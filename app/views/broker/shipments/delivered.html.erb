@@ -1,0 +1,10 @@
+<% provide :title, 'Delivered' %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1>Shipments</h1>
+  <p class="lead">Delivered</p>
+</div>
+
+<%= render 'show_many_delivered_at', shipments: @shipments %>
+<%= render 'layouts/pagy', pagy: @pagy %>

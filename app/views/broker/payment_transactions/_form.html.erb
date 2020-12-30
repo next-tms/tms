@@ -1,0 +1,25 @@
+<%= bootstrap_form_with(model: [:broker, @payment_transaction], local: true, layout: :horizontal, label_col: 'col-sm-2', control_col: 'col-sm-10') do |f| %>
+  <%= f.alert_message 'Unable to save invoice:' %>
+
+  <div class="form-group row">
+    <label class="col-form-label col-sm-2">Carrier</label>
+      <div class="col-sm-10">
+        <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, selected: (@payment_transaction.broker_carrier ? @payment_transaction.broker_carrier.id : nil) }, class: 'custom-select' %>
+    </div>
+  </div>
+
+  <%= f.text_field :due_on, label: 'Due On', autocomplete: 'off', class: 'flatpickr-date', value: maybe_in_time_zone(datetime: @payment_transaction.due_on, time_zone: current_user.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+
+  <% unless action_name = 'new' %>
+    <%= f.text_field :shipment_load_id, label: 'Invoiced Load' %>
+  <% end %>
+  <%= f.text_field :pro, label: 'Invoiced Pro' %>
+  <%= f.text_field :balance, label: 'Balance', class: 'money' %>
+  <%= f.text_field :paid, label: 'Pay', class: 'money' %>
+  <%= f.text_field :notes, label: 'Remark' %>
+  <%= f.check_box :additional_charge, label: 'Is additional charge?' %>
+
+  <div class="form-group">
+    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+  </div>
+<% end %>

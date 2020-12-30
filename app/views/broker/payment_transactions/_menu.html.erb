@@ -1,0 +1,25 @@
+<div class="navbar navbar-menu navbar-expand">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+      <% if (@payment_transaction and @payment_transaction.id) or action_name == 'import' or action_name == 'new' %>
+        <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Invoices'), broker_payment_transactions_path, class: 'nav-link' %></li>
+      <% end %>
+      <% if @payment_transaction and @payment_transaction.id %>
+        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_payment_transaction_path(@payment_transaction), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_broker_payment_transaction_path(@payment_transaction), class: 'nav-link' %></li>
+        <% if current_user.has_role? 'controller' or current_user.has_role? 'accounts_payable' %>
+          <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Delete'), broker_payment_transaction_path(@payment_transaction), method: :delete, data: { confirm: 'Are you sure you want to permanently delete this payment?' }, class: 'nav-link' %></li>
+        <% end %>
+      <% else %>
+        <% unless current_page? action: 'new' %>
+          <li class="navbar-item"><%= link_to icon('fas', 'plus', 'New'), new_broker_payment_transaction_path, class: 'nav-link' %></li>
+        <% else %>
+          <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Reset'), new_broker_payment_transaction_path, data: { confirm: 'Reset the form? Unsaved changes will be lost.' }, class: 'nav-link' %></li>
+        <% end %>
+      <% end %>
+      <% if action_name == 'index' or action_name == 'import' %>
+        <li class="navbar-item"><%= link_to icon('fas', 'file-import', 'Import Statement'), broker_ap_invoices_import_path, class: 'nav-link' %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>

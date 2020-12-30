@@ -1,0 +1,88 @@
+<%= bootstrap_form_with(model: [:broker, @shipment], local: true, layout: :horizontal, label_col: 'col-sm-3', control_col: 'col-sm-8') do |f| %>
+
+  <%= f.alert_message 'Unable to create shipment:' %>
+
+  <%= f.select :broker_customer_id, current_user.broker_customers.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@shipment.broker_customer ? @shipment.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, class: 'custom-select col-sm-6 col-md-4 mt-2 mb-4' %>
+
+  <div class="row">
+    <div class="col-sm-6 col-md-4">
+      <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
+      <%= f.text_field :shipper_name, label: 'Name', autofocus: 'autofocus' %>
+      <!-- Worst code ever -->
+      <div class="form-group form-row mb-4">
+        <label class="col-form-label col-sm-3 mr-0 ml-0">Pickup Hours</label>
+        <%= f.text_field :pickup_hours_start_at, label: 'From', hide_label: true, class: 'timepicker col-3 ml-4 mr-2', wrapper: false %>
+        <%= f.text_field :pickup_hours_end_at, label: 'To', hide_label: true, class: 'timepicker col-3', wrapper: false %>
+      </div>
+      <%= f.text_field :pickup_on, label: 'Pickup On', class: 'flatpickr-date', append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+      <%= f.text_field :shipper_contact_name, label: 'Contact' %>
+      <%= f.telephone_field :shipper_contact_phone, label: 'Phone' %>
+      <%= f.email_field :shipper_contact_email, label: 'Email' %>
+      <%= f.fields_for :shipper_address do |shipper_address_form| %>
+        <%= shipper_address_form.text_field :ref %>
+        <%= shipper_address_form.text_field :street %>
+        <%= shipper_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
+        <%= shipper_address_form.text_field :city %>
+        <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, class: 'custom-select' %>
+        <%= shipper_address_form.text_field :zip_code, label: 'ZIP' %>
+      <% end %>
+    </div>
+
+    <div class="col-sm-6 col-md-4">
+      <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
+      <%= f.text_field :receiver_name, label: 'Name' %>
+      <!-- Worst code ever -->
+      <div class="form-group form-row mb-4">
+        <label class="col-form-label col-sm-3 mr-0 ml-0">Delivery Hours</label>
+        <%= f.text_field :delivery_hours_start_at, label: 'From', hide_label: true, class: 'timepicker col-3 ml-4 mr-2', wrapper: false %>
+        <%= f.text_field :delivery_hours_end_at, label: 'To', hide_label: true, class: 'timepicker col-3', wrapper: false %>
+      </div>
+      <%= f.text_field :deliver_by, label: 'Delivery Appointment', class: 'flatpickr', append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+      <%= f.text_field :receiver_contact_name, label: 'Contact' %>
+      <%= f.telephone_field :receiver_contact_phone, label: 'Phone' %>
+      <%= f.email_field :receiver_contact_email, label: 'Email' %>
+      <%= f.fields_for :receiver_address do |receiver_address_form| %>
+        <%= receiver_address_form.text_field :ref %>
+        <%= receiver_address_form.text_field :street %>
+        <%= receiver_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
+        <%= receiver_address_form.text_field :city %>
+        <%= receiver_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.receiver_address.state.blank? ? nil : @shipment.receiver_address.state) }, class: 'custom-select' %>
+        <%= receiver_address_form.text_field :zip_code, label: 'ZIP' %>
+      <% end %>
+    </div>
+
+    <div class="col-sm-6 col-md-4">
+      <p class="col-title"><%= icon 'fas', 'barcode', 'References' %></p>
+      <%= f.text_field :shipper_reference, label: 'Shipper', autocomplete: 'off' %>
+      <%= f.text_field :customer_reference, label: 'PO', autocomplete: 'off' %>
+      <%= f.text_field :bol, label: 'BOL', autocomplete: 'off' %>
+      <%= f.text_field :pro, label: 'Pro', autocomplete: 'off' %>
+
+      <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Value' %></p>
+      <%= f.text_field :value, label: 'Total', prepend: '$', class: 'money', autocomplete: 'off' %>
+    </div>
+  </div>
+
+  <h2>Services</h2>
+  <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorials_form| %>
+    <%= render 'shipment_broker_accessorial_fields', f: shipment_broker_accessorials_form %>
+  <% end %>
+  <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :shipment_broker_accessorials, 'btn btn-light mt-2 mb-4' %>
+
+  <h2>Freight</h2>
+  <%= f.check_box :truckload, label: 'Truckload' %>
+  <p class="mb-2">&nbsp;</p>
+
+  <%= f.fields_for :items do |items_form| %>
+    <%= render 'item_fields', f: items_form %>
+  <% end %>
+  <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :items, 'btn btn-light mt-2 mb-4' %>
+
+  <h2>Special Instructions</h2>
+  <%= f.text_area :bol_notes, hide_label: true, rows: 5, class: 'col-sm-6' %>
+
+  <div class="form-group">
+    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+  </div>
+   
+<% end %>

@@ -1,0 +1,60 @@
+<% unless shipments.blank? %>
+
+  <div class="table-responsive">
+    <table class="table table-condensed table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <th>Load</th>
+          <th>SO</th>
+          <th>PO</th>
+          <th>Origin</th>
+          <th>Destination</th>
+          <th>Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% shipments.each do |shipment| %>
+          <tr data-link="<%= customer_shipment_path(shipment) %>" class="data-link">
+            <td>
+              <%= link_to shipment.load_id, customer_shipment_path(shipment) %>
+              <% if not shipment.out_for_delivery_at.blank? and shipment.delivered_at.blank? %>
+                <br>
+                <span class="text-muted">OFD</span>
+              <% end %>
+            </td>
+            <td><%= shipment.shipper_reference %></td>
+            <td><%= shipment.customer_reference %></td>
+            <td>
+              <% unless shipment.shipper_address.full_address? %>
+                <%= shipment.shipper_address.zip_code %>
+              <% else %>
+                <%= shipment.shipper_name %>
+                <br>
+                <%= shipment.shipper_address.city %>, <%= shipment.shipper_address.state %>
+              <% end %>
+            </td>
+            <td>
+              <% unless shipment.receiver_address.full_address? %>
+                <%= shipment.receiver_address.zip_code %>
+              <% else %>
+                <%= shipment.receiver_name %>
+                <br>
+                <%= shipment.receiver_address.city %>, <%= shipment.receiver_address.state %>
+              <% end %>
+            </td>
+            <td>
+              <%= pluralize_with_delimiter shipment.total_pieces, 'piece' %>
+              <br>
+              <%= number_with_delimiter shipment.total_weight %> lbs
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+<% else %>
+  <div class="section">
+    <p><em>Nothing to show</em></p>
+  </div>
+<% end %>

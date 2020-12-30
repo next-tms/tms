@@ -1,0 +1,31 @@
+<% provide :title, 'Account' %>
+
+<div class="page-header mb-4">
+  <h1><%= yield :title %></h1>
+</div>
+
+<%= bootstrap_form_for(resource, as: resource_name, url: user_registration_path, html: { method: :put }, layout: :horizontal, label_col: 'col-sm-4', control_col: 'col-sm-8') do |f| %>
+
+  <%= devise_error_messages! %>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <p class="col-title"><%= icon 'fas', 'user', 'Profile' %>
+      <%= f.email_field :email, placeholder: 'Your email address', class: 'form-control', autofocus: true %>
+      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+        <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+      <% end %>
+
+      <p class="col-title"><%= icon 'fas', 'key', 'Change Password' %>
+      <p class="text-info">Only complete to change password:</p>
+      <%= f.password_field :password, placeholder: 'Password', class: 'form-control' %>
+      <%= f.password_field :password_confirmation, placeholder: 'New password confirmation', class: 'form-control' %>
+    </div>
+  </div>
+
+  <p class="text-danger">Password required to make changes</p>
+  <div class="form-inline form-row mb-2">
+    <%= f.password_field :current_password, placeholder: 'Current Password', hide_label: true, class: 'form-control' %>
+    <%= f.submit 'Save', class: 'btn btn-primary ml-2' %>
+  </div>
+<% end %>

@@ -1,0 +1,12 @@
+<%= bootstrap_form_with(model: [:broker, @shipment]) do |f| %>
+  <%= f.alert_message 'Unable to save tracking:' %>
+
+  <%= f.fields_for :tracking_events do |tracking_events_form| %>
+    <%= render 'tracking_event_fields', f: tracking_events_form  %>
+  <% end %>
+  <% if false %><%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :tracking_events, 'btn btn-light mt-2 mb-4' %><% end %>
+
+  <div class="form-group">
+    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+  </div>
+<% end %>

@@ -1,0 +1,96 @@
+<% unless payment_transactions.blank? %>
+  <div class="table-responsive">
+    <table class="table table-condensed table-borderless table-striped table-hover h-100">
+      <thead>
+        <tr>
+          <% if defined? link_to_payment and link_to_payment %>
+            <th>Payment</th>
+          <% end %>
+          <th>Due</th>
+          <th>Load</th>
+          <th>Pro</th>
+          <% if payment_transactions.first.payment.has_invoice_numbers? %><th>Invoice</th><% end %>
+          <th>Balance</th>
+          <th>Shipment Cost</th>
+          <th>Variance</th>
+          <th>Pay</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% payment_transactions.each do |payment_transaction| %>
+          <tr class="<%= 'bg-warning' if payment_transaction.variance and payment_transaction.variance > 0 %>">
+            <% if defined? link_to_payment and link_to_payment %>
+              <td>
+                <% unless payment_transaction.payment.blank? %>
+                  <%= link_to payment_transaction.payment.week, broker_payment_path(payment_transaction.payment) %>
+                <% end %>
+              </td>
+            <% end %>
+            <td><%= short_date payment_transaction.due_on, current_user.time_zone %></td>
+            <td>
+              <% if not payment_transaction.shipment.blank? %>
+                <%= link_to payment_transaction.shipment.load_id, broker_shipment_path(payment_transaction.shipment) %>
+              <% elsif not payment_transaction.legacy_load_id.blank? %>
+                <%= payment_transaction.legacy_load_id %> <small class="text-uppercase text-primary">legacy</small>
+              <% end %>
+            </td>
+            <td>
+              <%= payment_transaction.pro %>
+              <% if not payment_transaction.shipment.blank? %>
+                <% duplicate_shipments = payment_transaction.broker_carrier.payment_transactions.where(shipment: payment_transaction.shipment) - [ payment_transaction ] %>
+                <% unless duplicate_shipments.blank? %>
+                  <br>
+                  <strong><%= link_to "#{duplicate_shipments.size} #{'duplicate'.pluralize(duplicate_shipments.size)}", broker_search_path(q: payment_transaction.shipment.load_id) %></strong>
+                <% end %>
+              <% elsif not payment_transaction.legacy_load_id.blank? %>
+                <% duplicate_payment_transactions = payment_transaction.broker_carrier.payment_transactions.where(legacy_load_id: payment_transaction.legacy_load_id) - [ payment_transaction ] %>
+                <% unless duplicate_payment_transactions.blank? %>
+                  <br>
+                  <strong><%= link_to "#{duplicate_payment_transactions.size} #{'duplicate'.pluralize(duplicate_payment_transactions.size)}", broker_search_path(q: payment_transaction.legacy_load_id) %></strong>
+                <% end %>
+              <% end%>
+            </td>
+            <% if payment_transactions.first.payment.has_invoice_numbers? %><td><%= payment_transaction.invoice %></td><% end %>
+            <td><%= humanized_money_with_symbol payment_transaction.balance, no_cents_if_whole: false %></td>
+            <td>
+              <% if not payment_transaction.shipment.blank? and not payment_transaction.additional_charge? %>
+                <%= humanized_money_with_symbol payment_transaction.shipment.carrier_cost, no_cents_if_whole: false %>
+              <% end %>
+            </td>
+            <td>
+              <% unless payment_transaction.shipment.blank? %>
+                <%= humanized_money_with_symbol payment_transaction.variance, no_cents_if_whole: false %>
+              <% end %>
+            </td>
+            <td><%= humanized_money_with_symbol payment_transaction.paid, no_cents_if_whole: false %></td>
+            <td>
+              <% if not payment_transaction.shipment.blank? and not payment_transaction.shipment.canceled_at.blank? %>
+                <strong>Warning: Shipment marked canceled and currently not included in profitability report</strong>
+                <% unless payment_transaction.notes.blank? %><br><% end %>
+              <% end %>
+              <%= payment_transaction.notes %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>&nbsp;</th>
+          <th>&nbsp;</th>
+          <th>&nbsp;</th>
+          <% if payment_transactions.first.payment.has_invoice_numbers? %><th>&nbsp;</th><% end %>
+          <th><%= humanized_money_with_symbol payment_transactions.map(&:balance).inject(Money.new(0)) { |sum, balance| (sum = sum + balance) unless balance.blank? }, no_cents_if_whole: false %></th>
+          <th>&nbsp;</th>
+          <th><%= humanized_money_with_symbol payment_transactions.map(&:variance).inject(Money.new(0)) { |sum, variance| (sum = sum + variance) unless variance.blank? }, no_cents_if_whole: false %></th>
+          <th><%= humanized_money_with_symbol payment_transactions.map(&:paid).inject(Money.new(0)) { |sum, paid| (sum = sum + paid) unless paid.blank? }, no_cents_if_whole: false %></th>
+          <th>&nbsp;</th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+<% else %>
+  <div class="section">
+    <p><em>Nothing to show</em></p>
+  </div>
+<% end %>

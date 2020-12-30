@@ -1,0 +1,26 @@
+<% provide :title, "Documents — Load #{@shipment.load_id}" %>
+<% provide :menu, render('menu') %>
+<% provide :no_cache, 'yes' %>
+<% provide :auto_refresh, 'yes' if @shipment.dispatched_at.blank? or @shipment.broker_carrier.blank? %>
+
+<%= render 'header', page_title: 'Documents' %>
+
+<% unless @shipment.broker_carrier.blank? %>
+  <div class="row">
+    <div class="col-sm-3">
+      <p class="col-title">Shipping Documents</p>
+      <ul class="list-unstyled">
+        <li><%= link_to 'Bill of Lading', bol_document_customer_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></li>
+        <% unless @shipment.total_charges.blank? %>
+          <li><%= link_to 'Quote', quote_document_customer_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></li>
+        <% end %>
+      </ul>
+    </div>
+  
+    <div class="col-sm-3">
+      <p class="col-title">Scanned Documents</p>
+    </div>
+  </div>
+<% else %>
+  <%= render 'layouts/message', title: 'No documents available', message: 'Shipment must first be booked.' %>
+<% end %>

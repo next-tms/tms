@@ -1,0 +1,9 @@
+<td>
+  <% unless shipment.receiver_address.full_address? %>
+    <%= shipment.receiver_address.zip_code %>
+  <% else %>
+    <%= shipment.receiver_name %>
+    <br>
+    <span class="text-nowrap"><%= shipment.receiver_address.city %>, <%= shipment.receiver_address.state %></span>
+  <% end %>
+</td>

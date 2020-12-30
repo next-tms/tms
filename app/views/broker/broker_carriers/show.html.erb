@@ -1,0 +1,17 @@
+<% provide :title, @broker_carrier.carrier.name %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_carrier.carrier.name %>
+  <small>
+    <%= @broker_carrier.account %>
+    <% unless @broker_carrier.broker_customer.blank? %>
+      <%= @broker_carrier.broker_customer.customer.name %>
+    <% end %>
+  </small>
+  </h1>
+  <p class="lead">Overview</p>
+</div>
+
+<h2>Recent Shipments</h2>
+<%= render 'broker/shipments/show_many', shipments: @broker_carrier.shipments %>

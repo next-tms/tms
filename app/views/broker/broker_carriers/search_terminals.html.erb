@@ -1,0 +1,36 @@
+<% provide :title, @broker_carrier.carrier.name %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_carrier.carrier.name %>
+  <small>
+    <%= @broker_carrier.account %>
+    <% unless @broker_carrier.broker_customer.blank? %>
+      <%= @broker_carrier.broker_customer.customer.name %>
+    <% end %>
+  </small>
+  </h1>
+  <p class="lead">Search Terminals</p>
+</div>
+
+<h2>Terminals</h2>
+<% unless @terminals.blank? %>
+  <div class="table-responsive">
+    <table class="table table-condensed table-borderless table-striped table-hover table-unsortable h-100">
+      <thead>
+        <th>Location</th>
+        <th>Phone</th>
+      </thead>
+      <tbody>
+        <% @terminals.each do |terminal| %>
+          <tr>
+            <td><%= terminal.address.pretty(', ') %></td>
+            <td><%= link_to terminal.phone.phoney_formatted, "tel:#{terminal.phone.phoney_formatted}" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p><em>Nothing to show</em></p>
+<% end %>

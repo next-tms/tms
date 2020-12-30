@@ -1,0 +1,22 @@
+<% unless broker_customers.blank? %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Shipments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% broker_customers.each do |broker_customer| %>
+          <tr data-link="<%= broker_broker_customer_path(broker_customer) %>" class="data-link">
+            <td><%= broker_customer.customer.name %></td>
+            <td><%= broker_customer.shipments.active.size %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p><em>Nothing to show</em></p>
+<% end %>

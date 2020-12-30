@@ -1,0 +1,17 @@
+<div class="modal fade" id="nav-modal" tabindex="-1" role="dialog" aria-labelledby="nav-model" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row pb-4">
+          <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'plus'}<br>Quote".html_safe, customer_quote_only_path %></div>
+          <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'pallet'}<br>Shipments".html_safe, customer_shipments_path, 'data-turbolinks': 'false' %></div>
+        </div>
+        <%= render 'layouts/nav_manifest_modal_rows' %>
+        <div class="row border-top pt-4">
+          <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'user-circle'}<br>Account".html_safe, edit_user_registration_path %></div>
+          <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'sign-out-alt'}<br>Logout".html_safe, destroy_user_session_path, method: :delete, 'data-turbolinks': 'false' %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

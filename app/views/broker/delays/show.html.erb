@@ -1,0 +1,392 @@
+<% provide :title, "Load #{@shipment.pretty_id}" %>
+<% provide :menu, render('menu') %>
+<% provide :auto_refresh, 'yes' %>
+<% provide :prefetech_urls_csv, "https://www.google.com/maps/search/?api=1&query=#{URI.encode(@shipment.shipper_address.pretty(', '))}, https://www.google.com/maps/search/?api=1&query=#{URI.encode(@shipment.receiver_address.pretty(', '))}" %>
+
+<%= render 'header', page_title: 'Overview' %>
+
+<% if @shipment.tracking and not @shipment.tracking[:error].blank? %>
+  <p class="lead text-muted">Unable to track automatically — tracking API returned: <%= @shipment.tracking[:error] %></p>
+<% end %>
+
+<% if not @shipment.broker_carrier.blank? and not @shipment.dispatched_at.blank? and @shipment.pickup_confirmation.blank? %>
+  <% if @shipment.dispatched_at < DateTime.now - 8.minutes %>
+    <div class="alert shadow bg-warning">
+      <p class="h3">Pickup request not confirmed by <%= @shipment.broker_carrier.carrier.name %></p>
+      <p class="lead">Contact <%= @shipment.broker_carrier.carrier.name %> to schedule pickup.</p>
+    </div>
+  <% end %>
+<% end %>
+
+<div class="row">
+  <div class="col-sm-3">
+    <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
+    <% unless @shipment.shipper_address.types.blank? %>
+      <ul class="list-inline list-unstyled text-muted text-uppercase">
+        <% @shipment.shipper_address.types.each do |type| %>
+          <li class="list-inline-item"><%= type.gsub('-', ' ') %></li>
+        <% end %>
+      </ul>
+    <% end %>
+    <ul class="list-unstyled">
+      <% unless @shipment.shipper_contact_name.blank? %>
+        <li><%= @shipment.shipper_contact_name %></li>
+      <% end %>
+      <% unless @shipment.shipper_contact_phone.blank? %>
+        <li><%= link_to @shipment.shipper_contact_phone.phony_formatted, "tel:#{@shipment.shipper_contact_phone.phony_formatted}" %></li>
+      <% end %>
+      <% unless @shipment.shipper_contact_email.blank? %>
+        <li><%= link_to @shipment.shipper_contact_email, "mailto:#{@shipment.shipper_contact_email}" %></li>
+      <% end %>
+    </ul>
+    <address>
+      <%= @shipment.shipper_name %>
+      <br>
+      <%= @shipment.shipper_address.pretty('<br>').html_safe %>
+    </address>
+    <ul class="list-inline list-unstyled">
+      <li class="list-inline-item"><%= link_to icon('fab', 'google', 'Map'), "https://www.google.com/maps/search/?api=1&query=#{URI.encode(@shipment.shipper_address.proper(', '))}", target: '_blank' %></li>
+      <li class="list-inline-item"><%= link_to icon('fab', 'apple', 'Map'), "https://maps.apple.com/?address=#{URI.encode(@shipment.shipper_address.proper(', '))}", target: '_blank' %></li>
+    </ul>
+    <% if @shipment.lift_gate_pickup? %><p>LG</p><% end %>
+  </div>
+
+  <div class="col-sm-3">
+    <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
+    <% unless @shipment.receiver_address.types.blank? %>
+      <ul class="list-inline list-unstyled text-muted text-uppercase">
+        <% @shipment.receiver_address.types.each do |type| %>
+          <li class="list-inline-item"><%= type.gsub('_', ' ') %></li>
+        <% end %>
+      </ul>
+    <% end %>
+    <ul class="list-unstyled">
+      <% unless @shipment.receiver_contact_name.blank? %>
+        <li><%= @shipment.receiver_contact_name %></li>
+      <% end %>
+      <% unless @shipment.receiver_contact_phone.blank? %>
+        <li><%= link_to @shipment.receiver_contact_phone.phony_formatted, "tel:#{@shipment.receiver_contact_phone.phony_formatted}" %></li>
+      <% end %>
+      <% unless @shipment.receiver_contact_email.blank? %>
+        <li><%= link_to @shipment.receiver_contact_email, "mailto:#{@shipment.receiver_contact_email}" %></li>
+      <% end %>
+    </ul>
+    <address>
+      <%= @shipment.receiver_name %>
+      <br>
+      <%= @shipment.receiver_address.pretty('<br>').html_safe %>
+    </address>
+    <ul class="list-inline list-unstyled">
+      <li class="list-inline-item"><%= link_to icon('fab', 'google', 'Map'), "https://www.google.com/maps/search/?api=1&query=#{URI.encode(@shipment.receiver_address.proper(', '))}", target: '_blank' %></li>
+      <li class="list-inline-item"><%= link_to icon('fab', 'apple', 'Map'), "https://maps.apple.com/?address=#{URI.encode(@shipment.receiver_address.proper(', '))}", target: '_blank' %></li>
+    </ul>
+  </div>
+
+  <div class="col-sm-3">
+    <p class="col-title"><%= icon 'fas', 'clock', 'Schedule' %></p>
+    <table class="table table-borderless table-condensed">
+      <tbody>
+        <tr>
+          <th>Pickup</th>
+          <td><%= short_date @shipment.pickup_on, @shipment.shipper_address.time_zone %></td>
+        </tr>
+        <tr class="<% unless @shipment.promised_delivery_by.blank? %>bg-danger<% end %>">
+          <th>Promised</th>
+          <td>
+            <% if @shipment.promised_delivery_by.blank? %>
+              Standard transit time
+            <% else %>
+              <%= short_date @shipment.promised_delivery_by, @shipment.receiver_address.time_zone %>
+            <% end %>
+          </td>
+        </tr>
+        <% unless @shipment.broker_carrier.blank? %>
+          <% if @shipment.delivered_at.blank? %>
+            <tr>
+              <th>ETA</th>
+              <td><%= short_date @shipment.deliver_by, @shipment.receiver_address.time_zone %></td>
+            </tr>
+          <% else %>
+            <tr>
+              <th>Delivered</th>
+              <td><%= short_date @shipment.delivered_at, @shipment.receiver_address.time_zone %></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col-sm-3">
+    <p class="col-title"><%= icon 'fas', 'sticky-note', 'Notes' %></p>
+    <div class="notes">
+      <% unless @shipment.broker_notes.blank? %>
+        <%= simple_format @shipment.broker_notes %>
+      <% end %>
+      <% unless @shipment.customer_notes.blank? %>
+        <%= simple_format @shipment.customer_notes %>
+      <% end %>
+      <% if @shipment.broker_notes.blank? and @shipment.customer_notes.blank? %>
+        <p><em>No notes yet</em></p>
+      <% end %>
+    </div>
+
+    <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Value' %></p>
+    <% if @shipment.value > 0 %>
+      <ul class="list-unstyled">
+        <li><%= humanized_money_with_symbol @shipment.value, no_cents_if_whole: false %></li>
+        <li><%= humanized_money_with_symbol (@shipment.value / @shipment.total_weight), no_cents_if_whole: false %> per pound</li>
+      </ul>
+    <% else %>
+      <p><em>Not provided</em></p>
+    <% end %>
+  </div>
+
+  <div class="col-sm-12">
+    <p class="col-title">BOL Instructions</p>
+    <%= simple_format @shipment.broker.default_bol_notes %>
+    <%= simple_format@shipment.broker_carrier.default_bol_notes unless @shipment.broker_carrier.blank? %>
+    <%= simple_format @shipment.broker_customer.default_bol_notes %>
+    <%= simple_format @shipment.bol_notes %>
+  </div>
+
+  <div class="col-sm-6">
+    <p class="col-title"><%= icon 'fas', 'calendar', 'Log' %></p>
+    <div class="table-responsive">
+      <table class="table table-condensed table-borderless table-striped table-hover h-100">
+        <thead>
+          <th>Time</th>
+          <th>Event</th>
+        </thead>
+        <tbody>
+          <% unless @shipment.delivered_at.blank? or @shipment.broker_carrier.blank? %>
+            <tr>
+              <td><%= pretty_date @shipment.delivered_at, @shipment.receiver_address.time_zone %></td>
+              <td><%= real_carrier(@shipment).name %> delivered freight in <%= pluralize @shipment.delivered_in_days, 'day' %></td>
+            </tr>
+          <% end %>
+          <% unless @shipment.out_for_delivery_at.blank? %>
+            <tr>
+              <td><%= pretty_date @shipment.out_for_delivery_at, @shipment.receiver_address.time_zone %></td>
+              <td>Out for delivery</td>
+            </tr>
+          <% end %>
+          <% if not @shipment.delivery_appointment_at.blank? or not @shipment.delivery_appointment_on.blank? %>
+            <tr>
+              <td>&nbsp;</td>
+              <td>Delivery appointment scheduled for <%= pretty_date (@shipment.delivery_appointment_at.blank? ? @shipment.delivery_appointment_on : @shipment.delivery_appointment_at), @shipment.receiver_address.time_zone %></td>
+            </tr>
+          <% end %>
+          <% unless @shipment.pending_appointment_since.blank? %>
+            <tr>
+              <td><%= pretty_date @shipment.pending_appointment_since, @shipment.receiver_address.time_zone %></td>
+              <td>Appointment pending</td>
+            </tr>
+          <% end %>
+          <% unless @shipment.picked_up_at.blank? or @shipment.broker_carrier.blank? %>
+            <tr>
+              <td><%= pretty_date @shipment.picked_up_at, @shipment.shipper_address.time_zone %></td>
+              <td><%= real_carrier(@shipment).name %> picked up freight</td>
+            </tr>
+          <% end %>
+          <% unless @shipment.dispatched_at.blank? %>
+            <tr>
+              <td><%= pretty_date @shipment.dispatched_at, @shipment.shipper_address.time_zone %></td>
+              <td>Pickup scheduled</td>
+            </tr>
+          <% end %>
+          <tr>
+            <td><%= pretty_date @shipment.created_at.in_time_zone(current_user.time_zone.to_s), current_user.time_zone %></td>
+            <td>Shipment entered</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-sm-6">
+    <% if current_user.has_role? 'accounting' or @shipment.broker_customer.sales_reps.include? current_user %>
+      <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Pricing' %></p>
+      <div class="table-responsive">
+        <table class="table table-condensed table-borderless table-striped table-hover h-100">
+          <thead>
+            <th>Service</th>
+            <th>Cost</th>
+            <th>Charge</th>
+            <th>BOL?</th>
+            <th>Invoice?</th>
+          </thead>
+          <tbody>
+            <% unless @shipment.broker_carrier.blank? %>
+              <tr>
+                <td><%= @shipment.broker_carrier.carrier.name %></td>
+                <td><%= humanized_money_with_symbol @shipment.carrier_cost, no_cents_if_whole: false %></td>
+                <td><%= humanized_money_with_symbol @shipment.carrier_charge, no_cents_if_whole: false %></td>
+                <td>✓</td>
+                <td>✓</td>
+              </tr>
+            <% end %>
+            <% @shipment.shipment_broker_accessorials.sort_by{ |shipment_broker_accessorial| shipment_broker_accessorial.broker_accessorial.name }.each do |shipment_broker_accessorial| %>
+              <tr>
+                <td><%= shipment_broker_accessorial.broker_accessorial.name %></td>
+                <td><%= humanized_money_with_symbol shipment_broker_accessorial.cost, no_cents_if_whole: false %></td>
+                <td><%= humanized_money_with_symbol shipment_broker_accessorial.charge, no_cents_if_whole: false %></td>
+                <td><% unless shipment_broker_accessorial.broker_accessorial.broker_only %>✓<% end %></td>
+                <td><% unless shipment_broker_accessorial.broker_accessorial.broker_only %>✓<% end %></td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr class="bg-light font-weight-bold">
+              <td>&nbsp;</td>
+              <td><%= humanized_money_with_symbol @shipment.total_cost, no_cents_if_whole: false %></td>
+              <td><%= humanized_money_with_symbol @shipment.total_charges, no_cents_if_whole: false %></td>
+              <td><%= @shipment.margin %><br><strong><small class="text-uppercase">Margin</small></strong></td>
+              <td><%= humanized_money_with_symbol @shipment.profit, no_cents_if_whole: false %><br><strong><small class="text-uppercase">Profit</small></strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    <% else %>
+      <p>&nbsp;</p>
+    <% end %>
+  </div>
+
+</div>
+
+<p class="col-title"><%= icon 'fas', 'pallet', 'Freight' %></p>
+<% if not @shipment.items.count == 0 %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Piece</th>
+          <th>Description</th>
+          <th>HZ<small class="text-muted">***</small></th>
+          <th><small class="text-muted">inches</small><br>Dimensions</th>
+          <th><small class="text-muted">lbs</small><br>Weight</th>
+          <th><small class="text-muted">Declared</small><br>Class</th>
+          <th><small class="text-muted">Auto</small><br>Class</th>
+          <th>NMFC</th>
+          <th><small class="text-muted">(L×W×H) inches ÷ 1,728</small><br>Cubic Ft</th>
+          <th><small class="text-muted">lbs/cubic ft</small><br>Density</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @shipment.items.each do |item| %>
+          <tr>
+            <td><%= pluralize item.quantity, item.packaging.name %></td>
+            <td><%= item.desc %></td>
+            <td><% if item.hazmat %>✓<% end %></td>
+            <td><% if item.l and item.w and item.h %><%= item.l %>x<%= item.w %>x<%= item.h %><% end %></td>
+            <td>
+              <% if item.quantity > 1 %>
+                <%= number_with_delimiter(item.weight / item.quantity) %> per <%= item.packaging.name %>
+              <% end %>
+              <%= number_with_delimiter item.weight %> <% if item.quantity > 1 %>total<% end %>
+            </td>
+            <td><%= item.forced_freight_class %></td>
+            <td><%= item.calculated_freight_class %></td>
+            <td><%= item.nmfc %></td>
+            <td><%= item.cubic_ft rounded: true %></td>
+            <td><%= item.density rounded: true %></td>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot>
+        <tr class="bg-light font-weight-bold">
+          <td><%= pluralize @shipment.total_pieces, 'piece' %></td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>
+            <% if @shipment.linear_ft %>
+              <span class="text-nowrap"><%= @shipment.linear_ft %> linear ft <small class="text-muted">*, **</small></span>
+            <% end %>
+          </td>
+          <td><%= number_with_delimiter @shipment.total_weight %> lbs</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>
+            <% if @shipment.total_cubic_ft(rounded: true) %>
+              <%= number_with_delimiter @shipment.total_cubic_ft(rounded: true) %> <small class="text-muted">*</small>
+            <% end %>
+          </td>
+          <td>
+            <% if @shipment.total_density(rounded: true) %>
+              <%= number_with_delimiter @shipment.total_density(rounded: true) %> <small class="text-muted">*</small>
+            <% end %>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+    <p class="text-muted">
+      <small>* Individual values shown may not match total shown as individual lines are rounded up, but totals are calculated precisely then rounded up ** Linear footage calculation assumes pallets can be rotated in any direction *** HZ indicates hazardous material</small>
+    </p>
+  </div>
+<% end %>
+
+<% if current_user.has_role? 'accounts_receivable' or current_user.has_role? 'quoting' %>
+  <h2>Easy Copy & Paste</h2>
+
+  <div class="row">
+
+    <% if current_user.has_role? 'quoting' %>
+      <div class="col-sm-4">
+        <p class="col-title">For Quoting</p>
+<textarea class="form-control copyable" rows="4" readonly>
+Load <%= @shipment.pretty_id %>
+
+Origin: <%= @shipment.shipper_address.city %>, <%= @shipment.shipper_address.state %>, <%= @shipment.shipper_address.zip_code %>
+Destination: <%= @shipment.receiver_address.city %>, <%= @shipment.receiver_address.state %>, <%= @shipment.receiver_address.zip_code %>
+
+<% unless @shipment.shipment_broker_accessorials.blank? %>
+<% @shipment.shipment_broker_accessorials.each do |shipment_broker_accessorial| %>
+<%= shipment_broker_accessorial.broker_accessorial.name %>
+<% end %>
+<% end %>
+
+<% unless @shipment.items.empty? %>
+<% @shipment.items.each do |item| %>
+<%= item.quantity %> <%= item.packaging.name %> <%= item.desc %> <% if item.l and item.w and item.h %><%= item.l %>x<%= item.w %>x<%= item.h %><% end %> <%= item.calculated_freight_class %> <%= number_with_delimiter item.weight %> lbs
+<% end %>
+<% end %>
+
+</textarea>
+      </div>
+    <% end %>
+
+    <% if current_user.has_role? 'accounts_receivable' %>
+      <div class="col-sm-4">
+        <p class="col-title">For Invoicing</p>
+<textarea class="form-control copyable" rows="4" readonly>
+Load <%= @shipment.pretty_id %>
+
+Shipper Ref: <%= @shipment.shipper_reference %>
+PO Ref: <%= @shipment.customer_reference %>
+
+Origin
+<%= @shipment.shipper_name %>
+<%= @shipment.shipper_address.pretty("\n") %>
+
+Destination
+<%= @shipment.receiver_name %>
+<%= @shipment.receiver_address.pretty("\n") %>
+
+<% unless @shipment.shipment_broker_accessorials.blank? %>
+<% @shipment.shipment_broker_accessorials.each do |shipment_broker_accessorial| %>
+<%= shipment_broker_accessorial.broker_accessorial.name %>
+<% end %>
+<% end %>
+
+<% unless @shipment.items.empty? %>
+<% @shipment.items.each do |item| %>
+<%= item.quantity %> <%= item.packaging.name %> <%= item.desc %> <% if item.l and item.w and item.h %><%= item.l %>x<%= item.w %>x<%= item.h %><% end %> <%= item.forced_freight_class ? item.forced_freight_class : item.calculated_freight_class %> <%= number_with_delimiter item.weight %> lbs
+<% end %>
+<% end %>
+</textarea>
+      </div>
+    <% end %>
+
+  </div>
+<% end %>

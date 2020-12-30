@@ -1,0 +1,29 @@
+<% unless broker_carriers.blank? %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <th>Carrier</th>
+          <th>Account</th>
+          <th>Shipments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% broker_carriers.each do |broker_carrier| %>
+          <tr data-link="<%= broker_broker_carrier_path(broker_carrier) %>" class="data-link">
+            <td><%= broker_carrier.carrier.name %></td>
+            <td>
+              <%= current_user.broker.name %>
+              <% unless broker_carrier.broker_customer.blank? %>
+                <span class="text-muted"> / <%= broker_carrier.broker_customer.customer.name %></span>
+              <% end %>
+            </td>
+            <td><%= broker_carrier.shipments.size %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p><em>Nothing to show</em></p>
+<% end %>

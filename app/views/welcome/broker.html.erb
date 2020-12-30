@@ -1,0 +1,9 @@
+<% provide :title, @website.slogan %>
+<% provide :no_container, 'yes' %>
+
+<div class="bg-dark text-black jumbotron-broker text-center rounded-0">
+  <div class="container-fluid">
+    <h1 class="display-4"><span><%= yield :title %></span></h1>
+    <p class="lead"><span><%= @website.desc %></span></p>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+<% provide :title, "Preferences for #{@broker_customer.customer.name}" %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_customer.customer.name %></h1>
+  <p class="lead">Preferences</p>
+</div>
+
+<%= render 'form' %>

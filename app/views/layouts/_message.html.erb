@@ -1,0 +1,9 @@
+<div class="alert <%== defined?(classes) ? classes : 'bg-light' %>">
+  <% if defined?(title) && !title.blank? %>
+    <p class="lead"><%= title %></p>
+  <% end %>
+  
+  <% if defined?(message) && !message.blank? %>
+    <p><%= message %></p>
+  <% end %>
+</div>

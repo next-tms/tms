@@ -1,0 +1,15 @@
+<% provide :title, 'Search' %>
+
+<div class="page-header">
+  <h1>Search</h1>
+</div>
+
+<%= render 'form' %>
+
+<div class="mb-4">&nbsp;</div>
+
+<% unless @search.blank? %>
+  <%= render 'results', search: @search, broker_carriers: @broker_carriers, broker_customers: @broker_customers, shipments: @shipments, payments: @payments %>
+<% else %>
+  <p><em>Nothing found</em></p>
+<% end %>

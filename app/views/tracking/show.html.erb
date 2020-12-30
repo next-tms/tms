@@ -1,0 +1,19 @@
+<% unless @shipment.blank? %>
+  <% provide :title, "Tracking - Load #{@shipment.load_id}" %>
+<% else %>
+  <% provide :title, "Tracking" %>
+<% end %>
+
+<% unless @shipment.blank? %>
+  <%= render 'results', load_id: @load_id, shipment: @shipment %>
+<% else %>
+  <div class="page-header">
+    <h1>Tracking</h1>
+    <p class="lead">Tracking</p>
+    <%= render 'form', load_id: @load_id %>
+    <div class="mb-4">&nbsp;</div>
+  </div>
+  <% unless @load_id.blank? %>
+    <p><em>Nothing found</em></p>
+  <% end %>
+<% end %>

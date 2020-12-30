@@ -1,0 +1,9 @@
+<% provide :title, 'Edit Invoice' %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1>Invoice <% unless @payment_transaction.broker_carrier.blank? %><small><%= @payment_transaction.broker_carrier.broker_customer_specific_name %></small><% end %></h1>
+  <p class="lead"><%= yield :title %></p>
+</div>
+
+<%= render 'form' %>

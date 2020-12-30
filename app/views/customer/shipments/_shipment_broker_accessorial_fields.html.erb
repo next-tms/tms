@@ -1,0 +1,11 @@
+<div class="nested-fields form-inline form-row mb-2">
+  <%= f.hidden_field :_destroy %>
+  <%= f.select :broker_accessorial_id, current_user.broker_customer.eligible_broker_accessorials.where.not(broker_only: true).sort_by(&:name).collect { |c| [c.name, c.id] }, { label: 'Accessorial', hide_label: true }, class: 'custom-select mr-2', wrapper: false %>
+  <% if action_name == 'pricing' %>
+    <%= f.text_field :cost, prepend: '$', label: 'Cost', class: 'mr-2 money', autocomplete: 'off' %>
+    <%= f.text_field :charge, prepend: '$', label: 'Charge', class: 'mr-2 money', autocomplete: 'off' %>
+  <% end %>
+  <div class="form-group">
+    <%= link_to icon('fas', 'trash'), '#', class: 'remove-fields btn btn-light' %>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<nav class="navbar navbar-menu navbar-expand">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+      <% if not action_name == 'index' %>
+        <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Customers'), broker_broker_customers_path, class: 'nav-link' %></li>
+      <% end %>
+      <% if @broker_customer and @broker_customer.id %>
+        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'truck', 'Carriers'), broker_carriers_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'sliders-h', 'Preferences'), edit_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'dollar-sign', 'Pricing'), edit_pricing_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
+      <% else %>
+        <% unless current_page? action: 'new' %>
+          <li class="navbar-item"><%= link_to icon('fas', 'plus', 'New'), new_broker_broker_customer_path, class: 'nav-link' %></li>
+          <% if current_user.has_role? 'accounting' %>
+            <li class="navbar-item"><%= link_to icon('fas', 'chart-pie', 'Profitability'), broker_customers_profitability_report_path, class: 'nav-link' %></li>
+          <% end %>
+        <% else %>
+          <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Reset'), new_broker_broker_customer_path, data: { confirm: 'Reset the form? Unsaved changes will be lost.' }, class: 'nav-link' %></li>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+</nav>

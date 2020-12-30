@@ -1,0 +1,5 @@
+<td>
+  <% unless shipment.pickup_driver_assigned_at.blank? %>
+    <span class="text-nowrap"><%= shipment.pickup_driver_assigned_at.in_time_zone(shipment.shipper_address.time_zone.to_s).strftime('%l:%M %p') %></span>
+  <% end %>
+</td>

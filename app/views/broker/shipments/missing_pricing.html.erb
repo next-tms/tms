@@ -1,0 +1,11 @@
+<% provide :title, 'Missing Pricing — Shipments' %>
+<% provide :menu, render('menu') %>
+<% provide :auto_refresh, 'yes' %>
+
+<div class="page-header">
+  <h1>Shipments</h1>
+  <p class="lead">Missing Pricing</p>
+</div>
+
+<%= render 'show_many_pricing', shipments: @shipments %>
+<%= render 'layouts/pagy', pagy: @pagy %>

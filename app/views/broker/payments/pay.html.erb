@@ -1,0 +1,37 @@
+<% provide :title, 'Pay' %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1>Payment <% unless @payment.broker_carrier.blank? %><small><%= link_to @payment.broker_carrier.broker_customer_specific_name, broker_broker_carrier_path(@payment.broker_carrier) %></small><% end %></h1>
+  <p class="lead"><%= yield :title %></p>
+</div>
+
+<div class="row">
+  <div class="col">
+    <%= bootstrap_form_with(model: [:broker, @payment], local: true, layout: :horizontal, label_col: 'col-sm-2', control_col: 'col-sm-10') do |f| %>
+      <%= f.alert_message 'Unable to update payment:' %>
+      <%= f.text_field :paid_on, label: 'Paid On', autocomplete: 'off', class: 'flatpickr-date', value: maybe_in_time_zone(datetime: @payment.paid_on, time_zone: current_user.time_zone) %>
+      <%= f.text_field :method_reference, label: 'Method Reference' %>
+      <div class="form-group">
+        <%= f.submit class: 'btn btn-primary mt-4', value: 'Pay' %>
+      </div>
+    <% end %>
+  </div>
+  <div class="col">
+    <p class="col-title">Check Mailing Details</p>
+    <div class="row">
+      <% unless @payment.broker_carrier.check_mailing_address.blank? %>
+        <% unless @payment.broker_carrier.account.blank? %>
+          <div class="col-3">Account #:</div>
+          <div class="col-9"><%= @payment.broker_carrier.account %></div>
+        <% end %>
+        <% unless @payment.broker_carrier.check_mailing_address.blank? %>
+          <div class="col-3">Address</div>
+          <div class="col-9">
+            <address><%= @payment.broker_carrier.check_mailing_address.pretty('<br>').html_safe %></address>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

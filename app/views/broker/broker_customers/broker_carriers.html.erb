@@ -1,0 +1,40 @@
+<% provide :title, "Carriers for #{@broker_customer.customer.name}" %>
+<% provide :menu, render('menu') %>
+
+<div class="row">
+  <div class="col-8">
+    <div class="page-header">
+      <h1><%= @broker_customer.customer.name %></h1>
+      <p class="lead">Carriers</h2>
+    </div>
+  </div>
+</div>
+
+<div class="btn-toolbar">
+  <%= link_to 'New', new_broker_broker_carrier_path(@broker_customer), class: 'btn btn-primary' %>
+</div>
+
+<% unless @broker_customer.broker_carriers.blank? %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <th>Carrier</th>
+          <th>Account</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @broker_customer.broker_carriers.each do |broker_broker_carrier| %>
+          <tr data-link="<%= broker_broker_carrier_path(broker_broker_carrier.id) %>" class="data-link">
+            <td><%= broker_broker_carrier.carrier.name %></td>
+            <td><%= broker_broker_carrier.account %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="section">
+    <p><em>Nothing to show</em></p>
+  </div>
+<% end %>

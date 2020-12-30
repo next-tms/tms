@@ -1,0 +1,217 @@
+h1 small, .text-highlighted {
+  color: #ff4500;
+  font-weight: 400;
+}
+
+.text-red { color: red; }
+
+h2 {
+  margin-bottom: 1rem;
+}
+
+table thead tr th, table tbody tr th {
+  font-weight: 600;
+}
+
+table thead tr th, .lead, .brand {
+  font-family: 'Nimbus Sans L', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+table thead tr th {
+  text-transform: uppercase;
+}
+
+.navbar-divider {
+  padding-left: 1.4rem;
+}
+
+.nav-wrapper {
+  overflow: hidden;
+}
+
+.navbar {
+  background: black;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.navbar-menu {
+  // background: #363636;
+}
+
+.navbar-nav {
+  font-weight: 400;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.navbar-nav::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.navbar-link {
+  text-transform: lowercase;
+}
+
+.navbar-menu ul.navbar-nav {
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+img.navbar-brand-logo {
+  height: 0.95rem;
+}
+
+.navbar-menu ul.navbar-nav li.navbar-item {
+  display: inline-block;
+  float: none;
+}
+
+main {
+  background: #f6f6f6;
+}
+
+navbar, .navbar a, .navbar a:active, .navbar a:hover, .navbar a:visited,
+footer, footer a, footer a:active, footer a:hover, footer a:visited {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+tr.bg-danger, tr.bg-danger a, tr.bg-danger a:active, tr.bg-danger a:hover, tr.bg-danger a:visited {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.navbar a, .navbar a:active, .navbar a:hover, .navbar a:visited {
+  font-weight: 500;
+}
+
+.modal-content a, .modal-content a:active, .modal-content a:hover, .modal-content a:visited {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.90);
+}
+
+main a, main a:active, main a:hover, main a:visited {
+  font-weight: 500;
+}
+
+.alert a, .alert a:active, .alert a:hover, .alert a:visited {
+  color: black;
+}
+
+.jumbotron {
+  padding-bottom: 3.4rem;
+  padding-top: 20.5rem;
+}
+
+.jumbotron-services {
+  background: url(https://example.sfo2.cdn.digitaloceanspaces.com/marcin-jozwiak-oh0DITWoHi4-unsplash.jpg) no-repeat center bottom;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.jumbotron-services h1 span, .jumbotron-services p span {
+  font-weight: 700 !important;
+  background: rgba(255, 204, 0, 0.8);
+}
+
+.welcome-wrapper .jumbotron {
+  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url(https://example.sfo2.cdn.digitaloceanspaces.com/elevate-dI-aXC7DWpQ-unsplash.jpg) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  margin-bottom: 0;
+}
+
+.welcome-wrapper {
+  background: black;
+  font-weight: 700 !important;
+  // background: rgba(236, 238, 236, 0.8);
+  // color: rgba(236, 238, 236, 0.85);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.welcome-wrapper .services-row > div {
+  min-height: 17rem;
+  padding-top: 4.5rem;
+  padding-bottom: 2rem;
+}
+
+.welcome-wrapper .services-row .truckload-col {
+  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url(https://example.sfo2.cdn.digitaloceanspaces.com/matthew-t-rader-1shWwOrkxEM-unsplash.jpg) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.welcome-wrapper .services-row .ltl-col {
+  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url(https://example.sfo2.cdn.digitaloceanspaces.com/marcin-jozwiak-oh0DITWoHi4-unsplash.jpg) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.welcome-wrapper .services-row .intermodal-col {
+  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url(https://example.sfo2.cdn.digitaloceanspaces.com/bernd-dittrich-eCc7FjMoR74-unsplash.jpg) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.welcome-wrapper .services-row .volume-col {
+  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url(https://example.sfo2.cdn.digitaloceanspaces.com/rick-steinhauer-Wib7kVoPlgY-unsplash.jpg) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.welcome-wrapper p {
+  font-weight: normal;
+}
+
+.page-header {
+  margin-bottom: 2.4rem;
+}
+
+.data-link {
+  cursor: pointer;
+}
+
+.col-title {
+  font-weight: bolder;
+  text-transform: uppercase;
+}
+
+.form-inline label {
+  margin-right: 0.4rem;
+}
+
+main {
+  // font-size: 0.9rem * 1.15;
+}
+
+main {
+  padding-top: 1.7rem;
+  padding-bottom: 1.7rem;
+}
+
+iframe {
+  border: none;
+  height: 15rem;
+}
+
+.btn-toolbar {
+  margin-bottom: 1rem;
+}
+
+footer .row {
+  padding-top: 2.4rem;
+}

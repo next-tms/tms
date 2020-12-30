@@ -1,0 +1,27 @@
+<% unless @website.manifest.dig('footer', 'html').blank? %>
+  <%= CGI.unescapeHTML(@website.manifest.dig('footer', 'html')).html_safe %>
+<% else %>
+  <footer class="mt-5 mb-5">
+    <div class="container-fluid">
+      <div class="footer-bottom">
+        <p class="h3"><%= @website.broker.name %></p>
+        <% if @website %>
+          <div class="row">
+            <div class="col-sm-12 col-md-3">
+              <ul class="list-unstyled">
+                <li><%= link_to @website.broker.phone.phony_formatted, "tel:#{@website.broker.phone.phony_formatted}" %></li>
+                <li><%= link_to @website.broker.customer_service_email, "mailto:#{@website.broker.customer_service_email}" %></li>
+              </ul>
+            </div>
+            <div class="col-sm-12 col-md-3">
+              <ul class="list-unstyled">
+                <li><%= @website.broker.address.pretty('<br>').gsub('Apt', 'Ste').html_safe %></li>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+        <p>© <%= DateTime.now.year %> <%= @website.copyright_holder %></p>
+      </div>
+    </div>
+  </footer>
+<% end %>

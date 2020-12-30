@@ -1,0 +1,11 @@
+<% provide :title, 'Missing Pro — Shipments' %>
+<% provide :menu, render('menu') %>
+<% provide :auto_refresh, 'yes' %>
+
+<div class="page-header">
+  <h1>Shipments</h1>
+  <p class="lead">Missing Pro</p>
+</div>
+
+<%= render 'show_many', shipments: @shipments %>
+<%= render 'layouts/pagy', pagy: @pagy %>

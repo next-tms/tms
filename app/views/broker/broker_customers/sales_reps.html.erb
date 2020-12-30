@@ -1,0 +1,20 @@
+<% provide :title, "Sales Reps - #{@broker_customer.customer.name}" %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_customer.customer.name %></h1>
+  <p class="lead">Sales Reps</h2>
+</div>
+
+<%= bootstrap_form_with(model: [:broker, @broker_customer], local: true) do |f| %>
+  <%= f.alert_message 'Unable to save:' %>
+
+  <%= f.fields_for :broker_customer_sales_reps do |broker_customer_sales_reps_form| %>
+    <%= render 'broker_customer_sales_rep_fields', f: broker_customer_sales_reps_form %>
+  <% end %>
+  <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :broker_customer_sales_reps, 'btn btn-light mt-2 mb-4' %>
+
+  <div class="form-group">
+    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+  </div>
+<% end %>

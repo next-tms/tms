@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+body {
+  font-smoothing: antialiased;
+  font-family: -apple-system, BlinkMacSystemFont, "segoe ui", Roboto, "helvetica neue", Arial, sans-serif, "apple color emoji", "segoe ui emoji", "segoe ui symbol", "noto color emoji";
+  font-size: 16px;
+}
+
+.signature {
+  margin-top: 15px;
+}
+
+address {
+  font-style: normal !important;
+}
+
+.img-logo { height: 30px; width: auto; }
+.float-left { float: left; }
+.clear { clear: both; }
+.display-inline { display: inline; }
+    </style>
+  </head>
+
+  <body>
+    <%= yield %>
+    <div class="signature">
+      <p class="title"><%= yield :signature %></p>
+    </div>
+  </body>
+</html>

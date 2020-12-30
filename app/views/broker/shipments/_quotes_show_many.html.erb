@@ -1,0 +1,73 @@
+<% unless rates.blank? %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <% if !@shipment.quote_only? %>
+            <th>&nbsp;</td>
+          <% end %>
+          <th>Carrier</td>
+          <th>Quote</th>
+          <th>Rate</th>
+          <th>Service</th>
+          <th>Transit</th>
+          <% if !@shipment.quote_only? && !@shipment.total_charges == 0 %>
+            <th>Profit</th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% rates.each do |rate| %>
+          <tr>
+            <% if !@shipment.quote_only? %>
+              <td>
+                <%= link_to 'Book', broker_shipment_path(@shipment, shipment: { applied_rate_uid: rate.uid }), method: :patch, class: 'btn btn-sm btn-primary' %>
+              </td>
+            <% end %>
+            <td>
+              <div class="text-nowrap">
+                <% if not rate.tracking_carrier.blank? %>
+                  <%= rate.tracking_carrier.name %>
+                  <br>
+                  <span class="text-muted"> via <%= rate.broker_carrier.carrier.name %></span>
+                <% else %>
+                  <%= rate.broker_carrier.carrier.name %>
+                <% end %>
+                <% unless rate.broker_carrier.broker_customer.blank? %>
+                  <br>
+                  <span class="text-muted"> via <%= rate.broker_carrier.broker_customer.customer.name %> account</span>
+                <% end %>
+              </div>
+            </td>
+            <td>
+              <% unless rate.reference.blank? %>
+                <%= rate.reference %>
+                <span class="text-nowrap"><%= link_to icon('fas', 'eye', 'Show'), quote_uri(@shipment), target: '_blank' unless quote_uri(@shipment).blank? %></span>
+              <% else %>
+                <em>Not provided</em>
+              <% end %>
+            </td>
+            <td><%= humanized_money_with_symbol rate.cost, no_cents_if_whole: false %></td>
+            <td><%= rate.pretty_service_type %></td>
+            <td>
+              <% unless rate.transit_days.blank? %>
+                <%= rate.transit_days %> <%= 'day'.pluralize(rate.transit_days ? rate.transit_days.to_i : 0) %>
+                <br/>
+                <%= short_date rate.transit_days.to_i.business_days.after(@shipment.shipper_available_at || Date.current).in_time_zone(@shipment.receiver_address.time_zone.to_s), @shipment.receiver_address.time_zone %>
+              <% else %>
+                <em>Not provided</em>
+              <% end %>
+            </td>
+            <% unless @shipment.total_charges == 0 %>
+              <td><%= humanized_money_with_symbol (@shipment.total_charges - rate.cost), no_cents_if_whole: false %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="section">
+    <p class="lead">Nothing to show</p>
+  </div>
+<% end %>

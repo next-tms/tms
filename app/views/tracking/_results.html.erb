@@ -1,0 +1,23 @@
+<div class="page-header">
+  <h1>Load <%= @shipment.load_id %></h1>
+  <ul class="list-unstyled list-inline lead">
+    <% unless @shipment.broker_carrier.blank? %>
+      <li class="list-inline-item"><%= real_carrier(@shipment).name %></li>
+    <% end %>
+    <% unless @shipment.shipper_reference.blank? %>
+      <li class="list-inline-item">Shipper <%= @shipment.shipper_reference %></li>
+    <% end %>
+    <% unless @shipment.customer_reference.blank? %>
+      <li class="list-inline-item">PO <%= @shipment.customer_reference %></li>
+    <% end %>
+    <% unless @shipment.bol.blank? %>
+      <li class="list-inline-item">BOL <%= @shipment.bol %></li>
+    <% end %>
+  </ul>
+</div>
+
+<div class="row">
+  <div class="col col-md-8">
+    <%= render 'tracking', shipment: @shipment %>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+<td>
+  <% unless pickup_uri(shipment).blank? %>
+    <%= link_to (shipment.tracking_carrier_pickup_confirmation || shipment.pickup_confirmation), pickup_uri(shipment), target: '_blank' %>
+  <% else %>
+    <%= shipment.tracking_carrier_pickup_confirmation || shipment.pickup_confirmation %>
+  <% end %>
+</td>

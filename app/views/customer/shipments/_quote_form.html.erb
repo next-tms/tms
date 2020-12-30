@@ -1,0 +1,44 @@
+<%= bootstrap_form_with(model: [:customer, @shipment], local: true, layout: :horizontal) do |f| %>
+
+  <%= f.alert_message "Unable to create quote:" %>
+
+  <div class="row">
+    <div class="col-sm-6 col-md-3">
+      <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
+      <%= f.fields_for :shipper_address do |shipper_address_form| %>
+        <%= shipper_address_form.text_field :city, autofocus: 'autofocus' %>
+        <%= shipper_address_form.text_field :state, label: 'State' %>
+        <%= shipper_address_form.text_field :zip_code, label: 'ZIP' %>
+      <% end %>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+      <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
+      <%= f.fields_for :receiver_address do |receiver_address_form| %>
+        <%= receiver_address_form.text_field :city %>
+        <%= receiver_address_form.text_field :state, label: 'State' %>
+        <%= receiver_address_form.text_field :zip_code, label: 'ZIP' %>
+      <% end %>
+    </div>
+  </div>
+
+  <h2>Services</h2>
+  <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorials_form| %>
+    <%= render 'shipment_broker_accessorial_fields', f: shipment_broker_accessorials_form %>
+  <% end %>
+  <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :shipment_broker_accessorials, 'btn btn-light mt-2 mb-4' %>
+
+  <h2>Freight</h2>``
+  <%= f.check_box :truckload, label: 'Truckload' %>
+  <p class="mb-2">&nbsp;</p>
+
+  <%= f.fields_for :items do |items_form| %>
+    <%= render 'item_fields', f: items_form %>
+  <% end %>
+  <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :items, 'btn btn-light mt-2 mb-4' %>
+
+  <div class="form-group">
+    <%= f.submit class: 'btn btn-primary mt-4', value: 'Quote' %>
+  </div>
+   
+<% end %>

@@ -1,0 +1,20 @@
+<% provide :title, "Rates — Load #{@shipment.load_id}" %>
+<% provide :menu, render('menu') %>
+<% provide :no_cache, 'yes' %>
+
+<%= render 'header', page_title: 'Rates' %>
+
+<% if @shipment.incomplete? %>
+  <%= render 'layouts/message', classes: 'bg-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>
+<% end %>
+
+<ul class="list-inline list-unstyled font-weight-bold">
+  <li class="list-inline-item">Quoted <%= long_date DateTime.current, current_user.time_zone %></li>
+  <li class="list-inline-item">Rates valid through <%= long_date (DateTime.current + 14.days), current_user.time_zone %></li>
+</ul>
+
+<% unless @rates.blank? %>
+  <%= render 'quotes_show_many', rates: @rates %>
+<% else %>
+  <%= render 'layouts/message', title: 'No rates found', message: 'Please get in touch with us for more information' %>
+<% end %>

@@ -1,0 +1,12 @@
+<% unless @website.manifest.dig('nav', 'modal_collections').blank? %>
+  <% @website.manifest.dig('nav', 'modal_collections').each do |modal_collection| %>
+    <div class="row border-top pb-4 pt-4">
+      <% unless modal_collection.dig('links').blank? %>
+        <% modal_collection.dig('links').each do |link| %>
+          <% fa_icon = link.dig('fa-icon').split(':') %>
+          <div class="col-3 text-center"><%= link_to "#{icon fa_icon[0], fa_icon[1]}<br>#{link.dig('title')}".html_safe, link.dig('url'), target: link.dig('target') %></div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

@@ -1,0 +1,26 @@
+<div class="navbar navbar-menu navbar-expand">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+      <% if @shipment and @shipment.id %>
+        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), customer_shipment_path(@shipment), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_customer_shipment_path(@shipment), class: 'nav-link' %></li>
+        <% if current_user.broker_customer.can_quote? %>
+          <li class="navbar-item"><%= link_to icon('fas', 'project-diagram', 'Rates'), quote_customer_shipment_path(@shipment), class: 'nav-link' %></li>
+        <% end %>
+        <li class="navbar-item"><%= link_to icon('fas', 'file-invoice', 'Documents'), documents_customer_shipment_path(@shipment), class: 'nav-link' %></li>
+        <% unless @shipment.picked_up_at.blank? %>
+          <li class="navbar-item"><%= link_to icon('fas', 'truck-moving', 'Tracking'), tracking_path(load_id: @shipment.load_id), class: 'nav-link' %></li>
+        <% end %>
+      <% else %>
+        <% if not current_page? action: 'new' and not current_page? action: 'new_quote_only' %>
+          <li class="navbar-item"><%= link_to icon('fas', 'plus', 'Shipment'), new_customer_shipment_path, class: 'nav-link' %></li>
+          <% if current_user.broker_customer.can_quote? %>
+            <li class="navbar-item"><%= link_to icon('fas', 'plus', 'Quote'), customer_quote_only_path, class: 'nav-link' %></li>
+          <% end %>
+        <% else %>
+          <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Reset'), new_customer_shipment_path, data: { confirm: 'Reset the form? Unsaved changes will be lost.' }, class: 'nav-link' %></li>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+</div>

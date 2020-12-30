@@ -1,0 +1,53 @@
+<% cache [@shipment, page_title] do %>
+  <div class="page-header">
+    <h1>
+      <%= @shipment.quote_only? ? 'Quote' : 'Load' %>
+      <%= @shipment.load_id %>
+      <% unless @shipment.broker_customer.blank? %>
+        <small><%= link_to @shipment.broker_customer.customer.name, broker_broker_customer_path(@shipment.broker_customer) %></small>
+      <% end %>
+    </h1>
+    <% unless @shipment.quote_only? %>
+      <ul class="list-unstyled list-inline lead">
+        <li class="list-inline-item"><strong><%= @shipment.status %></strong></li>
+        <% unless @shipment.broker_carrier.blank? %>
+          <% if @shipment.broker_carrier.carrier.acts_as_broker? and not @shipment.tracking_carrier.blank? %>
+            <li class="list-inline-item"><strong><%= @shipment.tracking_carrier.name %> via <%= @shipment.broker_carrier.carrier.name %></strong></li>
+          <% else %>
+            <li class="list-inline-item"><strong><%= @shipment.broker_carrier.carrier.name %></strong></li>
+          <% end %>
+        <% end %>
+        <% if (@shipment.picked_up_at.blank? || @shipment.pro.blank?) and not (@shipment.tracking_carrier_pickup_confirmation.blank? and @shipment.pickup_confirmation.blank?) %>
+          <li class="list-inline-item">
+            <strong>Pickup</strong>
+            <% unless pickup_uri(@shipment).blank? %>
+              <%= link_to real_pickup_confirmation(@shipment), pickup_uri(@shipment), target: '_blank' %>
+            <% else %>
+              <%= real_pickup_confirmation(@shipment) %>
+            <% end %>
+          </li>
+        <% end %>
+        <% unless @shipment.shipper_reference.blank? %>
+          <li class="list-inline-item"><strong>Shipper</strong> <%= @shipment.shipper_reference %></li>
+        <% end %>
+        <% unless @shipment.customer_reference.blank? %>
+          <li class="list-inline-item"><strong>PO</strong> <%= @shipment.customer_reference %></li>
+        <% end %>
+        <% unless @shipment.bol.blank? %>
+          <li class="list-inline-item"><strong>BOL</strong> <%= @shipment.bol %></li>
+        <% end %>
+        <% if not tracking_uri(@shipment).blank? or not real_pro(@shipment).blank? %>
+          <li class="list-inline-item">
+            <strong>Pro</strong>
+            <% unless tracking_uri(@shipment).blank? %>
+              <%= link_to real_pro(@shipment), tracking_uri(@shipment), target: '_blank' %>
+            <% else %>
+              <%= real_pro(@shipment) %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+    <p class="lead"><%= page_title %></p>
+  </div>
+<% end %>

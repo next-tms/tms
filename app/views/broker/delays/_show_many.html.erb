@@ -1,0 +1,24 @@
+<% unless delays.blank? %>
+  <div class="table-responsive">
+    <table class="table table-condensed table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% delays.each do |delay| %>
+          <tr>
+            <td><%= delay.title %></td>
+            <td><%= delay.notes %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="section">
+    <p><em>Nothing to show</em></p>
+  </div>
+<% end %>

@@ -1,0 +1,29 @@
+<% cache [search, broker_carriers] do %>
+  <% unless broker_carriers.blank? %>
+    <h3>Carriers</h3>
+    <%= render 'broker/broker_carriers/show_many', broker_carriers: broker_carriers %>
+  <% end %>
+<% end %>
+
+<% cache [search, broker_customers] do %>
+  <% unless broker_customers.blank? %>
+    <h3>Customers</h3>
+    <%= render 'broker/broker_customers/show_many', broker_customers: broker_customers %>
+  <% end %>
+<% end %>
+
+<% if current_user.has_role? 'accounts_receivable' %>
+  <% cache [current_user, search, payments] do %>
+    <% unless payments.blank? %>
+      <h3>Payments</h3>
+      <%= render 'broker/payments/show_many', payments: payments %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% cache [search, shipments] do %>
+  <% unless shipments.blank? %>
+    <h3>Shipments</h3>
+    <%= render 'broker/shipments/show_many', shipments: shipments %>
+  <% end %>
+<% end %>

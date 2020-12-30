@@ -1,0 +1,6 @@
+<%= bootstrap_form_tag(url: tracking_path, method: 'get', layout: :inline) do |f| %>
+  <%= f.text_field :load_id, label: 'Load', hide_label: true, placeholder: 'Load', autofocus: 'autofocus', value: (load_id ? load_id : '') %>
+  <div class="form-group">
+    <%= f.submit class: 'btn btn-primary ml-2', value: 'Track' %>
+  </div>
+<% end %>

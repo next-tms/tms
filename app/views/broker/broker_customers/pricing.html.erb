@@ -1,0 +1,46 @@
+<% provide :title, "Pricing for #{@broker_customer.customer.name}" %>
+<% provide :menu, render('menu') %>
+
+<div class="row">
+  <div class="col-8">
+    <div class="page-header">
+      <h1><%= @broker_customer.customer.name %></h1>
+      <p class="lead">Pricing</h2>
+    </div>
+  </div>
+</div>
+
+<div class="btn-toolbar">
+  <%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_pricing_broker_broker_customer_path(@broker_customer), class: 'btn btn-primary' %>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-borderless table-striped table-hover sortable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Flat Charge</th>
+        <th>Upcharge</th>
+        <th>Upcharge %</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Pricing Program</td>
+        <td></td>
+        <td><%= humanized_money_with_symbol @broker_customer.default_upcharge %></td>
+        <td><%= @broker_customer.default_upcharge_percentage.blank? ? '0.00' : @broker_customer.default_upcharge_percentage * 100 %>%</td>
+      </tr>
+      <% unless @broker_customer.broker_accessorials.blank? %>
+        <% @broker_customer.broker_accessorials.each do |broker_accessorial| %>
+          <tr>
+            <td><%= broker_accessorial.name %></td>
+            <td><%= humanized_money_with_symbol broker_accessorial.flat_charge %></td>
+            <td><%= humanized_money_with_symbol broker_accessorial.upcharge %></td>
+            <td><%= broker_accessorial.upcharge_percent.blank? ? '0.00' : broker_accessorial.upcharge_percent * 100 %>%</td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

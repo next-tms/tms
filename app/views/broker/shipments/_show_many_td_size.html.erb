@@ -1,0 +1,9 @@
+<td>
+  <% unless shipment.truckload? %>
+    <span class="text-nowrap"><%= pluralize_with_delimiter shipment.total_pieces, 'piece' %></span>
+  <% else %>
+    <span class="text-nowrap">1 truckload</span>
+  <% end %>
+  <br>
+  <span class="text-nowrap"><%= number_with_delimiter shipment.total_weight %> lbs</span>
+</td>

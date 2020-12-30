@@ -1,0 +1,9 @@
+<% provide :title, 'Overview | Carriers' %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1>Carriers</h1>
+  <p class="lead">Overview</p>
+</div>
+
+<%= render 'show_many', broker_carriers: @broker_carriers %>

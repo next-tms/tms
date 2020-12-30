@@ -1,0 +1,9 @@
+<% provide :title, 'Paid Payments' %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1>Payments</h1>
+  <p class="lead"><%= yield :title %></p>
+</div>
+
+<%= render 'show_many', payments: @payments %>

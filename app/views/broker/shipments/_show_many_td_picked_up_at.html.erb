@@ -1,0 +1,5 @@
+<td>
+  <% unless shipment.picked_up_at.blank? %>
+    <%= short_date shipment.picked_up_at, shipment.shipper_address.time_zone %>
+  <% end %>
+</td>

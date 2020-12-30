@@ -1,0 +1,92 @@
+<div class="table-responsive">
+  <table class="table table-condensed table-borderless table-striped table-hover table-unsortable h-100">
+    <thead>
+      <th>Time</th>
+      <th>Where</th>
+      <th>Event</th>
+    </thead>
+    <tbody>
+      <% if shipment.tracking_events.where(event: Event.find_by_active_shipping_code('delivered')).blank? && !shipment.delivered_at.blank? && !shipment.broker_carrier.blank? %>
+        <tr>
+          <td><%= pretty_date shipment.delivered_at, shipment.receiver_address.time_zone %>
+          <td><%= shipment.receiver_address.locality %></td>
+          <td>Delivered</td>
+        </tr>
+      <% end %>
+      <% if shipment.tracking_events.where(event: Event.find_by_active_shipping_code('out_for_delivery')).blank? && !shipment.out_for_delivery_at.blank? %>
+        <tr>
+          <td><%= pretty_date shipment.out_for_delivery_at, shipment.receiver_address.time_zone %>
+          <td><%= shipment.receiver_address.locality %></td>
+          <td>Out for delivery</td>
+        </tr>
+      <% end %>
+      <% if !shipment.delivery_appointment_at.blank? || !shipment.delivery_appointment_on.blank? %>
+        <tr>
+          <td></td>
+          <td></td>
+          <td>Delivery appointment scheduled for <%= pretty_date (shipment.delivery_appointment_at.blank? ? shipment.delivery_appointment_on : shipment.delivery_appointment_at), shipment.receiver_address.time_zone %></td>
+        </tr>
+      <% elsif shipment.out_for_delivery_at.blank? && shipment.delivered_at.blank? && !shipment.deliver_by.blank? %>
+        <tr>
+          <td></td>
+          <td></td>
+          <td>Estimated delivery: <%= short_date shipment.deliver_by, shipment.receiver_address.time_zone %></td>
+        </tr>
+      <% end %>
+      <% if !shipment.pending_appointment_since.blank? and (shipment.delivery_appointment_on.blank? || shipment.delivery_appointment_at.blank?) && shipment.out_for_delivery_at.blank? && shipment.delivered_at.blank? %>
+        <tr>
+          <td></td>
+          <td></td>
+          <td>Appointment pending</td>
+        </tr>
+      <% end %>
+      <% if !shipment.tracking_events.blank? %>
+       <% shipment.tracking_events.order(at: :desc).each do |tracking_event| %>
+         <% next if !tracking_event.public? && !current_user.broker_customer.blank? %>
+         <tr>
+          <td><%= pretty_date tracking_event.at, tracking_event.time_zone %></td>
+          <td>
+            <% if defined?(search_terminals_links) && search_terminals_links %>
+              <%= link_to tracking_event.pretty_location, search_terminals_broker_broker_carrier_path(shipment.broker_carrier, city: tracking_event.city, state: tracking_event.state) %>
+            <% else %>
+              <%= tracking_event.pretty_location %>
+            <% end %>
+          </td>
+          <td><%= tracking_event.event.name.capitalize %></td>
+         </tr>
+       <% end %>
+      <% end %>
+      <% if shipment.tracking_events.where(event: Event.find_by_active_shipping_code('picked_up')).blank? && !shipment.picked_up_at.blank? && !shipment.broker_carrier.blank? %>
+        <tr>
+          <td><%= pretty_date shipment.picked_up_at, shipment.shipper_address.time_zone %>
+          <td><%= shipment.shipper_address.locality %></td>
+          <td>Freight picked up</td>
+        </tr>
+      <% end %>
+      <% if !shipment.pickup_on.blank? && shipment.picked_up_at.blank? %>
+        <% unless shipment.pickup_eta_at.blank? %>
+          <tr>
+            <td></td>
+            <td></td>
+            <td>The driver’s estimated arrival time to pickup is <%= shipment.pickup_eta_at %>.</td>
+          </tr>
+        <% end %>
+        <tr>
+          <td><%= pretty_date shipment.dispatched_at, shipment.shipper_address.time_zone %></td>
+          <td></td>
+          <td>
+            Pickup scheduled for <%= pretty_date shipment.pickup_on, shipment.shipper_address.time_zone %>
+            <% unless shipment.pickup_hours_start_at.blank? or shipment.pickup_hours_end_at.blank? %>
+              between <%= shipment.pickup_hours_start_at %> and <%= shipment.pickup_hours_end_at %> <small><%= shipment.shipper_address.time_zone.abbr(Date.current) %></small>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td><%= pretty_date shipment.dispatched_at, shipment.shipper_address.time_zone %></td>
+          <td></td>
+          <td>Dispatched</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

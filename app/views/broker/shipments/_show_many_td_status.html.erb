@@ -1,0 +1,9 @@
+<td>
+  <span class="text-nowrap">
+    <% if shipment.status.include? '—' %>
+      <%= shipment.status.split(' — ').join('<br>').html_safe %>
+    <% else %>
+      <%= shipment.status %>
+    <% end %>
+  </span>
+</td>

@@ -1,0 +1,13 @@
+<% provide :title, @broker_customer.customer.name %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_customer.customer.name %></h1>
+  <p class="lead">Overview</h2>
+</div>
+
+<h2>Recent Shipments</h2>
+<div class="btn-toolbar">
+  <%= link_to 'New', new_broker_shipment_path(broker_customer_id: @broker_customer.id), class: 'btn btn-primary' %>
+</div>
+<%= render 'broker/shipments/show_many_pricing', shipments: @shipments %>

@@ -1,0 +1,5 @@
+class ChangeAddressIdOnTrackingEvents < ActiveRecord::Migration[6.0]
+  def change
+    change_column_null :tracking_events, :address_id, true
+  end
+end

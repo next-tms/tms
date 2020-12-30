@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+body {
+  font-smoothing: antialiased;
+  font-family: -apple-system, BlinkMacSystemFont, "segoe ui", Roboto, "helvetica neue", Arial, sans-serif, "apple color emoji", "segoe ui emoji", "segoe ui symbol", "noto color emoji";
+  font-size: 16px;
+}
+
+.brand {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 300;
+  height: 100%;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.signature {
+  margin-top: 15px;
+}
+
+.img-logo { height: 30px; width: auto; }
+.float-left { float: left; }
+.clear { clear: both; }
+.display-inline { display: inline; }
+    </style>
+  </head>
+
+  <body>
+    <p class="title">Confirm Your Email</p>
+    <p>Hello <%= @resource.first_name %>,</p>
+    <p>Please confirm your email:</p>
+    <p><%= link_to 'Confirm My Email', confirmation_url(@resource, confirmation_token: @token), host: @resource.broker.websites.first.domain, protocol: 'https' %></p>
+    <div class="signature">
+      <p><em>All the best,</em></p>
+      <p class="title"><%= @resource.broker.name %></p>
+    </div>
+  </body>
+</html>

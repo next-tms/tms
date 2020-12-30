@@ -1,0 +1,29 @@
+<% provide :title, "Documents — Load #{@shipment.load_id}" %>
+<% provide :menu, render('menu') %>
+<% provide :no_cache, 'yes' %>
+
+<%= render 'header', page_title: 'Documents' %>
+
+<% cache do @shipment %>
+  <div class="row">
+    <div class="col-sm-3">
+      <p class="col-title">Customer</p>
+      <ul class="list-unstyled">
+        <li><%= link_to 'Bill of Lading', bol_document_broker_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></li>
+        <li><%= link_to 'Quote', quote_document_broker_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></li>
+      </ul>
+    </div>
+  
+    <div class="col-sm-3">
+      <p class="col-title">Carrier</p>
+      <ul class="list-unstyled">
+        <% if not @shipment.quote_id.blank? and not quote_uri(@shipment).blank? %>
+          <li><%= link_to 'Quote', quote_uri(@shipment), target: '_blank' %></li>
+        <% end %>
+        <% if not @shipment.delivered_at.blank? and not pod_uri(@shipment).blank? %>
+          <li><%= link_to 'POD', pod_uri(@shipment), target: '_blank' %></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+<% end %>

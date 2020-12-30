@@ -1,0 +1,22 @@
+<% provide :title, 'In Transit — Shipments' %>
+<% provide :menu, render('menu') %>
+<% provide :auto_refresh, 'yes' %>
+
+<div class="page-header">
+  <h1>Shipments</h1>
+  <p class="lead">In Transit</p>
+</div>
+
+<% unless @late_shipments.blank? %>
+  <h2>Late</h2>
+  <%= render 'show_many_pending_delivery', shipments: @late_shipments %>
+<% end %>
+
+<% unless @shipments.blank? %>
+  <h2>On Time</h2>
+  <%= render 'show_many_pending_delivery', shipments: @shipments %>
+<% end %>
+
+<% if @late_shipments.blank? && @shipments.blank? %>
+  <%= render 'layouts/no_content' %>
+<% end %>

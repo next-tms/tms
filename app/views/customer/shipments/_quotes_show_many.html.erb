@@ -1,0 +1,48 @@
+<% unless rates.blank? %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <th>&nbsp;</td>
+          <th>Carrier</td>
+          <th>Rate</th>
+          <th>Service</th>
+          <th>Transit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rates.each do |rate| %>
+          <tr>
+            <td>
+              <%= link_to 'Book', customer_shipment_path(@shipment, shipment: { applied_rate_uid: rate.uid }), method: :patch, class: 'btn btn-sm btn-primary' %>
+            </td>
+            <td>
+              <div class="text-nowrap">
+                <% if not rate.tracking_carrier.blank? %>
+                  <%= rate.tracking_carrier.name %>
+                <% else %>
+                  <%= rate.broker_carrier.carrier.name %>
+                <% end %>
+              </div>
+            </td>
+            <td><%= humanized_money_with_symbol current_user.broker_customer.carrier_charge_calculator(carrier_cost: rate.cost, shipment: @shipment), no_cents_if_whole: false %></td>
+            <td><%= rate.pretty_service_type %></td>
+            <td>
+              <% unless rate.transit_days.blank? %>
+                <%= rate.transit_days %> <%= 'day'.pluralize(rate.transit_days ? rate.transit_days.to_i : 0) %>
+                <br/>
+                <%= short_date rate.transit_days.to_i.business_days.after(@shipment.shipper_available_at || Date.current).in_time_zone(@shipment.receiver_address.time_zone.to_s), @shipment.receiver_address.time_zone %>
+              <% else %>
+                <em>Not provided</em>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="section">
+    <p class="lead">Nothing to show</p>
+  </div>
+<% end %>

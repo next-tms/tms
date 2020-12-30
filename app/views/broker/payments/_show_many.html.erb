@@ -1,0 +1,36 @@
+<% unless payments.blank? %>
+  <% current_week = Date.current.strftime('%U').to_i %>
+  <p><strong>Current Week: <%= current_week %></strong></p>
+  <div class="table-responsive">
+    <table class="table table-condensed table-borderless table-striped table-hover h-100">
+      <thead>
+        <tr>
+          <th>Week</th>
+          <% unless payments.map(&:paid_on).uniq == [nil] %>
+            <th>Paid On</th>
+          <% end %>
+          <th>Carrier</th>
+          <th>Balance</th>
+          <th>Pay</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% payments.each do |payment| %>
+          <tr data-link="<%= broker_payment_path(payment) %>" class="data-link <% if !payment.week.blank? && (payment.week < current_week) && payment.paid_on.blank? %>bg-warning<% end %>">
+            <td><%= payment.week %>
+            <% unless payments.map(&:paid_on).uniq == [nil] %>
+              <td><%= short_date payment.paid_on, current_user.time_zone %></td>
+            <% end %>
+            <td><%= payment.broker_carrier.broker_customer_specific_name unless payment.broker_carrier.blank? %></td>
+            <td><%= humanized_money_with_symbol payment.balance, no_cents_if_whole: false %></td>
+            <td><%= humanized_money_with_symbol payment.paid, no_cents_if_whole: false %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="section">
+    <p><em>Nothing to show</em></p>
+  </div>
+<% end %>

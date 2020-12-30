@@ -1,0 +1,46 @@
+<nav class="navbar navbar-expand">
+  <div class="container-fluid">
+    <%= link_to root_path, class: 'navbar-brand' do %>
+      <% unless @website&.manifest.dig('nav', 'logo', 'url').blank? %>
+        <%= image_tag @website.manifest.dig('nav', 'logo', 'url'), alt: @website.broker.name, class: 'navbar-brand-logo' %>
+      <% else %>
+        <%= @website.broker.name %>
+      <% end %>
+    <% end %>
+    <ul class="navbar-nav">
+    </ul>
+    <ul class="nav navbar-nav ml-auto">
+      <% unless current_user %>
+        <li class="navbar-item"><%= link_to 'Track Shipment', tracking_path, 'data-turbolinks': 'false', class: 'nav-link' %></li>
+      <% end %>
+      <li class="navbar-item"><a href="#" data-toggle="modal" data-target="#nav-modal" class="btn nav-link"><%= icon 'fas', 'grip-horizontal' %></a></li>
+      <% if current_user %>
+        <% if current_user.broker? %>
+          <li class="navbar-item">
+            <%= bootstrap_form_tag(url: broker_search_path, layout: :inline, method: 'get') do |f| %>
+              <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search anything' %>
+            <% end %>
+          </li>
+        <% elsif current_user.customer? %>
+          <li class="navbar-item">
+            <%= bootstrap_form_tag(url: customer_search_path, layout: :inline, method: 'get') do |f| %>
+              <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search anything' %>
+            <% end %>
+          </li>
+        <% end %>
+      <% else %>
+        <li class="navbar-item"><%= link_to 'Login', new_user_session_path, 'data-turbolinks': 'false', class: 'nav-link' %></li>
+      <% end %>
+    </ul>
+  </div>
+</nav>
+
+<% if current_user %>
+  <% if current_user.broker? %>
+    <%= render 'layouts/nav_broker_modal' %>
+  <% elsif current_user.customer? %>
+    <%= render 'layouts/nav_customer_modal' %>
+  <% end %>
+<% else %>
+    <%= render 'layouts/nav_global_modal' %>
+<% end %>

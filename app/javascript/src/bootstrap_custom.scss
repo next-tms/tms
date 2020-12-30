@@ -1,0 +1,30 @@
+/*! `Custom` Bootstrap 4 theme */
+
+$primary: #ff6600;
+$secondary: #1a0eab;
+$success: #3e4d59;
+$danger: #f00;
+$info: #f3f8ff;
+$warning: #ffE869;
+$light: #eceeec;
+$dark: #1e2b37;
+$spacer:1.2rem;
+$border-width: 0.1rem;
+$btn-border-radius: 0.25rem;
+$enable-shadows: true;
+
+$font-size-base: 0.9rem;
+
+$link-color: darken($primary, 0.75);
+$link-hover-decoration: none;
+$body-bg: black;
+$body-color: rgba(0, 0, 0, 0.85); // main is background-color: white
+
+$spacer: .5rem;
+$table-cell-padding: .34rem !default;
+$table-cell-padding-sm: .17rem !default;
+
+$font-family-sans-serif: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+$headings-font-weight: 400;
+$headings-font-family: 'Nimbus Sans L', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";

@@ -1,0 +1,12 @@
+<div class="page-header">
+  <h1>Load <%= @shipment.load_id %></h1>
+  <ul class="list-unstyled list-inline lead">
+    <% unless @shipment.shipper_reference.blank? %>
+      <li class="list-inline-item"><strong>Shipper</strong> <%= @shipment.shipper_reference %></li>
+    <% end %>
+    <% unless @shipment.customer_reference.blank? %>
+      <li class="list-inline-item"><strong>PO</strong> <%= @shipment.customer_reference %></li>
+    <% end %>
+  </ul>
+  <p class="lead"><%= page_title %></p>
+</div>

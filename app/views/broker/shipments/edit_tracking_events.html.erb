@@ -1,0 +1,6 @@
+<% provide :title, "Edit Tracking — Load #{@shipment.load_id}" %>
+<% provide :menu, render('menu') %>
+<% provide :no_cache, 'yes' %>
+
+<%= render 'header', page_title: 'Tracking' %>
+<%= render 'tracking_events_form' %>

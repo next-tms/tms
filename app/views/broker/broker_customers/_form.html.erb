@@ -1,0 +1,42 @@
+<%= bootstrap_form_with(model: [:broker, @broker_customer], path: [:broker, @broker_customer], layout: :horizontal) do |f| %>
+
+  <%= f.alert_message "Unable to save customer:" %>
+
+  <%= f.fields_for :customer do |customer_form| %>
+    <%= customer_form.text_field :name, placeholder: 'Name', autofocus: true %>
+  <% end %>
+
+  <div class="form-group row">
+    <label class="col-form-label col-sm-2">Primary Pickup Address</label>
+    <div class="col-sm-10">
+      <%= f.fields_for :primary_pickup_address do |primary_pickup_address_form| %>
+        <%= primary_pickup_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
+        <%= primary_pickup_address_form.text_field :street2, hide_label: true %>
+        <%= primary_pickup_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
+        <%= primary_pickup_address_form.text_field :state, hide_label: true, placeholder: 'State' %>
+        <%= primary_pickup_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-form-label col-sm-2">Sales Reps</label>
+      <div class="col-sm-10">
+      <%= f.fields_for :broker_customer_sales_reps do |broker_customer_sales_reps_form| %>
+        <%= render 'broker_customer_sales_rep_fields', f: broker_customer_sales_reps_form %>
+      <% end %>
+      <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :broker_customer_sales_reps, 'btn btn-light mt-2 mb-4' %>
+    </div>
+  </div>
+
+  <%= f.form_group :can_quote, label: { text: 'Preferences' } do %>
+    <%= f.check_box :can_quote, label: 'Company has access to online quoting' %>
+    <%= f.check_box :always_show_quotes_based_on_calculated_classes, label: 'Always show rates based on calculated class rather than declared class' %>
+  <% end %>
+
+  <%= f.text_area :default_bol_notes, label: 'Default instructions on BOL', rows: 7 %>
+
+  <%= f.form_group do %>
+    <%= f.submit 'Save', class: 'btn btn-primary' %>
+  <% end %>
+<% end %>

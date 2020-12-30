@@ -1,0 +1,9 @@
+<% provide :title, 'Services' %>
+<% provide :menu, render('broker/broker/menu') %>
+
+<div class="page-header">
+  <h1>Services</h1>
+  <p class="lead">Overview</p>
+</div>
+
+<% render 'show_many', broker_accessorials: @broker_accessorials %>

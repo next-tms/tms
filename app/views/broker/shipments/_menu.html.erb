@@ -1,0 +1,69 @@
+<div class="navbar navbar-menu navbar-expand">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+      <% if @shipment&.id && !@shipment.quote_only? %>
+        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_shipment_path(@shipment), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_broker_shipment_path(@shipment), class: 'nav-link' %></li>
+        <% if current_user.has_role? 'accounting' or @shipment.broker_customer.sales_reps.include? current_user %>
+          <li class="navbar-item"><%= link_to icon('fas', 'dollar-sign', 'Pricing'), pricing_broker_shipment_path(@shipment), class: 'nav-link' %></li>
+        <% end %>
+        <% if current_user.has_role? 'dispatch' %>
+          <li class="navbar-item"><%= link_to icon('fas', 'map-signs', 'Routing'), transit_broker_shipment_path(@shipment), class: 'nav-link' %></li>
+          <li class="navbar-item"><%= link_to icon('fas', 'map-pin', 'Tracking'), edit_tracking_events_broker_shipment_path(@shipment), class: 'nav-link' %></li>
+        <% end %>
+        <li class="navbar-item"><%= link_to icon('fas', 'folder', 'Documents'), documents_broker_shipment_path(@shipment), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'sticky-note', 'Notes'), notes_broker_shipment_path(@shipment), class: 'nav-link' %></li>
+        <li class="navbar-item">
+          <% unless @shipment.canceled_at.blank? %>
+            <%= link_to icon('fas', 'arrow-up', 'Reinstate'), broker_shipment_path(@shipment, shipment: { canceled_at: nil }), method: :patch, class: 'nav-link' %>
+          <% else %>
+            <%= link_to icon('fas', 'ban', 'Cancel'), broker_shipment_path(@shipment, shipment: { canceled_at: DateTime.now }), method: :patch, data: { confirm: 'Are you sure you want to cancel this shipment?' }, class: 'nav-link' %>
+          <% end %>
+        </li>
+      <% else %>
+        <% if action_name.include?('new') %>
+          <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Reset'), new_broker_shipment_path, data: { confirm: 'Reset the form? Unsaved changes will be lost.' }, class: 'nav-link' %></li>
+        <% end %>
+      <% end %>
+      <% if action_name == 'index' or action_name.include? 'pending' or ['delivered', 'late', 'missing_delivery_appointment', 'missing_pricing', 'missing_pro'].include? action_name %>
+        <li class="navbar-item">
+          <li class="navbar-item"><%= link_to icon('fas', 'plus', 'Fast Quote'), broker_quote_only_path, class: 'nav-link' %></li>
+          <%= link_to broker_shipments_pending_quotation_path, class: 'nav-link' do %>
+            <%= icon 'far', 'inbox', 'Inbox' %>
+            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_quotation.or(Shipment.where(broker_customer: [ current_user.broker_customers ]).canceled_recently).distinct.size, type: 'badge-dark' %>
+          <% end %>
+        </li>
+        <li class="navbar-item">
+          <%= link_to broker_shipments_pending_dispatch_path, class: 'nav-link' do %>
+            <%= icon 'fas', 'file-invoice-dollar', 'Quoted' %>
+            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_dispatch.size, type: 'badge-dark' %>
+          <% end %>
+        </li>
+        <li class="navbar-item">
+          <%= link_to broker_shipments_pending_pickup_path, class: 'nav-link' do %>
+            <%= icon 'fas', 'industry', 'Dispatched' %>
+            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_pickup.or(Shipment.where(broker_customer: [ current_user.broker_customers ]).canceled_recently.pending_pickup).distinct.size, type: 'badge-dark' %>
+          <% end %>
+        </li>
+        <li class="navbar-item">
+          <%= link_to broker_shipments_pending_departure_path, class: 'nav-link' do %>
+            <%= icon 'fas', 'arrow-circle-up', 'Pending Departure' %>
+            <%= maybe_badge (Shipment.where(broker_customer: [ current_user.broker_customers ]).pending_departure).size, type: 'badge-dark' %>
+          <% end %>
+        </li>
+        <li class="navbar-item">
+          <%= link_to broker_shipments_pending_delivery_path, class: 'nav-link' do %>
+            <%= icon 'fas', 'arrow-circle-right', 'In Transit' %>
+            <%= maybe_badge (Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_delivery - Shipment.where(broker_customer: [ current_user.broker_customers ]).active.late).size, type: 'badge-dark' %>
+          <% end %>
+        </li>
+        <li class="navbar-item">
+          <%= link_to icon('fas', 'check-square', 'Delivered'), broker_shipments_delivered_path, class: 'nav-link' %>
+        </li>
+        <li class="navbar-item"><%= link_to icon('fas', 'calendar-times', 'Missing Appointment'), broker_shipments_missing_delivery_appointment_path, class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'barcode', 'Missing Pro'), broker_shipments_missing_pro_path, class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'dollar-sign', 'Missing Pricing'), broker_shipments_missing_pricing_path, class: 'nav-link' %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>

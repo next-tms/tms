@@ -1,0 +1,29 @@
+<div class="modal fade" id="nav-modal" tabindex="-1" role="dialog" aria-labelledby="nav-model" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row pb-4">
+          <% if current_user.has_role? 'carrier_relations' %>
+            <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'truck-moving'}<br>Carriers".html_safe, broker_broker_carriers_path, 'data-turbolinks': 'false' %></div>
+          <% end %>
+          <% if current_user.has_role? 'sales_rep' %>
+            <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'user-tie'}<br>Customers".html_safe, broker_broker_customers_path, 'data-turbolinks': 'false' %></div>
+            <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'pallet'}<br>Shipments".html_safe, broker_shipments_path, 'data-turbolinks': 'false' %></div>
+          <% end %>
+        </div>
+        <% if current_user.has_role? 'accounts_payable' or current_user.has_role? 'accounts_receivable' or current_user.has_role? 'controller' %>
+          <div class="row border-top pt-4">
+            <% if current_user.has_role? 'accounts_payable' %>
+              <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'file-invoice-dollar'}<br>Accounts Payable".html_safe, broker_payments_path %></div>
+            <% end %>
+          </div>
+        <% end %>
+        <%= render 'layouts/nav_manifest_modal_rows' %>
+        <div class="row border-top pt-4">
+          <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'user-circle'}<br>Account".html_safe, edit_user_registration_path %></div>
+          <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'sign-out-alt'}<br>Logout".html_safe, destroy_user_session_path, method: :delete, 'data-turbolinks': 'false' %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
