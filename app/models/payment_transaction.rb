@@ -60,7 +60,7 @@ class PaymentTransaction < ApplicationRecord
   def set_week
     return if due_on.blank?
 
-    self.week = due_on.strftime('%U').to_i - 1
+    self.week = due_on.strftime('%U').to_i + 1
   end
 
   private
