@@ -189,7 +189,7 @@ GEM
       mini_portile2 (~> 2.4.0)
     nori (2.6.0)
     orm_adapter (0.5.0)
-    pagy (3.8.3)
+    pagy (3.10.0)
     pg (1.2.0)
     phony (2.18.12)
     phony_rails (0.14.13)
