@@ -47,7 +47,7 @@ end
 gem 'bootstrap_form', '~> 4.0'
 
 # gem 'aws-sdk', group: :production
-gem 'devise', '~> 4.7.1'
+gem 'devise', '~> 4.7.3'
 
 gem 'loadcss-rails'
 
