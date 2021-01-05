@@ -5,7 +5,7 @@
     <table class="table table-condensed table-borderless table-striped table-hover h-100">
       <thead>
         <tr>
-          <th>Due</th>
+          <th colspan="2">Due</th>
           <% unless payments.map(&:paid_on).uniq == [nil] %>
             <th>Paid On</th>
           <% end %>
@@ -19,9 +19,9 @@
           <tr data-link="<%= broker_payment_path(payment) %>" class="data-link <% if !payment.week.blank? && (payment.week < current_week) && payment.paid_on.blank? %>bg-warning<% end %>">
             <td>
               <% unless payment.due_on.blank? %>
-                <span class="text-muted"><%= payment.due_on.year %> /</span>
-                <%= payment.week %>
+                <span class="text-muted"><%= payment.due_on.year.to_s.length == 2 ? "20#{payment.due_on.year}" : payment.due_on.year %></span>
               <% end %>
+              <%= payment.week %>
             </td>
             <% unless payments.map(&:paid_on).uniq == [nil] %>
               <td><%= short_date payment.paid_on, current_user.time_zone %></td>
