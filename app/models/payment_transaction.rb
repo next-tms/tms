@@ -4,9 +4,10 @@ class PaymentTransaction < ApplicationRecord
   scope :unpaid, -> { where(payment_id: nil) }
   scope :paid, -> { where.not(payment_id: nil) }
 
-  before_save :set_payment
+  before_create :set_payment
+  before_create :set_week
+
   before_save :set_shipment
-  before_save :set_week
 
   belongs_to :created_by, class_name: 'User', optional: true
 
