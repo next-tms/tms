@@ -48,7 +48,6 @@ class PaymentTransaction < ApplicationRecord
       payment.save
     else
       payment = payment.first
-      payment.due_on = due_on unless payment.due_on < due_on
     end
     self.payment = payment
   end
