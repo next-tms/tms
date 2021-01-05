@@ -5,7 +5,7 @@
     <table class="table table-condensed table-borderless table-striped table-hover h-100">
       <thead>
         <tr>
-          <th colspan="2">Due</th>
+          <th>Due</th>
           <% unless payments.map(&:paid_on).uniq == [nil] %>
             <th>Paid On</th>
           <% end %>
