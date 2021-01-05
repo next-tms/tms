@@ -16,7 +16,7 @@ class Broker::PaymentsController < Broker::BrokerController
   end
 
   def index
-    @payments = Payment.unpaid.order(:week)
+    @payments = Payment.unpaid.order(:due_on)
   end
 
   def paid
