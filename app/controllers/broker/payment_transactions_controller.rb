@@ -36,7 +36,6 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
       broker_carrier_id = payment_transaction_params[:broker_carrier_id]
       created_by_id = current_user.id
 
-      payment_transactions = []
       csv = payment_transaction_params[:csv].gsub(', ', ',')
       csv = CSV.parse(csv, headers: true)
       csv.each do |row|
@@ -47,9 +46,9 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
         invoice = nil
 
         if !row.dig('due').blank?
-          due_on = Date.strptime(row.dig('due'), '%m/%d/%Y')
+          due_on = Date.strptime(row.dig('due'), '%m/%d/%y')
         elsif !row.dig('date').blank?
-          due_on = Date.strptime(row.dig('date'), '%m/%d/%Y') + BrokerCarrier.find(broker_carrier_id).days_to_pay_after_invoice_date.days
+          due_on = Date.strptime(row.dig('date'), '%m/%d/%y') + BrokerCarrier.find(broker_carrier_id).days_to_pay_after_invoice_date.days
         end
 
         invoice = row.dig('invoice') unless row.dig('invoice').blank?
@@ -57,10 +56,9 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
         pro = row.dig('pro')
 
         next if balance_cents.blank? || due_on.blank? || pro.blank?
-
         old_payment_transaction = PaymentTransaction.where(broker_id: broker_id).where(pro: pro).where(broker_carrier_id: broker_carrier_id)
         if old_payment_transaction.blank?
-          payment_transaction = {
+          PaymentTransaction.create(
             broker_id: broker_id,
             broker_carrier_id: broker_carrier_id,
             balance_cents: balance_cents,
@@ -68,37 +66,19 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
             due_on: due_on,
             invoice: invoice,
             pro: pro
-          }
-          payment_transactions << payment_transaction
+          )
         else
           old_payment_transaction = old_payment_transaction.first
           if old_payment_transaction.payment.paid_on.blank?
             old_payment_transaction.balance_cents = balance_cents
             old_payment_transaction.due_on = due_on
-            old_payment_transaction.set_week
-            old_payment_transaction.set_payment
-            old_payment_transaction.set_shipment
             old_payment_transaction.save
           end
         end
       end
 
-      payment_transaction_imports = PaymentTransaction.import(payment_transactions)
-      if payment_transaction_imports.num_inserts != 0
-        # import doesnt' support callbacks on save
-        PaymentTransaction.where(id: payment_transaction_imports.ids).each do |payment_transaction|
-          payment_transaction.set_week
-          payment_transaction.set_payment
-          payment_transaction.set_shipment
-          payment_transaction.save
-        end
-        flash[:notice] = "Imported #{payment_transaction_imports.num_inserts} invoices"
-        redirect_to broker_payments_path and return
-      else
-        @payment_transaction = PaymentTransaction.new
-        flash[:error] = 'No new invoices found'
-        render :import and return
-      end
+      flash[:notice] = 'Updated database from report'
+      redirect_to broker_payments_path and return
     end
   end
 

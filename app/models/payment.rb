@@ -16,6 +16,7 @@ class Payment < ApplicationRecord
   has_many :payment_transactions, dependent: :delete_all
   accepts_nested_attributes_for :payment_transactions, allow_destroy: true, reject_if: :all_blank
 
+  before_save :set_due_on
   before_save :set_paid
   monetize :paid_cents
 
@@ -30,6 +31,12 @@ class Payment < ApplicationRecord
   end
 
   private
+
+  def set_due_on
+    return if payment_transactions.blank?
+    date = (payment_transactions.map(&:due_on).uniq - [nil]).sort.first 
+    due_on = date
+  end
 
   def set_paid
     self.paid = payment_transactions.map(&:paid).inject(Money.new(0)) { |sum, paid| sum += paid }
