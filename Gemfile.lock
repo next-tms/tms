@@ -171,7 +171,7 @@ GEM
     mini_mime (1.0.2)
     mini_portile2 (2.5.0)
     minitest (5.14.2)
-    moneta (1.3.0)
+    moneta (1.4.1)
     monetize (1.9.2)
       money (~> 6.12)
     money (6.13.6)
