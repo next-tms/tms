@@ -876,7 +876,7 @@ class Shipment < ApplicationRecord
   def maybe_create_payment_transaction
     return unless !broker_carrier.blank? && broker_carrier.create_invoice_on_pickup? && payment_transactions.blank?
 
-    payment_transaction = PaymentTransaction.new(
+    payment_transaction = PaymentTransaction.create(
       shipment: self,
       broker: broker,
       broker_carrier:
@@ -887,9 +887,6 @@ class Shipment < ApplicationRecord
       due_on: Date.current + broker_carrier.days_to_pay_after_invoice_date.days,
       pro: pro
     )
-    payment_transaction.set_week
-    payment_transaction.set_payment
-    payment_transaction.save
   end
 
   # Fix broker_accessorials when broker_customer changes
