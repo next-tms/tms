@@ -89,9 +89,9 @@ GEM
     bindex (0.8.1)
     bootsnap (1.5.1)
       msgpack (~> 1.0)
-    bootstrap_form (4.3.0)
-      actionpack (>= 5.0)
-      activemodel (>= 5.0)
+    bootstrap_form (4.5.0)
+      actionpack (>= 5.2)
+      activemodel (>= 5.2)
     builder (3.2.4)
     business_time (0.9.3)
       activesupport (>= 3.2.0)
@@ -348,7 +348,7 @@ DEPENDENCIES
   api_cache
   barby
   bootsnap (>= 1.4.2)
-  bootstrap_form (~> 4.0)
+  bootstrap_form (~> 4.5)
   business_time
   byebug
   capybara (>= 2.15)
