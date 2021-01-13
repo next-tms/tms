@@ -44,7 +44,7 @@ gem 'responders'
 source 'https://rails-assets.org' do
   gem 'rails-assets-tether', '>= 1.3.3'
 end
-gem 'bootstrap_form', '~> 4.0'
+gem 'bootstrap_form', '~> 4.5'
 
 # gem 'aws-sdk', group: :production
 gem 'devise', '~> 4.7.3'
@@ -64,7 +64,7 @@ gem 'hiredis'
 gem 'sidekiq'
 gem 'business_time'
 gem 'timezone', '~> 1.3'
-gem 'money-rails', '~>1.12'
+gem 'money-rails', '~>1.13'
 gem 'httparty'
 gem 'savon'
 gem 'geocoder'
