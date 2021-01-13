@@ -44,7 +44,7 @@ gem 'responders'
 source 'https://rails-assets.org' do
   gem 'rails-assets-tether', '>= 1.3.3'
 end
-gem 'bootstrap_form', '~> 4.0'
+gem 'bootstrap_form', '~> 4.5'
 
 # gem 'aws-sdk', group: :production
 gem 'devise', '~> 4.7.3'
