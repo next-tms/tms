@@ -6,7 +6,7 @@ class RateSerializer < ActiveModel::Serializer
   end
 
   def charge
-    object.broker_customer.carrier_charge_calculator(carrier_cost: object.cost).to_f
+    object.broker_customer.carrier_charge_calculator(carrier_cost: object.cost, shipment: object.shipment).to_f
   end
 
   def charge_currency
