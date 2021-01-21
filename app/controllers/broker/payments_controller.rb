@@ -74,7 +74,6 @@ class Broker::PaymentsController < Broker::BrokerController
       @payment.paid_on = payment_params[:paid_on]
       @payment.method_reference = payment_params[:method_reference]
       @payment.payment_transactions = payment_transactions
-      @payment.week = @payment.paid_on.strftime('%U').to_i - 1
 
       if @payment.save
         redirect_to [:broker, @payment]
