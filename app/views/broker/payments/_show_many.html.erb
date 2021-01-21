@@ -6,7 +6,7 @@
       <thead>
         <tr>
           <th>Due</th>
-          <% unless payments.map(&:paid_on).uniq == [nil] %>
+          <% unless action_name == 'index' %>
             <th>Paid On</th>
           <% end %>
           <th>Carrier</th>
@@ -23,7 +23,7 @@
               <% end %>
               <%= payment.week %>
             </td>
-            <% unless payments.map(&:paid_on).uniq == [nil] %>
+            <% unless action_name == 'index' %>
               <td><%= short_date payment.paid_on, current_user.time_zone %></td>
             <% end %>
             <td><%= payment.broker_carrier.broker_customer_specific_name unless payment.broker_carrier.blank? %></td>
