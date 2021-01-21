@@ -113,6 +113,17 @@ Rails.application.configure do
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 
+  Rails.application.config.middleware.use ExceptionNotification::Rack,
+    email: {
+      email_prefix: '[tms.liftoff.rocks]',
+      sender_address: %{'robot' <robot@liftoff.rocks>},
+      exception_recipients: if ENV['EXCEPTION_NOTIFICATION_EMAILS'].include?(':')
+                              ENV['EXCEPTION_NOTIFICATION_EMAILS'].split(':')
+                            else
+                              ENV['EXCEPTION_NOTIFICATION_EMAILS']
+                            end
+    }
+
   config.paperclip_defaults = {
     storage: :s3,
     s3_credentials: {

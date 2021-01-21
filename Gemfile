@@ -54,6 +54,8 @@ gem 'loadcss-rails'
 # liftoff.rocks
 gem 'reactive_freight', git: 'https://github.com/brodyhoskins/reactive_freight', ref: '9347577632baa031da3d0888ac4cdd7308a6e0f7'
 
+gem 'exception_notification'
+
 gem 'api_cache'
 gem 'moneta'
 gem 'jwt'
