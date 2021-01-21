@@ -6,4 +6,9 @@
   <p class="lead"><%= yield :title %></p>
 </div>
 
-<%= render 'show_many', payments: @payments %>
+<% unless @payments.blank? %>
+  <%= render 'show_many', payments: @payments %>
+  <%= render 'layouts/pagy', pagy: @pagy %>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>
