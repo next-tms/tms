@@ -21,6 +21,7 @@
         <% unless @shipment.customer_reference.blank? %>
           <li><b>PO Ref:</b> <%= @shipment.customer_reference %></li>
         <% end %>
+        <li><strong>Date:</strong> <%= long_date Date.current, @shipment.shipper_address.time_zone %></li>
       </ul>
     </div>
   </header>
