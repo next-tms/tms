@@ -16,11 +16,11 @@ class Broker::PaymentsController < Broker::BrokerController
   end
 
   def index
-    @pagy, @payments = Payment.unpaid.order(:due_on)
+    @pagy, @payments = pagy(Payment.unpaid.order(:due_on))
   end
 
   def paid
-    @pagy, @payments = Payment.paid.order(paid_on: :desc)
+    @pagy, @payments = pagy(Payment.paid.order(paid_on: :desc))
   end
 
   def new
