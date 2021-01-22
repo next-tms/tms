@@ -339,6 +339,7 @@ class Shipment < ApplicationRecord
           end
 
           cost = Money.new(pricing_rule.cost_per_pallet * flattened_items.size)
+          cost += broker_carrier.quote_padding unless broker_carrier.quote_padding.blank?
 
           rate = Rate.new
           rate.shipment = self
@@ -388,6 +389,7 @@ class Shipment < ApplicationRecord
             Rails.logger.info "Shipment#update_quotes: ReactiveShipping::#{broker_carrier.carrier.scac}: ReactiveShipping returned blank cost"
             next
           end
+          cost += broker_carrier.quote_padding unless broker_carrier.quote_padding.blank?
 
           unless reactive_shipping_rate.with_excessive_length_fees
             if broker_carrier.overlength_rules.blank?

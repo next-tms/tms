@@ -23,6 +23,8 @@ class BrokerCarrier < ApplicationRecord
   accepts_nested_attributes_for :overlength_rules
   accepts_nested_attributes_for :pricing_rules
 
+  monetize :quote_padding_cents
+
   def overlength_rules
     if !as_reactive_shipping_carrier.blank? && !as_reactive_shipping_carrier.rates_with_excessive_length_fees
       super

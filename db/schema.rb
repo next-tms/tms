@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_16_082931) do
+ActiveRecord::Schema.define(version: 2021_01_22_193904) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,14 +29,14 @@ ActiveRecord::Schema.define(version: 2020_11_16_082931) do
     t.string "city"
     t.string "state"
     t.string "zip_code"
-    t.string "longitude"
+    t.decimal "latitude", precision: 15, scale: 10
+    t.decimal "longitude", precision: 15, scale: 10
     t.text "verification_info"
     t.text "original_attributes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "types"
     t.string "ref"
-    t.decimal "latitude", precision: 15, scale: 10
     t.string "time_zone"
     t.text "google_places_spot_cached"
   end
@@ -62,7 +62,7 @@ ActiveRecord::Schema.define(version: 2020_11_16_082931) do
     t.integer "flat_charge_cents", default: 0, null: false
     t.string "flat_charge_currency", default: "USD", null: false
     t.bigint "broker_customer_id"
-    t.index ["accessorial_id"], name: "index_broker_accessorials_on_quote_as_accessorial_id"
+    t.index ["accessorial_id"], name: "index_broker_accessorials_on_accessorial_id"
     t.index ["broker_customer_id"], name: "index_broker_accessorials_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_accessorials_on_broker_id"
   end
@@ -81,6 +81,8 @@ ActiveRecord::Schema.define(version: 2020_11_16_082931) do
     t.bigint "broker_customer_id"
     t.integer "days_to_pay_after_invoice_date", default: 30
     t.boolean "create_invoice_on_pickup"
+    t.integer "quote_padding_cents", default: 0, null: false
+    t.string "quote_padding_currency", default: "USD", null: false
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
@@ -118,7 +120,6 @@ ActiveRecord::Schema.define(version: 2020_11_16_082931) do
 
   create_table "brokers", id: :serial, force: :cascade do |t|
     t.string "name"
-    t.json "google_api_config"
     t.bigint "address_id"
     t.string "phone"
     t.string "customer_service_email"
@@ -168,9 +169,10 @@ ActiveRecord::Schema.define(version: 2020_11_16_082931) do
   end
 
   create_table "customer_contacts", force: :cascade do |t|
+    t.bigint "broker_id"
     t.bigint "customer_id"
     t.bigint "contact_id"
-    t.integer "broker_id"
+    t.index ["broker_id"], name: "index_customer_contacts_on_broker_id"
     t.index ["contact_id"], name: "index_customer_contacts_on_contact_id"
     t.index ["customer_id"], name: "index_customer_contacts_on_customer_id"
   end
@@ -288,6 +290,18 @@ ActiveRecord::Schema.define(version: 2020_11_16_082931) do
     t.index ["carrier_area_id"], name: "index_pricing_rules_on_carrier_area_id"
     t.index ["max_pallets"], name: "index_pricing_rules_on_max_pallets"
     t.index ["min_pallets"], name: "index_pricing_rules_on_min_pallets"
+  end
+
+  create_table "quickbooks_credentials", force: :cascade do |t|
+    t.bigint "broker_id", null: false
+    t.datetime "access_token_expires_at"
+    t.datetime "refresh_token_expires_at"
+    t.text "access_token"
+    t.text "realm_id"
+    t.text "refresh_token"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["broker_id"], name: "index_quickbooks_credentials_on_broker_id"
   end
 
   create_table "rate_accessorials", force: :cascade do |t|
@@ -567,6 +581,7 @@ ActiveRecord::Schema.define(version: 2020_11_16_082931) do
   add_foreign_key "carrier_contacts", "contacts"
   add_foreign_key "carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "contacts", "brokers"
+  add_foreign_key "customer_contacts", "brokers"
   add_foreign_key "customer_contacts", "contacts"
   add_foreign_key "customer_contacts", "customers"
   add_foreign_key "location_areas", "areas"
@@ -583,6 +598,7 @@ ActiveRecord::Schema.define(version: 2020_11_16_082931) do
   add_foreign_key "payments", "users", column: "created_by_id"
   add_foreign_key "pricing_rules", "broker_carriers"
   add_foreign_key "pricing_rules", "carrier_areas"
+  add_foreign_key "quickbooks_credentials", "brokers"
   add_foreign_key "rate_accessorials", "accessorials"
   add_foreign_key "rate_accessorials", "rates"
   add_foreign_key "rates", "broker_carriers"
