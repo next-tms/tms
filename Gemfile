@@ -8,7 +8,7 @@ gem 'puma', '5.1.1'
 gem 'sass-rails', '>= 6'
 gem 'webpacker', '~> 5.2'
 gem 'turbolinks', '~> 5' # Still needed with webpacker
-gem 'jbuilder', '~> 2.10'
+gem 'jbuilder', '~> 2.11'
 
 gem 'bootsnap', '>= 1.4.2', require: false
 
