@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_22_193904) do
+ActiveRecord::Schema.define(version: 2021_01_27_190449) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -446,6 +446,7 @@ ActiveRecord::Schema.define(version: 2021_01_22_193904) do
     t.boolean "quote_only", default: false
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
     t.index ["broker_customer_id"], name: "index_shipments_on_broker_customer_id"
+    t.index ["broker_notes"], name: "index_shipments_on_broker_notes"
     t.index ["receiver_address_id"], name: "index_shipments_on_receiver_address_id"
     t.index ["shipper_address_id"], name: "index_shipments_on_shipper_address_id"
     t.index ["tracking_carrier_id"], name: "index_shipments_on_tracking_carrier_id"
