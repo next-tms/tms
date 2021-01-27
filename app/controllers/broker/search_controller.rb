@@ -22,6 +22,7 @@ class Broker::SearchController < Broker::BrokerController
 
     shipments_by_load = Shipment.where(broker_customer: [current_user.broker_customers]).where(load_id: @search)
     shipments_by_bol = Shipment.where(broker_customer: [current_user.broker_customers]).where(bol: @search)
+    shipments_by_broker_notes = Shipment.where(broker_customer: [current_user.broker_customers]).where('broker_notes ilike ?', "%#{@search}%")
     shipments_by_customer_reference = Shipment.where(broker_customer: [current_user.broker_customers]).where('customer_reference ilike ?', "%#{@search}%")
     shipments_by_pro = Shipment.where(broker_customer: [current_user.broker_customers]).where('pro ilike ?', "%#{@search}%")
     shipments_by_pro += Shipment.where(broker_customer: [current_user.broker_customers]).where('tracking_carrier_pro ilike ?', "%#{@search}%")
@@ -41,7 +42,7 @@ class Broker::SearchController < Broker::BrokerController
 
     @broker_carriers = broker_carriers_by_name
     @broker_customers = broker_customers_by_name
-    @shipments = shipments_by_address + shipments_by_load + shipments_by_bol + shipments_by_pro + shipments_by_shipper_reference + shipments_by_customer_reference + shipments_by_shipper_name + shipments_by_shipper_contact_name + shipments_by_receiver_name + shipments_by_receiver_contact_name
+    @shipments = shipments_by_address + shipments_by_load + shipments_by_bol + shipments_by_broker_notes + shipments_by_pro + shipments_by_shipper_reference + shipments_by_customer_reference + shipments_by_shipper_name + shipments_by_shipper_contact_name + shipments_by_receiver_name + shipments_by_receiver_contact_name
 
     @broker_carriers = @broker_carriers.uniq
     @broker_customers = @broker_customers.uniq
