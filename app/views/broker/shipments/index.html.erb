@@ -6,4 +6,7 @@
   <p class="lead">Overview</p>
 </div>
 
-</div>
+<% unless current_user.sales_rep_for_broker_customers.blank? %>
+  <h2>My Customers’ Recent Shipments</h2>
+  <%= shipment_show_many_table(shipments: Shipment.active.where(broker_customer: current_user.sales_rep_for_broker_customers).order(created_at: :desc).limit(20), td_names: ['created_at', 'id', 'status', 'broker_customer', 'origin', 'broker_carrier', 'destination', 'pro', 'picked_up_at', 'promised_delivery_by', 'delivery_at', 'size']) %>
+<% end %>

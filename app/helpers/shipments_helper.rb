@@ -5,6 +5,7 @@ module ShipmentsHelper
     td_names_map = [
       %w[broker_carrier Carrier],
       %w[broker_customer Customer],
+      %w[created_at Entered],
       %w[delivered_at Delivered],
       %w[delivery_by ETA],
       %w[id Load],
