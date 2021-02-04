@@ -5,11 +5,17 @@ class Shipment < ApplicationRecord
   scope :canceled_recently, -> { canceled.where('canceled_at > ?', 1.day.ago) }
   scope :active, -> { where.not(id: canceled) }
 
-  scope :pending_dispatch, -> { active.where.not(broker_carrier: nil).where(dispatched_at: nil).where(picked_up_at: nil).where(out_for_delivery_at: nil).where(delivered_at: nil) }
+  scope :pending_dispatch, lambda {
+                             active.where.not(broker_carrier: nil).where(dispatched_at: nil).where(picked_up_at: nil).where(out_for_delivery_at: nil).where(delivered_at: nil)
+                           }
   scope :pending_pickup, -> { active.where.not(dispatched_at: nil).where(picked_up_at: nil) }
   scope :pending_quotation, -> { where(broker_carrier: nil) } # Include canceled
-  scope :pending_delivery, -> { active.where.not(picked_up_at: nil).where.not(departed_origin_terminal_at: nil).where(delivered_at: nil) }
-  scope :pending_departure, -> { active.where.not(picked_up_at: nil).where(departed_origin_terminal_at: nil).where(delivered_at: nil) }
+  scope :pending_delivery, lambda {
+                             active.where.not(picked_up_at: nil).where.not(departed_origin_terminal_at: nil).where(delivered_at: nil)
+                           }
+  scope :pending_departure, lambda {
+                              active.where.not(picked_up_at: nil).where(departed_origin_terminal_at: nil).where(delivered_at: nil)
+                            }
 
   scope :missing_delivery_appointment, lambda {
     joins(:shipment_broker_accessorials)
@@ -30,7 +36,9 @@ class Shipment < ApplicationRecord
   scope :delivered, -> { where.not(delivered_at: nil) }
   scope :late_per_deliver_by, -> { where.not(id: delivered).where('deliver_by < ?', Date.current) }
   scope :late_per_promised_delivery_by, -> { where.not(id: delivered).where('promised_delivery_by < ?', Date.current) }
-  scope :late_per_quoted_delivery_by, -> { where.not(id: delivered).where('quoted_delivery_by < ?', Date.current + 3.days) }
+  scope :late_per_quoted_delivery_by, lambda {
+                                        where.not(id: delivered).where('quoted_delivery_by < ?', Date.current + 3.days)
+                                      }
   scope :late, -> { where(id: late_per_promised_delivery_by).or(where(id: late_per_deliver_by)).distinct }
   scope :not_late, -> { where.not(id: late) }
 
@@ -231,6 +239,7 @@ class Shipment < ApplicationRecord
 
   def pickup_by
     return nil if pickup_on.blank?
+
     shipper_address&.time_zone&.local_to_utc(pickup_on.end_of_day)
   end
 
@@ -263,9 +272,7 @@ class Shipment < ApplicationRecord
 
   # ReactiveShipping wrappers
   def update_rates
-    unless Rails.env == 'development'
-      return [] if !rates.blank? && (rates.first.shipment_fingerprint == fingerprint)
-    end
+    return [] if !Rails.env == 'development' && !rates.blank? && (rates.first.shipment_fingerprint == fingerprint)
 
     return if calculated_freight_classes.uniq == [nil] && forced_freight_classes.uniq.nil?
 
@@ -338,7 +345,8 @@ class Shipment < ApplicationRecord
 
     broker_carriers.each do |broker_carrier|
       unless broker_carrier.pricing_rules.blank?
-        broker_carrier.pricing_rules.where('min_pallets <= ?', flattened_items.size).where('max_pallets >= ?', flattened_items.size).each do |pricing_rule|
+        broker_carrier.pricing_rules.where('min_pallets <= ?', flattened_items.size).where('max_pallets >= ?',
+                                                                                           flattened_items.size).each do |pricing_rule|
           unless pricing_rule.carrier_area.from_area.zip_codes.include?(shipper_address.zip_code) && pricing_rule.carrier_area.to_area.zip_codes.include?(receiver_address.zip_code)
             next
           end
@@ -368,7 +376,8 @@ class Shipment < ApplicationRecord
 
       package_sets.each do |package_set|
         begin
-          response = carrier.find_rates(origin, destination, package_set.dig(:packages), accessorials: reactive_shipping_accessorials)
+          response = carrier.find_rates(origin, destination, package_set.dig(:packages),
+                                        accessorials: reactive_shipping_accessorials)
         rescue NotImplementedError => e
           Rails.logger.info "Shipment#update_quotes: ReactiveShipping::#{broker_carrier.carrier.scac}: Returned invalid response (error): #{e.backtrace}: #{e.message} (#{e.class})"
           next
@@ -556,14 +565,10 @@ class Shipment < ApplicationRecord
         return @late = true if DateTime.current > delivery_appointment_at
       elsif delivery_appointment_at.blank? && !delivery_appointment_on.blank?
         return @late = true if Date.current > delivery_appointment_on
-      else
-        unless deliver_by.blank?
-          return @late = true if Date.current > deliver_by
-        end
+      elsif !deliver_by.blank? && (Date.current > deliver_by)
+        return @late = true
       end
-      unless promised_delivery_by.blank?
-        return @late = true if Date.current > promised_delivery_by
-      end
+      @late = true if !promised_delivery_by.blank? && (Date.current > promised_delivery_by)
     elsif !pickup_by.blank?
       return @late = true if pickup_by < DateTime.current
     end
@@ -578,7 +583,7 @@ class Shipment < ApplicationRecord
 
   # Set BrokerAccessorials based on codes (for API)
   def accessorial_codes=(codes)
-    codes = codes.gsub(', ', ',').split(',') if codes.class == String
+    codes = codes.gsub(', ', ',').split(',') if codes.instance_of?(String)
     broker_accessorials = []
     codes.each do |code|
       broker_accessorial = broker_customer.broker_accessorials.where(code: code)
@@ -606,29 +611,29 @@ class Shipment < ApplicationRecord
     @assumed_accessorials = []
 
     # Airports
-    unless receiver_name.blank?
-      if %w[aero aircraft airport aviation avionic hangar].any? { |word| receiver_name.downcase.include?(word) }
-        @assumed_accessorials << Accessorial.find_by_code('DAIR')
-      end
+    if !receiver_name.blank? && %w[aero aircraft airport aviation avionic hangar].any? do |word|
+         receiver_name.downcase.include?(word)
+       end
+      @assumed_accessorials << Accessorial.find_by_code('DAIR')
     end
-    unless shipper_name.blank?
-      if %w[aero aircraft airport aviation avionic hangar].any? { |word| shipper_name.downcase.include?(word) }
-        @assumed_accessorials << Accessorial.find_by_code('PAIR')
-      end
+    if !shipper_name.blank? && %w[aero aircraft airport aviation avionic hangar].any? do |word|
+         shipper_name.downcase.include?(word)
+       end
+      @assumed_accessorials << Accessorial.find_by_code('PAIR')
     end
-    unless receiver_address.types.blank?
-      @assumed_accessorials << Accessorial.find_by_code('DAIR') if receiver_address.types.include? 'airport'
+    if !receiver_address.types.blank? && (receiver_address.types.include? 'airport')
+      @assumed_accessorials << Accessorial.find_by_code('DAIR')
     end
-    unless shipper_address.types.blank?
-      @assumed_accessorials << Accessorial.find_by_code('PAIR') if shipper_address.types.include? 'airport'
+    if !shipper_address.types.blank? && (shipper_address.types.include? 'airport')
+      @assumed_accessorials << Accessorial.find_by_code('PAIR')
     end
 
     # Military bases
-    unless receiver_address.types.blank?
-      @assumed_accessorials << Accessorial.find_by_code('DMIL') if receiver_address.types.include? 'military'
+    if !receiver_address.types.blank? && (receiver_address.types.include? 'military')
+      @assumed_accessorials << Accessorial.find_by_code('DMIL')
     end
-    unless shipper_address.types.blank?
-      @assumed_accessorials << Accessorial.find_by_code('PMIL') if shipper_address.types.include? 'military'
+    if !shipper_address.types.blank? && (shipper_address.types.include? 'military')
+      @assumed_accessorials << Accessorial.find_by_code('PMIL')
     end
 
     # Residential
@@ -648,8 +653,8 @@ class Shipment < ApplicationRecord
     end
 
     # Appointment delivery
-    unless bol_notes.blank?
-      @assumed_accessorials << Accessorial.find_by_code('DAPP') if bol_notes.downcase.include? 'must contact'
+    if !bol_notes.blank? && (bol_notes.downcase.include? 'must contact')
+      @assumed_accessorials << Accessorial.find_by_code('DAPP')
     end
 
     @assumed_accessorials = @assumed_accessorials.uniq

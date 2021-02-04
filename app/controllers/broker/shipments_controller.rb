@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Broker::ShipmentsController < Broker::BrokerController
-  before_action :set_shipment_by_load_id, only: %i[rate_uid documents documents_bol documents_quote create_tracking_event destroy edit edit_tracking_events notes pricing quote show tracking_events transit update]
+  before_action :set_shipment_by_load_id,
+                only: %i[rate_uid documents documents_bol documents_quote create_tracking_event destroy edit edit_tracking_events
+                         notes pricing quote show tracking_events transit update]
   before_action :authenticate_user!
 
   def index; end
@@ -142,21 +144,21 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     pending_pickup.each do |shipment|
       if shipment.late?
-        @shipments_missed_pickup += [ shipment ]
+        @shipments_missed_pickup += [shipment]
         next
       end
 
       if shipment.pickup_by.blank?
-        @shipments_for_pickup_today += [ shipment ]
+        @shipments_for_pickup_today += [shipment]
         next
       end
 
       pickup_by = shipment.pickup_by
       end_of_day = DateTime.current.end_of_day
       if pickup_by <= end_of_day
-        @shipments_for_pickup_today += [ shipment ]
+        @shipments_for_pickup_today += [shipment]
       else
-        @shipments_for_pickup_later += [ shipment ]
+        @shipments_for_pickup_later += [shipment]
       end
     end
 
@@ -292,11 +294,13 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :tracking_carrier_pro,
                                      :truckload,
                                      :value,
-                                     items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat refrigerated desc weight quantity],
+                                     items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat
+                                                          refrigerated desc weight quantity],
                                      receiver_address_attributes: %i[id ref street street2 city state zip_code],
                                      shipper_address_attributes: %i[id ref street street2 city state zip_code],
                                      shipment_accessorials_attributes: %i[_destroy accessorial_id],
-                                     shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id cost charge],
+                                     shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id
+                                                                                 cost charge],
                                      tracking_events_attributes: [
                                        :_destroy,
                                        :id,
@@ -306,7 +310,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                        :country_alpha2,
                                        :event_id,
                                        :public,
-                                       address_attributes: %i[id street street2 city state zip_code]
+                                       { address_attributes: %i[id street street2 city state zip_code] }
                                      ])
   end
 end
