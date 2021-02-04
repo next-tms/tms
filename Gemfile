@@ -4,7 +4,7 @@ ruby '2.6.6'
 
 gem 'rails', '~> 6.0.3'
 gem 'pg', '~> 1.2.0'
-gem 'puma', '5.1.1'
+gem 'puma', '5.2.0'
 gem 'sass-rails', '>= 6'
 gem 'webpacker', '~> 5.2'
 gem 'turbolinks', '~> 5' # Still needed with webpacker
