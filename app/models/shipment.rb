@@ -229,6 +229,11 @@ class Shipment < ApplicationRecord
     @loose ||= !loose_items.empty?
   end
 
+  def pickup_by
+    return nil if pickup_on.blank?
+    shipper_address&.time_zone&.local_to_utc(pickup_on.end_of_day)
+  end
+
   # ReactiveShipping
   def reactive_shipping_tracking
     return @reactive_shipping_tracking if @reactive_shipping_tracking
@@ -546,7 +551,7 @@ class Shipment < ApplicationRecord
     return @late if @late
     return @late = false unless delivered_at.blank?
 
-    unless picked_up_at.blank?
+    if !picked_up_at.blank?
       if !delivery_appointment_at.blank?
         return @late = true if DateTime.current > delivery_appointment_at
       elsif delivery_appointment_at.blank? && !delivery_appointment_on.blank?
@@ -559,11 +564,9 @@ class Shipment < ApplicationRecord
       unless promised_delivery_by.blank?
         return @late = true if Date.current > promised_delivery_by
       end
+    elsif !pickup_by.blank?
+      return @late = true if pickup_by < DateTime.current
     end
-
-    return unless picked_up_at.blank? && !pickup_on.blank?
-
-    @late = true if Date.current > pickup_on
   end
 
   def accessorials

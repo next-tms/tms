@@ -135,8 +135,33 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def pending_pickup
     pending_pickup = Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_pickup.or(Shipment.where(broker_customer: [current_user.broker_customers]).canceled_recently.pending_pickup).distinct
-    @shipments_for_pickup_today = pending_pickup.where(pickup_on: nil).or(pending_pickup.where('pickup_on <= ?', Date.current)).distinct.order(:pickup_hours_end_at)
-    @shipments_for_pickup_later = pending_pickup.where('pickup_on > ?', Date.current).order(:pickup_hours_end_at)
+
+    @shipments_for_pickup_later = Shipment.none
+    @shipments_for_pickup_today = Shipment.none
+    @shipments_missed_pickup = Shipment.none
+
+    pending_pickup.each do |shipment|
+      if shipment.late?
+        @shipments_missed_pickup += [ shipment ]
+        next
+      end
+
+      if shipment.pickup_by.blank?
+        @shipments_for_pickup_today += [ shipment ]
+        next
+      end
+
+      pickup_by = shipment.pickup_by
+      end_of_day = DateTime.current.end_of_day
+      if pickup_by <= end_of_day
+        @shipments_for_pickup_today += [ shipment ]
+      else
+        @shipments_for_pickup_later += [ shipment ]
+      end
+    end
+
+    # @shipments_for_pickup_today = pending_pickup.where(pickup_on: nil).or(pending_pickup.where('pickup_on <= ?', Date.current)).distinct.order(:pickup_hours_end_at)
+    # @shipments_for_pickup_later = pending_pickup.where('pickup_on > ?', Date.current).order(:pickup_hours_end_at)
   end
 
   def pending_quotation
