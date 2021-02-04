@@ -7,6 +7,11 @@
   <p class="lead">Dispatched</p>
 </div>
 
+<% unless @shipments_missed_pickup.blank? %>
+  <h2>Overdue</h2>
+  <%= render 'show_many_pending_pickups', shipments: @shipments_missed_pickup %>
+<% end %>
+
 <% unless @shipments_for_pickup_today.blank? %>
   <h2>Today</h2>
   <%= render 'show_many_pending_pickups', shipments: @shipments_for_pickup_today %>
