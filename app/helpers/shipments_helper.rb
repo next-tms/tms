@@ -39,9 +39,9 @@ module ShipmentsHelper
     str << '<tbody>'
     shipments.each do |shipment|
       if shipment.pending_departure?
-        str << '<tr class="bg-danger">'
+        str << '<tr class="table-danger">'
       else
-        shipment.late? || !shipment.canceled_at.blank? || shipment.dispatch_incomplete? ? str << '<tr class="bg-warning">' : str << '<tr>'
+        shipment.late? || !shipment.canceled_at.blank? || shipment.dispatch_incomplete? ? str << '<tr class="table-warning">' : str << '<tr>'
       end
 
       td_names.each do |td_name|
