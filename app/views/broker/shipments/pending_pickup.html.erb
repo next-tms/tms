@@ -22,6 +22,6 @@
   <%= render 'show_many_pending_pickups', shipments: @shipments_for_pickup_later %>
 <% end %>
 
-<% if @shipments_for_pickup_today.blank? and @shipments_for_pickup_later.blank? %>
+<% if @shipments_missed_pickup.blank? && @shipments_for_pickup_today.blank? && @shipments_for_pickup_later.blank? %>
   <%= render 'layouts/no_content' %>
 <% end %>
