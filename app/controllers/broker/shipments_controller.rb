@@ -153,12 +153,10 @@ class Broker::ShipmentsController < Broker::BrokerController
         next
       end
 
-      pickup_by = shipment.pickup_by
-      end_of_day = DateTime.current.end_of_day
-      if pickup_by <= end_of_day
-        @shipments_for_pickup_today += [shipment]
-      else
+      if shipment.pickup_by >= shipment.shipper_address.time_zone.local_to_utc(Date.current.next_day.beginning_of_day)
         @shipments_for_pickup_later += [shipment]
+      else
+        @shipments_for_pickup_today += [shipment]
       end
     end
 
