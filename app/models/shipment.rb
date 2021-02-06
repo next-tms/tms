@@ -570,7 +570,7 @@ class Shipment < ApplicationRecord
       end
       @late = true if !promised_delivery_by.blank? && (Date.current > promised_delivery_by)
     elsif !pickup_by.blank?
-      return @late = true if pickup_by <= DateTime.current.end_of_day
+      return @late = pickup_by < DateTime.current
     end
   end
 
