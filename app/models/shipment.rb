@@ -768,6 +768,7 @@ class Shipment < ApplicationRecord
       item.quantity.times do
         new_item = item.dup
         new_item.quantity = 1
+        new_item.weight = item.weight.to_f / item.quantity if item.quantity > 1
         @flattened_items << new_item
       end
     end
