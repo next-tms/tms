@@ -18,6 +18,10 @@
     <% end %>
   </div>
   <div class="col">
+    <% unless @payment.broker_carrier.accounting_notes.blank? %>
+      <p class="col-title">Accounting Notes</p>
+      <%= simple_format @payment.broker_carrier.accounting_notes %>
+    <% end %>
     <p class="col-title">Check Mailing Details</p>
     <div class="row">
       <% unless @payment.broker_carrier.check_mailing_address.blank? %>

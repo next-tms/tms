@@ -8,6 +8,8 @@
   <%= f.text_field :account_desc, placeholder: 'Description', autocomplete: 'off' %>
 
   <h2>Billing Details</h2>
+  <%= f.text_area :accounting_notes, rows: 7 %>
+
   <%= f.number_field :days_to_pay_after_invoice_date, label: 'Days Until Due', help: 'Used to generate payment due dates when they are not specified on account statements', min: 0 %>
 
   <%= f.form_group label: { text: 'Invoicing' } do %>

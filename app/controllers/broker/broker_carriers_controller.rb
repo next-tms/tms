@@ -72,6 +72,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   # Never trust parameters from the scary internet, only allow the white list through.
   def broker_carrier_params
     params.require(:broker_carrier).permit(:id,
+                                           :accounting_notes,
                                            :broker_id,
                                            :broker_customer_id,
                                            :carrier_id,
