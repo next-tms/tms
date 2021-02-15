@@ -272,7 +272,7 @@ class Shipment < ApplicationRecord
 
   # ReactiveShipping wrappers
   def update_rates
-    return [] if !Rails.env == 'development' && !rates.blank? && (rates.first.shipment_fingerprint == fingerprint)
+    return [] if !Rails.env.development? && !rates.blank? && rates.first.shipment_fingerprint == fingerprint
 
     return if calculated_freight_classes.uniq == [nil] && forced_freight_classes.uniq.nil?
 
