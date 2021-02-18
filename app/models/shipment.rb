@@ -943,12 +943,14 @@ class Shipment < ApplicationRecord
 
   # Prettify
   def prettify_shipper_name
+    return if shipper_name == broker_customer&.name
     return unless (shipper_name == shipper_name.downcase) || (shipper_name == shipper_name.upcase)
 
     self.shipper_name = shipper_name.titleize
   end
 
   def prettify_receiver_name
+    return if receiver_name == broker_customer&.name
     return unless (receiver_name == receiver_name.downcase) || (receiver_name == receiver_name.upcase)
 
     self.receiver_name = receiver_name.titleize
