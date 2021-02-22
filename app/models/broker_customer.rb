@@ -53,15 +53,15 @@ class BrokerCustomer < ApplicationRecord
 
     if !upcharge_rules.blank?
       carrier_charge = carrier_cost
-      shipment.items.map(&:packaging).uniq.each do |packaging|
-        size = shipment.items.packaging(packaging).size
-        try_upcharge_rules = upcharge_rules.where('min <= ?', size).where('max >= ?', size).or(upcharge_rules.where('min <= ?', size).where(max: nil))
+      shipment.items.each do |item|
+        quantity = item.quantity
+        try_upcharge_rules = upcharge_rules.where('min <= ?', quantity).where('max >= ?', quantity).or(upcharge_rules.where('min <= ?', quantity).where(max: nil))
 
         if try_upcharge_rules.blank?
           return !default_upcharge.blank? && default_upcharge.positive? ? carrier_cost + default_upcharge : carrier_charge
         else
           try_upcharge_rules.each do |upcharge_rule|
-            carrier_charge += upcharge_rule.upcharge * size
+            carrier_charge += upcharge_rule.upcharge * quantity
           end
         end
       end
