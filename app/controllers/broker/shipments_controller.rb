@@ -135,6 +135,10 @@ class Broker::ShipmentsController < Broker::BrokerController
     @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_departure.order(:picked_up_at))
   end
 
+  def pending_found
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).pending_found.order(:created_at))
+  end
+
   def pending_pickup
     pending_pickup = Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_pickup.or(Shipment.where(broker_customer: [current_user.broker_customers]).canceled_recently.pending_pickup).distinct
 
@@ -258,6 +262,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :dispatched_at,
                                      :dispatched,
                                      :lift_gate,
+                                     :lost_on,
                                      :out_for_delivery_at,
                                      :pickup_driver_assigned_at,
                                      :picked_up_at,

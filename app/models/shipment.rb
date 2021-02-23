@@ -8,6 +8,7 @@ class Shipment < ApplicationRecord
   scope :pending_dispatch, lambda {
                              active.where.not(broker_carrier: nil).where(dispatched_at: nil).where(picked_up_at: nil).where(out_for_delivery_at: nil).where(delivered_at: nil)
                            }
+  scope :pending_found, -> { active.pending_delivery.where.not(lost_on: nil) }
   scope :pending_pickup, -> { active.where.not(dispatched_at: nil).where(picked_up_at: nil) }
   scope :pending_quotation, -> { where(broker_carrier: nil) } # Include canceled
   scope :pending_delivery, lambda {

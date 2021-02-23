@@ -68,6 +68,7 @@ Rails.application.routes.draw do
 
     get 'shipments/pending-dispatch', to: 'shipments#pending_dispatch'
     get 'shipments/late', to: 'shipments#late'
+    get 'shipments/pending-found', to: 'shipments#pending_found'
     get 'shipments/delivered', to: 'shipments#delivered'
     get 'shipments/missing-delivery-appointment', to: 'shipments#missing_delivery_appointment'
     get 'shipments/missing-pricing', to: 'shipments#missing_pricing'
