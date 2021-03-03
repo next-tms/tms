@@ -3,6 +3,11 @@
     <ul class="navbar-nav">
       <% if @shipment&.id && !@shipment.quote_only? %>
         <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_shipment_path(@shipment), class: 'nav-link' %></li>
+        <% if @shipment.booked_at.blank? %>
+          <li class="navbar-item"><%= link_to icon('fas', 'bell', 'Book'), book_broker_shipment_path(@shipment), class: 'nav-link' %></li>
+        <% else %>
+          <li class="navbar-item"><%= link_to icon('fas', 'bell-slash', 'Unbook'), unbook_broker_shipment_path(@shipment), class: 'nav-link' %></li>
+        <% end %>
         <li class="navbar-item"><%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_broker_shipment_path(@shipment), class: 'nav-link' %></li>
         <% if current_user.has_role? 'accounting' or @shipment.broker_customer.sales_reps.include? current_user %>
           <li class="navbar-item"><%= link_to icon('fas', 'dollar-sign', 'Pricing'), pricing_broker_shipment_path(@shipment), class: 'nav-link' %></li>
@@ -25,7 +30,7 @@
           <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Reset'), new_broker_shipment_path, data: { confirm: 'Reset the form? Unsaved changes will be lost.' }, class: 'nav-link' %></li>
         <% end %>
       <% end %>
-      <% if action_name == 'index' or action_name.include? 'pending' or ['delivered', 'late', 'missing_delivery_appointment', 'missing_pricing', 'missing_pro'].include? action_name %>
+      <% if action_name == 'index' or action_name.include? 'pending' or ['booked', 'delivered', 'late', 'missing_delivery_appointment', 'missing_pricing', 'missing_pro'].include? action_name %>
         <li class="navbar-item">
           <li class="navbar-item"><%= link_to icon('fas', 'plus', 'Fast Quote'), broker_quote_only_path, class: 'nav-link' %></li>
           <%= link_to broker_shipments_pending_quotation_path, class: 'nav-link' do %>
@@ -37,6 +42,12 @@
           <%= link_to broker_shipments_pending_dispatch_path, class: 'nav-link' do %>
             <%= icon 'fas', 'file-invoice-dollar', 'Quoted' %>
             <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_dispatch.size, type: 'badge-dark' %>
+          <% end %>
+        </li>
+        <li class="navbar-item">
+          <%= link_to broker_shipments_booked_path, class: 'nav-link' do %>
+            <%= icon 'fas', 'bell', 'Booked' %>
+            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.booked.size, type: 'badge-dark' %>
           <% end %>
         </li>
         <li class="navbar-item">

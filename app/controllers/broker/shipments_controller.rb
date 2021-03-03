@@ -2,9 +2,29 @@
 
 class Broker::ShipmentsController < Broker::BrokerController
   before_action :set_shipment_by_load_id,
-                only: %i[rate_uid documents documents_bol documents_quote create_tracking_event destroy edit edit_tracking_events
-                         notes pricing quote show tracking_events transit update]
+                only: %i[book rate_uid documents documents_bol documents_quote create_tracking_event destroy edit edit_tracking_events
+                         notes pricing quote show tracking_events transit unbook update]
   before_action :authenticate_user!
+
+  def book
+    @shipment.updated_by = current_user
+    @shipment.save
+
+    @shipment.booked_at = DateTime.current
+    @shipment.save
+
+    redirect_to [:broker, @shipment]
+  end
+
+  def unbook
+    @shipment.updated_by = current_user
+    @shipment.save
+
+    @shipment.booked_at = nil
+    @shipment.save
+
+    redirect_to [:broker, @shipment]
+  end
 
   def index; end
 
@@ -119,6 +139,10 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def missing_pro
     @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.missing_pro.order(:created_at))
+  end
+
+  def booked
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.booked.order(:booked_at))
   end
 
   def pending_dispatch

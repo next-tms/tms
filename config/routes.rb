@@ -66,6 +66,7 @@ Rails.application.routes.draw do
 
     resources :payments
 
+    get 'shipments/booked', to: 'shipments#booked'
     get 'shipments/pending-dispatch', to: 'shipments#pending_dispatch'
     get 'shipments/late', to: 'shipments#late'
     get 'shipments/pending-found', to: 'shipments#pending_found'
@@ -82,6 +83,7 @@ Rails.application.routes.draw do
     resources :shipments, path: 'shipments', as: :shipments, param: :load_id do
       # Stupid, but required for some AJAX without PATCH
       get 'update' => 'shipments#update', as: :update
+      member { get 'book' => 'shipments#book', as: :book }
       member { get 'documents' => 'shipments#documents', as: :documents }
       member { get 'documents/bol' => 'shipments#documents_bol', as: :bol_document }
       member { get 'documents/quote' => 'shipments#documents_quote', as: :quote_document }
@@ -93,6 +95,7 @@ Rails.application.routes.draw do
       member { get 'tracking/edit', as: :edit_tracking_events, to: 'shipments#edit_tracking_events' }
       member { get 'tracking/update', as: :update_tracking_events, to: 'shipments#update_tracking_events' }
       member { post 'tracking/create', as: :create_tracking_event, to: 'shipments#create_tracking_event' }
+      member { get 'unbook' => 'shipments#unbook', as: :unbook }
     end
 
     get 'search' => 'search#search'
@@ -100,12 +103,21 @@ Rails.application.routes.draw do
 
   namespace :customer do
     root 'shipments#index'
+
+    get 'shipments/booked', to: 'shipments#booked'
+    get 'shipments/delivered', to: 'shipments#delivered'
+    get 'shipments/pending-delivery', to: 'shipments#pending_delivery'
+    get 'shipments/pending-dispatch', to: 'shipments#pending_dispatch'
+    get 'shipments/pending-pickup', to: 'shipments#pending_pickup'
+    get 'shipments/pending-quotation', to: 'shipments#pending_quotation'
     get 'shipments/quote-only' => 'shipments#new_quote_only', as: :quote_only
     resources :shipments, path: 'shipments', as: :shipments, param: :load_id, only: [:index, :new, :create, :edit, :show, :update] do
+      member { get 'book' => 'shipments#book', as: :book }
       member { get 'documents' => 'shipments#documents', as: :documents }
       member { get 'documents/bol' => 'shipments#documents_bol', as: :bol_document }
       member { get 'documents/quote' => 'shipments#documents_quote', as: :quote_document }
       member { get 'quote', as: :quote }
+      member { get 'unbook' => 'shipments#unbook', as: :unbook }
     end
     get 'search' => 'search#search'
   end

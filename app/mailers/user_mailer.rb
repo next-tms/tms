@@ -22,6 +22,16 @@ class UserMailer < ActionMailer::Base
     )
   end
 
+  def booked_at(shipment)
+    @shipment = shipment
+    mail(
+      from: from(shipment),
+      reply_to: reply_to(shipment, __method__),
+      to: to(shipment, __method__),
+      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} #{shipment.booked_at.blank? ? 'Unbooked' : 'Booked'}"
+    )
+  end
+
   def delivered_at(shipment)
     @shipment = shipment
     mail(

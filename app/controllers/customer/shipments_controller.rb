@@ -1,8 +1,28 @@
 # frozen_string_literal: true
 
 class Customer::ShipmentsController < Customer::CustomerController
-  before_action :set_shipment_by_load_id, only: %i[documents documents_bol documents_quote edit quote show update]
+  before_action :set_shipment_by_load_id, only: %i[book documents documents_bol documents_quote edit quote show unbook update]
   before_action :authenticate_user!
+
+  def book
+    @shipment.updated_by = current_user
+    @shipment.save
+
+    @shipment.booked_at = DateTime.current
+    @shipment.save
+
+    redirect_to [:customer, @shipment]
+  end
+
+  def unbook
+    @shipment.updated_by = current_user
+    @shipment.save
+
+    @shipment.booked_at = nil
+    @shipment.save
+
+    redirect_to [:customer, @shipment]
+  end
 
   def documents; end
 
@@ -50,6 +70,10 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.shipper_contact_name = "#{current_user.first_name} #{current_user.last_name}"
   end
 
+  def booked
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customer]).active.booked.order(:booked_at))
+  end
+
   def create
     @shipment = Shipment.new(shipment_params)
     @shipment.updated_by = current_user
@@ -63,6 +87,10 @@ class Customer::ShipmentsController < Customer::CustomerController
     else
       render :new
     end
+  end
+
+  def delivered
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.delivered.order(delivered_at: :desc))
   end
 
   def edit; end
@@ -87,6 +115,45 @@ class Customer::ShipmentsController < Customer::CustomerController
         redirect_to customer_shipment_path(@shipment) and return
       end
     end
+  end
+
+  def pending_delivery
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.pending_delivery.order(:picked_up_at))
+  end
+
+  def pending_dispatch
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.pending_dispatch.order(:created_at))
+  end
+
+  def pending_pickup
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.pending_pickup.distinct)
+    # pending_pickup = Shipment.where(broker_customer: current_user.broker_customer).active.pending_pickup.distinct
+    #
+    # @shipments_for_pickup_later = Shipment.none
+    # @shipments_for_pickup_today = Shipment.none
+    # @shipments_missed_pickup = Shipment.none
+    #
+    # pending_pickup.each do |shipment|
+    #   if shipment.late?
+    #     @shipments_missed_today += [shipment]
+    #     next
+    #   end
+    #
+    #   if shipment.pickup_by.blank?
+    #     @shipments_for_pickup_today += [shipment]
+    #     next
+    #   end
+    #
+    #   if shipment.pickup_by >= shipment.shipper_address.time_zone.local_to_utc(Date.current.next_day.beginning_of_day)
+    #     @shipments_for_pickup_later += [shipment]
+    #   else
+    #     @shipments_for_pickup_today += [shipment]
+    #   end
+    # end
+  end
+
+  def pending_quotation
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.pending_quotation.or(Shipment.where(broker_customer: current_user.broker_customer).canceled_recently).distinct.order(:created_at))
   end
 
   def quote

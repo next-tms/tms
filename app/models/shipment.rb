@@ -5,6 +5,7 @@ class Shipment < ApplicationRecord
   scope :canceled_recently, -> { canceled.where('canceled_at > ?', 1.day.ago) }
   scope :active, -> { where.not(id: canceled) }
 
+  scope :booked, lambda { active.where.not(booked_at: nil).where(dispatched_at: nil) }
   scope :pending_dispatch, lambda {
                              active.where.not(broker_carrier: nil).where(dispatched_at: nil).where(picked_up_at: nil).where(out_for_delivery_at: nil).where(delivered_at: nil)
                            }
@@ -114,6 +115,10 @@ class Shipment < ApplicationRecord
   # before_save :maybe_update_dispatched_at_to_now, if: :pickup_confirmation_changed?
   before_save :maybe_update_out_for_delivery_at_to_delivered_at, if: :delivered_at_changed?
   before_save :update_deliver_by_to_out_for_delivery_at, if: :out_for_delivery_at_changed?
+
+  before_save :maybe_book, if: :dispatched_at_changed?
+  before_save :unbook, if: :canceled_at_changed?
+  before_save :uncancel, if: :booked_at_changed?
 
   # Pricing
   before_save :set_total_charges
@@ -936,6 +941,18 @@ class Shipment < ApplicationRecord
 
   def maybe_update_dispatched_at_to_now
     self.dispatched_at = DateTime.current if dispatched_at.blank?
+  end
+
+  def maybe_book
+    self.booked_at = self.dispatched_at if self.booked_at.blank?
+  end
+
+  def unbook
+    self.booked_at = nil
+  end
+
+  def uncancel
+    self.canceled_at = nil
   end
 
   def update_deliver_by_to_out_for_delivery_at

@@ -1,0 +1,26 @@
+<% provide :title, 'Pickups — Shipments' %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1>Shipments</h1>
+  <p class="lead">Pickups</p>
+</div>
+
+<%= render 'show_many', shipments: @shipments %>
+<%= render 'layouts/pagy', pagy: @pagy %>
+
+<!--
+<% unless @shipments_for_pickup_today.blank? %>
+  <h2>Today</h2>
+  <%= render 'show_many_pending_pickups', shipments: @shipments_for_pickup_today %>
+<% end %>
+
+<% unless @shipments_for_pickup_later.blank? %>
+  <h2>Future</h2>
+  <%= render 'show_many_pending_pickups', shipments: @shipments_for_pickup_later %>
+<% end %>
+
+<% if @shipments_missed_pickup.blank? && @shipments_for_pickup_today.blank? && @shipments_for_pickup_later.blank? %>
+  <%= render 'layouts/no_content' %>
+<% end %>
+-->
