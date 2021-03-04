@@ -13,7 +13,7 @@
         <%= primary_pickup_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
         <%= primary_pickup_address_form.text_field :street2, hide_label: true %>
         <%= primary_pickup_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
-        <%= primary_pickup_address_form.text_field :state, hide_label: true, placeholder: 'State' %>
+        <%= primary_pickup_address_form.select :state, states_and_abbreviations, { hide_label: true, selected: (@broker_customer.primary_pickup_address.state.blank? ? nil : @broker_customer.primary_pickup_address.state) }, class: 'custom-select' %>
         <%= primary_pickup_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
       <% end %>
     </div>
