@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_27_190449) do
+ActiveRecord::Schema.define(version: 2021_03_04_031502) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,6 +83,7 @@ ActiveRecord::Schema.define(version: 2021_01_27_190449) do
     t.boolean "create_invoice_on_pickup"
     t.integer "quote_padding_cents", default: 0, null: false
     t.string "quote_padding_currency", default: "USD", null: false
+    t.text "accounting_notes"
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
@@ -94,6 +95,9 @@ ActiveRecord::Schema.define(version: 2021_01_27_190449) do
     t.bigint "broker_customer_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "commission_flat_cents", default: 0, null: false
+    t.string "commission_flat_currency", default: "USD", null: false
+    t.decimal "commission_percent", default: "0.0"
     t.index ["broker_customer_id"], name: "index_broker_customer_sales_reps_on_broker_customer_id"
     t.index ["user_id"], name: "index_broker_customer_sales_reps_on_user_id"
   end
@@ -444,6 +448,8 @@ ActiveRecord::Schema.define(version: 2021_01_27_190449) do
     t.datetime "pickup_driver_assigned_at"
     t.datetime "departed_origin_terminal_at"
     t.boolean "quote_only", default: false
+    t.date "lost_on"
+    t.datetime "booked_at"
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
     t.index ["broker_customer_id"], name: "index_shipments_on_broker_customer_id"
     t.index ["broker_notes"], name: "index_shipments_on_broker_notes"

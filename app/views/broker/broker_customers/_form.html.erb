@@ -1,4 +1,4 @@
-<%= bootstrap_form_with(model: [:broker, @broker_customer], path: [:broker, @broker_customer], layout: :horizontal) do |f| %>
+<%= bootstrap_form_with(model: [:broker, @broker_customer], layout: :horizontal) do |f| %>
 
   <%= f.alert_message "Unable to save customer:" %>
 
@@ -20,7 +20,7 @@
   </div>
 
   <div class="form-group row">
-    <label class="col-form-label col-sm-2">Sales Reps</label>
+    <label class="col-form-label col-sm-2">Sales Reps &amp; Commissions</label>
       <div class="col-sm-10">
       <%= f.fields_for :broker_customer_sales_reps do |broker_customer_sales_reps_form| %>
         <%= render 'broker_customer_sales_rep_fields', f: broker_customer_sales_reps_form %>
