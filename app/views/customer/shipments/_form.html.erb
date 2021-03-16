@@ -20,9 +20,9 @@
         <%= shipper_address_form.text_field :ref %>
         <%= shipper_address_form.text_field :street %>
         <%= shipper_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
-        <%= shipper_address_form.text_field :city %>
-        <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, class: 'custom-select' %>
-        <%= shipper_address_form.text_field :zip_code, label: 'ZIP' %>
+        <%= shipper_address_form.text_field :city, disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
+        <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled'), class: 'custom-select' %>
+        <%= shipper_address_form.text_field :zip_code, label: 'ZIP', disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
       <% end %>
     </div>
 
@@ -43,9 +43,9 @@
         <%= receiver_address_form.text_field :ref %>
         <%= receiver_address_form.text_field :street %>
         <%= receiver_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
-        <%= receiver_address_form.text_field :city %>
-        <%= receiver_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.receiver_address.state.blank? ? nil : @shipment.receiver_address.state) }, class: 'custom-select' %>
-        <%= receiver_address_form.text_field :zip_code, label: 'ZIP' %>
+        <%= receiver_address_form.text_field :city, disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
+        <%= receiver_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.receiver_address.state.blank? ? nil : @shipment.receiver_address.state) }, disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled'), class: 'custom-select' %>
+        <%= receiver_address_form.text_field :zip_code, label: 'ZIP', disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
       <% end %>
     </div>
 
