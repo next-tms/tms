@@ -26,7 +26,21 @@ class Broker::ShipmentsController < Broker::BrokerController
     redirect_to [:broker, @shipment]
   end
 
-  def index; end
+  def index
+    if current_user.roles.map(&:name).include?('sales_rep')
+      broker_customer_ids = BrokerCustomerSalesRep.where(
+        user: current_user
+      ).pluck(:broker_customer_id)
+  
+      unless broker_customer_ids.blank?
+        @shipments = Shipment.active.where(
+          broker_customer_id: broker_customer_ids
+        ).order(created_at: :desc).limit(20)
+      end
+    else
+      @shipments = Shipment.active.order(created_at: :desc).limit(20)
+    end
+  end
 
   def new
     @shipment = Shipment.new
@@ -151,6 +165,12 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def pending_delivery
     shipments = Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_delivery
+    @missing_deliver_by_shipments = shipments.missing_deliver_by
+
+    unless @missing_deliver_by_shipments.blank?
+      shipments = shipments.where.not(id: @missing_deliver_by_shipments.map(&:id))
+    end
+
     @late_shipments = shipments.late.order(:picked_up_at)
     @shipments = shipments.not_late.order(:picked_up_at)
   end

@@ -7,6 +7,11 @@
   <p class="lead">In Transit</p>
 </div>
 
+<% unless @missing_deliver_by_shipments.blank? %>
+  <h2>Missing ETA</h2>
+  <%= render 'show_many_pending_delivery', shipments: @missing_deliver_by_shipments %>
+<% end %>
+
 <% unless @late_shipments.blank? %>
   <h2>Late</h2>
   <%= render 'show_many_pending_delivery', shipments: @late_shipments %>

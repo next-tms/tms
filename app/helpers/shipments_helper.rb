@@ -41,7 +41,7 @@ module ShipmentsHelper
       if shipment.pending_departure?
         str << '<tr class="table-danger">'
       else
-        shipment.late? || !shipment.canceled_at.blank? || shipment.dispatch_incomplete? ? str << '<tr class="table-warning">' : str << '<tr>'
+        shipment.late? || !shipment.canceled_at.blank? || shipment.dispatch_incomplete? || shipment.missing_deliver_by? ? str << '<tr class="table-warning">' : str << '<tr>'
       end
 
       td_names.each do |td_name|

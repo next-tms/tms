@@ -33,6 +33,7 @@ class Shipment < ApplicationRecord
   scope :missing_pro, -> { active.pending_delivery.where(pro: ['', nil]) }
   scope :missing_cost, -> { active.where.not(id: pending_quotation).where(carrier_cost_cents: 0) }
   scope :missing_charge, -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
+  scope :missing_deliver_by, -> { active.pending_delivery.where(deliver_by: ['', nil]) }
   scope :missing_pricing, -> { active.missing_cost.or(active.missing_charge) }
 
   scope :delivered, -> { where.not(delivered_at: nil) }
@@ -195,6 +196,10 @@ class Shipment < ApplicationRecord
     str += shipper_address.pretty(', ') unless shipper_address.blank?
     str += receiver_address.pretty(', ') unless receiver_address.blank?
     Digest::SHA2.hexdigest str
+  end
+
+  def missing_deliver_by?
+    deliver_by.blank?
   end
 
   def total_broker_accessorial_charge
