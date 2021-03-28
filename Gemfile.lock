@@ -123,7 +123,7 @@ GEM
     exception_notification (4.4.3)
       actionmailer (>= 4.0, < 7)
       activesupport (>= 4.0, < 7)
-    ffi (1.14.2)
+    ffi (1.15.0)
     geocoder (1.6.6)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
@@ -150,7 +150,7 @@ GEM
     json (2.5.1)
     jsonapi-renderer (0.2.2)
     jwt (2.2.2)
-    listen (3.4.1)
+    listen (3.5.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     loadcss-rails (2.0.1)
@@ -369,7 +369,7 @@ DEPENDENCIES
   jbuilder (~> 2.11)
   jquery-rails
   jwt
-  listen (>= 3.0.5, < 3.5)
+  listen (>= 3.0.5, < 3.6)
   loadcss-rails
   mainstreet
   moneta
