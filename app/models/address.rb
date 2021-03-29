@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class Address < ApplicationRecord
-  has_many :shipments, class_name: 'Sale', foreign_key: 'shipment_id'
+  # TODO: Remove this - where did this come from?
+  # has_many :shipments, class_name: 'Sale', foreign_key: 'shipment_id'
 
   validates :city, presence: true
   validates :state, presence: true
@@ -70,6 +71,13 @@ class Address < ApplicationRecord
     obj == '' ? nil : obj
   end
 
+  def names
+    @names ||= (
+      Shipment.where(shipper_address: self).pluck(:shipper_name) +
+      Shipment.where(receiver_address: self).pluck(:receiver_name)
+    ).uniq.reject { |name| name.blank? }
+  end
+
   def twin
     addresses = Address.where(street: blank_to_nil(street), street2: blank_to_nil(street2), city: blank_to_nil(city), zip_code: blank_to_nil(zip_code)).where('updated_at > ?', 6.months.ago).order(updated_at: :desc).limit(1)
     @twin = addresses.first unless addresses.blank?
@@ -113,7 +121,11 @@ class Address < ApplicationRecord
         self.google_places_spot_cached = twin.google_places_spot_cached
       else
         logger.info 'Calling Google Places API'
-        self.google_places_spot_cached = GooglePlaces::Client.new(ENV['GOOGLE_API_KEY']).spots_by_query(proper(', ')).first
+        self.google_places_spot_cached = GooglePlaces::Client.new(
+          ENV['GOOGLE_API_KEY']
+        ).spots_by_query(
+          (names&.first.blank? ? proper(', ') : "#{names&.first}, #{proper(', ')}")
+        ).first
       end
     end
     @google_places_spot = google_places_spot_cached
