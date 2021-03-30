@@ -49,6 +49,12 @@ class Address < ApplicationRecord
     types.include? 'residential'
   end
 
+  def restaurant?
+    return nil unless types
+
+    types.include? 'restaurant'
+  end
+
   def full_address?
     !street.blank? and !city.blank? and !state.blank?
   end
