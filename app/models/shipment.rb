@@ -85,6 +85,7 @@ class Shipment < ApplicationRecord
   validates_associated :shipper_address, presence: true
 
   before_save :maybe_create_payment_transaction, if: :picked_up_at_changed?
+  before_save :remove_tracking_events, if: :pro_or_tracking_carrier_pro_changed?
 
   # Fix broker_accessorials when broker_customer changes
   before_save :recalculate_broker_accessorials, if: :broker_customer_id_changed?
@@ -867,6 +868,14 @@ class Shipment < ApplicationRecord
   end
 
   private
+
+  def pro_or_tracking_carrier_pro_changed?
+    pro_changed? || tracking_carrier_pro_changed?
+  end
+
+  def remove_tracking_events
+    tracking_events.destroy_all
+  end
 
   def validate_applied_rate_association
     return if applied_rate.blank?
