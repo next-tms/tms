@@ -79,8 +79,13 @@ class Address < ApplicationRecord
   end
 
   def twin
-    addresses = Address.where(street: blank_to_nil(street), street2: blank_to_nil(street2), city: blank_to_nil(city), zip_code: blank_to_nil(zip_code)).where('updated_at > ?', 6.months.ago).order(updated_at: :desc).limit(1)
-    @twin = addresses.first unless addresses.blank?
+    addresses = Address.where(
+      street: blank_to_nil(street),
+      street2: blank_to_nil(street2),
+      city: blank_to_nil(city),
+      zip_code: blank_to_nil(zip_code)
+    ).where.not(id: self.id).where('updated_at > ?', 6.months.ago).order(updated_at: :desc).limit(1)
+    @twin = addresses&.first
   end
 
   def smarty_streets_result
