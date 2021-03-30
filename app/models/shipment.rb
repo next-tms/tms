@@ -663,6 +663,10 @@ class Shipment < ApplicationRecord
       end
     end
 
+    # Restaurant
+    @assumed_accessorials << Accessorial.find_by_code('PRST') if shipper_address.restaurant?
+    @assumed_accessorials << Accessorial.find_by_code('DRST') if receiver_address.restaurant?
+
     # Appointment delivery
     if !bol_notes.blank? && (bol_notes.downcase.include? 'must contact')
       @assumed_accessorials << Accessorial.find_by_code('DAPP')
