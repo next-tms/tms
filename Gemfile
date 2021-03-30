@@ -52,7 +52,7 @@ gem 'devise', '~> 4.7.3'
 gem 'loadcss-rails'
 
 # liftoff.rocks
-gem 'reactive_freight', git: 'https://github.com/brodyhoskins/reactive_freight', ref: '1942d0512f5902406765ffc801792c6175a9e6d7'
+gem 'reactive_freight', git: 'https://github.com/brodyhoskins/reactive_freight', ref: 'e0eb7395efab1f0bbf5fa5f3cfefe28c24456c6c'
 
 gem 'exception_notification'
 
