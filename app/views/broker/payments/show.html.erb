@@ -8,6 +8,9 @@
     <li class="list-inline-item"><%= @payment.broker_carrier.broker_customer_specific_name %></li>
     <% unless @payment.paid_on.blank? %>
       <li class="list-inline-item">Paid on <%= short_date @payment.paid_on, current_user.time_zone %></li>
+      <% unless @payment.bank.blank? %>
+        <li class="list-inline-item"><%= @payment.bank.pretty_name.titleize %></li>
+      <% end %>
       <% unless @payment.method_reference.blank? %>
         <li class="list-inline-item">Ref <%= @payment.method_reference %></li>
       <% end %>
