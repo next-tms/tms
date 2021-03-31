@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/brodyhoskins/reactive_freight
-  revision: e0eb7395efab1f0bbf5fa5f3cfefe28c24456c6c
-  ref: e0eb7395efab1f0bbf5fa5f3cfefe28c24456c6c
+  revision: cc0c8c6f9b2d664a5ef11479b590cb2c7449292f
+  ref: cc0c8c6f9b2d664a5ef11479b590cb2c7449292f
   specs:
     reactive_freight (0.0.2)
       httparty (~> 0.10)
@@ -9,7 +9,7 @@ GIT
       rmagick (>= 4.1, < 4.3)
       savon (>= 2.0, < 2.13)
       watir (>= 6.1, < 6.20)
-      webdrivers (>= 4.0, < 4.6)
+      webdrivers (>= 4.0, < 4.7)
 
 GEM
   remote: https://rubygems.org/
