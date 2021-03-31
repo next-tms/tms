@@ -54,6 +54,8 @@ gem 'loadcss-rails'
 # liftoff.rocks
 gem 'reactive_freight', git: 'https://github.com/brodyhoskins/reactive_freight', ref: 'cc0c8c6f9b2d664a5ef11479b590cb2c7449292f'
 
+gem 'rollbar'
+
 gem 'api_cache'
 gem 'moneta'
 gem 'jwt'
