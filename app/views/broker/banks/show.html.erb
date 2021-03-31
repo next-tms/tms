@@ -1,0 +1,31 @@
+<% provide :title, @bank.pretty_name %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1>Accounts</h1>
+  <p class="lead"><%= yield :title %></p>
+</div>
+
+<div class="row">
+  <div class="col col-md-4">
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <th>Bank</th>
+            <td><%= @bank.name %></td>
+          </tr>
+          <tr>
+            <th>Account Number</th>
+            <td><%= @bank.account_number %></td>
+          </tr>
+          </tr>
+          <tr>
+            <th>Type</th>
+            <td><%= @bank.type.name %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

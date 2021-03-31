@@ -51,6 +51,8 @@ Rails.application.routes.draw do
     resources :payment_transactions, path: 'ap/invoices' do
     end
 
+    resources :banks, except: %i[destroy], path: 'ap/accounts'
+
     get 'ap/payments/overdue', to: 'payments#overdue'
     get 'ap/payments/paid', to: 'payments#paid'
 

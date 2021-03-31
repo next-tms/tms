@@ -11,6 +11,7 @@ class Payment < ApplicationRecord
   belongs_to :approved_by, class_name: 'User', optional: true
   belongs_to :created_by, class_name: 'User', optional: true
 
+  belongs_to :bank, optional: true
   belongs_to :broker
   belongs_to :broker_carrier
 

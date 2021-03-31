@@ -7,7 +7,7 @@
         <tr>
           <th>Due</th>
           <% unless action_name == 'index' %>
-            <th>Paid On</th>
+            <th>Payment</th>
           <% end %>
           <th>Carrier</th>
           <th>Balance</th>
@@ -24,7 +24,12 @@
               <%= payment.week %>
             </td>
             <% unless action_name == 'index' %>
-              <td><%= short_date payment.paid_on, current_user.time_zone %></td>
+              <td>
+                <%= short_date payment.paid_on, current_user.time_zone %>
+                <% unless payment.bank.blank? %>
+                  <%= payment.bank.pretty_name %>
+                <% end %>
+              </td>
             <% end %>
             <td><%= payment.broker_carrier.broker_customer_specific_name unless payment.broker_carrier.blank? %></td>
             <td><%= humanized_money_with_symbol payment.balance, no_cents_if_whole: false %></td>
