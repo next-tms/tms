@@ -4,7 +4,14 @@
 <div class="page-header">
   <h1>Payment <% unless @payment.paid_on.blank? %><span class="badge badge-success">Paid</span><% end %> <% unless @payment.broker_carrier.blank? %><small><%= link_to @payment.broker_carrier.broker_customer_specific_name, broker_broker_carrier_path(@payment.broker_carrier) %></small><% end %></h1>
   <ul class="list-unstyled list-inline lead">
-    <li class="list-inline-item"><span class="text-primary"><%= @payment.week %></span></li>
+    <li class="list-inline-item">
+      <span class="text-primary">
+        <% unless @payment.due_on.blank? %>
+          <%= @payment.due_on.year.to_s.length == 2 ? "20#{@payment.due_on.year}" : @payment.due_on.year %>
+        <% end %>
+        <%= @payment.week.blank? ? 'Unknown' : @payment.week %>
+      </span>
+    </li>
     <li class="list-inline-item"><%= @payment.broker_carrier.broker_customer_specific_name %></li>
     <% unless @payment.paid_on.blank? %>
       <li class="list-inline-item">Paid on <%= short_date @payment.paid_on, current_user.time_zone %></li>
