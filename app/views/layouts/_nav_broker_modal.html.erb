@@ -15,6 +15,7 @@
           <div class="row border-top pt-4">
             <% if current_user.has_role? 'accounts_payable' %>
               <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'file-invoice-dollar'}<br>Accounts Payable".html_safe, broker_payments_path %></div>
+              <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'university'}<br>Bank Accounts".html_safe, broker_banks_path %></div>
             <% end %>
           </div>
         <% end %>
