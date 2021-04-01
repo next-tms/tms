@@ -26,7 +26,7 @@ class Broker::BanksController < Broker::BrokerController
   def edit; end
 
   def update
-    if !@bank.update(contact_params)
+    if !@bank.update(bank_params)
       flash[:danger] = 'Unable to update contact'
       render :edit
     else
