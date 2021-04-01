@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 class Broker::BanksController < Broker::BrokerController
-  before_action :set_bank, only: %i[show edit update destroy]
+  before_action :set_bank, only: %i[activity show edit update destroy]
   before_action :authenticate_user!
   before_action :require_accounts_payable
+
+  def activity
+    @pagy, @payments = pagy(@bank.payments.paid.order(paid_on: :desc))
+  end
 
   def index
     @pagy, @banks = pagy(current_user.broker.banks.order(:name))

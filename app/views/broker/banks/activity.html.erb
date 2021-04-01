@@ -1,0 +1,9 @@
+<% provide :title, "#{@bank.pretty_name} Activity" %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= yield :title %></h1>
+  <p class="lead">Activity</p>
+</div>
+
+<%= render 'broker/payments/show_many', payments: @payments %>

@@ -6,6 +6,7 @@
       <% end %>
       <% if @bank and @bank.id %>
         <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_bank_path(@bank), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'exchange-alt', 'Activity'), activity_broker_bank_path(@bank), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_broker_bank_path(@bank), class: 'nav-link' %></li>
       <% else %>
         <% if current_page? action: 'new' %>
