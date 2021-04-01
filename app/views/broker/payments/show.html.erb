@@ -12,7 +12,10 @@
         <li class="list-inline-item"><%= @payment.bank.pretty_name.titleize %></li>
       <% end %>
       <% unless @payment.method_reference.blank? %>
-        <li class="list-inline-item">Ref <%= @payment.method_reference %></li>
+        <li class="list-inline-item">
+          <%= @payment.payment_method&.name || 'Ref' %>
+          <%= @payment.method_reference %>
+        </li>
       <% end %>
     <% end %>
   </ul>

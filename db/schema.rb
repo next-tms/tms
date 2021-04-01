@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_31_211755) do
+ActiveRecord::Schema.define(version: 2021_04_01_170112) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -252,6 +252,12 @@ ActiveRecord::Schema.define(version: 2021_03_31_211755) do
     t.string "name"
   end
 
+  create_table "payment_methods", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "payment_transactions", force: :cascade do |t|
     t.bigint "shipment_id"
     t.string "pro"
@@ -292,10 +298,12 @@ ActiveRecord::Schema.define(version: 2021_03_31_211755) do
     t.integer "paid_cents", default: 0, null: false
     t.string "paid_currency", default: "USD", null: false
     t.bigint "bank_id"
+    t.bigint "payment_method_id"
     t.index ["approved_by_id"], name: "index_payments_on_approved_by_id"
     t.index ["bank_id"], name: "index_payments_on_bank_id"
     t.index ["broker_carrier_id"], name: "index_payments_on_broker_carrier_id"
     t.index ["created_by_id"], name: "index_payments_on_created_by_id"
+    t.index ["payment_method_id"], name: "index_payments_on_payment_method_id"
   end
 
   create_table "pricing_rules", force: :cascade do |t|
@@ -621,6 +629,7 @@ ActiveRecord::Schema.define(version: 2021_03_31_211755) do
   add_foreign_key "payments", "banks"
   add_foreign_key "payments", "broker_carriers"
   add_foreign_key "payments", "brokers"
+  add_foreign_key "payments", "payment_methods"
   add_foreign_key "payments", "users", column: "approved_by_id"
   add_foreign_key "payments", "users", column: "created_by_id"
   add_foreign_key "pricing_rules", "broker_carriers"

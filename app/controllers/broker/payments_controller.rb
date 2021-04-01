@@ -113,6 +113,6 @@ class Broker::PaymentsController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def payment_params
-    params.require(:payment).permit(:id, :approved_by_id, :bank_id, :broker_carrier_id, :legacy_csv, :due_on, :legacy_csv, :method_reference, :paid_on, payment_transactions_attributes: %i[_destroy id additional_charge balance invoice legacy_load_id notes paid pro shipment_load_id])
+    params.require(:payment).permit(:id, :approved_by_id, :bank_id, :broker_carrier_id, :legacy_csv, :due_on, :legacy_csv, :method_reference, :payment_method_id, :paid_on, payment_transactions_attributes: %i[_destroy id additional_charge balance invoice legacy_load_id notes paid pro shipment_load_id])
   end
 end

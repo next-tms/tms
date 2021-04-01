@@ -14,6 +14,7 @@ class Payment < ApplicationRecord
   belongs_to :bank, optional: true
   belongs_to :broker
   belongs_to :broker_carrier
+  belongs_to :payment_method, optional: true
 
   belongs_to :created_by, class_name: 'User'
   validates_presence_of :created_by
