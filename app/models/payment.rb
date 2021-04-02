@@ -24,6 +24,26 @@ class Payment < ApplicationRecord
 
   monetize :paid_cents
 
+  def export_headers
+    ['Account', 'Date', 'Description', 'Amount']
+  end
+
+  def to_csv(with_headers)
+    return '' if paid_cents.blank? || paid_cents == 0
+
+    columns = ['Account', 'Description', 'Amount']
+    CSV.generate do |csv|
+      csv << export_headers if with_headers
+
+      csv << [
+        "#{bank&.name} #{bank&.account_number}".upcase,
+        paid_on&.to_s,
+        "#{payment_method&.name} #{method_reference}".upcase,
+        "-#{paid_cents.to_f / 100}"
+      ]
+    end
+  end
+
   def balance
     payment_transactions.map(&:balance).inject(Money.new(0)) { |sum, paid| sum += paid }
   end

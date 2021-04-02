@@ -7,6 +7,16 @@ class Broker::BanksController < Broker::BrokerController
 
   def activity
     @pagy, @payments = pagy(@bank.payments.paid.order(paid_on: :desc))
+
+    respond_to do |format|
+        format.html
+        format.csv do
+          csv = ''.dup
+          csv += "#{@payments.first.export_headers.join(',')}\n"
+          csv += @payments.inject(''.dup) { |str, p| str << p.to_csv(false)  }
+          send_data csv, filename: "#{@bank.pretty_name} Activity.csv"
+        end
+    end
   end
 
   def index
