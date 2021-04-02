@@ -36,9 +36,9 @@ class Payment < ApplicationRecord
       csv << export_headers if with_headers
 
       csv << [
-        "#{bank&.name} #{bank&.account_number}".upcase,
+        "#{bank&.name} #{bank&.account_number}".upcase.strip,
         paid_on&.to_s,
-        "#{payment_method&.name} #{method_reference}".upcase,
+        "#{payment_method&.name} #{method_reference}".upcase.strip,
         "-#{paid_cents.to_f / 100}"
       ]
     end
