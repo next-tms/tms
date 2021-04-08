@@ -255,7 +255,7 @@ class Shipment < ApplicationRecord
     shipper_address&.time_zone&.local_to_utc(pickup_on.end_of_day)
   end
 
-  # ReactiveShipping
+  # HyperCarrier
   def reactive_shipping_tracking
     return @reactive_shipping_tracking if @reactive_shipping_tracking
 
@@ -267,7 +267,7 @@ class Shipment < ApplicationRecord
 
     begin
       tracking_number = pro.blank? ? pickup_confirmation : pro
-      carrier = ReactiveShipping.const_get(broker_carrier.carrier.scac)
+      carrier = HypcerCarrier.const_get(broker_carrier.carrier.scac)
       carrier = carrier.new(
         account: broker_carrier.account,
         debug: !Rails.env.production?,
@@ -282,7 +282,7 @@ class Shipment < ApplicationRecord
     end
   end
 
-  # ReactiveShipping wrappers
+  # HyperCarrier wrappers
   def update_rates
     return [] if !Rails.env.development? && !rates.blank? && rates.first.shipment_fingerprint == fingerprint
 
@@ -332,7 +332,7 @@ class Shipment < ApplicationRecord
     end
 
     origin = shipper_address
-    origin = ReactiveShipping::Location.new(
+    origin = HyperCarrier::Location.new(
       country: 'US',
       state: origin.state,
       city: origin.city,
@@ -340,7 +340,7 @@ class Shipment < ApplicationRecord
     )
 
     destination = receiver_address
-    destination = ReactiveShipping::Location.new(
+    destination = HyperCarrier::Location.new(
       country: 'US',
       state: destination.state,
       city: destination.city,
@@ -391,35 +391,35 @@ class Shipment < ApplicationRecord
           response = carrier.find_rates(origin, destination, package_set.dig(:packages),
                                         accessorials: reactive_shipping_accessorials)
         rescue NotImplementedError => e
-          Rails.logger.info "Shipment#update_quotes: ReactiveShipping::#{broker_carrier.carrier.scac}: Returned invalid response (error): #{e.backtrace}: #{e.message} (#{e.class})"
+          Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: Returned invalid response (error): #{e.backtrace}: #{e.message} (#{e.class})"
           next
         rescue StandardError => e
-          Rails.logger.info "Shipment#update_quotes: ReactiveShipping::#{broker_carrier.carrier.scac}: Returned invalid response (error): #{e.backtrace}: #{e.message} (#{e.class})"
+          Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: Returned invalid response (error): #{e.backtrace}: #{e.message} (#{e.class})"
           next
         end
 
         if response.blank?
-          Rails.logger.info "Shipment#update_quotes: ReactiveShipping::#{broker_carrier.carrier.scac}: ReactiveShipping returned blank response"
+          Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: HyperCarrier returned blank response"
           next
         end
 
         reactive_shipping_rates = response.rates
         if reactive_shipping_rates.blank?
-          Rails.logger.info "Shipment#update_quotes: ReactiveShipping::#{broker_carrier.carrier.scac}: Carrier returned blank response"
+          Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: Carrier returned blank response"
           next
         end
 
         reactive_shipping_rates.each do |reactive_shipping_rate|
           cost = Money.new(reactive_shipping_rate.price)
           if cost == Money.new(0)
-            Rails.logger.info "Shipment#update_quotes: ReactiveShipping::#{broker_carrier.carrier.scac}: ReactiveShipping returned blank cost"
+            Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: HyperCarrier returned blank cost"
             next
           end
           cost += broker_carrier.quote_padding unless broker_carrier.quote_padding.blank?
 
           unless reactive_shipping_rate.with_excessive_length_fees
             if broker_carrier.overlength_rules.blank?
-              Rails.logger.info "Shipment#update_quotes: ReactiveShipping::#{broker_carrier.carrier.scac}: ReactiveShipping unable to quote overlength fees as they are tariff-based; broker has not defined tariff rules"
+              Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: HyperCarrier unable to quote overlength fees as they are tariff-based; broker has not defined tariff rules"
               next
             end
 
