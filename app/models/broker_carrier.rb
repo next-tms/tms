@@ -41,9 +41,9 @@ class BrokerCarrier < ApplicationRecord
     end
   end
 
-  # ReactiveShipping
+  # HyperCarrier
   def as_reactive_shipping_carrier
-    carrier = ReactiveShipping.const_get(self.carrier.scac)
+    carrier = HyperCarrier.const_get(self.carrier.scac)
     carrier = carrier.new(
       account: account,
       customer_address: {
