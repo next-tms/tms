@@ -156,15 +156,49 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def booked
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.booked.order(:booked_at))
+    @pagy, @shipments = pagy(
+      Shipment.where(
+        broker_customer_id: current_user.broker_customers.pluck(:id)).active.booked.order(:booked_at).includes(
+          { broker_carrier: :carrier },
+          { broker_customer: :customer },
+          :applied_rate,
+          :items,
+          :receiver_address,
+          :shipper_address,
+          :tracking_carrier
+        )
+      )
   end
 
   def pending_dispatch
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_dispatch.order(:created_at))
+    @pagy, @shipments = pagy(
+      Shipment.where(
+        broker_customer_id: current_user.broker_customers.pluck(:id)
+      ).active.pending_dispatch.order(:created_at).includes(
+        { broker_carrier: :carrier },
+        { broker_customer: :customer },
+        :applied_rate,
+        :items,
+        :receiver_address,
+        :shipper_address,
+        :tracking_carrier
+      )
+    )
   end
 
   def pending_delivery
-    shipments = Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_delivery
+    shipments = Shipment.where(
+      broker_customer_id: current_user.broker_customers.pluck(:id)
+    ).active.pending_delivery.includes(
+      { broker_carrier: :carrier },
+      { broker_customer: :customer },
+      :applied_rate,
+      :items,
+      :receiver_address,
+      :shipper_address,
+      :tracking_carrier
+    )
+
     @missing_deliver_by_shipments = shipments.missing_deliver_by
 
     unless @missing_deliver_by_shipments.blank?
@@ -176,7 +210,19 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pending_departure
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_departure.order(:picked_up_at))
+    @pagy, @shipments = pagy(
+      Shipment.where(
+          broker_customer: [current_user.broker_customers]
+      ).active.pending_departure.order(:picked_up_at).includes(
+        { broker_carrier: :carrier },
+        { broker_customer: :customer },
+        :applied_rate,
+        :items,
+        :receiver_address,
+        :shipper_address,
+        :tracking_carrier
+      )
+    )
   end
 
   def pending_found
@@ -184,7 +230,25 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pending_pickup
-    pending_pickup = Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_pickup.or(Shipment.where(broker_customer: [current_user.broker_customers]).canceled_recently.pending_pickup).distinct
+    # pending_pickup = Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_pickup.or(Shipment.where(broker_customer: [current_user.broker_customers]).canceled_recently.pending_pickup).distinct
+
+    current_user_broker_customer_ids = current_user.broker_customers.pluck(:id)
+
+    pending_pickup = Shipment.where(
+      broker_customer_id: current_user_broker_customer_ids
+    ).active.pending_pickup.or(
+      Shipment.where(
+        broker_customer_id: current_user_broker_customer_ids
+      ).canceled_recently.pending_pickup
+    ).distinct.includes(
+      { broker_carrier: :carrier },
+      { broker_customer: :customer },
+      :applied_rate,
+      :items,
+      :receiver_address,
+      :shipper_address,
+      :tracking_carrier
+    )
 
     @shipments_for_pickup_later = Shipment.none
     @shipments_for_pickup_today = Shipment.none
@@ -213,11 +277,41 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pending_quotation
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_quotation.or(Shipment.where(broker_customer: [current_user.broker_customers]).canceled_recently).distinct.order(:created_at))
+    current_user_broker_customer_ids = current_user.broker_customers.pluck(:id)
+
+    @pagy, @shipments = pagy(
+      Shipment.where(
+        broker_customer_id: current_user_broker_customer_ids
+      ).active.pending_quotation.or(
+        Shipment.where(
+          broker_customer: current_user_broker_customer_ids
+        ).canceled_recently
+      ).distinct.order(:created_at).includes(
+        { broker_carrier: :carrier },
+        { broker_customer: :customer },
+        :applied_rate,
+        :items,
+        :receiver_address,
+        :shipper_address,
+        :tracking_carrier
+      )
+    )
   end
 
   def delivered
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.delivered.order(delivered_at: :desc))
+    @pagy, @shipments = pagy(
+      Shipment.where(
+        broker_customer_id: [current_user.broker_customers.pluck(:id)]
+      ).active.delivered.order(delivered_at: :desc).includes(
+        { broker_carrier: :carrier },
+        { broker_customer: :customer },
+        :applied_rate,
+        :items,
+        :receiver_address,
+        :shipper_address,
+        :tracking_carrier
+      )
+    )
   end
 
   def notes; end
