@@ -279,6 +279,9 @@ class Shipment < ApplicationRecord
         password: broker_carrier.password
       )
       @reactive_shipping_tracking = carrier.find_tracking_info(tracking_number)
+    # TODO: Remove `rescue StandardError`
+    rescue StandardError
+      @reactive_shipping_tracking = nil
     rescue NotImplementedError
       @reactive_shipping_tracking = nil
     end
