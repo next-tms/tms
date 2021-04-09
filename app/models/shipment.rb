@@ -267,7 +267,7 @@ class Shipment < ApplicationRecord
 
     begin
       tracking_number = pro.blank? ? pickup_confirmation : pro
-      carrier = HypcerCarrier.const_get(broker_carrier.carrier.scac)
+      carrier = HyperCarrier.const_get(broker_carrier.carrier.scac)
       carrier = carrier.new(
         account: broker_carrier.account,
         debug: !Rails.env.production?,
