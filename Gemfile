@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.7.2'
+ruby '3.0.1'
 
 gem 'rails', '~> 6.1.0'
 gem 'pg', '~> 1.2.0'
@@ -52,7 +52,7 @@ gem 'devise', '~> 4.7.3'
 gem 'loadcss-rails'
 
 # liftoff.rocks
-gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: '105be504d7606b84499689a2a7185fbdf39170fa'
+gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: '4db4878365921d5ef139288138e65ff4708c896a'
 
 gem 'rollbar'
 

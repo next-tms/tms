@@ -260,14 +260,18 @@ class Shipment < ApplicationRecord
     return @reactive_shipping_tracking if @reactive_shipping_tracking
 
     # Do not check broker_carrier.account, broker_carrier.username, broker_carrier.password as `nil` can be passed on
-    if broker_carrier.blank? || broker_carrier.carrier.scac.blank? ||
-       (pro.blank? && !broker_carrier.carrier.has_traceable_pickup_confirmation?)
-      return nil
-    end
+    return nil if pro.blank? && pickup_confirmation.blank?
+    return nil if broker_carrier.blank? || broker_carrier.carrier.scac.blank?
+
+    tracking_number = if pro.blank?
+                        broker_carrier.carrier.has_traceable_pickup_confirmation? ? pickup_confirmation : nil
+                      else
+                        pro
+                      end
+    return nil if tracking_number.blank?
 
     begin
-      tracking_number = pro.blank? ? pickup_confirmation : pro
-      carrier = HypcerCarrier.const_get(broker_carrier.carrier.scac)
+      carrier = HyperCarrier.const_get(broker_carrier.carrier.scac)
       carrier = carrier.new(
         account: broker_carrier.account,
         debug: !Rails.env.production?,
@@ -275,9 +279,10 @@ class Shipment < ApplicationRecord
         password: broker_carrier.password
       )
       @reactive_shipping_tracking = carrier.find_tracking_info(tracking_number)
-    rescue NotImplementedError
-      @reactive_shipping_tracking = nil
+    # TODO: Remove `rescue StandardError`
     rescue StandardError
+      @reactive_shipping_tracking = nil
+    rescue NotImplementedError
       @reactive_shipping_tracking = nil
     end
   end

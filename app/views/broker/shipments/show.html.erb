@@ -1,7 +1,6 @@
 <% provide :title, "Load #{@shipment.load_id}" %>
 <% provide :menu, render('menu') %>
 <% provide :auto_refresh, 'yes' %>
-<% provide :prefetech_urls_csv, "https://www.google.com/maps/search/?api=1&query=#{URI.encode(@shipment.shipper_address.pretty(', '))}, https://www.google.com/maps/search/?api=1&query=#{URI.encode(@shipment.receiver_address.pretty(', '))}" %>
 
 <%= render 'header', page_title: 'Overview' %>
 
@@ -51,8 +50,8 @@
         <%= @shipment.shipper_address.pretty('<br>').html_safe %>
       </address>
       <ul class="list-inline list-unstyled">
-        <li class="list-inline-item"><%= link_to icon('fab', 'google', 'Map'), "https://www.google.com/maps/search/?api=1&query=#{URI.encode(@shipment.shipper_address.proper(', '))}", target: '_blank' %></li>
-        <li class="list-inline-item"><%= link_to icon('fab', 'apple', 'Map'), "https://maps.apple.com/?address=#{URI.encode(@shipment.shipper_address.proper(', '))}", target: '_blank' %></li>
+        <li class="list-inline-item"><%= link_to icon('fab', 'google', 'Map'), "https://www.google.com/maps/search/?api=1&query=#{URI.encode_www_form_component(@shipment.shipper_address.proper(', '))}", target: '_blank' %></li>
+        <li class="list-inline-item"><%= link_to icon('fab', 'apple', 'Map'), "https://maps.apple.com/?address=#{URI.encode_www_form_component(@shipment.shipper_address.proper(', '))}", target: '_blank' %></li>
       </ul>
       <% if @shipment.lift_gate_pickup? %><p>LG</p><% end %>
     </div>
@@ -85,8 +84,8 @@
         <%= @shipment.receiver_address.pretty('<br>').html_safe %>
       </address>
       <ul class="list-inline list-unstyled">
-        <li class="list-inline-item"><%= link_to icon('fab', 'google', 'Map'), "https://www.google.com/maps/search/?api=1&query=#{URI.encode(@shipment.receiver_address.proper(', '))}", target: '_blank' %></li>
-        <li class="list-inline-item"><%= link_to icon('fab', 'apple', 'Map'), "https://maps.apple.com/?address=#{URI.encode(@shipment.receiver_address.proper(', '))}", target: '_blank' %></li>
+        <li class="list-inline-item"><%= link_to icon('fab', 'google', 'Map'), "https://www.google.com/maps/search/?api=1&query=#{URI.encode_www_form_component(@shipment.receiver_address.proper(', '))}", target: '_blank' %></li>
+        <li class="list-inline-item"><%= link_to icon('fab', 'apple', 'Map'), "https://maps.apple.com/?address=#{URI.encode_www_form_component(@shipment.receiver_address.proper(', '))}", target: '_blank' %></li>
       </ul>
     </div>
   <% end %>

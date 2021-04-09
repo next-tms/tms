@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/brodyhoskins/hyper_carrier
-  revision: 105be504d7606b84499689a2a7185fbdf39170fa
-  ref: 105be504d7606b84499689a2a7185fbdf39170fa
+  revision: 4db4878365921d5ef139288138e65ff4708c896a
+  ref: 4db4878365921d5ef139288138e65ff4708c896a
   specs:
     hyper_carrier (0.0.1)
       active_utils (~> 3.3.1)
@@ -15,8 +15,12 @@ GIT
       webdrivers (>= 4.0, < 4.7)
 
 GEM
-  remote: https://rubygems.org/
   remote: https://rails-assets.org/
+  specs:
+    rails-assets-tether (1.4.7)
+
+GEM
+  remote: https://rubygems.org/
   specs:
     actioncable (6.1.3.1)
       actionpack (= 6.1.3.1)
@@ -171,7 +175,7 @@ GEM
     method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2020.1104)
+    mime-types-data (3.2021.0225)
     mini_mime (1.0.3)
     mini_portile2 (2.5.0)
     minitest (5.14.4)
@@ -195,9 +199,9 @@ GEM
       racc (~> 1.4)
     nori (2.6.0)
     orm_adapter (0.5.0)
-    pagy (3.11.0)
-    pg (1.2.0)
-    phony (2.18.12)
+    pagy (4.1.0)
+    pg (1.2.3)
+    phony (2.18.22)
     phony_rails (0.14.13)
       activesupport (>= 3.0)
       phony (> 2.15)
@@ -225,7 +229,6 @@ GEM
       bundler (>= 1.15.0)
       railties (= 6.1.3.1)
       sprockets-rails (>= 2.0.0)
-    rails-assets-tether (1.4.7)
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
@@ -247,7 +250,7 @@ GEM
       ffi (~> 1.0)
     rbtree (0.4.4)
     redis (4.2.5)
-    regexp_parser (1.8.2)
+    regexp_parser (2.1.1)
     responders (3.0.1)
       actionpack (>= 5.0)
       railties (>= 5.0)
@@ -261,7 +264,7 @@ GEM
     rubyzip (2.3.0)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
-    sassc (2.2.1)
+    sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
       railties (>= 4.0.0)
@@ -280,7 +283,7 @@ GEM
     selenium-webdriver (3.142.7)
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
-    semantic_range (2.3.1)
+    semantic_range (3.0.0)
     sendgrid-actionmailer (3.2.0)
       mail (~> 2.7)
       sendgrid-ruby (~> 6.4)
@@ -401,7 +404,7 @@ DEPENDENCIES
   webpacker (~> 5.2)
 
 RUBY VERSION
-   ruby 2.7.2p137
+   ruby 3.0.1p64
 
 BUNDLED WITH
-   2.2.4
+   2.2.15
