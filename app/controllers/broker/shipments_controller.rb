@@ -199,8 +199,6 @@ class Broker::ShipmentsController < Broker::BrokerController
       :tracking_carrier
     )
 
-    automatically_track(shipments)
-
     @missing_deliver_by_shipments = shipments.missing_deliver_by
 
     unless @missing_deliver_by_shipments.blank?
@@ -251,8 +249,6 @@ class Broker::ShipmentsController < Broker::BrokerController
       :shipper_address,
       :tracking_carrier
     )
-
-    automatically_track(pending_pickup)
 
     @shipments_for_pickup_later = Shipment.none
     @shipments_for_pickup_today = Shipment.none
@@ -360,10 +356,6 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   private
-
-  def automatically_track(shipments)
-    TrackShipmentsJob.perform_later(shipments.map(&:id))
-  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_shipment
