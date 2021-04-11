@@ -35,6 +35,14 @@ class User < ApplicationRecord
     broker_customers.include? broker_customer
   end
 
+  def sales_rep_for_broker_customers
+    BrokerCustomer.where(
+      id: BrokerCustomerSalesRep.where(
+        user: self
+      ).pluck(:broker_customer_id)
+    )
+  end
+
   def sales_rep_earnings(from, to)
     shipments = Shipment.active.where(
       broker_customer: broker_customers
@@ -94,6 +102,7 @@ class User < ApplicationRecord
     return Shipment.where(broker_customer_id: broker_customer_ids) unless broker_customer_ids.blank?
 
     Shipment.none
+  end
 
   def sales_rep_only?
     roles.map(&:name) == ['sales_rep']

@@ -1,0 +1,9 @@
+<% provide :title, "Customers | #{@broker_customer_sales_rep.first_name} #{@broker_customer_sales_rep.last_name}" %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_customer_sales_rep.first_name %> <%= @broker_customer_sales_rep.last_name %></h1>
+  <p class="lead">Customers</p>
+</div>
+
+<%= render 'show_many_broker_customers', broker_customers: @broker_customer_sales_rep.broker_customers %>
