@@ -94,6 +94,7 @@ class User < ApplicationRecord
     return Shipment.where(broker_customer_id: broker_customer_ids) unless broker_customer_ids.blank?
 
     Shipment.none
+  end
 
   def sales_rep_only?
     roles.map(&:name) == ['sales_rep']
