@@ -11,8 +11,10 @@ class Payment < ApplicationRecord
   belongs_to :approved_by, class_name: 'User', optional: true
   belongs_to :created_by, class_name: 'User', optional: true
 
+  belongs_to :bank, optional: true
   belongs_to :broker
   belongs_to :broker_carrier
+  belongs_to :payment_method, optional: true
 
   belongs_to :created_by, class_name: 'User'
   validates_presence_of :created_by
@@ -21,6 +23,26 @@ class Payment < ApplicationRecord
   accepts_nested_attributes_for :payment_transactions, allow_destroy: true, reject_if: :all_blank
 
   monetize :paid_cents
+
+  def export_headers
+    ['Account', 'Date', 'Description', 'Amount']
+  end
+
+  def to_csv(with_headers)
+    return '' if paid_cents.blank? || paid_cents == 0
+
+    columns = ['Account', 'Description', 'Amount']
+    CSV.generate do |csv|
+      csv << export_headers if with_headers
+
+      csv << [
+        "#{bank&.name} #{bank&.account_number}".upcase.squish,
+        paid_on&.strftime('%m-%d-%Y'),
+        "#{payment_method&.name} #{method_reference} TO #{broker_carrier&.carrier&.name}".upcase.squish,
+        "-#{paid_cents.to_f / 100}"
+      ]
+    end
+  end
 
   def balance
     payment_transactions.map(&:balance).inject(Money.new(0)) { |sum, paid| sum += paid }

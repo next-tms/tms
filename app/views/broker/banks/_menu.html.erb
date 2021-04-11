@@ -1,0 +1,20 @@
+<div class="navbar navbar-menu navbar-expand">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+      <% if not action_name == 'index' %>
+        <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Accounts'), broker_banks_path, class: 'nav-link' %></li>
+      <% end %>
+      <% if @bank and @bank.id %>
+        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_bank_path(@bank), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'exchange-alt', 'Activity'), activity_broker_bank_path(@bank), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_broker_bank_path(@bank), class: 'nav-link' %></li>
+      <% else %>
+        <% if current_page? action: 'new' %>
+          <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Reset'), new_broker_bank_path, data: { confirm: 'Reset the form? Unsaved changes will be lost.' }, class: 'nav-link' %></li>
+        <% else %>
+          <li class="navbar-item"><%= link_to icon('fas', 'plus', 'New'), new_broker_bank_path, class: 'nav-link' %></li>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+</div>

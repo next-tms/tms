@@ -1,0 +1,11 @@
+<%= bootstrap_form_with(model: [:broker, @bank], local: true, layout: :horizontal, label_col: 'col-sm-2', control_col: 'col-sm-10') do |f| %>
+  <%= f.alert_message 'Unable to save account:' %>
+
+  <%= f.text_field :name, label: 'Bank Name', autofocus: 'autofocus' %>
+  <%= f.text_field :account_number %>
+  <%= f.select :type_id, BankType.all.order(:name).collect { |type| [type.name, type.id] }, { include_blank: false, label: 'Type' }, class: 'custom-select' %>
+
+  <div class="form-group">
+    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+  </div>
+<% end %>

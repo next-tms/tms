@@ -1,0 +1,9 @@
+<% provide :title, 'New Account' %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1>Accounts</h1>
+  <p class="lead"><%= yield :title %></p>
+</div>
+
+<%= render 'form' %>

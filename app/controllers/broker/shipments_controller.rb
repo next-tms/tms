@@ -156,17 +156,30 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def booked
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.booked.order(:booked_at))
+    @pagy, @shipments = pagy(
+      Shipment.where(
+        broker_customer_id: current_user.broker_customers.pluck(:id)).active.booked.order(:booked_at).includes(
+          { broker_carrier: :carrier },
+          { broker_customer: :customer },
+          :applied_rate,
+          :items,
+          :receiver_address,
+          :shipper_address,
+          :tracking_carrier
+        )
+      )
   end
 
   def pending_dispatch
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_dispatch.order(:created_at))
+    @pagy, @shipments = pagy(
+      current_user.shipments.active.pending_dispatch.includes(default_includes).order(:created_at)
+    )
   end
 
   def pending_delivery
-    shipments = Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_delivery
-    @missing_deliver_by_shipments = shipments.missing_deliver_by
+    shipments = current_user.shipments.active.pending_delivery.includes(default_includes)
 
+    @missing_deliver_by_shipments = shipments.missing_deliver_by
     unless @missing_deliver_by_shipments.blank?
       shipments = shipments.where.not(id: @missing_deliver_by_shipments.map(&:id))
     end
@@ -176,15 +189,19 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pending_departure
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_departure.order(:picked_up_at))
+    @pagy, @shipments = pagy(
+      current_user.shipments.active.pending_departure.includes(default_includes).order(:picked_up_at)
+    )
   end
 
   def pending_found
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).pending_found.order(:created_at))
+    @pagy, @shipments = pagy(
+      current_user.shipments.pending_found.includes(default_includes).order(:created_at)
+    )
   end
 
   def pending_pickup
-    pending_pickup = Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_pickup.or(Shipment.where(broker_customer: [current_user.broker_customers]).canceled_recently.pending_pickup).distinct
+    pending_pickup = current_user.shipments.active.pending_pickup.includes(default_includes)
 
     @shipments_for_pickup_later = Shipment.none
     @shipments_for_pickup_today = Shipment.none
@@ -207,17 +224,20 @@ class Broker::ShipmentsController < Broker::BrokerController
         @shipments_for_pickup_today += [shipment]
       end
     end
-
-    # @shipments_for_pickup_today = pending_pickup.where(pickup_on: nil).or(pending_pickup.where('pickup_on <= ?', Date.current)).distinct.order(:pickup_hours_end_at)
-    # @shipments_for_pickup_later = pending_pickup.where('pickup_on > ?', Date.current).order(:pickup_hours_end_at)
   end
 
   def pending_quotation
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.pending_quotation.or(Shipment.where(broker_customer: [current_user.broker_customers]).canceled_recently).distinct.order(:created_at))
+    @pagy, @shipments = pagy(
+      current_user.shipments.active.pending_quotation.or(
+        current_user.shipments.canceled_recently
+      ).distinct.includes(default_includes)
+    )
   end
 
   def delivered
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customers]).active.delivered.order(delivered_at: :desc))
+    @pagy, @shipments = pagy(
+      current_user.shipments.active.delivered.order(delivered_at: :desc).includes(default_includes)
+    )
   end
 
   def notes; end
@@ -262,6 +282,18 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   private
+
+  def default_includes
+    [
+      { broker_carrier: :carrier },
+      { broker_customer: :customer },
+      :applied_rate,
+      :items,
+      :receiver_address,
+      :shipper_address,
+      :tracking_carrier
+    ]
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_shipment

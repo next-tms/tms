@@ -87,6 +87,14 @@ class User < ApplicationRecord
     @broker ||= !customer?
   end
 
+  def shipments
+    return broker_customer.shipments if customer?
+
+    broker_customer_ids = sales_rep_for_broker_customers&.pluck(:id)
+    return Shipment.where(broker_customer_id: broker_customer_ids) unless broker_customer_ids.blank?
+
+    Shipment.none
+
   def sales_rep_only?
     roles.map(&:name) == ['sales_rep']
   end

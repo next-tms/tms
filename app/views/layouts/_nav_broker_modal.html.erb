@@ -19,7 +19,8 @@
         <% if current_user.has_role? 'accounts_payable' or current_user.has_role? 'accounts_receivable' or current_user.has_role? 'controller' %>
           <div class="row border-top pt-4">
             <% if current_user.has_role? 'accounts_payable' %>
-              <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'file-invoice-dollar'}<br>Accounts Payable".html_safe, broker_payments_path %></div>
+              <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'file-invoice-dollar'}<br>Payables".html_safe, broker_payments_path %></div>
+              <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'university'}<br>Accounts".html_safe, broker_banks_path %></div>
             <% end %>
           </div>
         <% end %>

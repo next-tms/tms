@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 
-ruby '2.7.2'
+ruby '3.0.1'
 
-gem 'rails', '~> 6.0.3'
+gem 'rails', '~> 6.1.0'
 gem 'pg', '~> 1.2.0'
-gem 'puma', '5.2.1'
+gem 'puma', '5.2.2'
 gem 'sass-rails', '>= 6'
 gem 'webpacker', '~> 5.2'
 gem 'turbolinks', '~> 5' # Still needed with webpacker
@@ -18,7 +18,7 @@ end
 
 group :development do
   gem 'web-console', '>= 3.3.0'
-  gem 'listen', '>= 3.0.5', '< 3.5'
+  gem 'listen', '>= 3.0.5', '< 3.6'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
@@ -52,9 +52,9 @@ gem 'devise', '~> 4.7.3'
 gem 'loadcss-rails'
 
 # liftoff.rocks
-gem 'reactive_freight', git: 'https://github.com/brodyhoskins/reactive_freight', ref: '1942d0512f5902406765ffc801792c6175a9e6d7'
+gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: '4db4878365921d5ef139288138e65ff4708c896a'
 
-gem 'exception_notification'
+gem 'rollbar'
 
 gem 'api_cache'
 gem 'moneta'
@@ -66,7 +66,7 @@ gem 'hiredis'
 gem 'sidekiq'
 gem 'business_time'
 gem 'timezone', '~> 1.3'
-gem 'money-rails', '~>1.13'
+gem 'money-rails', '~>1.14'
 gem 'httparty'
 gem 'savon'
 gem 'geocoder'

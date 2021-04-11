@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_04_031502) do
+ActiveRecord::Schema.define(version: 2021_04_01_170112) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -46,6 +46,21 @@ ActiveRecord::Schema.define(version: 2021_03_04_031502) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_areas_on_name"
+  end
+
+  create_table "bank_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "banks", force: :cascade do |t|
+    t.bigint "broker_id", null: false
+    t.bigint "type_id", null: false
+    t.string "account_number"
+    t.string "name"
+    t.index ["broker_id"], name: "index_banks_on_broker_id"
+    t.index ["type_id"], name: "index_banks_on_type_id"
   end
 
   create_table "broker_accessorials", force: :cascade do |t|
@@ -237,6 +252,12 @@ ActiveRecord::Schema.define(version: 2021_03_04_031502) do
     t.string "name"
   end
 
+  create_table "payment_methods", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "payment_transactions", force: :cascade do |t|
     t.bigint "shipment_id"
     t.string "pro"
@@ -276,9 +297,13 @@ ActiveRecord::Schema.define(version: 2021_03_04_031502) do
     t.integer "week"
     t.integer "paid_cents", default: 0, null: false
     t.string "paid_currency", default: "USD", null: false
+    t.bigint "bank_id"
+    t.bigint "payment_method_id"
     t.index ["approved_by_id"], name: "index_payments_on_approved_by_id"
+    t.index ["bank_id"], name: "index_payments_on_bank_id"
     t.index ["broker_carrier_id"], name: "index_payments_on_broker_carrier_id"
     t.index ["created_by_id"], name: "index_payments_on_created_by_id"
+    t.index ["payment_method_id"], name: "index_payments_on_payment_method_id"
   end
 
   create_table "pricing_rules", force: :cascade do |t|
@@ -567,6 +592,8 @@ ActiveRecord::Schema.define(version: 2021_03_04_031502) do
     t.index ["broker_id"], name: "index_websites_on_broker_id"
   end
 
+  add_foreign_key "banks", "bank_types", column: "type_id"
+  add_foreign_key "banks", "brokers"
   add_foreign_key "broker_accessorials", "accessorials"
   add_foreign_key "broker_accessorials", "broker_customers"
   add_foreign_key "broker_accessorials", "brokers"
@@ -599,8 +626,10 @@ ActiveRecord::Schema.define(version: 2021_03_04_031502) do
   add_foreign_key "payment_transactions", "payments"
   add_foreign_key "payment_transactions", "shipments"
   add_foreign_key "payment_transactions", "users", column: "created_by_id"
+  add_foreign_key "payments", "banks"
   add_foreign_key "payments", "broker_carriers"
   add_foreign_key "payments", "brokers"
+  add_foreign_key "payments", "payment_methods"
   add_foreign_key "payments", "users", column: "approved_by_id"
   add_foreign_key "payments", "users", column: "created_by_id"
   add_foreign_key "pricing_rules", "broker_carriers"

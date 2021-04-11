@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Broker < ApplicationRecord
+  has_many :banks
   has_many :users
   has_many :shipments
   has_many :websites
