@@ -31,15 +31,39 @@ class User < ApplicationRecord
   end
 
   def sales_rep_for?(broker_customer)
-    sales_rep_for_broker_customers.include? broker_customer
+    return nil unless broker_customer.blank?
+    broker_customers.include? broker_customer
   end
 
-  def sales_rep_for_broker_customers
-    if has_role? 'sales_rep_for_all_broker_customers'
-      broker.broker_customers
-    else
-      broker_customers
+  def sales_rep_earnings(from, to)
+    shipments = Shipment.active.where(
+      broker_customer: broker_customers
+    ).where(
+      'picked_up_at >= ?', from
+    ).where(
+      'picked_up_at <= ?', to
+    )
+
+    return Money.new(0) if shipments.blank?
+
+    earnings = Money.new(0)
+
+    shipments.find_each do |shipment|
+      broker_customer_sales_rep = BrokerCustomerSalesRep.where(
+        user: self,
+        broker_customer: shipment.broker_customer
+      )&.first
+
+      next if broker_customer_sales_rep.blank?
+      unless !broker_customer_sales_rep.commission_percent.blank?
+        earnings += shipment.profit * (broker_customer_sales_rep.commission_percent / 100)
+      end
+      unless broker_customer_sales_rep.commission_flat.blank?
+        earnings += shipment.profit + broker_customer_sales_rep.commission_flat
+      end
     end
+
+    earnings
   end
 
   def has_role?(role_name)
@@ -70,6 +94,9 @@ class User < ApplicationRecord
     return Shipment.where(broker_customer_id: broker_customer_ids) unless broker_customer_ids.blank?
 
     Shipment.none
+
+  def sales_rep_only?
+    roles.map(&:name) == ['sales_rep']
   end
 
   def enable_notifications

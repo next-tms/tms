@@ -5,7 +5,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   before_action :authenticate_user!
 
   def index
-    @broker_customers = current_user.broker_customers.joins(:customer).order((Customer.table_name + '.name').to_s)
+    @broker_customers = current_user.sales_rep_only? ? current_user.broker_customers : current_user.broker.broker_customers
   end
 
   def profitability_report

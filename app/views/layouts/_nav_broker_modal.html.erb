@@ -8,6 +8,11 @@
           <% end %>
           <% if current_user.has_role? 'sales_rep' %>
             <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'user-tie'}<br>Customers".html_safe, broker_broker_customers_path, 'data-turbolinks': 'false' %></div>
+          <% end %>
+          <% if current_user.has_role? 'admin' %>
+            <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'user-tie'}<br>Sales Reps".html_safe, broker_broker_customer_sales_reps_path, 'data-turbolinks': 'false' %></div>
+          <% end %>
+          <% if current_user.has_role? 'sales_rep' %>
             <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'pallet'}<br>Shipments".html_safe, broker_shipments_path, 'data-turbolinks': 'false' %></div>
           <% end %>
         </div>
