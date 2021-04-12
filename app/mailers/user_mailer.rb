@@ -18,7 +18,7 @@ class UserMailer < ActionMailer::Base
       from: from(shipment),
       reply_to: reply_to(shipment, __method__),
       to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Entered Load #{shipment.load_id} Entered"
+      subject: "#{who_performed(shipment)} Entered Load #{shipment.load_id}"
     )
   end
 
