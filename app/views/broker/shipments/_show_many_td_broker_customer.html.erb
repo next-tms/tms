@@ -1,3 +1,5 @@
 <td>
-  <%= link_to shipment.broker_customer.customer.name, broker_broker_customer_path(shipment.broker_customer) %>
+  <% unless shipment.broker_customer.blank? %>
+    <%= link_to shipment.broker_customer.customer.name, broker_broker_customer_path(shipment.broker_customer) %>
+  <% end %>
 </td>
