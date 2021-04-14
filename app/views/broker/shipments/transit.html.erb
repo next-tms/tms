@@ -12,7 +12,7 @@
       <div class="form-group row">
         <label class="col-form-label col-sm-4">Carrier</label>
         <div class="col-sm-8">
-          <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.includes(:carrier).collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, help: 'For manual quotes', selected: (@shipment.broker_carrier ? @shipment.broker_carrier.id : nil) }, class: 'custom-select' %>
+          <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.includes(:carrier).collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, include_blank: true, help: 'For manual quotes', selected: (@shipment.broker_carrier ? @shipment.broker_carrier.id : nil) }, class: 'custom-select' %>
           <% if not @shipment.broker_carrier.blank? and @shipment.broker_carrier.carrier.acts_as_broker? %>
             <%= f.select :tracking_carrier_id, Carrier.all.collect { |carrier| [ carrier.name, carrier.id ] }.sort, { label: 'Carrier', hide_label: true, help: 'For tracking', selected: (@shipment.tracking_carrier ? @shipment.tracking_carrier.id : nil) }, class: 'custom-select' %>
           <% end %>
