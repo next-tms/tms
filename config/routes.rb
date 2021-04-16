@@ -39,7 +39,6 @@ Rails.application.routes.draw do
     end
 
     resources :broker_customer_sales_reps, path: 'sales-reps' do
-      member { get 'customers', to: 'broker_customer_sales_reps#broker_customers' }
     end
 
     resources :broker_carriers, path: 'carriers' do

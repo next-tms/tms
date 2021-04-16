@@ -6,7 +6,6 @@
       <% end %>
       <% if @broker_customer_sales_rep&.id %>
         <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_broker_customer_sales_rep_path(@broker_customer_sales_rep), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'user-tie', 'Customers'), customers_broker_broker_customer_sales_rep_path(@broker_customer_sales_rep), class: 'nav-link' %></li>
         <% end %>
     </ul>
   </div>
