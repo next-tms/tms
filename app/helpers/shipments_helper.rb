@@ -19,6 +19,7 @@ module ShipmentsHelper
       %w[promised_delivery_by Service],
       %w[receiver Consignee],
       %w[shipper Shipper],
+      %w[shipper_contact_name Contact],
       %w[size Size],
       %w[status Status],
       %w[total_cost Cost],
