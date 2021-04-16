@@ -375,8 +375,8 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :value,
                                      items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat
                                                           refrigerated desc weight quantity],
-                                     receiver_address_attributes: %i[id ref street street2 city state zip_code country],
-                                     shipper_address_attributes: %i[id ref street street2 city state zip_code country],
+                                     receiver_address_attributes: %i[id ref street street2 city state zip_code country_id],
+                                     shipper_address_attributes: %i[id ref street street2 city state zip_code country_id],
                                      shipment_accessorials_attributes: %i[_destroy accessorial_id],
                                      shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id
                                                                                  cost charge],
