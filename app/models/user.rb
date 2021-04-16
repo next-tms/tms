@@ -103,7 +103,7 @@ class User < ApplicationRecord
       return Shipment.where(broker_customer_id: broker_customer_ids) unless broker_customer_ids.blank?
     end
 
-    broker.shipments
+    Shipment.none
   end
 
   def sales_rep_only?
