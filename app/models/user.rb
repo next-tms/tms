@@ -98,7 +98,7 @@ class User < ApplicationRecord
   def shipments
     return broker_customer.shipments if customer?
 
-    if roles.size == 0 && role.name == 'sales_rep'
+    if sales_rep_only?
       broker_customer_ids = sales_rep_for_broker_customers&.pluck(:id)
       return Shipment.where(broker_customer_id: broker_customer_ids) unless broker_customer_ids.blank?
     end
