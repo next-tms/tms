@@ -126,7 +126,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             broker_customer_sales_reps_attributes: %i[_destroy id commission_flat commission_percent user_id],
                                             broker_accessorials_attributes: %i[_destroy id accessorial_id flat_charge code name upcharge upcharge_percent],
                                             customer_attributes: %i[_destroy id name],
-                                            primary_pickup_address_attributes: %i[id street street2 city state zip_code],
+                                            primary_pickup_address_attributes: %i[id street street2 city state zip_code country_id],
                                             upcharge_rules_attributes: %i[_destroy id max min packaging_id upcharge upcharge_percentage]
                                            )
   end
