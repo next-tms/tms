@@ -22,7 +22,8 @@ class Broker::BrokerController < ApplicationController
       :id,
       broker_countries_attributes: [
         :_destroy,
-        :country_id
+        :country_id,
+        :id
       ]
     )
   end
