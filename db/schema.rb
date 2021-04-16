@@ -2,15 +2,15 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_01_170112) do
+ActiveRecord::Schema.define(version: 2021_04_14_202600) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,8 @@ ActiveRecord::Schema.define(version: 2021_04_01_170112) do
     t.string "ref"
     t.string "time_zone"
     t.text "google_places_spot_cached"
+    t.integer "country_id", null: false
+    t.index ["country_id"], name: "index_addresses_on_country_id"
   end
 
   create_table "areas", force: :cascade do |t|
@@ -103,6 +105,15 @@ ActiveRecord::Schema.define(version: 2021_04_01_170112) do
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
     t.index ["check_mailing_address_id"], name: "index_broker_carriers_on_check_mailing_address_id"
+  end
+
+  create_table "broker_countries", force: :cascade do |t|
+    t.bigint "broker_id"
+    t.bigint "country_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["broker_id"], name: "index_broker_countries_on_broker_id"
+    t.index ["country_id"], name: "index_broker_countries_on_country_id"
   end
 
   create_table "broker_customer_sales_reps", force: :cascade do |t|
@@ -185,6 +196,15 @@ ActiveRecord::Schema.define(version: 2021_04_01_170112) do
     t.string "label"
     t.text "comments"
     t.index ["broker_id"], name: "index_contacts_on_broker_id"
+  end
+
+  create_table "countries", force: :cascade do |t|
+    t.string "alpha2_code"
+    t.string "alpha3_code"
+    t.string "name"
+    t.integer "un_code"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "customer_contacts", force: :cascade do |t|
@@ -592,6 +612,7 @@ ActiveRecord::Schema.define(version: 2021_04_01_170112) do
     t.index ["broker_id"], name: "index_websites_on_broker_id"
   end
 
+  add_foreign_key "addresses", "countries"
   add_foreign_key "banks", "bank_types", column: "type_id"
   add_foreign_key "banks", "brokers"
   add_foreign_key "broker_accessorials", "accessorials"
@@ -601,6 +622,7 @@ ActiveRecord::Schema.define(version: 2021_04_01_170112) do
   add_foreign_key "broker_carriers", "broker_customers"
   add_foreign_key "broker_carriers", "brokers"
   add_foreign_key "broker_carriers", "carriers"
+  add_foreign_key "broker_countries", "countries"
   add_foreign_key "broker_customer_sales_reps", "broker_customers"
   add_foreign_key "broker_customer_sales_reps", "users"
   add_foreign_key "broker_customers", "addresses", column: "primary_pickup_address_id"

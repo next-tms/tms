@@ -69,6 +69,7 @@ Rails.application.routes.draw do
     end
 
     get 'settings', to: 'broker#settings', as: :settings
+    match 'settings', to: 'broker#update', as: :update_settings, via: %i[patch put post]
     resources :broker_accessorials, path: 'settings/accessorials'
 
     resources :payments

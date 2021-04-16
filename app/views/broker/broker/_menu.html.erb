@@ -1,6 +1,9 @@
 <div class="navbar navbar-menu navbar-expand">
   <div class="container-fluid">
     <ul class="navbar-nav">
+      <% if not action_name == 'index' %>
+        <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Settings'), broker_settings_path, class: 'nav-link' %></li>
+      <% end %>
       <li class="navbar-item"><%= link_to icon('fas', 'concierge-bell', 'Services'), broker_broker_accessorials_path, class: 'nav-link' %></li>
     </ul>
   </div>

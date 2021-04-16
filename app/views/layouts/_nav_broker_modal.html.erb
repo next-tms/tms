@@ -27,6 +27,9 @@
         <%= render 'layouts/nav_manifest_modal_rows' %>
         <div class="row border-top pt-4">
           <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'user-circle'}<br>Account".html_safe, edit_user_registration_path %></div>
+          <% if current_user.has_role?('admin') %>
+            <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'cog'}<br>Settings".html_safe, broker_settings_path %></div>
+          <% end %>
           <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'sign-out-alt'}<br>Logout".html_safe, destroy_user_session_path, method: :delete, 'data-turbolinks': 'false' %></div>
         </div>
       </div>

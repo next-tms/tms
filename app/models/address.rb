@@ -12,6 +12,8 @@ class Address < ApplicationRecord
   before_save :prettify_city, if: :city_changed?
   before_save :prettify_state, if: :state_changed?
 
+  belongs_to :country
+
   def pretty(seperator)
     str = ''.dup
     str << "#{ref}#{seperator}" unless ref.blank?

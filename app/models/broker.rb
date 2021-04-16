@@ -9,6 +9,10 @@ class Broker < ApplicationRecord
   has_many :broker_carriers
   has_many :carriers, through: :broker_carriers
 
+  has_many :broker_countries
+  has_many :countries, through: :broker_countries
+  accepts_nested_attributes_for :broker_countries, allow_destroy: true, reject_if: :all_blank
+
   has_many :broker_customers
   has_many :customers, through: :broker_customers
 

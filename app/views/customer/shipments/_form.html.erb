@@ -23,6 +23,7 @@
         <%= shipper_address_form.text_field :city, disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
         <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled'), class: 'custom-select' %>
         <%= shipper_address_form.text_field :zip_code, label: 'ZIP', disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
+        <%= shipper_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.shipper_address.country.blank? ? nil : @shipment.shipper_address.country.id) }, class: 'custom-select', disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
       <% end %>
     </div>
 
@@ -46,6 +47,7 @@
         <%= receiver_address_form.text_field :city, disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
         <%= receiver_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.receiver_address.state.blank? ? nil : @shipment.receiver_address.state) }, disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled'), class: 'custom-select' %>
         <%= receiver_address_form.text_field :zip_code, label: 'ZIP', disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
+        <%= receiver_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.receiver_address.country.blank? ? nil : @shipment.receiver_address.country.id) }, class: 'custom-select', disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
       <% end %>
     </div>
 
