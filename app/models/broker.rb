@@ -35,6 +35,7 @@ class Broker < ApplicationRecord
   has_many :payment_transactions
 
   after_create :copy_accessorials_to_broker_accessorials
+  before_save :unique_countries
 
   def last_load_id
     shipments.blank? ? first_load_id : shipments.order(load_id: :desc).limit(1).first.load_id
@@ -56,5 +57,9 @@ class Broker < ApplicationRecord
     Accessorial.all.each do |accessorial|
       BrokerAccessorial.create(broker: self, accessorial: accessorial, code: accessorial.code, name: accessorial.name)
     end
+  end
+
+  def unique_countries
+    self.countries = self.countries.distinct unless self.countries.blank?
   end
 end
