@@ -50,7 +50,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.shipper_name = broker_customer.customer.name
     @shipment.broker_customer = broker_customer
     @shipment.shipper_address = broker_customer.primary_pickup_address.dup
-    @shipment.receiver_address = Address.new
+    @shipment.receiver_address = Address.new(country: broker_customer.primary_pickup_address.country)
   end
 
   def new_quote_only
