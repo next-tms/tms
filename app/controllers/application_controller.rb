@@ -3,6 +3,7 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
 
+  before_action :add_floc_opt_out_header
   before_action :set_website, :check_if_website_belongs_to_broker
   protect_from_forgery with: :exception
 
@@ -25,6 +26,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def add_floc_opt_out_header
+    response.set_header('Permissions-Policy', 'interest-cohort=()')
+  end
 
   def check_if_website_belongs_to_broker
     if current_user
