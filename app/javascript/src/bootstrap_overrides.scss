@@ -5,6 +5,14 @@ h1 small, .text-highlighted {
 
 .text-red { color: red; }
 
+::selection {
+  background: #ffb380;
+}
+
+::-moz-selection {
+  background: #ffb380;
+}
+
 h2 {
   margin-bottom: 1rem;
 }
