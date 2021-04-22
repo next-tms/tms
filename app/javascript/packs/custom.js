@@ -115,27 +115,44 @@ document.addEventListener('turbolinks:load', function() {
         return e.preventDefault();
     });
 
-    $("form.new_shipment .form-group [id$='_l'], form.edit_shipment .form-group [id$='_l']").blur(function() {
-        console.log($(this).val().toLowerCase().indexOf('x'));
-        if ($(this).val().toLowerCase().indexOf('x') > -1) {
-            dimensions = $(this).val().toLowerCase().split('x');
-            if (dimensions.length >= 2) {
-                // Let's get crazy
-                length_input = $(this);
-                length_input.val($.trim(dimensions[0]));
-                width_input = length_input.parent('.form-group').parent('td').next('td').find("[id$='_w']");
-                height_input = width_input.parent('.form-group').parent('td').next('td').find("[id$='_h']");
-                weight_input = height_input.parent('.form-group').parent('td').next('td').find("[id$='_weight']");
-                width_input.val($.trim(dimensions[1]));
-                if (dimensions.length == 3) {
-                    height_input.val($.trim(dimensions[2]));
-                    weight_input.focus();
-                } else {
-                    height_input.focus();
+    function bindLengthFieldHandler() {
+        console.log('bindLengthFieldHandler()');
+        $('#shipment-form').on('change', function() {
+            console.log('#shipment-form on change');
+            $("[id$='_l']").on('blur', function() {
+                console.log($(this).val().toLowerCase().indexOf('x'));
+                if ($(this).val().toLowerCase().indexOf('x') > -1) {
+                    dimensions = $(this).val().toLowerCase().split('x');
+                    if (dimensions.length >= 2) {
+                        // Let's get crazy
+                        length_input = $(this);
+                        length_input.val($.trim(dimensions[0]));
+                        width_input = length_input.parent().find("[id$='_w']");
+                        height_input = length_input.parent().find("[id$='_h']");
+                        weight_input = length_input.parent().find("[id$='_weight']");
+                        nmfc_input = length_input.parent().find("[id$='_nmfc']");
+                        width_input.val($.trim(dimensions[1]));
+                        if (dimensions.length == 3) {
+                            if (dimensions[2].indexOf(' ') && dimensions[2].toLowerCase().indexOf('lbs')) {
+                                height_and_weight = $.trim(dimensions[2]).split(' ');
+                                console.log(height_and_weight);
+                                var weight = height_and_weight[height_and_weight.length - 1]
+                                height_input.val($.trim(height_and_weight[0]));
+                                weight_input.val($.trim(weight.toLowerCase().replace('lbs', '')));
+                                nmfc_input.focus();
+                            } else {
+                                height_input.val($.trim(dimensions[2]));
+                                weight_input.focus();
+                            }
+                        } else {
+                            height_input.focus();
+                        }
+                    }
                 }
-            }
-        }
-    });
+            });
+        });
+    }
+    bindLengthFieldHandler();
 
     // Turbolinks prefetching from https://gist.github.com/hopsoft/ab500a3b584e2878c83137cb539abb32
     const hoverTime = 200;
