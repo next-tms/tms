@@ -6,7 +6,7 @@ gem 'rails', '~> 6.1.0'
 gem 'pg', '~> 1.2.0'
 gem 'puma', '5.2.2'
 gem 'sass-rails', '>= 6'
-gem 'webpacker', '~> 5.2'
+gem 'webpacker', '~> 5.3'
 gem 'turbolinks', '~> 5' # Still needed with webpacker
 gem 'jbuilder', '~> 2.11'
 
