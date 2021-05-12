@@ -126,7 +126,11 @@ class Item < ApplicationRecord
   def as_reactive_shipping_package
     HyperCarrier::Package.new(
       weight * 16,
-      [l, w, h],
+      {
+        length: l,
+        width: w,
+        height: h
+      },
       units: :imperial
     )
   end
