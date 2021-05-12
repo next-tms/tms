@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/brodyhoskins/hyper_carrier
-  revision: c761af5df563a8baf022a4788bdda8b2e3383dfb
-  ref: c761af5df563a8baf022a4788bdda8b2e3383dfb
+  revision: 080a9490e5f7ecec627f6ca2f3951c4df2f21a40
+  ref: 080a9490e5f7ecec627f6ca2f3951c4df2f21a40
   specs:
     hyper_carrier (0.0.1)
       active_utils (~> 3.3.1)
@@ -170,7 +170,7 @@ GEM
     mainstreet (0.2.2)
       geocoder (>= 1.5.1)
     marcel (1.0.1)
-    measured (2.6.0)
+    measured (2.7.1)
       activesupport (>= 5.2)
     method_source (1.0.0)
     mime-types (3.3.1)
