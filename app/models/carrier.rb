@@ -9,6 +9,8 @@ class Carrier < ApplicationRecord
 
   has_many :shipments
 
+  belongs_to :broker_billing_address, class_name: 'Address', required: false
+
   # has_many :location_addresses, class_name: 'Address', required: false
   belongs_to :check_mailing_address, class_name: 'Address', required: false
 

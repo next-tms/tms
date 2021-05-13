@@ -50,7 +50,7 @@
     <div class="col">
       <h2><%= !@shipment.carrier.blank? ? @shipment.carrier.name : '&nbsp;'.html_safe %></h2>
     </div>
-    <% unless @shipment.pro.blank? %>
+    <% if (!@broker_carrier.blank? && !@broker_carrier.carrier.acts_as_broker?) && !@shipment.pro.blank? %>
       <div class="col text-right">
         <h2>Pro <%= @shipment.pro %></h2>
       </div>
@@ -124,18 +124,26 @@
       <h3>Terms</h3>
       <p>Third Party Freight Charges Billed To:</p>
       <address>
-        <%= @website.broker.name %>
-        <br>
-        <%= @website.broker.address.pretty('<br>').gsub('Apt', 'Ste').html_safe %>
+        <% if !@shipment.broker_carrier.blank? && @shipment.broker_carrier.carrier.acts_as_broker? && !@shipment.broker_carrier.carrier.broker_billing_address.blank? %>
+          <%= @shipment.broker_carrier.carrier.name %>
+          <br>
+          <%= @shipment.broker_carrier.carrier.broker_billing_address.pretty('<br>').gsub('Apt', 'Ste').html_safe %>
+        <% else %>
+          <%= @website.broker.name %>
+          <br>
+          <%= @website.broker.address.pretty('<br>').gsub('Apt', 'Ste').html_safe %>
+        <% end %>
       </address>
       <p>
         <% unless @shipment.broker_carrier.blank? %>
-          <% unless @shipment.broker_carrier.account.blank? %>
+          <% if !@shipment.broker_carrier.account.blank? && !@shipment.broker_carrier.carrier.acts_as_broker? %>
             Account #: <%= @shipment.broker_carrier.account %><br>
           <% end %>
         <% end %>
-        <% unless @shipment.quote_id.blank? %>
-          Quote #: <%= @shipment.quote_id %><br>
+        <% if !@broker_carrier.blank? && !@broker_carrier.carrier.acts_as_broker? %>
+          <% if !@shipment.quote_id.blank? || ! %>
+            Quote #: <%= @shipment.quote_id %><br>
+          <% end %>
         <% end %>
         Terms: Third Party Prepaid
       </p>
