@@ -56,18 +56,18 @@ class Shipment < ApplicationRecord
 
   belongs_to :updated_by, class_name: 'User', required: false
 
-  has_many :shipment_items, dependent: :delete_all
+  has_many :shipment_items, dependent: :destroy
   has_many :items, through: :shipment_items
   accepts_nested_attributes_for :items, allow_destroy: true, reject_if: :all_blank
 
-  has_many :shipment_accessorials, dependent: :delete_all
+  has_many :shipment_accessorials, dependent: :destroy
   accepts_nested_attributes_for :shipment_accessorials, allow_destroy: true, reject_if: :all_blank
   has_many :accessorials, through: :shipment_accessorials
 
   belongs_to :applied_rate, class_name: 'Rate', required: false
-  has_many :rates, dependent: :delete_all
+  has_many :rates, dependent: :destroy
 
-  has_many :shipment_broker_accessorials, dependent: :delete_all
+  has_many :shipment_broker_accessorials, dependent: :destroy
   accepts_nested_attributes_for :shipment_broker_accessorials, allow_destroy: true, reject_if: :all_blank
   has_many :broker_accessorials, through: :shipment_broker_accessorials
 

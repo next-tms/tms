@@ -13,7 +13,7 @@ class BrokerCustomer < ApplicationRecord
   belongs_to :customer
   accepts_nested_attributes_for :customer
 
-  has_many :broker_customer_sales_reps, dependent: :delete_all
+  has_many :broker_customer_sales_reps, dependent: :destroy
   has_many :sales_reps, through: :broker_customer_sales_reps, source: 'user'
   accepts_nested_attributes_for :broker_customer_sales_reps, allow_destroy: true, reject_if: :all_blank
 

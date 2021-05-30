@@ -20,7 +20,7 @@ class Rate < ApplicationRecord
   belongs_to :shipment
   belongs_to :tracking_carrier, class_name: 'Carrier', optional: true
 
-  has_many :rate_accessorials, dependent: :delete_all
+  has_many :rate_accessorials, dependent: :destroy
   has_many :accessorials, through: :rate_accessorials
 
   # Returns the actual carrier rather than any broker associated

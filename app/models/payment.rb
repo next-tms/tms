@@ -19,7 +19,7 @@ class Payment < ApplicationRecord
   belongs_to :created_by, class_name: 'User'
   validates_presence_of :created_by
 
-  has_many :payment_transactions, dependent: :delete_all
+  has_many :payment_transactions, dependent: :destroy
   accepts_nested_attributes_for :payment_transactions, allow_destroy: true, reject_if: :all_blank
 
   monetize :paid_cents

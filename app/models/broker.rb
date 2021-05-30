@@ -28,7 +28,7 @@ class Broker < ApplicationRecord
 
   phony_normalize :phone, default_country_code: 'US'
 
-  has_many :broker_accessorials, dependent: :delete_all
+  has_many :broker_accessorials, dependent: :destroy
   accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
 
   has_many :payments
