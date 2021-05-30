@@ -13,6 +13,25 @@ document.addEventListener('turbolinks:load', function() {
         $('table').tablesorter();
     });
 
+    function moneyHandler() {
+        $('input.money').blur(function() {
+            num = $(this).val();
+            num = num.replace(/[^\d.-]/g, '');
+            num = parseFloat(num);
+            num = num.toFixed(2);
+            if (isNaN(num)) {
+                $(this).val('0.00');
+            } else {
+                $(this).val(num);
+            }
+        });
+    }
+    moneyHandler();
+
+    $(document).on('change', function() {
+        initMoney();
+    });
+
     $('input.timepicker').timepicker({
         timeFormat: 'h:mm p',
         interval: 30,
@@ -74,18 +93,6 @@ document.addEventListener('turbolinks:load', function() {
         altInput: true,
         altFormat: 'n/j/y',
         maxDate: new Date().addHours(12)
-    });
-
-    $('input.money').blur(function() {
-        num = $(this).val();
-        num = num.replace(/[^\d.-]/g, '');
-        num = parseFloat(num);
-        num = num.toFixed(2);
-        if (isNaN(num)) {
-            $(this).val('');
-        } else {
-            $(this).val(num);
-        }
     });
 
     $('textarea.copyable').click(function() {
