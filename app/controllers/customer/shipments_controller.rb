@@ -50,8 +50,8 @@ class Customer::ShipmentsController < Customer::CustomerController
   def new
     @shipment = Shipment.new
     @shipment.items << Item.new
-    @shipment.shipper_address = Address.new
-    @shipment.receiver_address = Address.new(country: current_user.broker_customer.primary_pickup_address.country)
+    @shipment.shipper_address = current_user.broker_customer&.primary_pickup_address&.dup || Address.new
+    @shipment.receiver_address = Address.new
 
     @shipment.shipper_contact_name = "#{current_user.first_name} #{current_user.last_name}"
     @shipment.shipper_name = current_user.broker_customer.customer.name
