@@ -29,7 +29,7 @@ document.addEventListener('turbolinks:load', function() {
     moneyHandler();
 
     $(document).on('change', function() {
-        initMoney();
+        moneyHandler();
     });
 
     $('input.timepicker').timepicker({
