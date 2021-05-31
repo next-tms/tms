@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand">
   <div class="container-fluid">
     <%= link_to root_path, class: 'navbar-brand' do %>
-      <% unless @website&.manifest&.dig('nav', 'logo', 'url')&.blank? %>
+      <% unless @website&.manifest&.dig('nav', 'logo', 'url').blank? %>
         <%= image_tag @website.manifest.dig('nav', 'logo', 'url'), alt: @website.broker.name, class: 'navbar-brand-logo' %>
       <% else %>
         <%= @website.broker.name %>
