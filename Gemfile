@@ -75,6 +75,9 @@ gem 'barby'
 gem 'google_places'
 gem 'phony_rails'
 gem 'htmlentities'
+
 gem 'pagy'
+gem 'ransack', '~> 2.4.2'
+
 gem 'public_suffix'
 gem 'rqrcode'

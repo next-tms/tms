@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <ul class="navbar-nav">
       <% if not action_name == 'index' %>
-        <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Payments'), broker_payments_path, class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Payables'), broker_payments_path, class: 'nav-link' %></li>
       <% end %>
       <% if @payment and @payment.id %>
         <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_payment_path(@payment), class: 'nav-link' %></li>
@@ -24,7 +24,6 @@
         <% if current_page? action: 'new' %>
           <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Reset'), new_broker_payment_path, data: { confirm: 'Reset the form? Unsaved changes will be lost.' }, class: 'nav-link' %></li>
         <% else %>
-          <li class="navbar-item"><%= link_to icon('fas', 'check', 'Paid'), broker_ap_payments_paid_path, class: 'nav-link' %></li>
           <li class="navbar-item"><%= link_to icon('fas', 'file-import', 'Import Statement'), broker_ap_invoices_import_path, class: 'nav-link' %></li>
           <li class="navbar-item"><%= link_to icon('fas', 'file-import', 'Import Legacy Remittance'), broker_ap_payments_import_legacy_path, class: 'nav-link' %></li>
         <% end %>

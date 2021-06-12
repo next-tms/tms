@@ -1,37 +1,46 @@
 <% unless payments.blank? %>
-  <% current_week = Date.current.strftime('%U').to_i %>
-  <p><strong>Current Week: <%= current_week %></strong></p>
+  <div class="btn-toolbar">
+    <div class="btn-group">
+      <% if @display_paid %>
+        <%= link_to 'Pending', url_for({ 'q' => { 'paid_on_null' => '1' } }), class: 'btn btn-light' %>
+        <%= link_to 'Paid', url_for({ 'q' => { 'paid_on_null' => '0' } }), class: 'btn btn-dark' %>
+      <% else %>
+        <%= link_to 'Pending', url_for({ 'q' => { 'paid_on_null' => '1' } }), class: 'btn btn-dark' %>
+        <%= link_to 'Paid', url_for({ 'q' => { 'paid_on_null' => '0' } }), class: 'btn btn-light' %>
+      <% end %>
+    </div>
+  </div>
+
   <div class="table-responsive">
     <table class="table table-condensed table-borderless table-striped table-hover h-100">
       <thead>
         <tr>
-          <th>Due</th>
-          <% unless action_name == 'index' %>
-            <th>Payment</th>
+          <% unless @display_paid %>
+            <th><%= sort_link(@q, :due_on, 'Due') %></th>
+          <% else %>
+            <th><%= sort_link(@q, :paid_on, 'Paid') %></th>
+            <th><%= sort_link(@q, :bank_name, 'Bank') %></th>
           <% end %>
-          <th>Carrier</th>
-          <th>Balance</th>
-          <th>Pay</th>
+          <th><%= sort_link @q, :broker_carrier_carrier_name, 'Carrier' %></th>
+          <th><%= sort_link @q, :balance, 'Balance' %></th>
+          <th><%= sort_link @q, :paid, 'Pay' %></th>
         </tr>
       </thead>
       <tbody>
         <% payments.each do |payment| %>
-          <tr class="<% if !payment.week.blank? && (payment.week < current_week) && payment.paid_on.blank? %>bg-warning<% end %>">
-            <td>
-              <%= link_to broker_payment_path(payment) do %>
-                <% unless payment.due_on.blank? %>
-                  <%= payment.due_on.year.to_s.length == 2 ? "20#{payment.due_on.year}" : payment.due_on.year %>
-                <% end %>
-                <%= payment.week.blank? ? 'Unknown' : payment.week %>
-              <% end %>
-            </td>
-            <% unless action_name == 'index' %>
+          <tr>
+            <% unless @display_paid %>
               <td>
-                <%= short_date payment.paid_on, current_user.time_zone %>
-                <% unless payment.bank.blank? %>
-                  <%= payment.bank.pretty_name %>
+                <%= link_to broker_payment_path(payment) do %>
+                  <% unless payment.due_on.blank? %>
+                    <%= payment.due_on.year.to_s.length == 2 ? "20#{payment.due_on.year}" : payment.due_on.year %>
+                  <% end %>
+                  <%= payment.week.blank? ? 'Unknown' : payment.week %>
                 <% end %>
               </td>
+            <% else %>
+              <td><%= short_date payment.paid_on, current_user.time_zone %></td>
+              <td><%== payment.bank&.pretty_name %></td>
             <% end %>
             <td>
               <% unless payment.broker_carrier.blank? %>
