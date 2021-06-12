@@ -16,11 +16,15 @@ class Broker::PaymentsController < Broker::BrokerController
   end
 
   def index
-    @pagy, @payments = pagy(Payment.unpaid.order(:due_on))
+    @display_paid = ['0', nil].include?(params.dig(:q, :paid_on_null))
+
+    @q = Payment.includes(required_includes).ransack(params[:q])
+    @pagy, @payments = pagy(paid_or_pending_filter(@q))
   end
 
   def paid
-    @pagy, @payments = pagy(Payment.paid.order(paid_on: :desc))
+    @q = Payment.paid.includes(required_includes).ransack(params[:q])
+    @pagy, @payments = pagy(@q.result(distinct: true))
   end
 
   def new
@@ -114,5 +118,14 @@ class Broker::PaymentsController < Broker::BrokerController
   # Never trust parameters from the scary internet, only allow the white list through.
   def payment_params
     params.require(:payment).permit(:id, :approved_by_id, :bank_id, :broker_carrier_id, :legacy_csv, :due_on, :legacy_csv, :method_reference, :payment_method_id, :paid_on, payment_transactions_attributes: %i[_destroy id additional_charge balance invoice legacy_load_id notes paid pro shipment_load_id])
+  end
+
+  # Query helpers
+  def paid_or_pending_filter(q)
+    @display_paid ? q.result.paid : q.result.unpaid
+  end
+
+  def required_includes
+    [ :bank, :broker_carrier, { broker_carrier: :carrier } ]
   end
 end
