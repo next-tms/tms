@@ -6,16 +6,20 @@ class Broker::BanksController < Broker::BrokerController
   before_action :require_accounts_payable
 
   def activity
-    @pagy, @payments = pagy(@bank.payments.paid.order(paid_on: :desc))
+    @display_paid = ['0', nil].include?(params.dig(:q, :paid_on_null))
+
+    @q = @bank.payments.paid.ransack(params[:q])
+    @q.sorts = 'paid_on DESC' if @q.sorts.blank?
+    @pagy, @payments = pagy(paid_or_pending_filter(@q))
 
     respond_to do |format|
-        format.html
-        format.csv do
-          csv = ''.dup
-          csv += "#{@payments.first.export_headers.join(',')}\n"
-          csv += @payments.inject(''.dup) { |str, p| str << p.to_csv(false)  }
-          send_data csv, filename: "#{@bank.pretty_name} Activity.csv"
-        end
+      format.html
+      format.csv do
+        csv = ''.dup
+        csv += "#{@payments.first.export_headers.join(',')}\n"
+        csv += @payments.inject(''.dup) { |str, p| str << p.to_csv(false)  }
+        send_data csv, filename: "#{@bank.pretty_name} Activity.csv"
+      end
     end
   end
 
@@ -55,6 +59,11 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   private
+
+  # Query helpers
+  def paid_or_pending_filter(q)
+    @display_paid ? q.result.paid : q.result.unpaid
+  end
 
   def require_accounts_payable
     require_role 'accounts_payable'
