@@ -47,32 +47,6 @@ class Broker::SearchController < Broker::BrokerController
     @broker_carriers = @broker_carriers.uniq
     @broker_customers = @broker_customers.uniq
     @shipments = @shipments.uniq
-
-    @payments = Payment.none
-    if current_user.has_role?('accounts_payable')
-      if @search.start_with? '$'
-        cents = @search.gsub('$', '').gsub(',', '').gsub(' ', '').to_f * 100
-        @payments += Payment.where('paid_cents >= ?', cents - 1000).where('paid_cents <= ?', cents + 1000)
-      end
-      @payments += Payment.where('method_reference ilike ?', "%#{@search}%")
-      @payments += PaymentTransaction.where('notes ilike ?', "%#{@search}%").map(&:payment)
-      unless @broker_carriers.blank?
-        @payments += Payment.where(id: PaymentTransaction.where(broker_carrier: @broker_carriers).map(&:payment_id))
-      end
-      @payments += Payment.where(id: PaymentTransaction.where(pro: @search).map(&:payment_id))
-      @payments += Payment.where(id: PaymentTransaction.where(legacy_load_id: @search).map(&:payment_id))
-      @payments = @payments.uniq
-    end
-
-    if (@broker_carriers.size == 1) && @shipments.blank? && @payments.blank?
-      redirect_to broker_broker_carrier_path(@broker_carriers.first) and return
-    end
-    if (@broker_customers.size == 1) && @shipments.blank? && @payments.blank?
-      redirect_to broker_broker_customer_path(@broker_customers.first) and return
-    end
-    if (@shipments.size == 1) && @broker_customers.blank? && @broker_carriers.blank? && @payments.blank?
-      redirect_to broker_shipment_path(@shipments.first) and return
-    end
   end
 
   private

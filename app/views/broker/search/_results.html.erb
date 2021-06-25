@@ -12,15 +12,6 @@
   <% end %>
 <% end %>
 
-<% if current_user.has_role? 'accounts_receivable' %>
-  <% cache [current_user, search, payments] do %>
-    <% unless payments.blank? %>
-      <h3>Payments</h3>
-      <%= render 'broker/payments/show_many', payments: payments %>
-    <% end %>
-  <% end %>
-<% end %>
-
 <% cache [search, shipments] do %>
   <% unless shipments.blank? %>
     <h3>Shipments</h3>
