@@ -1,16 +1,16 @@
-<% unless payments.blank? %>
-  <div class="btn-toolbar">
-    <div class="btn-group">
-      <% if @display_paid %>
-        <%= link_to 'Pending', url_for({ 'q' => { 'paid_on_null' => '1' } }), class: 'btn btn-light' %>
-        <%= link_to 'Paid', url_for({ 'q' => { 'paid_on_null' => '0' } }), class: 'btn btn-dark' %>
-      <% else %>
-        <%= link_to 'Pending', url_for({ 'q' => { 'paid_on_null' => '1' } }), class: 'btn btn-dark' %>
-        <%= link_to 'Paid', url_for({ 'q' => { 'paid_on_null' => '0' } }), class: 'btn btn-light' %>
-      <% end %>
-    </div>
+<div class="btn-toolbar">
+  <div class="btn-group">
+    <% if @display_paid %>
+      <%= link_to 'Pending', url_for({ 'q' => { 'paid_on_null' => '1' } }), class: 'btn btn-light' %>
+      <%= link_to 'Paid', url_for({ 'q' => { 'paid_on_null' => '0' } }), class: 'btn btn-dark' %>
+    <% else %>
+      <%= link_to 'Pending', url_for({ 'q' => { 'paid_on_null' => '1' } }), class: 'btn btn-dark' %>
+      <%= link_to 'Paid', url_for({ 'q' => { 'paid_on_null' => '0' } }), class: 'btn btn-light' %>
+    <% end %>
   </div>
+</div>
 
+<% unless payments.blank? %>
   <div class="table-responsive">
     <table class="table table-condensed table-borderless table-striped table-hover h-100">
       <thead>
