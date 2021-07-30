@@ -4,7 +4,7 @@ ruby '3.0.1'
 
 gem 'rails', '~> 6.1.4'
 gem 'pg', '~> 1.2.0'
-gem 'puma', '5.3.2'
+gem 'puma', '5.4.0'
 gem 'webpacker', '~> 5.4'
 gem 'turbolinks', '~> 5' # Still needed with webpacker
 gem 'jbuilder', '~> 2.11'
