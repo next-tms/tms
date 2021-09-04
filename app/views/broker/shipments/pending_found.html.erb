@@ -7,8 +7,10 @@
   <p class="lead">Lost</p>
 </div>
 
+<%= render 'search_form' %>
 <% unless @shipments.blank? %>
   <%= render 'show_many_pending_delivery', shipments: @shipments %>
 <% else %>
   <%= render 'layouts/no_content' %>
 <% end %>
+<%= render 'layouts/pagy', pagy: @pagy %>
