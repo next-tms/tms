@@ -11,7 +11,6 @@ import 'src/application.scss'
 import 'bootstrap/dist/js/bootstrap'
 
 // Global
-import 'tablesorter'
 import flatpickr from 'flatpickr'
 import 'jquery-timepicker/jquery.timepicker'
 import 'jquery-timepicker/jquery.timepicker.css'

@@ -9,10 +9,6 @@ document.addEventListener('turbolinks:load', function() {
         // Not yet working
     }
 
-    $(function() {
-        $('table').tablesorter();
-    });
-
     function moneyHandler() {
         $('input.money').blur(function() {
             num = $(this).val();
@@ -30,17 +26,6 @@ document.addEventListener('turbolinks:load', function() {
 
     $(document).on('change', function() {
         moneyHandler();
-    });
-
-    $('input.timepicker').timepicker({
-        timeFormat: 'h:mm p',
-        interval: 30,
-        minTime: '12:00am',
-        maxTime: '11:59pm',
-        startTime: '10:00',
-        dynamic: false,
-        dropdown: false,
-        scrollbar: true
     });
 
     $('.clear-flatpickr').on('click', function() {
