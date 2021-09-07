@@ -1,11 +1,10 @@
 <% provide :title, @broker_customer.customer.name %>
+<% provide :menu, render('menu') %>
 
 <div class="page-header">
   <h1><%= @broker_customer.customer.name %></h1>
-  <p class="lead">Customer Shipments</h2>
+  <p class="lead">Shipments</h2>
 </div>
-
-<h2>Shipments</h2>
 
 <%= render 'broker/shipments/search_form' %>
 <%= render 'broker/shipments/show_many_pricing', shipments: @shipments %>

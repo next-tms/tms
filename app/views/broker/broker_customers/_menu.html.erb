@@ -6,6 +6,7 @@
       <% end %>
       <% if @broker_customer and @broker_customer.id %>
         <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'industry', 'Shipments'), broker_broker_customer_shipments_path(@broker_customer), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'truck', 'Carriers'), broker_carriers_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'sliders-h', 'Preferences'), edit_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'dollar-sign', 'Pricing'), edit_pricing_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>

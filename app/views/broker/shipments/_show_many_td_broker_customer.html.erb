@@ -1,5 +1,7 @@
-<td>
-  <% unless shipment.broker_customer.blank? %>
-    <%= link_to shipment.broker_customer.customer.name, broker_broker_customer_path(shipment.broker_customer) %>
-  <% end %>
-</td>
+<% unless controller.controller_name == 'broker_customers' %>
+  <td>
+    <% unless shipment.broker_customer.blank? %>
+      <%= link_to shipment.broker_customer.customer.name, broker_broker_customer_shipments_path(shipment.broker_customer), target: '_blank' %>
+    <% end %>
+  </td>
+<% end %>

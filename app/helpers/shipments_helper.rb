@@ -32,6 +32,8 @@ module ShipmentsHelper
     str << '<tr>'
     td_names.each do |td_name|
       td_names_map.each do |td_names_map_line|
+        next if td_names_map_line[0] == 'broker_carrier' && controller.controller_name == 'broker_carriers'
+        next if td_names_map_line[0] == 'broker_customer' && controller.controller_name == 'broker_customers'
         if defined?(@q)
           unless td_names_map_line[2].blank?
             str << "<th>#{sort_link @q, td_names_map_line[2], td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
