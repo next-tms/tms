@@ -99,18 +99,9 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
     @broker_customer_carriers = BrokerCarrier.where broker: @broker_customer.broker, customer: @broker_customer.customer
 
-    @from_date = params[:from_date]
-    @to_date = params[:to_date]
-
-    if @from_date.blank?
-      @shipments = @broker_customer.shipments
-    else
-      @shipments = if @to_date.blank?
-                     @broker_customer.shipments.where('picked_up_at >= ?', @from_date)
-                   else
-                     @broker_customer.shipments.where('picked_up_at >= ?', @from_date).where('picked_up_at <= ?', @to_date)
-                   end
-    end
+    @q = @broker_customer.shipments.ransack(params[:q])
+    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @pagy, @shipments = pagy(@q.result)
   end
 
   private
