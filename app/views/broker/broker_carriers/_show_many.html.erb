@@ -3,8 +3,8 @@
     <table class="table table-borderless table-striped table-hover sortable">
       <thead>
         <tr>
-          <th>Carrier</th>
-          <th>Account</th>
+          <th><%= sort_link @q, :carrier_name, 'Carrier' %></th>
+          <th><%= sort_link @q, :broker_customer_customer_name, 'Account' %></th>
           <th>Shipments</th>
         </tr>
       </thead>

@@ -9,7 +9,11 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def index
-    @broker_carriers = current_user.broker.broker_carriers.joins(:carrier).order((Carrier.table_name + '.name').to_s)
+    @broker_carriers = 
+
+    @q = current_user.broker.broker_carriers.includes(:carrier).ransack(params[:q])
+    @q.sorts = "#{Carrier.table_name + '.name'} desc" if @q.sorts.blank?
+    @pagy, @broker_carriers = pagy(@q.result)
   end
 
   def show
