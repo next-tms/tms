@@ -5,7 +5,13 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   before_action :authenticate_user!
 
   def index
-    @broker_customers = current_user.sales_rep_only? ? current_user.broker_customers : current_user.broker.broker_customers
+    @q = if current_user.sales_rep_only?
+           current_user.broker_customers
+         else
+           current_user.broker.broker_customers
+         end.ransack(params[:q])
+    @q.sorts = "#{Customer.table_name + '.name'} desc" if @q.sorts.blank?
+    @pagy, @broker_customers = pagy(@q.result)
   end
 
   def profitability_report
