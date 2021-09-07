@@ -5,7 +5,7 @@
   <div class="col-auto float-right">
     <%= search_form_for(@q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
       <%= f.hidden_field :sorts, value: params[:q].try(:[], :s) %>
-      <%= f.text_field :broker_carrier_carrier_name_or_broker_customer_customer_name_or_shipper_name_or_shipper_contact_name_or_receiver_name_or_receiver_contact_name_or_shipper_address_city_or_receiver_address_city_or_bol_notes_cont, placeholder: 'Filter', autofocus: true, class: 'form-control mr-2' %>
+      <%= f.text_field :broker_carrier_carrier_name_or_broker_customer_customer_name_or_shipper_name_or_shipper_contact_name_or_receiver_name_or_receiver_contact_name_or_shipper_address_city_or_receiver_address_city_or_bol_notes_or_shipper_address_zip_code_or_receiver_address_zip_code_cont, placeholder: 'Filter', autofocus: true, class: 'form-control mr-2' %>
     <% end %>
   </div>
 </div>
