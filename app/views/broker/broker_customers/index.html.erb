@@ -6,4 +6,6 @@
   <p class="lead">Overview</p>
 </div>
 
+<%= render 'search_form' %>
 <%= render 'show_many', broker_customers: @broker_customers %>
+<%= render 'layouts/pagy', pagy: @pagy %>

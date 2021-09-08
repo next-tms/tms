@@ -87,6 +87,10 @@ footer, footer a, footer a:active, footer a:hover, footer a:visited {
   color: rgba(255, 255, 255, 0.9);
 }
 
+a.sort_link, a.sort_link:active, a.sort_link:hover, a.sort_link:visited {
+  color: rgb(0, 0, 0);
+}
+
 tr.bg-danger, tr.bg-danger a, tr.bg-danger a:active, tr.bg-danger a:hover, tr.bg-danger a:visited {
   color: rgba(255, 255, 255, 0.9) !important;
 }

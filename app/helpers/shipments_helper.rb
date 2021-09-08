@@ -3,27 +3,27 @@ module ShipmentsHelper
     return render('layouts/no_content').html_safe if shipments.blank?
 
     td_names_map = [
-      %w[broker_carrier Carrier],
-      %w[broker_customer Customer],
-      %w[created_at Entered],
-      %w[delivered_at Delivered],
-      %w[delivery_by ETA],
-      %w[id Load],
-      %w[pickup_driver_assigned_at Asgn],
-      %w[pickup_eta_at ETA],
-      %w[picked_up_at Pickup],
-      %w[pickup_hours_end_at Closing],
-      ['pickup_on', 'Pickup By'],
-      %w[pickup_confirmation Ref],
-      %w[pro Pro],
-      %w[promised_delivery_by Service],
-      %w[receiver Consignee],
-      %w[shipper Shipper],
-      %w[shipper_contact_name Contact],
-      %w[size Size],
-      %w[status Status],
-      %w[total_cost Cost],
-      %w[total_charges Charge]
+      ['broker_carrier', 'Carrier', :broker_carrier_carrier_name],
+      ['broker_customer', 'Customer', :broker_customer_customer_name],
+      ['created_at', 'Entered', :created_at],
+      ['delivered_at', 'Delivered', :delivered_at],
+      ['delivery_by', 'ETA', :delivery_by],
+      ['id', 'Load', :load_id],
+      ['pickup_driver_assigned_at', 'Asgn', :pickup_driver_assigned_at],
+      ['pickup_eta_at', 'ETA', :pickup_eta_at],
+      ['picked_up_at', 'Pickup', :picked_up_at],
+      ['pickup_hours_end_at', 'Closing', :pickup_hours_end_at],
+      ['pickup_on', 'Pickup By', :pickup_on],
+      ['pickup_confirmation', 'Ref', :pickup_confirmation],
+      ['pro', 'Pro', :pro],
+      ['promised_delivery_by', 'Service', nil],
+      ['receiver', 'Consignee', :receiver_name],
+      ['shipper', 'Shipper', :shipper_name],
+      ['shipper_contact_name', 'Contact', :shipper_contact_name],
+      ['size', 'Size', :items_count],
+      ['status', 'Status', nil],
+      ['total_cost', 'Cost', nil],
+      ['total_charges', 'Charge', nil]
     ]
 
     str = '<div class="table-responsive">'
@@ -32,7 +32,17 @@ module ShipmentsHelper
     str << '<tr>'
     td_names.each do |td_name|
       td_names_map.each do |td_names_map_line|
-        str << "<th>#{td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
+        next if td_names_map_line[0] == 'broker_carrier' && controller.controller_name == 'broker_carriers'
+        next if td_names_map_line[0] == 'broker_customer' && controller.controller_name == 'broker_customers'
+        if defined?(@q)
+          unless td_names_map_line[2].blank?
+            str << "<th>#{sort_link @q, td_names_map_line[2], td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
+          else
+            str << "<th>#{td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
+          end
+        else
+          str << "<th>#{td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
+        end
       end
     end
     str << '</tr>'

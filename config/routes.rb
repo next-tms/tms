@@ -41,6 +41,7 @@ Rails.application.routes.draw do
     resources :broker_customer_sales_reps, path: 'sales-reps' do
     end
 
+    get 'carriers/:id/shipments' => 'broker_carriers#shipments', as: :broker_carrier_shipments
     resources :broker_carriers, path: 'carriers' do
       member { get 'tariff' => 'broker_carriers#tariff', as: :tariff }
       member { get 'terminals/search' => 'broker_carriers#search_terminals', as: :search_terminals }

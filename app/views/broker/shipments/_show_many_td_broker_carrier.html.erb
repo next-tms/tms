@@ -1,11 +1,13 @@
-<td>
-  <% unless shipment.broker_carrier.blank? %>
-    <% if shipment.broker_carrier.carrier.acts_as_broker? and not shipment.tracking_carrier.blank? %>
-      <%= shipment.tracking_carrier.name %>
-      <br>
-      via <%= shipment.broker_carrier.carrier.name %>
-    <% else %>
-      <%= shipment.broker_carrier.carrier.name %>
+<% unless controller.controller_name == 'broker_carriers' %>
+  <td class="text-nowrap">
+    <% unless shipment.broker_carrier.blank? %>
+      <% if shipment.broker_carrier.carrier.acts_as_broker? and not shipment.tracking_carrier.blank? %>
+        <span class="text-nowrap"><%= shipment.tracking_carrier.name %>
+        <br>
+        via <%= link_to shipment.broker_carrier.carrier.name, broker_broker_carrier_shipments_path(shipment.broker_carrier), target: '_blank' %>
+      <% else %>
+        <%= link_to shipment.broker_carrier.carrier.name, broker_broker_carrier_shipments_path(shipment.broker_carrier), target: '_blank' %>
+      <% end %>
     <% end %>
-  <% end %>
-</td>
+  </td>
+<% end %>

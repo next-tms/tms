@@ -1,0 +1,11 @@
+<% provide :title, @broker_carrier.carrier.name %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_carrier.carrier.name %></h1>
+  <p class="lead">Shipments</h2>
+</div>
+
+<%= render 'broker/shipments/search_form' %>
+<%= render 'broker/shipments/show_many_pricing', shipments: @shipments %>
+<%= render 'layouts/pagy', pagy: @pagy %>

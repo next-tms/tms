@@ -2,14 +2,18 @@
 
 class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :authenticate_user!
-  before_action :set_broker_carrier, only: %i[show edit preferences search_terminals tariff update]
+  before_action :set_broker_carrier, only: %i[show edit preferences search_terminals shipments tariff update]
 
   def edit
     @broker_carrier.check_mailing_address = Address.new if @broker_carrier.check_mailing_address.blank?
   end
 
   def index
-    @broker_carriers = current_user.broker.broker_carriers.joins(:carrier).order((Carrier.table_name + '.name').to_s)
+    @broker_carriers = 
+
+    @q = current_user.broker.broker_carriers.includes(:carrier).ransack(params[:q])
+    @q.sorts = "#{Carrier.table_name + '.name'} desc" if @q.sorts.blank?
+    @pagy, @broker_carriers = pagy(@q.result)
   end
 
   def show
@@ -60,6 +64,18 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     else
       redirect_to [:broker, @broker_carrier]
     end
+  end
+
+  def shipments
+    if !current_user.broker == @broker_carrier.broker
+      unauthorized
+    end
+
+    @broker_carrier_carriers = BrokerCarrier.where broker: @broker_carrier.broker, carrier: @broker_carrier.carrier
+
+    @q = @broker_carrier.shipments.ransack(params[:q])
+    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @pagy, @shipments = pagy(@q.result)
   end
 
   private
