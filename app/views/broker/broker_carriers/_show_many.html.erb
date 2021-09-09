@@ -3,8 +3,13 @@
     <table class="table table-borderless table-striped table-hover sortable">
       <thead>
         <tr>
-          <th><%= sort_link @q, :carrier_name, 'Carrier' %></th>
-          <th><%= sort_link @q, :broker_customer_customer_name, 'Account' %></th>
+          <% if @q %>
+            <th><%= sort_link @q, :carrier_name, 'Carrier' %></th>
+            <th><%= sort_link @q, :broker_customer_customer_name, 'Account' %></th>
+          <% else %>
+            <th>Carrier</th>
+            <th>Account</th>
+          <% end %>
           <th>Shipments</th>
         </tr>
       </thead>
