@@ -26,7 +26,7 @@ class BrokerCarrier < ApplicationRecord
   monetize :quote_padding_cents
 
   def api_configured?
-    !(account.blank? || username.blank? || password.blank?)
+    !((account.blank? && username.blank?) || password.blank?)
   end
 
   def overlength_rules
