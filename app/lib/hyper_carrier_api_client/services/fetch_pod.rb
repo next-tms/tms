@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+module HyperCarrierApiClient
+  module Services
+    class FetchPod < Base
+      def find(tracking_number)
+        hyper_carrier_api_call_block do
+          carrier_client.find_pod(tracking_number)
+        end
+      end
+    end
+  end
+end
