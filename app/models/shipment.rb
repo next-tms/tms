@@ -116,6 +116,11 @@ class Shipment < ApplicationRecord
   before_save :sanitize_departed_origin_terminal_at, if: :departed_origin_terminal_at_changed?
   before_save :sanitize_quoted_delivery_by, if: :quoted_delivery_by_changed?
 
+  # Reference sanitization
+  before_save :squish_bol, if: :will_save_change_to_bol?
+  before_save :squish_pickup_confirmation, if: :will_save_change_to_pickup_confirmation?
+  before_save :squish_pro, if: :will_save_change_to_pro?
+
   # Fill in missing DateTimes
   # before_save :maybe_update_dispatched_at_to_now, if: :pickup_confirmation_changed?
   before_save :maybe_update_out_for_delivery_at_to_delivered_at, if: :delivered_at_changed?
@@ -1107,6 +1112,19 @@ class Shipment < ApplicationRecord
 
   def sanitize_quoted_delivery_by
     self.quoted_delivery_by = sanitize_datetime datetime: quoted_delivery_by, time_zone: receiver_address.time_zone
+  end
+
+  # Reference sanitization
+  def squish_bol
+    self.bol = bol&.squish
+  end
+
+  def squish_pickup_confirmation
+    self.pickup_confirmation = pickup_confirmation&.squish
+  end
+
+  def squish_pro
+    self.pro = pro&.squish
   end
 
   # Pricing
