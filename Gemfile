@@ -45,7 +45,9 @@ source 'https://rails-assets.org' do
 end
 gem 'bootstrap_form', '~> 4.5'
 
-# gem 'aws-sdk', group: :production
+gem 'aws-sdk', '~> 3.1.0', group: :production
+gem 'image_processing', '~> 1.12.1'
+
 gem 'devise', '~> 4.8.0'
 
 gem 'loadcss-rails'
