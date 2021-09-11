@@ -20,10 +20,10 @@
         <% if not @shipment.quote_id.blank? and not quote_uri(@shipment).blank? %>
           <li><%= link_to 'Quote', quote_uri(@shipment), target: '_blank' %></li>
         <% end %>
-        <% if not @shipment.picked_up_at.blank? and not @shipment.carrier_bol.blank? %>
+        <% unless @shipment.carrier_bol.blank? %>
           <li><%= link_to 'BOL', rails_blob_path(@shipment.carrier_bol, disposition: 'preview'), target: '_blank' %></li>
         <% end %>
-        <% if not @shipment.delivered_at.blank? and not @shipment.carrier_pod.blank? %>
+        <% unless @shipment.carrier_pod.blank? %>
           <li><%= link_to 'POD', rails_blob_path(@shipment.carrier_pod, disposition: 'preview'), target: '_blank' %></li>
         <% end %>
       </ul>
