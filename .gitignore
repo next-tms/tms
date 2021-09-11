@@ -30,3 +30,5 @@ yarn-debug.log*
 .yarn-integrity
 
 config/initializers/01_development_env.rb 
+
+/storage
