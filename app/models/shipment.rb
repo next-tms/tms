@@ -71,6 +71,9 @@ class Shipment < ApplicationRecord
   accepts_nested_attributes_for :shipment_broker_accessorials, allow_destroy: true, reject_if: :all_blank
   has_many :broker_accessorials, through: :shipment_broker_accessorials
 
+  has_one_attached :carrier_bol
+  has_one_attached :carrier_pod
+
   belongs_to :receiver_address, class_name: 'Address', required: true
   belongs_to :shipper_address, class_name: 'Address', required: true
 
@@ -180,6 +183,20 @@ class Shipment < ApplicationRecord
     false
   end
 
+  def fetch_carrier_bol
+    path = HyperCarrierApiClient.fetch_bol(broker_carrier: broker_carrier, tracking_number: pro)
+    return nil if path.blank?
+
+    carrier_bol.attach(io: File.open(path), filename: "#{load_id} BOL (Carrier).pdf", content_type: 'application/pdf')
+  end
+
+  def fetch_carrier_pod
+    path = HyperCarrierApiClient.fetch_pod(broker_carrier: broker_carrier, tracking_number: pro)
+    return nil if path.blank?
+
+    carrier_pod.attach(io: File.open(path), filename: "#{load_id} POD.pdf", content_type: 'application/pdf')
+  end
+
   def fingerprint
     str = ''.dup
     str = (bol_notes.blank? ? '' : bol_notes)
@@ -271,18 +288,25 @@ class Shipment < ApplicationRecord
     return nil if tracking_number.blank?
 
     begin
-      carrier = HyperCarrier.const_get(broker_carrier.carrier.scac)
-      carrier = carrier.new(
-        account: broker_carrier.account,
-        debug: !Rails.env.production?,
-        username: broker_carrier.username,
-        password: broker_carrier.password
+      @reactive_shipping_tracking = HyperCarrierApiClient.fetch_tracking(
+        broker_carrier: broker_carrier,
+        tracking_number: tracking_number
       )
-      @reactive_shipping_tracking = carrier.find_tracking_info(tracking_number)
-    # TODO: Remove `rescue StandardError`
-    rescue StandardError
+    rescue NotImplementedError => e
+      if Rails.env.production?
+        Rollbar.warning("Shipment#reactive_shipping_tracking id=#{id}", e)
+      else
+        raise
+      end
+
       @reactive_shipping_tracking = nil
-    rescue NotImplementedError
+    rescue StandardError => e # TODO: Remove catch-all rescue
+      if Rails.env.production?
+        Rollbar.critical("Shipment#reactive_shipping_tracking id=#{id}", e)
+      else
+        raise
+      end
+
       @reactive_shipping_tracking = nil
     end
   end
