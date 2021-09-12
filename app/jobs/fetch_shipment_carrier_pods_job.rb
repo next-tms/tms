@@ -1,12 +1,14 @@
 class FetchShipmentCarrierPodsJob < ApplicationJob
-  def perform(shipments = nil)
-    if shipments.blank?
-      shipments = Shipment.left_joins(
-        :carrier_pod_attachment
-      ).group(:id).having('COUNT(active_storage_attachments) = 0').where(
-        'delivered_at > ?', 1.week.ago
-      )
-    end
+  def perform(shipment_ids = nil)
+    shipments = if shipment_ids.blank?
+                  Shipment.left_joins(
+                    :carrier_pod_attachment
+                  ).group(:id).having('COUNT(active_storage_attachments) = 0').where(
+                    'delivered_at > ?', 1.week.ago
+                  )
+                else
+                  Shipment.where(id: shipment_ids)
+                end
 
     shipments.find_each do |shipment|
       next unless shipment.broker_carrier.api_configured?
