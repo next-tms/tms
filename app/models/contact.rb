@@ -6,6 +6,10 @@ class Contact < ApplicationRecord
   phony_normalize :mobile_phone, default_country_code: 'US'
   phony_normalize :work_phone, default_country_code: 'US'
 
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
   def label
     @label ||= read_attribute(:label) || "#{first_name} #{last_name}"
   end

@@ -1,0 +1,9 @@
+<% provide :title, "#{@broker_customer.customer.name} New Contact" %>
+<% provide :menu, render('broker/broker_customers/menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_customer.customer.name %></h1>
+  <p class="lead">New Contact</p>
+</div>
+
+<%= render 'form' %>
