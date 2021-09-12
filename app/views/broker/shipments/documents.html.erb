@@ -4,29 +4,49 @@
 
 <%= render 'header', page_title: 'Documents' %>
 
-<% cache do @shipment %>
-  <div class="row">
-    <div class="col-sm-3">
-      <p class="col-title">Customer</p>
-      <ul class="list-unstyled">
-        <li><%= link_to 'Bill of Lading', bol_document_broker_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></li>
-        <li><%= link_to 'Quote', quote_document_broker_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></li>
-      </ul>
-    </div>
-  
-    <div class="col-sm-3">
-      <p class="col-title">Carrier</p>
-      <ul class="list-unstyled">
-        <% if not @shipment.quote_id.blank? and not quote_uri(@shipment).blank? %>
-          <li><%= link_to 'Quote', quote_uri(@shipment), target: '_blank' %></li>
-        <% end %>
-        <% unless @shipment.carrier_bol.blank? %>
-          <li><%= link_to 'BOL', rails_blob_path(@shipment.carrier_bol, disposition: 'preview'), target: '_blank' %></li>
-        <% end %>
-        <% unless @shipment.carrier_pod.blank? %>
-          <li><%= link_to 'POD', rails_blob_path(@shipment.carrier_pod, disposition: 'preview'), target: '_blank' %></li>
-        <% end %>
-      </ul>
+<div class="row">
+  <div class="col col-md-6">
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped">
+        <thead>
+          <tr>
+            <th>Author</th>
+            <th>Kind</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><%= current_user.broker.name %></td>
+            <td>Bill of Lading</td>
+            <td><%= link_to icon('fas', 'eye', 'View'), bol_document_broker_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><%= current_user.broker.name %></td>
+            <td>Customer Quote</td>
+            <td><%= link_to icon('fas', 'eye', 'View'), quote_document_broker_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></td>
+            <td></td>
+          </tr>
+          <% unless @shipment.carrier_bol.blank? %>
+            <tr>
+              <td><%= @shipment.broker_carrier.carrier.name %></td>
+              <td>Bill of Lading</td>
+              <td><%= link_to icon('fas', 'eye', 'View'), rails_blob_path(@shipment.carrier_bol, disposition: 'preview'), 'data-turbolinks': 'false', target: '_blank' %></td>
+              <td><%= link_to icon('fas', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_bol, disposition: 'attachment'), 'data-turbolinks': 'false', download: "#{@shipment.load_id} BOL.pdf" %></td>
+            </tr>
+          <% end %>
+          <% unless @shipment.carrier_pod.blank? %>
+            <tr>
+              <td><%= @shipment.broker_carrier.carrier.name %></td>
+              <td>Proof of Delivery</td>
+              <td><%= link_to icon('fas', 'eye', 'View'), rails_blob_path(@shipment.carrier_pod, disposition: 'preview'), target: '_blank' %></td>
+              <td><%= link_to icon('fas', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_pod, disposition: 'attachment'), download: "#{@shipment.load_id} POD.pdf" %></td>
+            </tr>
+          <% end %>
+        <tbody>
+      </table>
     </div>
   </div>
-<% end %>
+</div>
