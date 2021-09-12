@@ -1,12 +1,13 @@
 <nav class="navbar navbar-menu navbar-expand">
   <div class="container-fluid">
     <ul class="navbar-nav">
-      <% if not action_name == 'index' %>
+      <% if !(controller.controller_name == 'broker_carriers' && action_name == 'index') %>
         <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Carriers'), broker_broker_carriers_path, class: 'nav-link' %></li>
       <% end %>
       <% if @broker_carrier and @broker_carrier.id %>
-        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', @broker_carrier.carrier.name), broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'industry', 'Shipments'), broker_broker_carrier_shipments_path(@broker_carrier), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'address-book', 'Contacts'), broker_broker_carrier_broker_carrier_contacts_path(@broker_carrier), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'sliders-h', 'Preferences'), edit_broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'file-contract', 'Tariff'), tariff_broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
       <% else %>

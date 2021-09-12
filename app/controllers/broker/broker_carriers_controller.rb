@@ -2,7 +2,7 @@
 
 class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :authenticate_user!
-  before_action :set_broker_carrier, only: %i[show edit preferences search_terminals shipments tariff update]
+  before_action :set_broker_carrier, only: %i[contacts edit preferences search_terminals shipments show tariff update]
 
   def edit
     @broker_carrier.check_mailing_address = Address.new if @broker_carrier.check_mailing_address.blank?
@@ -64,6 +64,16 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     else
       redirect_to [:broker, @broker_carrier]
     end
+  end
+
+  def contacts
+    if !current_user.broker == @broker_carrier.broker
+      unauthorized
+    end
+
+    @q = @broker_carrier.broker_carrier_contacts.includes(:contact).ransack(params[:q])
+    @q.sorts = 'contacts.first_name desc' if @q.sorts.blank?
+    @pagy, @broker_carrier_contacts = pagy(@q.result)
   end
 
   def shipments

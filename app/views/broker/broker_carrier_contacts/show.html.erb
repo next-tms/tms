@@ -1,0 +1,53 @@
+<% provide :title, @broker_carrier_contact.contact.full_name %>
+<% provide :menu, render('broker/broker_carriers/menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_carrier.carrier.name %></h1>
+  <p class="lead"><%= yield :title %></p>
+</div>
+
+<div class="row">
+  <div class="col col-md-6">
+    <div class="btn-toolbar mb-3">
+      <div class="btn-group">
+        <%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_broker_broker_carrier_broker_carrier_contact_path(@broker_carrier, @broker_carrier_contact), class: 'btn btn-primary' %>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <th>Name</th>
+            <td><%= @broker_carrier_contact.contact.full_name %></td>
+          </tr>
+          <tr>
+            <th>Title</th>
+            <td><%= @broker_carrier_contact.contact.job_title %></td>
+          </tr>
+          <tr>
+            <th>Phones</th>
+            <td>
+              <ul class="list-unstyled">
+                <% unless @broker_carrier_contact.contact.mobile_phone.blank? %>
+                  <li><%= link_to @broker_carrier_contact.contact.mobile_phone.phony_formatted, "tel:#{@broker_carrier_contact.contact.mobile_phone}" %> <span class="badge badge-info">Mobile</span></li>
+                <% end %>
+                <% unless @broker_carrier_contact.contact.work_phone.blank? %>
+                  <li><%= link_to @broker_carrier_contact.contact.work_phone.phony_formatted, "tel:#{@broker_carrier_contact.contact.work_phone}" %> <span class="badge badge-info">Office</span></li>
+                <% end %>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>
+              <% unless @broker_carrier_contact.contact.email.blank? %>
+                <%= link_to @broker_carrier_contact.contact.email, "mailto:#{@broker_carrier_contact.contact.email}" %>
+              <% end %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

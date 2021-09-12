@@ -1,0 +1,11 @@
+<% provide :title, "#{@broker_carrier.carrier.name} Contacts" %>
+<% provide :menu, render('broker/broker_carriers/menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_carrier.carrier.name %></h1>
+  <p class="lead">Contacts</p>
+</div>
+
+<%= render 'search_form' %>
+<%= render 'show_many', broker_carrier_contacts: @broker_carrier_contacts %>
+<%= render 'layouts/pagy', pagy: @pagy %>

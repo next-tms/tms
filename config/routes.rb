@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       member { get 'pricing' => 'broker_customers#pricing', as: :pricing }
       member { get 'pricing/edit' => 'broker_customers#edit_pricing', as: :edit_pricing }
       member { get 'sales-reps' => 'broker_customers#sales_reps', as: :sales_reps }
+      resources :broker_customer_contacts
     end
 
     resources :broker_customer_sales_reps, path: 'sales-reps' do
@@ -45,6 +46,7 @@ Rails.application.routes.draw do
     resources :broker_carriers, path: 'carriers' do
       member { get 'tariff' => 'broker_carriers#tariff', as: :tariff }
       member { get 'terminals/search' => 'broker_carriers#search_terminals', as: :search_terminals }
+      resources :broker_carrier_contacts, path: 'contacts'
     end
 
     resources :contacts

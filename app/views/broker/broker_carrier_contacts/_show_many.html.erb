@@ -1,0 +1,40 @@
+<% unless broker_carrier_contacts.blank? %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <th><%= sort_link @q, :contact_first_name, 'Name' %></th>
+          <th>Phone</th>
+          <th><%= sort_link @q, :contact_email, 'Email' %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% broker_carrier_contacts.each do |broker_carrier_contact| %>
+          <tr data-link="<%= broker_broker_carrier_broker_carrier_contact_path(@broker_carrier, broker_carrier_contact) %>" class="data-link">
+            <td>
+              <%= broker_carrier_contact.contact.first_name %>
+              <%= broker_carrier_contact.contact.last_name %>
+            </td>
+            <td>
+              <ul class="list-unstyled">
+                <% unless broker_carrier_contact.contact.mobile_phone.blank? %>
+                  <li><%= link_to broker_carrier_contact.contact.mobile_phone.phony_formatted, "tel:#{broker_carrier_contact.contact.mobile_phone.phony_formatted}" %> <span class="badge badge-info">Mobile</span></li>
+                <% end %>
+                <% unless broker_carrier_contact.contact.work_phone.blank? %>
+                  <li><%= link_to broker_carrier_contact.contact.work_phone.phony_formatted, "tel:#{broker_carrier_contact.contact.work_phone.phony_formatted}" %> <span class="badge badge-info">Office</span></li>
+                <% end %>
+              </ul>
+            </td>
+            <td>
+              <% unless broker_carrier_contact.contact.email.blank? %>
+                <%= link_to broker_carrier_contact.contact.email, "mailto:#{broker_carrier_contact.contact.email}" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>
