@@ -5,7 +5,7 @@
         <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Customers'), broker_broker_customers_path, class: 'nav-link' %></li>
       <% end %>
       <% if @broker_customer and @broker_customer.id %>
-        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', @broker_customer.customer.name), broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'plus', 'New Shipment'), new_broker_shipment_path(broker_customer_id: @broker_customer.id), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'industry', 'Shipments'), broker_broker_customer_shipments_path(@broker_customer), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'address-book', 'Contacts'), broker_broker_customer_broker_customer_contacts_path(@broker_customer), class: 'nav-link' %></li>
