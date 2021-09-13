@@ -1,15 +1,34 @@
-<div class="nested-fields form-inline form-row mb-2" data-controller="dimensions">
-  <%= f.hidden_field :_destroy %>
-  <%= f.number_field :quantity, hide_label: true, placeholder: 'Quantity', class: 'mr-1 col-1', wrapper: false, min: 1 %>
-  <%= f.select :packaging_id, Packaging.order(:name).all.collect {|c| [ c.name, c.id ] }, { label: 'Packaging', hide_label: true }, class: 'custom-select mr-2 col', wrapper: false %>
-  <%= f.text_field :desc, hide_label: 'true', placeholder: 'Description', class: 'mr-2 col', wrapper: false %>
-  <%= f.text_field :l, hide_label: true, placeholder: 'L', data: { action: 'keyup->dimensions#handle', 'dimensions-target': 'length' }, class: 'mr-1 col-1', wrapper: false %>
-  <%= f.text_field :w, hide_label: true, placeholder: 'W', data: { 'dimensions-target': 'width' }, class: 'mr-1 col-1', wrapper: false %>
-  <%= f.text_field :h, hide_label: true, placeholder: 'H', data: { 'dimensions-target': 'height' }, class: 'mr-1 col-1', wrapper: false %>
-  <%= f.text_field :weight, hide_label: true, placeholder: 'lbs', data: { 'dimensions-target': 'weight' }, class: 'mr-2 col-1', wrapper: false %>
-  <%= f.text_field :nmfc, hide_label: true, placeholder: 'NMFC', data: { 'dimensions-target': 'nmfc' }, class: 'mr-1 col-2', wrapper: false %>
-  <%= f.select :forced_class, [['Auto', nil]] + valid_classes.collect { |c| [c, c] }, { label: 'Class', hide_label: true, selected: ( f.object.forced_freight_class ? f.object.forced_freight_class : f.object.calculated_freight_class ) }, class: 'custom-select mr-2 col', wrapper: false %>
-  <div class="col">
-    <%= link_to icon('fas', 'trash'), '#', class: 'remove-fields btn btn-light' %>
+<div class="row gy-2 gx-3 align-items-center" data-controller="dimensions">
+  <%= f.hidden_field :_destroy, wrapper: false %>
+  <div class="col-sm-2">
+    <div class="input-group">
+      <%= f.number_field :quantity, hide_label: true, placeholder: '#', wrapper: true, min: 1, wrapper: false %>
+      <%= f.select :packaging_id, Packaging.order(:name).all.collect {|c| [ c.name, c.id ] }, { label: 'Packaging', hide_label: true, selected: ( f.object.packaging_id ? f.object.packaging_id : default_packaging_id ), wrapper: false }, class: 'form-select' %>
+    </div>
+  </div>
+
+  <div class="col-auto">
+    <%= f.text_field :desc, hide_label: 'true', placeholder: 'Description', wrapper: false %>
+  </div>
+
+  <div class="col-sm-3">
+    <div class="input-group">
+      <%= f.text_field :l, hide_label: true, placeholder: 'L', data: { action: 'keyup->dimensions#fromLength', 'dimensions-target': 'length' }, wrapper: false %>
+      <%= f.text_field :w, hide_label: true, placeholder: 'W', data: { 'dimensions-target': 'width' }, wrapper: false %>
+      <%= f.text_field :h, hide_label: true, placeholder: 'H', data: { 'dimensions-target': 'height' }, wrapper: false %>
+      <%= f.text_field :weight, hide_label: true, placeholder: 'lbs', data: { 'dimensions-target': 'weight' }, wrapper: false %>
+    </div>
+  </div>
+
+  <div class="col-auto">
+    <%= f.text_field :nmfc, hide_label: true, placeholder: 'NMFC', data: { 'dimensions-target': 'nmfc' }, wrapper: false %>
+  </div>
+
+  <div class="col-sm-1">
+    <%= f.select :forced_class, [['Auto', nil]] + valid_classes.collect { |c| [c, c] }, { label: 'Class', hide_label: true, selected: ( f.object.forced_freight_class ? f.object.forced_freight_class : f.object.calculated_freight_class ), wrapper: false }, class: 'form-select' %>
+  </div>
+
+  <div class="col-auto">
+    <%= link_to icon('fas', 'trash'), '#', class: 'remove-fields btn btn-light', wrapper: false %>
   </div>
 </div>
