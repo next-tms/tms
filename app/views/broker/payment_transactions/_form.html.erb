@@ -8,7 +8,7 @@
     </div>
   </div>
 
-  <%= f.text_field :due_on, label: 'Due On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @payment_transaction.due_on, time_zone: current_user.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+  <%= f.text_field :due_on, label: 'Due On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @payment_transaction.due_on, time_zone: current_user.time_zone) %>
 
   <% unless action_name = 'new' %>
     <%= f.text_field :shipment_load_id, label: 'Invoiced Load' %>

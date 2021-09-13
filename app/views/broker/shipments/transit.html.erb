@@ -19,7 +19,7 @@
           <%= link_to 'Find Rates', quote_broker_shipment_path(@shipment), class: 'btn btn-light' %>
         </div>
       </div>
-      <%= f.text_field :quoted_delivery_by, label: 'Quoted ETA', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.quoted_delivery_by, time_zone: @shipment.receiver_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+      <%= f.text_field :quoted_delivery_by, label: 'Quoted ETA', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.quoted_delivery_by, time_zone: @shipment.receiver_address.time_zone) %>
       <%= f.text_field :quote_id, label: 'Quote Ref', autocomplete: 'off' %>
       <%= f.text_field :pro, label: 'Pro', autocomplete: 'off' %>
       <% if not @shipment.broker_carrier.blank? and @shipment.broker_carrier.carrier.acts_as_broker? %>
@@ -30,17 +30,17 @@
 
     <div class="col-sm-4">
       <p class="col-title"><%= icon 'fas', 'truck-loading', 'Pickup' %></p>
-        <%= f.text_field :pickup_on, label: 'Pickup On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.pickup_on, time_zone: @shipment.shipper_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+        <%= f.text_field :pickup_on, label: 'Pickup On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.pickup_on, time_zone: @shipment.shipper_address.time_zone) %>
       <% unless @shipment.broker_carrier.blank? %>
-        <%= f.text_field :dispatched_at, label: 'Dispatched', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.dispatched_at, time_zone: @shipment.shipper_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+        <%= f.text_field :dispatched_at, label: 'Dispatched', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.dispatched_at, time_zone: @shipment.shipper_address.time_zone) %>
         <%= f.text_field :pickup_confirmation, label: (@shipment.broker_carrier.carrier.acts_as_broker? ? 'Pickup Ref' : 'Broker Pickup Ref'), autocomplete: 'off' %>
         <% if not @shipment.broker_carrier.blank? and @shipment.broker_carrier.carrier.acts_as_broker? %>
           <%= f.text_field :tracking_carrier_pickup_confirmation, label: 'Carrier Pickup Ref', autocomplete: 'off' %>
         <% end %>
-        <%= f.text_field :pickup_driver_assigned_at, label: 'Assigned', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.pickup_driver_assigned_at, time_zone: @shipment.shipper_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+        <%= f.text_field :pickup_driver_assigned_at, label: 'Assigned', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.pickup_driver_assigned_at, time_zone: @shipment.shipper_address.time_zone) %>
         <%= f.text_field :pickup_eta_at, label: 'ETA', class: 'timepicker' %>
-        <%= f.text_field :picked_up_at, label: 'Pickup', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.picked_up_at, time_zone: @shipment.shipper_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
-        <%= f.text_field :departed_origin_terminal_at, label: 'Departed', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.departed_origin_terminal_at, time_zone: @shipment.shipper_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+        <%= f.text_field :picked_up_at, label: 'Pickup', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.picked_up_at, time_zone: @shipment.shipper_address.time_zone) %>
+        <%= f.text_field :departed_origin_terminal_at, label: 'Departed', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.departed_origin_terminal_at, time_zone: @shipment.shipper_address.time_zone) %>
         <% unless @shipment.shipper_address.time_zone.blank? %>  
           <p class="text-muted text-right">Pickup times in <%= @shipment.shipper_address.time_zone.abbr(Date.current) %></p>
         <% end %>
@@ -49,15 +49,15 @@
 
     <div class="col-sm-4">
       <p class="col-title"><%= icon 'fas', 'people-carry', 'Delivery' %></p>
-      <%= f.text_field :promised_delivery_by, label: 'Promised By', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.promised_delivery_by, time_zone: @shipment.receiver_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+      <%= f.text_field :promised_delivery_by, label: 'Promised By', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.promised_delivery_by, time_zone: @shipment.receiver_address.time_zone) %>
       <% unless @shipment.broker_carrier.blank? %>
-        <%= f.text_field :deliver_by, label: 'ETA', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.deliver_by, time_zone: @shipment.receiver_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
-        <%= f.text_field :out_for_delivery_at, label: 'Out for delivery', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), value: maybe_in_time_zone(datetime: @shipment.out_for_delivery_at, time_zone: @shipment.receiver_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
-        <%= f.text_field :lost_on, label: 'Lost On', autocomplete: 'off', data: flatpickr_data, append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
-        <%= f.text_field :pending_appointment_since, label: 'Appointment Pending Since', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.pending_appointment_since, time_zone: @shipment.receiver_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
-        <%= f.text_field :delivery_appointment_on, label: 'Appointment On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.delivery_appointment_on, time_zone: @shipment.receiver_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
-        <%= f.text_field :delivery_appointment_at, label: 'Appointment At', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.delivery_appointment_at, time_zone: @shipment.shipper_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
-        <%= f.text_field :delivered_at, label: 'Delivered', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), value: maybe_in_time_zone(datetime: @shipment.delivered_at, time_zone: @shipment.shipper_address.time_zone), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+        <%= f.text_field :deliver_by, label: 'ETA', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.deliver_by, time_zone: @shipment.receiver_address.time_zone) %>
+        <%= f.text_field :out_for_delivery_at, label: 'Out for delivery', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), value: maybe_in_time_zone(datetime: @shipment.out_for_delivery_at, time_zone: @shipment.receiver_address.time_zone) %>
+        <%= f.text_field :lost_on, label: 'Lost On', autocomplete: 'off', data: flatpickr_data %>
+        <%= f.text_field :pending_appointment_since, label: 'Appointment Pending Since', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.pending_appointment_since, time_zone: @shipment.receiver_address.time_zone) %>
+        <%= f.text_field :delivery_appointment_on, label: 'Appointment On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.delivery_appointment_on, time_zone: @shipment.receiver_address.time_zone) %>
+        <%= f.text_field :delivery_appointment_at, label: 'Appointment At', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @shipment.delivery_appointment_at, time_zone: @shipment.shipper_address.time_zone) %>
+        <%= f.text_field :delivered_at, label: 'Delivered', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), value: maybe_in_time_zone(datetime: @shipment.delivered_at, time_zone: @shipment.shipper_address.time_zone) %>
         <% unless @shipment.receiver_address.time_zone.blank? %>
           <p class="text-muted text-right">Delivery times in <%= @shipment.receiver_address.time_zone.abbr(Date.current) %></p>
         <% end %>
