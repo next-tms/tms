@@ -15,5 +15,8 @@ import flatpickr from 'flatpickr'
 import 'jquery-timepicker/jquery.timepicker'
 import 'jquery-timepicker/jquery.timepicker.css'
 
+import 'tablesorter/dist/js/jquery.tablesorter.combined'
+
 import './global'
 import './custom'
+import './sortable'
