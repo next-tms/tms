@@ -29,7 +29,7 @@
   </div>
 
   <%= f.hidden_field :default_upcharge_percentage, value: 0 %>
-  <%= f.text_field :default_upcharge, label: '&nbsp;'.html_safe, default: 0, prepend: '$', class: 'money', autocomplete: 'off' %>
+  <%= f.text_field :default_upcharge, label: '&nbsp;'.html_safe, default: 0, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
 
   <div class="form-group row">
     <label class="col-form-label col-sm-2">Services</label>

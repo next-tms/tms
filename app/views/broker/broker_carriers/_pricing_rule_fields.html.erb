@@ -4,5 +4,5 @@
 
   <%= f.text_field :min_pallets, hide_label: true, placeholder: 'Min', class: 'mr-1 col-1', wrapper: false %>
   <%= f.text_field :max_pallets, hide_label: true, placeholder: 'Max', class: 'mr-1 col-1', wrapper: false %>
-  <%= f.text_field :cost_per_pallet, prepend: '$', hide_label: true, placeholder: 'Cost per pallet', class: 'money', autocomplete: 'off' %>
+  <%= f.text_field :cost_per_pallet, prepend: '$', hide_label: true, placeholder: 'Cost per pallet', data: money_controller_data, autocomplete: 'off' %>
 </div>

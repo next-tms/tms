@@ -1,7 +1,7 @@
 <div class="nested-fields form-inline form-row mb-2">
   <%= f.hidden_field :_destroy %>
   <%= f.select :event_id, Event.all.sort_by { |event| event.name }.collect { |event| [ event.name.capitalize, event.id ] }, { label: 'Event', hide_label: true }, class: 'custom-select mr-2' %>
-  <%= f.text_field :at, label: 'At', hide_label: true, autocomplete: 'off', class: 'flatpickr', value: maybe_in_time_zone(datetime: f.object.at, time_zone: (!f.object.time_zone.blank? ? current_user.time_zone : f.object.time_zone)), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+  <%= f.text_field :at, label: 'At', hide_label: true, autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.at, time_zone: (!f.object.time_zone.blank? ? current_user.time_zone : f.object.time_zone)), append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
   <%= f.text_field :city, hide_label: true, placeholder: 'City', class: 'ml-2 mr-2' %>
   <%= f.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, class: 'custom-select mr-2' %>
   <%= f.hidden_field :country_alpha2, value: 'US' %>

@@ -1,6 +1,18 @@
 module ApplicationHelper
   include Pagy::Frontend
 
+  # Stimulus
+  def money_controller_data
+    { action: 'blur->money#handle', controller: 'money', 'money-target': 'input' }
+  end
+
+  def flatpickr_data(options = {})
+    {
+      controller: 'flatpickr',
+      date_format: 'Y-m-d',
+    }.deep_merge(options)
+  end
+
   # From font-awesome-sass-5.12.0 gem
   def icon(style, name, text = nil, html_options = {})
     if text.is_a?(Hash)

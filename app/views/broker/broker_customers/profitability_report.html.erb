@@ -7,8 +7,8 @@
 </div>
 
 <%= bootstrap_form_tag(url: broker_customers_profitability_report_path, method: 'get', layout: :inline) do |f| %>
-  <%= f.text_field :from_date, label: 'From', autocomplete: 'off', class: 'flatpickr-date-max-today mr-2', value: (@from_date ? @from_date : '') %>
-  <%= f.text_field :to_date, label: 'Until', autocomplete: 'off', class: 'flatpickr-date-max-today', value: (@to_date ? @to_date : '') %>
+  <%= f.text_field :from_date, label: 'From', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), class: 'mr-2', value: (@from_date ? @from_date : '') %>
+  <%= f.text_field :to_date, label: 'Until', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), value: (@to_date ? @to_date : '') %>
   <div class="form-group">
     <%= f.submit class: 'btn btn-primary ml-2', value: 'Generate' %>
   </div>

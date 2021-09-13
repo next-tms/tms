@@ -7,8 +7,8 @@
 <%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment)) do |f| %>
   <h2 class="h5"><%= @shipment.broker_carrier.blank? ? 'Carrier' : @shipment.broker_carrier.carrier.name %></h2>
   <div class="form-inline form-row mb-2">
-    <%= f.text_field :carrier_cost, prepend: '$', label: 'Cost', class: 'money', autocomplete: 'off' %>
-    <%= f.text_field :carrier_charge, prepend: '$', label: 'Charge', class: 'money', autocomplete: 'off' %>
+    <%= f.text_field :carrier_cost, prepend: '$', label: 'Cost', data: money_controller_data, autocomplete: 'off' %>
+    <%= f.text_field :carrier_charge, prepend: '$', label: 'Charge', data: money_controller_data, autocomplete: 'off' %>
   </div>
 
   <h2 class="h5">Services</h2>

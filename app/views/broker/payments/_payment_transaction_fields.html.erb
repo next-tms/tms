@@ -3,8 +3,8 @@
   <%= f.text_field :shipment_load_id, hide_label: true, placeholder: 'Load', class: 'mr-1 col', wrapper: false %>
   <%= f.text_field :pro, hide_label: true, placeholder: 'Pro', class: 'mr-1 col', wrapper: false %>
   <%= f.text_field :invoice, hide_label: true, placeholder: 'Invoice', class: 'mr-1 col', wrapper: false %>
-  <%= f.text_field :balance, hide_label: true, placeholder: 'Balance', class: 'money mr-1 col', wrapper: false %>
-  <%= f.text_field :paid, hide_label: true, placeholder: 'Paid', class: 'money mr-1 col', wrapper: false %>
+  <%= f.text_field :balance, hide_label: true, placeholder: 'Balance', data: money_controller_data, class: 'mr-1 col', wrapper: false %>
+  <%= f.text_field :paid, hide_label: true, placeholder: 'Paid', data: money_controller_data, class: 'mr-1 col', wrapper: false %>
   <%= f.text_field :notes, hide_label: true, placeholder: 'Notes', class: 'mr-1 col', wrapper: false %>
   <%= f.check_box :additional_charge, label: 'Is additional charge?', class: 'mr-1 col', wrapper: false %>
   <div class="col">

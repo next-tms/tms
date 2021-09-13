@@ -14,7 +14,7 @@
         <%= f.text_field :pickup_hours_start_at, label: 'From', hide_label: true, class: 'timepicker col-3 ml-4 mr-2', wrapper: false %>
         <%= f.text_field :pickup_hours_end_at, label: 'To', hide_label: true, class: 'timepicker col-3', wrapper: false %>
       </div>
-      <%= f.text_field :pickup_on, label: 'Pickup On', class: 'flatpickr-date', append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+      <%= f.text_field :pickup_on, label: 'Pickup On', data: flatpickr_data, append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
       <%= f.text_field :shipper_contact_name, label: 'Contact' %>
       <%= f.telephone_field :shipper_contact_phone, label: 'Phone' %>
       <%= f.email_field :shipper_contact_email, label: 'Email' %>
@@ -38,7 +38,7 @@
         <%= f.text_field :delivery_hours_start_at, label: 'From', hide_label: true, class: 'timepicker col-3 ml-4 mr-2', wrapper: false %>
         <%= f.text_field :delivery_hours_end_at, label: 'To', hide_label: true, class: 'timepicker col-3', wrapper: false %>
       </div>
-      <%= f.text_field :deliver_by, label: 'Delivery Appointment', class: 'flatpickr', append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+      <%= f.text_field :deliver_by, label: 'Delivery Appointment', data: flatpickr_data, append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
       <%= f.text_field :receiver_contact_name, label: 'Contact' %>
       <%= f.telephone_field :receiver_contact_phone, label: 'Phone' %>
       <%= f.email_field :receiver_contact_email, label: 'Email' %>
@@ -61,7 +61,7 @@
       <%= f.text_field :pro, label: 'Pro', autocomplete: 'off' %>
 
       <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Value' %></p>
-      <%= f.text_field :value, label: 'Total', prepend: '$', class: 'money', autocomplete: 'off' %>
+      <%= f.text_field :value, label: 'Total', prepend: '$', data: money_controller_data, autocomplete: 'off' %>
     </div>
   </div>
 

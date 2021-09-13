@@ -1,3 +1,5 @@
+<div data-controller="hello"></div>
+
 <div class="row mb-2">
   <div class="col">
     <%= render 'layouts/pagy', pagy: @pagy %>
@@ -5,8 +7,8 @@
   <div class="col-auto float-right">
     <%= search_form_for(@q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
       <%= f.hidden_field :sorts, value: params[:q].try(:[], :s) %>
-      <%= f.text_field :booked_at_gt, placeholder: 'From', autocomplete: 'off', class: 'flatpickr-date-max-today mr-1' %>
-      <%= f.text_field :booked_at_lt, placeholder: 'Until', autocomplete: 'off', class: 'flatpickr-date-max-today mr-1' %>
+      <%= f.text_field :booked_at_gt, placeholder: 'From', autocomplete: 'off', data: flatpickr_data({ flatpickr_max_date: Date.current }), class: 'form-control mr-1' %>
+      <%= f.text_field :booked_at_lt, placeholder: 'Until', autocomplete: 'off', data: flatpickr_data({ flatpickr_max_date: Date.current }), class: 'form-control mr-1' %>
       <%= f.text_field :broker_carrier_carrier_name_or_broker_customer_customer_name_or_shipper_name_or_shipper_contact_name_or_receiver_name_or_receiver_contact_name_or_shipper_address_city_or_receiver_address_city_or_bol_notes_or_shipper_address_zip_code_or_receiver_address_zip_code_cont, placeholder: 'Filter', autofocus: true, class: 'form-control mr-2' %>
       <%= f.submit 'Filter', class: 'btn btn-primary' %>
     <% end %>

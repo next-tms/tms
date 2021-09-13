@@ -2,7 +2,7 @@
   <%= f.hidden_field :_destroy %>
   <%= f.text_field :min_length, hide_label: true, placeholder: 'Min', class: 'mr-1 col-1', wrapper: false %>
   <%= f.text_field :max_length, hide_label: true, placeholder: 'Max', class: 'mr-1 col-1', wrapper: false %>
-  <%= f.text_field :cost, prepend: '$', hide_label: true, placeholder: 'Cost', class: 'money', autocomplete: 'off' %>
+  <%= f.text_field :cost, prepend: '$', hide_label: true, placeholder: 'Cost', data: money_controller_data, autocomplete: 'off' %>
   <div class="col">
     <%= link_to icon('fas', 'trash'), '#', class: 'remove-fields btn btn-light' %>
   </div>
