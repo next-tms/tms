@@ -333,7 +333,7 @@
     <% if current_user.has_role? 'quoting' %>
       <div class="col-sm-4">
         <p class="col-title">For Quoting</p>
-<textarea class="form-control copyable" rows="4" readonly>
+<textarea class="form-control" data-action="click->clipboard#copy" data-controller="clipboard" rows="4" readonly>
 Load <%= @shipment.pretty_id %>
 
 Origin: <%= @shipment.shipper_address.city %>, <%= @shipment.shipper_address.state %>, <%= @shipment.shipper_address.zip_code %>
@@ -358,7 +358,7 @@ Destination: <%= @shipment.receiver_address.city %>, <%= @shipment.receiver_addr
     <% if current_user.has_role? 'accounts_receivable' %>
       <div class="col-sm-4">
         <p class="col-title">For Invoicing</p>
-<textarea class="form-control copyable" rows="4" readonly>
+<textarea class="form-control" data-action="click->clipboard#copy" data-controller="clipboard" rows="4" readonly>
 Load <%= @shipment.pretty_id %>
 
 Shipper Ref: <%= @shipment.shipper_reference %>
