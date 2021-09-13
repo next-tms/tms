@@ -13,3 +13,5 @@ application.register('flatpickr', Flatpickr)
 
 import { Tooltip, Toast, Popover } from 'bootstrap'
 import 'src/application.scss'
+
+import './sortable'

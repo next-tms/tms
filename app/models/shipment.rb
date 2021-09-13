@@ -189,6 +189,8 @@ class Shipment < ApplicationRecord
   end
 
   def fetch_carrier_bol
+    return nil if pro.blank?
+
     path = HyperCarrierApiClient.fetch_bol(broker_carrier: broker_carrier, tracking_number: pro)
     return nil if path.blank?
 
@@ -196,6 +198,8 @@ class Shipment < ApplicationRecord
   end
 
   def fetch_carrier_pod
+    return nil if pro.blank?
+
     path = HyperCarrierApiClient.fetch_pod(broker_carrier: broker_carrier, tracking_number: pro)
     return nil if path.blank?
 

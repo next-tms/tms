@@ -54,7 +54,7 @@ class Address < ApplicationRecord
   def restaurant?
     return nil unless types
 
-    types.include? 'restaurant'
+    !(types & ['food', 'meal takeaway', 'restaurant']).empty?
   end
 
   def full_address?
