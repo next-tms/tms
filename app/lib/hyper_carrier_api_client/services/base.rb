@@ -5,6 +5,7 @@ module HyperCarrierApiClient
     class Base
       API_TIMEOUT_EXCEPTIONS = [
         EOFError,
+        Errno::ECONNREFUSED,
         Net::OpenTimeout,
         Net::ReadTimeout
       ]
