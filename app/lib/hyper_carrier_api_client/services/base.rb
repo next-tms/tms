@@ -15,6 +15,10 @@ module HyperCarrierApiClient
         Net::ReadTimeout
       ]
 
+      SELENIUM_EXCEPTIONS = [
+        Selenium::WebDriver::Error::UnknownError
+      ]
+
       def initialize(broker_carrier:, retry_on_timeout: false, return_nil_on_404: false)
         @carrier_client = HyperCarrierApiClient.build_client(broker_carrier: broker_carrier)
         @broker_carrier = broker_carrier
@@ -31,6 +35,9 @@ module HyperCarrierApiClient
         rescue *API_NOT_FOUND_EXCEPTIONS
           result = nil
         rescue *API_TIMEOUT_EXCEPTIONS
+          sleep(20)
+          result = yield
+        rescue *SELENIUM_EXCEPTIONS
           sleep(20)
           result = yield
         rescue NotImplementedError
