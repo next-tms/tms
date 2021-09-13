@@ -515,7 +515,9 @@ class Shipment < ApplicationRecord
 
     tracking.shipment_events.each do |shipment_event|
       next if shipment_event.time.blank? || shipment_event.status.blank? ||
-              shipment_event.location.blank?
+              shipment_event.location.blank? ||
+              shipment_event.location.city.blank? ||
+              shipment_event.location.state.blank?
 
       fingerprint = Digest::SHA2.hexdigest(
         shipment_event.time +
