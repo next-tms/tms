@@ -29,6 +29,7 @@
       <link rel="prefetch" href="<%= url %>"/>
     <% end %>
   <% end %>
+    <%= javascript_pack_tag "application" %>
 </head>
 
 <body class="<% unless yield(:menu).empty? %>body-with-menu<% end %> <% unless yield(:auto_refresh).empty? %>auto-refresh<% end %>">

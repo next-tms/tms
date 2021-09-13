@@ -1,29 +1,49 @@
 {
+  "name": "app",
+  "private": true,
   "dependencies": {
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.15.5",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.15.6",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@rails/activestorage": "^6.0.2-1",
-    "@rails/ujs": "^6.1.4",
-    "@rails/webpacker": "5.4.2",
-    "bootstrap": "4.5.3",
-    "flatpickr": "^4.6.9",
-    "is-promise": "^4.0.0",
-    "jquery": "^3.6.0",
-    "jquery-timepicker": "^1.3.3",
-    "popper.js": "^1.16.1",
-    "resolve-url-loader": "^4.0.0",
-    "tablesorter": "^2.31.3",
-    "turbolinks": "^5.2.0",
-    "webpack": "^4.46.0",
-    "webpack-cli": "^3.3.12"
+    "@popperjs/core": "^2.10.1",
+    "@rails/actioncable": "latest",
+    "@rails/activestorage": "latest",
+    "@rails/webpacker": "^6.0.0-rc.5",
+    "autoprefixer": "^10.3.4",
+    "babel-plugin-macros": "^3.1.0",
+    "bootstrap": "^5.1.1",
+    "css-loader": "^6.2.0",
+    "mini-css-extract-plugin": "^2.3.0",
+    "mrujs": "^0.4.13",
+    "postcss": "^8.3.6",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-import": "^14.0.2",
+    "postcss-loader": "^6.1.1",
+    "postcss-preset-env": "^6.7.0",
+    "resolve-url": "^0.2.1",
+    "sass": "^1.39.2",
+    "sass-loader": "^12.1.0",
+    "style-loader": "^3.2.1",
+    "urix": "^0.1.0",
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0"
   },
+  "version": "0.1.0",
+  "babel": {
+    "presets": [
+      "./node_modules/@rails/webpacker/package/babel/preset.js"
+    ]
+  },
+  "browserslist": [
+    "defaults"
+  ],
   "devDependencies": {
-    "webpack-dev-server": "^3.11.2"
-  },
-  "engines": {
-    "node": "16.8.0",
-    "yarn": "1.22.11"
+    "@webpack-cli/serve": "^1.5.2",
+    "webpack-dev-server": "^4.2.0"
   }
 }

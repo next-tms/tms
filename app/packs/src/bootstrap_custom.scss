@@ -17,8 +17,12 @@ $font-size-base: 0.9rem;
 
 $link-color: darken($primary, 0.75);
 $link-hover-decoration: none;
+$link-decoration: none;
+
 $body-bg: black;
 $body-color: rgba(0, 0, 0, 0.85); // main is background-color: white
+
+$input-bg: white;
 
 $spacer: .5rem;
 $table-cell-padding: .34rem !default;
