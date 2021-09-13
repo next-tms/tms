@@ -5,11 +5,7 @@ module HyperCarrierApiClient
     class FetchTracking < Base
       def find(tracking_number)
         hyper_carrier_api_call_block do
-          begin
-            carrier_client.find_tracking_info(tracking_number)
-          rescue NotImplementedError
-            nil
-          end
+          carrier_client.find_tracking_info(tracking_number)
         end
       end
     end
