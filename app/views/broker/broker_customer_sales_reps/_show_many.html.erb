@@ -11,10 +11,12 @@
       </thead>
       <tbody>
         <% broker_customer_sales_reps.each do |broker_customer_sales_rep| %>
-          <tr data-link="<%= broker_broker_customer_sales_rep_path(broker_customer_sales_rep) %>" class="data-link">
+          <tr>
             <td>
-              <%= broker_customer_sales_rep.first_name %>
-              <%= broker_customer_sales_rep.last_name %>
+              <%= link_to broker_broker_customer_sales_rep_path(broker_customer_sales_rep) do %>
+                <%= broker_customer_sales_rep.first_name %>
+                <%= broker_customer_sales_rep.last_name %>
+              <% end %>
             </td>
             <td><%= BrokerCustomerSalesRep.where(user: broker_customer_sales_rep).size %></td>
             <td>

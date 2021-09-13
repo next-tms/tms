@@ -14,8 +14,8 @@
       </thead>
       <tbody>
         <% broker_customers.each do |broker_customer| %>
-          <tr data-link="<%= broker_broker_customer_path(broker_customer) %>" class="data-link">
-            <td><%= broker_customer.customer.name %></td>
+          <tr>
+            <td><%= link_to broker_customer.customer.name, broker_broker_customer_path(broker_customer) %></td>
             <td><%= broker_customer.shipments.active.size %></td>
           </tr>
         <% end %>

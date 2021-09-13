@@ -10,10 +10,12 @@
       </thead>
       <tbody>
         <% broker_carrier_contacts.each do |broker_carrier_contact| %>
-          <tr data-link="<%= broker_broker_carrier_broker_carrier_contact_path(@broker_carrier, broker_carrier_contact) %>" class="data-link">
+          <tr>
             <td>
-              <%= broker_carrier_contact.contact.first_name %>
-              <%= broker_carrier_contact.contact.last_name %>
+              <%= link_to broker_broker_carrier_broker_carrier_contact_path(@broker_carrier, broker_carrier_contact) do %>
+                <%= broker_carrier_contact.contact.first_name %>
+                <%= broker_carrier_contact.contact.last_name %>
+              <% end %>
             </td>
             <td>
               <ul class="list-unstyled">

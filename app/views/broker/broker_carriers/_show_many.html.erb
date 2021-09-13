@@ -15,8 +15,8 @@
       </thead>
       <tbody>
         <% broker_carriers.each do |broker_carrier| %>
-          <tr data-link="<%= broker_broker_carrier_path(broker_carrier) %>" class="data-link">
-            <td><%= broker_carrier.carrier.name %></td>
+          <tr>
+            <td><%= link_to broker_carrier.carrier.name, broker_broker_carrier_path(broker_carrier) %></td>
             <td>
               <%= current_user.broker.name %>
               <% unless broker_carrier.broker_customer.blank? %>

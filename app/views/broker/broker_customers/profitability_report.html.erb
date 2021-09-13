@@ -41,8 +41,12 @@
           <% total_charges = total_charges + profitability_report[:total_charges] %>
           <% total_profit = total_profit + profitability_report[:total_profit] %>
           <% total_shipments = total_shipments + profitability_report[:total_shipments] %>
-          <tr data-link="<%= broker_broker_customer_shipments_path(broker_customer.id, params: { from_date: @from_date, to_date: @to_date }) %>" class="data-link">
-            <td><%= broker_customer.customer.name %></td>
+          <tr>
+            <td>
+              <%= link_to broker_broker_customer_shipments_path(broker_customer.id, params: { from_date: @from_date, to_date: @to_date }) do %>
+                <%= broker_customer.customer.name %>
+              <% end %>
+            </td>
             <td><%= profitability_report[:total_shipments] %></td>
             <td><%= humanized_money_with_symbol profitability_report[:total_cost], no_cents_if_whole: false %></td>
             <td><%= humanized_money_with_symbol profitability_report[:total_charges], no_cents_if_whole: false %></td>
