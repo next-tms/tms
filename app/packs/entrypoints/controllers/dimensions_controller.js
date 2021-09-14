@@ -23,7 +23,7 @@ export default class extends Controller {
             this.widthTarget.value = dimensions[1].trim()
 
             const height = dimensions[2].split(' ')[0].trim()
-            const weight = dimensions[2].split(' ')[1].trim().toLowerCase().replace('lbs', '').trim()
+            const weight = dimensions[2].split(' ')[1].trim()
 
             this.heightTarget.value = height
             this.weightTarget.value = weight
@@ -43,8 +43,8 @@ export default class extends Controller {
 
     cleanup() {
         this.lengthTarget.value = this.lengthTarget.value.replace(/\D/g,'')
-        this.widthTarget.value = this.lengthTarget.value.replace(/\D/g,'')
-        this.heightTarget.value = this.lengthTarget.value.replace(/\D/g,'')
+        this.widthTarget.value = this.widthTarget.value.replace(/\D/g,'')
+        this.heightTarget.value = this.heightTarget.value.replace(/\D/g,'')
         this.weightTarget.value = this.weightTarget.value.replace(/\D/g,'')
     }
 }
