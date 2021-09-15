@@ -1,46 +1,37 @@
-<%= bootstrap_form_with(model: [:broker, @shipment], local: true, layout: :horizontal, label_col: 'col-sm-3', control_col: 'col-sm-8', id: 'shipment-form') do |f| %>
-
+<%= bootstrap_form_with(model: [:broker, @shipment], local: true, layout: :horizontal, label_col: 'col-sm-3', control_col: 'col-sm-8', id: 'shipment-form', data: { controller: 'autofill-shipper', 'autofill-shipper-target': 'form' }) do |f| %>
   <%= f.alert_message 'Unable to create shipment:' %>
 
-  <%= f.select :broker_customer_id, current_user.broker_customers.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@shipment.broker_customer ? @shipment.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
+  <%= f.select :broker_customer_id, current_user.broker_customers.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@shipment.broker_customer ? @shipment.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, data: { action: 'autofill-shipper#handle', 'autofill-shipper-target': 'brokerCustomer' }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
 
   <div class="row">
     <div class="col-sm-6 col-md-4">
       <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
       <%= f.text_field :shipper_name, label: 'Name', autofocus: 'autofocus' %>
-      <div class="form-group-row">
-        <div class="input-group w-100">
-          <label class="input-group-text col-sm-3">Pickup Hours</label>
-          <%= f.text_field :pickup_hours_start_at, label: 'From', hide_label: true, class: 'timepicker', wrapper: false %>
-          <%= f.text_field :pickup_hours_end_at, label: 'To', hide_label: true, class: 'timepicker', wrapper: false %>
-        </div>
-      </div>
-      <%= f.text_field :pickup_on, label: 'Pickup On', data: flatpickr_data %>
+      <%= f.text_field :pickup_on, label: 'Pickup', data: flatpickr_data %>
+      <%= f.text_field :pickup_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      <%= f.text_field :pickup_hours_end_at, label: '&nbsp;'.html_safe, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
       <%= f.text_field :shipper_contact_name, label: 'Contact' %>
       <%= f.telephone_field :shipper_contact_phone, label: 'Phone' %>
       <%= f.email_field :shipper_contact_email, label: 'Email' %>
-      <%= f.fields_for :shipper_address do |shipper_address_form| %>
-        <%= shipper_address_form.text_field :ref %>
-        <%= shipper_address_form.text_field :street %>
-        <%= shipper_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
-        <%= shipper_address_form.text_field :city %>
-        <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, class: 'form-select' %>
-        <%= shipper_address_form.text_field :zip_code, label: 'ZIP' %>
-        <%= shipper_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.shipper_address.country.blank? ? nil : @shipment.shipper_address.country.id) }, class: 'form-select' %>
-      <% end %>
+      <div data-autofill-shipper-target="shipperAddress">
+        <%= f.fields_for :shipper_address do |shipper_address_form| %>
+          <%= shipper_address_form.text_field :ref %>
+          <%= shipper_address_form.text_field :street %>
+          <%= shipper_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
+          <%= shipper_address_form.text_field :city %>
+          <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, class: 'form-select' %>
+          <%= shipper_address_form.text_field :zip_code, label: 'ZIP' %>
+          <%= shipper_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.shipper_address.country.blank? ? nil : @shipment.shipper_address.country.id) }, class: 'form-select' %>
+        <% end %>
+      </div>
     </div>
 
     <div class="col-sm-6 col-md-4">
       <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
       <%= f.text_field :receiver_name, label: 'Name' %>
-      <div class="form-group-row">
-        <div class="input-group w-100">
-          <label class="input-group-text col-sm-3">Delivery Hours</label>
-          <%= f.text_field :deliver_hours_start_at, label: 'From', hide_label: true, class: 'timepicker', wrapper: false %>
-          <%= f.text_field :delivery_hours_end_at, label: 'To', hide_label: true, class: 'timepicker', wrapper: false %>
-        </div>
-      </div>
-      <%= f.text_field :deliver_by, label: 'Delivery Appointment', data: flatpickr_data %>
+      <%= f.text_field :deliver_by, label: 'Appointment', data: flatpickr_data %>
+      <%= f.text_field :delivery_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      <%= f.text_field :delivery_hours_end_at, label: '&nbsp;'.html_safe, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
       <%= f.text_field :receiver_contact_name, label: 'Contact' %>
       <%= f.telephone_field :receiver_contact_phone, label: 'Phone' %>
       <%= f.email_field :receiver_contact_email, label: 'Email' %>

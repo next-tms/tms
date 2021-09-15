@@ -7,10 +7,16 @@ module ApplicationHelper
   end
 
   def flatpickr_data(options = {})
-    {
-      controller: 'flatpickr',
-      date_format: 'Y-m-d',
-    }.deep_merge(options)
+    if options[:override].blank?
+      {
+        controller: 'flatpickr',
+        date_format: 'Y-m-d',
+      }.deep_merge(options)
+    else
+      {
+        controller: 'flatpickr'
+      }.deep_merge(options[:override])
+    end
   end
 
   # From font-awesome-sass-5.12.0 gem

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomersController < Broker::BrokerController
-  before_action :set_broker_customer, only: %i[edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing sales_reps shipments show update]
+  before_action :set_broker_customer, only: %i[edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing primary_pickup_address sales_reps shipments show update]
   before_action :authenticate_user!
 
   def index
@@ -65,6 +65,19 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.primary_pickup_address = Address.new if @broker_customer.primary_pickup_address.blank?
   end
 
+  # Used by Stimulus autofill_shipper
+  def primary_pickup_address
+    respond_to do |format|
+      format.json do
+        if @broker_customer.broker == current_user.broker
+          render json: { primary_pickup_address: @broker_customer.primary_pickup_address }
+        else
+          head :unauthorized
+        end
+      end
+    end
+  end
+
   def update
     if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
       unauthorized
@@ -87,6 +100,13 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     if @broker_customer.broker == current_user.broker
       @shipments = @broker_customer.shipments.order(load_id: :desc).limit(25)
       @customer_contacts = @broker_customer.customer.customer_contacts
+
+      respond_to do |format|
+        format.html
+        format.json do
+          render json: { primary_pickup_address: @broker_customer.primary_pickup_address }
+        end
+      end
     else
       render file: 'public/401', layout: false, status: :unauthorized
     end
