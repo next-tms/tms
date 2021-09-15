@@ -1,5 +1,7 @@
 require("@rails/activestorage").start()
-require("mrujs") // Legacy @rails/ujs drop-in replacement
+
+import Turbolinks from "turbolinks"
+Turbolinks.start()
 
 import { Application } from 'stimulus'
 import { definitionsFromContext } from 'stimulus/webpack-helpers'
