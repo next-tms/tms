@@ -1,8 +1,5 @@
 require("@rails/activestorage").start()
 
-import mrujs from "mrujs"
-mrujs.start()
-
 import Turbolinks from "turbolinks"
 Turbolinks.start()
 
