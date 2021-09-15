@@ -20,10 +20,10 @@
             <td>
               <ul class="list-unstyled">
                 <% unless broker_carrier_contact.contact.mobile_phone.blank? %>
-                  <li><%= link_to broker_carrier_contact.contact.mobile_phone.phony_formatted, "tel:#{broker_carrier_contact.contact.mobile_phone.phony_formatted}" %> <span class="badge badge-info">Mobile</span></li>
+                  <li><%= link_to broker_carrier_contact.contact.mobile_phone.phony_formatted, "tel:#{broker_carrier_contact.contact.mobile_phone.phony_formatted}" %> <span class="badge bg-info">Mobile</span></li>
                 <% end %>
                 <% unless broker_carrier_contact.contact.work_phone.blank? %>
-                  <li><%= link_to broker_carrier_contact.contact.work_phone.phony_formatted, "tel:#{broker_carrier_contact.contact.work_phone.phony_formatted}" %> <span class="badge badge-info">Office</span></li>
+                  <li><%= link_to broker_carrier_contact.contact.work_phone.phony_formatted, "tel:#{broker_carrier_contact.contact.work_phone.phony_formatted}" %> <span class="badge bg-info">Office</span></li>
                 <% end %>
               </ul>
             </td>

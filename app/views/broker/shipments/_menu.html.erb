@@ -35,43 +35,43 @@
           <li class="navbar-item"><%= link_to icon('fas', 'plus', 'Fast Quote'), broker_quote_only_path, class: 'nav-link' %></li>
           <%= link_to broker_shipments_pending_quotation_path, class: 'nav-link' do %>
             <%= icon 'far', 'inbox', 'Inbox' %>
-            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_quotation.or(Shipment.where(broker_customer: [ current_user.broker_customers ]).canceled_recently).distinct.size, type: 'badge-dark' %>
+            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_quotation.or(Shipment.where(broker_customer: [ current_user.broker_customers ]).canceled_recently).distinct.size, type: 'bg-dark' %>
           <% end %>
         </li>
         <li class="navbar-item">
           <%= link_to broker_shipments_pending_dispatch_path, class: 'nav-link' do %>
             <%= icon 'fas', 'file-invoice-dollar', 'Quoted' %>
-            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_dispatch.size, type: 'badge-dark' %>
+            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_dispatch.size, type: 'bg-dark' %>
           <% end %>
         </li>
         <li class="navbar-item">
           <%= link_to broker_shipments_booked_path, class: 'nav-link' do %>
             <%= icon 'fas', 'bell', 'Booked' %>
-            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.booked.size, type: 'badge-dark' %>
+            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.booked.size, type: 'bg-dark' %>
           <% end %>
         </li>
         <li class="navbar-item">
           <%= link_to broker_shipments_pending_pickup_path, class: 'nav-link' do %>
             <%= icon 'fas', 'industry', 'Dispatched' %>
-            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_pickup.or(Shipment.where(broker_customer: [ current_user.broker_customers ]).canceled_recently.pending_pickup).distinct.size, type: 'badge-dark' %>
+            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_pickup.or(Shipment.where(broker_customer: [ current_user.broker_customers ]).canceled_recently.pending_pickup).distinct.size, type: 'bg-dark' %>
           <% end %>
         </li>
         <li class="navbar-item">
           <%= link_to broker_shipments_pending_departure_path, class: 'nav-link' do %>
             <%= icon 'fas', 'arrow-circle-up', 'Pending Departure' %>
-            <%= maybe_badge (Shipment.where(broker_customer: [ current_user.broker_customers ]).pending_departure).size, type: 'badge-dark' %>
+            <%= maybe_badge (Shipment.where(broker_customer: [ current_user.broker_customers ]).pending_departure).size, type: 'bg-dark' %>
           <% end %>
         </li>
         <li class="navbar-item">
           <%= link_to broker_shipments_pending_found_path, class: 'nav-link' do %>
             <%= icon 'fas', 'exclamation-circle', 'Lost' %>
-            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).pending_found.size, type: 'badge-danger' %>
+            <%= maybe_badge Shipment.where(broker_customer: [ current_user.broker_customers ]).pending_found.size, type: 'bg-danger' %>
           <% end %>
         </li>
         <li class="navbar-item">
           <%= link_to broker_shipments_pending_delivery_path, class: 'nav-link' do %>
             <%= icon 'fas', 'arrow-circle-right', 'In Transit' %>
-            <%= maybe_badge (Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_delivery - Shipment.where(broker_customer: [ current_user.broker_customers ]).active.late).size, type: 'badge-dark' %>
+            <%= maybe_badge (Shipment.where(broker_customer: [ current_user.broker_customers ]).active.pending_delivery - Shipment.where(broker_customer: [ current_user.broker_customers ]).active.late).size, type: 'bg-dark' %>
           <% end %>
         </li>
         <li class="navbar-item">
