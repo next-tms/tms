@@ -39,7 +39,9 @@
                 <% end %>
               </td>
             <% else %>
-              <td><%= short_date payment.paid_on, current_user.time_zone %></td>
+              <td>
+                <%= link_to short_date(payment.paid_on, current_user.time_zone), broker_payment_path(payment) %>
+              </td>
               <td><%== payment.bank&.pretty_name %></td>
             <% end %>
             <td>
