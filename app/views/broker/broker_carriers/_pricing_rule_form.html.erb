@@ -1,0 +1,13 @@
+<p class="col-title">From <%= f.object.carrier_area.from_area.name %> to <%= f.object.carrier_area.to_area.name %></p>
+<div class="pricing-rules-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+  <div class="col col-sm-4">
+    <div class="input-group">
+      <%= f.text_field :min_pallets, placeholder: 'Min', wrapper: false %>
+      <%= f.text_field :max_pallets, placeholder: 'Max', wrapper: false %>
+    </div>
+  </div>
+
+  <div class="col col-sm-2">
+    <%= f.text_field :cost_per_pallet, prepend: '$', hide_label: true, placeholder: 'Cost per pallet', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
+  </div>
+</div>

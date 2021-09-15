@@ -1,0 +1,30 @@
+<div class="broker-accessorial-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+  <div class="col-auto">
+    <%= f.select :accessorial_id, @broker_customer.eligible_broker_accessorials.where.not(accessorial: nil).map(&:accessorial).collect { |accessorial| [ accessorial.name, accessorial.id ] }, { hide_label: true, include_blank: 'API accessorial to use', wrapper: false }, class: 'form-select' %>
+  </div>
+
+  <div class="col col-md-1">
+    <%= f.text_field :code, placeholder: 'Code', wrapper: false %>
+  </div>
+
+  <div class="col col-md-2">
+    <%= f.text_field :name, placeholder: 'Name', wrapper: false %>
+  </div>
+
+  <div class="col col-md-1">
+    <%= f.text_field :upcharge_percent, default: 0, prepend: '%', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
+  </div>
+
+  <div class="col col-md-1">
+    <%= f.text_field :upcharge, default: 0, prepend: '$', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
+  </div>
+
+  <div class="col col-md-1">
+    <%= f.text_field :flat_charge, hide_label: true, help: 'Always apply this amount regardless of carrier fee', default: 0, prepend: '$', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
+  </div>
+
+  <div class="col-auto">
+    <%= f.hidden_field :_destroy %>
+    <%= link_to icon('fas', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
+  </div>
+</div>

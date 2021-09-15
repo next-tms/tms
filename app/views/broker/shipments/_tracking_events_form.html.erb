@@ -1,12 +1,23 @@
 <%= bootstrap_form_with(model: [:broker, @shipment]) do |f| %>
   <%= f.alert_message 'Unable to save tracking:' %>
 
-  <%= f.fields_for :tracking_events do |tracking_events_form| %>
-    <%= render 'tracking_event_fields', f: tracking_events_form  %>
-  <% end %>
-  <% if false %><%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :tracking_events, 'btn btn-light mt-2 mb-4' %><% end %>
+  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".tracking-event-form-wrapper">
+    <template data-nested-form-target="template">
+      <%= f.fields_for :tracking_events, TrackingEvent.new, child_index: 'NEW_RECORD' do |tracking_events_form| %>
+        <%= render 'tracking_event_form', f: tracking_events_form %>
+      <% end %>
+    </template>
 
-  <div class="form-group">
-    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+    <%= f.fields_for :tracking_events do |tracking_events_form| %>
+      <%= render 'tracking_event_form', f: tracking_events_form %>
+    <% end %>
+
+    <div data-nested-form-target="target"></div>
+
+    <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
   </div>
+
+  <%= f.form_group do %>
+    <%= f.submit class: 'btn btn-primary', value: 'Save' %>
+  <% end %>
 <% end %>

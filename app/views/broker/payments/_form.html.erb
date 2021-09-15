@@ -1,26 +1,30 @@
-<%= bootstrap_form_with(model: [:broker, @payment], local: true, layout: :horizontal, label_col: 'col-sm-2', control_col: 'col-sm-10') do |f| %>
+<%= bootstrap_form_with(model: [:broker, @payment], local: true, layout: :horizontal, label_col: 'col col-md-2', control_col: 'col') do |f| %>
   <%= f.alert_message 'Unable to save payment:' %>
 
-  <div class="form-group row">
-    <label class="col-form-label col-sm-2">Carrier</label>
-      <div class="col-sm-10">
-        <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, selected: (@payment.broker_carrier ? @payment.broker_carrier.id : nil) }, class: 'custom-select' %>
-    </div>
-  </div>
+  <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', selected: (@payment.broker_carrier ? @payment.broker_carrier.id : nil) }, class: 'custom-select' %>
 
-  <%= f.text_field :due_on, label: 'Due On', autocomplete: 'off', class: flatpickr_data, value: maybe_in_time_zone(datetime: @payment.due_on, time_zone: current_user.time_zone) %>
+  <%= f.text_field :due_on, label: 'Due', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @payment.due_on, time_zone: current_user.time_zone)&.to_date %>
 
+  <p class="col-title"><%= f.object.paid_on.blank? ? 'Statement' : 'Transactions' %></p>
   <div class="form-group row">
-    <label class="col-form-label col-sm-2">Transactions</label>
-      <div class="col-sm-10">
-        <%= f.fields_for :payment_transactions do |payment_transactions_form| %>
-          <%= render 'payment_transaction_fields', f: payment_transactions_form %>
+    <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".payment-transaction-form-wrapper">
+      <template data-nested-form-target="template">
+        <%= f.fields_for :payment_transactions, PaymentTransaction.new, child_index: 'NEW_RECORD' do |payment_transactions_form| %>
+          <%= render 'payment_transaction_form', f: payment_transactions_form %>
         <% end %>
-        <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :payment_transactions, 'btn btn-light mt-2 mb-4' %>
+      </template>
+
+      <%= f.fields_for :payment_transactions do |payment_transactions_form| %>
+        <%= render 'payment_transaction_form', f: payment_transactions_form %>
+      <% end %>
+
+      <div data-nested-form-target="target"></div>
+
+      <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
     </div>
   </div>
 
-  <div class="form-group">
-    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
-  </div>
+  <%= f.form_group do %>
+    <%= f.submit class: 'btn btn-primary', value: 'Save' %>
+  <% end %>
 <% end %>
