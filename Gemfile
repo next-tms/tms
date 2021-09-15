@@ -78,6 +78,10 @@ gem 'google_places'
 gem 'phony_rails'
 gem 'htmlentities'
 
+gem 'wicked_pdf', '~> 2.1.0'
+gem 'wkhtmltopdf-heroku', '~> 2.12.6.0', groups: %i[production staging]
+gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0', groups: %i[development]
+
 gem 'pagy'
 gem 'ransack', '~> 2.4.2'
 
