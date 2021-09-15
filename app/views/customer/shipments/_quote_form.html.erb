@@ -1,5 +1,4 @@
 <%= bootstrap_form_with(model: [:customer, @shipment], local: true, layout: :horizontal) do |f| %>
-
   <%= f.alert_message "Unable to create quote:" %>
 
   <div class="row">
@@ -39,6 +38,5 @@
 
   <div class="form-group">
     <%= f.submit class: 'btn btn-primary mt-4', value: 'Quote' %>
-  </div>
-   
+  </div>   
 <% end %>

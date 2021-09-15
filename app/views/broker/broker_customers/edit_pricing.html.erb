@@ -9,40 +9,52 @@
 <%= bootstrap_form_with(model: [:broker, @broker_customer], path: [:broker, @broker_customer], layout: :horizontal) do |f| %>
   <%= f.alert_message 'Unable to save customer:' %>
 
-  <div class="form-group row">
-    <label class="col-form-label col-sm-2">Rules</label>
-    <div class="col-sm-10">
-      <p>Set pricing per unit based on minimum and maximum counts</p>
-      <p><small class="text-muted">Leave max blank to mean “anything more than minimum count”</small></p>
-      <%= f.fields_for :upcharge_rules do |upcharge_rules_form| %>
-        <%= render 'upcharge_rule_fields', f: upcharge_rules_form %>
+  <p class="col-title">Rules</p>
+  <p>Set pricing per unit based on minimum and maximum counts</p>
+  <p><small class="text-muted">Leave max blank to mean “anything more than minimum count”</small></p>
+
+  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".upcharge-rule-form-wrapper">
+    <template data-nested-form-target="template">
+      <%= f.fields_for :upcharge_rules, UpchargeRule.new, child_index: 'NEW_RECORD' do |upcharge_rules_form| %>
+        <%= render 'upcharge_rule_form', f: upcharge_rules_form %>
       <% end %>
-      <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :upcharge_rules, 'btn btn-light mt-2 mb-4' %>
-    </div>
+    </template>
+
+    <%= f.fields_for :upcharge_rules do |upcharge_rules_form| %>
+      <%= render 'upcharge_rule_form', f: upcharge_rules_form %>
+    <% end %>
+
+    <div data-nested-form-target="target"></div>
+
+    <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
   </div>
 
-  <div class="form-group row">
-    <label class="col-form-label col-sm-2">Fallback</label>
-    <div class="col-sm-10">
-      <p>When no rules are matched, apply fallback pricing (per shipment):</p>
-    </div>
+  <p class="col-title">Fallback</p>
+  <p>When no rules are matched, apply fallback pricing (per shipment):</p>
+
+  <div class="col-2">
+    <%= f.hidden_field :default_upcharge_percentage, value: 0 %>
+    <%= f.text_field :default_upcharge, hide_label: true, default: 0, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
   </div>
 
-  <%= f.hidden_field :default_upcharge_percentage, value: 0 %>
-  <%= f.text_field :default_upcharge, label: '&nbsp;'.html_safe, default: 0, prepend: '$', class: 'money', autocomplete: 'off' %>
+  <p class="col-title">Services</p>
+  <p>Set bill amounts for specific services</p>
 
-  <div class="form-group row">
-    <label class="col-form-label col-sm-2">Services</label>
-      <div class="col-sm-10">
-      <p>Set bill amounts for specific services</p>
-      <%= f.fields_for :broker_accessorials do |broker_accessorials_form| %>
-        <%= render 'broker_accessorial_fields', f: broker_accessorials_form %>
+  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".broker-accessorial-form-wrapper">
+    <template data-nested-form-target="template">
+      <%= f.fields_for :broker_accessorials, BrokerAccessorial.new, child_index: 'NEW_RECORD' do |broker_accessorials_form| %>
+        <%= render 'broker_accessorial_form', f: broker_accessorials_form %>
       <% end %>
-      <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :broker_accessorials, 'btn btn-light mt-2 mb-4' %>
-    </div>
+    </template>
+
+    <%= f.fields_for :broker_accessorials do |broker_accessorials_form| %>
+      <%= render 'broker_accessorial_form', f: broker_accessorials_form %>
+    <% end %>
+
+    <div data-nested-form-target="target"></div>
+
+    <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
   </div>
 
-  <%= f.form_group do %>
-    <%= f.submit 'Save', class: 'btn btn-primary' %>
-  <% end %>
+  <%= f.submit 'Save', class: 'btn btn-primary' %>
 <% end %>

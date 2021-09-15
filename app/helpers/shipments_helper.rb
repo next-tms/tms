@@ -69,4 +69,8 @@ module ShipmentsHelper
     str << '</div>'
     str.html_safe
   end
+
+  def default_packaging_id
+    @default_packaging_id ||= Packaging.find_by_name('pallet')&.id
+  end
 end

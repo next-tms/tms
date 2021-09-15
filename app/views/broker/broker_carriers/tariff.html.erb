@@ -16,18 +16,30 @@
 <% if !@broker_carrier.as_reactive_shipping_carrier.blank? && !@broker_carrier.as_reactive_shipping_carrier.rates_with_excessive_length_fees %>
   <%= bootstrap_form_with(model: [:broker, @broker_carrier], path: [:broker, @broker_carrier]) do |f| %>
     <%= f.alert_message 'Unable to update account:' %>
-  
+
     <div class="form-group row">
       <label class="col-form-label col-sm-2">Overlength Rules</label>
         <div class="col-sm-10">
         <p>Minimum length and max length are inclusive, leave max length blank to mean “anything longer than minimum length”</p>
-        <%= f.fields_for :overlength_rules do |overlength_rules_form| %>
-          <%= render 'overlength_rule_fields', f: overlength_rules_form %>
-        <% end %>
-        <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :overlength_rules, 'btn btn-light mt-2 mb-4' %>
+
+        <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".overlength-rules-form-wrapper">
+          <template data-nested-form-target="template">
+            <%= f.fields_for :overlength_rules, OverlengthRule.new, child_index: 'NEW_RECORD' do |overlength_rules_form| %>
+              <%= render 'overlength_rule_form', f: overlength_rules_form %>
+            <% end %>
+          </template>
+
+          <%= f.fields_for :overlength_rules do |overlength_rules_form| %>
+            <%= render 'overlength_rule_form', f: overlength_rules_form %>
+          <% end %>
+
+          <div data-nested-form-target="target"></div>
+
+          <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+        </div>
       </div>
     </div>
-  
+
     <%= f.form_group do %>
       <%= f.submit class: 'btn btn-primary', value: 'Save' %>
     <% end %>
@@ -35,17 +47,18 @@
 <% elsif !@broker_carrier.carrier.carrier_areas.blank? %>
   <%= bootstrap_form_with(model: [:broker, @broker_carrier], path: [:broker, @broker_carrier]) do |f| %>
     <%= f.alert_message 'Unable to update account:' %>
-  
+
     <div class="form-group row">
       <label class="col-form-label col-sm-2">Pallet Pricing Rules</label>
         <div class="col-sm-10">
         <p>Minimum and max pallets are inclusive and required</p>
         <%= f.fields_for :pricing_rules do |pricing_rules_form| %>
-          <%= render 'pricing_rule_fields', f: pricing_rules_form %>
+          <%= render 'pricing_rule_form', f: pricing_rules_form %>
         <% end %>
+        </div>
       </div>
     </div>
-  
+
     <%= f.form_group do %>
       <%= f.submit class: 'btn btn-primary', value: 'Save' %>
     <% end %>

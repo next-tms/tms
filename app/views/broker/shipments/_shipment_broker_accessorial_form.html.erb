@@ -1,0 +1,20 @@
+<div class="shipment-broker-accessorial-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+  <div class="col-auto">
+    <%= f.select :broker_accessorial_id, (@shipment.broker_customer.blank? ? current_user.broker.broker_accessorials.where(broker_customer: nil) : @shipment.broker_customer.eligible_broker_accessorials).collect { |c| [c.name, c.id] }, { label: 'Accessorial', hide_label: true, wrapper: false }, class: 'form-select' %>
+  </div>
+
+  <% if action_name == 'pricing' %>
+    <div class="col-auto">
+      <%= f.text_field :cost, prepend: '$', label: 'Cost', data: money_controller_data, autocomplete: 'off' %>
+    </div>
+
+    <div class="col-auto">
+      <%= f.text_field :charge, prepend: '$', label: 'Charge', data: money_controller_data, autocomplete: 'off' %>
+    </div>
+  <% end %>
+
+  <div class="col-auto">
+    <%= f.hidden_field :_destroy %>
+    <%= link_to icon('fas', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
+  </div>
+</div>

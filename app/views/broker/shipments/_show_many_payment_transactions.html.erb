@@ -15,7 +15,7 @@
       </thead>
       <tbody>
         <% payment_transactions.each do |payment_transaction| %>
-          <tr class="data-link <%= 'bg-warning' if payment_transaction.variance and payment_transaction.variance > 0 %>">
+          <tr class="<%= 'bg-warning' if payment_transaction.variance and payment_transaction.variance > 0 %>">
             <td><%= payment_transaction.broker_carrier.carrier.name %></td>
             <td>
               <% unless payment_transaction.payment.blank? %>

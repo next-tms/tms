@@ -1,18 +1,13 @@
 <%= bootstrap_form_with(model: [:customer, @shipment], local: true, layout: :horizontal) do |f| %>
-
   <%= f.alert_message 'Unable to create shipment:' %>
 
   <div class="row">
     <div class="col-sm-6 col-md-4">
       <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
       <%= f.text_field :shipper_name, label: 'Name', autofocus: 'autofocus' %>
-      <!-- Worst code ever -->
-      <div class="form-group form-row mb-4">
-        <label class="col-form-label col-sm-3 mr-0 ml-0">Pickup Hours</label>
-        <%= f.text_field :pickup_hours_start_at, label: 'From', hide_label: true, class: 'timepicker col-3 ml-4 mr-2', wrapper: false %>
-        <%= f.text_field :pickup_hours_end_at, label: 'To', hide_label: true, class: 'timepicker col-3', wrapper: false %>
-      </div>
-      <%= f.text_field :pickup_on, label: 'Pickup On', class: 'flatpickr-date', append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+      <%= f.text_field :pickup_on, label: 'Pickup', data: flatpickr_data %>
+      <%= f.text_field :pickup_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      <%= f.text_field :pickup_hours_end_at, label: '&nbsp;'.html_safe, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
       <%= f.text_field :shipper_contact_name, label: 'Contact' %>
       <%= f.telephone_field :shipper_contact_phone, label: 'Phone' %>
       <%= f.email_field :shipper_contact_email, label: 'Email' %>
@@ -30,13 +25,10 @@
     <div class="col-sm-6 col-md-4">
       <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
       <%= f.text_field :receiver_name, label: 'Name' %>
-      <!-- Worst code ever -->
-      <div class="form-group form-row mb-4">
-        <label class="col-form-label col-sm-3 mr-0 ml-0">Delivery Hours</label>
-        <%= f.text_field :delivery_hours_start_at, label: 'From', hide_label: true, class: 'timepicker col-3 ml-4 mr-2', wrapper: false %>
-        <%= f.text_field :delivery_hours_end_at, label: 'To', hide_label: true, class: 'timepicker col-3', wrapper: false %>
-      </div>
-      <%= f.text_field :deliver_by, label: 'Delivery Appointment', class: 'flatpickr', append: link_to(icon('fas', 'trash'), '#', class: 'clear-flatpickr text-danger') %>
+      <%= f.text_field :deliver_by, label: 'Appointment', data: flatpickr_data %>
+      <%= f.text_field :delivery_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      <%= f.text_field :delivery_hours_end_at, label: '&nbsp;'.html_safe, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      <%= f.text_field :deliver_by, label: 'Delivery Appointment', data: flatpickr_data %>
       <%= f.text_field :receiver_contact_name, label: 'Contact' %>
       <%= f.telephone_field :receiver_contact_phone, label: 'Phone' %>
       <%= f.email_field :receiver_contact_email, label: 'Email' %>
@@ -59,7 +51,7 @@
       <%= f.text_field :pro, label: 'Pro', autocomplete: 'off' %>
 
       <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Value' %></p>
-      <%= f.text_field :value, label: 'Total', prepend: '$', class: 'money', autocomplete: 'off' %>
+      <%= f.text_field :value, label: 'Total', prepend: '$', data: money_controller_data, autocomplete: 'off' %>
     </div>
   </div>
 

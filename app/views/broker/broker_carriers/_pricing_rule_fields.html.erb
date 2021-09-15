@@ -1,8 +1,0 @@
-<p class="col-title">From <%= f.object.carrier_area.from_area.name %> to <%= f.object.carrier_area.to_area.name %></p>
-<div class="nested-fields form-inline form-row mb-2">
-  <%= f.hidden_field :_destroy %>
-
-  <%= f.text_field :min_pallets, hide_label: true, placeholder: 'Min', class: 'mr-1 col-1', wrapper: false %>
-  <%= f.text_field :max_pallets, hide_label: true, placeholder: 'Max', class: 'mr-1 col-1', wrapper: false %>
-  <%= f.text_field :cost_per_pallet, prepend: '$', hide_label: true, placeholder: 'Cost per pallet', class: 'money', autocomplete: 'off' %>
-</div>

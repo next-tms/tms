@@ -10,18 +10,20 @@
       </thead>
       <tbody>
         <% broker_customer_contacts.each do |broker_customer_contact| %>
-          <tr data-link="<%= broker_broker_customer_broker_customer_contact_path(@broker_customer, broker_customer_contact) %>" class="data-link">
+          <tr>
             <td>
-              <%= broker_customer_contact.contact.first_name %>
-              <%= broker_customer_contact.contact.last_name %>
+              <%= link_to broker_broker_customer_broker_customer_contact_path(@broker_customer, broker_customer_contact) do %>
+                <%= broker_customer_contact.contact.first_name %>
+                <%= broker_customer_contact.contact.last_name %>
+              <% end %>
             </td>
             <td>
               <ul class="list-unstyled">
                 <% unless broker_customer_contact.contact.mobile_phone.blank? %>
-                  <li><%= link_to broker_customer_contact.contact.mobile_phone.phony_formatted, "tel:#{broker_customer_contact.contact.mobile_phone.phony_formatted}" %> <span class="badge badge-info">Mobile</span></li>
+                  <li><%= link_to broker_customer_contact.contact.mobile_phone.phony_formatted, "tel:#{broker_customer_contact.contact.mobile_phone.phony_formatted}" %> <span class="badge bg-info">Mobile</span></li>
                 <% end %>
                 <% unless broker_customer_contact.contact.work_phone.blank? %>
-                  <li><%= link_to broker_customer_contact.contact.work_phone.phony_formatted, "tel:#{broker_customer_contact.contact.work_phone.phony_formatted}" %> <span class="badge badge-info">Office</span></li>
+                  <li><%= link_to broker_customer_contact.contact.work_phone.phony_formatted, "tel:#{broker_customer_contact.contact.work_phone.phony_formatted}" %> <span class="badge bg-info">Office</span></li>
                 <% end %>
               </ul>
             </td>

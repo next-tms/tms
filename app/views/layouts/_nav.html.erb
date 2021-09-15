@@ -13,7 +13,7 @@
       <% unless current_user %>
         <li class="navbar-item"><%= link_to 'Track Shipment', tracking_path, 'data-turbolinks': 'false', class: 'nav-link' %></li>
       <% end %>
-      <li class="navbar-item"><a href="#" data-toggle="modal" data-target="#nav-modal" class="btn nav-link"><%= icon 'fas', 'grip-horizontal' %></a></li>
+      <li class="navbar-item"><a href="#" data-bs-toggle="modal" data-bs-target="#nav-modal" class="btn nav-link" data-action="nav#modal"><%= icon 'fas', 'grip-horizontal' %></a></li>
       <% if current_user %>
         <% if current_user.broker? %>
           <li class="navbar-item">

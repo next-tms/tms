@@ -14,7 +14,7 @@
       </thead>
       <tbody>
         <% shipments.each do |shipment| %>
-          <tr data-link="<%= customer_shipment_path(shipment) %>" class="data-link">
+          <tr>
             <td>
               <%= link_to shipment.load_id, customer_shipment_path(shipment) %>
               <% if not shipment.out_for_delivery_at.blank? and shipment.delivered_at.blank? %>

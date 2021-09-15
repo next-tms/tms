@@ -25,8 +25,8 @@
       </thead>
       <tbody>
         <% @broker_customer.broker_carriers.each do |broker_broker_carrier| %>
-          <tr data-link="<%= broker_broker_carrier_path(broker_broker_carrier.id) %>" class="data-link">
-            <td><%= broker_broker_carrier.carrier.name %></td>
+          <tr>
+            <td><%= link_to broker_broker_carrier.carrier.name, broker_broker_carrier_path(broker_broker_carrier) %></td>
             <td><%= broker_broker_carrier.account %></td>
           </tr>
         <% end %>

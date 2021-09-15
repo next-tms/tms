@@ -10,8 +10,8 @@
       </thead>
       <tbody>
         <% banks.each do |bank| %>
-          <tr data-link="<%= broker_bank_path(bank) %>" class="data-link">
-            <td><%= bank.name %></td>
+          <tr>
+            <td><%= link_to bank.name, broker_bank_path(bank) %></td>
             <td><%= bank.account_number %></td>
             <td><%= bank.type.name %></td>
           </tr>

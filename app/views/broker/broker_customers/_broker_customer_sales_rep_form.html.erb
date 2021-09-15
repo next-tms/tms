@@ -1,0 +1,14 @@
+<div class="tracking-event-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+  <div class="col-auto">
+    <%= f.select :user_id, ( current_user.broker.users.brokers.order(:first_name).all ).collect { |user| [ "#{user.first_name} #{user.last_name}", user.id ] }, { label: 'User', hide_label: true, wrapper: false }, class: 'form-select' %>
+  </div>
+
+  <div class="col col-md-2">
+    <%= f.text_field :commission_percent, append: '%', wrapper: false %>
+  </div>
+
+  <div class="col-auto">
+    <%= f.hidden_field :_destroy %>
+    <%= link_to icon('fas', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
+  </div>
+</div>

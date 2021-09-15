@@ -1,0 +1,25 @@
+<div class="tracking-event-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+  <div class="col-auto">
+    <%= f.select :event_id, Event.all.sort_by { |event| event.name }.collect { |event| [ event.name.capitalize, event.id ] }, { label: 'Event', hide_label: true }, class: 'form-select' %>
+  </div>
+
+  <div class="col-auto">
+    <%= f.text_field :at, label: 'At', hide_label: true, autocomplete: 'off', data: flatpickr_data({ flatpickr_date_format: 'Y-m-d h:i K', flatpickr_enable_time: true }), value: maybe_in_time_zone(datetime: f.object.at, time_zone: (!f.object.time_zone.blank? ? current_user.time_zone : f.object.time_zone)) %>
+  </div>
+
+  <div class="col-auto">
+    <%= f.text_field :city, hide_label: true, placeholder: 'City' %>
+  </div>
+
+  <div class="col-auto">
+    <%= f.select :state, states_and_abbreviations, { hide_label: true, selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, class: 'form-select' %>
+  </div>
+
+  <div class="col-auto">
+    <%= f.form_group do %>
+      <%= f.hidden_field :country_alpha2, value: 'US', wrapper: false %>
+      <%= f.hidden_field :_destroy %>
+      <%= link_to icon('fas', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
+    <% end %>
+  </div>
+</div>
