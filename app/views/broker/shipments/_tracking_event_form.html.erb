@@ -4,7 +4,7 @@
   </div>
 
   <div class="col-auto">
-    <%= f.text_field :at, label: 'At', hide_label: true, autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.at, time_zone: (!f.object.time_zone.blank? ? current_user.time_zone : f.object.time_zone)) %>
+    <%= f.text_field :at, label: 'At', hide_label: true, autocomplete: 'off', data: flatpickr_data({ flatpickr_date_format: 'Y-m-d h:i K', flatpickr_enable_time: true }), value: maybe_in_time_zone(datetime: f.object.at, time_zone: (!f.object.time_zone.blank? ? current_user.time_zone : f.object.time_zone)) %>
   </div>
 
   <div class="col-auto">
