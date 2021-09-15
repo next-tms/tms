@@ -21,7 +21,7 @@
           <tr>
             <% if !@shipment.quote_only? %>
               <td>
-                <%= link_to 'Book', broker_shipment_path(@shipment, shipment: { applied_rate_uid: rate.uid }), method: :patch, class: 'btn btn-sm btn-primary' %>
+                <%= link_to 'Book', '#', data: { action: 'book#handle', controller: 'book', url: broker_shipment_path(@shipment), applied_rate_uid: rate.uid }, class: 'btn btn-sm btn-primary' %>
               </td>
             <% end %>
             <td>
