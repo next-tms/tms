@@ -53,7 +53,7 @@ gem 'devise', '~> 4.8.0'
 gem 'loadcss-rails'
 
 # liftoff.rocks
-gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: '14ee15475906142c0d30d3ed4b019d6a05a28386'
+gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: '10dc8005fe9babf8ab2aa6e6f4d93f62e2b4b810'
 
 gem 'rollbar'
 
