@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/brodyhoskins/hyper_carrier
-  revision: 33b4016fdd29347a10dccdde179870439759a24e
-  ref: 33b4016fdd29347a10dccdde179870439759a24e
+  revision: e515d3817fc8b981a598afee4b672424f4befffd
+  ref: e515d3817fc8b981a598afee4b672424f4befffd
   specs:
     hyper_carrier (0.0.1)
       active_utils (~> 3.3.1)
@@ -1325,6 +1325,8 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.12.4)
       mini_portile2 (~> 2.6.1)
+      racc (~> 1.4)
+    nokogiri (1.12.4-x86_64-darwin)
       racc (~> 1.4)
     nori (2.6.0)
     orm_adapter (0.5.0)
