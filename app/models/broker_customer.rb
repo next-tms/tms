@@ -80,7 +80,9 @@ class BrokerCustomer < ApplicationRecord
       if to_date
         return nil unless to_date
 
-        shipments = self.shipments.active.where(broker_customer: self).where('picked_up_at >= ?', from_date).where('picked_up_at <= ?', to_date)
+        shipments = self.shipments.active.where(broker_customer: self).where(
+          picked_up_at: (from_date.beginning_of_day..to_date.end_of_day)
+        )
       end
     else
       shipments = self.shipments
