@@ -23,7 +23,8 @@ module HyperCarrierApiClient
       ]
 
       SELENIUM_EXCEPTIONS = [
-        Selenium::WebDriver::Error::UnknownError
+        Selenium::WebDriver::Error::UnknownError,
+        Selenium::WebDriver::Error::WebDriverError
       ]
 
       def initialize(broker_carrier:, retry_on_timeout: false, return_nil_on_404: false)
