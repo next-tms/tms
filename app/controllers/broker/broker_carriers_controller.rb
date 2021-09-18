@@ -58,10 +58,30 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def update
-    if !@broker_carrier.update(broker_carrier_params)
+    @broker_carrier.assign_attributes(broker_carrier_params)
+    update_documents = @broker_carrier.will_save_change_to_account? || @broker_carrier.will_save_change_to_username? || @broker_carrier.will_save_change_to_password?
+
+    if !@broker_carrier.save
       flash[:error] = 'Unable to update carrier'
       render :edit
     else
+      if update_documents && @broker_carrier.api_configured?
+        shipments = @broker_carrier.shipments.where('created_at > ?', 90.days.ago)
+        unless shipments.blank?
+          TrackShipmentsJob.perform_later(shipments.pluck(:id))
+
+          pending_delivery_shipment_ids = shipments.pending_delivery.pluck(:id)  
+          unless pending_delivery_shipment_ids.blank?
+            FetchShipmentCarrierBolsJob.perform_later(pending_delivery_shipment_ids)
+          end
+
+          delivered_shipment_ids = shipments.delivered.pluck(:id)
+          unless delivered_shipment_ids.blank?
+            FetchShipmentCarrierPodsJob.perform_later(delivered_shipment_ids)
+          end
+        end
+      end
+
       redirect_to [:broker, @broker_carrier]
     end
   end
