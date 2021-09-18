@@ -4,8 +4,8 @@ module HyperCarrierApiClient
   module Services
     class Base
       API_INVALID_CREDENTIALS_EXCEPTIONS = [
-        HyperCarrier::ExpiredCredentials,
-        HyperCarrier::InvalidCredentials
+        HyperCarrier::ExpiredCredentialsError,
+        HyperCarrier::InvalidCredentialsError
       ]
 
       API_NOT_FOUND_EXCEPTIONS = [
