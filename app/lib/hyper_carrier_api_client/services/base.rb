@@ -5,10 +5,7 @@ module HyperCarrierApiClient
     class Base
       API_NOT_FOUND_EXCEPTIONS = [
         HyperCarrier::DocumentNotFound,
-        HyperCarrier::ExpiredCredentialsError,
-        HyperCarrier::InvalidCredentialsError,
-        HyperCarrier::ShipmentNotFound,
-        NotImplementedError
+        HyperCarrier::ShipmentNotFound
       ]
 
       API_TIMEOUT_EXCEPTIONS = [
@@ -22,7 +19,7 @@ module HyperCarrierApiClient
         Selenium::WebDriver::Error::UnknownError
       ]
 
-      def initialize(broker_carrier:, retry_on_timeout: true, return_nil_on_404: false)
+      def initialize(broker_carrier:, retry_on_timeout: false, return_nil_on_404: false)
         @carrier_client = HyperCarrierApiClient.build_client(broker_carrier: broker_carrier)
         @broker_carrier = broker_carrier
         @retry_on_timeout = retry_on_timeout
@@ -37,6 +34,8 @@ module HyperCarrierApiClient
         sleep(20)
         yield
       rescue *SELENIUM_EXCEPTIONS
+        nil
+      rescue NameError
         nil
       rescue NotImplementedError
         nil
