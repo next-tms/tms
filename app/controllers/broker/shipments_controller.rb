@@ -112,37 +112,26 @@ class Broker::ShipmentsController < Broker::BrokerController
     unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
       unauthorized
     end
+
     if !@shipment.quote_only?
-      @shipment.update_tracking_events
+      TrackShipmentJob.perform_later(@shipment) if Rails.env.development? || @shipment.delivered_at.blank?
+
+      unless @shipment.broker_bol_valid?
+        CreateShipmentBrokerBolJob.perform_later(domain: request.host, shipment: @shipment)
+      end
+  
+      unless @shipment.broker_quote_valid?
+        CreateShipmentBrokerQuoteJob.perform_later(domain: request.host, shipment: @shipment)
+      end
+
+      FetchShipmentCarrierBolsJob.perform_later([ @shipment.id ]) if Rails.env.development? || @shipment.carrier_bol.blank?
+      FetchShipmentCarrierPodsJob.perform_later([ @shipment.id ]) if Rails.env.development? || @shipment.carrier_pod.blank?
     else
       redirect_to quote_broker_shipment_path(@shipment)
     end
   end
 
   def documents; end
-
-  def documents_bol
-    unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
-      unauthorized
-    end
-    qrcode = RQRCode::QRCode.new(tracking_url(load_id: @shipment.load_id))
-    @qrcode = qrcode.as_svg(
-      offset: 0,
-      color: '000',
-      shape_rendering: 'crispEdges',
-      module_size: 3,
-      standalone: true,
-      size: 150
-    )
-    render 'shipments/documents_bol', layout: 'print'
-  end
-
-  def documents_quote
-    unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
-      unauthorized
-    end
-    render 'shipments/documents_quote', layout: 'print'
-  end
 
   def destroy
     unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')

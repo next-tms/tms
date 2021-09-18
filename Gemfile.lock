@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/brodyhoskins/hyper_carrier
-  revision: c0fd51c0d9da30ac5008291c84c5aad80b24d2f3
-  ref: c0fd51c0d9da30ac5008291c84c5aad80b24d2f3
+  revision: 1410eb3f536608d12a383a2fff002c3bc5e6c942
+  ref: 1410eb3f536608d12a383a2fff002c3bc5e6c942
   specs:
     hyper_carrier (0.0.1)
       active_utils (~> 3.3.1)
@@ -1470,6 +1470,10 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    wicked_pdf (2.1.0)
+      activesupport
+    wkhtmltopdf-binary-edge (0.12.6.0)
+    wkhtmltopdf-heroku (2.12.6.0)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.4.2)
@@ -1530,6 +1534,9 @@ DEPENDENCIES
   web-console (>= 3.3.0)
   webdrivers
   webpacker (~> 6.0.0.rc.5)
+  wicked_pdf (~> 2.1.0)
+  wkhtmltopdf-binary-edge (~> 0.12.6.0)
+  wkhtmltopdf-heroku (~> 2.12.6.0)
 
 RUBY VERSION
    ruby 3.0.2p107

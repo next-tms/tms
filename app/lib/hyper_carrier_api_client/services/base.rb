@@ -30,23 +30,16 @@ module HyperCarrierApiClient
       end
 
       def hyper_carrier_api_call_block
-        result = nil
-
-        begin
-          result = yield
-        rescue *API_NOT_FOUND_EXCEPTIONS
-          result = nil
-        rescue *API_TIMEOUT_EXCEPTIONS
-          sleep(20)
-          result = yield
-        rescue *SELENIUM_EXCEPTIONS
-          sleep(20)
-          result = yield
-        rescue NotImplementedError
-          result = nil
-        end
-
-        result
+        yield
+      rescue *API_NOT_FOUND_EXCEPTIONS
+        nil
+      rescue *API_TIMEOUT_EXCEPTIONS
+        sleep(20)
+        yield
+      rescue *SELENIUM_EXCEPTIONS
+        nil
+      rescue NotImplementedError
+        nil
       end
 
       attr_reader :carrier_client, :broker_carrier, :retry_on_timeout, :return_nil_on_404

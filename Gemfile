@@ -53,7 +53,7 @@ gem 'devise', '~> 4.8.0'
 gem 'loadcss-rails'
 
 # liftoff.rocks
-gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: 'c0fd51c0d9da30ac5008291c84c5aad80b24d2f3'
+gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: '1410eb3f536608d12a383a2fff002c3bc5e6c942'
 
 gem 'rollbar'
 
@@ -77,6 +77,10 @@ gem 'barby'
 gem 'google_places'
 gem 'phony_rails'
 gem 'htmlentities'
+
+gem 'wicked_pdf', '~> 2.1.0'
+gem 'wkhtmltopdf-heroku', '~> 2.12.6.0', groups: %i[production staging]
+gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0', groups: %i[development]
 
 gem 'pagy'
 gem 'ransack', '~> 2.4.2'

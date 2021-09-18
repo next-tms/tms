@@ -71,6 +71,8 @@ class Shipment < ApplicationRecord
   accepts_nested_attributes_for :shipment_broker_accessorials, allow_destroy: true, reject_if: :all_blank
   has_many :broker_accessorials, through: :shipment_broker_accessorials
 
+  has_one_attached :broker_bol
+  has_one_attached :broker_quote
   has_one_attached :carrier_bol
   has_one_attached :carrier_pod
 
@@ -209,20 +211,22 @@ class Shipment < ApplicationRecord
   def fingerprint
     str = ''.dup
     str = (bol_notes.blank? ? '' : bol_notes)
-    unless items.blank?
-      items.each do |item|
-        str += (item.l.blank? ? '' : item.l.to_s)
-        str += (item.w.blank? ? '' : item.w.to_s)
-        str += (item.h.blank? ? '' : item.h.to_s)
-        str += (item.weight.blank? ? '' : item.weight.to_s)
-        str += (item.forced_freight_class.blank? ? '' : item.forced_freight_class.to_s)
-        str += (item.calculated_freight_class.blank? ? '' : item.calculated_freight_class.to_s)
+    unless flattened_items.blank?
+      str += flattened_items.size.to_s
+      flattened_items.each do |flattened_item|
+        str += (flattened_item.l.blank? ? '' : flattened_item.l.to_s)
+        str += (flattened_item.w.blank? ? '' : flattened_item.w.to_s)
+        str += (flattened_item.h.blank? ? '' : flattened_item.h.to_s)
+        str += (flattened_item.weight.blank? ? '' : flattened_item.weight.to_s)
+        str += (flattened_item.forced_freight_class.blank? ? '' : flattened_item.forced_freight_class.to_s)
+        str += (flattened_item.calculated_freight_class.blank? ? '' : flattened_item.calculated_freight_class.to_s)
       end
     end
     str += accessorial_codes.join(', ') unless accessorials.blank?
     str += shipper_address.pretty(', ') unless shipper_address.blank?
     str += receiver_address.pretty(', ') unless receiver_address.blank?
-    Digest::SHA2.hexdigest str
+
+    Digest::SHA2.hexdigest(str)
   end
 
   def missing_deliver_by?
@@ -899,6 +903,14 @@ class Shipment < ApplicationRecord
 
     @linear_ft = (@linear_ft / 12.to_f).ceil
     # @linear_ft = ( @linear_ft / 12.to_f )
+  end
+
+  def broker_bol_valid?
+    @broker_bol_valid ||= !broker_bol.blank? && broker_bol_shipment_fingerprint == fingerprint
+  end
+
+  def broker_quote_valid?
+    @broker_quote_valid ||= !broker_quote.blank? && broker_quote_shipment_fingerprint == fingerprint
   end
 
   def to_param
