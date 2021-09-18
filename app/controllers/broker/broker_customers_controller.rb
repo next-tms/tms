@@ -20,8 +20,8 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @from_date = Date.current.at_beginning_of_month
     @to_date = Date.current
     unless params[:from_date].blank?
-      @from_date = params[:from_date]
-      @to_date = params[:to_date].blank? ? Date.current : params[:to_date]
+      @from_date = Date.parse(params[:from_date])
+      @to_date = params[:to_date].blank? ? Date.current : Date.parse(params[:to_date])
     end
   end
 

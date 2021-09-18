@@ -43,7 +43,7 @@
           <% total_shipments = total_shipments + profitability_report[:total_shipments] %>
           <tr>
             <td>
-              <%= link_to broker_broker_customer_shipments_path(broker_customer.id, params: { from_date: @from_date, to_date: @to_date }) do %>
+              <%= link_to broker_broker_customer_shipments_path(broker_customer.id, params: { q: { picked_up_at_gteq: @from_date, picked_up_at_lteq: @to_date } }) do %>
                 <%= broker_customer.customer.name %>
               <% end %>
             </td>

@@ -13,9 +13,9 @@
       <tbody>
         <% rates.each do |rate| %>
           <tr>
-            <td>
-              <%= link_to 'Book', customer_shipment_path(@shipment, shipment: { applied_rate_uid: rate.uid }), method: :patch, class: 'btn btn-sm btn-primary' %>
-            </td>
+              <td>
+                <%= link_to 'Book', '#', data: { action: 'book#handle', controller: 'book', url: customer_shipment_path(@shipment), applied_rate_uid: rate.uid }, class: 'btn btn-sm btn-primary' %>
+              </td>
             <td>
               <div class="text-nowrap">
                 <% if not rate.tracking_carrier.blank? %>

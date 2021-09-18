@@ -93,11 +93,18 @@ class Broker::ShipmentsController < Broker::BrokerController
     end
     @shipment.updated_by = current_user
     @shipment.save
-    if !@shipment.update(shipment_params)
-      flash[:error] = "Unable to update shipment: #{@shipment.errors.full_messages.join(', ')}"
-      redirect_back fallback_location: edit_broker_shipment_path(@shipment)
-    else
-      redirect_to broker_shipment_path(@shipment)
+
+    respond_to do |format|
+      if !@shipment.update(shipment_params)
+        format.html do
+          flash[:error] = "Unable to update shipment: #{@shipment.errors.full_messages.join(', ')}"
+          redirect_back fallback_location: edit_broker_shipment_path(@shipment)
+        end
+        format.json { render json: @shipment.errors, status: :unprocessable_entity }
+      else
+        format.html { redirect_to broker_shipment_path(@shipment) }
+        format.json { redirect_to broker_shipment_path(@shipment), status: :see_other }
+      end
     end
   end
 

@@ -105,14 +105,17 @@ class Customer::ShipmentsController < Customer::CustomerController
     unless shipment_params[:applied_rate_uid].blank?
       @shipment.carrier_charge = current_user.broker_customer.carrier_charge_calculator(carrier_cost: @shipment.carrier_cost, shipment: @shipment)
     end
-    if !@shipment.update(shipment_params)
-      flash[:error] = "Unable to update shipment: #{@shipment.errors.full_messages.join(', ')}"
-      redirect_back fallback_location: edit_customer_shipment_path(@shipment)
-    else
-      if !@shipment.shipper_address.full_address? || !@shipment.receiver_address.full_address?
-        redirect_to edit_customer_shipment_path(@shipment) and return
+
+    respond_to do |format|
+      if !@shipment.update(shipment_params)
+        format.html do
+          flash[:error] = "Unable to update shipment: #{@shipment.errors.full_messages.join(', ')}"
+          redirect_back fallback_location: edit_customer_shipment_path(@shipment)
+        end
+        format.json { render json: @shipment.errors, status: :unprocessable_entity }
       else
-        redirect_to customer_shipment_path(@shipment) and return
+        format.html { redirect_to customer_shipment_path(@shipment) }
+        format.json { redirect_to customer_shipment_path(@shipment), status: :see_other }
       end
     end
   end
