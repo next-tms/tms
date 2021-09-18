@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
     response.set_header('Permissions-Policy', 'interest-cohort=()')
   end
 
-  def check_website_belongs_to_broker
+  def check_if_website_belongs_to_broker
     if current_user
       if @website
         raise ApplicationController::NotAuthorized unless current_user.broker == @website.broker
