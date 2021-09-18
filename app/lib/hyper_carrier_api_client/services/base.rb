@@ -50,7 +50,6 @@ module HyperCarrierApiClient
         sleep(20)
         yield
       rescue *SELENIUM_EXCEPTIONS => e
-        Rails.env.development? ? Rails.logger.debug(e) : Rollbar.warning(e)
         nil
       rescue *SELENIUM_TIMEOUT_EXCEPTIONS
         sleep(20)
