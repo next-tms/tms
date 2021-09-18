@@ -6,7 +6,12 @@ module HyperCarrierApiClient
       def self.call(broker_carrier:)
         config = { debugging: !Rails.env.production?, timeout: 60 }
 
-        carrier = HyperCarrier.const_get(broker_carrier.carrier.scac)
+        carrier = begin
+                    HyperCarrier.const_get(broker_carrier.carrier.scac)
+                  rescue NameError
+                    nil
+                  end
+
         return nil if carrier.blank?
 
         new_carrier_client ||= carrier.new(

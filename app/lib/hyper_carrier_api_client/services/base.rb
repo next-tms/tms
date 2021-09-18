@@ -35,8 +35,6 @@ module HyperCarrierApiClient
         yield
       rescue *SELENIUM_EXCEPTIONS
         nil
-      rescue NameError
-        nil
       rescue NotImplementedError
         nil
       end
