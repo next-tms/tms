@@ -3,9 +3,16 @@
 module HyperCarrierApiClient
   module Services
     class Base
+      API_INVALID_CREDENTIALS_EXCEPTIONS = [
+        HyperCarrier::ExpiredCredentials,
+        HyperCarrier::InvalidCredentials
+      ]
+
       API_NOT_FOUND_EXCEPTIONS = [
         HyperCarrier::DocumentNotFound,
-        HyperCarrier::ShipmentNotFound
+        HyperCarrier::ResponseError,
+        HyperCarrier::ShipmentNotFound,
+        NotImplementedError
       ]
 
       API_TIMEOUT_EXCEPTIONS = [
@@ -28,14 +35,14 @@ module HyperCarrierApiClient
 
       def hyper_carrier_api_call_block
         yield
+      rescue *API_INVALID_CREDENTIALS_EXCEPTIONS
+        nil
       rescue *API_NOT_FOUND_EXCEPTIONS
         nil
       rescue *API_TIMEOUT_EXCEPTIONS
         sleep(20)
         yield
       rescue *SELENIUM_EXCEPTIONS
-        nil
-      rescue NotImplementedError
         nil
       end
 
