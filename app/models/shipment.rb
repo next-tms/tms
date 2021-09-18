@@ -300,28 +300,10 @@ class Shipment < ApplicationRecord
                       end
     return nil if tracking_number.blank?
 
-    begin
-      @reactive_shipping_tracking = HyperCarrierApiClient.fetch_tracking(
-        broker_carrier: broker_carrier,
-        tracking_number: tracking_number
-      )
-    rescue NotImplementedError => e
-      if Rails.env.production?
-        Rollbar.warning("Shipment#reactive_shipping_tracking id=#{id}", e)
-      else
-        raise
-      end
-
-      @reactive_shipping_tracking = nil
-    rescue StandardError => e # TODO: Remove catch-all rescue
-      if Rails.env.production?
-        Rollbar.critical("Shipment#reactive_shipping_tracking id=#{id}", e)
-      else
-        raise
-      end
-
-      @reactive_shipping_tracking = nil
-    end
+    @reactive_shipping_tracking = HyperCarrierApiClient.fetch_tracking(
+      broker_carrier: broker_carrier,
+      tracking_number: tracking_number
+    )
   end
 
   # HyperCarrier wrappers
