@@ -23,6 +23,11 @@ module HyperCarrierApiClient
       ]
 
       SELENIUM_EXCEPTIONS = [
+        Selenium::WebDriver::Error::UnknownError
+      ]
+
+      SELENIUM_TIMEOUT_EXCEPTIONS = [
+        Errno::ECONNREFUSED,
         Selenium::WebDriver::Error::UnknownError,
         Selenium::WebDriver::Error::WebDriverError
       ]
@@ -43,8 +48,12 @@ module HyperCarrierApiClient
       rescue *API_TIMEOUT_EXCEPTIONS
         sleep(20)
         yield
-      rescue *SELENIUM_EXCEPTIONS
+      rescue *SELENIUM_EXCEPTIONS => e
+        Rails.env.development? ? Rails.logger.debug(e) : Rollbar.warning(e)
         nil
+      rescue *SELENIUM_TIMEOUT_EXCEPTIONS
+        sleep(20)
+        yield
       end
 
       attr_reader :carrier_client, :broker_carrier, :retry_on_timeout, :return_nil_on_404
