@@ -4,6 +4,8 @@ module HyperCarrierApiClient
   module Services
     class BuildApiClient
       def self.call(broker_carrier:)
+        return nil if broker_carrier.carrier&.scac.blank?
+
         config = { debugging: !Rails.env.production?, timeout: 60 }
 
         carrier = begin
