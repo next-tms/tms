@@ -1,7 +1,11 @@
+# frozen_string_literal: true
+
 class TrackShipmentsJob < ApplicationJob
   def perform(shipment_ids)
-    shipment_ids.each do |shipment_id|
-      Shipment.find(shipment_id).update_tracking_events
+    shipments = Shipment.where(id: shipment_ids)
+
+    shipments.find_each do |shipment|
+      TrackShipmentJob.perform_later(shipment)
     end
   end
 end

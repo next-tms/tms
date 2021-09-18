@@ -8,6 +8,9 @@ class Item < ApplicationRecord
   belongs_to :packaging
   accepts_nested_attributes_for :packaging, allow_destroy: true, reject_if: :all_blank
 
+  has_many :shipment_items, dependent: :destroy
+  has_many :shipments, through: :shipment_items
+
   validates :quantity, numericality: { only_integer: true, greater_than: 0 }, presence: true
   validates :weight, numericality: { only_integer: true, greater_than: 0 }, presence: true
   validates :desc, presence: true
