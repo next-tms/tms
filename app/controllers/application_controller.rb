@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   include Pagy::Backend
 
   before_action :add_floc_opt_out_header
-  before_action :set_website, :check_if_website_belongs_to_broker
+  before_action :check_website, :check_if_website_belongs_to_broker
   protect_from_forgery with: :exception
 
   # Rescue from invalid authenticity token
@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
     response.set_header('Permissions-Policy', 'interest-cohort=()')
   end
 
-  def check_if_website_belongs_to_broker
+  def check_website_belongs_to_broker
     if current_user
       if @website
         raise ApplicationController::NotAuthorized unless current_user.broker == @website.broker
@@ -42,8 +42,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def set_website
+  def check_website
     @website ||= Website.find_by_domain(request.host) || nil
+    redirect_to 'https://next-tms.com/' and return if @website.blank?
   end
 
   def user_sign_in_path
