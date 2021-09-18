@@ -3,7 +3,8 @@
 class Rate < ApplicationRecord
   scope :with_calculated_freight_classes, -> { where(with_calculated_freight_classes: true) }
   scope :with_forced_freight_classes, -> { where(with_calculated_freight_classes: false) }
-  scope :without_error, -> { where(error: nil) }
+  scope :with_error, -> { where.not(error: nil).where.not(error: '') }
+  scope :without_error, -> { where.not(id: with_error) }
 
   before_save :maybe_set_expires_at
   before_save :set_incomplete

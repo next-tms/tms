@@ -14,6 +14,17 @@
   <%= render 'layouts/message', classes: 'bg-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>
 <% end %>
 
+<% unless @shipment.rates.with_error.blank? %>
+  <% message = [] %>
+  <% @shipment.rates.with_error.includes(broker_carrier: :carrier).find_each do |rate| %>
+    <% message << "<p class=\"font-monospace\">#{rate.broker_carrier.carrier.name} (account ##{rate.broker_carrier.account}): #{rate.error}</p>" %>
+  <% end %>
+  <% message = message.uniq.join('<br>') %>
+  <% message = "<p>The following quotes were not included:</p>#{message}".html_safe %>
+
+  <%= render 'layouts/message', classes: 'bg-warning', title: 'API errors found', message: message %>
+<% end %>
+
 <ul class="list-inline list-unstyled font-weight-bold">
   <li class="list-inline-item">Quoted <%= long_date DateTime.current, current_user.time_zone %></li>
   <li class="list-inline-item">Rates valid through <%= long_date (DateTime.current + 14.days), current_user.time_zone %></li>

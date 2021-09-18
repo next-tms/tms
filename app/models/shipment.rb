@@ -307,8 +307,8 @@ class Shipment < ApplicationRecord
   end
 
   # HyperCarrier wrappers
-  def update_rates
-    return [] if !Rails.env.development? && !rates.blank? && rates.first.shipment_fingerprint == fingerprint
+  def update_rates(force = false)
+    return [] if !force && !rates.blank? && rates.first.shipment_fingerprint == fingerprint
 
     return if calculated_freight_classes.uniq == [nil] && forced_freight_classes.uniq.nil?
 
@@ -390,60 +390,102 @@ class Shipment < ApplicationRecord
           cost = Money.new(pricing_rule.cost_per_pallet * flattened_items.size)
           cost += broker_carrier.quote_padding unless broker_carrier.quote_padding.blank?
 
-          rate = Rate.new
-          rate.shipment = self
-          rate.accessorials = combined_accessorials
-          rate.broker_carrier = broker_carrier
-          rate.broker_customer = broker_customer
-          rate.with_calculated_freight_classes = true # Default when there is no difference
-          rate.cost = cost
-          rate.reference = nil
-          rate.transit_days = nil
-          rate.reactive_shipping_service_type = 'standard'
-          rate.request = nil
-          rate.response = nil
+          rate = Rate.new(
+            shipment: self,
+            accessorials: combined_accessorials,
+            broker_carrier: broker_carrier,
+            broker_customer: broker_customer,
+            with_calculated_freight_classes: true, # Default when there is no difference
+            cost: cost,
+            reference: nil,
+            transit_days: nil,
+            reactive_shipping_service_type: 'standard',
+            request: nil,
+            response: nil
+          )
           rate.save
+
           break
         end
       end
 
-      carrier = broker_carrier.as_reactive_shipping_carrier
-      next if carrier.blank?
-
       package_sets.each do |package_set|
-        begin
-          response = carrier.find_rates(origin, destination, package_set.dig(:packages),
-                                        accessorials: reactive_shipping_accessorials)
-        rescue NotImplementedError => e
-          Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: Returned invalid response (error): #{e.backtrace}: #{e.message} (#{e.class})"
-          next
-        rescue StandardError => e
-          Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: Returned invalid response (error): #{e.backtrace}: #{e.message} (#{e.class})"
-          next
-        end
+        response = HyperCarrierApiClient.fetch_rates(
+          broker_carrier: broker_carrier,
+          origin: origin,
+          destination: destination,
+          package_set: package_set,
+          accessorials: reactive_shipping_accessorials
+        )
 
-        if response.blank?
-          Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: HyperCarrier returned blank response"
+        next if response.blank? # Carrier doesn't support quoting
+
+        if response.rates.blank?
+          rate = Rate.new(
+            shipment: self,
+            accessorials: combined_accessorials,
+            broker_carrier: broker_carrier,
+            broker_customer: broker_customer,
+            error: 'API Error: Carrier returned no rates',
+            with_calculated_freight_classes: !package_set.dig(:use_forced_freight_classes),
+            cost: nil,
+            reference: nil,
+            tracking_carrier: tracking_carrier,
+            transit_days: nil,
+            reactive_shipping_service_type: nil,
+            request: response.request,
+            response: response.params
+          )
+          rate.save
+
           next
         end
 
         reactive_shipping_rates = response.rates
-        if reactive_shipping_rates.blank?
-          Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: Carrier returned blank response"
-          next
-        end
-
         reactive_shipping_rates.each do |reactive_shipping_rate|
           cost = Money.new(reactive_shipping_rate.price)
           if cost == Money.new(0)
-            Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: HyperCarrier returned blank cost"
+            rate = Rate.new(
+              shipment: self,
+              accessorials: combined_accessorials,
+              broker_carrier: broker_carrier,
+              broker_customer: broker_customer,
+              error: 'API Error: Cost was blank',
+              with_calculated_freight_classes: !package_set.dig(:use_forced_freight_classes),
+              cost: nil,
+              reference: nil,
+              tracking_carrier: tracking_carrier,
+              transit_days: nil,
+              reactive_shipping_service_type: nil,
+              request: response.request,
+              response: response.params
+            )
+            rate.save
+
             next
           end
+
           cost += broker_carrier.quote_padding unless broker_carrier.quote_padding.blank?
 
           unless reactive_shipping_rate.with_excessive_length_fees
             if broker_carrier.overlength_rules.blank?
-              Rails.logger.info "Shipment#update_quotes: HyperCarrier::#{broker_carrier.carrier.scac}: HyperCarrier unable to quote overlength fees as they are tariff-based; broker has not defined tariff rules"
+              rate = Rate.new(
+                shipment: self,
+                accessorials: combined_accessorials,
+                broker_carrier: broker_carrier,
+                broker_customer: broker_customer,
+                error: 'API Error: Unable to quote overlength fees as they are tariff-based, broker has not defined tariff rules',
+                with_calculated_freight_classes: !package_set.dig(:use_forced_freight_classes),
+                cost: nil,
+                reference: nil,
+                tracking_carrier: tracking_carrier,
+                transit_days: nil,
+                reactive_shipping_service_type: nil,
+                request: response.request,
+                response: response.params
+              )
+              rate.save
+
               next
             end
 
@@ -470,27 +512,48 @@ class Shipment < ApplicationRecord
           if broker_carrier.carrier.acts_as_broker?
             carrier_name = reactive_shipping_rate.carrier.dig(:name)
             carrier_scac = reactive_shipping_rate.carrier.dig(:scac)
-            next if carrier_scac.blank? || carrier_name.blank?
+            if carrier_scac.blank? || carrier_name.blank?
+              rate = Rate.new(
+                shipment: self,
+                accessorials: combined_accessorials,
+                broker_carrier: broker_carrier,
+                broker_customer: broker_customer,
+                error: 'API Error: Carrier (acting as broker) API returned quote with missing carrier name and SCAC',
+                with_calculated_freight_classes: !package_set.dig(:use_forced_freight_classes),
+                cost: nil,
+                reference: nil,
+                tracking_carrier: tracking_carrier,
+                transit_days: nil,
+                reactive_shipping_service_type: nil,
+                request: response.request,
+                response: response.params
+              )
+              rate.save
 
+              next
+            end
+
+            # Import carrier information
             tracking_carrier = Carrier.find_by_scac(carrier_scac)
             if tracking_carrier.blank?
               tracking_carrier = Carrier.create(name: carrier_name.titleize, scac: carrier_scac.upcase)
             end
           end
 
-          rate = Rate.new
-          rate.shipment = self
-          rate.accessorials = combined_accessorials
-          rate.broker_carrier = broker_carrier
-          rate.broker_customer = broker_customer
-          rate.with_calculated_freight_classes = !package_set.dig(:use_forced_freight_classes)
-          rate.cost = cost
-          rate.reference = reactive_shipping_rate.estimate_reference
-          rate.tracking_carrier = tracking_carrier
-          rate.transit_days = reactive_shipping_rate.transit_days
-          rate.reactive_shipping_service_type = reactive_shipping_rate.service_name.to_s
-          rate.request = response.request
-          rate.response = response.params
+          rate = Rate.new(
+            shipment: self,
+            accessorials: combined_accessorials,
+            broker_carrier: broker_carrier,
+            broker_customer: broker_customer,
+            with_calculated_freight_classes: !package_set.dig(:use_forced_freight_classes),
+            cost: cost,
+            reference: reactive_shipping_rate.estimate_reference,
+            tracking_carrier: tracking_carrier,
+            transit_days: reactive_shipping_rate.transit_days,
+            reactive_shipping_service_type: reactive_shipping_rate.service_name.to_s,
+            request: response.request,
+            response: response.params
+          )
           rate.save
         end
       end
