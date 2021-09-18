@@ -23,7 +23,8 @@ module HyperCarrierApiClient
       ]
 
       SELENIUM_EXCEPTIONS = [
-        Selenium::WebDriver::Error::UnknownError
+        Selenium::WebDriver::Error::SessionNotCreatedError,
+        Selenium::WebDriver::Error::UnexpectedAlertOpenError
       ]
 
       SELENIUM_TIMEOUT_EXCEPTIONS = [
