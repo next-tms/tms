@@ -13,7 +13,7 @@
         <% broker_customer_sales_reps.each do |broker_customer_sales_rep| %>
           <tr>
             <td>
-              <%= link_to broker_broker_customer_sales_rep_path(broker_customer_sales_rep) do %>
+              <%= link_to broker_broker_customer_sales_rep_path(broker_customer_sales_rep, target: '_top') do %>
                 <%= broker_customer_sales_rep.first_name %>
                 <%= broker_customer_sales_rep.last_name %>
               <% end %>

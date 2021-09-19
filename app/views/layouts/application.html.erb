@@ -12,7 +12,9 @@
   <% else %>
     <meta name="description" content="<%= t :app_name %> breathes life into your shipments by automating your biggest headaches."/>
   <% end %>
-  <% if not yield(:no_cache).blank? %><meta name="turbolinks-cache-control" content="no-cache"/><% end %>
+  <% if !yield(:no_cache).blank? || !flash.blank? %>
+    <meta name="turbo-cache-control" content="no-cache"/>
+  <% end %>
   <link href="https://<%= @website.blank? ? 'liftoff.rocks' : @website.domain %><%= request.fullpath %>" rel="canonical" />
 
   <%= csrf_meta_tags %>
@@ -36,7 +38,7 @@
   <!--[if IE]>
     <div class="alert bg-danger mb-0 rounded-0">
       <div class="container-fluid">
-        <p>Your browser is currently unsupported. Please consider using <%= link_to 'Microsoft Edge', 'https://www.microsoft.com/en-us/edge', 'data-turbolinks': 'false', target: '_blank' %>, <%= link_to 'Google Chrome', 'https://www.google.com/chrome/', 'data-turbolinks': 'false', target: '_blank' %> or <%= link_to 'Mozilla Firefox', 'https://www.mozilla.org/en-US/firefox/new/', 'data-turbolinks': 'false', target: '_blank' %>.</p>
+        <p>Your browser is currently unsupported. Please consider using <%= link_to 'Microsoft Edge', 'https://www.microsoft.com/en-us/edge', 'data-turbo': 'false', target: '_blank' %>, <%= link_to 'Google Chrome', 'https://www.google.com/chrome/', 'data-turbo': 'false', target: '_blank' %> or <%= link_to 'Mozilla Firefox', 'https://www.mozilla.org/en-US/firefox/new/', 'data-turbo': 'false', target: '_blank' %>.</p>
       </div>
     </div>
   <![endif]-->

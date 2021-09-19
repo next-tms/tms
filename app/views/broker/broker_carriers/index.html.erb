@@ -6,6 +6,6 @@
   <p class="lead">Overview</p>
 </div>
 
-<%= render 'search_form' %>
-<%= render 'show_many', broker_carriers: @broker_carriers %>
-<%= render 'layouts/pagy', pagy: @pagy %>
+<%= turbo_frame_tag :broker_carriers do %>
+  <%= render 'show_many', broker_carriers: @broker_carriers %>
+<% end %>

@@ -1,1 +1,13 @@
-<%= shipment_show_many_table(shipments: shipments, td_names: ['id', 'status', 'broker_customer', 'broker_carrier', 'pro', 'shipper', 'receiver', 'picked_up_at', 'promised_delivery_by', 'delivery_at', 'size']) %>
+<% unless table.blank? %>
+  <% if @pagy %>
+    <%= render 'broker/shipments/search_form' %>
+  <% end %>
+  
+  <%= table %>
+  
+  <% if @pagy %>
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% end %>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>

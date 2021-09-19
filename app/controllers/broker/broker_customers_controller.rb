@@ -117,8 +117,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
       unauthorized
     end
 
-    @broker_customer_carriers = BrokerCarrier.where broker: @broker_customer.broker, customer: @broker_customer.customer
-
     @q = @broker_customer.shipments.ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)

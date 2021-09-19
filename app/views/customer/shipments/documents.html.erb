@@ -10,9 +10,9 @@
     <div class="col-sm-3">
       <p class="col-title">Shipping Documents</p>
       <ul class="list-unstyled">
-        <li><%= link_to 'Bill of Lading', bol_document_customer_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></li>
+        <li><%= link_to 'Bill of Lading', bol_document_customer_shipment_path(@shipment), 'data-turbo': 'false', target: '_blank' %></li>
         <% unless @shipment.total_charges.blank? %>
-          <li><%= link_to 'Quote', quote_document_customer_shipment_path(@shipment), 'data-turbolinks': 'false', target: '_blank' %></li>
+          <li><%= link_to 'Quote', quote_document_customer_shipment_path(@shipment), 'data-turbo': 'false', target: '_blank' %></li>
         <% end %>
       </ul>
     </div>

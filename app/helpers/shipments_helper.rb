@@ -1,6 +1,6 @@
 module ShipmentsHelper
   def shipment_show_many_table(shipments:, td_names:)
-    return render('layouts/no_content').html_safe if shipments.blank?
+    return nil if shipments.blank?
 
     td_names_map = [
       ['broker_carrier', 'Carrier', :broker_carrier_carrier_name],
@@ -22,12 +22,12 @@ module ShipmentsHelper
       ['shipper_contact_name', 'Contact', :shipper_contact_name],
       ['size', 'Size', :items_count],
       ['status', 'Status', nil],
-      ['total_cost', 'Cost', nil],
-      ['total_charges', 'Charge', nil]
+      ['total_cost', 'Cost', :total_cost_cents],
+      ['total_charges', 'Charge', :total_charges_cents]
     ]
 
     str = '<div class="table-responsive">'
-    str << '<table class="table table-condensed table-borderless table-striped table-hover sortable">'
+    str << '<table class="table table-condensed table-borderless table-striped table-hover">'
     str << '<thead>'
     str << '<tr>'
     td_names.each do |td_name|
@@ -58,7 +58,11 @@ module ShipmentsHelper
       td_names.each do |td_name|
         td_names_map.each do |td_names_map_line|
           if td_names_map_line[0] == td_name
-            str << render("broker/shipments/show_many_td_#{td_names_map_line[0]}", shipment: shipment)
+            str << render(
+              partial: "broker/shipments/show_many_td_#{td_names_map_line[0]}",
+              formats: %i[html],
+              locals: { shipment: shipment }
+            )
           end
         end
       end

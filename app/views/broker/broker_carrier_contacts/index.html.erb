@@ -6,6 +6,6 @@
   <p class="lead">Contacts</p>
 </div>
 
-<%= render 'search_form' %>
-<%= render 'show_many', broker_carrier_contacts: @broker_carrier_contacts %>
-<%= render 'layouts/pagy', pagy: @pagy %>
+<%= turbo_frame_tag :broker_carrier_contacts do %>
+  <%= render 'show_many', broker_carrier_contacts: @broker_carrier_contacts %>
+<% end %>

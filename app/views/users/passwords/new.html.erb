@@ -5,7 +5,7 @@
   <p class="lead"><%= yield :title %></p>
 </div>
 
-<%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), layout: :horizontal, label_col: 'col-sm-1', control_col: 'col-sm-4') do |f| %>
+<%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), data: { turbo: false }, layout: :horizontal, label_col: 'col-sm-1', control_col: 'col-sm-4') do |f| %>
   <%= f.alert_message 'Unable to send email:' %>
   <%= f.email_field :email, placeholder: 'Your email address', hide_label: true, class: 'form-control', required: true, autofocus: true %>
   <%= f.submit 'Send email', class: 'btn btn-primary' %>
