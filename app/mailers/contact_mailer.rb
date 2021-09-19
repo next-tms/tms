@@ -61,7 +61,7 @@ class ContactMailer < ActionMailer::Base
 
     from = pretty_email(from_user)
     mail(
-      cc: from,
+      bcc: from,
       from: from,
       reply_to: from,
       to: pretty_email(to_contact),
