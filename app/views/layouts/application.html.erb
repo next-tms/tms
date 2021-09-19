@@ -15,7 +15,7 @@
   <% if !yield(:no_cache).blank? || !flash.blank? %>
     <meta name="turbo-cache-control" content="no-cache"/>
   <% end %>
-  <link href="https://<%= @website.blank? ? 'liftoff.rocks' : @website.domain %><%= request.fullpath %>" rel="canonical" />
+  <link href="https://<%= @website.blank? ? 'tms.next-tms.com' : @website.domain %><%= request.fullpath %>" rel="canonical" />
 
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>

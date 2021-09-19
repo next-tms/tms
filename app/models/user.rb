@@ -117,7 +117,7 @@ class User < ApplicationRecord
     client.api.account.messages.create(
       from: '+14243616317',
       to: phone,
-      url: 'https://liftoff.rocks/Liftoff%20TMS.vcf'
+      url: 'https://tms.next-tms.com/Next%%20TMS.vcf'
     )
   end
 end
