@@ -25,6 +25,9 @@ class User < ApplicationRecord
   validates_presence_of :first_name
   validates_presence_of :last_name
 
+  scope :broker, -> { where(broker_customer: nil) }
+  scope :customer, -> { where.not(broker_customer: nil) }
+
   def broker_customers
     if has_role?('sales_rep_for_all_broker_customers')
       broker.broker_customers
