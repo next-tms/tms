@@ -151,7 +151,7 @@ class Broker::ShipmentsController < Broker::BrokerController
       params[:shipment_method].to_sym,
       *[
         from_user: current_user,
-        to_contact: params[:contact_id],
+        to_contact: Contact.find(params[:contact_id]),
         shipment: @shipment
       ]
     ).deliver_later
