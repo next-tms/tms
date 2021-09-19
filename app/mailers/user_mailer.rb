@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default from: 'Liftoff <robot@liftoff.rocks>', reply_to: 'Support — Liftoff <hello@liftoff.rocks>'
+  default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
 
   def send_welcome(user)
     @user = user
