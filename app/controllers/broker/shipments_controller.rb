@@ -2,8 +2,9 @@
 
 class Broker::ShipmentsController < Broker::BrokerController
   before_action :set_shipment_by_load_id,
-                only: %i[book rate_uid documents documents_bol documents_quote create_tracking_event destroy edit edit_tracking_events
-                         notes pricing quote send_document show tracking_events transit unbook update]
+                only: %i[book rate_uid documents create_tracking_event destroy edit edit_tracking_events
+                         notes pricing quote send_document send_document_with_contact_mailer show
+                         tracking_events transit unbook update]
   before_action :authenticate_user!
 
   def book
@@ -151,7 +152,7 @@ class Broker::ShipmentsController < Broker::BrokerController
       *[
         from_user: current_user,
         to_contact: params[:contact_id],
-        shipment: params[:shipment_id]
+        shipment: @shipment
       ]
     ).deliver_later
 
