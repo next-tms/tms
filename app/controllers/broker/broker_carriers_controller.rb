@@ -91,9 +91,9 @@ class Broker::BrokerCarriersController < Broker::BrokerController
       unauthorized
     end
 
-    @q = @broker_carrier.broker_carrier_contacts.includes(:contact).ransack(params[:q])
+    @q = @broker_carrier.contacts.ransack(params[:q])
     @q.sorts = 'contacts.first_name desc' if @q.sorts.blank?
-    @pagy, @broker_carrier_contacts = pagy(@q.result)
+    @pagy, @contacts = pagy(@q.result)
   end
 
   def shipments

@@ -7,7 +7,7 @@
       <% if @broker_carrier and @broker_carrier.id %>
         <li class="navbar-item"><%= link_to icon('fas', 'asterisk', @broker_carrier.carrier.name), broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'industry', 'Shipments'), broker_broker_carrier_shipments_path(@broker_carrier), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'address-book', 'Contacts'), broker_broker_carrier_broker_carrier_contacts_path(@broker_carrier), class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'address-book', 'Contacts'), contacts_broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'sliders-h', 'Preferences'), edit_broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'file-contract', 'Tariff'), tariff_broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
       <% else %>

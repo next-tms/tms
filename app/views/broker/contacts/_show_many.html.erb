@@ -1,0 +1,41 @@
+<% unless contacts.blank? %>
+  <%= render 'broker/contacts/search_form' %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <th><%= sort_link @q, :contact_first_name, 'Name' %></th>
+          <th>Phone</th>
+          <th><%= sort_link @q, :contact_email, 'Email' %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% contacts.each do |contact| %>
+          <tr>
+            <td>
+              <%= link_to contact.full_name, broker_contact_path(contact), target: '_top' %>
+            </td>
+            <td>
+              <ul class="list-unstyled">
+                <% unless contact.mobile_phone.blank? %>
+                  <li><%= link_to contact.mobile_phone.phony_formatted, "tel:#{contact.mobile_phone.phony_formatted}" %> <span class="badge bg-info">Mobile</span></li>
+                <% end %>
+                <% unless contact.work_phone.blank? %>
+                  <li><%= link_to contact.work_phone.phony_formatted, "tel:#{contact.work_phone.phony_formatted}" %> <span class="badge bg-info">Office</span></li>
+                <% end %>
+              </ul>
+            </td>
+            <td>
+              <% unless contact.email.blank? %>
+                <%= link_to contact.email, "mailto:#{contact.email}" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= render 'layouts/pagy', pagy: @pagy %>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>

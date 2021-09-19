@@ -2,6 +2,8 @@
 
 class BrokerCustomer < ApplicationRecord
   belongs_to :broker
+
+  has_many :contacts
   has_many :shipments
 
   serialize :shipment_string_patterns, Array
@@ -22,9 +24,6 @@ class BrokerCustomer < ApplicationRecord
 
   has_many :broker_carriers
   accepts_nested_attributes_for :broker_carriers, allow_destroy: true, reject_if: :all_blank
-
-  has_many :broker_customer_contacts
-  has_many :contacts, through: :broker_customer_contacts
 
   monetize :default_upcharge_cents, allow_nil: true
 
