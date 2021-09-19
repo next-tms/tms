@@ -1,7 +1,7 @@
 require("@rails/activestorage").start()
 
-import Turbolinks from "turbolinks"
-Turbolinks.start()
+import * as Turbo from "@hotwired/turbo"
+// Turbo.session.drive = true
 
 import { Application } from 'stimulus'
 import { definitionsFromContext } from 'stimulus/webpack-helpers'

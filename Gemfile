@@ -6,7 +6,6 @@ gem 'rails', '~> 6.1.4'
 gem 'pg', '~> 1.2.0'
 gem 'puma', '5.4.0'
 gem 'webpacker', '~> 6.0.0.rc.5'
-gem 'turbolinks', '~> 5' # Still needed with webpacker
 gem 'jbuilder', '~> 2.11'
 
 gem 'bootsnap', '>= 1.4.2', require: false
@@ -53,6 +52,8 @@ gem 'devise', '~> 4.8.0'
 gem 'loadcss-rails'
 
 # liftoff.rocks
+gem 'turbo-rails', '~> 0.7.14'
+
 gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: '4ba2b12eed3239a231c965d987f778a486d2b66f'
 
 gem 'rollbar'

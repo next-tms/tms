@@ -14,8 +14,8 @@ export default class extends Controller {
               'X-CSRF-Token': authenticityToken
             }
         })
-        .then(function() {
-            Turbolinks.visit('/')
+        .then(response => {
+            Turbo.visit('/')
         })
     }
 }

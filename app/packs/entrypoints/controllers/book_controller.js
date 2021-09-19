@@ -26,7 +26,7 @@ export default class extends Controller {
             body: JSON.stringify(data)
         })
         .then(function(response) {
-            Turbolinks.visit(response.headers.get('Location'))
+            Turbo.visit(response.headers.get('Location'))
         })
     }
 }

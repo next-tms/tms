@@ -10,6 +10,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@hotwired/turbo-rails": "^7.0.0-rc.4",
     "@popperjs/core": "^2.10.1",
     "@rails/actioncable": "latest",
     "@rails/activestorage": "latest",
@@ -31,7 +32,6 @@
     "stimulus": "^2.0.0",
     "stimulus-flatpickr": "^1.4.0",
     "style-loader": "^3.2.1",
-    "turbolinks": "^5.2.0",
     "urix": "^0.1.0",
     "webpack": "^5.51.1",
     "webpack-cli": "^4.8.0"
