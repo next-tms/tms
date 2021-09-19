@@ -1,4 +1,5 @@
 <% unless broker_customer_contacts.blank? %>
+  <%= render 'broker/broker_customer_contacts/search_form' %>
   <div class="table-responsive">
     <table class="table table-borderless table-striped table-hover sortable">
       <thead>
@@ -12,7 +13,7 @@
         <% broker_customer_contacts.each do |broker_customer_contact| %>
           <tr>
             <td>
-              <%= link_to broker_broker_customer_broker_customer_contact_path(@broker_customer, broker_customer_contact) do %>
+              <%= link_to broker_broker_customer_broker_customer_contact_path(@broker_customer, broker_customer_contact, target: '_top') do %>
                 <%= broker_customer_contact.contact.first_name %>
                 <%= broker_customer_contact.contact.last_name %>
               <% end %>
@@ -37,6 +38,7 @@
       </tbody>
     </table>
   </div>
+  <%= render 'layouts/pagy', pagy: @pagy %>
 <% else %>
   <%= render 'layouts/no_content' %>
 <% end %>

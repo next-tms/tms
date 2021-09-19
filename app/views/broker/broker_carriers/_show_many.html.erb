@@ -1,6 +1,7 @@
 <% unless broker_carriers.blank? %>
+  <%= render 'broker/broker_carriers/search_form' %>
   <div class="table-responsive">
-    <table class="table table-borderless table-striped table-hover sortable">
+    <table class="table table-borderless table-striped table-hover">
       <thead>
         <tr>
           <% if @q %>
@@ -16,7 +17,7 @@
       <tbody>
         <% broker_carriers.each do |broker_carrier| %>
           <tr>
-            <td><%= link_to broker_carrier.carrier.name, broker_broker_carrier_path(broker_carrier) %></td>
+            <td><%= link_to broker_carrier.carrier.name, broker_broker_carrier_path(broker_carrier), target: '_top' %></td>
             <td>
               <%= current_user.broker.name %>
               <% unless broker_carrier.broker_customer.blank? %>
@@ -29,6 +30,7 @@
       </tbody>
     </table>
   </div>
+  <%= render 'layouts/pagy', pagy: @pagy %>
 <% else %>
   <%= render 'layouts/no_content' %>
 <% end %>

@@ -4,7 +4,7 @@
       <div class="modal-body">
         <div class="row pb-4">
           <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'plus'}<br>Quote".html_safe, customer_quote_only_path %></div>
-          <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'pallet'}<br>Shipments".html_safe, customer_shipments_path, 'data-turbolinks': 'false' %></div>
+          <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'pallet'}<br>Shipments".html_safe, customer_shipments_path, 'data-turbo': 'false' %></div>
         </div>
         <%= render 'layouts/nav_manifest_modal_rows' %>
         <div class="row border-top pt-4">

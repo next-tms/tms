@@ -11,9 +11,9 @@
       <tbody>
         <% banks.each do |bank| %>
           <tr>
-            <td><%= link_to bank.name, broker_bank_path(bank) %></td>
-            <td><%= bank.account_number %></td>
-            <td><%= bank.type.name %></td>
+            <td><%= link_to bank.name, broker_bank_path(bank), target: '_top' %></td>
+            <td><%= bank.account_number, target: '_top' %></td>
+            <td><%= bank.type.name, target: '_top' %></td>
           </tr>
         <% end %>
       </tbody>

@@ -5,7 +5,7 @@
   <p class="lead"><%= yield :title %></p>
 </div>
 
-<%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), method: :put, layout: :horizontal, label_col: 'col-sm-1', control_col: 'col-sm-4') do |f| %>
+<%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), data: { turbo: false }, method: :put, layout: :horizontal, label_col: 'col-sm-1', control_col: 'col-sm-4') do |f| %>
   <%= f.alert_message 'Unable to update password:' %>
   <%= f.hidden_field :reset_password_token, value: params[:reset_password_token] %>
   <%= f.password_field :password, placeholder: 'New password', hide_label: true, class: 'form-control', required: true, autofocus: true %>

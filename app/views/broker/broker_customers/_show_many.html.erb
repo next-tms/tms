@@ -1,4 +1,5 @@
-<% unless broker_customers.blank? %>
+<% unless @broker_customers.blank? %>
+  <%= render 'broker/broker_customers/search_form' %>
   <div class="table-responsive">
     <table class="table table-borderless table-striped table-hover sortable">
       <thead>
@@ -15,13 +16,14 @@
       <tbody>
         <% broker_customers.each do |broker_customer| %>
           <tr>
-            <td><%= link_to broker_customer.customer.name, broker_broker_customer_path(broker_customer) %></td>
+            <td><%= link_to broker_customer.customer.name, broker_broker_customer_path(broker_customer), target: '_top' %></td>
             <td><%= broker_customer.shipments.active.size %></td>
           </tr>
         <% end %>
       </tbody>
     </table>
   </div>
+  <%= render 'layouts/pagy', pagy: @pagy %>
 <% else %>
   <%= render 'layouts/no_content' %>
 <% end %>

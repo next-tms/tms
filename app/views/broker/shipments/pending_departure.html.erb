@@ -7,6 +7,6 @@
   <p class="lead">Pending Departure</p>
 </div>
 
-<%= render 'search_form' %>
-<%= render 'show_many_pending_departure', shipments: @shipments %>
-<%= render 'layouts/pagy', pagy: @pagy %>
+<%= turbo_frame_tag :shipments do %>
+  <%= render 'show_many_pending_departure', shipments: @shipments %>
+<% end %>
