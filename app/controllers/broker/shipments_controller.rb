@@ -134,8 +134,9 @@ class Broker::ShipmentsController < Broker::BrokerController
   def documents; end
 
   def send_document
-    @contacts = Contact.where(
+    @contacts = Contact.distinct.where(
       id: (
+        @shipment.broker.users.broker.pluck(:contact_id) +
         @shipment.broker_customer.contacts.where(broker_customer: @shipment.broker_customer).pluck(:id) +
         @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).pluck(:id)
       )
