@@ -1,4 +1,4 @@
-<% unless table.blank? %>
+<% if defined?(table) && !table.blank? %>
   <% if @pagy %>
     <%= render 'broker/shipments/search_form' %>
   <% end %>
