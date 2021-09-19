@@ -26,8 +26,6 @@ Rails.application.routes.draw do
   get 'tracking' => 'tracking#show'
 
   namespace :broker do
-    root 'shipments#index'
-
     get 'customers/profitability-report' => 'broker_customers#profitability_report'
     get 'customers/:id/shipments' => 'broker_customers#shipments', as: :broker_customer_shipments
     resources :broker_customers, path: 'customers' do
