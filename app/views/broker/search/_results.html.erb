@@ -15,6 +15,6 @@
 <% cache [search, shipments] do %>
   <% unless shipments.blank? %>
     <h3>Shipments</h3>
-    <%= render 'broker/shipments/show_many', shipments: shipments %>
+    <%= render 'broker/shipments/show_many', table: shipment_show_many_table(shipments: @shipments, td_names: ['created_at', 'id', 'status', 'broker_customer', 'origin', 'broker_carrier', 'destination', 'pro', 'picked_up_at', 'promised_delivery_by', 'delivery_at', 'size']) %>
   <% end %>
 <% end %>

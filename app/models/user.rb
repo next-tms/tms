@@ -5,8 +5,11 @@ class User < ApplicationRecord
   scope :brokers, -> { where.not(id: customers) }
 
   devise :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable
+  
+  before_save :update_contact
 
   belongs_to :broker, required: true
+  belongs_to :contact
   belongs_to :customer, required: false
   belongs_to :broker_customer, required: false
 
@@ -21,6 +24,9 @@ class User < ApplicationRecord
 
   validates_presence_of :first_name
   validates_presence_of :last_name
+
+  scope :broker, -> { where(broker_customer: nil) }
+  scope :customer, -> { where.not(broker_customer: nil) }
 
   def broker_customers
     if has_role?('sales_rep_for_all_broker_customers')
@@ -119,5 +125,22 @@ class User < ApplicationRecord
       to: phone,
       url: 'https://tms.next-tms.com/Next%%20TMS.vcf'
     )
+  end
+
+  private
+
+  def update_contact
+    contact = Contact.new if :new_record?
+
+    contact.assign_attributes(
+      broker_customer: broker_customer,
+      broker: broker,
+      email: email,
+      first_name: first_name,
+      last_name: last_name
+    )
+
+    contact.save
+    self.contact = contact
   end
 end
