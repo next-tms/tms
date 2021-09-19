@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PoopulateContactsFromUsers < ActiveRecord::Migration[6.1]
+class PopulateContactsFromUsers < ActiveRecord::Migration[6.1]
   def up
     User.all.includes(:broker, :broker_customer).find_each do |user|
       contact = Contact.create(
