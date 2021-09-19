@@ -3,7 +3,7 @@
 class Broker::ShipmentsController < Broker::BrokerController
   before_action :set_shipment_by_load_id,
                 only: %i[book rate_uid documents documents_bol documents_quote create_tracking_event destroy edit edit_tracking_events
-                         notes pricing quote show tracking_events transit unbook update]
+                         notes pricing quote send_document show tracking_events transit unbook update]
   before_action :authenticate_user!
 
   def book
@@ -132,6 +132,30 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def documents; end
+
+  def send_document
+    @contacts = Contact.where(
+      id: (
+        @shipment.broker_customer.contacts.where(broker_customer: @shipment.broker_customer).pluck(:id) +
+        @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).pluck(:id)
+      )
+    ).order(:first_name)
+
+    render layout: 'modal'
+  end
+
+  def send_document_with_contact_mailer
+    ContactMailer.send(
+      params[:shipment_method].to_sym,
+      *[
+        from_user: current_user,
+        to_contact: params[:contact_id],
+        shipment: params[:shipment_id]
+      ]
+    ).deliver_later
+
+    render layout: 'modal'
+  end
 
   def destroy
     unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')

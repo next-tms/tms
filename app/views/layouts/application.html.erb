@@ -1,75 +1,74 @@
 <!DOCTYPE html>
-
-<head>
-  <title><%= yield :title %> — <%= @website ? @website.broker.name : t(:app_name) %></title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!--[if IE]>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.42/polyfill.js"></script>
-  <![endif]-->
-  <% unless @website.blank? %>
-    <meta name="description" content="<%= @website.desc %>"/>
-  <% else %>
-    <meta name="description" content="<%= t :app_name %> breathes life into your shipments by automating your biggest headaches."/>
-  <% end %>
-  <% if !yield(:no_cache).blank? || !flash.blank? %>
-    <meta name="turbo-cache-control" content="no-cache"/>
-  <% end %>
-  <link href="https://<%= @website.blank? ? 'tms.next-tms.com' : @website.domain %><%= request.fullpath %>" rel="canonical" />
-
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
-
-  <%= javascript_pack_tag 'application', integrity: true %>
-  <%= stylesheet_pack_tag 'application', media: 'all', integrity: true %>
-
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" as="style" onload="this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"></noscript>
-
-  <% if yield(:prefetch_urls_csv) %>
-    <% yield(:prefetech_urls_csv).split(', ').each do |url| %>
-      <link rel="prefetch" href="<%= url %>"/>
+  <head>
+    <title><%= yield :title %> — <%= @website ? @website.broker.name : t(:app_name) %></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if IE]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.42/polyfill.js"></script>
+    <![endif]-->
+    <% unless @website.blank? %>
+      <meta name="description" content="<%= @website.desc %>"/>
+    <% else %>
+      <meta name="description" content="<%= t :app_name %> breathes life into your shipments by automating your biggest headaches."/>
     <% end %>
-  <% end %>
-</head>
-
-<body class="<% unless yield(:menu).empty? %>body-with-menu<% end %> <% unless yield(:auto_refresh).empty? %>auto-refresh<% end %>">
-
-  <!--[if IE]>
-    <div class="alert bg-danger mb-0 rounded-0">
-      <div class="container-fluid">
-        <p>Your browser is currently unsupported. Please consider using <%= link_to 'Microsoft Edge', 'https://www.microsoft.com/en-us/edge', 'data-turbo': 'false', target: '_blank' %>, <%= link_to 'Google Chrome', 'https://www.google.com/chrome/', 'data-turbo': 'false', target: '_blank' %> or <%= link_to 'Mozilla Firefox', 'https://www.mozilla.org/en-US/firefox/new/', 'data-turbo': 'false', target: '_blank' %>.</p>
-      </div>
-    </div>
-  <![endif]-->
-
-  <% flash.each do |type, message| %>
-    <div class="flash-alert alert bg-<%= flash_class type %> mb-0 rounded-0">
-      <div class="container-fluid">
-        <p><%= message %></p>
-      </div>
-    </div>
-  <% end %>
-
-  <div class="shrinkable nav-wrapper">
-    <%= render 'layouts/nav' %>
-    <% if yield(:menu) %>
-      <%= yield :menu %>
+    <% if !yield(:no_cache).blank? || !flash.blank? %>
+      <meta name="turbo-cache-control" content="no-cache"/>
     <% end %>
-  </div>
+    <link href="https://<%= @website.blank? ? 'tms.next-tms.com' : @website.domain %><%= request.fullpath %>" rel="canonical" />
 
-  <% if yield(:no_container) == 'yes' %>
-    <%= yield %>
-  <% else %>
-    <main>
-      <div class="container-fluid">
-        <%= yield %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= javascript_pack_tag 'application', integrity: true %>
+    <%= stylesheet_pack_tag 'application', media: 'all', integrity: true %>
+
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"></noscript>
+
+    <% if yield(:prefetch_urls_csv) %>
+      <% yield(:prefetech_urls_csv).split(', ').each do |url| %>
+        <link rel="prefetch" href="<%= url %>"/>
+      <% end %>
+    <% end %>
+  </head>
+
+  <body class="<% unless yield(:menu).empty? %>body-with-menu<% end %> <% unless yield(:auto_refresh).empty? %>auto-refresh<% end %>">
+
+    <!--[if IE]>
+      <div class="alert bg-danger mb-0 rounded-0">
+        <div class="container-fluid">
+          <p>Your browser is currently unsupported. Please consider using <%= link_to 'Microsoft Edge', 'https://www.microsoft.com/en-us/edge', 'data-turbo': 'false', target: '_blank' %>, <%= link_to 'Google Chrome', 'https://www.google.com/chrome/', 'data-turbo': 'false', target: '_blank' %> or <%= link_to 'Mozilla Firefox', 'https://www.mozilla.org/en-US/firefox/new/', 'data-turbo': 'false', target: '_blank' %>.</p>
+        </div>
       </div>
-    </main>
-  <% end %>
+    <![endif]-->
 
-  <%= render 'layouts/footer' %>
+    <% flash.each do |type, message| %>
+      <div class="flash-alert alert bg-<%= flash_class type %> mb-0 rounded-0">
+        <div class="container-fluid">
+          <p><%= message %></p>
+        </div>
+      </div>
+    <% end %>
 
-</body>
+    <div class="shrinkable nav-wrapper">
+      <%= render 'layouts/nav' %>
+      <% if yield(:menu) %>
+        <%= yield :menu %>
+      <% end %>
+    </div>
 
+    <turbo-frame id="modal"></turbo-frame>
+
+    <% if yield(:no_container) == 'yes' %>
+      <%= yield %>
+    <% else %>
+      <main>
+        <div class="container-fluid">
+          <%= yield %>
+        </div>
+      </main>
+    <% end %>
+
+    <%= render 'layouts/footer' %>
+  </body>
 </html>

@@ -1,0 +1,17 @@
+<%= turbo_frame_tag :modal do %>
+  <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" data-controller="modal" data-modal-target="modal">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="h5 modal-title"><%= yield :title %></h5>
+          <%= link_to icon('fas', 'times'), '#', data: { action: 'modal#close' }, class: 'btn' %>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

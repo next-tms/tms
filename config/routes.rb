@@ -31,11 +31,11 @@ Rails.application.routes.draw do
     resources :broker_customers, path: 'customers' do
       member { get 'carriers' => 'broker_customers#broker_carriers', as: :broker_carriers }
       member { get 'carriers/edit' => 'broker_customers#edit_broker_carriers', as: :edit_broker_carriers }
+      member { get 'contacts' => 'broker_customers#contacts', as: :contacts }
       member { get 'pricing' => 'broker_customers#pricing', as: :pricing }
       member { get 'pricing/edit' => 'broker_customers#edit_pricing', as: :edit_pricing }
       member { get 'primary-pickup-address' => 'broker_customers#primary_pickup_address', as: :primary_pickup_address }
       member { get 'sales-reps' => 'broker_customers#sales_reps', as: :sales_reps }
-      resources :broker_customer_contacts
     end
 
     resources :broker_customer_sales_reps, path: 'sales-reps' do
@@ -43,9 +43,9 @@ Rails.application.routes.draw do
 
     get 'carriers/:id/shipments' => 'broker_carriers#shipments', as: :broker_carrier_shipments
     resources :broker_carriers, path: 'carriers' do
+      member { get 'contacts' => 'broker_carriers#contacts', as: :contacts }
       member { get 'tariff' => 'broker_carriers#tariff', as: :tariff }
       member { get 'terminals/search' => 'broker_carriers#search_terminals', as: :search_terminals }
-      resources :broker_carrier_contacts, path: 'contacts'
     end
 
     resources :contacts
@@ -95,8 +95,8 @@ Rails.application.routes.draw do
       get 'update' => 'shipments#update', as: :update
       member { get 'book' => 'shipments#book', as: :book }
       member { get 'documents' => 'shipments#documents', as: :documents }
-      member { get 'documents/bol' => 'shipments#documents_bol', as: :bol_document }
-      member { get 'documents/quote' => 'shipments#documents_quote', as: :quote_document }
+      member { get 'documents/send/:shipment_method' => 'shipments#send_document', as: :send_document }
+      member { post 'documents/send/:active_storage_blob_id' => 'shipments#send_document_with_contact_mailer', as: :send_document_with_contact_mailer }
       member { get 'notes', as: :notes }
       member { get 'pricing', as: :pricing }
       member { get 'quote', as: :quote }
