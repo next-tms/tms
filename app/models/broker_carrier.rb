@@ -10,12 +10,7 @@ class BrokerCarrier < ApplicationRecord
 
   belongs_to :check_mailing_address, class_name: 'Address', required: false
 
-  # has_many :carrier_contacts
-  # has_many :contacts, through: :carrier_contacts
-
-  has_many :broker_carrier_contacts
-  has_many :contacts, through: :broker_carrier_contacts
-
+  has_many :contacts
   has_many :overlength_rules
   has_many :payment_transactions
   has_many :pricing_rules

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomersController < Broker::BrokerController
-  before_action :set_broker_customer, only: %i[edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing primary_pickup_address sales_reps shipments show update]
+  before_action :set_broker_customer, only: %i[contacts edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing primary_pickup_address sales_reps shipments show update]
   before_action :authenticate_user!
 
   def index
@@ -110,6 +110,16 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     else
       render file: 'public/401', layout: false, status: :unauthorized
     end
+  end
+
+  def contacts
+    if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
+      unauthorized
+    end
+
+    @q = @broker_customer.ransack(params[:q])
+    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @pagy, @contacts = pagy(@q.result)
   end
 
   def shipments

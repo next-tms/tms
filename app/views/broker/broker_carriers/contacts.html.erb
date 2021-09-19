@@ -1,0 +1,17 @@
+<% provide :title, @broker_carrier.carrier.name %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_carrier.carrier.name %></h1>
+  <p class="lead">Contacts</h2>
+</div>
+
+<div class="btn-toolbar mb-3">
+  <div class="btn-group">
+    <%= link_to icon('fas', 'plus', 'New'), new_broker_contact_path(broker_carrier_id: @broker_carrier.id), class: 'btn mr-2' %>
+  </div>
+</div>
+
+<%= turbo_frame_tag :contacts do %>
+  <%= render 'broker/contacts/show_many', contacts: @contacts %>
+<% end %>

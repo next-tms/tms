@@ -1,0 +1,5 @@
+<% if !@contact.broker_carrier.blank? %>
+  <% provide :menu, render('broker/broker_carriers/menu') %>
+<% elsif !@contact.broker_customer.blank? %>
+  <% provide :menu, render('broker/broker_customers/menu') %>
+<% end %>

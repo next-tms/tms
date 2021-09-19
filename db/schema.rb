@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_18_072537) do
+ActiveRecord::Schema.define(version: 2021_09_19_212519) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -112,15 +112,6 @@ ActiveRecord::Schema.define(version: 2021_09_18_072537) do
     t.index ["broker_id"], name: "index_broker_accessorials_on_broker_id"
   end
 
-  create_table "broker_carrier_contacts", force: :cascade do |t|
-    t.bigint "broker_carrier_id", null: false
-    t.bigint "contact_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["broker_carrier_id"], name: "index_broker_carrier_contacts_on_broker_carrier_id"
-    t.index ["contact_id"], name: "index_broker_carrier_contacts_on_contact_id"
-  end
-
   create_table "broker_carriers", id: :serial, force: :cascade do |t|
     t.integer "carrier_id"
     t.integer "broker_id"
@@ -151,15 +142,6 @@ ActiveRecord::Schema.define(version: 2021_09_18_072537) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["broker_id"], name: "index_broker_countries_on_broker_id"
     t.index ["country_id"], name: "index_broker_countries_on_country_id"
-  end
-
-  create_table "broker_customer_contacts", force: :cascade do |t|
-    t.bigint "broker_customer_id", null: false
-    t.bigint "contact_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["broker_customer_id"], name: "index_broker_customer_contacts_on_broker_customer_id"
-    t.index ["contact_id"], name: "index_broker_customer_contacts_on_contact_id"
   end
 
   create_table "broker_customer_sales_reps", force: :cascade do |t|
@@ -243,6 +225,10 @@ ActiveRecord::Schema.define(version: 2021_09_18_072537) do
     t.string "mobile_phone"
     t.string "label"
     t.text "comments"
+    t.bigint "broker_customer_id"
+    t.bigint "broker_carrier_id"
+    t.index ["broker_carrier_id"], name: "index_contacts_on_broker_carrier_id"
+    t.index ["broker_customer_id"], name: "index_contacts_on_broker_customer_id"
     t.index ["broker_id"], name: "index_contacts_on_broker_id"
   end
 
@@ -658,15 +644,11 @@ ActiveRecord::Schema.define(version: 2021_09_18_072537) do
   add_foreign_key "broker_accessorials", "accessorials"
   add_foreign_key "broker_accessorials", "broker_customers"
   add_foreign_key "broker_accessorials", "brokers"
-  add_foreign_key "broker_carrier_contacts", "broker_carriers"
-  add_foreign_key "broker_carrier_contacts", "contacts"
   add_foreign_key "broker_carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "broker_carriers", "broker_customers"
   add_foreign_key "broker_carriers", "brokers"
   add_foreign_key "broker_carriers", "carriers"
   add_foreign_key "broker_countries", "countries"
-  add_foreign_key "broker_customer_contacts", "broker_customers"
-  add_foreign_key "broker_customer_contacts", "contacts"
   add_foreign_key "broker_customer_sales_reps", "broker_customers"
   add_foreign_key "broker_customer_sales_reps", "users"
   add_foreign_key "broker_customers", "addresses", column: "primary_pickup_address_id"
@@ -681,6 +663,8 @@ ActiveRecord::Schema.define(version: 2021_09_18_072537) do
   add_foreign_key "carrier_contacts", "contacts"
   add_foreign_key "carriers", "addresses", column: "broker_billing_address_id"
   add_foreign_key "carriers", "addresses", column: "check_mailing_address_id"
+  add_foreign_key "contacts", "broker_carriers"
+  add_foreign_key "contacts", "broker_customers"
   add_foreign_key "contacts", "brokers"
   add_foreign_key "customer_contacts", "brokers"
   add_foreign_key "customer_contacts", "contacts"
