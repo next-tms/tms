@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_19_212519) do
+ActiveRecord::Schema.define(version: 2021_09_19_230639) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -612,8 +612,10 @@ ActiveRecord::Schema.define(version: 2021_09_19_212519) do
     t.boolean "receive_email_notifications", default: true
     t.string "time_zone"
     t.boolean "receive_notifications_from_self", default: true
+    t.bigint "contact_id"
     t.index ["broker_customer_id"], name: "index_users_on_broker_customer_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["contact_id"], name: "index_users_on_contact_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
@@ -715,5 +717,6 @@ ActiveRecord::Schema.define(version: 2021_09_19_212519) do
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
   add_foreign_key "users", "broker_customers"
+  add_foreign_key "users", "contacts"
   add_foreign_key "websites", "brokers"
 end
