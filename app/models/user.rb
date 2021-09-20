@@ -28,6 +28,14 @@ class User < ApplicationRecord
   scope :broker, -> { where(broker_customer: nil) }
   scope :customer, -> { where.not(broker_customer: nil) }
 
+  def full_name
+    @full_name ||= "#{first_name} #{last_name}"
+  end
+
+  def label
+    full_name
+  end
+
   def broker_customers
     if has_role?('sales_rep_for_all_broker_customers')
       broker.broker_customers

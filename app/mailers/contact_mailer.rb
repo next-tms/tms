@@ -74,10 +74,10 @@ class ContactMailer < ActionMailer::Base
   end
 
   def pretty_email(model)
-    if model.first_name.blank? || model.last_name.blank?
+    if model.label.blank?
       model.email
     else
-      "#{model.first_name} #{model.last_name} <#{model.email}>"
+      "#{model.label} <#{model.email}>"
     end
   end
 end
