@@ -47,6 +47,8 @@ module HyperCarrierApiClient
 
         begin
           yield
+        rescue ArgumentError # Invalid accessorials
+          nil
         rescue *API_INVALID_CREDENTIALS_EXCEPTIONS
           nil
         rescue *API_NOT_FOUND_EXCEPTIONS
