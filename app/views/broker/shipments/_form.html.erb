@@ -19,9 +19,9 @@
           <%= shipper_address_form.text_field :street %>
           <%= shipper_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
           <%= shipper_address_form.text_field :city %>
-          <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, class: 'form-select' %>
+          <%= shipper_address_form.select :state, states_and_abbreviations, { include_blank: true, label: 'State', selected: (@shipment.shipper_address.state.blank? ? nil : @shipment.shipper_address.state) }, class: 'form-select' %>
           <%= shipper_address_form.text_field :zip_code, label: 'ZIP' %>
-          <%= shipper_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.shipper_address.country.blank? ? nil : @shipment.shipper_address.country.id) }, class: 'form-select' %>
+          <%= shipper_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.shipper_address.country.blank? ? current_user.broker.address.country.id : @shipment.shipper_address.country.id) }, class: 'form-select' %>
         <% end %>
       </div>
     </div>
@@ -40,9 +40,9 @@
         <%= receiver_address_form.text_field :street %>
         <%= receiver_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
         <%= receiver_address_form.text_field :city %>
-        <%= receiver_address_form.select :state, states_and_abbreviations, { label: 'State', selected: (@shipment.receiver_address.state.blank? ? nil : @shipment.receiver_address.state) }, class: 'form-select' %>
+        <%= receiver_address_form.select :state, states_and_abbreviations, { include_blank: true, label: 'State', selected: (@shipment.receiver_address.state.blank? ? nil : @shipment.receiver_address.state) }, class: 'form-select' %>
         <%= receiver_address_form.text_field :zip_code, label: 'ZIP' %>
-        <%= receiver_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.receiver_address.country.blank? ? nil : @shipment.receiver_address.country.id) }, class: 'form-select' %>
+        <%= receiver_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.receiver_address.country.blank? ? current_user.broker.address.country.id : @shipment.receiver_address.country.id) }, class: 'form-select' %>
       <% end %>
     </div>
 
