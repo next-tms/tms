@@ -104,7 +104,9 @@ class Broker::ShipmentsController < Broker::BrokerController
         format.json { render json: @shipment.errors, status: :unprocessable_entity }
       else
         format.html { redirect_to broker_shipment_path(@shipment) }
-        format.json { redirect_to broker_shipment_path(@shipment), status: :see_other }
+        format.json do
+          render json: { location: broker_shipment_path(@shipment) }
+        end
       end
     end
   end
