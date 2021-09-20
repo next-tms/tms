@@ -61,6 +61,8 @@ module HyperCarrierApiClient
         rescue *SELENIUM_TIMEOUT_EXCEPTIONS
           sleep(10)
           retry
+        rescue Savon::SOAPFault
+          nil
         end
       end
 
