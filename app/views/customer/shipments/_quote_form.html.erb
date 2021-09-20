@@ -6,7 +6,7 @@
       <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
       <%= f.fields_for :shipper_address do |shipper_address_form| %>
         <%= shipper_address_form.text_field :city, autofocus: 'autofocus' %>
-        <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State' }, class: 'custom-select' %>
+        <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State' }, class: 'form-select' %>
         <%= shipper_address_form.text_field :zip_code, label: 'ZIP' %>
       <% end %>
     </div>
@@ -15,7 +15,7 @@
       <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
       <%= f.fields_for :receiver_address do |receiver_address_form| %>
         <%= receiver_address_form.text_field :city %>
-        <%= receiver_address_form.select :state, states_and_abbreviations, { label: 'State' }, class: 'custom-select' %>
+        <%= receiver_address_form.select :state, states_and_abbreviations, { label: 'State' }, class: 'form-select' %>
         <%= receiver_address_form.text_field :zip_code, label: 'ZIP' %>
       <% end %>
     </div>

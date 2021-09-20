@@ -13,9 +13,9 @@
         <%= primary_pickup_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
         <%= primary_pickup_address_form.text_field :street2, hide_label: true %>
         <%= primary_pickup_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
-        <%= primary_pickup_address_form.select :state, states_and_abbreviations, { hide_label: true, include_blank: 'State' }, class: 'custom-select' %>
+        <%= primary_pickup_address_form.select :state, states_and_abbreviations, { hide_label: true, include_blank: 'State' }, class: 'form-select' %>
         <%= primary_pickup_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
-        <%= primary_pickup_address_form.select :country_id, Country.all.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, include_blank: 'Country' }, class: 'custom-select' %>
+        <%= primary_pickup_address_form.select :country_id, Country.all.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, include_blank: 'Country' }, class: 'form-select' %>
       <% end %>
     </div>
   </div>

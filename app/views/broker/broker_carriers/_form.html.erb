@@ -2,8 +2,8 @@
   <%= f.alert_message "Unable to create account:" %>
 
   <h2>Account</h2>
-  <%= f.select :carrier_id, Carrier.all.order(:name).all.order(:name).collect {|c| [ c.name, c.id ] }, { label: 'Carrier', selected: (@broker_carrier.carrier ? @broker_carrier.carrier.id : nil) }, class: 'custom-select' %>
-  <%= f.select :broker_customer_id, [['None — Blanket Pricing', nil]] + current_user.broker.broker_customers.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@broker_carrier.broker_customer ? @broker_carrier.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, class: 'custom-select' %>
+  <%= f.select :carrier_id, Carrier.all.order(:name).all.order(:name).collect {|c| [ c.name, c.id ] }, { label: 'Carrier', selected: (@broker_carrier.carrier ? @broker_carrier.carrier.id : nil) }, class: 'form-select' %>
+  <%= f.select :broker_customer_id, [['None — Blanket Pricing', nil]] + current_user.broker.broker_customers.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@broker_carrier.broker_customer ? @broker_carrier.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, class: 'form-select' %>
   <%= f.text_field :account, placeholder: 'Account #', autocomplete: 'off' %>
   <%= f.text_field :account_desc, placeholder: 'Description', autocomplete: 'off' %>
 

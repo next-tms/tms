@@ -1,7 +1,7 @@
 <%= bootstrap_form_with(model: [:broker, @payment], local: true, layout: :horizontal, label_col: 'col col-md-2', control_col: 'col') do |f| %>
   <%= f.alert_message 'Unable to save payment:' %>
 
-  <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', selected: (@payment.broker_carrier ? @payment.broker_carrier.id : nil) }, class: 'custom-select' %>
+  <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', selected: (@payment.broker_carrier ? @payment.broker_carrier.id : nil) }, class: 'form-select' %>
 
   <%= f.text_field :due_on, label: 'Due', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @payment.due_on, time_zone: current_user.time_zone)&.to_date %>
 
