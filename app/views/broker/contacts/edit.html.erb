@@ -1,16 +1,10 @@
-<% provide :title, "Preferences for #{@broker_carrier.carrier.name}" %>
-<% provide :menu, render('menu') %>
+<% provide :title, @contact.full_name %>
+<% provide :menu, render('broker/contacts/menu') %>
 
 <div class="page-header">
-  <h1><%= @broker_carrier.carrier.name %>
-  <small>
-    <%= @broker_carrier.account %>
-    <% unless @broker_carrier.broker_customer.blank? %>
-      <%= @broker_carrier.broker_customer.customer.name %>
-    <% end %>
-  </small>
+  <h1><%= @contact.full_name %>
   </h1>
-  <p class="lead">Preferences</p>
+  <p class="lead">Edit</p>
 </div>
 
 <%= render 'form' %>

@@ -15,7 +15,7 @@ class Broker::ContactsController < Broker::BrokerController
   end
 
   def show
-    unauthorized unless @contact.broker_carrier.broker == current_user.broker
+    unauthorized unless @contact.broker == current_user.broker
   end
 
   def new
