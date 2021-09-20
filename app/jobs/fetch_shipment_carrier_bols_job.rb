@@ -13,7 +13,7 @@ class FetchShipmentCarrierBolsJob < ApplicationJob
                 end
 
     shipments.find_each do |shipment|
-      next unless shipment.broker_carrier.api_configured?
+      next if !shipment.broker_carrier&.api_configured?
       FetchShipmentCarrierBolJob.perform_later(shipment)
     end
   end
