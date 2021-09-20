@@ -61,9 +61,7 @@ class ContactMailer < ActionMailer::Base
 
     from = pretty_email(from_user)
     mail(
-      bcc: from,
       from: from,
-      reply_to: from,
       to: pretty_email(to_contact),
       subject: "#{document_name} for Load #{shipment.load_id}"
     )
