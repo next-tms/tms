@@ -23,7 +23,10 @@
       </tbody>
     </table>
   </div>
-  <%= render 'layouts/pagy', pagy: @pagy %>
+
+  <% if @pagy %>
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% end %>
 <% else %>
   <%= render 'layouts/no_content' %>
 <% end %>
