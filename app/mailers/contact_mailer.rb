@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ContactMailer < ActionMailer::Base
-  default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
+  default from: 'Next TMS <robot@tms.next-tms.com>'
 
   def broker_bol(from_user:, to_contact:, shipment:)
     @shipment = shipment
