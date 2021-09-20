@@ -3,8 +3,8 @@
 class Broker::ContactsController < Broker::BrokerController
   before_action :authenticate_user!
   before_action :set_contact, only: %i[edit show update]
-  before_action :set_broker_carrier, only: %i[edit new show update]
-  before_action :set_broker_customer, only: %i[edit new show update]
+  before_action :set_broker_carrier, only: %i[edit show update]
+  before_action :set_broker_customer, only: %i[edit show update]
 
   def edit; end
 
@@ -22,6 +22,9 @@ class Broker::ContactsController < Broker::BrokerController
     @contact = Contact.new
     @contact.broker_carrier = params[:broker_carrier_id].blank? ? nil : BrokerCarrier.find(params[:broker_carrier_id])
     @contact.broker_customer = params[:broker_customer_id].blank? ? nil : BrokerCustomer.find(params[:broker_customer_id])
+
+    @broker_carrier = @contact.broker_carrier
+    @broker_customer = @contact.broker_customer
   end
 
   def create

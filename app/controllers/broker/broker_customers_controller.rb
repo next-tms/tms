@@ -117,7 +117,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
       unauthorized
     end
 
-    @q = @broker_customer.ransack(params[:q])
+    @q = @broker_customer.contacts.ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
   end
