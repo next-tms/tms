@@ -471,7 +471,7 @@ class Shipment < ApplicationRecord
 
           dimensions = items.pluck(:l, :w).flatten
           dimensions_contain_blank = !dimensions.size == (dimensions - [nil, '']).size
-          max_dimension = max_dimension&.max || 48
+          max_dimension = dimensions&.max || 48
 
           if !reactive_shipping_rate.with_excessive_length_fees && (max_dimension > 48 || dimensions_contain_blank)
             if broker_carrier.overlength_rules.blank?
