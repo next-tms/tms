@@ -143,11 +143,11 @@ class Broker::ShipmentsController < Broker::BrokerController
   def send_document
     contact_ids = @shipment.broker.users.broker.pluck(:contact_id)
 
-    if shipment&.broker_customer&.contacts
+    if @shipment&.broker_customer&.contacts
       contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer).pluck(:id)
     end
 
-    if shipment&.broker_carrier&.contacts
+    if @shipment&.broker_carrier&.contacts
       contact_ids += @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).pluck(:id)
     end
 
