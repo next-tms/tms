@@ -123,6 +123,10 @@ class Broker::ShipmentsController < Broker::BrokerController
         CreateShipmentBrokerBolJob.perform_later(domain: request.host, shipment: @shipment)
       end
   
+      unless @shipment.broker_dispatch_sheet_valid?
+        CreateShipmentBrokerDispatchSheetJob.perform_later(domain: request.host, shipment: @shipment)
+      end
+
       unless @shipment.broker_quote_valid?
         CreateShipmentBrokerQuoteJob.perform_later(domain: request.host, shipment: @shipment)
       end

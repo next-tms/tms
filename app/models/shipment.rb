@@ -72,6 +72,7 @@ class Shipment < ApplicationRecord
   has_many :broker_accessorials, through: :shipment_broker_accessorials
 
   has_one_attached :broker_bol
+  has_one_attached :broker_dispatch_sheet
   has_one_attached :broker_quote
   has_one_attached :carrier_bol
   has_one_attached :carrier_pod
@@ -957,6 +958,10 @@ class Shipment < ApplicationRecord
 
   def broker_bol_valid?
     @broker_bol_valid ||= !broker_bol.blank? && broker_bol_shipment_fingerprint == fingerprint
+  end
+
+  def broker_dispatch_sheet_valid?
+    @broker_dispatch_sheet_valid ||= !broker_dispatch_sheet.blank? && broker_dispatch_sheet_shipment_fingerprint == fingerprint
   end
 
   def broker_quote_valid?
