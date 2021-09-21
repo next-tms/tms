@@ -3,6 +3,6 @@
 <%= bootstrap_form_with(url: send_document_broker_shipment_path, method: :post) do |f| %>
   <%= f.hidden_field :shipment_id, value: params[:shipment_id] %>
   <%= f.hidden_field :shipment_method, value: params[:shipment_method] %>
-  <%= f.select :contact_id, @contacts.collect { |c| [c.full_name, c.id] }, { include_blank: false, hide_label: true }, class: 'form-select' %>
+  <%= f.select :contact_id, @contacts.collect { |c| ["#{c.full_name <#{c.email}>}, c.id] }, { include_blank: false, label: 'To' }, class: 'form-select' %>
   <%= f.submit 'Send', class: 'btn btn-primary' %>
 <% end %>
