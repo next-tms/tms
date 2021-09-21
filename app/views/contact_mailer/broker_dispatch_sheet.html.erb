@@ -1,0 +1,24 @@
+<% provide :signature, @shipment.broker.name %>
+
+<p>Please find the dispatch sheet attached for the following shipment (load <%= @shipment.load_id %>):</p>
+
+<p>From:</p>
+<address>
+  <%= @shipment.shipper_name %>
+  <br>
+  <%= @shipment.shipper_address.pretty('<br>').html_safe %>
+</address>
+
+<p>To:</p>
+<address>
+  <%= @shipment.receiver_name %>
+  <br>
+  <%= @shipment.receiver_address.pretty('<br>').html_safe %>
+</address>
+
+<p>
+  <% @shipment.items.each do |item| %>
+    <%= pluralize(item.quantity, item.packaging.name) %> <%= item.desc %> <% if item.l and item.w and item.h %><%= item.l %>x<%= item.w %>x<%= item.h %> in<% end %> <%= number_with_delimiter item.weight %> lbs
+    <% unless @shipment.items.last == item %><br><% end %>
+  <% end %>
+</p>
