@@ -29,11 +29,24 @@
     </div>
   </div>
 
-  <h2>API Details</h2>
-  <%= f.text_field :username, placeholder: 'Username', autocomplete: 'off' %> 
-  <%= f.text_field :password, placeholder: 'Password', autocomplete: 'off' %> 
+  <h2>Credentials</h2>
+  <p class="col-title">
+    <% if f.object.carrier&.has_seperate_website_credentials? %>
+      API & Website Credentials
+    <% else %>
+      API Credentials
+    <% end %>
+  </p>
+  <%= f.text_field :username, placeholder: 'Username', autocomplete: 'off' %>
+  <%= f.text_field :password, placeholder: 'Password', autocomplete: 'off' %>
 
-  <%= f.text_area :default_bol_notes, rows: 7 %>
+  <% if f.object.carrier&.has_seperate_website_credentials? %>
+    <p class="col-title">Website Credentials</p>
+    <%= f.text_field :website_username, placeholder: 'Username', autocomplete: 'off' %>
+    <%= f.text_field :website_password, placeholder: 'Password', autocomplete: 'off' %>
+  <% end %>
+
+  <%= f.text_area :default_bol_notes, label: 'Default BOL Notes', rows: 7 %>
 
   <%= f.form_group do %>
     <%= f.submit class: 'btn btn-primary', value: 'Save' %>

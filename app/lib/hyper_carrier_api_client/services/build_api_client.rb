@@ -16,12 +16,19 @@ module HyperCarrierApiClient
 
         return nil if carrier.blank?
 
-        new_carrier_client ||= carrier.new(
-                                 account: broker_carrier.account,
-                                 debug: config[:debugging],
-                                 username: broker_carrier.username,
-                                 password: broker_carrier.password
-                               )
+        args = {
+          account: broker_carrier.account,
+          debug: config[:debugging],
+          username: broker_carrier.username,
+          password: broker_carrier.password
+        }
+
+        if broker_carrier.carrier.has_seperate_website_credentials?
+          args[:website_username] = broker_carrier.website_username
+          args[:website_password] = broker_carrier.website_password
+        end
+
+        new_carrier_client ||= carrier.new(args)
       end
     end
   end
