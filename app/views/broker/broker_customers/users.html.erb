@@ -1,0 +1,11 @@
+<% provide :title, "Users" %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= @broker_customer.customer.name %></h1>
+  <p class="lead"><%= yield :title %></p>
+</div>
+
+<%= turbo_frame_tag :users do %>
+  <%= render 'broker/users/show_many', users: @users %>
+<% end %>

@@ -1,5 +1,8 @@
 <% unless broker_carriers.blank? %>
-  <%= render 'broker/broker_carriers/search_form' %>
+  <% if @pagy %>
+    <%= render 'broker/broker_carriers/search_form' %>
+  <% end %>
+
   <div class="table-responsive">
     <table class="table table-borderless table-striped table-hover">
       <thead>
@@ -30,7 +33,10 @@
       </tbody>
     </table>
   </div>
-  <%= render 'layouts/pagy', pagy: @pagy %>
+
+  <% if @pagy %>
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% end %>
 <% else %>
   <%= render 'layouts/no_content' %>
 <% end %>
