@@ -9,11 +9,16 @@ class Contact < ApplicationRecord
   phony_normalize :work_phone, default_country_code: 'US'
 
   def full_name
+    if first_name.blank? && last_name.blank?
+      return read_attribute(:label) if first_name.blank? && last_name.blank? && job_title.blank?
+      return job_title
+    end
+
     "#{first_name} #{last_name}"
   end
 
   def label
-    @label ||= read_attribute(:label) || "#{first_name} #{last_name}"
+    full_name
   end
 
   private
