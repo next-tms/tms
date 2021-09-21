@@ -1,4 +1,4 @@
-<% unless @website.manifest.dig('nav', 'modal_collections').blank? %>
+<% if !@website&.manifest&.dig('nav', 'modal_collections').blank? %>
   <% @website.manifest.dig('nav', 'modal_collections').each do |modal_collection| %>
     <div class="row border-top pb-4 pt-4">
       <% unless modal_collection.dig('links').blank? %>
