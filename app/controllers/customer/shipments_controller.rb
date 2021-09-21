@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Customer::ShipmentsController < Customer::CustomerController
-  before_action :set_shipment_by_load_id, only: %i[book documents documents_bol documents_quote edit quote show unbook update]
+  before_action :set_shipment_by_load_id, only: %i[book documents edit quote show unbook update]
   before_action :authenticate_user!
 
   def book
@@ -25,23 +25,6 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def documents; end
-
-  def documents_bol
-    qrcode = RQRCode::QRCode.new(tracking_url(load_id: @shipment.load_id))
-    @qrcode = qrcode.as_svg(
-      offset: 0,
-      color: '000',
-      shape_rendering: 'crispEdges',
-      module_size: 3,
-      standalone: true,
-      size: 150
-    )
-    render 'shipments/documents_bol', layout: 'print'
-  end
-
-  def documents_quote
-    render 'shipments/documents_quote', layout: 'print'
-  end
 
   def index
     @pagy, @shipments = pagy(current_user.broker_customer.shipments.active.order(created_at: :desc))

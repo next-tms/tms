@@ -5,22 +5,58 @@
 
 <%= render 'header', page_title: 'Documents' %>
 
-<% unless @shipment.broker_carrier.blank? %>
-  <div class="row">
-    <div class="col-sm-3">
-      <p class="col-title">Shipping Documents</p>
-      <ul class="list-unstyled">
-        <li><%= link_to 'Bill of Lading', bol_document_customer_shipment_path(@shipment), 'data-turbo': 'false', target: '_blank' %></li>
-        <% unless @shipment.total_charges.blank? %>
-          <li><%= link_to 'Quote', quote_document_customer_shipment_path(@shipment), 'data-turbo': 'false', target: '_blank' %></li>
-        <% end %>
-      </ul>
-    </div>
-  
-    <div class="col-sm-3">
-      <p class="col-title">Scanned Documents</p>
+<div class="row">
+  <div class="col col-md-8">
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped">
+        <thead>
+          <tr>
+            <th>Author</th>
+            <th>Kind</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @shipment.broker_quote_valid? %>
+            <tr>
+              <td><%= @shipment.broker.name %></td>
+              <td>Quote</td>
+              <td><%= link_to icon('fas', 'eye', 'View'), rails_blob_path(@shipment.broker_quote, disposition: 'preview'), 'data-turquoteinks': 'false', target: '_blank' %></td>
+              <td><%= link_to icon('fas', 'file-download', 'Download'), rails_blob_path(@shipment.broker_quote, disposition: 'attachment'), 'data-turquoteinks': 'false', download: "#{@shipment.load_id} Quote.pdf" %></td>
+            </tr>
+          <% end %>
+
+          <% if @shipment.broker_bol_valid? %>
+            <tr>
+              <td><%= @shipment.broker.name %></td>
+              <td>Bill of Lading</td>
+              <td><%= link_to icon('fas', 'eye', 'View'), rails_blob_path(@shipment.broker_bol, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
+              <td><%= link_to icon('fas', 'file-download', 'Download'), rails_blob_path(@shipment.broker_bol, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL.pdf" %></td>
+            </tr>
+          <% end %>
+
+          <% unless @shipment.carrier_bol.blank? %>
+            <tr>
+              <td><%= @shipment.broker_carrier.carrier.name %></td>
+              <td>Bill of Lading</td>
+              <td><%= link_to icon('fas', 'eye', 'View'), rails_blob_path(@shipment.carrier_bol, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
+              <td><%= link_to icon('fas', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_bol, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL - #{@shipment.broker_carrier.carrier.name}.pdf" %></td>
+            </tr>
+          <% end %>
+
+          <!--
+          <% unless @shipment.carrier_pod.blank? %>
+            <tr>
+              <td><%= @shipment.broker_carrier.carrier.name %></td>
+              <td>Proof of Delivery</td>
+              <td><%= link_to icon('fas', 'eye', 'View'), rails_blob_path(@shipment.carrier_pod, disposition: 'preview'), target: '_blank' %></td>
+              <td><%= link_to icon('fas', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_pod, disposition: 'attachment'), download: "#{@shipment.load_id} POD.pdf" %></td>
+            </tr>
+          <% end %>
+          -->
+        <tbody>
+      </table>
     </div>
   </div>
-<% else %>
-  <%= render 'layouts/message', title: 'No documents available', message: 'Shipment must first be booked.' %>
-<% end %>
+</div>
