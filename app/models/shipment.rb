@@ -210,8 +210,8 @@ class Shipment < ApplicationRecord
 
   def fingerprint
     str = ''.dup
-    str << broker_carrier.blank? ? '' : broker_carrier.id.to_s
-    str << tracking_carrier.blank? ? '' : tracking_carrier.id.to_s
+    str << (broker_carrier.blank? ? '' : broker_carrier.id.to_s)
+    str << (tracking_carrier.blank? ? '' : tracking_carrier.id.to_s)
     str << (bol_notes.blank? ? '' : bol_notes)
     unless flattened_items.blank?
       str += flattened_items.size.to_s
