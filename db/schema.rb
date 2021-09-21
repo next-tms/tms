@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_21_063557) do
+ActiveRecord::Schema.define(version: 2021_09_21_161124) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2021_09_21_063557) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "code"
     t.string "reactive_shipping_code"
+    t.boolean "fee", default: false
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -107,6 +108,7 @@ ActiveRecord::Schema.define(version: 2021_09_21_063557) do
     t.integer "flat_charge_cents", default: 0, null: false
     t.string "flat_charge_currency", default: "USD", null: false
     t.bigint "broker_customer_id"
+    t.boolean "fee", default: false
     t.index ["accessorial_id"], name: "index_broker_accessorials_on_accessorial_id"
     t.index ["broker_customer_id"], name: "index_broker_accessorials_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_accessorials_on_broker_id"
