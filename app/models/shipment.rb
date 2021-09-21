@@ -469,7 +469,7 @@ class Shipment < ApplicationRecord
 
           cost += broker_carrier.quote_padding unless broker_carrier.quote_padding.blank?
 
-          dimensions = shipment.items.pluck(:l, :w).flatten
+          dimensions = items.pluck(:l, :w).flatten
           dimensions_contain_blank = !dimensions.size == (dimensions - [nil, '']).size
           max_dimension = max_dimension.max
 
