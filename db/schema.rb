@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_19_230733) do
+ActiveRecord::Schema.define(version: 2021_09_21_063557) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -129,6 +129,8 @@ ActiveRecord::Schema.define(version: 2021_09_19_230733) do
     t.integer "quote_padding_cents", default: 0, null: false
     t.string "quote_padding_currency", default: "USD", null: false
     t.text "accounting_notes"
+    t.string "website_username"
+    t.string "website_password"
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
@@ -211,6 +213,7 @@ ActiveRecord::Schema.define(version: 2021_09_19_230733) do
     t.bigint "check_mailing_address_id"
     t.boolean "has_traceable_pickup_confirmation", default: false
     t.bigint "broker_billing_address_id"
+    t.boolean "has_seperate_website_credentials", default: false
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
   end
@@ -613,10 +616,19 @@ ActiveRecord::Schema.define(version: 2021_09_19_230733) do
     t.string "time_zone"
     t.boolean "receive_notifications_from_self", default: true
     t.bigint "contact_id"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
     t.index ["broker_customer_id"], name: "index_users_on_broker_customer_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
@@ -718,5 +730,6 @@ ActiveRecord::Schema.define(version: 2021_09_19_230733) do
   add_foreign_key "user_roles", "users"
   add_foreign_key "users", "broker_customers"
   add_foreign_key "users", "contacts"
+  add_foreign_key "users", "users", column: "invited_by_id"
   add_foreign_key "websites", "brokers"
 end
