@@ -21,7 +21,7 @@
               <li><b>PO Ref:</b> <%= shipment.customer_reference %></li>
             <% end %>
             <li><strong>Date:</strong> <%= long_date Date.current, shipment.shipper_address.time_zone %></li>
-            <li><strong>Pickup Date:</strong> <%= short_date shipment.pickup_on %></li>
+            <li><strong>Pickup Date:</strong> <%= shipment.pickup_on %></li>
           </ul>
         </td>
       </tr>
