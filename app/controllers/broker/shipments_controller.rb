@@ -141,13 +141,17 @@ class Broker::ShipmentsController < Broker::BrokerController
   def documents; end
 
   def send_document
-    @contacts = Contact.distinct.where(
-      id: (
-        @shipment.broker.users.broker.pluck(:contact_id) +
-        @shipment.broker_customer.contacts.where(broker_customer: @shipment.broker_customer).pluck(:id) +
-        @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).pluck(:id)
-      )
-    ).order(:first_name)
+    contact_ids = @shipment.broker.users.broker.pluck(:contact_id)
+
+    if shipment&.broker_customer&.contacts
+      contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer).pluck(:id)
+    end
+
+    if shipment&.broker_carrier&.contacts
+      contact_ids += @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).pluck(:id)
+    end
+
+    @contacts = Contact.distinct.where(id: contact_ids).order(:first_name)
 
     render layout: 'modal'
   end
