@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_21_161124) do
+ActiveRecord::Schema.define(version: 2021_09_21_192407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -524,6 +524,7 @@ ActiveRecord::Schema.define(version: 2021_09_21_161124) do
     t.datetime "booked_at"
     t.string "broker_bol_shipment_fingerprint"
     t.string "broker_quote_shipment_fingerprint"
+    t.string "broker_dispatch_sheet_shipment_fingerprint"
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
     t.index ["broker_customer_id"], name: "index_shipments_on_broker_customer_id"
     t.index ["broker_notes"], name: "index_shipments_on_broker_notes"
