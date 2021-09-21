@@ -71,9 +71,15 @@ class ContactMailer < ActionMailer::Base
       content: document.download
     }
 
+    # Avoid SendGrid::DuplicatePersonalizationError
+    from = if from_user.email == to_contact.email
+             "#{shipment.broker.name} <#{shipment.broker.customer_service_email}>"
+           else
+             pretty_email(from_user)
+           end
+
     mail(
-      cc: pretty_email(from_user),
-      from: "#{shipment.broker.name} <#{shipment.broker.customer_service_email}>",
+      from: from,
       to: pretty_email(to_contact),
       subject: "#{document_name} for Load #{shipment.load_id}"
     )
