@@ -469,7 +469,11 @@ class Shipment < ApplicationRecord
 
           cost += broker_carrier.quote_padding unless broker_carrier.quote_padding.blank?
 
-          unless reactive_shipping_rate.with_excessive_length_fees
+          dimensions = shipment.items.pluck(:l, :w).flatten
+          dimensions_contain_blank = !dimensions.size == (dimensions - [nil, '']).size
+          max_dimension = max_dimension.max
+
+          if !reactive_shipping_rate.with_excessive_length_fees && (max_dimension > 48 || dimensions_contain_blank)
             if broker_carrier.overlength_rules.blank?
               rate = Rate.new(
                 shipment: self,
@@ -495,11 +499,9 @@ class Shipment < ApplicationRecord
               'min_length <= ?', longest_dimension
             ).where(
               'max_length >= ?', longest_dimension
-            )
+            )&.first
 
-            if !overlength_rule.blank?
-              overlength_rule = overlength_rule.first
-            else
+            if overlength_rule.blank?
               overlength_rule = broker_carrier.overlength_rules.where(
                 'min_length <= ?', longest_dimension
               ).where(
@@ -507,6 +509,7 @@ class Shipment < ApplicationRecord
               )
               overlength_rule = overlength_rule.first unless overlength_rule.blank?
             end
+
             cost += overlength_rule.cost unless overlength_rule.blank?
           end
 
