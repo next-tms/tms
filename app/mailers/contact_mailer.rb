@@ -15,6 +15,18 @@ class ContactMailer < ActionMailer::Base
     )
   end
 
+  def broker_dispatch_sheet(from_user:, to_contact:, shipment:)
+    @shipment = shipment
+
+    send_document(
+      document: shipment.broker_dispatch_sheet,
+      document_name: 'Scanned Bill of Lading',
+      shipment: shipment,
+      from_user: from_user,
+      to_contact: to_contact,
+    )
+  end
+
   def broker_quote(from_user:, to_contact:, shipment:)
     @shipment = shipment
 
@@ -59,15 +71,9 @@ class ContactMailer < ActionMailer::Base
       content: document.download
     }
 
-    # Avoid SendGrid::DuplicatePersonalizationError
-    from = if from_user.email == to_contact.email
-             "#{shipment.broker.name} <#{shipment.broker.customer_service_email}>"
-           else
-             pretty_email(from_user)
-           end
-
     mail(
-      from: from,
+      cc: pretty_email(from_user),
+      from: "#{shipment.broker.name} <#{shipment.broker.customer_service_email}>",
       to: pretty_email(to_contact),
       subject: "#{document_name} for Load #{shipment.load_id}"
     )
