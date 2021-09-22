@@ -211,6 +211,8 @@ class Shipment < ApplicationRecord
 
   def fingerprint
     str = ''.dup
+    str << (total_cost.blank? ? '' : total_cost.to_s)
+    str << (total_charges.blank? ? '' : total_charges.to_s)
     str << (broker_carrier.blank? ? '' : broker_carrier.id.to_s)
     str << (tracking_carrier.blank? ? '' : tracking_carrier.id.to_s)
     str << (bol_notes.blank? ? '' : bol_notes)
