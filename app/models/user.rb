@@ -58,13 +58,18 @@ class User < ApplicationRecord
   end
 
   def sales_rep_earnings(from, to)
-    shipments = Shipment.active.where(
-      broker_customer: broker_customers
-    ).where(
-      'picked_up_at >= ?', from
-    ).where(
-      'picked_up_at <= ?', to
-    )
+    shipments = Shipment
+                .active
+                .where(
+                  broker_customer: broker_customers
+                )
+                .where(
+                  'picked_up_at >= ?', from
+                )
+                .where(
+                  'picked_up_at <= ?', to
+                )
+                .includes(:broker_customer)
 
     return Money.new(0) if shipments.blank?
 

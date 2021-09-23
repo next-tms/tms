@@ -47,7 +47,7 @@ class Shipment < ApplicationRecord
   scope :not_late, -> { where.not(id: late) }
 
   belongs_to :broker
-  belongs_to :broker_carrier, required: false
+  belongs_to :broker_carrier, counter_cache: true, required: false
 
   has_many :tracking_events
   accepts_nested_attributes_for :tracking_events, allow_destroy: true, reject_if: :all_blank

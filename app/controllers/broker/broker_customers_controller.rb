@@ -9,7 +9,8 @@ class Broker::BrokerCustomersController < Broker::BrokerController
            current_user.broker_customers
          else
            current_user.broker.broker_customers
-         end.ransack(params[:q])
+         end.includes(:customer).ransack(params[:q])
+
     @q.sorts = "#{Customer.table_name + '.name'} desc" if @q.sorts.blank?
     @pagy, @broker_customers = pagy(@q.result)
   end
@@ -127,7 +128,17 @@ class Broker::BrokerCustomersController < Broker::BrokerController
       unauthorized
     end
 
-    @q = @broker_customer.shipments.ransack(params[:q])
+    @q = @broker_customer
+        .shipments
+        .includes(
+          :applied_rate,
+          :broker_carrier, { broker_carrier: :carrier },
+          :items,
+          :receiver_address,
+          :shipper_address,
+          :tracking_carrier
+        ).ransack(params[:q])
+
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end

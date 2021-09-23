@@ -203,13 +203,13 @@ class Broker::ShipmentsController < Broker::BrokerController
   def booked
     @q = Shipment.where(
       broker_customer_id: current_user.broker_customers.pluck(:id)
-    ).active.booked.includes(required_includes).ransack(params[:q])
+    ).active.booked.includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
     @q.sorts = 'booked_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
 
   def pending_dispatch
-    @q = current_user.shipments.active.pending_dispatch.includes(required_includes).ransack(params[:q])
+    @q = current_user.shipments.active.pending_dispatch.includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
@@ -235,7 +235,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .pending_delivery
          .late
          .not_missing_deliver_by
-         .includes(required_includes)
+         .includes([required_includes, :receiver_address].flatten)
          .ransack(params[:q])
 
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
@@ -249,7 +249,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .pending_delivery
          .not_late
          .not_missing_deliver_by
-         .includes(required_includes)
+         .includes([required_includes, :receiver_address].flatten)
          .ransack(params[:q])
 
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
@@ -262,7 +262,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .active
          .pending_delivery
          .missing_deliver_by
-         .includes(required_includes)
+         .includes([required_includes, :receiver_address].flatten)
          .ransack(params[:q])
 
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
@@ -270,7 +270,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pending_departure
-    @q = current_user.shipments.active.pending_departure.includes(required_includes).ransack(params[:q])
+    @q = current_user.shipments.active.pending_departure.includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
@@ -285,7 +285,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     pending_pickup = current_user
                      .shipments
                      .active
-                     .pending_pickup.includes(required_includes)
+                     .pending_pickup.includes([required_includes, :items, :receiver_address].flatten)
 
     @shipments_for_pickup_later = Shipment.none
     @shipments_for_pickup_today = Shipment.none
@@ -313,13 +313,13 @@ class Broker::ShipmentsController < Broker::BrokerController
   def pending_quotation
     @q = current_user.shipments.active.pending_quotation.or(
         current_user.shipments.canceled_recently
-      ).includes(required_includes).ransack(params[:q])
+      ).includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result(distinct: true))
   end
 
   def delivered
-    @q = current_user.shipments.active.delivered.includes(required_includes).ransack(params[:q])
+    @q = current_user.shipments.active.delivered.includes(*[required_includes, :items, :receiver_address]).ransack(params[:q])
     @q.sorts = 'delivered_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
@@ -366,18 +366,6 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   private
-
-  def required_includes
-    [
-      { broker_carrier: :carrier },
-      { broker_customer: :customer },
-      :applied_rate,
-      :items,
-      :receiver_address,
-      :shipper_address,
-      :tracking_carrier
-    ]
-  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_shipment
@@ -483,8 +471,6 @@ class Broker::ShipmentsController < Broker::BrokerController
       :broker_carrier, { broker_carrier: :carrier },
       :broker_customer, { broker_customer: :customer },
       :applied_rate,
-      :items,
-      :receiver_address,
       :shipper_address,
       :tracking_carrier
     ]

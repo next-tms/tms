@@ -9,9 +9,16 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def index
-    @broker_carriers = 
+    @q = current_user
+         .broker
+         .broker_carriers
+         .includes(
+           [
+             :broker_customer, { broker_customer: :customer },
+             :carrier,
+           ]
+         ).ransack(params[:q])
 
-    @q = current_user.broker.broker_carriers.includes(:carrier).ransack(params[:q])
     @q.sorts = "#{Carrier.table_name + '.name'} desc" if @q.sorts.blank?
     @pagy, @broker_carriers = pagy(@q.result)
   end
@@ -101,9 +108,16 @@ class Broker::BrokerCarriersController < Broker::BrokerController
       unauthorized
     end
 
-    @broker_carrier_carriers = BrokerCarrier.where broker: @broker_carrier.broker, carrier: @broker_carrier.carrier
+    @q = @broker_carrier
+         .shipments
+         .includes(
+           :applied_rate,
+           :items,
+           :receiver_address,
+           :tracking_carrier,
+           :shipper_address
+         ).ransack(params[:q])
 
-    @q = @broker_carrier.shipments.ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
