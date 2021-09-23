@@ -20,7 +20,6 @@
             <% unless shipment.customer_reference.blank? %>
               <li><b>PO Ref:</b> <%= shipment.customer_reference %></li>
             <% end %>
-            <li><strong>Date:</strong> <%= long_date Date.current, shipment.shipper_address.time_zone %></li>
           </ul>
         </td>
       </tr>
@@ -28,6 +27,26 @@
   </table>
 
   <h2><%= !shipment.broker_carrier.blank? ? shipment.broker_carrier.carrier.name : '&nbsp;'.html_safe %></h2>
+
+  <div class="text-center bordered">
+    <strong>Date:</strong> 
+    <table>
+      <tbody>
+        <tr>
+          <th>Pickup Date</th>
+          <td><%= long_date shipment.pickup_on, shipment.shipper_address.time_zone %></td>
+        </tr>
+        <tr>
+          <th>Pickup Hours</th>
+          <td>
+            <%= shipment.pickup_hours_start_at %>
+            -
+            <%= shipment.pickup_hours_end_at %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <table>
     <tbody>
