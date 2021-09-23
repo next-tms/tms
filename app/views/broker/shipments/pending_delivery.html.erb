@@ -7,21 +7,11 @@
   <p class="lead">In Transit</p>
 </div>
 
-<% unless @missing_deliver_by_shipments.blank? %>
-  <h2>Missing ETA</h2>
-  <%= render 'show_many_pending_delivery', shipments: @missing_deliver_by_shipments %>
-<% end %>
+<h2>Missing ETA</h2>
+<%= turbo_frame_tag :shipments_without_deliver_by, src: broker_shipments_pending_delivery_without_deliver_by_path %>
 
-<% unless @late_shipments.blank? %>
-  <h2>Late</h2>
-  <%= render 'show_many_pending_delivery', shipments: @late_shipments %>
-<% end %>
+<h2>Late</h2>
+<%= turbo_frame_tag :shipments_late, src: broker_shipments_pending_delivery_late_path %>
 
-<% unless @shipments.blank? %>
-  <h2>On Time</h2>
-  <%= render 'show_many_pending_delivery', shipments: @shipments %>
-<% end %>
-
-<% if @late_shipments.blank? && @shipments.blank? %>
-  <%= render 'layouts/no_content' %>
-<% end %>
+<h2>On Time</h2>
+<%= turbo_frame_tag :shipments_on_time, src: broker_shipments_pending_delivery_on_time_path %>

@@ -226,6 +226,49 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipments = shipments.not_late.order(:picked_up_at)
   end
 
+  def pending_delivery; end
+
+  def pending_delivery_late
+    @q = current_user
+         .shipments
+         .active
+         .pending_delivery
+         .late
+         .not_missing_deliver_by
+         .includes(required_includes)
+         .ransack(params[:q])
+
+    @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
+    @pagy, @shipments = pagy(@q.result)
+  end
+
+  def pending_delivery_on_time
+    @q = current_user
+         .shipments
+         .active
+         .pending_delivery
+         .not_late
+         .not_missing_deliver_by
+         .includes(required_includes)
+         .ransack(params[:q])
+
+    @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
+    @pagy, @shipments = pagy(@q.result)
+  end
+
+  def pending_delivery_without_deliver_by
+    @q = current_user
+         .shipments
+         .active
+         .pending_delivery
+         .missing_deliver_by
+         .includes(required_includes)
+         .ransack(params[:q])
+
+    @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
+    @pagy, @shipments = pagy(@q.result)
+  end
+
   def pending_departure
     @q = current_user.shipments.active.pending_departure.includes(required_includes).ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
@@ -239,7 +282,10 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pending_pickup
-    pending_pickup = current_user.shipments.active.pending_pickup.includes(required_includes)
+    pending_pickup = current_user
+                     .shipments
+                     .active
+                     .pending_pickup.includes(required_includes)
 
     @shipments_for_pickup_later = Shipment.none
     @shipments_for_pickup_today = Shipment.none

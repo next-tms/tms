@@ -33,7 +33,8 @@ class Shipment < ApplicationRecord
   scope :missing_pro, -> { active.pending_delivery.where(pro: ['', nil]) }
   scope :missing_cost, -> { active.where.not(id: pending_quotation).where(carrier_cost_cents: 0) }
   scope :missing_charge, -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
-  scope :missing_deliver_by, -> { active.pending_delivery.where(deliver_by: ['', nil]) }
+  scope :missing_deliver_by, -> { where(deliver_by: ['', nil]) }
+  scope :not_missing_deliver_by, -> { where.not(id: missing_deliver_by) }
   scope :missing_pricing, -> { active.missing_cost.or(active.missing_charge) }
 
   scope :delivered, -> { where.not(delivered_at: nil) }

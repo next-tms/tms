@@ -85,8 +85,14 @@ Rails.application.routes.draw do
     get 'shipments/missing-pricing', to: 'shipments#missing_pricing'
     get 'shipments/missing-pro', to: 'shipments#missing_pro'
     get 'shipments/pending-delivery', to: 'shipments#pending_delivery'
+    get 'shipments/pending-delivery/late', to: 'shipments#pending_delivery_late'
+    get 'shipments/pending-delivery/on-time', to: 'shipments#pending_delivery_on_time'
+    get 'shipments/pending-delivery/without-deliver-by', to: 'shipments#pending_delivery_without_deliver_by'
     get 'shipments/pending-departure', to: 'shipments#pending_departure'
     get 'shipments/pending-pickup', to: 'shipments#pending_pickup'
+    get 'shipments/pending-pickup/late', to: 'shipments#pending_pickup'
+    get 'shipments/pending-pickup/today', to: 'shipments#pending_pickup_today'
+    get 'shipments/pending-pickup/future', to: 'shipments#pending_pickup_future'
     get 'shipments/pending-quotation', to: 'shipments#pending_quotation'
 
     get 'shipments/quote-only' => 'shipments#new_quote_only', as: :quote_only
