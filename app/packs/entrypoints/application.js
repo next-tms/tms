@@ -17,3 +17,5 @@ import { Tooltip, Toast, Popover } from 'bootstrap'
 import 'src/application.scss'
 
 import './sortable'
+
+const images = require.context('../images', true)

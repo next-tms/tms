@@ -8,10 +8,16 @@
 </div>
 
 <h2>Missing ETA</h2>
-<%= turbo_frame_tag :shipments_without_deliver_by, src: broker_shipments_pending_delivery_without_deliver_by_path %>
+<%= turbo_frame_tag :shipments_without_deliver_by, src: broker_shipments_pending_delivery_without_deliver_by_path do %>
+  <%= render 'shared/loading' %>
+<% end %>
 
 <h2>Late</h2>
-<%= turbo_frame_tag :shipments_late, src: broker_shipments_pending_delivery_late_path %>
+<%= turbo_frame_tag :shipments_late, src: broker_shipments_pending_delivery_late_path do %>
+  <%= render 'shared/loading' %>
+<% end %>
 
 <h2>On Time</h2>
-<%= turbo_frame_tag :shipments_on_time, src: broker_shipments_pending_delivery_on_time_path %>
+<%= turbo_frame_tag :shipments_on_time, src: broker_shipments_pending_delivery_on_time_path do %>
+  <%= render 'shared/loading' %>
+<% end %>
