@@ -26,6 +26,6 @@ export default class extends Controller {
             body: JSON.stringify(data)
         })
         .then(response => response.json())
-        .then(data => Turbo.visit(data.location))
+        .then(data => window.location = data.location)
     }
 }
