@@ -9,7 +9,7 @@
     <div class="col-auto float-right">
       <%= search_form_for(@q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :sorts, value: params[:q].try(:[], :s) %>
-        <%= f.text_field :customer_name_cont, placeholder: 'Filter', autofocus: true, class: 'form-control mr-2' %>
+        <%= f.text_field :customer_name_cont, placeholder: 'Filter', class: 'form-control mr-2' %>
         <%= f.submit 'Filter', class: 'btn btn-primary' %>
       <% end %>
     </div>
