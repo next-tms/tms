@@ -1230,6 +1230,9 @@ GEM
       actionpack (>= 5.2)
       activemodel (>= 5.2)
     builder (3.2.4)
+    bullet (6.1.5)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.11)
     business_time (0.10.0)
       activesupport (>= 3.2.0)
       sorted_set
@@ -1443,6 +1446,7 @@ GEM
       rails (>= 6.0.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
+    uniform_notifier (1.14.2)
     warden (1.2.9)
       rack (>= 2.0.9)
     wasabi (3.6.1)
@@ -1488,6 +1492,7 @@ DEPENDENCIES
   barby
   bootsnap (>= 1.4.2)
   bootstrap_form (~> 4.5)
+  bullet (~> 6.1.5)
   business_time
   byebug
   capybara (>= 3.35.3)
