@@ -62,6 +62,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_out_path_for(_resource_or_scope)
+    check_website
     @website.manifest.dig('landings', 'sign-out', 'url') || root_path
   end
 
