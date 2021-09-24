@@ -185,6 +185,15 @@ class Address < ApplicationRecord
     liftoff_types
   end
 
+  def to_reactive_shipping_address
+    HyperCarrier::Location.new(
+      country: 'US',
+      state: state,
+      city: city,
+      zip: zip_code
+    )
+  end
+
   def update_types
     return self unless full_address?
 

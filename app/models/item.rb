@@ -126,14 +126,15 @@ class Item < ApplicationRecord
     end
   end
 
-  def as_reactive_shipping_package
+  def as_reactive_shipping_package(use_forced_freight_class:)
     HyperCarrier::Package.new(
-      weight * 16,
+      (quantity * weight) * 16,
       {
         length: l,
         width: w,
         height: h
       },
+      declared_freight_class: api_freight_class(use_forced_freight_class: use_forced_freight_class),
       units: :imperial
     )
   end

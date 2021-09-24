@@ -362,7 +362,40 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def quote
     unauthorized if (!current_user.has_role? 'dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
-    @shipment.update_rates
+
+    reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
+              false
+            elsif @shipment.calculated_freight_classes.uniq == [nil] && @shipment.forced_freight_classes.uniq.nil?
+              false
+            else
+              true
+            end
+
+    reset = true if !reset && !params[:force].blank?
+
+    if reset
+      applied_rate = @shipment.applied_rate
+
+      if @shipment.applied_rate.blank?
+        @shipment.rates.destroy_all
+      else
+        @shipment.rates.where.not(id: @shipment.applied_rate.id).destroy_all
+      end
+    end
+
+    broker_carrier_ids = []
+    broker_carrier_ids += if @shipment.broker_customer.blank?
+                            @shipment.broker.broker_carriers.blanket.api_configured.pluck(:id)
+                          else
+                            @shipment.broker_customer.eligible_broker_carriers.api_configured.pluck(:id)
+                          end
+    broker_carrier_ids += PricingRule.where(broker_carrier: @shipment.broker.broker_carriers).pluck(:broker_carrier_id)
+
+    @broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
+
+    @use_forced_freight_classes = []
+    @use_forced_freight_classes << false unless @shipment.calculated_freight_classes.uniq == [nil]
+    @use_forced_freight_classes << true unless @shipment.forced_freight_classes.uniq == [nil]
   end
 
   private

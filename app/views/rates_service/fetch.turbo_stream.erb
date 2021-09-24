@@ -1,0 +1,54 @@
+<%= turbo_stream.append 'rates' do %>
+  <% unless @rates.blank? %>
+    <% @rates.each do |rate| %>
+      <% next if !rate.errors.blank? || rate.cost_cents == 0 %>
+      <tr data-rate-id="<%= rate.id %>" class="<%= (!@shipment.applied_rate.blank? && rate.id == @shipment.applied_rate.id) ? 'table-info' : nil %>">
+        <% if !@shipment.quote_only? %>
+          <td>
+            <%= link_to 'Book', '#', data: { action: 'book#handle', controller: 'book', url: broker_shipment_path(@shipment), applied_rate_uid: rate.uid }, class: 'btn btn-sm btn-primary' %>
+          </td>
+        <% end %>
+        <td>
+          <div class="text-nowrap">
+            <% if not rate.tracking_carrier.blank? %>
+              <%= rate.tracking_carrier.name %>
+              <br>
+              <span class="text-muted"> via <%= rate.broker_carrier.carrier.name %></span>
+            <% else %>
+              <%= rate.broker_carrier.carrier.name %>
+            <% end %>
+            <% unless rate.broker_carrier.broker_customer.blank? %>
+              <br>
+              <span class="text-muted"> via <%= rate.broker_carrier.broker_customer.customer.name %> account</span>
+            <% end %>
+          </div>
+        </td>
+        <td>
+          <%= @shipment.freight_classes(use_forced_freight_class: @use_forced_freight_classes).join(', ') %>
+        </td>
+        <td>
+          <% unless rate.reference.blank? %>
+            <%= rate.reference %>
+            <span class="text-nowrap"><%= link_to icon('fas', 'eye', 'Show'), quote_uri(@shipment), target: '_blank' unless quote_uri(@shipment).blank? %></span>
+          <% else %>
+            <em>Not provided</em>
+          <% end %>
+        </td>
+        <td data-sort="<%= rate.cost %>"><%= humanized_money_with_symbol rate.cost, no_cents_if_whole: false %></td>
+        <td><%= rate.pretty_service_type %></td>
+        <td>
+          <% unless rate.transit_days.blank? %>
+            <%= rate.transit_days %> <%= 'day'.pluralize(rate.transit_days ? rate.transit_days.to_i : 0) %>
+            <br/>
+            <%= short_date rate.transit_days.to_i.business_days.after(@shipment.shipper_available_at || Date.current).in_time_zone(@shipment.receiver_address.time_zone.to_s), @shipment.receiver_address.time_zone %>
+          <% else %>
+            <em>Not provided</em>
+          <% end %>
+        </td>
+        <% unless @shipment.total_charges == 0 %>
+          <td><%= humanized_money_with_symbol (@shipment.total_charges - rate.cost), no_cents_if_whole: false %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  <% end %>
+<% end %>

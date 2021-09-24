@@ -39,6 +39,7 @@
 // My guess is that it is simply too much to hold in memory, since
 // it freezes even before sortable is called if the table is too big in index.html
 
+// Retrieved 2021-09-12 https://github.com/tofsjonas/sortable
 // Event listener modified 2021-09-12 Brody Hoskins
 
 document.addEventListener('click', function (e) {
