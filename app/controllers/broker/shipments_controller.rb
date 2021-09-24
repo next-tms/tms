@@ -393,9 +393,16 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     @broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
 
-    @use_forced_freight_classes = []
-    @use_forced_freight_classes << false unless @shipment.calculated_freight_classes.uniq == [nil]
-    @use_forced_freight_classes << true unless @shipment.forced_freight_classes.uniq == [nil]
+    calculated_freight_classes = @shipment.forced_freight_classes
+    forced_freight_classes = @shipment.calculated_freight_classes
+
+    if calculated_freight_classes.sort == forced_freight_classes.sort
+      @use_forced_freight_classes = [false]
+    else
+      @use_forced_freight_classes = []
+      @use_forced_freight_classes << false unless @shipment.calculated_freight_classes == [nil]
+      @use_forced_freight_classes << true unless @shipment.forced_freight_classes == [nil]
+    end
   end
 
   private
