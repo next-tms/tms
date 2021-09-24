@@ -1,13 +1,14 @@
 GIT
   remote: https://github.com/brodyhoskins/hyper_carrier
-  revision: 46c90387d2c39f1df867b6493581c967331ee319
-  ref: 46c90387d2c39f1df867b6493581c967331ee319
+  revision: f438a6cf7c9a88e4f9f8eb9c1e9c77d98753309d
+  ref: f438a6cf7c9a88e4f9f8eb9c1e9c77d98753309d
   specs:
     hyper_carrier (0.0.1)
       active_utils (~> 3.3.1)
       activesupport (>= 4.2, < 6.2)
       httparty (~> 0.10)
       measured (>= 2.0)
+      mimemagic (~> 0.4.3)
       nokogiri (>= 1.6)
       rmagick (>= 4.1, < 4.3)
       savon (>= 2.0, < 2.13)
@@ -1309,6 +1310,9 @@ GEM
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2021.0225)
+    mimemagic (0.4.3)
+      nokogiri (~> 1)
+      rake
     mini_magick (4.11.0)
     mini_mime (1.1.1)
     mini_portile2 (2.6.1)
