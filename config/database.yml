@@ -68,3 +68,4 @@ production:
   # From https://edgeguides.rubyonrails.org/configuring.html#configuring-a-postgresql-database
   prepared_statements: false
   advisory_locks: false
+  pool: <%= ENV.fetch("DB_POOL") { 5 } %>
