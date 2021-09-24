@@ -4,32 +4,81 @@
 
 <%= render 'header', page_title: 'Find Rates' %>
 
-<div class="table-responsive">
-  <table class="table table-borderless table-striped table-hover sortable">
-    <thead>
-      <tr>
-        <% if !@shipment.quote_only? %>
-          <th>&nbsp;</th>
-        <% end %>
-        <th>Carrier</th>
-        <th>Class</th>
-        <th>Quote</th>
-        <th>Rate</th>
-        <th>Service</th>
-        <th>Transit</th>
-        <% if !@shipment.quote_only? && !@shipment.total_charges_cents == 0 %>
-          <th>Profit</th>
-        <% end %>
-      </tr>
-    </thead>
-    <tbody id="rates">
-    </tbody>
-  </table>
-</div>
+<% if !@shipment.broker_carrier.blank? && !@shipment.pickup_confirmation.blank? %>
+  <%= render 'layouts/message', classes: 'bg-warning', title: 'Dispatched', message: "You must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup #{@shipment.pickup_confirmation} or you may be charged." %>
+<% elsif !@shipment.broker_carrier.blank? && @shipment.pickup_confirmation.blank? %>
+  <%= render 'layouts/message', classes: 'bg-warning', title: 'Assigned', message: "Shipment is assigned to a #{@shipment.broker_carrier.carrier.name} but no pickup confirmation has been added — if switching carriers you must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup." %>
+<% end %>
 
-<% @broker_carriers.each do |broker_carrier| %>
-  <% @use_forced_freight_classes.each do |use_forced_freight_classes| %>
-    <%= turbo_frame_tag "#{@shipment.id}_#{broker_carrier.id}_forced_freight_classes_#{use_forced_freight_classes}", src: rates_fetch_path(broker_carrier_id: broker_carrier.id, shipment_id: @shipment.id, use_forced_freight_classes: use_forced_freight_classes, format: 'turbo_stream') do %>
+<% if !@shipment.quote_only? && @shipment.incomplete? %>
+  <%= render 'layouts/message', classes: 'bg-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>
+<% end %>
+
+<% if @use_forced_freight_classes == [false] %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <% if !@shipment.quote_only? %>
+            <th>&nbsp;</th>
+          <% end %>
+          <th>Carrier</th>
+          <th>Quote</th>
+          <th>Rate</th>
+          <th>Service</th>
+          <th>Transit</th>
+          <% if !@shipment.quote_only? && !@shipment.total_charges_cents == 0 %>
+            <th>Profit</th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody id="rates_false">
+      </tbody>
+    </table>
+  </div>
+
+  <% @broker_carriers.each do |broker_carrier| %>
+    <%= turbo_frame_tag "#{@shipment.id}_#{broker_carrier.id}_forced_freight_classes_false", src: rates_fetch_path(broker_carrier_id: broker_carrier.id, shipment_id: @shipment.id, use_forced_freight_classes: false, format: 'turbo_stream') do %>
     <% end %>
   <% end %>
+<% else %>
+  <div class="row">
+    <% @use_forced_freight_classes.each do |use_forced_freight_classes| %>
+      <div class="col col-md-6">
+        <p class="col-title">
+          <% classes = @shipment.freight_classes(use_forced_freight_class: use_forced_freight_classes) %>
+          Based on <%= use_forced_freight_classes ? 'Declared' : 'Calculated' %>
+          <%= 'class'.pluralize(classes.size).titleize %>
+          <%= classes.join(', ') %>
+        </p>
+
+        <div class="table-responsive">
+          <table class="table table-borderless table-striped table-hover sortable">
+            <thead>
+              <tr>
+                <% if !@shipment.quote_only? %>
+                  <th>&nbsp;</th>
+                <% end %>
+                <th>Carrier</th>
+                <th>Quote</th>
+                <th>Rate</th>
+                <th>Service</th>
+                <th>Transit</th>
+                <% if !@shipment.quote_only? && !@shipment.total_charges_cents == 0 %>
+                  <th>Profit</th>
+                <% end %>
+              </tr>
+            </thead>
+            <tbody id="rates_<%= use_forced_freight_classes %>">
+            </tbody>
+          </table>
+        </div>
+
+        <% @broker_carriers.each do |broker_carrier| %>
+          <%= turbo_frame_tag "#{@shipment.id}_#{broker_carrier.id}_forced_freight_classes_#{use_forced_freight_classes}", src: rates_fetch_path(broker_carrier_id: broker_carrier.id, shipment_id: @shipment.id, use_forced_freight_classes: use_forced_freight_classes, format: 'turbo_stream') do %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 <% end %>

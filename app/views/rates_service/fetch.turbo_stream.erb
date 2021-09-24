@@ -1,5 +1,5 @@
-<%= turbo_stream.append 'rates' do %>
-  <% unless @rates.blank? %>
+<% unless @rates.blank? %>
+  <%= turbo_stream.append "rates_#{!@rates.first.with_calculated_freight_classes?}" do %>
     <% @rates.each do |rate| %>
       <% next if !rate.errors.blank? || rate.cost_cents == 0 %>
       <tr data-rate-id="<%= rate.id %>" class="<%= (!@shipment.applied_rate.blank? && rate.id == @shipment.applied_rate.id) ? 'table-info' : nil %>">
@@ -22,9 +22,6 @@
               <span class="text-muted"> via <%= rate.broker_carrier.broker_customer.customer.name %> account</span>
             <% end %>
           </div>
-        </td>
-        <td>
-          <%= @shipment.freight_classes(use_forced_freight_class: @use_forced_freight_classes).join(', ') %>
         </td>
         <td>
           <% unless rate.reference.blank? %>
