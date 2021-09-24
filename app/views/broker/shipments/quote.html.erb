@@ -4,47 +4,32 @@
 
 <%= render 'header', page_title: 'Find Rates' %>
 
-<% if !@shipment.broker_carrier.blank? && !@shipment.pickup_confirmation.blank? %>
-  <%= render 'layouts/message', classes: 'bg-warning', title: 'Dispatched', message: "You must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup #{@shipment.pickup_confirmation} or you may be charged." %>
-<% elsif !@shipment.broker_carrier.blank? && @shipment.pickup_confirmation.blank? %>
-  <%= render 'layouts/message', classes: 'bg-warning', title: 'Assigned', message: "Shipment is assigned to a #{@shipment.broker_carrier.carrier.name} but no pickup confirmation has been added — if switching carriers you must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup." %>
-<% end %>
+<div class="table-responsive">
+  <table class="table table-borderless table-striped table-hover sortable">
+    <thead>
+      <tr>
+        <% if !@shipment.quote_only? %>
+          <th>&nbsp;</th>
+        <% end %>
+        <th>Carrier</th>
+        <th>Class</th>
+        <th>Quote</th>
+        <th>Rate</th>
+        <th>Service</th>
+        <th>Transit</th>
+        <% if !@shipment.quote_only? && !@shipment.total_charges_cents == 0 %>
+          <th>Profit</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody id="rates">
+    </tbody>
+  </table>
+</div>
 
-<% if !@shipment.quote_only? && @shipment.incomplete? %>
-  <%= render 'layouts/message', classes: 'bg-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>
-<% end %>
-
-<% unless @shipment.rates.with_error.blank? %>
-  <% message = [] %>
-  <% @shipment.rates.with_error.includes(broker_carrier: :carrier).find_each do |rate| %>
-    <% message << "<p class=\"font-monospace\">#{rate.broker_carrier.carrier.name} (account ##{rate.broker_carrier.account}): #{rate.error}</p>" %>
+<% @broker_carriers.each do |broker_carrier| %>
+  <% @use_forced_freight_classes.each do |use_forced_freight_classes| %>
+    <%= turbo_frame_tag "#{@shipment.id}_#{broker_carrier.id}_forced_freight_classes_#{use_forced_freight_classes}", src: rates_fetch_path(broker_carrier_id: broker_carrier.id, shipment_id: @shipment.id, use_forced_freight_classes: use_forced_freight_classes, format: 'turbo_stream') do %>
+    <% end %>
   <% end %>
-  <% message = message.uniq.join('<br>') %>
-  <% message = "<p>The following quotes were not included:</p>#{message}".html_safe %>
-
-  <%= render 'layouts/message', classes: 'bg-warning', title: 'API errors found', message: message %>
-<% end %>
-
-<ul class="list-inline list-unstyled font-weight-bold">
-  <li class="list-inline-item">Quoted <%= long_date DateTime.current, current_user.time_zone %></li>
-  <li class="list-inline-item">Rates valid through <%= long_date (DateTime.current + 14.days), current_user.time_zone %></li>
-</ul>
-
-<% if not @shipment.rates.without_error.with_forced_freight_classes.blank? and @shipment.rates.without_error.with_calculated_freight_classes.blank? %>
-  <%= render 'quotes_show_many', rates: @shipment.rates.without_error.with_forced_freight_classes %>
-<% else %>
-  <div class="row">
-    <% unless @shipment.rates.without_error.with_calculated_freight_classes.blank? %>
-      <div class="col">
-        <p class="col-title">Using Calculated Freight <%= 'Class'.pluralize @shipment.calculated_freight_classes.size %> <%= @shipment.calculated_freight_classes.join(', ') %></p>
-        <%= render 'quotes_show_many', rates: @shipment.rates.without_error.with_calculated_freight_classes %>
-      </div>
-    <% end %>
-    <% unless @shipment.rates.without_error.with_forced_freight_classes.blank? %>
-      <div class="col">
-        <p class="col-title">Using Declared Freight <%= 'Class'.pluralize @shipment.forced_freight_classes.size %> <%= @shipment.forced_freight_classes.join(', ') %></p>
-        <%= render 'quotes_show_many', rates: @shipment.rates.without_error.with_forced_freight_classes %>
-      </div>
-    <% end %>
-  </div>
 <% end %>

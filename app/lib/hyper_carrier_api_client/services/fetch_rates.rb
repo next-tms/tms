@@ -3,12 +3,12 @@
 module HyperCarrierApiClient
   module Services
     class FetchRates < Base
-      def find(origin, destination, package_set, accessorials)
+      def find(origin, destination, packages, accessorials)
         hyper_carrier_api_call_block do
           carrier_client&.find_rates(
             origin,
             destination,
-            package_set.dig(:packages),
+            packages,
             accessorials: accessorials
           )
         end

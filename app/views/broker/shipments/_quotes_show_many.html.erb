@@ -1,22 +1,5 @@
 <% unless rates.blank? %>
-  <div class="table-responsive">
-    <table class="table table-borderless table-striped table-hover sortable">
-      <thead>
-        <tr>
-          <% if !@shipment.quote_only? %>
-            <th>&nbsp;</td>
-          <% end %>
-          <th>Carrier</td>
-          <th>Quote</th>
-          <th>Rate</th>
-          <th>Service</th>
-          <th>Transit</th>
-          <% if !@shipment.quote_only? && !@shipment.total_charges == 0 %>
-            <th>Profit</th>
-          <% end %>
-        </tr>
-      </thead>
-      <tbody>
+
         <% rates.each do |rate| %>
           <tr>
             <% if !@shipment.quote_only? %>

@@ -24,6 +24,9 @@ class Rate < ApplicationRecord
   has_many :rate_accessorials, dependent: :destroy
   has_many :accessorials, through: :rate_accessorials
 
+  serialize :request
+  serialize :response
+
   # Returns the actual carrier rather than any broker associated
   def carrier
     return nil if broker_carrier.blank?
