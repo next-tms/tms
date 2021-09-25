@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_23_080509) do
+ActiveRecord::Schema.define(version: 2021_09_25_230011) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -189,6 +189,7 @@ ActiveRecord::Schema.define(version: 2021_09_23_080509) do
     t.string "customer_service_email"
     t.integer "first_load_id"
     t.text "default_bol_notes"
+    t.string "robot_email"
     t.index ["address_id"], name: "index_brokers_on_address_id"
   end
 
