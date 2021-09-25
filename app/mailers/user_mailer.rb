@@ -5,7 +5,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     @broker = @user.customer? ? @user.broker_customer.broker : @user.broker
     mail(
-      from: "#{@broker.name} <#{@broker.customer_service_email}>",
+      from: "#{@broker.name} <#{@broker.robot_email}>",
       reply_to: "#{@broker.name} <#{@broker.customer_service_email}>",
       to: @user.email,
       subject: "Welcome to #{@broker.name}"
@@ -75,7 +75,7 @@ class UserMailer < ActionMailer::Base
   private
 
   def from(shipment)
-    "#{shipment.broker.name} <robot@#{shipment.broker.customer_service_email.split('@')[1]}>"
+    "#{shipment.broker.name} <#{@shipment.broker.robot_email}>"
   end
 
   def to(shipment, method)
@@ -87,7 +87,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def reply_to(shipment, __method__)
-    return "Robot <robot@#{shipment.broker.customer_service_email.split('@')[1]}>" if shipment.updated_by.blank?
+    return "Robot <#{shipment.broker.robot_email}>" if shipment.updated_by.blank?
 
     "#{shipment.updated_by.first_name} #{shipment.updated_by.last_name} <#{shipment.updated_by.email}>"
   end

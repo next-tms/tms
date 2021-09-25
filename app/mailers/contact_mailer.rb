@@ -79,7 +79,7 @@ class ContactMailer < ActionMailer::Base
          end
 
     mail(
-      from: "#{shipment.broker.name} <#{shipment.broker.customer_service_email}>",
+      from: "#{shipment.broker.name} <#{shipment.broker.robot_email}>",
       cc: cc,
       reply_to: pretty_email(from_user),
       to: pretty_email(to_contact),
