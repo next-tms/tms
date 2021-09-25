@@ -196,7 +196,12 @@ class Shipment < ApplicationRecord
     return nil if pro.blank?
 
     path = HyperCarrierApiClient.fetch_bol(broker_carrier: broker_carrier, tracking_number: pro)
-    return nil if path.blank? || !path.is_a?(String)
+    return nil if path.blank?
+
+    if !path.is_a?(String)
+      Rollbar.debug("Shipment#fetch_carrier_bol id=#{id}, path is a #{path.class}")
+      return nil
+    end
 
     carrier_bol.attach(io: File.open(path), filename: "#{load_id} BOL (Carrier).pdf", content_type: 'application/pdf')
   end
