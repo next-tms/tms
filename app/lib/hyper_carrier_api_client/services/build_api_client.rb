@@ -21,7 +21,10 @@ module HyperCarrierApiClient
           debug: config[:debugging],
           username: broker_carrier.username,
           password: broker_carrier.password,
-          watir_args: [:chrome, url: ENV['SELENOID_URL']]
+          selenoid_options: {
+            download_url: "#{ENV['SELENOID_BASE_URL']}/download"
+          },
+          watir_args: [:chrome, url: "#{ENV['SELENOID_BASE_URL']}/wd/hub/"]
         }
 
         if broker_carrier.carrier.has_seperate_website_credentials?
