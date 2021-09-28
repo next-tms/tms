@@ -47,7 +47,7 @@ class RatesService
       origin: @shipment.shipper_address.to_reactive_shipping_address,
       destination: @shipment.receiver_address.to_reactive_shipping_address,
       packages: packages,
-      accessorials: combined_accessorials
+      accessorials: accessorials
     )
 
     if response.blank? || response.rates.blank?
