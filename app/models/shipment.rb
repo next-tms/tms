@@ -217,23 +217,8 @@ class Shipment < ApplicationRecord
 
   def fingerprint
     str = ''.dup
-    str << (total_cost.blank? ? '' : total_cost.to_s)
-    str << (total_charges.blank? ? '' : total_charges.to_s)
-    str << (broker_carrier.blank? ? '' : broker_carrier.id.to_s)
-    str << (tracking_carrier.blank? ? '' : tracking_carrier.id.to_s)
-    str << (bol_notes.blank? ? '' : bol_notes)
-    unless flattened_items.blank?
-      str += flattened_items.size.to_s
-      flattened_items.each do |flattened_item|
-        str += (flattened_item.l.blank? ? '' : flattened_item.l.to_s)
-        str += (flattened_item.w.blank? ? '' : flattened_item.w.to_s)
-        str += (flattened_item.h.blank? ? '' : flattened_item.h.to_s)
-        str += (flattened_item.weight.blank? ? '' : flattened_item.weight.to_s)
-        str += (flattened_item.forced_freight_class.blank? ? '' : flattened_item.forced_freight_class.to_s)
-        str += (flattened_item.calculated_freight_class.blank? ? '' : flattened_item.calculated_freight_class.to_s)
-      end
-    end
-    str += accessorial_codes.join(', ') unless accessorials.blank?
+    str += flattened_items.to_json
+    str += accessorial_codes.to_json
     str += shipper_address.pretty(', ') unless shipper_address.blank?
     str += receiver_address.pretty(', ') unless receiver_address.blank?
 
@@ -706,15 +691,15 @@ class Shipment < ApplicationRecord
   end
 
   def broker_bol_valid?
-    @broker_bol_valid ||= !broker_bol.blank? && broker_bol_shipment_fingerprint == fingerprint
+    @broker_bol_valid ||= !broker_bol.blank? && broker_bol.created_at > updated_at
   end
 
   def broker_dispatch_sheet_valid?
-    @broker_dispatch_sheet_valid ||= !broker_dispatch_sheet.blank? && broker_dispatch_sheet_shipment_fingerprint == fingerprint
+    @broker_dispatch_sheet_valid ||= !broker_dispatch_sheet.blank? && broker_dispatch_sheet.created_at > updated_at
   end
 
   def broker_quote_valid?
-    @broker_quote_valid ||= !broker_quote.blank? && broker_quote_shipment_fingerprint == fingerprint
+    @broker_quote_valid ||= !broker_quote.blank? && broker_quote.created_at > updated_at
   end
 
   def to_param
