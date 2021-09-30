@@ -225,6 +225,18 @@ class Shipment < ApplicationRecord
     Digest::SHA2.hexdigest(str)
   end
 
+  def broker_documents_fingerprint
+    str = ''.dup
+    str += total_cost_cents.to_s
+    str += total_charges_cents.to_s
+    str += flattened_items.to_json
+    str += accessorial_codes.to_json
+    str += shipper_address.pretty(', ') unless shipper_address.blank?
+    str += receiver_address.pretty(', ') unless receiver_address.blank?
+
+    Digest::SHA2.hexdigest(str)
+  end
+
   def missing_deliver_by?
     deliver_by.blank?
   end
@@ -691,15 +703,15 @@ class Shipment < ApplicationRecord
   end
 
   def broker_bol_valid?
-    @broker_bol_valid ||= !broker_bol.blank? && broker_bol.created_at > updated_at
+    @broker_bol_valid ||= !broker_bol.blank? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
   end
 
   def broker_dispatch_sheet_valid?
-    @broker_dispatch_sheet_valid ||= !broker_dispatch_sheet.blank? && broker_dispatch_sheet.created_at > updated_at
+    @broker_dispatch_sheet_valid ||= !broker_dispatch_sheet.blank? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
   end
 
   def broker_quote_valid?
-    @broker_quote_valid ||= !broker_quote.blank? && broker_quote.created_at > updated_at
+    @broker_quote_valid ||= !broker_quote.blank? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
   end
 
   def to_param
