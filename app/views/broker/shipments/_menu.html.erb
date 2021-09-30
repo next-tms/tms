@@ -20,9 +20,9 @@
         <li class="navbar-item"><%= link_to icon('fas', 'sticky-note', 'Notes'), notes_broker_shipment_path(@shipment), class: 'nav-link' %></li>
         <li class="navbar-item">
           <% unless @shipment.canceled_at.blank? %>
-            <%= link_to icon('fas', 'arrow-up', 'Reinstate'), broker_shipment_path(@shipment, shipment: { canceled_at: nil }), method: :patch, class: 'nav-link' %>
+            <%= link_to icon('fas', 'arrow-up', 'Reinstate'), broker_shipment_path(@shipment, shipment: { canceled_at: nil }), data: { method: :patch }, class: 'nav-link' %>
           <% else %>
-            <%= link_to icon('fas', 'ban', 'Cancel'), broker_shipment_path(@shipment, shipment: { canceled_at: DateTime.now }), method: :patch, data: { confirm: 'Are you sure you want to cancel this shipment?' }, class: 'nav-link' %>
+            <%= link_to icon('fas', 'ban', 'Cancel'), broker_shipment_path(@shipment, shipment: { canceled_at: DateTime.now }), data: { confirm: 'Are you sure you want to cancel this shipment?', method: :patch }, class: 'nav-link' %>
           <% end %>
         </li>
       <% else %>
