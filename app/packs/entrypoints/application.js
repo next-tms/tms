@@ -1,7 +1,10 @@
 require("@rails/activestorage").start()
 
+import mrujs from "mrujs"
 import * as Turbo from "@hotwired/turbo"
-// Turbo.session.drive = true
+
+window.Turbo = Turbo
+mrujs.start()
 
 import { Application } from 'stimulus'
 import { definitionsFromContext } from 'stimulus/webpack-helpers'
