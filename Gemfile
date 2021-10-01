@@ -55,7 +55,7 @@ gem 'loadcss-rails'
 # liftoff.rocks
 gem 'turbo-rails', '~> 0.7.14'
 
-gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: '44dfb6b264e04b0189cf20f5bb36657bc1d89ff8'
+gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: 'cbae7b424a61f38b5d191f0b729d872b5bc3854f'
 
 gem 'rollbar'
 
