@@ -4,7 +4,7 @@ ruby '3.0.2'
 
 gem 'rails', '~> 6.1.4'
 gem 'pg', '~> 1.2.0'
-gem 'puma', '5.4.0'
+gem 'puma', '5.5.0'
 gem 'webpacker', '~> 6.0.0.rc.5'
 gem 'jbuilder', '~> 2.11'
 
