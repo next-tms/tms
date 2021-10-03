@@ -13,13 +13,12 @@ module Liftoff
 
     config.i18n.fallbacks = true
 
-    # SendGrid
-    config.action_mailer.delivery_method = :sendgrid_actionmailer
-    config.action_mailer.sendgrid_actionmailer_settings = {
-      api_key: ENV['SENDGRID_API_KEY'],
-      raise_delivery_errors: true
+    # Postmark
+    config.action_mailer.delivery_method = :postmark
+    
+    config.action_mailer.postmark_settings = {
+      api_token: ENV['POSTMARK_API_TOKEN']
     }
-    config.time_zone = 'UTC'
 
     # Sidekiq
     config.active_job.queue_adapter = :sidekiq
