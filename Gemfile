@@ -53,7 +53,7 @@ gem 'devise', '~> 4.8.0'
 gem 'loadcss-rails'
 
 # liftoff.rocks
-gem 'turbo-rails', '~> 0.7.14'
+gem 'turbo-rails', '~> 0.8.1'
 
 gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: 'cbae7b424a61f38b5d191f0b729d872b5bc3854f'
 
