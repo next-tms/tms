@@ -20,6 +20,7 @@ group :development do
   gem 'listen', '>= 3.0.5', '< 3.8'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'traceroute'
 end
 
 group :test do
@@ -55,7 +56,7 @@ gem 'loadcss-rails'
 # liftoff.rocks
 gem 'turbo-rails', '~> 0.8.1'
 
-gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: 'c96e3df8a06f80d0621e520cbc8746df2c85934e'
+gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: '503db9b4acd8ed0e0126eb62b0e5e4f81ceb1eea'
 
 gem 'rollbar'
 
