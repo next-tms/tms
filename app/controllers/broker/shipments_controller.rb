@@ -54,8 +54,12 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment = Shipment.new
     @shipment.items << Item.new
 
-    broker_customer = BrokerCustomer.find_by_id(params[:broker_customer_id])
-    @shipment.shipper_name = broker_customer.customer.name
+    broker_customer = nil
+    unless params[:broker_customer_id].blank?
+      broker_customer = BrokerCustomer.find_by_id(params[:broker_customer_id])
+    end
+
+    @shipment.shipper_name = broker_customer&.customer&.name
     @shipment.broker_customer = broker_customer
     @shipment.shipper_address = broker_customer&.primary_pickup_address&.dup || Address.new
     @shipment.receiver_address = Address.new
