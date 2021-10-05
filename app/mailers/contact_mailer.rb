@@ -91,7 +91,9 @@ class ContactMailer < ActionMailer::Base
     if model.label.blank?
       model.email
     else
-      "#{model.label} <#{model.email}>"
+      # Temporarily disable due to Rollbar #34
+      # "#{model.label} <#{model.email}>"
+      model.email
     end
   end
 end
