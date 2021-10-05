@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/brodyhoskins/hyper_carrier
-  revision: 503db9b4acd8ed0e0126eb62b0e5e4f81ceb1eea
-  ref: 503db9b4acd8ed0e0126eb62b0e5e4f81ceb1eea
+  revision: 49c43303bae5884402d191203697159b3e3f1f21
+  ref: 49c43303bae5884402d191203697159b3e3f1f21
   specs:
     hyper_carrier (0.0.1)
       active_utils (~> 3.3.1)
