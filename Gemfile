@@ -49,8 +49,6 @@ gem 'image_processing', '~> 1.12.1'
 
 gem 'devise', '~> 4.8.0'
 
-gem 'loadcss-rails'
-
 # liftoff.rocks
 gem 'turbo-rails', '~> 0.8.1'
 
