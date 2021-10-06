@@ -3,9 +3,7 @@
     <title><%= yield :title %> — <%= @website ? @website.broker.name : t(:app_name) %></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--[if IE]>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.42/polyfill.js"></script>
-    <![endif]-->
+
     <% unless @website.blank? %>
       <meta name="description" content="<%= @website.desc %>"/>
     <% else %>
@@ -33,15 +31,6 @@
   </head>
 
   <body class="<% unless yield(:menu).empty? %>body-with-menu<% end %> <% unless yield(:auto_refresh).empty? %>auto-refresh<% end %>">
-
-    <!--[if IE]>
-      <div class="alert alert-danger mb-0 border-0 rounded-0">
-        <div class="container-fluid">
-          <p>Your browser is currently unsupported. Please consider using <%= link_to 'Microsoft Edge', 'https://www.microsoft.com/en-us/edge', 'data-turbo': 'false', target: '_blank' %>, <%= link_to 'Google Chrome', 'https://www.google.com/chrome/', 'data-turbo': 'false', target: '_blank' %> or <%= link_to 'Mozilla Firefox', 'https://www.mozilla.org/en-US/firefox/new/', 'data-turbo': 'false', target: '_blank' %>.</p>
-        </div>
-      </div>
-    <![endif]-->
-
     <% flash.each do |type, message| %>
       <div class="flash-alert alert alert-<%= flash_class type %> mb-0 border-0 rounded-0">
         <div class="container-fluid">
