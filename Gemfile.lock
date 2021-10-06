@@ -1546,7 +1546,6 @@ DEPENDENCIES
   responders
   rollbar
   rqrcode
-  savon
   selenium-webdriver
   sidekiq
   simple_command
