@@ -33,8 +33,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # brody.digital base 20191230
 
-gem 'jquery-rails'
-
 group :development do
   gem 'rails_real_favicon'
 end
@@ -51,8 +49,6 @@ gem 'image_processing', '~> 1.12.1'
 
 gem 'devise', '~> 4.8.0'
 
-gem 'loadcss-rails'
-
 # liftoff.rocks
 gem 'turbo-rails', '~> 0.8.1'
 
@@ -60,8 +56,6 @@ gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: 
 
 gem 'rollbar'
 
-gem 'api_cache'
-gem 'moneta'
 gem 'jwt'
 gem 'active_model_serializers'
 gem 'simple_command'
@@ -72,7 +66,6 @@ gem 'business_time'
 gem 'timezone', '~> 1.3'
 gem 'money-rails', '~> 1.14.0'
 gem 'httparty'
-gem 'savon'
 gem 'geocoder'
 gem 'mainstreet'
 gem 'postmark-rails'
