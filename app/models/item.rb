@@ -127,7 +127,7 @@ class Item < ApplicationRecord
   end
 
   def as_reactive_shipping_package(use_forced_freight_class:)
-    HyperCarrier::Package.new(
+    Interstellar::Package.new(
       (quantity * weight) * 16,
       {
         length: l,

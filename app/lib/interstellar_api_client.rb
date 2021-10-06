@@ -1,4 +1,4 @@
-module HyperCarrierApiClient
+module InterstellarApiClient
   extend self
 
   def build_client(broker_carrier:)

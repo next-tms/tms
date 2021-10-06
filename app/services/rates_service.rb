@@ -42,7 +42,7 @@ class RatesService
       end
     end
 
-    response = HyperCarrierApiClient.fetch_rates(
+    response = InterstellarApiClient.fetch_rates(
       broker_carrier: @broker_carrier,
       origin: @shipment.shipper_address.to_reactive_shipping_address,
       destination: @shipment.receiver_address.to_reactive_shipping_address,

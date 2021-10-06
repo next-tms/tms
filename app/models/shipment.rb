@@ -195,7 +195,7 @@ class Shipment < ApplicationRecord
   def fetch_carrier_bol
     return nil if pro.blank?
 
-    path = HyperCarrierApiClient.fetch_bol(broker_carrier: broker_carrier, tracking_number: pro)
+    path = InterstellarApiClient.fetch_bol(broker_carrier: broker_carrier, tracking_number: pro)
     return nil if path.blank?
 
     if !path.is_a?(String)
@@ -209,7 +209,7 @@ class Shipment < ApplicationRecord
   def fetch_carrier_pod
     return nil if pro.blank?
 
-    path = HyperCarrierApiClient.fetch_pod(broker_carrier: broker_carrier, tracking_number: pro)
+    path = InterstellarApiClient.fetch_pod(broker_carrier: broker_carrier, tracking_number: pro)
     return nil if path.blank?
 
     carrier_pod.attach(io: File.open(path), filename: "#{load_id} POD.pdf", content_type: 'application/pdf')
@@ -293,7 +293,7 @@ class Shipment < ApplicationRecord
     shipper_address&.time_zone&.local_to_utc(pickup_on.end_of_day)
   end
 
-  # HyperCarrier
+  # Interstellar
   def reactive_shipping_tracking
     return @reactive_shipping_tracking if @reactive_shipping_tracking
 
@@ -308,7 +308,7 @@ class Shipment < ApplicationRecord
                       end
     return nil if tracking_number.blank?
 
-    @reactive_shipping_tracking = HyperCarrierApiClient.fetch_tracking(
+    @reactive_shipping_tracking = InterstellarApiClient.fetch_tracking(
       broker_carrier: broker_carrier,
       tracking_number: tracking_number
     )

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module HyperCarrierApiClient
+module InterstellarApiClient
   module Services
     class BuildApiClient
       def self.call(broker_carrier:)
@@ -9,7 +9,7 @@ module HyperCarrierApiClient
         config = { debugging: !Rails.env.production?, timeout: 60 }
 
         carrier = begin
-                    HyperCarrier.const_get(broker_carrier.carrier.scac)
+                    Interstellar.const_get(broker_carrier.carrier.scac)
                   rescue NameError
                     nil
                   end

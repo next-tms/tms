@@ -186,7 +186,7 @@ class Address < ApplicationRecord
   end
 
   def to_reactive_shipping_address
-    HyperCarrier::Location.new(
+    Interstellar::Location.new(
       country: 'US',
       state: state,
       city: city,

@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-module HyperCarrierApiClient
+module InterstellarApiClient
   module Services
     class Base
       API_INVALID_CREDENTIALS_EXCEPTIONS = [
-        HyperCarrier::ExpiredCredentialsError,
-        HyperCarrier::InvalidCredentialsError
+        Interstellar::ExpiredCredentialsError,
+        Interstellar::InvalidCredentialsError
       ]
 
       API_NOT_FOUND_EXCEPTIONS = [
-        HyperCarrier::DocumentNotFound,
-        HyperCarrier::ResponseError,
-        HyperCarrier::ShipmentNotFound,
+        Interstellar::DocumentNotFound,
+        Interstellar::ResponseError,
+        Interstellar::ShipmentNotFound,
         NotImplementedError
       ]
 
@@ -34,14 +34,14 @@ module HyperCarrierApiClient
       ]
 
       def initialize(broker_carrier:, retry_on_timeout: true, return_nil_on_404: false)
-        @carrier_client = HyperCarrierApiClient.build_client(broker_carrier: broker_carrier)
+        @carrier_client = InterstellarApiClient.build_client(broker_carrier: broker_carrier)
         @broker_carrier = broker_carrier
         @retry_on_timeout = retry_on_timeout
         @return_nil_on_404 = return_nil_on_404
         @tries = 0
       end
 
-      def hyper_carrier_api_call_block
+      def interstellar_api_call_block
         @tries += 1
         return nil if @tries > 10
 
