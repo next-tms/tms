@@ -1,3 +1,9 @@
+<% unless @shipment.public_notes.blank? %>
+  <div class="alert alert-info">
+    <%= simple_format @shipment.public_notes %>
+  </div>
+<% end %>
+
 <div class="table-responsive">
   <table class="table table-condensed table-borderless table-striped table-hover table-unsortable h-100">
     <thead>
