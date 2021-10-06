@@ -56,7 +56,6 @@ gem 'hyper_carrier', git: 'https://github.com/brodyhoskins/hyper_carrier', ref: 
 
 gem 'rollbar'
 
-gem 'moneta'
 gem 'jwt'
 gem 'active_model_serializers'
 gem 'simple_command'
