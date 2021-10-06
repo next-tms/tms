@@ -29,18 +29,16 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def index
     @q = if current_user.roles.map(&:name).include?('sales_rep')
-            broker_customer_ids = BrokerCustomerSalesRep.where(
-              user: current_user
-            ).pluck(:broker_customer_id)
-        
-            unless broker_customer_ids.blank?
-              Shipment.active.where(broker_customer_id: broker_customer_ids).ransack(params[:q])
-            else
-              nil
-            end
-          else
-            Shipment.active.includes(required_includes).ransack(params[:q])
-          end
+           broker_customer_ids = BrokerCustomerSalesRep.where(
+             user: current_user
+           ).pluck(:broker_customer_id)
+
+           unless broker_customer_ids.blank?
+             Shipment.active.where(broker_customer_id: broker_customer_ids).ransack(params[:q])
+           end
+         else
+           Shipment.active.includes(required_includes).ransack(params[:q])
+         end
 
     if @q
       @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -55,9 +53,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.items << Item.new
 
     broker_customer = nil
-    unless params[:broker_customer_id].blank?
-      broker_customer = BrokerCustomer.find_by_id(params[:broker_customer_id])
-    end
+    broker_customer = BrokerCustomer.find_by_id(params[:broker_customer_id]) unless params[:broker_customer_id].blank?
 
     @shipment.shipper_name = broker_customer&.customer&.name
     @shipment.broker_customer = broker_customer
@@ -126,7 +122,7 @@ class Broker::ShipmentsController < Broker::BrokerController
       unless @shipment.broker_bol_valid?
         CreateShipmentBrokerBolJob.perform_later(domain: request.host, shipment: @shipment)
       end
-  
+
       unless @shipment.broker_dispatch_sheet_valid?
         CreateShipmentBrokerDispatchSheetJob.perform_later(domain: request.host, shipment: @shipment)
       end
@@ -135,8 +131,12 @@ class Broker::ShipmentsController < Broker::BrokerController
         CreateShipmentBrokerQuoteJob.perform_later(domain: request.host, shipment: @shipment)
       end
 
-      FetchShipmentCarrierBolsJob.perform_later([ @shipment.id ]) if Rails.env.development? || @shipment.carrier_bol.blank?
-      FetchShipmentCarrierPodsJob.perform_later([ @shipment.id ]) if Rails.env.development? || @shipment.carrier_pod.blank?
+      if Rails.env.development? || @shipment.carrier_bol.blank?
+        FetchShipmentCarrierBolsJob.perform_later([@shipment.id])
+      end
+      if Rails.env.development? || @shipment.carrier_pod.blank?
+        FetchShipmentCarrierPodsJob.perform_later([@shipment.id])
+      end
     else
       redirect_to quote_broker_shipment_path(@shipment)
     end
@@ -163,11 +163,9 @@ class Broker::ShipmentsController < Broker::BrokerController
   def send_document_with_contact_mailer
     ContactMailer.send(
       params[:shipment_method].to_sym,
-      *[
-        from_user: current_user,
-        to_contact: Contact.find(params[:contact_id]),
-        shipment: @shipment
-      ]
+      from_user: current_user,
+      to_contact: Contact.find(params[:contact_id]),
+      shipment: @shipment
     ).deliver_later
 
     render layout: 'modal'
@@ -213,7 +211,8 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pending_dispatch
-    @q = current_user.shipments.active.pending_dispatch.includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
+    @q = current_user.shipments.active.pending_dispatch.includes([required_includes, :items,
+                                                                  :receiver_address].flatten).ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
@@ -274,7 +273,8 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pending_departure
-    @q = current_user.shipments.active.pending_departure.includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
+    @q = current_user.shipments.active.pending_departure.includes([required_includes, :items,
+                                                                   :receiver_address].flatten).ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
@@ -316,14 +316,15 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def pending_quotation
     @q = current_user.shipments.active.pending_quotation.or(
-        current_user.shipments.canceled_recently
-      ).includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
+      current_user.shipments.canceled_recently
+    ).includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result(distinct: true))
   end
 
   def delivered
-    @q = current_user.shipments.active.delivered.includes(*[required_includes, :items, :receiver_address]).ransack(params[:q])
+    @q = current_user.shipments.active.delivered.includes(required_includes, :items,
+                                                          :receiver_address).ransack(params[:q])
     @q.sorts = 'delivered_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
@@ -468,6 +469,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :pro,
                                      :pending_appointment_since,
                                      :promised_delivery_by,
+                                     :public_notes,
                                      :quote_id,
                                      :quote_only,
                                      :quoted_delivery_by,
@@ -491,8 +493,10 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :value,
                                      items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat
                                                           refrigerated desc weight quantity],
-                                     receiver_address_attributes: %i[id ref street street2 city state zip_code country_id],
-                                     shipper_address_attributes: %i[id ref street street2 city state zip_code country_id],
+                                     receiver_address_attributes: %i[id ref street street2 city state zip_code
+                                                                     country_id],
+                                     shipper_address_attributes: %i[id ref street street2 city state zip_code
+                                                                    country_id],
                                      shipment_accessorials_attributes: %i[_destroy accessorial_id],
                                      shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id
                                                                                  cost charge],

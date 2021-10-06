@@ -4,6 +4,12 @@
 
 <%= render 'header', page_title: 'Overview' %>
 
+<% unless @shipment.public_notes.blank? %>
+  <div class="alert alert-info">
+    <%= simple_format @shipment.public_notes %>
+  </div>
+<% end %>
+
 <div class="row">
   <div class="col-sm-3">
     <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
