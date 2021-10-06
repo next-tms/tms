@@ -22,7 +22,6 @@ module Liftoff
 
     # Sidekiq
     config.active_job.queue_adapter = :sidekiq
-    config.active_job.queue_name_prefix = Rails.env
 
     config.eager_load_paths << Rails.root.join('lib')
 
