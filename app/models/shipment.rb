@@ -5,7 +5,7 @@ class Shipment < ApplicationRecord
   scope :canceled_recently, -> { canceled.where('canceled_at > ?', 1.day.ago) }
   scope :active, -> { where.not(id: canceled) }
 
-  scope :booked, lambda { active.where.not(booked_at: nil).where(dispatched_at: nil) }
+  scope :booked, -> { active.where.not(booked_at: nil).where(dispatched_at: nil) }
   scope :pending_dispatch, lambda {
                              active.where.not(broker_carrier: nil).where(dispatched_at: nil).where(picked_up_at: nil).where(out_for_delivery_at: nil).where(delivered_at: nil)
                            }
@@ -198,7 +198,7 @@ class Shipment < ApplicationRecord
     path = InterstellarApiClient.fetch_bol(broker_carrier: broker_carrier, tracking_number: pro)
     return nil if path.blank?
 
-    if !path.is_a?(String)
+    unless path.is_a?(String)
       Rollbar.debug("Shipment#fetch_carrier_bol id=#{id}, path is a #{path.class}")
       return nil
     end
@@ -294,8 +294,8 @@ class Shipment < ApplicationRecord
   end
 
   # Interstellar
-  def reactive_shipping_tracking
-    return @reactive_shipping_tracking if @reactive_shipping_tracking
+  def interstellar_tracking
+    return @interstellar_tracking if @interstellar_tracking
 
     # Do not check broker_carrier.account, broker_carrier.username, broker_carrier.password as `nil` can be passed on
     return nil if pro.blank? && pickup_confirmation.blank?
@@ -308,17 +308,16 @@ class Shipment < ApplicationRecord
                       end
     return nil if tracking_number.blank?
 
-    @reactive_shipping_tracking = InterstellarApiClient.fetch_tracking(
+    @interstellar_tracking = InterstellarApiClient.fetch_tracking(
       broker_carrier: broker_carrier,
       tracking_number: tracking_number
     )
   end
 
   def update_tracking_events
-    tracking = reactive_shipping_tracking
-    return if tracking.blank?
+    return if interstellar_tracking.blank?
 
-    tracking.shipment_events.each do |shipment_event|
+    interstellar_tracking.shipment_events.each do |shipment_event|
       next if shipment_event.time.blank? || shipment_event.status.blank? ||
               shipment_event.location.blank? ||
               shipment_event.location.city.blank? ||
@@ -328,23 +327,22 @@ class Shipment < ApplicationRecord
         shipment_event.time +
         shipment_event.status.to_s
       )
-      next unless tracking_events.where(reactive_carrier_fingerprint: fingerprint).blank?
-
-      unless tracking_events.where(reactive_carrier_fingerprint: fingerprint).blank?
-        puts '!tracking_events.where(reactive_carrier_fingerprint: fingerprint).blank?'
-        next
-      end
+      tracking_event = tracking_events.where(reactive_carrier_fingerprint: fingerprint)&.first
+      tracking_event = tracking_events.new if tracking_event.blank?
 
       event = Event.find_by_active_shipping_code(shipment_event.status.to_s)
       next if event.blank?
 
       self.delivered_at = shipment_event.time if delivered_at.blank? && event.active_shipping_code == 'delivered'
+
       if out_for_delivery_at.blank? && event.active_shipping_code == 'out_for_delivery'
         self.out_for_delivery_at = shipment_event.time
       end
+
       if pending_appointment_since.blank? && event.active_shipping_code == 'pending_delivery_appointment'
         self.pending_appointment_since = shipment_event.time
       end
+
       self.picked_up_at = shipment_event.time if picked_up_at.blank? && event.active_shipping_code == 'picked_up'
 
       if changed?
@@ -352,14 +350,14 @@ class Shipment < ApplicationRecord
         save
       end
 
-      tracking_event = TrackingEvent.new
-      tracking_event.shipment = self
-      tracking_event.at = DateTime.parse(shipment_event.time)
-      tracking_event.city = shipment_event.location.city
-      tracking_event.country_alpha2 = shipment_event.location.country_code(:alpha2)
-      tracking_event.event = event
-      tracking_event.reactive_carrier_fingerprint = fingerprint
-      tracking_event.state = shipment_event.location.state
+      tracking_event.assign_attributes(
+        at: DateTime.parse(shipment_event.time),
+        city: shipment_event.location.city,
+        country_alpha2: shipment_event.location.country_code(:alpha2),
+        event: event,
+        reactive_carrier_fingerprint: fingerprint,
+        state: shipment_event.location.state
+      )
       tracking_event.save
     end
 
@@ -421,7 +419,7 @@ class Shipment < ApplicationRecord
       end
       @late = true if !promised_delivery_by.blank? && (Date.current > promised_delivery_by)
     elsif !pickup_by.blank?
-      return @late = pickup_by < DateTime.current
+      @late = pickup_by < DateTime.current
     end
   end
 
@@ -813,7 +811,7 @@ class Shipment < ApplicationRecord
   end
 
   def maybe_book
-    self.booked_at = self.dispatched_at if self.booked_at.blank?
+    self.booked_at = dispatched_at if booked_at.blank?
   end
 
   def unbook
