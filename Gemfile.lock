@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: ed734adc46883abe82ee5ddda74beaf1bdc65a4d
-  ref: ed734adc46883abe82ee5ddda74beaf1bdc65a4d
+  revision: f1bafa541fc42293c762380234c8aed2aaf3bacb
+  ref: f1bafa541fc42293c762380234c8aed2aaf3bacb
   specs:
     interstellar (0.1.pre1)
       active_utils (~> 3.3.1)
@@ -13,12 +13,11 @@ GIT
       rmagick (>= 4.1, < 4.3)
       savon (>= 2.0, < 2.13)
       watir (~> 7.0.0.beta5)
-      webdrivers (~> 4.6.1)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers
-  revision: 41dcff0faf88750037081c8e5769335fd91cd3dc
-  ref: 41dcff0faf88750037081c8e5769335fd91cd3dc
+  revision: f96b6612e2ba851110da7b554c27c98a36d11fd3
+  ref: f96b6612e2ba851110da7b554c27c98a36d11fd3
   specs:
     interstellar-next_carriers (0.1.pre1)
       interstellar (= 0.1.pre1)
