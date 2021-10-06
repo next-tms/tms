@@ -33,8 +33,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # brody.digital base 20191230
 
-gem 'jquery-rails'
-
 group :development do
   gem 'rails_real_favicon'
 end
