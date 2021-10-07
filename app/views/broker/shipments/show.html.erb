@@ -175,7 +175,7 @@
   </div>
 
   <div class="col-sm-6">
-    <% if current_user.has_role? 'accounting' or @shipment.broker_customer.sales_reps.include? current_user %>
+    <% if current_user.has_role?('dispatch') or current_user.has_role?('accounting') or @shipment.broker_customer.sales_reps.include? current_user %>
       <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Pricing' %></p>
       <div class="table-responsive">
         <table class="table table-condensed table-borderless table-striped table-hover h-100">
