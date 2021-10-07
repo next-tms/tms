@@ -340,7 +340,9 @@ class Broker::ShipmentsController < Broker::BrokerController
   def pickup; end
 
   def pricing
-    unauthorized if (!current_user.has_role?('accounting') || !current_user.has_role?('dispatch')) && !current_user.sales_rep_for?(@shipment.broker_customer)
+    if !current_user.has_role?('accounting') && !current_user.has_role?('dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
+      unauthorized
+    end
   end
 
   def create_tracking_event
