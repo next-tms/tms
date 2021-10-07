@@ -9,7 +9,7 @@
           <li class="navbar-item"><%= link_to icon('fas', 'bell-slash', 'Unbook'), unbook_broker_shipment_path(@shipment), class: 'nav-link' %></li>
         <% end %>
         <li class="navbar-item"><%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_broker_shipment_path(@shipment), class: 'nav-link' %></li>
-        <% if current_user.has_role? 'accounting' or @shipment.broker_customer.sales_reps.include? current_user %>
+        <% if current_user.has_role?('accounting') or current_user.has_role?('dispatch') or @shipment.broker_customer.sales_reps.include?(current_user) %>
           <li class="navbar-item"><%= link_to icon('fas', 'dollar-sign', 'Pricing'), pricing_broker_shipment_path(@shipment), class: 'nav-link' %></li>
         <% end %>
         <% if current_user.has_role? 'dispatch' %>
