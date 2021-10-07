@@ -8,13 +8,19 @@ class Broker::ShipmentsController < Broker::BrokerController
   before_action :authenticate_user!
 
   def book
-    @shipment.updated_by = current_user
-    @shipment.save
+    redirect_to_edit = @shipment.quote_only?
 
-    @shipment.booked_at = DateTime.current
-    @shipment.save
+    @shipment.update_columns(
+      booked_at: DateTime.current,
+      quote_only: false,
+      updated_by_id: current_user.id
+    )
 
-    redirect_to [:broker, @shipment]
+    if redirect_to_edit
+      redirect_to edit_broker_shipment_path(@shipment) and return
+    else
+      redirect_to [:broker, @shipment]
+    end
   end
 
   def unbook
