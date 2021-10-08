@@ -197,8 +197,8 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def missing_pricing
-    @q = Shipment.where(broker_customer: [current_user.broker_customers]).active.missing_pricing.ransack(params[:q])
-    @q.sorts = 'load_id asc' if @q.sorts.blank?
+    @q = Shipment.where(broker_customer: [current_user.broker_customers]).active.missing_pricing.pending_delivery.ransack(params[:q])
+    @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
 

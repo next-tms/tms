@@ -7,6 +7,6 @@
   <p class="lead">Missing Pro</p>
 </div>
 
-<%= render 'search_form' %>
-<%= render 'show_many', shipments: @shipments %>
-<%= render 'layouts/pagy', pagy: @pagy %>
+<%= turbo_frame_tag :shipments do %>
+  <%= render 'show_many', table: shipment_show_many_table(shipments: @shipments, td_names: ['id', 'status', 'broker_customer', 'origin', 'broker_carrier', 'destination', 'pro', 'picked_up_at', 'promised_delivery_by', 'delivery_at', 'size']) %>
+<% end %>
