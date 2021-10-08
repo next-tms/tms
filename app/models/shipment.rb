@@ -227,25 +227,27 @@ class Shipment < ApplicationRecord
 
   def broker_documents_fingerprint
     str = ''.dup
+    str += accessorial_codes&.to_json || ''
     str += bol || ''
     str += bol_notes || ''
+    str += broker_carrier_id&.to_s || ''
     str += deliver_by.to_s || ''
-    str += delivery_appointment_on.to_s || ''
     str += delivery_appointment_at.to_s || ''
+    str += delivery_appointment_on.to_s || ''
     str += delivery_hours_end_at.to_s || ''
     str += delivery_hours_start_at.to_s || ''
+    str += flattened_items&.to_json || ''
     str += pickup_hours_end_at || ''
     str += pickup_hours_start_at || ''
     str += pro || ''
     str += quote_id || ''
+    str += receiver_address.pretty(', ') unless receiver_address.blank?
+    str += shipper_address.pretty(', ') unless shipper_address.blank?
     str += shipper_bol || ''
     str += shipper_reference || ''
-    str += total_cost_cents.to_s
-    str += total_charges_cents.to_s
-    str += flattened_items.to_json
-    str += accessorial_codes.to_json
-    str += shipper_address.pretty(', ') unless shipper_address.blank?
-    str += receiver_address.pretty(', ') unless receiver_address.blank?
+    str += total_charges_cents&.to_s || ''
+    str += total_cost_cents&.to_s || ''
+    str += tracking_carrier_id&.to_s || ''
 
     Digest::SHA2.hexdigest(str)
   end
