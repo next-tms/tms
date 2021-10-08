@@ -348,23 +348,6 @@ class Shipment < ApplicationRecord
       event = Event.find_by_active_shipping_code(shipment_event.status.to_s)
       next if event.blank?
 
-      self.delivered_at = shipment_event.time if delivered_at.blank? && event.active_shipping_code == 'delivered'
-
-      if out_for_delivery_at.blank? && event.active_shipping_code == 'out_for_delivery'
-        self.out_for_delivery_at = shipment_event.time
-      end
-
-      if pending_appointment_since.blank? && event.active_shipping_code == 'pending_delivery_appointment'
-        self.pending_appointment_since = shipment_event.time
-      end
-
-      self.picked_up_at = shipment_event.time if picked_up_at.blank? && event.active_shipping_code == 'picked_up'
-
-      if changed?
-        self.updated_by = nil # robot
-        save
-      end
-
       tracking_event.assign_attributes(
         at: DateTime.parse(shipment_event.time),
         city: shipment_event.location.city,
@@ -373,20 +356,38 @@ class Shipment < ApplicationRecord
         reactive_carrier_fingerprint: fingerprint,
         state: shipment_event.location.state
       )
-      tracking_event.save
-    end
 
-    if departed_origin_terminal_at.blank?
-      tracking_event = tracking_events.where(
-        event: Event.find_by_active_shipping_code('departed')
-      ).order(at: :desc).limit(1)
+      next unless tracking_event.save
 
-      unless tracking_event.blank?
-        # TrackingEvent expects localized format and converts to UTC
-        self.departed_origin_terminal_at = (tracking_event.first.at + shipper_address.time_zone.utc_offset.seconds).to_s(:db)
-        self.updated_by = nil
+      case tracking_event.event.active_shipping_code
+      when 'delivered'
+        self.delivered_at = tracking_event.at if delivered_at.blank?
+      when 'out_for_delivery'
+        self.out_for_delivery_at = tracking_event.at if out_for_delivery_at.blank?
+      when 'pending_delivery_appointment'
+        self.pending_appointment_since = tracking_event.at.at if pending_appointment_since.blank?
+      when 'picked_up'
+        self.picked_up_at = tracking_event.at if picked_up_at.blank?
+      end
+
+      if changed?
+        self.updated_by = nil # robot
         save
       end
+
+      next unless departed_origin_terminal_at.blank?
+
+      tracking_event = tracking_events.where(
+        event: Event.find_by_active_shipping_code('departed')
+      ).order(at: :desc).limit(1)&.first
+
+      next if tracking_event.blank?
+
+      # TrackingEvent expects localized format and converts to UTC
+      update(
+        departed_origin_terminal_at: (tracking_event.at + shipper_address.time_zone.utc_offset.seconds).to_s(:db),
+        updated_by: nil
+      )
     end
 
     tracking_events
