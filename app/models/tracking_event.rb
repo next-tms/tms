@@ -30,7 +30,7 @@ class TrackingEvent < ApplicationRecord
   end
 
   def sanitize_at
-    at = sanitize_datetime(datetime: at, time_zone: time_zone)
+    at = sanitize_datetime(datetime: self.at, time_zone: time_zone)
     self.at = at.blank? ? DateTime.current : at
   end
 
