@@ -5,13 +5,23 @@
 <%= render 'header', page_title: 'Overview' %>
 
 <% if @shipment.dispatch_incomplete? %>
-  <%= render 'layouts/message', classes: 'bg-warning', title: 'Incomplete dispatch', message: 'Check the Routing page for missing details.' %>
+  <div class="alert alert-warning">
+    <p class="lead">Missing pickup confirmation number</p>
+    <p>This shipment was dispatched but doesn’t have a pickup confirmation number.</p>
+  </div>
+<% end %>
+
+<% if !@shipment.picked_up_at.blank? and @shipment.pro.blank? %>
+  <div class="alert alert-warning">
+    <p class="lead">Missing pro number</p>
+    <p>This shipment is in transit but doesn’t have a pro number.</p>
+  </div>
 <% end %>
 
 <% if @shipment.dispatched_at.blank? and not @shipment.suggested_broker_accessorials.blank?  %>
-  <div class="alert shadow bg-warning">
-    <p class="h2"><%= icon 'fas', 'radiation-alt', 'Missing Services' %></p>
-    <p class="lead">Based on the shipment information the following services may be required and charged by the carrier:</p>
+  <div class="alert alert-warning">
+    <p class="lead"><%= icon 'fas', 'dollar-sign', 'Missing Services' %></p>
+    <p>Based on the shipment information the following services may be required and charged by the carrier:</p>
     <ul class="list-unstyled list-inline">
       <% @shipment.suggested_broker_accessorials.each do |broker_accessorial| %>
         <li class="list-inline-item">
