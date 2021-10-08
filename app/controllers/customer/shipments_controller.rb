@@ -86,7 +86,9 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.updated_by = current_user
     @shipment.save
     unless shipment_params[:applied_rate_uid].blank?
-      @shipment.carrier_charge = current_user.broker_customer.carrier_charge_calculator(carrier_cost: @shipment.carrier_cost, shipment: @shipment)
+      @shipment.carrier_charge = current_user.broker_customer.carrier_charge_calculator(
+        carrier_cost: @shipment.carrier_cost, shipment: @shipment
+      )
     end
 
     respond_to do |format|
@@ -177,6 +179,7 @@ class Customer::ShipmentsController < Customer::CustomerController
                                      :applied_rate_uid,
                                      :bol_notes,
                                      :bol,
+                                     :booked_at,
                                      :broker_carrier_id,
                                      :broker_customer_id,
                                      :broker_notes,
@@ -221,10 +224,14 @@ class Customer::ShipmentsController < Customer::CustomerController
                                      :tracking_carrier_id,
                                      :truckload,
                                      :value,
-                                     shipper_address_attributes: %i[id ref street street2 city state zip_code country_id],
-                                     receiver_address_attributes: %i[id ref street street2 city state zip_code country_id],
-                                     items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat refrigerated desc weight quantity],
+                                     shipper_address_attributes: %i[id ref street street2 city state zip_code
+                                                                    country_id],
+                                     receiver_address_attributes: %i[id ref street street2 city state zip_code
+                                                                     country_id],
+                                     items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat
+                                                          refrigerated desc weight quantity],
                                      shipment_accessorials_attributes: %i[_destroy accessorial_id],
-                                     shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id cost charge])
+                                     shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id cost
+                                                                                 charge])
   end
 end

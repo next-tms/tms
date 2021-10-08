@@ -12,7 +12,11 @@ export default class extends Controller {
 
         const data = {
             authenticity_token: authenticityToken,
-            shipment: { applied_rate_uid: e.currentTarget.dataset.appliedRateUid }
+            shipment: {
+                applied_rate_uid: e.currentTarget.dataset.appliedRateUid,
+                booked_at: new Date(),
+                quote_only: false
+            }
         }
 
         fetch(url, {

@@ -444,6 +444,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :applied_rate_uid,
                                      :bol_notes,
                                      :bol,
+                                     :booked_at,
                                      :broker_carrier_id,
                                      :broker_customer_id,
                                      :broker_notes,

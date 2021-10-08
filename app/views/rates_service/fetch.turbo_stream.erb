@@ -3,11 +3,9 @@
     <% @rates.each do |rate| %>
       <% next if !rate.errors.blank? || rate.cost_cents == 0 %>
       <tr data-rate-id="<%= rate.id %>" class="<%= (!@shipment.applied_rate.blank? && rate.id == @shipment.applied_rate.id) ? 'table-info' : nil %>">
-        <% if !@shipment.quote_only? %>
-          <td>
-            <%= link_to 'Book', '#', data: { action: 'book#handle', controller: 'book', url: broker_shipment_path(@shipment), applied_rate_uid: rate.uid }, class: 'btn btn-sm btn-primary' %>
-          </td>
-        <% end %>
+        <td>
+          <%= link_to 'Book', '#', data: { action: 'book#handle', controller: 'book', url: broker_shipment_path(@shipment), applied_rate_uid: rate.uid }, class: 'btn btn-sm btn-primary' %>
+        </td>
         <td>
           <div class="text-nowrap">
             <% if not rate.tracking_carrier.blank? %>
