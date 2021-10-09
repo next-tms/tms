@@ -135,9 +135,10 @@ class Item < ApplicationRecord
         height: h
       },
       declared_freight_class: api_freight_class(use_forced_freight_class: use_forced_freight_class),
-      units: :imperial,
+      description: desc,
       hazmat: hazmat?,
-      nmfc: (nmfc.blank? ? nil : nmfc)
+      nmfc: (nmfc.blank? ? nil : nmfc),
+      units: :imperial
     )
   end
 
