@@ -365,7 +365,7 @@ class Shipment < ApplicationRecord
       when 'out_for_delivery'
         self.out_for_delivery_at = tracking_event.at if out_for_delivery_at.blank?
       when 'pending_delivery_appointment'
-        self.pending_appointment_since = tracking_event.at.at if pending_appointment_since.blank?
+        self.pending_appointment_since = tracking_event.at if pending_appointment_since.blank?
       when 'picked_up'
         self.picked_up_at = tracking_event.at if picked_up_at.blank?
       end
