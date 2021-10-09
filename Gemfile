@@ -54,7 +54,7 @@ gem 'turbo-rails', '~> 0.8.1'
 
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: '439fc6787d540a3438fffcd796b2ef6db24c9967'
 gem 'interstellar-next_platforms', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms', ref: 'e7f8fce83b6ee9924171f0be41e64699637396cc'
-gem 'interstellar-next_carriers', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers', ref: '5d7b88a7d9b33fe63051ddaf2e00cdde6a308000'
+gem 'interstellar-next_carriers', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers', ref: 'a98fcd5edca751465c156a16e1237b671551bd30'
 
 gem 'rollbar'
 
