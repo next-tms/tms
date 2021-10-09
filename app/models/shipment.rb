@@ -20,11 +20,20 @@ class Shipment < ApplicationRecord
                             }
 
   scope :missing_delivery_appointment, lambda {
-    joins(:shipment_broker_accessorials)
+    joins(:broker_accessorials)
       .where(
-        'shipment_broker_accessorials.broker_accessorial_id IN (?)',
-        BrokerAccessorial.where(accessorial: Accessorial.find_by_reactive_shipping_code('appointment_delivery'))
-        .map(&:id)
+        'broker_accessorials.id IN (?)',
+        BrokerAccessorial.where(
+          accessorial_id:
+          [
+            Accessorial.find_by_reactive_shipping_code('appointment_delivery').id,
+            Accessorial.find_by_reactive_shipping_code('residential_delivery').id
+          ]
+        ).pluck(:id)
+      )
+      .or(
+        Shipment
+        .where.not(pending_appointment_since: nil)
       )
       .pending_delivery
       .where(delivery_appointment_on: nil)
