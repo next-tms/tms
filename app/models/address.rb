@@ -166,26 +166,26 @@ class Address < ApplicationRecord
     self
   end
 
-  def liftoff_types
-    liftoff_types = []
+  def next_types
+    next_types = []
     streets_formatted = "#{street || ''} #{street2 || ''}".downcase
     if %w[aero aircraft aviation avionic hangar].any? { |word| streets_formatted.include?(word) }
-      liftoff_types << 'airport'
+      next_types << 'airport'
     end
 
     yaml = YAML.load_file(File.join(Rails.root, 'config', 'postal_codes.yml'))
     military_postal_codes = yaml['MILITARY'].inject([]) { |arr, postal_code| arr << postal_code.to_s }
     military_postal_codes.each do |military_postal_code|
       if zip_code.start_with?(military_postal_code) || (zip_code == military_postal_code)
-        liftoff_types << 'military'
+        next_types << 'military'
         break
       end
     end
 
-    liftoff_types
+    next_types
   end
 
-  def to_reactive_shipping_address
+  def to_interstellar_shipping_address
     Interstellar::Location.new(
       country: 'US',
       state: state,
@@ -217,7 +217,7 @@ class Address < ApplicationRecord
     else
       types = twin.types
     end
-    self.types = (liftoff_types + types).sort.uniq
+    self.types = (next_types + types).sort.uniq
     self
   end
 

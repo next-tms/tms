@@ -126,7 +126,7 @@ class Item < ApplicationRecord
     end
   end
 
-  def as_reactive_shipping_package(use_forced_freight_class:)
+  def as_interstellar_package(use_forced_freight_class:)
     Interstellar::Package.new(
       (quantity * weight) * 16,
       {

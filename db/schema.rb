@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_11_205448) do
+ActiveRecord::Schema.define(version: 2021_10_11_215135) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 2021_10_11_205448) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "code"
-    t.string "reactive_shipping_code"
+    t.string "interstellar_code"
     t.boolean "fee", default: false
   end
 
@@ -414,10 +414,10 @@ ActiveRecord::Schema.define(version: 2021_10_11_205448) do
     t.boolean "incomplete"
     t.string "shipment_fingerprint"
     t.string "uid"
-    t.string "reactive_shipping_service_type"
+    t.string "interstellar_service_type"
     t.index ["broker_carrier_id"], name: "index_rates_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_rates_on_broker_customer_id"
-    t.index ["reactive_shipping_service_type"], name: "index_rates_on_reactive_shipping_service_type"
+    t.index ["interstellar_service_type"], name: "index_rates_on_interstellar_service_type"
     t.index ["shipment_id"], name: "index_rates_on_shipment_id"
     t.index ["tracking_carrier_id"], name: "index_rates_on_tracking_carrier_id"
   end
@@ -564,7 +564,7 @@ ActiveRecord::Schema.define(version: 2021_10_11_205448) do
     t.string "city"
     t.string "state"
     t.string "country_alpha2", limit: 2
-    t.string "reactive_carrier_fingerprint"
+    t.string "interstellar_carrier_fingerprint"
     t.bigint "user_id"
     t.index ["address_id"], name: "index_tracking_events_on_address_id"
     t.index ["event_id"], name: "index_tracking_events_on_event_id"

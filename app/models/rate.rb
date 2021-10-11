@@ -39,8 +39,8 @@ class Rate < ApplicationRecord
   end
 
   def pretty_service_type
-    return '' if reactive_shipping_service_type.blank?
-    "#{reactive_shipping_service_type.sub('_', ' ').titleize.sub('Am', 'AM').sub('Pm', 'PM')} LTL"
+    return '' if interstellar_service_type.blank?
+    "#{interstellar_service_type.sub('_', ' ').titleize.sub('Am', 'AM').sub('Pm', 'PM')} LTL"
   end
 
   def to_param

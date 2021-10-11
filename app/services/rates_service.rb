@@ -44,8 +44,8 @@ class RatesService
 
     response = InterstellarApiClient.fetch_rates(
       broker_carrier: @broker_carrier,
-      origin: @shipment.shipper_address.to_reactive_shipping_address,
-      destination: @shipment.receiver_address.to_reactive_shipping_address,
+      origin: @shipment.shipper_address.to_interstellar_shipping_address,
+      destination: @shipment.receiver_address.to_interstellar_shipping_address,
       packages: packages,
       accessorials: accessorials
     )
@@ -59,9 +59,9 @@ class RatesService
 
     rates = []
 
-    reactive_shipping_rates = response.rates
-    reactive_shipping_rates.each do |reactive_shipping_rate|
-      cost = Money.new(reactive_shipping_rate.price)
+    interstellar_rates = response.rates
+    interstellar_rates.each do |interstellar_rate|
+      cost = Money.new(interstellar_rate.price)
 
       if cost == Money.new(0)
         rate = new_rate
@@ -81,7 +81,7 @@ class RatesService
       dimensions_contain_blank = !dimensions.size == (dimensions - [nil, '']).size
       max_dimension = dimensions&.max || 48
 
-      if !reactive_shipping_rate.with_excessive_length_fees && (max_dimension > 48 || dimensions_contain_blank)
+      if !interstellar_rate.with_excessive_length_fees && (max_dimension > 48 || dimensions_contain_blank)
         if @broker_carrier.overlength_rules.blank?
           rate = new_rate
           rate.assign_attributes(
@@ -111,8 +111,8 @@ class RatesService
 
       tracking_carrier = nil
       if @broker_carrier.carrier.acts_as_broker?
-        carrier_name = reactive_shipping_rate.carrier.dig(:name)
-        carrier_scac = reactive_shipping_rate.carrier.dig(:scac)
+        carrier_name = interstellar_rate.carrier.dig(:name)
+        carrier_scac = interstellar_rate.carrier.dig(:scac)
 
         if carrier_scac.blank? || carrier_name.blank?
           rate = new_rate
@@ -137,10 +137,10 @@ class RatesService
       rate = new_rate
       rate.assign_attributes(
         cost: cost,
-        reference: reactive_shipping_rate.estimate_reference,
+        reference: interstellar_rate.estimate_reference,
         tracking_carrier: tracking_carrier,
-        transit_days: reactive_shipping_rate.transit_days,
-        reactive_shipping_service_type: reactive_shipping_rate.service_name.to_s,
+        transit_days: interstellar_rate.transit_days,
+        interstellar_service_type: interstellar_rate.service_name.to_s,
         request: response.request,
         response: response.params
       )
@@ -178,7 +178,7 @@ class RatesService
 
     @packages = []
     @shipment.flattened_items.each do |item|
-      package = item.as_reactive_shipping_package(use_forced_freight_class: @use_forced_freight_classes)
+      package = item.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes)
       @packages << package
     end
 
@@ -189,8 +189,8 @@ class RatesService
     return @accessorials if @accessorials
 
     @accessorials = []
-    combined_accessorials.where.not(reactive_shipping_code: [nil, '']).find_each do |accessorial|
-      @accessorials << accessorial.reactive_shipping_code.to_sym
+    combined_accessorials.where.not(interstellar_code: [nil, '']).find_each do |accessorial|
+      @accessorials << accessorial.interstellar_code.to_sym
     end
 
     @accessorials

@@ -26,8 +26,8 @@ class Shipment < ApplicationRecord
         BrokerAccessorial.where(
           accessorial_id:
           [
-            Accessorial.find_by_reactive_shipping_code('appointment_delivery').id,
-            Accessorial.find_by_reactive_shipping_code('residential_delivery').id
+            Accessorial.find_by_interstellar_code('appointment_delivery').id,
+            Accessorial.find_by_interstellar_code('residential_delivery').id
           ]
         ).pluck(:id)
       )
@@ -351,7 +351,7 @@ class Shipment < ApplicationRecord
         shipment_event.time +
         shipment_event.status.to_s
       )
-      tracking_event = tracking_events.where(reactive_carrier_fingerprint: fingerprint)&.first
+      tracking_event = tracking_events.where(interstellar_carrier_fingerprint: fingerprint)&.first
       tracking_event = tracking_events.new if tracking_event.blank?
 
       event = Event.find_by_active_shipping_code(shipment_event.status.to_s)
@@ -362,7 +362,7 @@ class Shipment < ApplicationRecord
         city: shipment_event.location.city,
         country_alpha2: shipment_event.location.country_code(:alpha2),
         event: event,
-        reactive_carrier_fingerprint: fingerprint,
+        interstellar_carrier_fingerprint: fingerprint,
         state: shipment_event.location.state
       )
 

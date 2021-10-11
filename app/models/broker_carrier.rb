@@ -28,7 +28,7 @@ class BrokerCarrier < ApplicationRecord
   end
 
   def overlength_rules
-    if !as_reactive_shipping_carrier.blank? && !as_reactive_shipping_carrier.rates_with_excessive_length_fees
+    if !as_interstellar_carrier.blank? && !as_interstellar_carrier.rates_with_excessive_length_fees
       super
     else
       OverlengthRule.none
@@ -44,7 +44,7 @@ class BrokerCarrier < ApplicationRecord
   end
 
   # Interstellar
-  def as_reactive_shipping_carrier
+  def as_interstellar_carrier
     carrier = Interstellar.const_get(self.carrier.scac)
     carrier = carrier.new(
       account: account,
