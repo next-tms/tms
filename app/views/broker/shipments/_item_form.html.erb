@@ -21,7 +21,7 @@
 
   <div class="col-sm-2">
     <div class="input-group">
-      <%= f.select :forced_class, [['Auto', nil]] + valid_classes.collect { |c| [c, c] }, { label: 'Class', hide_label: true, selected: ( f.object.forced_freight_class ? f.object.forced_freight_class : f.object.calculated_freight_class ), wrapper: false }, class: 'form-select' %>
+      <%= f.select :forced_class, [['Auto', nil]] + valid_classes.collect { |c| [c, c] }, { label: 'Class', hide_label: true, selected: ( f.object.forced_freight_class ? f.object.forced_freight_class : f.object.calculated_freight_class ), wrapper: false }, data: { 'dimensions-target': 'forcedClass' }, class: 'form-select' %>
       <%= f.text_field :nmfc, hide_label: true, placeholder: 'NMFC', data: { 'dimensions-target': 'nmfc' }, wrapper: false %>
     </div>
   </div>
