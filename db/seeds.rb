@@ -1,80 +1,46 @@
-if Carrier.all.size == 0
-  Carrier.create name: 'Fake Transportation', scac: 'FAKE'
+# frozen_string_literal: true
+
+def load_yaml(table)
+  YAML.safe_load(
+    File.open(
+      File.join(
+        Rails.root,
+        'db',
+        'seed',
+        "#{table}.yaml"
+      )
+    ),
+    permitted_classes: [NilClass]
+  )&.with_indifferent_access&.dig(table)
 end
 
-if Broker.all.size == 0
-  Broker.create name: 'Fake Broker'
-end
+def import_seeds(tables)
+  tables.each do |table|
+    model = table.dig(:name).camelize.singularize.constantize
+    entries = load_yaml(table.dig(:name))
+    entries.each do |entry|
+      key = table.dig(:key).to_sym
+      val = entry[key]
 
-if Packaging.all.size == 0
-  packaging_names = ['tote', 'crate', 'cylinder', 'drum', 'luggage', 'pail', 'pallet', 'piece', 'roll', 'truckload', 'vehicle']
-  packaging_names.each do |packaging_name|
-    Packaging.create name: packaging_name
-  end
-end
+      database_entry = model.find_by(Hash[key, val])
+      database_entry = model.new(entry) if database_entry.blank?
 
-if Accessorial.all.size == 0
-  limited_access_types = [
-    'Airport %word%',
-    'Cemetery %word%',
-    'Church %word%',
-    'Construction or Jobsite %word%',
-    'Amusement Park %word%',
-    'Farm %word%',
-    'Golf Course %word%',
-    'Government %word%',
-    'Grocery Warehouse %word%',
-    'Hospital %word%',
-    'Inspection Site %word%',
-    'Mall %word%',
-    'Marina %word%',
-    'Military Site %word%',
-    'Mine Site %word%',
-    'Storage Facility %word%',
-    'Nursing Home %word%',
-    'Park %word%',
-    'Prison %word%',
-    'Ranch %word%',
-    'Athletic Facility %word%',
-    'Reservation %word%',
-    'Lodging %word%',
-    'Restaurant %word%',
-    'School %word%',
-    'Steel Mill %word%',
-    'Utility Site %word%',
-    'Brewery/Winery %word%',
-    'Liftgate %word%',
-    'Residential %word%'
-  ]
-  
-  ['Delivery', 'Pickup'].each do |word|
-    limited_access_types.each do |limited_access_type|
-      Accessorial.find_or_create_by name: limited_access_type.sub('%word%', word)
+      database_entry.assign_attributes(entry)
+      if database_entry.save
+        puts "[  OK  ] Save `#{model.name} id=#{database_entry.id} #{key.to_s}=#{val}`"
+      else
+        str = "[ FAIL ] Save `#{model.name} id=nil #{key.to_s}=#{val}`".dup
+        str << "\n#{database_entry.errors.full_messages.join("\n")}"
+        raise str
+      end
     end
   end
 end
 
-# User roles
-role_names = ['dispatch', 'accounting', 'tracking', 'accounts_payable', 'accounts_receivable', 'claims', 'sales_representative_for_all_customers']
+# main
 
-role_names.each do |role_name|
-  role = Role.find_or_create_by(name: role_name)
-end
-
-Broker.find_each do |broker|
-  Accessorial.all.each do |accessorial|
-    BrokerAccessorial.create(broker: broker, accessorial: accessorial, name: accessorial.name)
-  end
-end
-
-# Test account setup
-if Rails.env == 'development' and User.find_by_email('test@example.com').blank?
-  address = Address.create street: '555 Fake St', city: 'Fake', state: 'FA', zip_code: '55555'
-  broker = Broker.find_or_create_by name: 'Fake Transport', address: address, phone: '5555555555', customer_service_email: 'cs@faketransport.com'
-  broker_carrier = BrokerCarrier.find_or_create_by broker: broker, carrier: Carrier.find_by_scac('FAKE')
-  user = User.new
-  user.broker = broker
-  user.email = 'test@example.com'
-  user.password = 'test123'
-  user.save!
-end
+import_seeds(
+  [
+    { name: 'packagings', key: :name }
+  ]
+)

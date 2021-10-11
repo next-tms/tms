@@ -1,0 +1,35 @@
+packagings:
+  - name: 20 ft container
+    interstellar_type: null
+  - name: 40 ft container
+    interstellar_type: null
+  - name: box
+    interstellar_type: box
+  - name: bundle
+    interstellar_type: bundle
+  - name: container
+    interstellar_type: container
+  - name: crate
+    interstellar_type: crate
+  - name: cylinder
+    interstellar_type: cylinder
+  - name: drum
+    interstellar_type: drum
+  - name: linear ft
+    interstellar_type: null
+  - name: luggage
+    interstellar_type: luggage
+  - name: pail
+    interstellar_type: pail
+  - name: pallet
+    interstellar_type: pallet
+  - name: piece
+    interstellar_type: piece
+  - name: roll
+    interstellar_type: roll
+  - name: tote
+    interstellar_type: tote
+  - name: truckload
+    interstellar_type: truckload
+  - name: vehicle
+    interstellar_type: null

@@ -134,6 +134,7 @@ class Item < ApplicationRecord
         width: w,
         height: h
       },
+      packaging.interstellar_type&.to_sym,
       declared_freight_class: api_freight_class(use_forced_freight_class: use_forced_freight_class),
       description: desc,
       hazmat: hazmat?,

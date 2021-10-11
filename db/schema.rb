@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_06_172628) do
+ActiveRecord::Schema.define(version: 2021_10_11_205448) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -313,6 +313,8 @@ ActiveRecord::Schema.define(version: 2021_10_06_172628) do
 
   create_table "packagings", force: :cascade do |t|
     t.string "name"
+    t.string "interstellar_type"
+    t.index ["interstellar_type"], name: "index_packagings_on_interstellar_type"
   end
 
   create_table "payment_methods", force: :cascade do |t|
