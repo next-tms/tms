@@ -81,6 +81,8 @@ class Shipment < ApplicationRecord
   accepts_nested_attributes_for :shipment_broker_accessorials, allow_destroy: true, reject_if: :all_blank
   has_many :broker_accessorials, through: :shipment_broker_accessorials
 
+  has_one :pickup
+
   has_one_attached :broker_bol
   has_one_attached :broker_dispatch_sheet
   has_one_attached :broker_quote

@@ -5,13 +5,13 @@
 <%= render 'header', page_title: 'Find Rates' %>
 
 <% if !@shipment.broker_carrier.blank? && !@shipment.pickup_confirmation.blank? %>
-  <%= render 'layouts/message', classes: 'bg-warning', title: 'Dispatched', message: "You must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup #{@shipment.pickup_confirmation} or you may be charged." %>
+  <%= render 'layouts/message', classes: 'alert-warning', title: 'Dispatched', message: "You must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup #{@shipment.pickup_confirmation} or you may be charged." %>
 <% elsif !@shipment.broker_carrier.blank? && @shipment.pickup_confirmation.blank? %>
-  <%= render 'layouts/message', classes: 'bg-warning', title: 'Assigned', message: "Shipment is assigned to a #{@shipment.broker_carrier.carrier.name} but no pickup confirmation has been added — if switching carriers you must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup." %>
+  <%= render 'layouts/message', classes: 'alert-warning', title: 'Assigned', message: "Shipment is assigned to a #{@shipment.broker_carrier.carrier.name} but no pickup confirmation has been added — if switching carriers you must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup." %>
 <% end %>
 
 <% if !@shipment.quote_only? && @shipment.incomplete? %>
-  <%= render 'layouts/message', classes: 'bg-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>
+  <%= render 'layouts/message', classes: 'alert-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>
 <% end %>
 
 <% if @use_forced_freight_classes == [false] %>

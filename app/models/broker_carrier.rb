@@ -14,7 +14,10 @@ class BrokerCarrier < ApplicationRecord
   has_many :overlength_rules
   has_many :payment_transactions
   has_many :pricing_rules
+  has_many :rates
   has_many :shipments
+
+  has_many :pickups, through: :rates
 
   accepts_nested_attributes_for :check_mailing_address
   accepts_nested_attributes_for :contacts

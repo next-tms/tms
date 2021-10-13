@@ -11,6 +11,8 @@ class Rate < ApplicationRecord
   before_save :set_shipment_fingerprint
   before_save :set_uid
 
+  has_one :pickup, required: false
+
   belongs_to :broker_carrier
   validates_presence_of :broker_carrier
 
