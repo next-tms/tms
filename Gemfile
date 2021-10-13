@@ -52,9 +52,9 @@ gem 'devise', '~> 4.8.0'
 # liftoff.rocks
 gem 'turbo-rails', '~> 0.8.1'
 
-gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'c59489d09e20e51b9719ef5abf426b91c68f764e'
-gem 'interstellar-next_platforms', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms', ref: 'e7f8fce83b6ee9924171f0be41e64699637396cc'
-gem 'interstellar-next_carriers', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers', ref: '92c8ebf7ab13e0f1bed94aa90cdf0e89090db0a8'
+gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'eb81e64785ad55e018fe240ec56957ae0326928c'
+gem 'interstellar-next_platforms', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms', ref: 'fbfdd7e0227b305fb5e2de5aca6ab765e1b21751'
+gem 'interstellar-next_carriers', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers', ref: '35e7e386f88cadfd9904bb7ff4acff674f3b35c0'
 
 gem 'rollbar'
 
