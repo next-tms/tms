@@ -76,6 +76,7 @@ Rails.application.routes.draw do
     resources :broker_accessorials, path: 'settings/accessorials'
 
     resources :payments
+    resources :pickups, only: %i[create]
 
     get 'shipments/booked', to: 'shipments#booked'
     get 'shipments/pending-dispatch', to: 'shipments#pending_dispatch'

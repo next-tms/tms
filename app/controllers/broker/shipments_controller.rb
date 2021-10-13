@@ -3,7 +3,7 @@
 class Broker::ShipmentsController < Broker::BrokerController
   before_action :set_shipment_by_load_id,
                 only: %i[book rate_uid documents create_tracking_event destroy edit edit_tracking_events
-                         notes pricing quote send_document send_document_with_contact_mailer show
+                         notes pickup pricing quote send_document send_document_with_contact_mailer show
                          tracking_events transit unbook update]
   before_action :authenticate_user!
 
@@ -93,6 +93,9 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def edit; end
+
+  def pickup
+  end
 
   def update
     unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')

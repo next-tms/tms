@@ -10,7 +10,7 @@ module ApplicationHelper
     if options[:override].blank?
       {
         controller: 'flatpickr',
-        date_format: 'Y-m-d',
+        flatpickr_date_format: 'Y-m-d',
       }.deep_merge(options)
     else
       {

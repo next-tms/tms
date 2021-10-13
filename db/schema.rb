@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_11_215135) do
+ActiveRecord::Schema.define(version: 2021_10_13_191414) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -371,6 +371,22 @@ ActiveRecord::Schema.define(version: 2021_10_11_215135) do
     t.index ["payment_method_id"], name: "index_payments_on_payment_method_id"
   end
 
+  create_table "pickups", force: :cascade do |t|
+    t.datetime "confirmed_at"
+    t.datetime "requested_at"
+    t.bigint "rate_id", null: false
+    t.bigint "shipment_id", null: false
+    t.bigint "updated_by_id"
+    t.string "error"
+    t.string "pickup_confirmation"
+    t.string "pro"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["rate_id"], name: "index_pickups_on_rate_id"
+    t.index ["shipment_id"], name: "index_pickups_on_shipment_id"
+    t.index ["updated_by_id"], name: "index_pickups_on_updated_by_id"
+  end
+
   create_table "pricing_rules", force: :cascade do |t|
     t.bigint "carrier_area_id", null: false
     t.bigint "broker_carrier_id", null: false
@@ -698,6 +714,9 @@ ActiveRecord::Schema.define(version: 2021_10_11_215135) do
   add_foreign_key "payments", "payment_methods"
   add_foreign_key "payments", "users", column: "approved_by_id"
   add_foreign_key "payments", "users", column: "created_by_id"
+  add_foreign_key "pickups", "rates"
+  add_foreign_key "pickups", "shipments"
+  add_foreign_key "pickups", "users", column: "updated_by_id"
   add_foreign_key "pricing_rules", "broker_carriers"
   add_foreign_key "pricing_rules", "carrier_areas"
   add_foreign_key "rate_accessorials", "accessorials"
