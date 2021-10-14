@@ -373,6 +373,14 @@ class Shipment < ApplicationRecord
       case tracking_event.event.active_shipping_code
       when 'delivered'
         self.delivered_at = tracking_event.at if delivered_at.blank?
+      when 'delivery_appointment_scheduled'
+        if shipment_event.message.is_a?(DateTime)
+          self.delivery_appointment_at = shipment_event.message
+        elsif shipment_event.message.is_a?(Date)
+          self.delivery_appointment_on = shipment_event.message
+        else
+          next
+        end
       when 'out_for_delivery'
         self.out_for_delivery_at = tracking_event.at if out_for_delivery_at.blank?
       when 'pending_delivery_appointment'

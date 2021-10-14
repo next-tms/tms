@@ -1,5 +1,6 @@
 class UserMailer < ActionMailer::Base
   default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
+  helper :application
 
   def send_welcome(user)
     @user = user
@@ -39,6 +40,26 @@ class UserMailer < ActionMailer::Base
       reply_to: reply_to(shipment, __method__),
       to: to(shipment, __method__),
       subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} Delivered"
+    )
+  end
+
+  def delivery_appointment_at(shipment)
+    @shipment = shipment
+    mail(
+      from: from(shipment),
+      reply_to: reply_to(shipment, __method__),
+      to: to(shipment, __method__),
+      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} Scheduled for Delivery"
+    )
+  end
+
+  def delivery_appointment_on(shipment)
+    @shipment = shipment
+    mail(
+      from: from(shipment),
+      reply_to: reply_to(shipment, __method__),
+      to: to(shipment, __method__),
+      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} Scheduled for Delivery"
     )
   end
 
@@ -95,7 +116,9 @@ class UserMailer < ActionMailer::Base
     users.uniq!
     users -= shipment.broker.users.with_role('notifications:-dispatch') unless [:new_shipment].include?(method)
 
-    users.inject('') { |str, user| str = user.receive_email_notifications? ? str + "#{user.first_name} #{user.last_name} <#{user.email}>, " : str + '' }[0..-3]
+    users.inject('') do |str, user|
+      str = user.receive_email_notifications? ? str + "#{user.first_name} #{user.last_name} <#{user.email}>, " : str + ''
+    end    [0..-3]
   end
 
   def reply_to(shipment, __method__)
