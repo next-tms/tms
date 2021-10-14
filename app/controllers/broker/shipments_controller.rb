@@ -94,8 +94,7 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def edit; end
 
-  def pickup
-  end
+  def pickup; end
 
   def update
     unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
@@ -125,19 +124,22 @@ class Broker::ShipmentsController < Broker::BrokerController
       unauthorized
     end
 
-    if !@shipment.quote_only?
+    unless @shipment.broker_quote_valid?
+      CreateShipmentBrokerQuoteJob.perform_later(domain: request.host,
+                                                 shipment: @shipment)
+    end
+
+    if @shipment.quote_only?
+      redirect_to quote_broker_shipment_path(@shipment)
+    else
       TrackShipmentJob.perform_later(@shipment) if Rails.env.development? || @shipment.delivered_at.blank?
 
-      unless @shipment.broker_bol_valid?
+      if !@shipment.broker_bol_valid? || @shipment.incomplete?
         CreateShipmentBrokerBolJob.perform_later(domain: request.host, shipment: @shipment)
       end
 
-      unless @shipment.broker_dispatch_sheet_valid?
+      if !@shipment.broker_dispatch_sheet_valid? || @shipment.incomplete?
         CreateShipmentBrokerDispatchSheetJob.perform_later(domain: request.host, shipment: @shipment)
-      end
-
-      unless @shipment.broker_quote_valid?
-        CreateShipmentBrokerQuoteJob.perform_later(domain: request.host, shipment: @shipment)
       end
 
       if Rails.env.development? || @shipment.carrier_bol.blank?
@@ -146,8 +148,6 @@ class Broker::ShipmentsController < Broker::BrokerController
       if Rails.env.development? || @shipment.carrier_pod.blank?
         FetchShipmentCarrierPodsJob.perform_later([@shipment.id])
       end
-    else
-      redirect_to quote_broker_shipment_path(@shipment)
     end
   end
 

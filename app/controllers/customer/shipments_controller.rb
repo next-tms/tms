@@ -79,7 +79,29 @@ class Customer::ShipmentsController < Customer::CustomerController
   def edit; end
 
   def show
-    @shipment.update_tracking_events
+    unless @shipment.broker_quote_valid?
+      CreateShipmentBrokerQuoteJob.perform_later(domain: request.host,
+                                                 shipment: @shipment)
+    end
+
+    unless @shipment.quote_only?
+      TrackShipmentJob.perform_later(@shipment) if Rails.env.development? || @shipment.delivered_at.blank?
+
+      if !@shipment.broker_bol_valid? || @shipment.incomplete?
+        CreateShipmentBrokerBolJob.perform_later(domain: request.host, shipment: @shipment)
+      end
+
+      if !@shipment.broker_dispatch_sheet_valid? || @shipment.incomplete?
+        CreateShipmentBrokerDispatchSheetJob.perform_later(domain: request.host, shipment: @shipment)
+      end
+
+      if Rails.env.development? || @shipment.carrier_bol.blank?
+        FetchShipmentCarrierBolsJob.perform_later([@shipment.id])
+      end
+      if Rails.env.development? || @shipment.carrier_pod.blank?
+        FetchShipmentCarrierPodsJob.perform_later([@shipment.id])
+      end
+    end
   end
 
   def update
