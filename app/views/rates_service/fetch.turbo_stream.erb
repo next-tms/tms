@@ -7,7 +7,7 @@
           <div class="btn-toolbar">
             <div class="btn-group">
               <%= link_to 'Book', '#', data: { action: 'book#handle', controller: 'book', url: broker_shipment_path(@shipment), applied_rate_uid: rate.uid }, class: 'btn btn-sm btn-primary' %>
-              <% if current_user.broker? && && rate.broker_carrier.api_configured? &&  rate.broker_carrier.as_interstellar_carrier.create_pickup_implemented? %>
+              <% if current_user.broker? && rate.broker_carrier.api_configured? &&  rate.broker_carrier.as_interstellar_carrier.create_pickup_implemented? %>
                 <% unless rate.shipment.incomplete? %>
                   <%= button_to 'Pickup', broker_pickups_path(pickup: { rate_uid: rate.uid }), class: 'btn btn-sm btn-outline-primary' %>
                 <% else %>
