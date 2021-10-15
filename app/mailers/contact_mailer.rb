@@ -20,7 +20,7 @@ class ContactMailer < ActionMailer::Base
 
     send_document(
       document: shipment.broker_dispatch_sheet,
-      document_name: 'Scanned Bill of Lading',
+      document_name: 'Dispatch Sheet',
       shipment: shipment,
       from_user: from_user,
       to_contact: to_contact,
