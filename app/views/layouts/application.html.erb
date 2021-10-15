@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <% unless @website.blank? %>
+      <% unless @website&.manifest&.dig('head', 'links').blank? %>
+        <% @website.manifest.dig('head', 'links').each do |link_options| %>
+          <%= tag 'link', link_options %>
+        <% end %>
+      <% end %>
       <meta name="description" content="<%= @website.desc %>"/>
     <% else %>
       <meta name="description" content="<%= t :app_name %> breathes life into your shipments by automating your biggest headaches."/>
