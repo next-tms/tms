@@ -118,7 +118,10 @@ class User < ApplicationRecord
 
   def shipments
     return broker_customer.shipments if customer?
-    return broker.shipments unless sales_rep_only?
+
+    if !sales_rep_only? && (has_role?('sales_rep_for_all_broker_customers') || has_role?('dispatch'))
+      return broker.shipments
+    end
 
     broker_customer_ids = sales_rep_for_broker_customers&.pluck(:id)
 
