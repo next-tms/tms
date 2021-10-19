@@ -34,24 +34,10 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def index
-    @q = if current_user.roles.map(&:name).include?('sales_rep')
-           broker_customer_ids = BrokerCustomerSalesRep.where(
-             user: current_user
-           ).pluck(:broker_customer_id)
+    @q = current_user.shipments.active.includes(required_includes).ransack(params[:q])
+    @q.sorts = 'created_at desc' if @q.sorts.blank?
 
-           unless broker_customer_ids.blank?
-             Shipment.active.where(broker_customer_id: broker_customer_ids).ransack(params[:q])
-           end
-         else
-           Shipment.active.includes(required_includes).ransack(params[:q])
-         end
-
-    if @q
-      @q.sorts = 'created_at desc' if @q.sorts.blank?
-      @pagy, @shipments = pagy(@q.result)
-    else
-      @pagy, @shipments = pagy(Shipment.none)
-    end
+    @pagy, @shipments = pagy(@q.result)
   end
 
   def new
