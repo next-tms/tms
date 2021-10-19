@@ -186,51 +186,8 @@
 
   <div class="col-sm-6">
     <% if current_user.has_role?('dispatch') or current_user.has_role?('accounting') or @shipment.broker_customer.sales_reps.include? current_user %>
-      <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Pricing' %></p>
-      <div class="table-responsive">
-        <table class="table table-condensed table-borderless table-striped table-hover h-100">
-          <thead>
-            <th>Service</th>
-            <th>Cost</th>
-            <th>Charge</th>
-            <th>BOL?</th>
-            <th>Invoice?</th>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <% if !@shipment.broker_carrier.blank? %>
-                  <%= @shipment.broker_carrier.carrier.name %>
-                <% else %>
-                  Shipping
-                <% end %>
-              </td>
-              <td><%= humanized_money_with_symbol @shipment.carrier_cost, no_cents_if_whole: false %></td>
-              <td><%= humanized_money_with_symbol @shipment.carrier_charge, no_cents_if_whole: false %></td>
-              <td>✓</td>
-              <td>✓</td>
-            </tr>
-            <% @shipment.shipment_broker_accessorials.sort_by{ |shipment_broker_accessorial| shipment_broker_accessorial.broker_accessorial.name }.each do |shipment_broker_accessorial| %>
-              <tr>
-                <td><%= shipment_broker_accessorial.broker_accessorial.name %></td>
-                <td><%= humanized_money_with_symbol shipment_broker_accessorial.cost, no_cents_if_whole: false %></td>
-                <td><%= humanized_money_with_symbol shipment_broker_accessorial.charge, no_cents_if_whole: false %></td>
-                <td><% unless shipment_broker_accessorial.broker_accessorial.broker_only %>✓<% end %></td>
-                <td><% unless shipment_broker_accessorial.broker_accessorial.broker_only %>✓<% end %></td>
-              </tr>
-            <% end %>
-          </tbody>
-          <tfoot>
-            <tr class="bg-light font-weight-bold">
-              <td>&nbsp;</td>
-              <td><%= humanized_money_with_symbol @shipment.total_cost, no_cents_if_whole: false %></td>
-              <td><%= humanized_money_with_symbol @shipment.total_charges, no_cents_if_whole: false %></td>
-              <td><%= @shipment.margin %><br><strong><small class="text-uppercase">Margin</small></strong></td>
-              <td><%= humanized_money_with_symbol @shipment.profit, no_cents_if_whole: false %><br><strong><small class="text-uppercase">Profit</small></strong></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+      <%= render 'pricing', shipment: @shipment %>
+      <%= render 'commissions', shipment: @shipment %>
     <% else %>
       <p>&nbsp;</p>
     <% end %>

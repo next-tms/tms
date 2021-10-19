@@ -58,6 +58,9 @@ class Shipment < ApplicationRecord
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
 
+  has_many :commissions, autosave: true, dependent: :destroy
+  has_many :broker_customer_sales_reps, through: :commissions
+
   has_many :tracking_events
   accepts_nested_attributes_for :tracking_events, allow_destroy: true, reject_if: :all_blank
 
@@ -148,6 +151,7 @@ class Shipment < ApplicationRecord
   # Pricing
   before_save :set_total_charges
   before_save :set_total_cost
+  before_save :build_commissions
 
   monetize :carrier_charge_cents, allow_nil: true
   monetize :carrier_cost_cents, allow_nil: true
@@ -768,6 +772,31 @@ class Shipment < ApplicationRecord
   end
 
   private
+
+  def build_commissions
+    return if broker_customer.blank? || total_cost == Money.new(0) || total_charges == Money.new(0)
+
+    unless commissions.blank?
+      if commissions.pluck(:paid).include?(true)
+        errors.add(:base, 'Pricing cannot be updated because commission(s) have already been paid')
+      else
+        commissions.each do |commission|
+          commission.mark_for_destruction
+        end
+      end
+    end
+
+    # total_charges, total_cost not yet serialized with pre-save attributes so we call Money.new
+    profit = Money.new(total_charges_cents - total_cost_cents)
+
+    broker_customer.broker_customer_sales_reps.find_each do |broker_customer_sales_rep|
+      amount = profit * (broker_customer_sales_rep.commission_percent.to_f / 100).round(2)
+      commission = commissions.build(
+        broker_customer_sales_rep: broker_customer_sales_rep,
+        amount: amount
+      )
+    end
+  end
 
   def pro_or_tracking_carrier_pro_changed?
     pro_changed? || tracking_carrier_pro_changed?
