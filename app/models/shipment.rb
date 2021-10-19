@@ -747,6 +747,22 @@ class Shipment < ApplicationRecord
     @broker_quote_valid ||= !broker_quote.blank? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
   end
 
+  def accessible_by?(user)
+    return false unless user.is_a?(User)
+
+    if user.broker?
+      if user.has_role?('dispatch') || user.has_role?('sales_rep')
+        return true if broker_customer.blank?
+
+        return user.sales_rep_for?(broker_customer)
+      end
+    elsif user.customer?
+      return broker_customer == user.broker_customer
+    end
+
+    false
+  end
+
   def to_param
     load_id.to_s
   end

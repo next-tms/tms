@@ -345,25 +345,25 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def edit_tracking_events
-    unauthorized if (!current_user.has_role? 'dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
+    unauthorized unless @shipment.accessible_by?(current_user)
   end
 
   def tracking_events
-    unauthorized if (!current_user.has_role? 'dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
+    unauthorized unless @shipment.accessible_by?(current_user)
   end
 
   def transit
-    unauthorized if (!current_user.has_role? 'dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
+    unauthorized unless @shipment.accessible_by?(current_user)
   end
 
   def transit_edit
-    unauthorized if (!current_user.has_role? 'dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
+    unauthorized unless @shipment.accessible_by?(current_user)
   end
 
   def delivery; end
 
   def quote
-    unauthorized if (!current_user.has_role? 'dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
+    unauthorized unless @shipment.accessible_by?(current_user)
 
     reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
               false
