@@ -45,9 +45,9 @@ class User < ApplicationRecord
   end
 
   def sales_rep_for?(broker_customer)
-    return nil unless broker_customer.blank?
+    return false if broker_customer.blank?
 
-    broker_customers.include? broker_customer
+    broker_customers.include?(broker_customer)
   end
 
   def sales_rep_for_broker_customers
