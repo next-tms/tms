@@ -5,7 +5,7 @@ class User < ApplicationRecord
   scope :brokers, -> { where.not(id: customers) }
 
   devise :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable
-  
+
   before_save :update_contact
 
   belongs_to :broker, required: true
@@ -46,6 +46,7 @@ class User < ApplicationRecord
 
   def sales_rep_for?(broker_customer)
     return nil unless broker_customer.blank?
+
     broker_customers.include? broker_customer
   end
 
@@ -82,7 +83,8 @@ class User < ApplicationRecord
       )&.first
 
       next if broker_customer_sales_rep.blank?
-      unless !broker_customer_sales_rep.commission_percent.blank?
+
+      if broker_customer_sales_rep.commission_percent.blank?
         earnings += shipment.profit * (broker_customer_sales_rep.commission_percent / 100)
       end
       unless broker_customer_sales_rep.commission_flat.blank?
@@ -116,13 +118,13 @@ class User < ApplicationRecord
 
   def shipments
     return broker_customer.shipments if customer?
+    return broker.shipments unless sales_rep_only?
 
-    if sales_rep_only?
-      broker_customer_ids = sales_rep_for_broker_customers&.pluck(:id)
-      return Shipment.where(broker_customer_id: broker_customer_ids) unless broker_customer_ids.blank?
-    end
+    broker_customer_ids = sales_rep_for_broker_customers&.pluck(:id)
 
-    broker.shipments
+    return Shipment.none if broker_customer_ids.blank?
+
+    Shipment.where(broker_customer_id: broker_customer_ids) unless broker_customer_ids.blank?
   end
 
   def sales_rep_only?
