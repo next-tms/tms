@@ -19,6 +19,8 @@ class User < ApplicationRecord
   has_many :broker_customer_sales_reps
   has_many :broker_customers, through: :broker_customer_sales_reps
 
+  has_many :commissions, through: :broker_customer_sales_reps
+
   serialize :time_zone
   validates_presence_of :time_zone
 
@@ -58,41 +60,10 @@ class User < ApplicationRecord
     )
   end
 
-  def sales_rep_earnings(from, to)
-    shipments = Shipment
-                .active
-                .where(
-                  broker_customer: broker_customers
-                )
-                .where(
-                  'picked_up_at >= ?', from
-                )
-                .where(
-                  'picked_up_at <= ?', to
-                )
-                .includes(:broker_customer)
-
-    return Money.new(0) if shipments.blank?
-
-    earnings = Money.new(0)
-
-    shipments.find_each do |shipment|
-      broker_customer_sales_rep = BrokerCustomerSalesRep.where(
-        user: self,
-        broker_customer: shipment.broker_customer
-      )&.first
-
-      next if broker_customer_sales_rep.blank?
-
-      if broker_customer_sales_rep.commission_percent.blank?
-        earnings += shipment.profit * (broker_customer_sales_rep.commission_percent / 100)
-      end
-      unless broker_customer_sales_rep.commission_flat.blank?
-        earnings += shipment.profit + broker_customer_sales_rep.commission_flat
-      end
-    end
-
-    earnings
+  def commissions_between(from, to)
+    commissions.where(
+      shipment: shipments.where(picked_up_at: from..to)
+    )
   end
 
   def has_role?(role_name)

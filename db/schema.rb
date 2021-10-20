@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_13_191414) do
+ActiveRecord::Schema.define(version: 2021_10_19_224055) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -78,6 +78,28 @@ ActiveRecord::Schema.define(version: 2021_10_13_191414) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_areas_on_name"
+  end
+
+  create_table "audits", force: :cascade do |t|
+    t.integer "auditable_id"
+    t.string "auditable_type"
+    t.integer "associated_id"
+    t.string "associated_type"
+    t.integer "user_id"
+    t.string "user_type"
+    t.string "username"
+    t.string "action"
+    t.jsonb "audited_changes"
+    t.integer "version", default: 0
+    t.string "comment"
+    t.string "remote_address"
+    t.string "request_uuid"
+    t.datetime "created_at"
+    t.index ["associated_type", "associated_id"], name: "associated_index"
+    t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
+    t.index ["created_at"], name: "index_audits_on_created_at"
+    t.index ["request_uuid"], name: "index_audits_on_request_uuid"
+    t.index ["user_id", "user_type"], name: "user_index"
   end
 
   create_table "bank_types", force: :cascade do |t|
@@ -222,6 +244,18 @@ ActiveRecord::Schema.define(version: 2021_10_13_191414) do
     t.boolean "has_seperate_website_credentials", default: false
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
+  end
+
+  create_table "commissions", force: :cascade do |t|
+    t.boolean "paid", default: false
+    t.integer "amount_cents", default: 0, null: false
+    t.string "amount_currency", default: "USD", null: false
+    t.bigint "broker_customer_sales_rep_id", null: false
+    t.bigint "shipment_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["broker_customer_sales_rep_id"], name: "index_commissions_on_broker_customer_sales_rep_id"
+    t.index ["shipment_id"], name: "index_commissions_on_shipment_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -694,6 +728,8 @@ ActiveRecord::Schema.define(version: 2021_10_13_191414) do
   add_foreign_key "carrier_contacts", "contacts"
   add_foreign_key "carriers", "addresses", column: "broker_billing_address_id"
   add_foreign_key "carriers", "addresses", column: "check_mailing_address_id"
+  add_foreign_key "commissions", "broker_customer_sales_reps"
+  add_foreign_key "commissions", "shipments"
   add_foreign_key "contacts", "broker_carriers"
   add_foreign_key "contacts", "broker_customers"
   add_foreign_key "contacts", "brokers"
