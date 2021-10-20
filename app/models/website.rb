@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Website < ApplicationRecord
+  after_save :update_manifest, if: -> { saved_change_to_manifest? }
+
   belongs_to :broker
 
   validates_presence_of :domain, :footer_url, :manifest_url, :sign_out_url
@@ -16,16 +18,16 @@ class Website < ApplicationRecord
       end
   end
 
-  def manifest
-    Rails.cache.fetch(manifest_url, expires_in: 3.hours) do
-      response = HTTParty.get(manifest_url)
-      break unless response.code == 200
+  def update_manifest
+    response = HTTParty.get(manifest_url)
+    return false unless response.code == 200
 
-      begin
-        JSON.parse(response.body)
-      rescue StandardError
-        break
-      end
+    begin
+      json = JSON.parse(response.body)
+    rescue StandardError
+      return false
     end
+
+    update(manifest: json)
   end
 end
