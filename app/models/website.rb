@@ -17,7 +17,7 @@ class Website < ApplicationRecord
   end
 
   def manifest
-    Rails.cache.fetch(manifest_url, expires: 3.hours) do
+    Rails.cache.fetch(manifest_url, expires_in: 3.hours) do
       response = HTTParty.get(manifest_url)
       break unless response.code == 200
 
