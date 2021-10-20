@@ -26,22 +26,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
   end
 
   def index
-    @broker_customer_sales_reps = User.
-                                  where(
-                                    id: [
-                                      BrokerCustomerSalesRep.joins(:user).where(
-                                        user_id: [
-                                          current_user.broker.users.pluck(:id)
-                                        ]).pluck(:user_id)
-                                      ]
-                                    )
-                                    .distinct
-                                    .includes(
-                                      :broker,
-                                      :broker_customer,
-                                      :roles
-                                    )
-                                    .order(:first_name)
+    @broker_customer_sales_reps = User.where(id: current_user.broker.broker_customer_sales_reps.pluck(:user_id)).order(:first_name)
   end
 
   def new

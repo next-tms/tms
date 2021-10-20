@@ -767,12 +767,7 @@ class Shipment < ApplicationRecord
     false
   end
 
-  def to_param
-    load_id.to_s
-  end
-
-  private
-
+  # TODO: Move to private
   def build_commissions
     return if broker_customer.blank? || total_cost == Money.new(0) || total_charges == Money.new(0)
 
@@ -797,6 +792,12 @@ class Shipment < ApplicationRecord
       )
     end
   end
+
+  def to_param
+    load_id.to_s
+  end
+
+  private
 
   def pro_or_tracking_carrier_pro_changed?
     pro_changed? || tracking_carrier_pro_changed?

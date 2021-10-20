@@ -14,6 +14,7 @@ class Broker < ApplicationRecord
   accepts_nested_attributes_for :broker_countries, allow_destroy: true, reject_if: :all_blank
 
   has_many :broker_customers
+  has_many :broker_customer_sales_reps, through: :broker_customers
   has_many :customers, through: :broker_customers
 
   has_many :broker_accessorials
@@ -60,6 +61,6 @@ class Broker < ApplicationRecord
   end
 
   def unique_countries
-    self.countries = self.countries.distinct unless self.countries.blank?
+    self.countries = countries.distinct unless countries.blank?
   end
 end
