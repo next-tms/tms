@@ -6,6 +6,6 @@
   <%= f.select :type_id, BankType.all.order(:name).collect { |type| [type.name, type.id] }, { include_blank: false, label: 'Type' }, class: 'form-select' %>
 
   <div class="form-group">
-    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+    <%= f.submit class: 'btn btn-primary mt-4', data: { turbo: false }, value: 'Save' %>
   </div>
 <% end %>

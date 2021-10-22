@@ -20,6 +20,6 @@
   <%= f.check_box :additional_charge, label: 'Is additional charge?' %>
 
   <div class="form-group">
-    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+    <%= f.submit class: 'btn btn-primary mt-4', data: { turbo: false }, value: 'Save' %>
   </div>
 <% end %>

@@ -50,6 +50,6 @@
   <%= f.text_area :default_bol_notes, label: 'Default instructions on BOL', rows: 7 %>
 
   <%= f.form_group do %>
-    <%= f.submit 'Save', class: 'btn btn-primary' %>
+    <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>
   <% end %>
 <% end %>
