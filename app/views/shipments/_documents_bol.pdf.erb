@@ -49,7 +49,7 @@
         <h2><%= !shipment.carrier.blank? ? shipment.carrier.name : '&nbsp;'.html_safe %></h2>
       </td>
       <td class="text-right">
-        <% if (!@broker_carrier.blank? && !@broker_carrier.carrier.acts_as_broker?) && !shipment.pro.blank? %>
+        <% if (!shipment.broker_carrier.blank? && !shipment.broker_carrier.carrier.acts_as_broker?) && !shipment.pro.blank? %>
           <h2>Pro <%= shipment.pro %></h2>
         <% end %>
       </td>
@@ -136,7 +136,7 @@
               Account #: <%= shipment.broker_carrier.account %><br>
             <% end %>
           <% end %>
-          <% if !@broker_carrier.blank? && !@broker_carrier.carrier.acts_as_broker? %>
+          <% if !shipment.broker_carrier.blank? && !shipment.broker_carrier.carrier.acts_as_broker? %>
             <% if !shipment.quote_id.blank? || ! %>
               Quote #: <%= shipment.quote_id %><br>
             <% end %>
