@@ -45,14 +45,16 @@
 
   <table>
     <tr>
-      <td colspan="2">
+      <% has_pro? = (!shipment.broker_carrier.blank? && !shipment.broker_carrier.carrier.acts_as_broker?) && !shipment.pro.blank? %>
+      <% cols = has_pro? ? 2 : 1 %>
+      <td <% if cols == 1 %>colspan="2"<% end %>>
         <h2><%= !shipment.carrier.blank? ? shipment.carrier.name : '&nbsp;'.html_safe %></h2>
       </td>
-      <td class="text-right">
-        <% if (!shipment.broker_carrier.blank? && !shipment.broker_carrier.carrier.acts_as_broker?) && !shipment.pro.blank? %>
+      <% if has_pro? %>
+        <td class="text-right">
           <h2>Pro <%= shipment.pro %></h2>
-        <% end %>
-      </td>
+        </td>
+      <% end %>
     </tr>
     <tr>
       <td>
