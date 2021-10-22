@@ -46,9 +46,9 @@
   <table>
     <tr>
       <% has_pro = (!shipment.broker_carrier.blank? && !shipment.broker_carrier.carrier.acts_as_broker?) && !shipment.pro.blank? %>
-      <% cols = has_pro ? 2 : 1 %>
-      <td <% if cols == 1 %>colspan="2"<% end %>>
-        <h2><%= !shipment.carrier.blank? ? shipment.carrier.name : '&nbsp;'.html_safe %></h2>
+      <% colspan = has_pro ? 1 : 2 %>
+      <td colspan="<%= colspan %>">>
+        <h2><%= shipment.carrier.blank? ? nil : shipment.carrier.name %></h2>
       </td>
       <% if has_pro %>
         <td class="text-right">
