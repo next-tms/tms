@@ -98,6 +98,6 @@
   <%= f.text_area :bol_notes, hide_label: true, rows: 5 %>
 
   <div class="form-group">
-    <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+    <%= f.submit class: 'btn btn-primary mt-4', data: { turbo: false }, value: 'Save' %>
   </div>
 <% end %>
