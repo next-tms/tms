@@ -35,6 +35,20 @@ class TrackingEvent < ApplicationRecord
   end
 
   def set_time_zone
+    time_zone = TrackingEvent.where(city: city, state: state).where.not(time_zone: [nil, ''])&.last&.time_zone
+
+    unless time_zone.blank?
+      self.time_zone = time_zone
+      return
+    end
+
+    time_zone = Address.where(city: city, state: state).where.not(time_zone: [nil, ''])&.last&.time_zone
+
+    unless time_zone.blank?
+      self.time_zone = time_zone
+      return
+    end
+
     client = GooglePlaces::Client.new(ENV['GOOGLE_API_KEY'])
 
     spots = client.spots_by_query(pretty_location)

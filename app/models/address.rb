@@ -1,18 +1,29 @@
 # frozen_string_literal: true
 
 class Address < ApplicationRecord
-  # TODO: Remove this - where did this come from?
-  # has_many :shipments, class_name: 'Sale', foreign_key: 'shipment_id'
+  before_save :prettify_city, if: :city_changed?
+  before_save :prettify_state, if: :state_changed?
+
+  before_save :standardize_address
+  before_save :update_coordinates
+  before_save :update_time_zone
+  before_save :update_types
+
+  belongs_to :country
+
+  serialize :google_places_spot_cached
+  serialize :open_street_map_result_cached
+  serialize :original_attributes
+  serialize :time_zone
+  serialize :types
+  serialize :verification_info
+
+  # Temporarily disabled, see https://github.com/ankane/mainstreet/issues/14
+  # validates_address fields: [:street, :city, :state, :zip_code], geocode: true
 
   validates :city, presence: true
   validates :state, presence: true
   validates :zip_code, presence: true
-
-  # Prettify
-  before_save :prettify_city, if: :city_changed?
-  before_save :prettify_state, if: :state_changed?
-
-  belongs_to :country
 
   def pretty(seperator)
     str = ''.dup
@@ -61,20 +72,6 @@ class Address < ApplicationRecord
     !street.blank? and !city.blank? and !state.blank?
   end
 
-  # Temporarily disabled, see https://github.com/ankane/mainstreet/issues/14
-  # validates_address fields: [:street, :city, :state, :zip_code], geocode: true
-
-  serialize :google_places_spot_cached
-  serialize :original_attributes
-  serialize :time_zone
-  serialize :types
-  serialize :verification_info
-
-  before_save :standardize_address
-  before_save :update_coordinates
-  before_save :update_types
-  before_save :update_time_zone
-
   def blank_to_nil(obj)
     obj == '' ? nil : obj
   end
@@ -92,32 +89,8 @@ class Address < ApplicationRecord
       street2: blank_to_nil(street2),
       city: blank_to_nil(city),
       zip_code: blank_to_nil(zip_code)
-    ).where.not(id: self.id).where('updated_at > ?', 6.months.ago).order(updated_at: :desc).limit(1)
+    ).where.not(id: id).where('updated_at > ?', 6.months.ago).order(updated_at: :desc).limit(1)
     @twin = addresses&.first
-  end
-
-  def smarty_streets_result
-    if @smarty_streets_result && !(will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?)
-      return @smarty_streets_result
-    end
-
-    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?
-      self.verification_info = nil
-    end
-
-    unless verification_info
-      if twin&.verification_info
-        self.verification_info = twin.verification_info
-      else
-        logger.info 'Calling SmartyStreet API'
-        begin
-          self.verification_info = MainStreet::AddressVerifier.new(proper(', ')).result.data.to_hash
-        rescue StandardError
-          self.verification_info = nil
-        end
-      end
-    end
-    @smarty_streets_result = verification_info
   end
 
   def google_places_spot
@@ -127,21 +100,82 @@ class Address < ApplicationRecord
 
     if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?
       self.google_places_spot_cached = nil
+      self.google_places_spot_updated_at = nil
     end
 
-    unless google_places_spot_cached
-      if twin&.google_places_spot_cached
-        self.google_places_spot_cached = twin.google_places_spot_cached
-      else
-        logger.info 'Calling Google Places API'
-        self.google_places_spot_cached = GooglePlaces::Client.new(
-          ENV['GOOGLE_API_KEY']
-        ).spots_by_query(
-          (names&.first.blank? ? proper(', ') : "#{names&.first}, #{proper(', ')}")
-        ).first
+    return @google_places_spot_cached = google_places_spot_cached unless google_places_spot_updated_at.blank?
+
+    if twin&.google_places_spot_cached
+      self.google_places_spot_cached = twin.google_places_spot_cached
+    else
+      logger.info 'Calling Google Places API'
+      self.google_places_spot_cached = GooglePlaces::Client.new(
+        ENV['GOOGLE_API_KEY']
+      ).spots_by_query(
+        (names&.first.blank? ? proper(', ') : "#{names&.first}, #{proper(', ')}")
+      ).first
+    end
+
+    self.google_places_spot_updated_at = DateTime.current
+    @google_places_spot = google_places_spot_cached
+  end
+
+  def open_street_map_result
+    if @open_street_map_result && !(will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?)
+      return @open_street_map_result
+    end
+
+    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?
+      self.open_street_map_result_updated_at = nil
+    end
+
+    unless open_street_map_result_updated_at.blank?
+      return @open_street_map_result_cached = open_street_map_result_cached
+    end
+
+    if twin&.open_street_map_result_cached
+      self.open_street_map_result_cached = twin.open_street_map_result_cached
+    else
+      logger.info 'Calling OpenStreetMap API'
+
+      client = OpenStreetMap::Client.new
+
+      self.open_street_map_result_cached = client.search(
+        q: "#{street}, #{city}, #{state}, #{country.name}",
+        format: 'json',
+        addressdetails: '1',
+        accept_language: 'en'
+      )&.first
+    end
+
+    self.open_street_map_result_updated_at = DateTime.current
+    @open_street_map_result = open_street_map_result_cached
+  end
+
+  def smarty_streets_result
+    if @smarty_streets_result && !(will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?)
+      return @smarty_streets_result
+    end
+
+    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?
+      self.smarty_streets_result_updated_at = nil
+    end
+
+    return @smarty_streets_result = verification_info unless smarty_streets_result_updated_at.blank?
+
+    if twin&.verification_info
+      self.verification_info = twin.verification_info
+    else
+      logger.info 'Calling SmartyStreet API'
+      begin
+        self.verification_info = MainStreet::AddressVerifier.new(proper(', ')).result.data.to_hash
+      rescue StandardError
+        self.verification_info = nil
       end
     end
-    @google_places_spot = google_places_spot_cached
+
+    self.smarty_streets_result_updated_at = DateTime.current
+    @smarty_streets_result = verification_info
   end
 
   def standardize_address
@@ -224,21 +258,30 @@ class Address < ApplicationRecord
   def update_coordinates
     return self unless full_address?
 
-    # Google more accurate than SmartyStreets
+    unless open_street_map_result.blank?
+      self.latitude = open_street_map_result['lat']
+      self.longitude = open_street_map_result['lon']
+      return true
+    end
+
     unless google_places_spot.blank?
       self.latitude = google_places_spot.lat
       self.longitude = google_places_spot.lng
+      return true
     end
-    self
+
+    true
   end
 
   def update_time_zone
-    self.time_zone = if google_places_spot
-                       Timezone.lookup(google_places_spot.lat, google_places_spot.lng)
-                     else
-                       Timezone['America/Los_Angeles']
-                     end
-    self
+    update_coordinates if latitude.blank? || longitude.blank?
+
+    if latitude.blank? || longitude.blank?
+      self.time_zone = Timezone['America/Los_Angeles']
+      return
+    end
+
+    self.time_zone = Timezone.lookup(latitude, longitude)
   end
 
   private
