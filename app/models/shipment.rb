@@ -58,7 +58,7 @@ class Shipment < ApplicationRecord
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
 
-  has_many :commissions, autosave: true, dependent: :destroy
+  has_many :commissions, dependent: :destroy
   has_many :broker_customer_sales_reps, through: :commissions
 
   has_many :tracking_events
@@ -775,9 +775,7 @@ class Shipment < ApplicationRecord
       if commissions.pluck(:paid).include?(true)
         errors.add(:base, 'Pricing cannot be updated because commission(s) have already been paid')
       else
-        commissions.each do |commission|
-          commission.mark_for_destruction
-        end
+        commissions.destroy_all
       end
     end
 
