@@ -68,11 +68,14 @@ gem 'business_time'
 gem 'timezone', '~> 1.3'
 gem 'money-rails', '~> 1.14.0'
 gem 'httparty'
-gem 'geocoder'
 gem 'mainstreet'
 gem 'postmark-rails'
 gem 'barby'
-gem 'google_places'
+
+gem 'geocoder', '~> 1.6.7'
+gem 'google_places', '~> 2.0.0'
+gem 'open_street_map', '~> 1.2.1'
+
 gem 'phony_rails'
 gem 'htmlentities'
 
