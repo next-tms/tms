@@ -1,4 +1,5 @@
-Timezone::Lookup.config(:google) do |c|
-  c.api_key = ENV['GOOGLE_API_KEY']
-  # c.client_id = 'your_google_client_id' # if using 'Google for Work'
+# frozen_string_literal: true
+
+Timezone::Lookup.config(:geonames) do |c|
+  c.username = ENV['GEONAMES_USERNAME']
 end

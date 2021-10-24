@@ -1365,6 +1365,8 @@ GEM
     nokogiri (1.12.5-x86_64-darwin)
       racc (~> 1.4)
     nori (2.6.0)
+    open_street_map (1.2.1)
+      httparty (~> 0.17)
     orm_adapter (0.5.0)
     pagy (4.11.0)
     pg (1.2.3)
@@ -1532,8 +1534,8 @@ DEPENDENCIES
   byebug
   capybara (>= 3.35.3)
   devise (~> 4.8.0)
-  geocoder
-  google_places
+  geocoder (~> 1.6.7)
+  google_places (~> 2.0.0)
   hiredis
   htmlentities
   httparty
@@ -1546,6 +1548,7 @@ DEPENDENCIES
   listen (>= 3.0.5, < 3.8)
   mainstreet
   money-rails (~> 1.14.0)
+  open_street_map (~> 1.2.1)
   pagy
   pg (~> 1.2.0)
   phony_rails
