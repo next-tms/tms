@@ -5,7 +5,12 @@
         <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Sales Reps'), broker_broker_customer_sales_reps_path, class: 'nav-link' %></li>
       <% end %>
       <% if @broker_customer_sales_rep&.id %>
-        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', 'Overview'), broker_broker_customer_sales_rep_path(@broker_customer_sales_rep), class: 'nav-link' %></li>
+        <li class="navbar-item">
+          <%= link_to icon('fas', 'asterisk', 'Overview'), broker_broker_customer_sales_rep_path(@broker_customer_sales_rep), class: 'nav-link' %>
+        </li>
+        <li class="navbar-item">
+          <%= link_to icon('fas', 'dollar-sign', 'Commissions'), commissions_broker_broker_customer_sales_rep_path(@broker_customer_sales_rep), class: 'nav-link' %>
+        </li>
         <% end %>
     </ul>
   </div>

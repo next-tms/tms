@@ -1,0 +1,36 @@
+<% unless commissions.blank? %>
+  <% if @pagy %>
+    <%= render 'broker/broker_customer_sales_reps/search_form' %>
+  <% end %>
+  
+  <div class="table-responsive mb-2">
+    <table class="table table-condensed table-borderless table-striped table-hover h-100">
+      <thead>
+        <th>Customer</th>
+        <th>Load</th>
+        <th>Amount</th>
+        <th>%</th>
+        <th>Paid?</th>
+      </thead>
+      <tbody>
+        <% commissions.find_each do |commission| %>
+          <tr>
+            <td><%= link_to commission.shipment.broker_customer.customer.name, broker_broker_customer_path(commission.shipment.broker_customer), target: '_blank' %></td>
+            <td><%= link_to commission.shipment.load_id, broker_shipment_path(commission.shipment), target: '_blank' %></td>
+            <td><%= humanized_money_with_symbol commission.amount, no_cents_if_whole: false %></td>
+            <td><%= commission.percent * 100 %></td>
+            <td>
+              <% if commission.paid? %>✓<% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <% if @pagy %>
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% end %>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>
