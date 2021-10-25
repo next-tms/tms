@@ -53,11 +53,16 @@ class BrokerCustomer < ApplicationRecord
 
     carrier_charge = Money.new(0)
 
+    return nil if default_upcharge.blank? && upcharge_rules.blank?
+
     if !upcharge_rules.blank?
       carrier_charge = carrier_cost
       shipment.items.each do |item|
         quantity = item.quantity
-        try_upcharge_rules = upcharge_rules.where('min <= ?', quantity).where('max >= ?', quantity).or(upcharge_rules.where('min <= ?', quantity).where(max: nil))
+        try_upcharge_rules = upcharge_rules.where('min <= ?', quantity).where('max >= ?',
+                                                                              quantity).or(upcharge_rules.where(
+                                                                                'min <= ?', quantity
+                                                                              ).where(max: nil))
 
         if try_upcharge_rules.blank?
           return !default_upcharge.blank? && default_upcharge.positive? ? carrier_cost + default_upcharge : carrier_charge

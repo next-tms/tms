@@ -167,20 +167,47 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def quote
-    @shipment.update_rates
-    if current_user.broker_customer.always_show_quotes_based_on_calculated_classes?
-      # calculated_freight_classes and forced_freight_classes are equal
-      if !@shipment.rates.without_error.with_forced_freight_classes.blank? && @shipment.rates.without_error.with_calculated_freight_classes.blank?
-        @rates = @shipment.rates.without_error.with_forced_freight_classes
+    unauthorized unless @shipment.accessible_by?(current_user)
+
+    reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
+              false
+            elsif @shipment.calculated_freight_classes.uniq == [nil] && @shipment.forced_freight_classes.uniq.nil?
+              false
+            else
+              true
+            end
+
+    reset = true if !reset && !params[:force].blank?
+
+    if reset
+      applied_rate = @shipment.applied_rate
+
+      if @shipment.applied_rate.blank?
+        @shipment.rates.destroy_all
       else
-        @rates = @shipment.rates.without_error.with_calculated_freight_classes
+        @shipment.rates.where.not(id: @shipment.applied_rate.id).destroy_all
       end
+    end
+
+    broker_carrier_ids = []
+    broker_carrier_ids += if @shipment.broker_customer.blank?
+                            @shipment.broker.broker_carriers.blanket.api_configured.pluck(:id)
+                          else
+                            @shipment.broker_customer.eligible_broker_carriers.api_configured.pluck(:id)
+                          end
+    broker_carrier_ids += PricingRule.where(broker_carrier: @shipment.broker.broker_carriers).pluck(:broker_carrier_id)
+
+    @broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
+
+    calculated_freight_classes = @shipment.forced_freight_classes
+    forced_freight_classes = @shipment.calculated_freight_classes
+
+    if calculated_freight_classes.sort == forced_freight_classes.sort
+      @use_forced_freight_classes = [false]
     else
-      @rates = if @shipment.rates.without_error.with_forced_freight_classes.blank?
-                 @shipment.rates.without_error.with_calculated_freight_classes
-               else
-                 @shipment.rates.without_error.with_forced_freight_classes
-               end
+      @use_forced_freight_classes = []
+      @use_forced_freight_classes << false unless @shipment.calculated_freight_classes == [nil]
+      @use_forced_freight_classes << true unless @shipment.forced_freight_classes == [nil]
     end
   end
 
@@ -229,6 +256,7 @@ class Customer::ShipmentsController < Customer::CustomerController
                                      :pro,
                                      :promised_delivery_by,
                                      :quote_id,
+                                     :quote_only,
                                      :quoted_delivery_by,
                                      :receiver_available_at,
                                      :receiver_contact_email,
