@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   root 'welcome#index'
 
   namespace :api, defaults: { format: :json } do
@@ -18,8 +17,8 @@ Rails.application.routes.draw do
 
   devise_for :users
   as :user do
-    get 'users/edit' => 'devise/registrations#edit', as: 'edit_user_registration'    
-    put 'users' => 'devise/registrations#update', as: 'user_registration'            
+    get 'users/edit' => 'devise/registrations#edit', as: 'edit_user_registration'
+    put 'users' => 'devise/registrations#update', as: 'user_registration'
   end
 
   get 'contact-card', to: 'brokers#contact_card'
@@ -102,9 +101,13 @@ Rails.application.routes.draw do
       # Stupid, but required for some AJAX without PATCH
       get 'update' => 'shipments#update', as: :update
       member { get 'book' => 'shipments#book', as: :book }
+      member { get 'book-modal' => 'shipments#book_modal', as: :book_modal }
       member { get 'documents' => 'shipments#documents', as: :documents }
       member { get 'documents/send/:shipment_method' => 'shipments#send_document', as: :send_document }
-      member { post 'documents/send/:active_storage_blob_id' => 'shipments#send_document_with_contact_mailer', as: :send_document_with_contact_mailer }
+      member do
+        post 'documents/send/:active_storage_blob_id' => 'shipments#send_document_with_contact_mailer',
+             as: :send_document_with_contact_mailer
+      end
       member { get 'notes', as: :notes }
       member { get 'pricing', as: :pricing }
       member { get 'quote', as: :quote }
@@ -129,7 +132,8 @@ Rails.application.routes.draw do
     get 'shipments/pending-pickup', to: 'shipments#pending_pickup'
     get 'shipments/pending-quotation', to: 'shipments#pending_quotation'
     get 'shipments/quote-only' => 'shipments#new_quote_only', as: :quote_only
-    resources :shipments, path: 'shipments', as: :shipments, param: :load_id, only: [:index, :new, :create, :edit, :show, :update] do
+    resources :shipments, path: 'shipments', as: :shipments, param: :load_id,
+                          only: %i[index new create edit show update] do
       member { get 'book' => 'shipments#book', as: :book }
       member { get 'documents' => 'shipments#documents', as: :documents }
       member { get 'documents/bol' => 'shipments#documents_bol', as: :bol_document }
@@ -139,5 +143,4 @@ Rails.application.routes.draw do
     end
     get 'search' => 'search#search'
   end
-
 end

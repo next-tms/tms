@@ -11,6 +11,31 @@
   </div>
 <% end %>
 
+<% if @shipment.incomplete? && !@shipment.applied_rate.blank? %>
+  <div class="alert alert-warning">
+    <p class="lead">Quote may be invalid</p>
+    <p>This shipment is missing important information but already has a quote applied. Please enter missing information and re-quote.</p>
+  </div>
+<% end %>
+
+<% if !@shipment.applied_rate.blank? && @shipment.fingerprint != @shipment.applied_rate.shipment_fingerprint %>
+  <div class="alert alert-warning">
+    <p class="lead">Quote may be invalid</p>
+    <% if @shipment.picked_up_at.blank? %>
+      <p>This shipment has changed since it was quoted. Please re-quote.</p>
+    <% else %>
+      <p>
+        This shipment has changed since it was dispatched.
+        <% if !@shipment.broker_customer.blank? %>
+          Please re-quote and send the correct documents.
+        <% else %>
+          Please re-quote and send the correct documents to <%= @shipment.broker_customer.customer.name %>.
+        <% end %>
+      </p>
+    <% end %>
+  </div>
+<% end %>
+
 <% if !@shipment.picked_up_at.blank? and @shipment.pro.blank? %>
   <div class="alert alert-warning">
     <p class="lead">Missing pro number</p>
