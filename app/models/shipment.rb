@@ -155,7 +155,7 @@ class Shipment < ApplicationRecord
   before_save :set_total_charges
   before_save :set_total_cost
   before_save :build_commissions, if: lambda {
-    broker_carrier_id_changed? || broker_customer_id_changed? || total_charges_changed? || total_cost_changed?
+    broker_carrier_id_changed? || broker_customer_id_changed? || total_charges_cents_changed? || total_cost_cents_changed?
   }
 
   monetize :carrier_charge_cents, allow_nil: true
