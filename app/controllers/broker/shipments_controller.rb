@@ -2,7 +2,7 @@
 
 class Broker::ShipmentsController < Broker::BrokerController
   before_action :set_shipment_by_load_id,
-                only: %i[book rate_uid documents create_tracking_event destroy edit edit_tracking_events
+                only: %i[book book_modal rate_uid documents create_tracking_event destroy edit edit_tracking_events
                          notes pickup pricing quote send_document send_document_with_contact_mailer show
                          tracking_events transit unbook update]
   before_action :authenticate_user!
@@ -21,6 +21,13 @@ class Broker::ShipmentsController < Broker::BrokerController
     else
       redirect_to [:broker, @shipment]
     end
+  end
+
+  def book_modal
+    @applied_rate_uid = shipment_params[:applied_rate_uid] unless params[:shipment].blank?
+    @broker_customers = current_user.broker_customers.includes(:customer).order('customers.name ASC')
+
+    render layout: 'modal'
   end
 
   def unbook
