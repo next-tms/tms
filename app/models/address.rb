@@ -258,11 +258,12 @@ class Address < ApplicationRecord
   def update_coordinates
     return self unless full_address?
 
-    unless open_street_map_result.blank?
-      self.latitude = open_street_map_result['lat']
-      self.longitude = open_street_map_result['lon']
-      return true
-    end
+    # TODO: Fix https://rollbar.com/next-tms/next_tms/items/101
+    # unless open_street_map_result.blank?
+    #   self.latitude = open_street_map_result['lat']
+    #   self.longitude = open_street_map_result['lon']
+    #   return true
+    # end
 
     unless google_places_spot.blank?
       self.latitude = google_places_spot.lat
