@@ -62,7 +62,7 @@ class User < ApplicationRecord
 
   def commissions_between(from, to)
     commissions.where(
-      shipment: shipments.where(picked_up_at: from..to)
+      shipment: shipments.where(delivered_at: from..to)
     )
   end
 

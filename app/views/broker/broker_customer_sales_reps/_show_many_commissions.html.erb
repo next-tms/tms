@@ -10,15 +10,33 @@
         <th>Load</th>
         <th>Amount</th>
         <th>%</th>
+        <th class="text-nowrap">Picked Up?</th>
+        <th>Delivered?</th>
         <th>Paid?</th>
       </thead>
       <tbody>
         <% commissions.find_each do |commission| %>
-          <tr>
+          <tr class="
+            <% if commission.shipment.picked_up_at.blank? || commission.shipment.delivered_at.blank? %>
+              <% if commission.paid? %>
+                table-danger
+              <% else %>
+                table-warning
+              <% end %>
+            <% elsif commission.paid? %>
+              table-warning
+            <% end %>
+          ">
             <td><%= link_to commission.shipment.broker_customer.customer.name, broker_broker_customer_path(commission.shipment.broker_customer), target: '_blank' %></td>
             <td><%= link_to commission.shipment.load_id, broker_shipment_path(commission.shipment), target: '_blank' %></td>
             <td><%= humanized_money_with_symbol commission.amount, no_cents_if_whole: false %></td>
             <td><%= commission.percent * 100 %></td>
+            <td>
+              <% if !commission.shipment.picked_up_at.blank? %>✓<% end %>
+            </td>
+            <td>
+              <% if !commission.shipment.delivered_at.blank? %>✓<% end %>
+            </td>
             <td>
               <% if commission.paid? %>✓<% end %>
             </td>

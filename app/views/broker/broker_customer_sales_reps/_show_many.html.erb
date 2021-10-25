@@ -31,7 +31,7 @@
         <% broker_customer_sales_reps.each do |broker_customer_sales_rep| %>
           <tr>
             <td>
-              <%= link_to broker_broker_customer_sales_rep_path(broker_customer_sales_rep, target: '_top') do %>
+              <%= link_to commissions_broker_broker_customer_sales_rep_path(broker_customer_sales_rep, target: '_top') do %>
                 <%= broker_customer_sales_rep.contact.full_name %>
               <% end %>
             </td>
