@@ -154,7 +154,9 @@ class Shipment < ApplicationRecord
   # Pricing
   before_save :set_total_charges
   before_save :set_total_cost
-  before_save :build_commissions
+  before_save :build_commissions, if: lambda {
+    broker_carrier_id_changed? || broker_customer_id_changed? || total_charges_changed? || total_cost_changed?
+  }
 
   monetize :carrier_charge_cents, allow_nil: true
   monetize :carrier_cost_cents, allow_nil: true
@@ -787,7 +789,7 @@ class Shipment < ApplicationRecord
 
     broker_customer.broker_customer_sales_reps.find_each do |broker_customer_sales_rep|
       amount = profit * (broker_customer_sales_rep.commission_percent.to_f / 100).round(2)
-      commission = commissions.build(
+      commissions.build(
         broker_customer_sales_rep: broker_customer_sales_rep,
         amount: amount
       )
@@ -811,27 +813,27 @@ class Shipment < ApplicationRecord
   def validate_applied_rate_association
     return if applied_rate.blank?
 
-    if applied_rate.shipment_fingerprint == fingerprint
-      self.carrier_cost = applied_rate.cost
-      self.carrier_charge = broker_customer.carrier_charge_calculator(carrier_cost: applied_rate.cost, shipment: self)
-      self.broker_carrier = applied_rate.broker_carrier
-      self.tracking_carrier = applied_rate.tracking_carrier
-      self.quote_id = applied_rate.reference
-      self.quoted_delivery_by = applied_rate.transit_days.to_i.business_days.after(pickup_on || DateTime.current)
-
-      unless updated_by.broker_customer.blank?
-        total_charges = broker_customer.carrier_charge_calculator(
-          carrier_cost: applied_rate.cost,
-          shipment: self
-        )
-        total_charges += broker_accessorials.inject(Money.new(0)) do |_sum, broker_accessorial|
-          sum += broker_accessorial.upcharge unless broker_accessorial.upcharge.blank?
-        end
-        self.total_charges = total_charges
-      end
-    else
+    if applied_rate.shipment_fingerprint != fingerprint
       errors.add(:rate, 'Rate fingerprint and shipment fingerprint do not match')
+      return
     end
+
+    self.carrier_cost = applied_rate.cost
+    self.carrier_charge = broker_customer.carrier_charge_calculator(carrier_cost: applied_rate.cost, shipment: self)
+    self.broker_carrier = applied_rate.broker_carrier
+    self.tracking_carrier = applied_rate.tracking_carrier
+    self.quote_id = applied_rate.reference
+    self.quoted_delivery_by = applied_rate.transit_days.to_i.business_days.after(pickup_on || DateTime.current)
+
+    return if updated_by.broker_customer.blank?
+
+    total_charges = broker_customer.carrier_charge_calculator(
+      carrier_cost: applied_rate.cost,
+      shipment: self
+    )
+    total_charges += broker_accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents)
+
+    self.total_charges = total_charges
   end
 
   # Remove applied_rate when carrier changes
@@ -842,7 +844,7 @@ class Shipment < ApplicationRecord
   def maybe_create_payment_transaction
     return unless !broker_carrier.blank? && broker_carrier.create_invoice_on_pickup? && payment_transactions.blank?
 
-    payment_transaction = PaymentTransaction.create(
+    PaymentTransaction.create(
       shipment: self,
       broker: broker,
       broker_carrier:
