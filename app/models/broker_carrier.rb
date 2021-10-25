@@ -46,10 +46,9 @@ class BrokerCarrier < ApplicationRecord
     end
   end
 
-  # Interstellar
   def as_interstellar_carrier
     carrier = Interstellar.const_get(self.carrier.scac)
-    carrier = carrier.new(
+    carrier.new(
       account: account,
       customer_address: {
         street: broker.address.street.sub('Apt', 'Ste'),
@@ -63,8 +62,13 @@ class BrokerCarrier < ApplicationRecord
       username: username,
       password: password
     )
-    carrier
   rescue StandardError
     nil
+  end
+
+  def pickup_number_is_tracking_number?
+    return false if as_interstellar_carrier.blank?
+
+    as_interstellar_carrier.pickup_number_is_tracking_number?
   end
 end
