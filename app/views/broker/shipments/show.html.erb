@@ -26,7 +26,7 @@
     <% else %>
       <p>
         This shipment has changed since it was dispatched.
-        <% if !@shipment.broker_customer.blank? %>
+        <% if @shipment.broker_customer.blank? %>
           Please re-quote and send the correct documents.
         <% else %>
           Please re-quote and send the correct documents to <%= @shipment.broker_customer.customer.name %>.
