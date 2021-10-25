@@ -6,7 +6,7 @@
           <% if current_user.has_role? 'carrier_relations' %>
             <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'truck-moving'}<br>Carriers".html_safe, broker_broker_carriers_path, 'data-turbo': 'false' %></div>
           <% end %>
-          <% if current_user.has_role? 'sales_rep' %>
+          <% if current_user.has_role?('root') || current_user.has_role?('sales_rep') %>
             <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'user-tie'}<br>Customers".html_safe, broker_broker_customers_path, 'data-turbo': 'false' %></div>
           <% end %>
           <% if current_user.has_role? 'admin' %>
