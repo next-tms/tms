@@ -39,6 +39,7 @@ Rails.application.routes.draw do
     end
 
     resources :broker_customer_sales_reps, path: 'sales-reps' do
+      member { get 'commissions' => 'broker_customer_sales_reps#commissions', as: :commissions }
     end
 
     get 'carriers/:id/shipments' => 'broker_carriers#shipments', as: :broker_carrier_shipments
