@@ -4,6 +4,13 @@
 
 <%= render 'header', page_title: 'Documents' %>
 
+<% if !@shipment.broker_bol_valid? && @shipment.pro.blank? && @shipment.broker_carrier&.as_interstellar_carrier&.bol_requires_tracking_number? %>
+  <div class="alert alert-warning">
+    <p class="lead">Missing pro number</p>
+    <p>Some documents for this shipment were not generated because <%= @shipment.broker_carrier.carrier.name %> requires the pro number to be entered first.</p>
+  </div>
+<% end %>
+
 <div class="row">
   <div class="col col-md-8">
     <div class="table-responsive">
