@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomersController < Broker::BrokerController
-  before_action :set_broker_customer, only: %i[contacts edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing primary_pickup_address sales_reps shipments show update]
+  before_action :set_broker_customer,
+                only: %i[contacts edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing
+                         primary_pickup_address sales_reps shipments show update]
   before_action :authenticate_user!
 
   def index
@@ -83,14 +85,16 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
       unauthorized
     end
-    if !@broker_customer.update(broker_customer_params)
+
+    @broker_customer.assign_attributes(broker_customer_params)
+    @broker_customer.sales_reps |= @broker_customer.sales_reps
+
+    if @broker_customer.save
+      redirect_to [:broker, @broker_customer, @customer_contact]
+    else
       Rails.logger.debug(@broker_customer.errors)
       flash[:danger] = 'Unable to update customer'
       render :edit
-    else
-      @broker_customer.sales_reps |= @broker_customer.sales_reps
-      @broker_customer.save
-      redirect_to [:broker, @broker_customer, @customer_contact]
     end
   end
 
@@ -129,15 +133,15 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     end
 
     @q = @broker_customer
-        .shipments
-        .includes(
-          :applied_rate,
-          :broker_carrier, { broker_carrier: :carrier },
-          :items,
-          :receiver_address,
-          :shipper_address,
-          :tracking_carrier
-        ).ransack(params[:q])
+         .shipments
+         .includes(
+           :applied_rate,
+           :broker_carrier, { broker_carrier: :carrier },
+           :items,
+           :receiver_address,
+           :shipper_address,
+           :tracking_carrier
+         ).ransack(params[:q])
 
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
@@ -159,11 +163,14 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             :default_upcharge,
                                             :default_upcharge_percentage,
                                             :default_bol_notes,
-                                            broker_customer_sales_reps_attributes: %i[_destroy id commission_flat commission_percent user_id],
-                                            broker_accessorials_attributes: %i[_destroy id accessorial_id flat_charge code name upcharge upcharge_percent],
+                                            broker_customer_sales_reps_attributes: %i[_destroy id commission_flat
+                                                                                      commission_percent user_id],
+                                            broker_accessorials_attributes: %i[_destroy id accessorial_id flat_charge
+                                                                               code name upcharge upcharge_percent],
                                             customer_attributes: %i[_destroy id name],
-                                            primary_pickup_address_attributes: %i[id street street2 city state zip_code country_id],
-                                            upcharge_rules_attributes: %i[_destroy id max min packaging_id upcharge upcharge_percentage]
-                                           )
+                                            primary_pickup_address_attributes: %i[id street street2 city state zip_code
+                                                                                  country_id],
+                                            upcharge_rules_attributes: %i[_destroy id max min packaging_id upcharge
+                                                                          upcharge_percentage])
   end
 end

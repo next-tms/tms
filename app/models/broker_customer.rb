@@ -30,6 +30,8 @@ class BrokerCustomer < ApplicationRecord
   has_many :upcharge_rules
   accepts_nested_attributes_for :upcharge_rules, allow_destroy: true, reject_if: :all_blank
 
+  validate :check_pricing_rules
+
   def eligible_broker_accessorials
     return @eligible_broker_accessorials if @eligible_broker_accessorials
 
@@ -105,6 +107,16 @@ class BrokerCustomer < ApplicationRecord
         total_profit: total_profit,
         total_margin: total_margin
       }
+    end
+  end
+
+  private
+
+  def check_pricing_rules
+    return unless can_quote?
+
+    if (default_upcharge_cents.blank? || default_upcharge_cents.zero?) && (default_upcharge_percentage.blank? || default_upcharge_percentage.zero?) && upcharge_rules.blank?
+      errors.add(:base, 'Pricing rules must exist to enable customer quoting.')
     end
   end
 end
