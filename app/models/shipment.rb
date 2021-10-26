@@ -176,6 +176,8 @@ class Shipment < ApplicationRecord
 
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
+  validates :load_id, uniqueness: { scope: :broker }
+
   def applied_rate_uid=(rate_uid)
     rate = Rate.find_by_uid(rate_uid)
     return if rate.blank?
