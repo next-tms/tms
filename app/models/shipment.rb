@@ -245,6 +245,7 @@ class Shipment < ApplicationRecord
                .except(
                  *%w[created_at updated_at]
                )
+               .to_s
       end
     end
 
