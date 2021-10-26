@@ -119,7 +119,7 @@ class User < ApplicationRecord
   private
 
   def update_contact
-    contact = Contact.new if new_record? && self.contact.blank?
+    contact = Contact.new if :new_record?
 
     contact.assign_attributes(
       broker_customer: broker_customer,
