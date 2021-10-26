@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_24_070507) do
+ActiveRecord::Schema.define(version: 2021_10_26_154639) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -82,28 +82,6 @@ ActiveRecord::Schema.define(version: 2021_10_24_070507) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_areas_on_name"
-  end
-
-  create_table "audits", force: :cascade do |t|
-    t.integer "auditable_id"
-    t.string "auditable_type"
-    t.integer "associated_id"
-    t.string "associated_type"
-    t.integer "user_id"
-    t.string "user_type"
-    t.string "username"
-    t.string "action"
-    t.jsonb "audited_changes"
-    t.integer "version", default: 0
-    t.string "comment"
-    t.string "remote_address"
-    t.string "request_uuid"
-    t.datetime "created_at"
-    t.index ["associated_type", "associated_id"], name: "associated_index"
-    t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
-    t.index ["created_at"], name: "index_audits_on_created_at"
-    t.index ["request_uuid"], name: "index_audits_on_request_uuid"
-    t.index ["user_id", "user_type"], name: "user_index"
   end
 
   create_table "bank_types", force: :cascade do |t|
@@ -588,6 +566,7 @@ ActiveRecord::Schema.define(version: 2021_10_24_070507) do
     t.text "public_notes"
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
     t.index ["broker_customer_id"], name: "index_shipments_on_broker_customer_id"
+    t.index ["broker_id", "load_id"], name: "index_shipments_on_broker_id_and_load_id", unique: true
     t.index ["broker_notes"], name: "index_shipments_on_broker_notes"
     t.index ["receiver_address_id"], name: "index_shipments_on_receiver_address_id"
     t.index ["shipper_address_id"], name: "index_shipments_on_shipper_address_id"
