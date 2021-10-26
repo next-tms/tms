@@ -264,7 +264,7 @@ class Address < ApplicationRecord
       return true
     end
 
-    unless google_places_spot.blank? && google_places_spot&.lat && google_places_spot&.lng
+    if !google_places_spot.blank? && !google_places_spot&.lat.blank? && !google_places_spot&.lng.blank?
       self.latitude = google_places_spot.lat
       self.longitude = google_places_spot.lng
       return true
