@@ -45,11 +45,10 @@
 
   <table>
     <tr>
-      <% has_pro = (!shipment.broker_carrier.blank? && !shipment.broker_carrier.carrier.acts_as_broker?) && !shipment.pro.blank? %>
       <td>
         <h2><%= shipment.carrier.blank? ? nil : shipment.carrier.name %></h2>
       </td>
-      <% if has_pro %>
+      <% if !shipment.broker_carrier.blank? && && !shipment.pro.blank? %>
         <td class="text-right">
           <h2>Pro <%= shipment.pro %></h2>
         </td>
