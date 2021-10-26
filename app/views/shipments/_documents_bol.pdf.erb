@@ -48,7 +48,7 @@
       <td>
         <h2><%= shipment.carrier.blank? ? nil : shipment.carrier.name %></h2>
       </td>
-      <% if !shipment.broker_carrier.blank? && && !shipment.pro.blank? %>
+      <% if !shipment.broker_carrier.blank? && !shipment.pro.blank? %>
         <td class="text-right">
           <h2>Pro <%= shipment.pro %></h2>
         </td>
