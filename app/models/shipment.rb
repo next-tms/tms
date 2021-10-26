@@ -237,7 +237,17 @@ class Shipment < ApplicationRecord
 
   def fingerprint
     str = ''.dup
-    str += flattened_items.to_json
+
+    unless flattened_items.blank?
+      flattened_items.each do |flattened_item|
+        str += flattened_item
+               .attributes
+               .except(
+                 *%w[created_at updated_at]
+               )
+      end
+    end
+
     str += accessorial_codes.to_json
     str += shipper_address.pretty(', ') unless shipper_address.blank?
     str += receiver_address.pretty(', ') unless receiver_address.blank?
