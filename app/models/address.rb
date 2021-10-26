@@ -5,8 +5,8 @@ class Address < ApplicationRecord
   before_save :prettify_state, if: :state_changed?
 
   before_save :standardize_address
-  before_save :update_coordinates
-  before_save :update_time_zone
+  before_save :set_coordinates
+  before_save :set_time_zone
   before_save :update_types
 
   belongs_to :country
@@ -255,27 +255,26 @@ class Address < ApplicationRecord
     self
   end
 
-  def update_coordinates
+  def set_coordinates
     return self unless full_address?
 
-    # TODO: Fix https://rollbar.com/next-tms/next_tms/items/101
-    # unless open_street_map_result.blank?
-    #   self.latitude = open_street_map_result['lat']
-    #   self.longitude = open_street_map_result['lon']
-    #   return true
-    # end
+    if !open_street_map_result.blank? && !open_street_map_result['lat'].blank? && !open_street_map_result['lon'].blank?
+      self.latitude = open_street_map_result['lat']
+      self.longitude = open_street_map_result['lon']
+      return true
+    end
 
-    unless google_places_spot.blank?
+    unless google_places_spot.blank? && google_places_spot&.lat && google_places_spot&.lng
       self.latitude = google_places_spot.lat
       self.longitude = google_places_spot.lng
       return true
     end
 
-    true
+    false
   end
 
-  def update_time_zone
-    update_coordinates if latitude.blank? || longitude.blank?
+  def set_time_zone
+    set_coordinates if latitude.blank? || longitude.blank?
 
     if latitude.blank? || longitude.blank?
       self.time_zone = Timezone['America/Los_Angeles']
