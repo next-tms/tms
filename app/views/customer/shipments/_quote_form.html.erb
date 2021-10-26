@@ -1,13 +1,18 @@
 <%= bootstrap_form_with(model: [:customer, @shipment], local: true, layout: :horizontal) do |f| %>
+
   <%= f.alert_message "Unable to create quote:" %>
+  <%= f.hidden_field :quote_only, value: true %>
+
+  <%= f.select :broker_customer_id, [['None — Blanket Pricing', nil]] + current_user.broker_customers.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@shipment.broker_customer ? @shipment.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
 
   <div class="row">
     <div class="col-sm-6 col-md-3">
       <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
       <%= f.fields_for :shipper_address do |shipper_address_form| %>
         <%= shipper_address_form.text_field :city, autofocus: 'autofocus' %>
-        <%= shipper_address_form.select :state, states_and_abbreviations, { label: 'State' }, class: 'form-select' %>
+        <%= shipper_address_form.select :state, states_and_abbreviations, { include_blank: true, label: 'State' }, class: 'form-select' %>
         <%= shipper_address_form.text_field :zip_code, label: 'ZIP' %>
+        <%= shipper_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.shipper_address.country.blank? ? current_user.broker.address.country.id : @shipment.shipper_address.country.id) }, class: 'form-select', disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
       <% end %>
     </div>
 
@@ -15,28 +20,50 @@
       <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
       <%= f.fields_for :receiver_address do |receiver_address_form| %>
         <%= receiver_address_form.text_field :city %>
-        <%= receiver_address_form.select :state, states_and_abbreviations, { label: 'State' }, class: 'form-select' %>
+        <%= receiver_address_form.select :state, states_and_abbreviations, { include_blank: true, label: 'State' }, class: 'form-select' %>
         <%= receiver_address_form.text_field :zip_code, label: 'ZIP' %>
+        <%= receiver_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { label: 'Country', selected: (@shipment.receiver_address.country.blank? ? current_user.broker.address.country.id : @shipment.receiver_address.country.id) }, class: 'form-select', disabled: (@shipment.total_charges == Money.new(0) ? false : 'disabled') %>
       <% end %>
     </div>
   </div>
 
-  <h2>Services</h2>
-  <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorials_form| %>
-    <%= render 'shipment_broker_accessorial_fields', f: shipment_broker_accessorials_form %>
-  <% end %>
-  <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :shipment_broker_accessorials, 'btn btn-light mt-2 mb-4' %>
+  <p class="col-title mt-4">Services</p>
+  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".shipment-broker-accessorial-form-wrapper">
+    <template data-nested-form-target="template">
+      <%= f.fields_for :shipment_broker_accessorials, ShipmentBrokerAccessorial.new, child_index: 'NEW_RECORD' do |shipment_broker_accessorial_form| %>
+        <%= render 'shipment_broker_accessorial_form', f: shipment_broker_accessorial_form %>
+      <% end %>
+    </template>
 
-  <h2>Freight</h2>
-  <%= f.check_box :truckload, label: 'Truckload' %>
-  <p class="mb-2">&nbsp;</p>
+    <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorial_form| %>
+      <%= render 'shipment_broker_accessorial_form', f: shipment_broker_accessorial_form %>
+    <% end %>
 
-  <%= f.fields_for :items do |items_form| %>
-    <%= render 'item_fields', f: items_form %>
-  <% end %>
-  <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :items, 'btn btn-light mt-2 mb-4' %>
+    <div data-nested-form-target="target"></div>
+
+    <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+  </div>
+
+  <p class="col-title mt-4">Freight</p>
+  <%= f.check_box :truckload, label: 'Ship as a truckload?', class: 'mb-4' %>
+  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".item-form-wrapper">
+    <template data-nested-form-target="template">
+      <%= f.fields_for :items, Item.new, child_index: 'NEW_RECORD' do |item_form| %>
+        <%= render 'item_form', f: item_form %>
+      <% end %>
+    </template>
+
+    <%= f.fields_for :items do |item_form| %>
+      <%= render 'item_form', f: item_form %>
+    <% end %>
+
+    <div data-nested-form-target="target"></div>
+
+    <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+  </div>
 
   <div class="form-group">
     <%= f.submit class: 'btn btn-primary mt-4', value: 'Quote' %>
-  </div>   
+  </div>
+   
 <% end %>
