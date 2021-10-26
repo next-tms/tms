@@ -42,11 +42,6 @@
     </div>
   </div>
 
-  <%= f.form_group :can_quote, label: { text: 'Preferences' } do %>
-    <%= f.check_box :can_quote, label: 'Company has access to online quoting' %>
-    <%= f.check_box :always_show_quotes_based_on_calculated_classes, label: 'Always show rates based on calculated class rather than declared class' %>
-  <% end %>
-
   <%= f.text_area :default_bol_notes, label: 'Default instructions on BOL', rows: 7 %>
 
   <%= f.form_group do %>
