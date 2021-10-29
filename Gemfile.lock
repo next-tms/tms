@@ -1455,7 +1455,7 @@ GEM
       rexml (~> 3.2)
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
-    set (1.0.1)
+    set (1.0.2)
     sidekiq (6.2.2)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
