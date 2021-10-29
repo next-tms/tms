@@ -12,11 +12,14 @@
   </div>
 
   <div class="col col-md-2">
-    <%= f.text_field :upcharge, prepend: '$', hide_label: true, default: 0, placeholder: 'Cost', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
+    <%= f.text_field :upcharge, prepend: '$', hide_label: true, placeholder: 'Charge', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
+  </div>
+
+  <div class="col col-md-2">
+    <%= f.text_field :upcharge_percentage, append: '%', hide_label: true, placeholder: '%', wrapper: false, autocomplete: 'off' %>
   </div>
 
   <div class="col-auto">
-    <%= f.hidden_field :upcharge_percentage, value: 0 %>
     <%= f.hidden_field :_destroy %>
     <%= link_to icon('fas', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
   </div>

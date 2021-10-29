@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_26_154639) do
+ActiveRecord::Schema.define(version: 2021_10_29_211024) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -613,7 +613,7 @@ ActiveRecord::Schema.define(version: 2021_10_26_154639) do
     t.integer "min"
     t.integer "upcharge_cents", default: 0, null: false
     t.string "upcharge_currency", default: "USD", null: false
-    t.float "upcharge_percentage"
+    t.float "upcharge_percentage", default: 0.0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["broker_customer_id"], name: "index_upcharge_rules_on_broker_customer_id"

@@ -55,7 +55,8 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.broker = current_user.broker
     # @broker_customer.sales_reps = [current_user]
     if @broker_customer.save
-      redirect_to [:broker, @broker_customer]
+      flash[:success] = "#{@broker_customer.customer.name} saved. You may now edit pricing if you’d like."
+      redirect_to edit_pricing_broker_broker_customer_path(@broker_customer)
     else
       render :new
     end

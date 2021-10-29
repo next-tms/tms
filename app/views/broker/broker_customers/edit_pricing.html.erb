@@ -14,7 +14,14 @@
 
   <p class="col-title">Rules</p>
   <p>Set pricing per unit based on minimum and maximum counts</p>
-  <p><small class="text-muted">Leave max blank to mean “anything more than minimum count”</small></p>
+
+  <div class="alert alert-warning">
+    <p>Should a shipment contain multiple types of packaging, the highest percentage from the matched rules will be applied as well as the individual dollar charges in the matched rules; however in the event the shipment contains a packaging type that has no matched rules, the fallback pricing (below) will be used instead.</p>
+  </div>
+
+  <div class="alert alert-info">
+    <p>Leave max blank to mean “anything more than minimum count”</p>
+  </div>
 
   <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".upcharge-rule-form-wrapper">
     <template data-nested-form-target="template">
@@ -36,8 +43,11 @@
   <p>When no rules are matched, apply fallback pricing (per shipment):</p>
 
   <div class="col-2">
-    <%= f.hidden_field :default_upcharge_percentage, value: 0 %>
     <%= f.text_field :default_upcharge, hide_label: true, default: 0, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
+  </div>
+
+  <div class="col-2">
+    <%= f.text_field :default_upcharge_percentage, hide_label: true, default: 0, append: '%', autocomplete: 'off' %>
   </div>
 
   <p class="col-title">Services</p>

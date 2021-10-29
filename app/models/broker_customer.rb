@@ -51,34 +51,78 @@ class BrokerCustomer < ApplicationRecord
   end
 
   def carrier_charge_calculator(carrier_cost:, shipment:)
-    return nil unless carrier_cost
-
-    carrier_charge = Money.new(0)
+    return nil unless carrier_cost&.positive?
 
     return nil if default_upcharge.blank? && upcharge_rules.blank?
 
-    if !upcharge_rules.blank?
-      carrier_charge = carrier_cost
-      shipment.items.each do |item|
-        quantity = item.quantity
-        try_upcharge_rules = upcharge_rules.where('min <= ?', quantity).where('max >= ?',
-                                                                              quantity).or(upcharge_rules.where(
-                                                                                'min <= ?', quantity
-                                                                              ).where(max: nil))
-
-        if try_upcharge_rules.blank?
-          return !default_upcharge.blank? && default_upcharge.positive? ? carrier_cost + default_upcharge : carrier_charge
-        else
-          try_upcharge_rules.each do |upcharge_rule|
-            carrier_charge += upcharge_rule.upcharge * quantity
-          end
-        end
-      end
-    elsif !default_upcharge.blank? && default_upcharge.positive?
-      carrier_charge = carrier_cost + default_upcharge
+    if upcharge_rules.blank? && !default_upcharge.blank? && default_upcharge.positive?
+      return (carrier_cost + default_upcharge)
     end
 
-    carrier_charge
+    # Do all shipment.items have a matching UpchargeRule?
+    matched = true
+    matched_percentage = 0
+
+    packaging_ids = shipment.items.pluck(:packaging_id)
+    packaging_ids.each do |packaging_id|
+      quantity = shipment.items.where(packaging_id: packaging_id).sum(:quantity)
+      try_upcharge_rules = upcharge_rules
+                           .where(packaging: packaging_id)
+                           .where('min <= ?', quantity)
+                           .where('max >= ?', quantity)
+                           .or(
+                             upcharge_rules
+                             .where(packaging: packaging_id)
+                             .where('min <= ?', quantity)
+                             .where(max: nil)
+                           )
+      if try_upcharge_rules.blank?
+        matched = false
+        break
+      else
+        upcharge_percentage = try_upcharge_rules.pluck(:upcharge_percentage).max
+        matched_percentage = upcharge_percentage if upcharge_percentage > matched_percentage
+      end
+    end
+
+    # Apply default default pricing
+    unless matched
+      if default_upcharge.positive? || default_upcharge_percentage.positive?
+        carrier_charges = carrier_cost
+
+        carrier_charges += default_upcharge if default_upcharge.positive?
+        return carrier_charges unless default_upcharge_percentage.positive?
+
+        carrier_charges += carrier_cost * (default_upcharge_percentage.to_f / 100)
+
+        return carrier_charges
+      else
+        return nil
+      end
+    end
+
+    carrier_charge = carrier_cost
+
+    carrier_charge = carrier_cost + ((matched_percentage.to_f / 100) * carrier_cost) if matched_percentage
+
+    shipment.items.each do |item|
+      try_upcharge_rules = upcharge_rules
+                           .where(packaging: item.packaging)
+                           .where('min <= ?', item.quantity)
+                           .where('max >= ?', item.quantity)
+                           .or(
+                             upcharge_rules
+                             .where(packaging: item.packaging)
+                             .where('min <= ?', item.quantity)
+                             .where(max: nil)
+                           )
+
+      max = try_upcharge_rules.pluck(:upcharge_cents).max
+      upcharge = try_upcharge_rules.where(upcharge_cents: max).first.upcharge
+      carrier_charge += upcharge * item.quantity
+    end
+
+    carrier_charge > carrier_cost ? carrier_charge : nil
   end
 
   def profitability_report(from_date = nil, to_date = nil)
@@ -116,7 +160,7 @@ class BrokerCustomer < ApplicationRecord
     return unless can_quote?
 
     if (default_upcharge_cents.blank? || default_upcharge_cents.zero?) && (default_upcharge_percentage.blank? || default_upcharge_percentage.zero?) && upcharge_rules.blank?
-      errors.add(:base, 'Pricing rules must exist to enable customer quoting.')
+      errors.add(:base, 'Fallback pricing rules must exist to enable customer quoting.')
     end
   end
 end
