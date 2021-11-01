@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_29_211024) do
+ActiveRecord::Schema.define(version: 2021_11_01_165103) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -177,7 +177,7 @@ ActiveRecord::Schema.define(version: 2021_10_29_211024) do
     t.boolean "can_quote", default: false
     t.integer "default_upcharge_cents", default: 0, null: false
     t.string "default_upcharge_currency", default: "USD", null: false
-    t.float "default_upcharge_percentage"
+    t.float "default_upcharge_percentage", default: 0.0
     t.boolean "always_show_quotes_based_on_calculated_classes", default: true
     t.bigint "primary_pickup_address_id"
     t.text "valid_freight_classes"
