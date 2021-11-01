@@ -834,7 +834,7 @@ class Shipment < ApplicationRecord
     end
 
     self.carrier_cost = applied_rate.cost
-    self.carrier_charge = broker_customer.carrier_charge_calculator(carrier_cost: applied_rate.cost, shipment: self)
+    self.carrier_charge = broker_customer.carrier_charge_calculator(carrier_cost: applied_rate.cost, shipment: self) || 0
     self.broker_carrier = applied_rate.broker_carrier
     self.tracking_carrier = applied_rate.tracking_carrier
     self.quote_id = applied_rate.reference
@@ -846,9 +846,12 @@ class Shipment < ApplicationRecord
       carrier_cost: applied_rate.cost,
       shipment: self
     )
-    total_charges += broker_accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents)
 
-    self.total_charges = total_charges
+    unless total_charges.blank?
+      total_charges += broker_accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents)
+    end
+
+    self.total_charges = total_charges || 0
   end
 
   # Remove applied_rate when carrier changes
