@@ -1,9 +1,6 @@
 <%= bootstrap_form_with(model: [:customer, @shipment], local: true, layout: :horizontal) do |f| %>
-
   <%= f.alert_message "Unable to create quote:" %>
   <%= f.hidden_field :quote_only, value: true %>
-
-  <%= f.select :broker_customer_id, [['None — Blanket Pricing', nil]] + current_user.broker_customers.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@shipment.broker_customer ? @shipment.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
 
   <div class="row">
     <div class="col-sm-6 col-md-3">
