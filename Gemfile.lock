@@ -1295,6 +1295,9 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    devise_invitable (2.0.5)
+      actionmailer (>= 5.0)
+      devise (>= 4.6)
     erubi (1.10.0)
     ffi (1.15.4)
     geocoder (1.6.7)
@@ -1534,6 +1537,7 @@ DEPENDENCIES
   byebug
   capybara (>= 3.35.3)
   devise (~> 4.8.0)
+  devise_invitable (~> 2.0.5)
   geocoder (~> 1.6.7)
   google_places (~> 2.0.0)
   hiredis

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_01_165103) do
+ActiveRecord::Schema.define(version: 2021_11_12_011317) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -659,10 +659,19 @@ ActiveRecord::Schema.define(version: 2021_11_01_165103) do
     t.string "time_zone"
     t.boolean "receive_notifications_from_self", default: true
     t.bigint "contact_id"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
     t.index ["broker_customer_id"], name: "index_users_on_broker_customer_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
@@ -770,5 +779,6 @@ ActiveRecord::Schema.define(version: 2021_11_01_165103) do
   add_foreign_key "user_roles", "users"
   add_foreign_key "users", "broker_customers"
   add_foreign_key "users", "contacts"
+  add_foreign_key "users", "users", column: "invited_by_id"
   add_foreign_key "websites", "brokers"
 end

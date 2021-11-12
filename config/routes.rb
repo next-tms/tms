@@ -121,6 +121,8 @@ Rails.application.routes.draw do
     end
 
     get 'search' => 'search#search'
+
+    resources :users, only: %i[index]
   end
 
   namespace :customer do
