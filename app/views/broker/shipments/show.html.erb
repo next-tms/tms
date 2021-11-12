@@ -4,6 +4,13 @@
 
 <%= render 'header', page_title: 'Overview' %>
 
+<% unless @shipment.broker_customer.internal_notes.blank? %>
+  <div class="alert alert-danger">
+    <p class="lead">Customer guide</p>
+    <%= simple_format @shipment.broker_customer.internal_notes %>
+  </div>
+<% end %>
+
 <% if @shipment.dispatch_incomplete? %>
   <div class="alert alert-warning">
     <p class="lead">Missing pickup confirmation number</p>
