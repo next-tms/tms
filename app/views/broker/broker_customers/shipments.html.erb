@@ -6,6 +6,13 @@
   <p class="lead">Shipments</h2>
 </div>
 
+<% unless @broker_customer.internal_notes.blank? %>
+  <div class="alert alert-danger">
+    <p class="lead">Customer guide</p>
+    <%= simple_format @broker_customer.internal_notes %>
+  </div>
+<% end %>
+
 <%= turbo_frame_tag :shipments do %>
   <%= render 'broker/shipments/show_many_pricing', shipments: @shipments %>
 <% end %>
