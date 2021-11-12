@@ -164,6 +164,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             :default_upcharge,
                                             :default_upcharge_percentage,
                                             :default_bol_notes,
+                                            :internal_notes,
                                             broker_customer_sales_reps_attributes: %i[_destroy id commission_flat
                                                                                       commission_percent user_id],
                                             broker_accessorials_attributes: %i[_destroy id accessorial_id flat_charge
