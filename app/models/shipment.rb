@@ -123,20 +123,6 @@ class Shipment < ApplicationRecord
   before_save :prettify_shipper_name, if: :shipper_name_changed?
   before_save :prettify_receiver_name, if: :receiver_name_changed?
 
-  # DateTime sanitization
-  before_save :sanitize_pending_appointment_since, if: :pending_appointment_since_changed?
-  before_save :sanitize_dispatched_at, if: :dispatched_at_changed?
-  before_save :sanitize_pickup_driver_assigned_at, if: :pickup_driver_assigned_at_changed?
-  before_save :sanitize_pickup_on, if: :pickup_on_changed?
-  before_save :sanitize_picked_up_at, if: :picked_up_at_changed?
-  before_save :sanitize_out_for_delivery_at, if: :out_for_delivery_at_changed?
-  before_save :sanitize_delivery_appointment_at, if: :delivery_appointment_at_changed?
-  before_save :sanitize_delivery_appointment_on, if: :delivery_appointment_on_changed?
-  before_save :sanitize_delivered_at, if: :delivered_at_changed?
-  before_save :sanitize_deliver_by, if: :deliver_by_changed?
-  before_save :sanitize_departed_origin_terminal_at, if: :departed_origin_terminal_at_changed?
-  before_save :sanitize_quoted_delivery_by, if: :quoted_delivery_by_changed?
-
   # Reference sanitization
   before_save :squish_bol, if: :will_save_change_to_bol?
   before_save :squish_pickup_confirmation, if: :will_save_change_to_pickup_confirmation?
@@ -834,9 +820,14 @@ class Shipment < ApplicationRecord
     end
 
     self.carrier_cost = applied_rate.cost
-    self.carrier_charge = broker_customer.carrier_charge_calculator(carrier_cost: applied_rate.cost, shipment: self) || 0
+    self.carrier_charge = broker_customer.carrier_charge_calculator(
+      carrier_cost: applied_rate.cost,
+      shipment: self
+    ) || 0
+
     self.broker_carrier = applied_rate.broker_carrier
     self.tracking_carrier = applied_rate.tracking_carrier
+
     self.quote_id = applied_rate.reference
     self.quoted_delivery_by = applied_rate.transit_days.to_i.business_days.after(pickup_on || DateTime.current)
 
@@ -847,9 +838,7 @@ class Shipment < ApplicationRecord
       shipment: self
     )
 
-    unless total_charges.blank?
-      total_charges += broker_accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents)
-    end
+    total_charges += broker_accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents) unless total_charges.blank?
 
     self.total_charges = total_charges || 0
   end
@@ -957,94 +946,6 @@ class Shipment < ApplicationRecord
     return unless (receiver_name == receiver_name.downcase) || (receiver_name == receiver_name.upcase)
 
     self.receiver_name = receiver_name.titleize
-  end
-
-  # DateTime sanitization
-  def sanitize_datetime(datetime:, time_zone:)
-    return if datetime.blank?
-
-    time_zone.local_to_utc ActiveSupport::TimeZone[time_zone.to_s].parse(datetime.to_s)
-  end
-
-  def sanitize_pending_appointment_since
-    self.pending_appointment_since = sanitize_datetime(
-      datetime: pending_appointment_since,
-      time_zone: receiver_address.time_zone
-    )
-  end
-
-  def sanitize_dispatched_at
-    self.dispatched_at = sanitize_datetime(
-      datetime: dispatched_at,
-      time_zone: shipper_address.time_zone
-    )
-  end
-
-  def sanitize_pickup_driver_assigned_at
-    self.pickup_driver_assigned_at = sanitize_datetime(
-      datetime: pickup_driver_assigned_at,
-      time_zone: shipper_address.time_zone
-    )
-  end
-
-  def sanitize_pickup_on
-    self.pickup_on = sanitize_datetime(
-      datetime: pickup_on,
-      time_zone: shipper_address.time_zone
-    )
-  end
-
-  def sanitize_picked_up_at
-    self.picked_up_at = sanitize_datetime(
-      datetime: picked_up_at,
-      time_zone: shipper_address.time_zone
-    )
-  end
-
-  def sanitize_out_for_delivery_at
-    self.out_for_delivery_at = sanitize_datetime(
-      datetime: out_for_delivery_at,
-      time_zone: receiver_address.time_zone
-    )
-  end
-
-  def sanitize_delivered_at
-    self.delivered_at = sanitize_datetime(
-      datetime: delivered_at,
-      time_zone: receiver_address.time_zone
-    )
-  end
-
-  def sanitize_deliver_by
-    self.deliver_by = sanitize_datetime(
-      datetime: deliver_by,
-      time_zone: receiver_address.time_zone
-    )
-  end
-
-  def sanitize_delivery_appointment_at
-    self.delivery_appointment_at = sanitize_datetime(
-      datetime: delivery_appointment_at,
-      time_zone: receiver_address.time_zone
-    )
-  end
-
-  def sanitize_delivery_appointment_on
-    self.delivery_appointment_on = sanitize_datetime(
-      datetime: delivery_appointment_on,
-      time_zone: receiver_address.time_zone
-    )
-  end
-
-  def sanitize_departed_origin_terminal_at
-    self.departed_origin_terminal_at = sanitize_datetime(
-      datetime: departed_origin_terminal_at,
-      time_zone: shipper_address.time_zone
-    )
-  end
-
-  def sanitize_quoted_delivery_by
-    self.quoted_delivery_by = sanitize_datetime datetime: quoted_delivery_by, time_zone: receiver_address.time_zone
   end
 
   # Reference sanitization
