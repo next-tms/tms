@@ -15,6 +15,7 @@ application.load(definitionsFromContext(context))
 
 import Flatpickr from 'stimulus-flatpickr'
 application.register('flatpickr', Flatpickr)
+require('flatpickr/dist/flatpickr.css')
 
 import { Tooltip, Toast, Popover } from 'bootstrap'
 import 'src/application.scss'
