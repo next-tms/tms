@@ -10,13 +10,27 @@ module ApplicationHelper
     if options[:override].blank?
       {
         controller: 'flatpickr',
-        flatpickr_date_format: 'Y-m-d',
+        flatpickr_date_format: 'Y-m-d'
       }.deep_merge(options)
     else
       {
         controller: 'flatpickr'
       }.deep_merge(options[:override])
     end
+  end
+
+  def flatpickr_datetime_data(datetime, time_zone)
+    return nil if datetime.blank?
+
+    formatted_offset = time_zone.blank? ? '-00:00' : datetime.formatted_offset
+    datetime = datetime.in_time_zone(time_zone.name) unless time_zone.blank?
+
+    flatpickr_data.deep_merge(
+      flatpickr_alt_input: true,
+      flatpickr_alt_format: 'Y-m-d h:i K',
+      flatpickr_enable_time: true,
+      flatpickr_date_format: "Y-m-dTH:i:00#{formatted_offset}"
+    )
   end
 
   # From font-awesome-sass-5.12.0 gem
@@ -51,13 +65,13 @@ module ApplicationHelper
   def pretty_date(date, time_zone)
     return nil unless date && time_zone
 
-    if date.class == ActiveSupport::TimeWithZone
+    if date.instance_of?(ActiveSupport::TimeWithZone)
       if date.year == DateTime.current.year
         date.in_time_zone(time_zone.to_s).strftime("%m/%d %a %l:%M %p <small>#{time_zone.abbr(Date.current)}</small>").html_safe
       else
         date.in_time_zone(time_zone.to_s).strftime("%m/%d/%y %a %l:%M %p <small>#{time_zone.abbr(Date.current)}</small>").html_safe
       end
-    elsif date.class == Date
+    elsif date.instance_of?(Date)
       if date.year == DateTime.current.year
         date.in_time_zone(time_zone.to_s).strftime("%m/%d %a <small>#{time_zone.abbr(Date.current)}</small>").html_safe
       else
