@@ -1,0 +1,7 @@
+<% provide :title, "#{@user.first_name} #{@user.last_name}" %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1><%= yield :title %></h1>
+  <p class="lead">Overview</h2>
+</div>

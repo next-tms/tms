@@ -1,0 +1,21 @@
+<% provide :title, 'New Account' %>
+
+<div class="page-header text-center">
+  <h1><%= yield :title %></h1>
+</div>
+
+<%= bootstrap_form_for(resource, as: resource_name, url: invitation_path(resource_name), method: :put, data: { turbo: false }) do |f| %>
+  <%= f.alert_message 'Unable to accept invitation:' %>
+
+  <%= f.hidden_field :invitation_token, autocomplete: 'off', disabled: true, readonly: true %>
+
+  <% if f.object.first_name.blank? && f.object.last_name.blank? %>
+    <%= f.text_field :first_name, required: true, autocomplete: 'given-name', autofocus: true %>
+    <%= f.text_field :last_name, required: true, autocomplete: 'family-name' %>
+  <% end %>
+
+  <%= f.password_field :password, autocomplete: 'new-password', autofocus: !(f.object.first_name.blank? && f.object.last_name.blank?) %>
+  <%= f.password_field :password_confirmation, autocomplete: 'new-password', required: true %>
+
+  <%= f.submit 'Save', class: 'btn btn-outline-primary ml-2' %>
+<% end %>
