@@ -4,7 +4,7 @@ class User < ApplicationRecord
   scope :customers, -> { where.not(broker_customer: nil) }
   scope :brokers, -> { where.not(id: customers) }
 
-  devise :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable
+  devise :database_authenticatable, :invitable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable
 
   before_save :update_contact
 
@@ -14,6 +14,8 @@ class User < ApplicationRecord
   belongs_to :broker_customer, required: false
 
   has_many :user_roles
+  accepts_nested_attributes_for :user_roles, allow_destroy: true, reject_if: :all_blank
+
   has_many :roles, through: :user_roles
 
   has_many :broker_customer_sales_reps

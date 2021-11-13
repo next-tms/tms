@@ -6,22 +6,30 @@
       <thead>
         <tr>
           <th><%= sort_link @q, :first_name, 'Name' %></th>
-          <th><%= sort_link @q, :email, 'Email' %></th>
-          <% if !controller_name == 'broker_customers' %>
+          <% if controller_name == 'users' %>
+            <th>Kind</th>
+          <% end %>
+          <% if controller_name != 'broker_customers' %>
             <th>Roles</th>
           <% end %>
+          <th><%= sort_link @q, :email, 'Email' %></th>
           <th><%= sort_link @q, :last_sign_in_at, 'Last Sign In' %></th>
         </tr>
       </thead>
       <tbody>
         <% users.each do |user| %>
           <tr>
-            <td class="text-nowrap"><%= user.contact.full_name %></td>
-            <td cass="text-nowrap"><%= user.email %></td>
-            <% if !controller_name == 'broker_customers' %>
+            <td class="text-nowrap"><%= link_to user.contact.full_name, broker_user_path(user), target: '_top' %></td>
+            <% if controller_name == 'users' %>
+              <td><%= user.customer? ? 'Customer' : 'Staff' %></td>
+            <% end %>
+            <% if controller_name != 'broker_customers' %>
               <td><%= (user.roles.map(&:name) - ['root']).sort.join(', ') %></td>
             <% end %>
-            <td class="text-nowrap"><%= pretty_date(user.last_sign_in_at, current_user.time_zone) %></td>
+            <td cass="text-nowrap"><%= link_to user.email, "mailto:#{user.email}" %></td>
+            <td class="text-nowrap">
+              <%= pretty_date(user.last_sign_in_at, current_user.time_zone) || 'Never' %>
+            </td>
           </tr>
         <% end %>
       </tbody>

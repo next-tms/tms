@@ -48,6 +48,7 @@ gem 'aws-sdk', '~> 3.1.0', group: :production
 gem 'image_processing', '~> 1.12.1'
 
 gem 'devise', '~> 4.8.0'
+gem 'devise_invitable', '~> 2.0.5'
 
 # liftoff.rocks
 gem 'turbo-rails', '~> 0.8.1'

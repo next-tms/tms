@@ -15,7 +15,8 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :users
+  devise_for :users, controllers: { invitations: 'users/invitations' }
+
   as :user do
     get 'users/edit' => 'devise/registrations#edit', as: 'edit_user_registration'
     put 'users' => 'devise/registrations#update', as: 'user_registration'
@@ -121,6 +122,8 @@ Rails.application.routes.draw do
     end
 
     get 'search' => 'search#search'
+
+    resources :users
   end
 
   namespace :customer do

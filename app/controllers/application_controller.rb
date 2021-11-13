@@ -5,6 +5,8 @@ class ApplicationController < ActionController::Base
 
   before_action :add_floc_opt_out_header
   before_action :check_website, :check_if_website_belongs_to_broker
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
   protect_from_forgery with: :exception
 
   # Rescue from invalid authenticity token
@@ -25,7 +27,7 @@ class ApplicationController < ActionController::Base
     render layout: false, file: 'public/401.html', status: :unauthorized
   end
 
-  private
+  protected
 
   def add_floc_opt_out_header
     response.set_header('Permissions-Policy', 'interest-cohort=()')
@@ -57,6 +59,8 @@ class ApplicationController < ActionController::Base
                          end
   end
 
+  # Devise
+
   def after_sign_in_path_for(resource_or_scope)
     stored_location_for(resource_or_scope) || user_sign_in_path
   end
@@ -64,6 +68,15 @@ class ApplicationController < ActionController::Base
   def after_sign_out_path_for(_resource_or_scope)
     check_website
     @website.manifest.dig('landings', 'sign-out', 'url') || root_path
+  end
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:account_update,
+                                      keys: %i[email first_name last_name password password_confirmation])
+    devise_parameter_sanitizer.permit(:accept_invitation, keys: %i[email broker_customer_id first_name last_name])
+    devise_parameter_sanitizer.permit(:invite,
+                                      keys: [:email, :broker_customer_id, :first_name, :last_name,
+                                             { user_roles_attributes: %i[_destroy role_id] }])
   end
 
   def storable_location?
