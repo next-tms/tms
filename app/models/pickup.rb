@@ -1,5 +1,44 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: pickups
+#
+# @!attribute id
+#   @return []
+# @!attribute confirmed_at
+#   @return [Time]
+# @!attribute error
+#   @return [String]
+# @!attribute pickup_confirmation
+#   @return [String]
+# @!attribute pro
+#   @return [String]
+# @!attribute requested_at
+#   @return [Time]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+# @!attribute rate_id
+#   @return []
+# @!attribute shipment_id
+#   @return []
+# @!attribute updated_by_id
+#   @return []
+#
+# Indexes
+#
+#  index_pickups_on_rate_id        (rate_id)
+#  index_pickups_on_shipment_id    (shipment_id)
+#  index_pickups_on_updated_by_id  (updated_by_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (rate_id => rates.id)
+#  fk_rails_...  (shipment_id => shipments.id)
+#  fk_rails_...  (updated_by_id => users.id)
+#
 class Pickup < ApplicationRecord
   after_commit :update_shipment
 

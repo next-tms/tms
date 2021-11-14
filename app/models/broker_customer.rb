@@ -1,5 +1,54 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: broker_customers
+#
+# @!attribute id
+#   @return []
+# @!attribute always_show_quotes_based_on_calculated_classes
+#   @return [Boolean]
+# @!attribute can_quote
+#   @return [Boolean]
+# @!attribute default_bol_notes
+#   @return [String]
+# @!attribute default_upcharge_cents
+#   @return [Integer]
+# @!attribute default_upcharge_currency
+#   @return [String]
+# @!attribute default_upcharge_percentage
+#   @return [Float]
+# @!attribute enable_auto_freight_class
+#   @return [Boolean]
+# @!attribute internal_notes
+#   @return [String]
+# @!attribute shipment_string_patterns
+#   @return [String]
+# @!attribute valid_freight_classes
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+# @!attribute broker_id
+#   @return []
+# @!attribute customer_id
+#   @return []
+# @!attribute primary_pickup_address_id
+#   @return []
+#
+# Indexes
+#
+#  index_broker_customers_on_broker_id                  (broker_id)
+#  index_broker_customers_on_customer_id                (customer_id)
+#  index_broker_customers_on_primary_pickup_address_id  (primary_pickup_address_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (broker_id => brokers.id)
+#  fk_rails_...  (customer_id => customers.id)
+#  fk_rails_...  (primary_pickup_address_id => addresses.id)
+#
 class BrokerCustomer < ApplicationRecord
   belongs_to :broker
 
