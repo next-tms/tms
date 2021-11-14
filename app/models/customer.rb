@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: customers
+#
+# @!attribute id
+#   @return []
+# @!attribute name
+#   @return [String]
+#
 class Customer < ApplicationRecord
   has_many :broker_customers
   has_many :brokers, through: :broker_customers

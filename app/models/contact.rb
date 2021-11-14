@@ -1,5 +1,46 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: contacts
+#
+# @!attribute id
+#   @return []
+# @!attribute comments
+#   @return [String]
+# @!attribute email
+#   @return [String]
+# @!attribute first_name
+#   @return [String]
+# @!attribute job_title
+#   @return [String]
+# @!attribute label
+#   @return [String]
+# @!attribute last_name
+#   @return [String]
+# @!attribute mobile_phone
+#   @return [String]
+# @!attribute work_phone
+#   @return [String]
+# @!attribute broker_carrier_id
+#   @return []
+# @!attribute broker_customer_id
+#   @return []
+# @!attribute broker_id
+#   @return []
+#
+# Indexes
+#
+#  index_contacts_on_broker_carrier_id   (broker_carrier_id)
+#  index_contacts_on_broker_customer_id  (broker_customer_id)
+#  index_contacts_on_broker_id           (broker_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (broker_carrier_id => broker_carriers.id)
+#  fk_rails_...  (broker_customer_id => broker_customers.id)
+#  fk_rails_...  (broker_id => brokers.id)
+#
 class Contact < ApplicationRecord
   belongs_to :broker, optional: true
   belongs_to :broker_carrier, optional: true

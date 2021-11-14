@@ -1,5 +1,34 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: brokers
+#
+# @!attribute id
+#   @return [Integer]
+# @!attribute customer_service_email
+#   @return [String]
+# @!attribute default_bol_notes
+#   @return [String]
+# @!attribute name
+#   @return [String]
+# @!attribute phone
+#   @return [String]
+# @!attribute robot_email
+#   @return [String]
+# @!attribute address_id
+#   @return []
+# @!attribute first_load_id
+#   @return [Integer]
+#
+# Indexes
+#
+#  index_brokers_on_address_id  (address_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (address_id => addresses.id)
+#
 class Broker < ApplicationRecord
   has_many :banks
   has_many :users
