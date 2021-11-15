@@ -93,21 +93,19 @@ class Broker::ShipmentsController < Broker::BrokerController
     unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
       unauthorized
     end
+    @shipment.assign_attributes(shipment_params)
     @shipment.updated_by = current_user
-    @shipment.save
 
     respond_to do |format|
-      if !@shipment.update(shipment_params)
+      if @shipment.save
+        format.html { redirect_to broker_shipment_path(@shipment) }
+        format.json { render json: { location: broker_shipment_path(@shipment) } }
+      else
         format.html do
           flash[:error] = "Unable to update shipment: #{@shipment.errors.full_messages.join(', ')}"
           redirect_back fallback_location: edit_broker_shipment_path(@shipment)
         end
         format.json { render json: @shipment.errors, status: :unprocessable_entity }
-      else
-        format.html { redirect_to broker_shipment_path(@shipment) }
-        format.json do
-          render json: { location: broker_shipment_path(@shipment) }
-        end
       end
     end
   end
