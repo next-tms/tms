@@ -1159,7 +1159,7 @@ class Shipment < ApplicationRecord
 
   # Notifications
   def notify_of_new_shipment
-    UserMailer.new_shipment(self).deliver_now unless quote_only?
+    UserMailer.new_shipment(self).deliver_now
   end
 
   def send_notification
