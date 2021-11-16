@@ -112,7 +112,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def to(shipment, method)
-    users = shipment.broker_customer.sales_reps + shipment.broker.users.with_role('dispatch')
+    users = (shipment.broker_customer&.sales_reps || []) + shipment.broker.users.with_role('dispatch')
     users.uniq!
     users -= shipment.broker.users.with_role('notifications:-dispatch') unless [:new_shipment].include?(method)
 
