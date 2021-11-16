@@ -1,6 +1,6 @@
 <% provide :signature, @shipment.broker.name %>
 
-<p><%= @shipment.broker_customer.customer.name %> load <%= @shipment.load_id %> is out for delivery<% unless @shipment.broker_carrier.blank? %> with <%= @shipment.broker_carrier.carrier.name %><% end %>.</p>
+<p><%= @shipment.broker_customer&.customer.blank? ? 'Load' : "#{@shipment.broker_customer.customer.name} load" %> <%= @shipment.load_id %> is out for delivery<% unless @shipment.broker_carrier.blank? %> with <%= @shipment.broker_carrier.carrier.name %><% end %>.</p>
 
 <p>From:</p>
 <address>
@@ -23,4 +23,4 @@
   <% end %>
 </p>
 
-<%= link_to "View on our website", broker_shipment_url(@shipment, host: @shipment.broker_customer.broker.websites.first.domain) %>
+<%= link_to "View shipment here", broker_shipment_url(@shipment, host: @shipment.broker.websites.first.domain) %>
