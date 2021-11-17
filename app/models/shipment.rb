@@ -504,10 +504,60 @@ class Shipment < ApplicationRecord
     @loose ||= !loose_items.empty?
   end
 
+  def deliver_from
+    return nil if pickup_on.blank?
+    return nil if pickup_hours_start_at.blank?
+    return nil if shipper_address&.time_zone.blank?
+
+    formatted_offset = DateTime.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
+
+    DateTime.parse("#{pickup_on} #{pickup_hours_start_at} #{formatted_offset}")
+  end
+
+  def delivery_from
+    from = promised_delivery_by || delivery_appointment_at || delivery_appointment_on || delivery_eta_on
+
+    return nil if from.blank?
+    return nil if from.is_a?(Date) && delivery_hours_start_at.blank?
+    return nil if receiver_address&.time_zone.blank?
+
+    formatted_offset = DateTime.now.in_time_zone(receiver_address.time_zone.name).formatted_offset
+    return DateTime.parse("#{from} #{delivery_hours_start_at} #{formatted_offset}") if from.is_a?(Date)
+
+    from
+  end
+
+  def delivery_to
+    to = promised_delivery_by || delivery_appointment_at || delivery_appointment_on || delivery_eta_on
+
+    return nil if to.blank?
+    return nil if to.is_a?(Date) && delivery_hours_end_at.blank?
+    return nil if receiver_address&.time_zone.blank?
+
+    formatted_offset = DateTime.now.in_time_zone(receiver_address.time_zone.name).formatted_offset
+    return DateTime.parse("#{to} #{delivery_hours_end_at} #{formatted_offset}") if to.is_a?(Date)
+
+    to
+  end
+
+  def pickup_from
+    return nil if pickup_on.blank?
+    return nil if pickup_hours_start_at.blank?
+    return nil if shipper_address&.time_zone.blank?
+
+    formatted_offset = DateTime.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
+
+    DateTime.parse("#{pickup_on} #{pickup_hours_start_at} #{formatted_offset}")
+  end
+
   def pickup_by
     return nil if pickup_on.blank?
+    return nil if pickup_hours_end_at.blank?
+    return nil if shipper_address&.time_zone.blank?
 
-    shipper_address&.time_zone&.local_to_utc(pickup_on.end_of_day)
+    formatted_offset = DateTime.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
+
+    DateTime.parse("#{pickup_on} #{pickup_hours_end_at} #{formatted_offset}")
   end
 
   # Interstellar
