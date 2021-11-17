@@ -51,7 +51,7 @@
       <p class="col-title"><%= icon 'fas', 'people-carry', 'Delivery' %></p>
       <%= f.text_field :promised_delivery_by, label: 'Promised By', autocomplete: 'off', data: flatpickr_datetime_data(f.object.promised_delivery_by, f.object.receiver_address.time_zone), value: maybe_in_time_zone(datetime: f.object.promised_delivery_by, time_zone: f.object.receiver_address.time_zone) %>
       <% unless @shipment.broker_carrier.blank? %>
-        <%= f.text_field :deliver_by, label: 'ETA', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.deliver_by, time_zone: f.object.receiver_address.time_zone) %>
+        <%= f.text_field :delivery_eta_on, label: 'ETA', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.delivery_eta_on, time_zone: f.object.receiver_address.time_zone) %>
         <%= f.text_field :out_for_delivery_at, label: 'Out for delivery', autocomplete: 'off', data: flatpickr_datetime_data(f.object.out_for_delivery_at, f.object.receiver_address.time_zone), value: maybe_in_time_zone(datetime: f.object.out_for_delivery_at, time_zone: f.object.receiver_address.time_zone) %>
         <%= f.text_field :lost_on, label: 'Lost On', autocomplete: 'off', data: flatpickr_data %>
         <%= f.text_field :pending_appointment_since, label: 'Appointment Pending Since', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.pending_appointment_since, time_zone: f.object.receiver_address.time_zone) %>

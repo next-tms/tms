@@ -220,9 +220,9 @@ class Broker::ShipmentsController < Broker::BrokerController
   def pending_delivery
     shipments = current_user.shipments.active.pending_delivery.includes(required_includes)
 
-    @missing_deliver_by_shipments = shipments.missing_deliver_by
-    unless @missing_deliver_by_shipments.blank?
-      shipments = shipments.where.not(id: @missing_deliver_by_shipments.map(&:id))
+    @missing_delivery_eta_on_shipments = shipments.missing_delivery_eta_on
+    unless @missing_delivery_eta_on_shipments.blank?
+      shipments = shipments.where.not(id: @missing_delivery_eta_on_shipments.map(&:id))
     end
 
     @late_shipments = shipments.late.order(:picked_up_at)
@@ -237,7 +237,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .active
          .pending_delivery
          .late
-         .not_missing_deliver_by
+         .not_missing_delivery_eta_on
          .includes([required_includes, :receiver_address].flatten)
          .ransack(params[:q])
 
@@ -251,7 +251,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .active
          .pending_delivery
          .not_late
-         .not_missing_deliver_by
+         .not_missing_delivery_eta_on
          .includes([required_includes, :receiver_address].flatten)
          .ransack(params[:q])
 
@@ -259,12 +259,12 @@ class Broker::ShipmentsController < Broker::BrokerController
     @pagy, @shipments = pagy(@q.result)
   end
 
-  def pending_delivery_without_deliver_by
+  def pending_delivery_without_delivery_eta_on
     @q = current_user
          .shipments
          .active
          .pending_delivery
-         .missing_deliver_by
+         .missing_delivery_eta_on
          .includes([required_includes, :receiver_address].flatten)
          .ransack(params[:q])
 
@@ -448,7 +448,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :carrier_cost,
                                      :customer_notes,
                                      :customer_reference,
-                                     :deliver_by,
+                                     :delivery_eta_on,
                                      :delivered_at,
                                      :delivery_appointment_at,
                                      :delivery_appointment_on,

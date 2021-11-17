@@ -34,14 +34,16 @@ module ShipmentsHelper
       td_names_map.each do |td_names_map_line|
         next if td_names_map_line[0] == 'broker_carrier' && controller.controller_name == 'broker_carriers'
         next if td_names_map_line[0] == 'broker_customer' && controller.controller_name == 'broker_customers'
+
         if defined?(@q)
-          unless td_names_map_line[2].blank?
-            str << "<th>#{sort_link @q, td_names_map_line[2], td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
-          else
+          if td_names_map_line[2].blank?
             str << "<th>#{td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
+          elsif td_names_map_line[0] == td_name
+            str << "<th>#{sort_link @q, td_names_map_line[2],
+                                    td_names_map_line[1]}</th>"
           end
-        else
-          str << "<th>#{td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
+        elsif td_names_map_line[0] == td_name
+          str << "<th>#{td_names_map_line[1]}</th>"
         end
       end
     end
@@ -52,18 +54,18 @@ module ShipmentsHelper
       if shipment.pending_departure?
         str << '<tr class="table-danger">'
       else
-        shipment.late? || !shipment.canceled_at.blank? || shipment.dispatch_incomplete? || (!shipment.picked_up_at.blank? && shipment.missing_deliver_by?) ? str << '<tr class="table-warning">' : str << '<tr>'
+        shipment.late? || !shipment.canceled_at.blank? || shipment.dispatch_incomplete? || (!shipment.picked_up_at.blank? && shipment.missing_delivery_eta_on?) ? str << '<tr class="table-warning">' : str << '<tr>'
       end
 
       td_names.each do |td_name|
         td_names_map.each do |td_names_map_line|
-          if td_names_map_line[0] == td_name
-            str << render(
-              partial: "broker/shipments/show_many_td_#{td_names_map_line[0]}",
-              formats: %i[html],
-              locals: { shipment: shipment }
-            )
-          end
+          next unless td_names_map_line[0] == td_name
+
+          str << render(
+            partial: "broker/shipments/show_many_td_#{td_names_map_line[0]}",
+            formats: %i[html],
+            locals: { shipment: shipment }
+          )
         end
       end
       str << '</tr>'

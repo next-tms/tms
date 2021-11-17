@@ -103,7 +103,7 @@
           <% if @shipment.delivered_at.blank? %>
             <tr>
               <th>ETA</th>
-              <td><%= short_date @shipment.deliver_by, @shipment.receiver_address.time_zone %></td>
+              <td><%= short_date @shipment.delivery_eta_on, @shipment.receiver_address.time_zone %></td>
             </tr>
           <% else %>
             <tr>
