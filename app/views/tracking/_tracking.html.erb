@@ -32,11 +32,11 @@
           <td></td>
           <td>Delivery appointment scheduled for <%= pretty_date (shipment.delivery_appointment_at.blank? ? shipment.delivery_appointment_on : shipment.delivery_appointment_at), shipment.receiver_address.time_zone %></td>
         </tr>
-      <% elsif shipment.out_for_delivery_at.blank? && shipment.delivered_at.blank? && !shipment.deliver_by.blank? %>
+      <% elsif shipment.out_for_delivery_at.blank? && shipment.delivered_at.blank? && !shipment.delivery_eta_on.blank? %>
         <tr>
           <td></td>
           <td></td>
-          <td>Estimated delivery: <%= short_date shipment.deliver_by, shipment.receiver_address.time_zone %></td>
+          <td>Estimated delivery: <%= short_date shipment.delivery_eta_on, shipment.receiver_address.time_zone %></td>
         </tr>
       <% end %>
       <% if !shipment.pending_appointment_since.blank? and (shipment.delivery_appointment_on.blank? || shipment.delivery_appointment_at.blank?) && shipment.out_for_delivery_at.blank? && shipment.delivered_at.blank? %>

@@ -74,7 +74,7 @@
             <% if @shipment.promised_delivery_by.blank? %>
               Standard transit time
             <% else %>
-              <%= short_date @shipment.deliver_by, @shipment.receiver_address.time_zone %>
+              <%= short_date @shipment.delivery_eta_on, @shipment.receiver_address.time_zone %>
             <% end %>
           </td>
         </tr>

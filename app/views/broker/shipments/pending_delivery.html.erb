@@ -8,7 +8,7 @@
 </div>
 
 <h2>Missing ETA</h2>
-<%= turbo_frame_tag :shipments_without_deliver_by, src: broker_shipments_pending_delivery_without_deliver_by_path do %>
+<%= turbo_frame_tag :shipments_without_delivery_eta_on, src: broker_shipments_pending_delivery_without_delivery_eta_on_path do %>
   <%= render 'shared/loading' %>
 <% end %>
 

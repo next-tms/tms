@@ -6,12 +6,15 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
   def create
     # Check permissions
     if current_user.broker_customer.blank?
-      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a customer of \"#{@website.broker.name}\"" }, status: :unauthorized and return
+      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a customer of \"#{@website.broker.name}\"" },
+             status: :unauthorized and return
     elsif current_user.broker != @website.broker
-      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a user of \"#{@website.domain}\"" }, status: :unauthorized and return
+      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a user of \"#{@website.domain}\"" },
+             status: :unauthorized and return
     end
     unless current_user.broker_customer.can_quote?
-      render json: { error: "Unauthorized: API not enabled for user \"#{current_user.email}\" of \"#{current_user.broker.name}\"" }, status: :unauthorized and return
+      render json: { error: "Unauthorized: API not enabled for user \"#{current_user.email}\" of \"#{current_user.broker.name}\"" },
+             status: :unauthorized and return
     end
 
     @shipment = Shipment.new(
@@ -27,24 +30,29 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
       @shipment.update_rates
       render json: @shipment, status: :ok and return
     else
-      render json: { error: 'Unknown error', error_messages: @shipment.errors.full_messages.to_json }, status: :unprocessable_entity and return
+      render json: { error: 'Unknown error', error_messages: @shipment.errors.full_messages.to_json },
+             status: :unprocessable_entity and return
     end
   end
 
   def quote
     # Check permissions
     if current_user.broker_customer.blank?
-      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a customer of \"#{@website.broker.name}\"" }, status: :unauthorized and return
+      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a customer of \"#{@website.broker.name}\"" },
+             status: :unauthorized and return
     elsif current_user.broker != @website.broker
-      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a user of \"#{@website.domain}\"" }, status: :unauthorized and return
+      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a user of \"#{@website.domain}\"" },
+             status: :unauthorized and return
     end
 
     unless current_user.broker_customer.can_quote?
-      render json: { error: "Unauthorized: API not enabled for user \"#{current_user.email}\" of \"#{current_user.broker.name}\"" }, status: :unauthorized and return
+      render json: { error: "Unauthorized: API not enabled for user \"#{current_user.email}\" of \"#{current_user.broker.name}\"" },
+             status: :unauthorized and return
     end
 
     unless current_user.broker_customer == @shipment.broker_customer
-      render json: { error: "Unauthorized: Shipment does not belong to \"#{current_user.email}\"" }, status: :unauthorized and return
+      render json: { error: "Unauthorized: Shipment does not belong to \"#{current_user.email}\"" },
+             status: :unauthorized and return
     end
 
     @shipment.update_rates
@@ -78,7 +86,8 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
     if @shipment.update(shipment_params)
       render json: @shipment, status: :ok and return
     else
-      render json: { error: 'Unknown error', error_messages: @shipment.errors.full_messages.to_json }, status: :unprocessable_entity and return
+      render json: { error: 'Unknown error', error_messages: @shipment.errors.full_messages.to_json },
+             status: :unprocessable_entity and return
     end
   end
 
@@ -104,7 +113,7 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
                                      :carrier_cost_encoded,
                                      :customer_notes,
                                      :customer_reference,
-                                     :deliver_by,
+                                     :delivery_eta_on,
                                      :delivered_at,
                                      :delivery_hours_end_at,
                                      :delivery_hours_start_at,
@@ -141,9 +150,11 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
                                      :value,
                                      shipper_address_attributes: %i[id ref street street2 city state zip_code],
                                      receiver_address_attributes: %i[id ref street street2 city state zip_code],
-                                     items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat refrigerated desc packaging_name weight quantity],
+                                     items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat
+                                                          refrigerated desc packaging_name weight quantity],
                                      shipment_accessorials_attributes: %i[_destroy accessorial_id],
-                                     shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id cost charge],
+                                     shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id cost
+                                                                                 charge],
                                      accessorial_codes: [])
   end
 end

@@ -168,7 +168,7 @@
               <tr>
                 <th>ETA</th>
                 <td>
-                  <%= short_date @shipment.deliver_by, @shipment.receiver_address.time_zone %>
+                  <%= short_date @shipment.delivery_eta_on, @shipment.receiver_address.time_zone %>
                   <% unless @shipment.delivery_hours_start_at.blank? or @shipment.delivery_hours_end_at.blank? %>
                     between <%= @shipment.delivery_hours_start_at %> and <%= @shipment.delivery_hours_end_at %> <small><%= @shipment.shipper_address.time_zone.abbr(Date.current) %></small>
                   <% end %>

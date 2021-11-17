@@ -34,7 +34,7 @@
 #   @return [String]
 # @!attribute customer_reference
 #   @return [String]
-# @!attribute deliver_by
+# @!attribute delivery_eta_on
 #   @return [Date]
 # @!attribute delivered_at
 #   @return [Time]
@@ -225,17 +225,17 @@ class Shipment < ApplicationRecord
   scope :missing_pro, -> { active.pending_delivery.where(pro: ['', nil]) }
   scope :missing_cost, -> { active.where.not(id: pending_quotation).where(carrier_cost_cents: 0) }
   scope :missing_charge, -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
-  scope :missing_deliver_by, -> { where(deliver_by: ['', nil]) }
-  scope :not_missing_deliver_by, -> { where.not(id: missing_deliver_by) }
+  scope :missing_delivery_eta_on, -> { where(delivery_eta_on: ['', nil]) }
+  scope :not_missing_delivery_eta_on, -> { where.not(id: missing_delivery_eta_on) }
   scope :missing_pricing, -> { active.missing_cost.or(active.missing_charge) }
 
   scope :delivered, -> { where.not(delivered_at: nil) }
-  scope :late_per_deliver_by, -> { where.not(id: delivered).where('deliver_by < ?', Date.current) }
+  scope :late_per_delivery_eta_on, -> { where.not(id: delivered).where('delivery_eta_on < ?', Date.current) }
   scope :late_per_promised_delivery_by, -> { where.not(id: delivered).where('promised_delivery_by < ?', Date.current) }
   scope :late_per_quoted_delivery_by, lambda {
                                         where.not(id: delivered).where('quoted_delivery_by < ?', Date.current + 3.days)
                                       }
-  scope :late, -> { where(id: late_per_promised_delivery_by).or(where(id: late_per_deliver_by)).distinct }
+  scope :late, -> { where(id: late_per_promised_delivery_by).or(where(id: late_per_delivery_eta_on)).distinct }
   scope :not_late, -> { where.not(id: late) }
 
   belongs_to :broker
@@ -314,7 +314,7 @@ class Shipment < ApplicationRecord
   # Fill in missing DateTimes
   # before_save :maybe_update_dispatched_at_to_now, if: :pickup_confirmation_changed?
   before_save :maybe_update_out_for_delivery_at_to_delivered_at, if: :delivered_at_changed?
-  before_save :update_deliver_by_to_out_for_delivery_at, if: :out_for_delivery_at_changed?
+  before_save :update_delivery_eta_on_to_out_for_delivery_at, if: :out_for_delivery_at_changed?
 
   before_save :maybe_book, if: :dispatched_at_changed?
   before_save :unbook, if: :canceled_at_changed?
@@ -433,7 +433,7 @@ class Shipment < ApplicationRecord
     str += bol || ''
     str += bol_notes || ''
     str += broker_carrier_id&.to_s || ''
-    str += deliver_by.to_s || ''
+    str += delivery_eta_on.to_s || ''
     str += delivery_appointment_at.to_s || ''
     str += delivery_appointment_on.to_s || ''
     str += delivery_hours_end_at.to_s || ''
@@ -454,8 +454,8 @@ class Shipment < ApplicationRecord
     Digest::SHA2.hexdigest(str)
   end
 
-  def missing_deliver_by?
-    deliver_by.blank?
+  def missing_delivery_eta_on?
+    delivery_eta_on.blank?
   end
 
   def total_broker_accessorial_charge
@@ -640,7 +640,7 @@ class Shipment < ApplicationRecord
         return @late = true if DateTime.current > delivery_appointment_at
       elsif delivery_appointment_at.blank? && !delivery_appointment_on.blank?
         return @late = true if Date.current > delivery_appointment_on
-      elsif !deliver_by.blank? && (Date.current > deliver_by)
+      elsif !delivery_eta_on.blank? && (Date.current > delivery_eta_on)
         return @late = true
       end
       @late = true if !promised_delivery_by.blank? && (Date.current > promised_delivery_by)
@@ -1112,8 +1112,8 @@ class Shipment < ApplicationRecord
     self.canceled_at = nil
   end
 
-  def update_deliver_by_to_out_for_delivery_at
-    self.deliver_by = out_for_delivery_at.to_date if deliver_by.blank? && !out_for_delivery_at.blank?
+  def update_delivery_eta_on_to_out_for_delivery_at
+    self.delivery_eta_on = out_for_delivery_at.to_date if delivery_eta_on.blank? && !out_for_delivery_at.blank?
   end
 
   # Prettify

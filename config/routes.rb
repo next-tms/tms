@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   root 'welcome#index'
 
@@ -90,7 +92,7 @@ Rails.application.routes.draw do
     get 'shipments/pending-delivery', to: 'shipments#pending_delivery'
     get 'shipments/pending-delivery/late', to: 'shipments#pending_delivery_late'
     get 'shipments/pending-delivery/on-time', to: 'shipments#pending_delivery_on_time'
-    get 'shipments/pending-delivery/without-deliver-by', to: 'shipments#pending_delivery_without_deliver_by'
+    get 'shipments/pending-delivery/without-delivery-eta-on', to: 'shipments#pending_delivery_without_delivery_eta_on'
     get 'shipments/pending-departure', to: 'shipments#pending_departure'
     get 'shipments/pending-pickup', to: 'shipments#pending_pickup'
     get 'shipments/pending-pickup/late', to: 'shipments#pending_pickup'

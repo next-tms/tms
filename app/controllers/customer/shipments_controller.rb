@@ -239,7 +239,7 @@ class Customer::ShipmentsController < Customer::CustomerController
                                      :carrier_cost_encoded,
                                      :customer_notes,
                                      :customer_reference,
-                                     :deliver_by,
+                                     :delivery_eta_on,
                                      :delivered_at,
                                      :delivery_hours_end_at,
                                      :delivery_hours_start_at,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_12_214006) do
+ActiveRecord::Schema.define(version: 2021_11_17_053507) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -518,7 +518,7 @@ ActiveRecord::Schema.define(version: 2021_11_12_214006) do
     t.datetime "delivered_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.date "deliver_by"
+    t.date "delivery_eta_on"
     t.integer "total_charges_cents", default: 0, null: false
     t.string "total_charges_currency", default: "USD", null: false
     t.integer "total_cost_cents", default: 0, null: false
