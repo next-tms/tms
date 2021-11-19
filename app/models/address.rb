@@ -276,6 +276,7 @@ class Address < ApplicationRecord
 
   def to_interstellar_shipping_address
     Interstellar::Location.new(
+      address1: street,
       country: 'US',
       state: state,
       city: city,

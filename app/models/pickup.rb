@@ -83,10 +83,10 @@ class Pickup < ApplicationRecord
     shipment.assign_attributes(
       applied_rate: rate,
       dispatched_at: DateTime.current,
+      pickup_confirmation: pickup_confirmation,
       updated_by: updated_by
     )
 
-    shipment.pickup_confirmation = pickup_confirmation
     shipment.pro = pro if saved_change_to_pro?
 
     shipment.save

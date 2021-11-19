@@ -45,25 +45,26 @@ module InterstellarApiClient
         @tries += 1
         return nil if @tries > 10
 
-        begin
-          yield
-        rescue ArgumentError # Invalid accessorials
-          nil
-        rescue *API_INVALID_CREDENTIALS_EXCEPTIONS
-          nil
-        rescue *API_NOT_FOUND_EXCEPTIONS
-          nil
-        rescue *API_TIMEOUT_EXCEPTIONS
-          sleep(10)
-          retry
-        rescue *SELENIUM_EXCEPTIONS => e
-          nil
-        rescue *SELENIUM_TIMEOUT_EXCEPTIONS
-          sleep(10)
-          retry
-        rescue Savon::SOAPFault
-          nil
-        end
+        yield
+        #        begin
+        #          yield
+        #        rescue ArgumentError # Invalid accessorials
+        #          nil
+        #        rescue *API_INVALID_CREDENTIALS_EXCEPTIONS
+        #          nil
+        #        rescue *API_NOT_FOUND_EXCEPTIONS
+        #          nil
+        #        rescue *API_TIMEOUT_EXCEPTIONS
+        #          sleep(10)
+        #          retry
+        #        rescue *SELENIUM_EXCEPTIONS => e
+        #          nil
+        #        rescue *SELENIUM_TIMEOUT_EXCEPTIONS
+        #          sleep(10)
+        #          retry
+        #        rescue Savon::SOAPFault
+        #          nil
+        #        end
       end
 
       attr_reader :carrier_client, :broker_carrier, :retry_on_timeout, :return_nil_on_404
