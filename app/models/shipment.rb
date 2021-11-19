@@ -504,18 +504,13 @@ class Shipment < ApplicationRecord
     @loose ||= !loose_items.empty?
   end
 
-  def deliver_from
-    return nil if pickup_on.blank?
-    return nil if pickup_hours_start_at.blank?
-    return nil if shipper_address&.time_zone.blank?
-
-    formatted_offset = DateTime.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
-
-    DateTime.parse("#{pickup_on} #{pickup_hours_start_at} #{formatted_offset}")
-  end
-
   def delivery_from
     from = promised_delivery_by || delivery_appointment_at || delivery_appointment_on || delivery_eta_on
+
+    if from.blank? && !pickup_by.blank?
+      from = pickup_by.in_time_zone(receiver_address.time_zone.name) + 7.days
+      from = from.beginning_of_day + 9.hours
+    end
 
     return nil if from.blank?
     return nil if from.is_a?(Date) && delivery_hours_start_at.blank?
@@ -527,17 +522,22 @@ class Shipment < ApplicationRecord
     from
   end
 
-  def delivery_to
-    to = promised_delivery_by || delivery_appointment_at || delivery_appointment_on || delivery_eta_on
+  def delivery_by
+    by = promised_delivery_by || delivery_appointment_at || delivery_appointment_on || delivery_eta_on
 
-    return nil if to.blank?
-    return nil if to.is_a?(Date) && delivery_hours_end_at.blank?
+    if by.blank? && !pickup_by.blank?
+      by = pickup_by.in_time_zone(receiver_address.time_zone.name) + 7.days
+      by = by.beginning_of_day + 17.hours
+    end
+
+    return nil if by.blank?
+    return nil if by.is_a?(Date) && delivery_hours_end_at.blank?
     return nil if receiver_address&.time_zone.blank?
 
     formatted_offset = DateTime.now.in_time_zone(receiver_address.time_zone.name).formatted_offset
-    return DateTime.parse("#{to} #{delivery_hours_end_at} #{formatted_offset}") if to.is_a?(Date)
+    return DateTime.parse("#{by} #{delivery_hours_end_at} #{formatted_offset}") if by.is_a?(Date)
 
-    to
+    by
   end
 
   def pickup_from
