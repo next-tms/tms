@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
-  before_action :set_broker_customer_sales_rep, only: %i[commissions destroy edit show update]
+  before_action :set_user, only: %i[commissions destroy edit show update]
   before_action :authenticate_user!
   before_action :require_admin
 
@@ -10,7 +10,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
   end
 
   def commissions
-    @q = @broker_customer_sales_rep.commissions.includes(required_includes).ransack(params[:q])
+    @q = @user.commissions.includes(required_includes).ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
     @pagy, @commissions = pagy(@q.result)
@@ -22,8 +22,8 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
     require_role 'admin'
   end
 
-  def set_broker_customer_sales_rep
-    @broker_customer_sales_rep = current_user.broker.users.find(params[:id])
+  def set_user
+    @user = current_user.broker.users.find(params[:id])
   end
 
   def set_user_params

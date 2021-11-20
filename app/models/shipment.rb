@@ -242,7 +242,6 @@ class Shipment < ApplicationRecord
   belongs_to :broker_carrier, counter_cache: true, required: false
 
   has_many :commissions, dependent: :destroy
-  has_many :broker_customer_sales_reps, through: :commissions
 
   has_many :tracking_events, dependent: :destroy
   accepts_nested_attributes_for :tracking_events, allow_destroy: true, reject_if: :all_blank
@@ -1024,7 +1023,7 @@ class Shipment < ApplicationRecord
     broker_customer.broker_customer_sales_reps.find_each do |broker_customer_sales_rep|
       amount = profit * (broker_customer_sales_rep.commission_percent.to_f / 100).round(2)
       commissions.build(
-        broker_customer_sales_rep: broker_customer_sales_rep,
+        user_id: broker_customer_sales_rep.user_id,
         amount: amount
       )
     end

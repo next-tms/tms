@@ -117,7 +117,7 @@ class User < ApplicationRecord
   has_many :broker_customer_sales_reps
   has_many :broker_customers, through: :broker_customer_sales_reps
 
-  has_many :commissions, through: :broker_customer_sales_reps
+  has_many :commissions
 
   serialize :time_zone
   validates_presence_of :time_zone
