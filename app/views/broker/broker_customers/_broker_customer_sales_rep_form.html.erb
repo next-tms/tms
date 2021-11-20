@@ -1,6 +1,6 @@
 <div class="tracking-event-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
   <div class="col-auto">
-    <%= f.select :user_id, ( current_user.broker.users.brokers.order(:first_name).all ).collect { |user| [ "#{user.first_name} #{user.last_name}", user.id ] }, { label: 'User', hide_label: true, wrapper: false }, class: 'form-select' %>
+    <%= f.select :user_id, current_user.broker.users.brokers.order(:first_name).all.collect { |user| [ "#{user.first_name} #{user.last_name}", user.id ] }, { label: 'User', hide_label: true, wrapper: false }, disabled: !f.object.new_record?, class: 'form-select' %>
   </div>
 
   <div class="col col-md-2">

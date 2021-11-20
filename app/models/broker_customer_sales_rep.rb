@@ -41,10 +41,17 @@ class BrokerCustomerSalesRep < ApplicationRecord
   monetize :commission_flat_cents
 
   validate :commission_flat_cents_or_commission_percent
+  validate :commissions_user
 
   private
 
   def commission_flat_cents_or_commission_percent
     errors.add :base, 'Comission required' if [commission_flat_cents, commission_percent].compact.count == 0
+  end
+
+  def commissions_user
+    return if !user_id_changed? || commissions.empty?
+
+    errors.add :user, 'cannot be changed when there are active commissions'
   end
 end
