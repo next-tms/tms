@@ -584,10 +584,27 @@ class Shipment < ApplicationRecord
     return if interstellar_tracking.blank?
 
     interstellar_tracking.shipment_events.each do |shipment_event|
-      next if shipment_event.time.blank? || shipment_event.status.blank? ||
-              shipment_event.location.blank? ||
-              shipment_event.location.city.blank? ||
-              shipment_event.location.state.blank?
+      next if shipment_event.time.blank? || shipment_event.status.blank?
+
+      interstellar_location = if shipment_event.status == :delivered && shipment_event.location.blank?
+                                Interstellar::Location.new(
+                                  city: receiver_address.city,
+                                  state: receiver_address.state,
+                                  country: ActiveUtils::Country.find(receiver_address.country.alpha3_code)
+                                )
+                              elsif shipment_event.status == :picked_up && shipment_event.location.blank?
+                                Interstellar::Location.new(
+                                  city: shipper_address.city,
+                                  state: shipper_address.state,
+                                  country: ActiveUtils::Country.find(shipper_address.country.alpha3_code)
+                                )
+                              else
+                                shipment_event.location
+                              end
+
+      if interstellar_location.blank? || interstellar_location.city.blank? || interstellar_location.state.blank? || interstellar_location.country.blank?
+        next
+      end
 
       fingerprint = Digest::SHA2.hexdigest(
         shipment_event.time +
@@ -601,11 +618,11 @@ class Shipment < ApplicationRecord
 
       tracking_event.assign_attributes(
         at: DateTime.parse(shipment_event.time),
-        city: shipment_event.location.city,
-        country_alpha2: shipment_event.location.country_code(:alpha2),
+        city: interstellar_location.city,
+        country_alpha2: interstellar_location.country_code(:alpha2),
         event: event,
         interstellar_carrier_fingerprint: fingerprint,
-        state: shipment_event.location.state
+        state: interstellar_location.state
       )
 
       next unless tracking_event.save
