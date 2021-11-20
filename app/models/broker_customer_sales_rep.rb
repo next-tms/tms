@@ -32,10 +32,9 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class BrokerCustomerSalesRep < ApplicationRecord
-  belongs_to :user
   belongs_to :broker_customer
+  belongs_to :user
 
-  has_many :commissions
   has_many :shipments, through: :commissions
 
   monetize :commission_flat_cents

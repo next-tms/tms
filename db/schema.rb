@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_17_053507) do
+ActiveRecord::Schema.define(version: 2021_11_20_010315) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -233,12 +233,12 @@ ActiveRecord::Schema.define(version: 2021_11_17_053507) do
     t.boolean "paid", default: false
     t.integer "amount_cents", default: 0, null: false
     t.string "amount_currency", default: "USD", null: false
-    t.bigint "broker_customer_sales_rep_id", null: false
     t.bigint "shipment_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["broker_customer_sales_rep_id"], name: "index_commissions_on_broker_customer_sales_rep_id"
+    t.bigint "user_id", null: false
     t.index ["shipment_id"], name: "index_commissions_on_shipment_id"
+    t.index ["user_id"], name: "index_commissions_on_user_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -722,8 +722,8 @@ ActiveRecord::Schema.define(version: 2021_11_17_053507) do
   add_foreign_key "carrier_contacts", "contacts"
   add_foreign_key "carriers", "addresses", column: "broker_billing_address_id"
   add_foreign_key "carriers", "addresses", column: "check_mailing_address_id"
-  add_foreign_key "commissions", "broker_customer_sales_reps"
   add_foreign_key "commissions", "shipments"
+  add_foreign_key "commissions", "users"
   add_foreign_key "contacts", "broker_carriers"
   add_foreign_key "contacts", "broker_customers"
   add_foreign_key "contacts", "brokers"
