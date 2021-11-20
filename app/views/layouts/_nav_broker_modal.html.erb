@@ -12,9 +12,13 @@
           <% if current_user.has_role?('root') || current_user.has_role?('sales_rep') %>
             <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'handshake'}<br>Customers".html_safe, broker_broker_customers_path, 'data-turbo': 'false' %></div>
           <% end %>
+
           <% if current_user.has_role? 'admin' %>
-            <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'user-tie'}<br>Sales Reps".html_safe, broker_broker_customer_sales_reps_path, 'data-turbo': 'false' %></div>
+            <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'dollar-sign'}<br>Commissions".html_safe, broker_broker_customer_sales_reps_path, 'data-turbo': 'false' %></div>
+          <% elsif current_user.has_role? 'sales_rep' %>
+            <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'dollar-sign'}<br>Commissions".html_safe, commissions_broker_broker_customer_sales_rep_path(current_user), 'data-turbo': 'false' %></div>
           <% end %>
+
           <% if current_user.has_role? 'root' %>
             <div class="col-3 text-center"><%= link_to "#{icon 'fas', 'users'}<br>Users".html_safe, broker_users_path, 'data-turbo': 'false' %></div>
           <% end %>

@@ -1,5 +1,8 @@
 <% provide :title, "Commissions | #{@user.full_name}" %>
-<% provide :menu, render('menu') %>
+
+<% if current_user.has_role?('admin') %>
+  <% provide :menu, render('menu') %>
+<% end %>
 
 <div class="page-header">
   <h1><%= @user.full_name %></h1>
