@@ -1080,7 +1080,7 @@ class Shipment < ApplicationRecord
     self.quote_id = applied_rate.reference
     self.quoted_delivery_by = applied_rate.transit_days.to_i.business_days.after(pickup_on || DateTime.current)
 
-    return if updated_by.broker_customer.blank?
+    return if updated_by&.broker_customer.blank?
 
     total_charges = broker_customer.carrier_charge_calculator(
       carrier_cost: applied_rate.cost,
