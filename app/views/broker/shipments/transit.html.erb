@@ -38,7 +38,7 @@
           <%= f.text_field :tracking_carrier_pickup_confirmation, label: 'Carrier Pickup Ref', autocomplete: 'off' %>
         <% end %>
         <%= f.text_field :pickup_driver_assigned_at, label: 'Assigned', autocomplete: 'off', data: flatpickr_datetime_data(f.object.pickup_driver_assigned_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.pickup_driver_assigned_at, time_zone: f.object.shipper_address.time_zone) %>
-        <%= f.text_field :pickup_eta_at, label: 'ETA', data: flatpickr_datetime_data(f.object.pickup_eta_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.pickup_eta_at, time_zone: f.object.shipper_address.time_zone) %>
+        <%= f.text_field :pickup_eta_at, label: 'ETA', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }), value: maybe_in_time_zone(datetime: f.object.pickup_eta_at, time_zone: f.object.shipper_address.time_zone) %>
         <%= f.text_field :picked_up_at, label: 'Pickup', autocomplete: 'off', data: flatpickr_datetime_data(f.object.picked_up_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.picked_up_at, time_zone: f.object.shipper_address.time_zone) %>
         <%= f.text_field :departed_origin_terminal_at, label: 'Departed', autocomplete: 'off', data: flatpickr_datetime_data(f.object.departed_origin_terminal_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.departed_origin_terminal_at, time_zone: f.object.shipper_address.time_zone) %>
         <% unless @shipment.shipper_address.time_zone.blank? %>  
