@@ -82,7 +82,7 @@ class PickupsService
     return @packages if @packages
 
     @packages = []
-    @shipment.flattened_items.each do |item|
+    @shipment.items.each do |item|
       package = item.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes)
       @packages << package
     end
