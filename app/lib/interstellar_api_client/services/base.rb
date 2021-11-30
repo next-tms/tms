@@ -6,32 +6,33 @@ module InterstellarApiClient
       API_INVALID_CREDENTIALS_EXCEPTIONS = [
         Interstellar::ExpiredCredentialsError,
         Interstellar::InvalidCredentialsError
-      ]
+      ].freeze
 
       API_NOT_FOUND_EXCEPTIONS = [
         Interstellar::DocumentNotFound,
         Interstellar::ResponseError,
         Interstellar::ShipmentNotFound,
+        Interstellar::UnserviceableError,
         NotImplementedError
-      ]
+      ].freeze
 
       API_TIMEOUT_EXCEPTIONS = [
         EOFError,
         Errno::ECONNREFUSED,
         Net::OpenTimeout,
         Net::ReadTimeout
-      ]
+      ].freeze
 
       SELENIUM_EXCEPTIONS = [
         Selenium::WebDriver::Error::SessionNotCreatedError,
         Selenium::WebDriver::Error::UnexpectedAlertOpenError
-      ]
+      ].freeze
 
       SELENIUM_TIMEOUT_EXCEPTIONS = [
         Errno::ECONNREFUSED,
         Selenium::WebDriver::Error::UnknownError,
         Selenium::WebDriver::Error::WebDriverError
-      ]
+      ].freeze
 
       def initialize(broker_carrier:, retry_on_timeout: true, return_nil_on_404: false)
         @carrier_client = InterstellarApiClient.build_client(broker_carrier: broker_carrier)
@@ -56,7 +57,7 @@ module InterstellarApiClient
         rescue *API_TIMEOUT_EXCEPTIONS
           sleep(10)
           retry
-        rescue *SELENIUM_EXCEPTIONS => e
+        rescue *SELENIUM_EXCEPTIONS
           nil
         rescue *SELENIUM_TIMEOUT_EXCEPTIONS
           sleep(10)
