@@ -52,7 +52,7 @@ gem 'devise', '~> 4.8.0'
 gem 'devise_invitable', '~> 2.0.5'
 
 # liftoff.rocks
-gem 'turbo-rails', '~> 0.8.1'
+gem 'turbo-rails', '~> 0.9.0'
 
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'db382e0bb16ebb693222f6b81fa34425cf0564ad'
 gem 'interstellar-next_platforms', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms', ref: 'fbfdd7e0227b305fb5e2de5aca6ab765e1b21751'
