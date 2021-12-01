@@ -104,11 +104,11 @@ class Rate < ApplicationRecord
   def pretty_interstellar_error
     return nil if interstellar_error_class.blank?
 
-    formatted_error = error.blank? ? nil : error.split(':').last.strip.downcase
+    formatted_error = error.blank? ? '' : error.split(':').last.strip.downcase
 
     case interstellar_error_class
     when 'Interstellar::ResponseError'
-      'API Error: Invalid response'
+      "API Error: Invalid response"
     when 'Interstellar::UnserviceableError'
       if error.blank?
         'No service'
@@ -116,7 +116,7 @@ class Rate < ApplicationRecord
         "No service: #{formatted_error}"
       end
     else
-      "API error: #{formatted_error || error}"
+      "API error: #{formatted_error}"
     end
   end
 
