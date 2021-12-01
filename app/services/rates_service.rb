@@ -23,10 +23,10 @@ class RatesService
 
     unless @broker_carrier.pricing_rules.blank?
       @broker_carrier
-      .pricing_rules
-      .where('min_pallets <= ?', @shipment.flattened_items.size)
-      .where('max_pallets >= ?', @shipment.flattened_items.size)
-      .find_each do |pricing_rule|
+        .pricing_rules
+        .where('min_pallets <= ?', @shipment.flattened_items.size)
+        .where('max_pallets >= ?', @shipment.flattened_items.size)
+        .find_each do |pricing_rule|
         unless pricing_rule.carrier_area.from_area.zip_codes.include?(@shipment.shipper_address.zip_code) &&
                pricing_rule.carrier_area.to_area.zip_codes.include?(@shipment.receiver_address.zip_code)
           next
@@ -42,17 +42,27 @@ class RatesService
       end
     end
 
-    response = InterstellarApiClient.fetch_rates(
-      broker_carrier: @broker_carrier,
-      origin: @shipment.shipper_address.to_interstellar_shipping_address,
-      destination: @shipment.receiver_address.to_interstellar_shipping_address,
-      packages: packages,
-      accessorials: accessorials
-    )
+    error = nil
+    interstellar_error_class = nil
+    response = nil
+
+    begin
+      response = InterstellarApiClient.fetch_rates(
+        broker_carrier: @broker_carrier,
+        origin: @shipment.shipper_address.to_interstellar_shipping_address,
+        destination: @shipment.receiver_address.to_interstellar_shipping_address,
+        packages: packages,
+        accessorials: accessorials
+      )
+    rescue StandardError => e
+      error = "API Error: #{e.class.name}: #{e.message}"
+      interstellar_error_class = e.class.name
+      response = nil
+    end
 
     if response.blank? || response.rates.blank?
       rate = new_rate
-      rate.assign_attributes(error: 'API Error: Carrier returned no rates')
+      rate.assign_attributes(error: error, interstellar_error_class: interstellar_error_class)
 
       return [rate]
     end
@@ -121,7 +131,7 @@ class RatesService
             request: response.request,
             response: response.params
           )
-          
+
           rates << rate
           next
         end
