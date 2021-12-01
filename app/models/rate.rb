@@ -86,6 +86,7 @@ class Rate < ApplicationRecord
   has_many :rate_accessorials, dependent: :destroy
   has_many :accessorials, through: :rate_accessorials
 
+  serialize :interstellar_error_class
   serialize :request
   serialize :response
 
@@ -100,8 +101,28 @@ class Rate < ApplicationRecord
     end
   end
 
+  def pretty_interstellar_error
+    return nil if interstellar_error_class.blank?
+
+    formatted_error = error.blank? ? nil : error.split(':').last.strip.downcase
+
+    case interstellar_error_class
+    when 'Interstellar::ResponseError'
+      'API Error: Invalid response'
+    when 'Interstellar::UnserviceableError'
+      if error.blank?
+        'No service'
+      else
+        "No service: #{formatted_error}"
+      end
+    else
+      "API error: #{formatted_error || error}"
+    end
+  end
+
   def pretty_service_type
     return '' if interstellar_service_type.blank?
+
     "#{interstellar_service_type.sub('_', ' ').titleize.sub('Am', 'AM').sub('Pm', 'PM')} LTL"
   end
 

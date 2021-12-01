@@ -1,7 +1,34 @@
 <% unless @rates.blank? %>
   <%= turbo_stream.append "rates_#{!@rates.first.with_calculated_freight_classes?}" do %>
     <% @rates.each do |rate| %>
-      <% next if !rate.errors.blank? || rate.cost_cents == 0 %>
+      <% if !rate.interstellar_error_class.blank? %>
+        <% next if current_user.customer? %>
+        <tr data-rate-id="<%= rate.id %>" class="table-warning">
+          <td></td>
+          <td>
+            <div class="text-nowrap">
+              <% if not rate.tracking_carrier.blank? %>
+                <%= rate.tracking_carrier.name %>
+                <br>
+                <span class="text-muted"> via <%= rate.broker_carrier.carrier.name %></span>
+              <% else %>
+                <%= rate.broker_carrier.carrier.name %>
+              <% end %>
+              <% unless rate.broker_carrier.broker_customer.blank? %>
+                <br>
+                <span class="text-muted"> via <%= rate.broker_carrier.broker_customer.customer.name %> account</span>
+              <% end %>
+            </div>
+          </td>
+          <td data-sort="ZZZZ" colspan="<%= current_user.customer? ? 5 : 4 %>">
+            <%= rate.pretty_interstellar_error %>
+          </td>
+        </tr>
+        <% next %>
+      <% end %>
+
+      <% next if rate.cost_cents == 0 %>
+
       <% if current_user.customer? %>
         <% upcharged_rate = current_user.broker_customer.carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment) %>
         <% next if upcharged_rate.nil? || upcharged_rate == Money.new(0) %>

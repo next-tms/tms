@@ -34,40 +34,43 @@ module InterstellarApiClient
         Selenium::WebDriver::Error::WebDriverError
       ].freeze
 
-      def initialize(broker_carrier:, retry_on_timeout: true, return_nil_on_404: false)
+      def initialize(broker_carrier:, retry_on_timeout: true, return_nil_on_error: true)
         @carrier_client = InterstellarApiClient.build_client(broker_carrier: broker_carrier)
         @broker_carrier = broker_carrier
         @retry_on_timeout = retry_on_timeout
-        @return_nil_on_404 = return_nil_on_404
+        @return_nil_on_error = return_nil_on_error
         @tries = 0
       end
 
       def interstellar_api_call_block
         @tries += 1
-        return nil if @tries > 10
+
+        if @tries > 10
+          @return_nil_on_error ? return : yield
+        end
 
         begin
           yield
         rescue ArgumentError # Invalid accessorials
-          nil
+          @return_nil_on_error ? return : yield
         rescue *API_INVALID_CREDENTIALS_EXCEPTIONS
-          nil
+          @return_nil_on_error ? return : yield
         rescue *API_NOT_FOUND_EXCEPTIONS
-          nil
+          @return_nil_on_error ? return : yield
         rescue *API_TIMEOUT_EXCEPTIONS
           sleep(10)
           retry
         rescue *SELENIUM_EXCEPTIONS
-          nil
+          @return_nil_on_error ? return : yield
         rescue *SELENIUM_TIMEOUT_EXCEPTIONS
           sleep(10)
           retry
         rescue Savon::SOAPFault
-          nil
+          @return_nil_on_error ? return : yield
         end
       end
 
-      attr_reader :carrier_client, :broker_carrier, :retry_on_timeout, :return_nil_on_404
+      attr_reader :carrier_client, :broker_carrier, :retry_on_timeout, :return_nil_on_error
     end
   end
 end
