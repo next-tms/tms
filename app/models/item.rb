@@ -161,7 +161,7 @@ class Item < ApplicationRecord
 
   def as_interstellar_package(use_forced_freight_class:)
     Interstellar::Package.new(
-      (quantity * weight) * 16,
+      weight * 16,
       {
         length: l,
         width: w,
@@ -172,6 +172,7 @@ class Item < ApplicationRecord
       description: desc,
       hazmat: hazmat?,
       nmfc: (nmfc.blank? ? nil : nmfc),
+      quantity: quantity,
       units: :imperial
     )
   end
