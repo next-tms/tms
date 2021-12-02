@@ -8,6 +8,7 @@
           <th><%= sort_link @q, :first_name, 'Name' %></th>
           <% if controller_name == 'users' %>
             <th>Kind</th>
+            <th>Active?</th>
           <% end %>
           <% if controller_name != 'broker_customers' %>
             <th>Roles</th>
@@ -18,10 +19,15 @@
       </thead>
       <tbody>
         <% users.each do |user| %>
-          <tr>
+          <tr class="<% if user.deactivated? %>table-warning<% end %>">
             <td class="text-nowrap"><%= link_to user.contact.full_name, broker_user_path(user), target: '_top' %></td>
             <% if controller_name == 'users' %>
-              <td><%= user.customer? ? 'Customer' : 'Staff' %></td>
+              <td>
+                <% unless user.deactivated? %>
+                  <%= user.customer? ? 'Customer' : 'Staff' %>
+                <% end %>
+              </td>
+              <td><% unless user.deactivated? %>✓<% end %></td>
             <% end %>
             <% if controller_name != 'broker_customers' %>
               <td><%= (user.roles.map(&:name) - ['root']).sort.join(', ') %></td>
