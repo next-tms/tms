@@ -53,8 +53,8 @@ class PickupsService
 
   def accessorials
     @accessorials ||= combined_accessorials.where.not(interstellar_code: [nil, '']).map do |accessorial|
-                        accessorial.interstellar_code.to_sym
-                      end
+      accessorial.interstellar_code.to_sym
+    end
   end
 
   def combined_accessorials
@@ -66,18 +66,18 @@ class PickupsService
                                )
   end
 
-   def contact_name(key)
-     case key
-     when :receiver
-       @shipment.receiver_contact_name || @shipment.receiver_name
-     when :shipper
-       @shipment.shipper_contact_name || @shipment.shipper_name
-     end
-   end
+  def contact_name(key)
+    case key
+    when :receiver
+      @shipment.receiver_contact_name || @shipment.receiver_name
+    when :shipper
+      @shipment.shipper_contact_name || @shipment.shipper_name
+    end
+  end
 
-   def scac
-     return @shipment.tracking_carrier.scac if @broker_carrier.carrier.acts_as_broker?
- 
-     @broker_carrier.carrier.scac
+  def scac
+    return @shipment.tracking_carrier.scac if @broker_carrier.carrier.acts_as_broker?
+
+    @broker_carrier.carrier.scac
   end
 end

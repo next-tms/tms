@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: db382e0bb16ebb693222f6b81fa34425cf0564ad
-  ref: db382e0bb16ebb693222f6b81fa34425cf0564ad
+  revision: 1bdb8773732678a3c663a6ee83c64bf27454df25
+  ref: 1bdb8773732678a3c663a6ee83c64bf27454df25
   specs:
     interstellar (0.1.pre1)
       active_utils (~> 3.3.1)
@@ -16,8 +16,8 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers
-  revision: 4ce85c67a291e182b0e09b39925d9ab35837d337
-  ref: 4ce85c67a291e182b0e09b39925d9ab35837d337
+  revision: 041c83fce95853c13e628d0ceed92b98c2406b8d
+  ref: 041c83fce95853c13e628d0ceed92b98c2406b8d
   specs:
     interstellar-next_carriers (0.1.pre1)
       interstellar (= 0.1.pre1)
@@ -25,8 +25,8 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms
-  revision: d0a01b915077dee864d2aabd2bb7a256084c7198
-  ref: d0a01b915077dee864d2aabd2bb7a256084c7198
+  revision: c53bf1fed0d3cf9ee4490e38248c104ee03028cd
+  ref: c53bf1fed0d3cf9ee4490e38248c104ee03028cd
   specs:
     interstellar-next_platforms (0.1.pre1)
       interstellar (= 0.1.pre1)
@@ -1502,7 +1502,7 @@ GEM
       railties (>= 5.0)
     rexml (3.2.5)
     rmagick (4.2.3)
-    rollbar (3.2.0)
+    rollbar (3.3.0)
     rqrcode (2.1.0)
       chunky_png (~> 1.0)
       rqrcode_core (~> 1.0)
@@ -1524,7 +1524,7 @@ GEM
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
     set (1.0.2)
-    sidekiq (6.2.2)
+    sidekiq (6.3.1)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
