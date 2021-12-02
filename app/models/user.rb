@@ -128,6 +128,10 @@ class User < ApplicationRecord
   scope :broker, -> { where(broker_customer: nil) }
   scope :customer, -> { where.not(broker_customer: nil) }
 
+  def active_for_authentication?
+    super && !deactivated
+  end
+
   def full_name
     @full_name ||= "#{first_name} #{last_name}"
   end

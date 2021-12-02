@@ -38,6 +38,7 @@ class Broker::UsersController < Broker::BrokerController
   def user_params
     params.require(:user).permit(
       :broker_customer_id,
+      :deactivated,
       :email,
       :first_name,
       :last_name,
