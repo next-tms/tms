@@ -58,6 +58,11 @@ class RatesService
       error = "API Error: #{e.class.name}: #{e.message}"
       interstellar_error_class = e.class.name
       response = nil
+
+      case e.class
+      when Interstellar::UnserviceableError
+        error = "No service (#{error})"
+      end
     end
 
     if response.blank? || response.rates.blank?
@@ -184,15 +189,7 @@ class RatesService
   end
 
   def packages
-    return @packages if @packages
-
-    @packages = []
-    @shipment.flattened_items.each do |item|
-      package = item.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes)
-      @packages << package
-    end
-
-    @packages
+    @packages ||= @shipment.items.map { |i| i.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes) }
   end
 
   def accessorials

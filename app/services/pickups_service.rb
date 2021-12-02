@@ -9,6 +9,10 @@ class PickupsService
   end
 
   def dispatch
+    packages = @shipment.items.map do |item|
+      item.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes)
+    end
+
     response = InterstellarApiClient.create_pickup(
       broker_carrier: @broker_carrier,
       accessorials: accessorials,
@@ -48,14 +52,9 @@ class PickupsService
   private
 
   def accessorials
-    return @accessorials if @accessorials
-
-    @accessorials = []
-    combined_accessorials.where.not(interstellar_code: [nil, '']).find_each do |accessorial|
-      @accessorials << accessorial.interstellar_code.to_sym
+    @accessorials ||= combined_accessorials.where.not(interstellar_code: [nil, '']).map do |accessorial|
+      accessorial.interstellar_code.to_sym
     end
-
-    @accessorials
   end
 
   def combined_accessorials
@@ -65,33 +64,6 @@ class PickupsService
                                  id: @shipment.accessorials.pluck(:id) +
                                      @shipment.assumed_accessorials.pluck(:id)
                                )
-  end
-
-  def new_pickup
-    Pickup.new(
-      accessorials: combined_accessorials,
-      broker_carrier: @broker_carrier,
-      broker_customer: @shipment.broker_customer,
-      shipment_fingerprint: @shipment.fingerprint,
-      shipment: @shipment,
-      with_calculated_freight_classes: !@use_forced_freight_classes
-    )
-  end
-
-  def packages
-    return @packages if @packages
-
-    @packages = []
-    @shipment.items.each do |item|
-      package = item.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes)
-      @packages << package
-    end
-
-    @packages
-  end
-
-  def items
-    @items ||= @shipment.items
   end
 
   def contact_name(key)
