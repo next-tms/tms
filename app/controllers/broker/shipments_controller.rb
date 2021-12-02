@@ -115,34 +115,16 @@ class Broker::ShipmentsController < Broker::BrokerController
       unauthorized
     end
 
-    unless @shipment.broker_quote_valid?
-      CreateShipmentBrokerQuoteJob.perform_later(domain: request.host,
-                                                 shipment: @shipment)
-    end
-
     if @shipment.quote_only?
-      redirect_to quote_broker_shipment_path(@shipment)
+      redirect_to quote_broker_shipment_path(@shipment) and return
     else
-      TrackShipmentJob.perform_later(@shipment) if Rails.env.development? || @shipment.delivered_at.blank?
-
-      if !@shipment.broker_bol_valid? || @shipment.incomplete?
-        CreateShipmentBrokerBolJob.perform_later(domain: request.host, shipment: @shipment)
-      end
-
-      if !@shipment.broker_dispatch_sheet_valid? || @shipment.incomplete?
-        CreateShipmentBrokerDispatchSheetJob.perform_later(domain: request.host, shipment: @shipment)
-      end
-
-      if Rails.env.development? || @shipment.carrier_bol.blank?
-        FetchShipmentCarrierBolsJob.perform_later([@shipment.id])
-      end
-      if Rails.env.development? || @shipment.carrier_pod.blank?
-        FetchShipmentCarrierPodsJob.perform_later([@shipment.id])
-      end
+      refresh_documents
     end
   end
 
-  def documents; end
+  def documents
+    refresh_documents
+  end
 
   def send_document
     contact_ids = @shipment.broker.users.broker.pluck(:contact_id)
@@ -421,6 +403,33 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def set_shipment_by_load_id
     @shipment = Shipment.find_by_load_id(params[:load_id])
+  end
+
+  def refresh_documents
+    unless @shipment.broker_quote_valid?
+      CreateShipmentBrokerQuoteJob.perform_later(
+        domain: @website.homepage_domain,
+        shipment: @shipment
+      )
+    end
+
+    return if @shipment.incomplete?
+
+    unless @shipment.broker_bol_valid?
+      CreateShipmentBrokerBolJob.perform_later(
+        domain: @website.homepage_domain,
+        shipment: @shipment
+      )
+    end
+
+    unless @shipment.broker_dispatch_sheet_valid?
+      CreateShipmentBrokerDispatchSheetJob.perform_later(
+        domain: @website.homepage_domain,
+        shipment: @shipment
+      )
+    end
+
+    FetchShipmentCarrierBolsJob.perform_later([@shipment.id]) if @shipment.carrier_bol.blank?
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
