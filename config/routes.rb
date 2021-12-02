@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   root 'welcome#index'
+
+  mount Sidekiq::Web => '/sidekiq'
 
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
