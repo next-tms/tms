@@ -932,8 +932,8 @@ class Shipment < ApplicationRecord
       return @linear_ft = nil unless item.l && item.w && item.h
 
       item.quantity.times do
-        # Rotate the item if longer that 96 inches
-        true_items << if item.long_side > 96
+        # Rotate the item if longer that 102 inches
+        true_items << if item.long_side > 102
                         { l: item.short_side, w: item.long_side, allocated: false }
                       else
                         { l: item.long_side, w: item.short_side, allocated: false }
@@ -972,12 +972,12 @@ class Shipment < ApplicationRecord
         row_tries = 0
         redo
       end
-      if true_items[i][:l] <= (96 - row_l)
+      if true_items[i][:l] <= (102 - row_l)
         row_l += true_items[i][:l]
         row_w = true_items[i][:w] if true_items[i][:w] > row_w
         true_items[i][:allocated] = true
         i += 1
-      elsif true_items[i][:l] > (96 - row_l)
+      elsif true_items[i][:l] > (102 - row_l)
         i += 1
         row_tries += 1
         redo
