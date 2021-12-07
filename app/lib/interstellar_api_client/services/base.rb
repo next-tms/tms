@@ -9,11 +9,10 @@ module InterstellarApiClient
       ].freeze
 
       API_NOT_FOUND_EXCEPTIONS = [
-        Interstellar::DocumentNotFound,
+        Interstellar::DocumentNotFoundError,
         Interstellar::ResponseError,
-        Interstellar::ShipmentNotFound,
-        Interstellar::UnserviceableError,
-        NotImplementedError
+        Interstellar::ShipmentNotFoundError,
+        Interstellar::UnserviceableError
       ].freeze
 
       API_TIMEOUT_EXCEPTIONS = [
@@ -51,8 +50,6 @@ module InterstellarApiClient
 
         begin
           yield
-        rescue ArgumentError # Invalid accessorials
-          @return_nil_on_error ? return : yield
         rescue *API_INVALID_CREDENTIALS_EXCEPTIONS
           @return_nil_on_error ? return : yield
         rescue *API_NOT_FOUND_EXCEPTIONS
