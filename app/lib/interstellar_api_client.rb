@@ -76,6 +76,16 @@ module InterstellarApiClient
     ).find(tracking_number)
   end
 
+  def fetch_pro(broker_carrier:, pickup_number:, date:, retry_on_timeout: false, return_nil_on_error: true)
+    return nil unless broker_carrier.as_interstellar_carrier&.find_tracking_number_from_pickup_number_implemented?
+
+    Services::FetchPro.new(
+      broker_carrier: broker_carrier,
+      retry_on_timeout: retry_on_timeout,
+      return_nil_on_error: return_nil_on_error
+    ).find(pickup_number, date)
+  end
+
   def fetch_rates(broker_carrier:, origin:, destination:, packages:, accessorials:, retry_on_timeout: false, return_nil_on_error: false)
     return nil unless broker_carrier.as_interstellar_carrier&.find_rates_implemented?
 

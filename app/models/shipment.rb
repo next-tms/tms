@@ -412,6 +412,43 @@ class Shipment < ApplicationRecord
     carrier_pod.attach(io: File.open(path), filename: "#{load_id} POD.pdf", content_type: 'application/pdf')
   end
 
+  def fetch_pro
+    return nil if pickup_confirmation.blank?
+
+    pro = nil
+    pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+                                          date: pickup_on)
+
+    if pro.blank?
+      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+                                            date: dispatched_at.to_date)
+    end
+
+    if pro.blank?
+      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+                                            date: pickup_on - 1.day)
+    end
+
+    if pro.blank?
+      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+                                            date: pickup_on + 1.day)
+    end
+
+    if pro.blank?
+      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+                                            date: pickup_on + 2.days)
+    end
+
+    if pro.blank?
+      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+                                            date: dispatched_at.to_date + 1.day)
+    end
+
+    return if pro.blank?
+
+    update(pro: pro, updated_by: nil)
+  end
+
   def fingerprint
     str = ''.dup
 

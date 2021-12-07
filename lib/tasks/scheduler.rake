@@ -8,6 +8,11 @@ task fetch_carrier_pods: :environment do
   FetchShipmentCarrierPodsJob.perform_later
 end
 
+desc 'Fetch pro for shipments picked up'
+task fetch_pros: :environment do
+  FetchShipmentProsJob.perform_later
+end
+
 desc 'Track shipments pending delivery'
 task track_pending_delivery_job: :environment do
   TrackShipmentsJob.perform_later(Shipment.active.pending_delivery.pluck(:id))
