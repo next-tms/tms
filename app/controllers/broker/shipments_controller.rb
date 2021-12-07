@@ -70,6 +70,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   def create
     broker_customer = shipment_params[:broker_customer_id].blank? ? nil : BrokerCustomer.find(shipment_params[:broker_customer_id])
     @shipment = Shipment.new(shipment_params)
+    @shipment.created_by = current_user
     @shipment.updated_by = current_user
     @shipment.broker = current_user.broker
     @shipment.broker_customer = broker_customer

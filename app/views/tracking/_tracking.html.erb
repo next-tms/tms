@@ -93,6 +93,23 @@
           <td>Dispatched</td>
         </tr>
       <% end %>
+      <tr>
+        <td><%= pretty_date shipment.created_at, (shipment.created_by&.time_zone || shipment.shipper_address.time_zone) %></td>
+        <td></td>
+        <td>
+          <% unless @shipment.created_by.blank? %>
+            Entered by <%= @shipment.created_by.full_name %>
+
+            <span class="text-muted">
+              <% unless current_user&.broker? %>
+                <%= @shipment.created_by.customer? ? @shipment.created_by.broker_customer.customer.name : @shipment.created_by.broker.name %>
+              <% end %>
+            </span>
+          <% else %>
+            Entered
+          <% end %>
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>
