@@ -60,6 +60,8 @@ class RatesService
       response = nil
 
       case e.class
+      when Interstellar::InvalidCredentialsError
+        error = 'Invalid username/password'
       when Interstellar::UnserviceableError
         error = "No service (#{error})"
       end
