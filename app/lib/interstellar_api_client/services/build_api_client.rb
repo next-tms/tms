@@ -9,10 +9,10 @@ module InterstellarApiClient
         config = { debugging: !Rails.env.production?, timeout: 60 }
 
         carrier = begin
-                    Interstellar.const_get(broker_carrier.carrier.scac)
-                  rescue NameError
-                    nil
-                  end
+          Interstellar.const_get(broker_carrier.carrier.scac)
+        rescue NameError
+          nil
+        end
 
         return nil if carrier.blank?
 
@@ -24,8 +24,8 @@ module InterstellarApiClient
           selenoid_options: {
             download_url: "#{ENV['SELENOID_BASE_URL']}/download"
           },
-          watir_args: [:chrome, url: "#{ENV['SELENOID_BASE_URL']}/wd/hub/"],
-          test: !Rails.env.production?
+          watir_args: [:chrome, { url: "#{ENV['SELENOID_BASE_URL']}/wd/hub/" }]
+          # test: !Rails.env.production?
         }
 
         if broker_carrier.carrier.has_seperate_website_credentials?

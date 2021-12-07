@@ -184,6 +184,8 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Shipment < ApplicationRecord
+  attr_accessor :dispatch_pickup
+
   scope :canceled, -> { where.not(canceled_at: nil) }
   scope :canceled_recently, -> { canceled.where('canceled_at > ?', 1.day.ago) }
   scope :active, -> { where.not(id: canceled) }

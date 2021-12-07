@@ -3,7 +3,7 @@
 class Broker::ShipmentsController < Broker::BrokerController
   before_action :set_shipment_by_load_id,
                 only: %i[book book_modal rate_uid documents create_tracking_event destroy edit edit_tracking_events
-                         notes pickup pricing quote send_document send_document_with_contact_mailer show
+                         notes pickup pickup_modal pricing quote send_document send_document_with_contact_mailer show
                          tracking_events transit unbook update]
   before_action :authenticate_user!
 
@@ -89,6 +89,12 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def pickup; end
 
+  def pickup_modal
+    @applied_rate_uid = shipment_params[:applied_rate_uid]
+
+    render layout: 'modal'
+  end
+
   def update
     unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
       unauthorized
@@ -98,7 +104,13 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     respond_to do |format|
       if @shipment.save
-        format.html { redirect_to broker_shipment_path(@shipment) }
+        format.html do
+          if @shipment.dispatch_pickup
+            redirect_to broker_pickups_path(pickup: { rate_uid: @shipment.applied_rate.uid }) and return
+          else
+            redirect_to broker_shipment_path(@shipment) and return
+          end
+        end
         format.json { render json: { location: broker_shipment_path(@shipment) } }
       else
         format.html do
@@ -464,6 +476,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :delivery_hours_end_at,
                                      :delivery_hours_start_at,
                                      :departed_origin_terminal_at,
+                                     :dispatch_pickup,
                                      :dispatched_at,
                                      :dispatched,
                                      :lift_gate,

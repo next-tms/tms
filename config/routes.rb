@@ -84,6 +84,7 @@ Rails.application.routes.draw do
 
     resources :payments
     resources :pickups, only: %i[create]
+    get 'pickups', to: 'pickups#create' # used by Broker::ShipmentsControlller
 
     get 'shipments/booked', to: 'shipments#booked'
     get 'shipments/pending-dispatch', to: 'shipments#pending_dispatch'
@@ -117,6 +118,7 @@ Rails.application.routes.draw do
              as: :send_document_with_contact_mailer
       end
       member { get 'notes', as: :notes }
+      member { get 'pickup-modal', as: :pickup_modal }
       member { get 'pricing', as: :pricing }
       member { get 'quote', as: :quote }
       member { get 'transit', as: :transit }
