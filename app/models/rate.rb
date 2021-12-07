@@ -107,8 +107,10 @@ class Rate < ApplicationRecord
     formatted_error = error.blank? ? '' : error.split(':').last.strip.downcase
 
     case interstellar_error_class
+    when 'Interstellar::InvalidCredentialsError'
+      'API Error: Invalid username or password'
     when 'Interstellar::ResponseError'
-      "API Error: Invalid response"
+      'API Error: Invalid response'
     when 'Interstellar::UnserviceableError'
       if error.blank?
         'No service'
