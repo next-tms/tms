@@ -1,0 +1,24 @@
+<%= provide :title, 'Pickup' %>
+
+<% unless @shipment.incomplete? %>
+  <div class="row">
+    <div class="col col-md-4">
+      <%= bootstrap_form_with(model: [:broker, @shipment],  method: :patch) do |f| %>
+        <%= f.hidden_field :dispatch_pickup, value: true %>
+        <%= f.hidden_field :quote_only, value: false %>
+        <%= f.hidden_field :applied_rate_uid, value: @applied_rate_uid %>
+      
+        <%= f.text_field :pickup_on, label: 'Pickup Date & Hours', data: flatpickr_data %>
+        <%= f.text_field :pickup_hours_start_at, hide_label: true, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+        <%= f.text_field :pickup_hours_end_at, hide_label: true, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      
+        <%= f.text_field :delivery_hours_start_at, label: 'Delivery Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+        <%= f.text_field :delivery_hours_end_at, hide_label: true, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      
+        <%= f.submit 'Dispatch', data: { turbo: false }, class: 'btn btn-primary' %>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <p>Shipper name and address as well as receiver name and address must be complete.</p>
+<% end %>

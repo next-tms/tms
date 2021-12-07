@@ -45,11 +45,7 @@
               <% end %>
 
               <% if current_user.broker? && rate.broker_carrier.api_configured? &&  rate.broker_carrier.as_interstellar_carrier.create_pickup_implemented? %>
-                <% unless rate.shipment.incomplete? %>
-                  <%= button_to 'Pickup', broker_pickups_path(pickup: { rate_uid: rate.uid }), class: 'btn btn-sm btn-outline-primary' %>
-                <% else %>
-                  <%= link_to 'Pickup', 'javascript:alert("Please enter all shipment details and try again.");', class: 'btn btn-sm btn-outline-primary' %>
-                <% end %>
+                <%= link_to 'Pickup', pickup_modal_broker_shipment_path(@shipment, shipment: { applied_rate_uid: rate.uid }), data: { 'turbo-frame': 'modal' }, class: 'btn btn-sm btn-outline-primary' %>
               <% end %>
             </div>
           </div>
