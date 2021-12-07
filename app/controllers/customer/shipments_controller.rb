@@ -59,6 +59,7 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def create
     @shipment = Shipment.new(shipment_params)
+    @shipment.created_by = current_user
     @shipment.updated_by = current_user
     @shipment.broker = current_user.broker
     @shipment.broker_customer = current_user.broker_customer

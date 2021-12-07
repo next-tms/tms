@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_02_213638) do
+ActiveRecord::Schema.define(version: 2021_12_07_020925) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -566,10 +566,12 @@ ActiveRecord::Schema.define(version: 2021_12_02_213638) do
     t.string "broker_quote_shipment_fingerprint"
     t.string "broker_dispatch_sheet_shipment_fingerprint"
     t.text "public_notes"
+    t.bigint "created_by_id"
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
     t.index ["broker_customer_id"], name: "index_shipments_on_broker_customer_id"
     t.index ["broker_id", "load_id"], name: "index_shipments_on_broker_id_and_load_id", unique: true
     t.index ["broker_notes"], name: "index_shipments_on_broker_notes"
+    t.index ["created_by_id"], name: "index_shipments_on_created_by_id"
     t.index ["receiver_address_id"], name: "index_shipments_on_receiver_address_id"
     t.index ["shipper_address_id"], name: "index_shipments_on_shipper_address_id"
     t.index ["tracking_carrier_id"], name: "index_shipments_on_tracking_carrier_id"
@@ -768,6 +770,7 @@ ActiveRecord::Schema.define(version: 2021_12_02_213638) do
   add_foreign_key "shipments", "broker_customers"
   add_foreign_key "shipments", "carriers", column: "tracking_carrier_id"
   add_foreign_key "shipments", "rates", column: "applied_rate_id"
+  add_foreign_key "shipments", "users", column: "created_by_id"
   add_foreign_key "shipments", "users", column: "updated_by_id"
   add_foreign_key "terminals", "addresses"
   add_foreign_key "terminals", "carriers"

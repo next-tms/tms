@@ -34,13 +34,13 @@
 #   @return [String]
 # @!attribute customer_reference
 #   @return [String]
-# @!attribute delivery_eta_on
-#   @return [Date]
 # @!attribute delivered_at
 #   @return [Time]
 # @!attribute delivery_appointment_at
 #   @return [Time]
 # @!attribute delivery_appointment_on
+#   @return [Date]
+# @!attribute delivery_eta_on
 #   @return [Date]
 # @!attribute delivery_hours_end_at
 #   @return [String]
@@ -150,6 +150,8 @@
 #   @return []
 # @!attribute broker_id
 #   @return [Integer]
+# @!attribute created_by_id
+#   @return []
 # @!attribute load_id
 #   @return [Integer]
 # @!attribute quote_id
@@ -169,6 +171,7 @@
 #  index_shipments_on_broker_customer_id     (broker_customer_id)
 #  index_shipments_on_broker_id_and_load_id  (broker_id,load_id) UNIQUE
 #  index_shipments_on_broker_notes           (broker_notes)
+#  index_shipments_on_created_by_id          (created_by_id)
 #  index_shipments_on_receiver_address_id    (receiver_address_id)
 #  index_shipments_on_shipper_address_id     (shipper_address_id)
 #  index_shipments_on_tracking_carrier_id    (tracking_carrier_id)
@@ -178,6 +181,7 @@
 #
 #  fk_rails_...  (applied_rate_id => rates.id)
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
+#  fk_rails_...  (created_by_id => users.id)
 #  fk_rails_...  (receiver_address_id => addresses.id)
 #  fk_rails_...  (shipper_address_id => addresses.id)
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
@@ -251,6 +255,7 @@ class Shipment < ApplicationRecord
   has_many :payment_transactions
   has_many :payments, through: :payment_transactions
 
+  belongs_to :created_by, class_name: 'User', required: false
   belongs_to :updated_by, class_name: 'User', required: false
 
   has_many :shipment_items, dependent: :destroy
