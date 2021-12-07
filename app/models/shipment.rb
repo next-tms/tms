@@ -301,7 +301,7 @@ class Shipment < ApplicationRecord
   before_save :recalculate_broker_accessorials, if: :broker_customer_id_changed?
 
   before_save :maybe_sync_broker_carrier_pickup_confirmation_and_pro
-  before_save :maybe_sync_tracking_carrier_pickup_confirmation_and_pro
+  before_save :maybe_sync_tracking_carrier_pickup_confirmation_and_tracking_carrier_pro
 
   # Remove tracking_carrier_* information when changed from broker to carrier
   before_save :maybe_remove_tracking_carrier, if: :broker_carrier_id_changed?
@@ -1174,12 +1174,17 @@ class Shipment < ApplicationRecord
     self.pro = pickup_confirmation if pro.blank? && !pickup_confirmation.blank?
   end
 
-  def maybe_sync_tracking_carrier_pickup_confirmation_and_pro
+  def maybe_sync_tracking_carrier_pickup_confirmation_and_tracking_carrier_pro
     return if tracking_carrier.blank?
     return unless tracking_carrier.pickup_number_is_tracking_number?
 
-    self.pickup_confirmation = pro if pickup_confirmation.blank? && !pro.blank?
-    self.pro = pickup_confirmation if pro.blank? && !pickup_confirmation.blank?
+    if tracking_carrier_pickup_confirmation.blank? && !tracking_carrier_pro.blank?
+      self.tracking_carrier_pickup_confirmation = tracking_carrier_pro
+    end
+
+    if tracking_carrier_pro.blank? && !tracking_carrier_pickup_confirmation.blank?
+      self.tracking_carrier_pro = tracking_carrier_pickup_confirmation
+    end
   end
 
   # Remove tracking_carrier_* information when changed from broker to carrier
