@@ -628,7 +628,7 @@ class Shipment < ApplicationRecord
     return if interstellar_tracking.blank?
 
     interstellar_tracking.shipment_events.each do |shipment_event|
-      next if shipment_event.time.blank? || shipment_event.status.blank?
+      next if shipment_event.time.blank? || shipment_event.time >= 1.day.from_now || shipment_event.status.blank?
 
       interstellar_location = if shipment_event.status == :delivered && shipment_event.location.blank?
                                 Interstellar::Location.new(
