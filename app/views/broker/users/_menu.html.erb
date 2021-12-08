@@ -8,7 +8,7 @@
         <li class="navbar-item"><%= link_to icon('fas', 'asterisk', @user.contact.full_name), broker_user_path(@user), class: 'nav-link' %></li>
         <li class="navbar-item"><%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_broker_user_path(@user), class: 'nav-link' %></li>
       <% else %>
-        <li class="navbar-item"><%= link_to icon('fas', 'plus', 'New'), new_user_invitation_path, class: 'nav-link' %></li>
+        <li class="navbar-item"><%= link_to icon('fas', 'plus', 'New Staff'), new_user_invitation_path, class: 'nav-link' %></li>
       <% end %>
     </ul>
   </div>

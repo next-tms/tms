@@ -71,12 +71,27 @@ class ApplicationController < ActionController::Base
   end
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:account_update,
-                                      keys: %i[email first_name last_name password password_confirmation])
-    devise_parameter_sanitizer.permit(:accept_invitation, keys: %i[email broker_customer_id first_name last_name])
-    devise_parameter_sanitizer.permit(:invite,
-                                      keys: [:email, :broker_customer_id, :first_name, :last_name,
-                                             { user_roles_attributes: %i[_destroy role_id] }])
+    devise_parameter_sanitizer.permit(
+      :account_update,
+      keys: %i[email first_name last_name password password_confirmation]
+    )
+
+    devise_parameter_sanitizer.permit(
+      :accept_invitation,
+      keys: %i[email broker_customer_id first_name last_name]
+    )
+
+    devise_parameter_sanitizer.permit(
+      :invite,
+      keys: [
+        :email,
+        :broker_customer_id,
+        :contact_id,
+        :first_name,
+        :last_name,
+        { user_roles_attributes: %i[_destroy role_id] }
+      ]
+    )
   end
 
   def storable_location?
