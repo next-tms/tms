@@ -1,0 +1,50 @@
+<%= turbo_frame_tag :receivables do %>
+  <div class="btn-toolbar">
+    <div class="btn-group">
+      <% if @display_paid %>
+        <%= link_to 'Pending', url_for({ 'q' => { 'paid_at_null' => '1' } }), class: 'btn btn-light' %>
+        <%= link_to 'Paid', url_for({ 'q' => { 'paid_at_null' => '0' } }), class: 'btn btn-dark' %>
+      <% else %>
+        <%= link_to 'Pending', url_for({ 'q' => { 'paid_at_null' => '1' } }), class: 'btn btn-dark' %>
+        <%= link_to 'Paid', url_for({ 'q' => { 'paid_at_null' => '0' } }), class: 'btn btn-light' %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render 'layouts/pagy', pagy: @pagy %>
+  <% unless receivables.blank? %>
+    <div class="table-responsive">
+      <table class="table table-condensed table-borderless table-striped table-hover h-100">
+        <thead>
+          <tr>
+            <th><%= sort_link(@q, :shipment_load_id, '#') %></th>
+            <% unless @display_paid %>
+              <th><%= sort_link(@q, :due_by, 'Due') %></th>
+            <% else %>
+              <th><%= sort_link(@q, :paid_at, 'Paid') %></th>
+            <% end %>
+            <th><%= sort_link @q, :broker_customer_customer_name, 'Customer' %></th>
+            <th>Invoiced?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% receivables.each do |receivable| %>
+            <tr>
+              <td><%= receivable.shipment.load_id %></td>
+              <% unless @display_paid %>
+                <td><%= pretty_date(receivable.due_by.in_time_zone(current_user.time_zone.name).to_date, current_user.time_zone) %></td>
+              <% else %>
+                <td><%= pretty_date(receivable.paid_at.in_time_zone(current_user.time_zone.name).to_date, current_user.time_zone) %></td>
+              <% end %>
+              <td><%= receivable.broker_customer.customer.name %></td>
+              <td><% if receivable.invoiced? %>✓<% end %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
+<% end %>

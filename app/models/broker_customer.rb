@@ -59,6 +59,7 @@ class BrokerCustomer < ApplicationRecord
   belongs_to :broker
 
   has_many :contacts
+  has_many :receivables
   has_many :shipments
 
   serialize :shipment_string_patterns, Array

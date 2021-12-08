@@ -263,6 +263,8 @@ class Shipment < ApplicationRecord
 
   has_many :commissions, dependent: :destroy
 
+  has_many :receivables
+
   has_many :tracking_events, dependent: :destroy
   accepts_nested_attributes_for :tracking_events, allow_destroy: true, reject_if: :all_blank
 

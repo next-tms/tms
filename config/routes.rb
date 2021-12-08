@@ -78,6 +78,8 @@ Rails.application.routes.draw do
       member { get 'pay', as: :pay }
     end
 
+    resources :receivables, path: 'ap/receivables'
+
     get 'settings', to: 'broker#settings', as: :settings
     match 'settings', to: 'broker#update', as: :update_settings, via: %i[patch put post]
     resources :broker_accessorials, path: 'settings/accessorials'

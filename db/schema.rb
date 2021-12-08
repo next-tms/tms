@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_08_004730) do
+ActiveRecord::Schema.define(version: 2021_12_08_011739) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -460,6 +460,27 @@ ActiveRecord::Schema.define(version: 2021_12_08_004730) do
     t.index ["tracking_carrier_id"], name: "index_rates_on_tracking_carrier_id"
   end
 
+  create_table "receivables", force: :cascade do |t|
+    t.boolean "invoiced", default: false
+    t.datetime "authorized_at"
+    t.datetime "due_by"
+    t.datetime "paid_at"
+    t.bigint "authorized_by_id"
+    t.bigint "created_by_id"
+    t.bigint "shipment_id", null: false
+    t.bigint "updated_by_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["authorized_at"], name: "index_receivables_on_authorized_at"
+    t.index ["authorized_by_id"], name: "index_receivables_on_authorized_by_id"
+    t.index ["created_by_id"], name: "index_receivables_on_created_by_id"
+    t.index ["due_by"], name: "index_receivables_on_due_by"
+    t.index ["invoiced"], name: "index_receivables_on_invoiced"
+    t.index ["paid_at"], name: "index_receivables_on_paid_at"
+    t.index ["shipment_id"], name: "index_receivables_on_shipment_id"
+    t.index ["updated_by_id"], name: "index_receivables_on_updated_by_id"
+  end
+
   create_table "roles", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
@@ -763,6 +784,10 @@ ActiveRecord::Schema.define(version: 2021_12_08_004730) do
   add_foreign_key "rates", "broker_customers"
   add_foreign_key "rates", "carriers", column: "tracking_carrier_id"
   add_foreign_key "rates", "shipments"
+  add_foreign_key "receivables", "shipments"
+  add_foreign_key "receivables", "users", column: "authorized_by_id"
+  add_foreign_key "receivables", "users", column: "created_by_id"
+  add_foreign_key "receivables", "users", column: "updated_by_id"
   add_foreign_key "shipment_accessorials", "accessorials"
   add_foreign_key "shipment_accessorials", "shipments"
   add_foreign_key "shipment_broker_accessorials", "broker_accessorials"
