@@ -1,3 +1,8 @@
+desc 'Create receivables for eligible shipments'
+task create_receivables: :environment do
+  CreateReceivablesJob.perform_later
+end
+
 desc 'Fetch bill of lading documents for shipments picked up'
 task fetch_carrier_bols: :environment do
   FetchShipmentCarrierBolsJob.perform_later
