@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Broker::ReceivablesController < Broker::BrokerController
-  before_action :set_receivable, only: %i[destroy edit pay show update]
+  before_action :set_receivable, only: %i[destroy edit pay rebuild show update]
   before_action :authenticate_user!
   before_action :require_accounts_receivable
 
@@ -25,6 +25,13 @@ class Broker::ReceivablesController < Broker::BrokerController
 
   def new
     @receivable = Receivable.new
+  end
+
+  def rebuild
+    @receivable.build_from_shipment(@receivable.shipment)
+    @receivable.save
+
+    redirect_to broker_receivable_path(@receivable)
   end
 
   def create; end
@@ -63,6 +70,6 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def required_includes
-    [ ]
+    [ :shipment, broker_customer: :customer ]
   end
 end

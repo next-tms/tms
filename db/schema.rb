@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_08_011739) do
+ActiveRecord::Schema.define(version: 2021_12_08_042645) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -460,6 +460,16 @@ ActiveRecord::Schema.define(version: 2021_12_08_011739) do
     t.index ["tracking_carrier_id"], name: "index_rates_on_tracking_carrier_id"
   end
 
+  create_table "receivable_items", force: :cascade do |t|
+    t.integer "charge_cents", default: 0, null: false
+    t.string "charge_currency", default: "USD", null: false
+    t.bigint "receivable_id", null: false
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["receivable_id"], name: "index_receivable_items_on_receivable_id"
+  end
+
   create_table "receivables", force: :cascade do |t|
     t.boolean "invoiced", default: false
     t.datetime "authorized_at"
@@ -471,6 +481,8 @@ ActiveRecord::Schema.define(version: 2021_12_08_011739) do
     t.bigint "updated_by_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "total_cents", default: 0, null: false
+    t.string "total_currency", default: "USD", null: false
     t.index ["authorized_at"], name: "index_receivables_on_authorized_at"
     t.index ["authorized_by_id"], name: "index_receivables_on_authorized_by_id"
     t.index ["created_by_id"], name: "index_receivables_on_created_by_id"
@@ -784,6 +796,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_011739) do
   add_foreign_key "rates", "broker_customers"
   add_foreign_key "rates", "carriers", column: "tracking_carrier_id"
   add_foreign_key "rates", "shipments"
+  add_foreign_key "receivable_items", "receivables"
   add_foreign_key "receivables", "shipments"
   add_foreign_key "receivables", "users", column: "authorized_by_id"
   add_foreign_key "receivables", "users", column: "created_by_id"
