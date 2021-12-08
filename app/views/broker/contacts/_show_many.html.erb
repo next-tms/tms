@@ -7,6 +7,7 @@
           <th><%= sort_link @q, :contact_first_name, 'Name' %></th>
           <th>Phone</th>
           <th><%= sort_link @q, :contact_email, 'Email' %></th>
+          <th>User?</th>
         </tr>
       </thead>
       <tbody>
@@ -30,6 +31,7 @@
                 <%= link_to contact.email, "mailto:#{contact.email}" %>
               <% end %>
             </td>
+            <td><% unless contact.user.blank? %>✓<% end %></td>
           </tr>
         <% end %>
       </tbody>
