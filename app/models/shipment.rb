@@ -1146,6 +1146,17 @@ class Shipment < ApplicationRecord
       )
       .ids
 
+    shipment_ids +=
+      delivered
+      .where(
+        broker_customer_id:
+        BrokerCustomer
+        .where.not(requires_carrier_pod_on_receivables: true)
+        .where.not(requires_carrier_bol_on_receivables: true)
+        .ids
+      )
+      .ids
+
     where(id: shipment_ids)
   end
 
