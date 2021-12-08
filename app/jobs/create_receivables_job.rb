@@ -6,7 +6,7 @@ class CreateReceivablesJob < ApplicationJob
       next unless shipment.receivables.blank?
 
       # TODO: Remove this
-      if DateTime.current.in_time_zone('America/Los_Angeles').to_date <= Date.parse('2021-12-08') && shipment.delivered_at.in_time_zone('America/Los_Angeles').to_date < Date.parse('2021-12-01')
+      if DateTime.current.in_time_zone('America/Los_Angeles').to_date <= Date.parse('2021-12-08') && shipment.picked_up_at.in_time_zone('America/Los_Angeles').to_date < Date.parse('2021-12-01')
         next
       end
 
