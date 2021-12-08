@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_07_020925) do
+ActiveRecord::Schema.define(version: 2021_12_08_042645) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -183,9 +183,13 @@ ActiveRecord::Schema.define(version: 2021_12_07_020925) do
     t.text "valid_freight_classes"
     t.boolean "enable_auto_freight_class", default: true
     t.text "internal_notes"
+    t.boolean "requires_carrier_bol_on_receivables", default: true
+    t.boolean "requires_carrier_pod_on_receivables", default: true
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["primary_pickup_address_id"], name: "index_broker_customers_on_primary_pickup_address_id"
+    t.index ["requires_carrier_bol_on_receivables"], name: "index_broker_customers_on_requires_carrier_bol_on_receivables"
+    t.index ["requires_carrier_pod_on_receivables"], name: "index_broker_customers_on_requires_carrier_pod_on_receivables"
   end
 
   create_table "brokers", id: :serial, force: :cascade do |t|
@@ -454,6 +458,39 @@ ActiveRecord::Schema.define(version: 2021_12_07_020925) do
     t.index ["interstellar_service_type"], name: "index_rates_on_interstellar_service_type"
     t.index ["shipment_id"], name: "index_rates_on_shipment_id"
     t.index ["tracking_carrier_id"], name: "index_rates_on_tracking_carrier_id"
+  end
+
+  create_table "receivable_items", force: :cascade do |t|
+    t.integer "charge_cents", default: 0, null: false
+    t.string "charge_currency", default: "USD", null: false
+    t.bigint "receivable_id", null: false
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["receivable_id"], name: "index_receivable_items_on_receivable_id"
+  end
+
+  create_table "receivables", force: :cascade do |t|
+    t.boolean "invoiced", default: false
+    t.datetime "authorized_at"
+    t.datetime "due_by"
+    t.datetime "paid_at"
+    t.bigint "authorized_by_id"
+    t.bigint "created_by_id"
+    t.bigint "shipment_id", null: false
+    t.bigint "updated_by_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "total_cents", default: 0, null: false
+    t.string "total_currency", default: "USD", null: false
+    t.index ["authorized_at"], name: "index_receivables_on_authorized_at"
+    t.index ["authorized_by_id"], name: "index_receivables_on_authorized_by_id"
+    t.index ["created_by_id"], name: "index_receivables_on_created_by_id"
+    t.index ["due_by"], name: "index_receivables_on_due_by"
+    t.index ["invoiced"], name: "index_receivables_on_invoiced"
+    t.index ["paid_at"], name: "index_receivables_on_paid_at"
+    t.index ["shipment_id"], name: "index_receivables_on_shipment_id"
+    t.index ["updated_by_id"], name: "index_receivables_on_updated_by_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -759,6 +796,11 @@ ActiveRecord::Schema.define(version: 2021_12_07_020925) do
   add_foreign_key "rates", "broker_customers"
   add_foreign_key "rates", "carriers", column: "tracking_carrier_id"
   add_foreign_key "rates", "shipments"
+  add_foreign_key "receivable_items", "receivables"
+  add_foreign_key "receivables", "shipments"
+  add_foreign_key "receivables", "users", column: "authorized_by_id"
+  add_foreign_key "receivables", "users", column: "created_by_id"
+  add_foreign_key "receivables", "users", column: "updated_by_id"
   add_foreign_key "shipment_accessorials", "accessorials"
   add_foreign_key "shipment_accessorials", "shipments"
   add_foreign_key "shipment_broker_accessorials", "broker_accessorials"

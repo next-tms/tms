@@ -1,0 +1,40 @@
+<% provide :title, "Invoice #{@receivable.shipment.load_id}" %>
+<% provide :menu, render('menu') %>
+
+<div class="page-header">
+  <h1>
+    <%= yield :title %>
+    <% unless @receivable.paid_at.blank? %>
+      <span class="badge bg-success">Paid</span>
+    <% end %>
+    <small>
+      <%= link_to @receivable.broker_customer.customer.name, broker_broker_customer_path(@receivable.broker_customer), target: '_blank' %></small>
+    </small>
+  </h1>
+
+  <ul class="list-unstyled list-inline lead">
+    <li class="list-inline-item">
+      Load <%= link_to @receivable.shipment.load_id, broker_shipment_path(@receivable.shipment), target: '_blank' %>
+    </li>
+    <li class="list-inline-item">
+      <% unless @receivable.due_by.blank? %>
+        Due <%= short_date @receivable.due_by, current_user.time_zone %>
+      <% end %>
+    </li>
+    <% unless @receivable.paid_at.blank? %>
+      <li class="list-inline-item">Paid on <%= short_date @receivable.paid_at, current_user.time_zone %></li>
+    <% end %>
+  </ul>
+</div>
+
+<% unless @receivable.total == @receivable.shipment.total_charges %>
+  <div class="alert alert-danger">
+    <p class="lead">Invoice doesn’t match load</p>
+    <p>The charges on this invoice do not match the load.</p>
+    <ul class="list-unstyled list-inline">
+      <li class="list-inline-item"><%= link_to 'Recalculate', rebuild_broker_receivable_path(@receivable), target: '_top', class: 'btn btn-light' %></li>
+    </ul>
+  </div>
+<% end %>
+
+<%= render 'receivable_items', receivable_items: @receivable.receivable_items %>

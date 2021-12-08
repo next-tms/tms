@@ -4,36 +4,46 @@
 
 <%= render 'header', page_title: 'Pricing' %>
 
-<%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment)) do |f| %>
-  <p class="col-title"><%= @shipment.broker_carrier.blank? ? 'Carrier' : @shipment.broker_carrier.carrier.name %></p>
-  <div class="row gy-2 gx-3 align-items-center mb-4">
-    <div class="col-auto">
-      <%= f.text_field :carrier_cost, prepend: '$', label: 'Cost', data: money_controller_data, autocomplete: 'off' %>
-    </div>
-
-    <div class="col-auto">
-      <%= f.text_field :carrier_charge, prepend: '$', label: 'Charge', data: money_controller_data, autocomplete: 'off' %>
-    </div>
+<% unless @shipment.receivables.blank? %>
+  <div class="alert alert-danger">
+    <p class="lead">Already invoiced</p>
+    <p>
+      This shipment has already been invoiced. Modifying the values here will not update any invoices associated and will require further review. Only users with accounting priveledges may make further changes.</p>
   </div>
+<% end %>
 
-  <p class="col-title">Services</p>
-  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".tracking-event-form-wrapper">
-    <template data-nested-form-target="template">
-      <%= f.fields_for :shipment_broker_accessorials, ShipmentBrokerAccessorial.new, child_index: 'NEW_RECORD' do |shipment_broker_accessorials_form| %>
+<% if @shipment.receivables.blank? || current_user.has_role?('accounts_receivable') %>
+  <%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment)) do |f| %>
+    <p class="col-title"><%= @shipment.broker_carrier.blank? ? 'Carrier' : @shipment.broker_carrier.carrier.name %></p>
+    <div class="row gy-2 gx-3 align-items-center mb-4">
+      <div class="col-auto">
+        <%= f.text_field :carrier_cost, prepend: '$', label: 'Cost', data: money_controller_data, autocomplete: 'off' %>
+      </div>
+  
+      <div class="col-auto">
+        <%= f.text_field :carrier_charge, prepend: '$', label: 'Charge', data: money_controller_data, autocomplete: 'off' %>
+      </div>
+    </div>
+  
+    <p class="col-title">Services</p>
+    <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".tracking-event-form-wrapper">
+      <template data-nested-form-target="template">
+        <%= f.fields_for :shipment_broker_accessorials, ShipmentBrokerAccessorial.new, child_index: 'NEW_RECORD' do |shipment_broker_accessorials_form| %>
+          <%= render 'shipment_broker_accessorial_form', f: shipment_broker_accessorials_form %>
+        <% end %>
+      </template>
+  
+      <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorials_form| %>
         <%= render 'shipment_broker_accessorial_form', f: shipment_broker_accessorials_form %>
       <% end %>
-    </template>
-
-    <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorials_form| %>
-      <%= render 'shipment_broker_accessorial_form', f: shipment_broker_accessorials_form %>
+  
+      <div data-nested-form-target="target"></div>
+  
+      <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+    </div>
+  
+    <%= f.form_group do %>
+      <%= f.submit class: 'btn btn-primary', value: 'Save' %>
     <% end %>
-
-    <div data-nested-form-target="target"></div>
-
-    <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
-  </div>
-
-  <%= f.form_group do %>
-    <%= f.submit class: 'btn btn-primary', value: 'Save' %>
   <% end %>
 <% end %>

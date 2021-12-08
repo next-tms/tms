@@ -22,6 +22,10 @@
 #   @return [Boolean]
 # @!attribute internal_notes
 #   @return [String]
+# @!attribute requires_carrier_bol_on_receivables
+#   @return [Boolean]
+# @!attribute requires_carrier_pod_on_receivables
+#   @return [Boolean]
 # @!attribute shipment_string_patterns
 #   @return [String]
 # @!attribute valid_freight_classes
@@ -39,9 +43,11 @@
 #
 # Indexes
 #
-#  index_broker_customers_on_broker_id                  (broker_id)
-#  index_broker_customers_on_customer_id                (customer_id)
-#  index_broker_customers_on_primary_pickup_address_id  (primary_pickup_address_id)
+#  index_broker_customers_on_broker_id                            (broker_id)
+#  index_broker_customers_on_customer_id                          (customer_id)
+#  index_broker_customers_on_primary_pickup_address_id            (primary_pickup_address_id)
+#  index_broker_customers_on_requires_carrier_bol_on_receivables  (requires_carrier_bol_on_receivables)
+#  index_broker_customers_on_requires_carrier_pod_on_receivables  (requires_carrier_pod_on_receivables)
 #
 # Foreign Keys
 #
@@ -53,6 +59,7 @@ class BrokerCustomer < ApplicationRecord
   belongs_to :broker
 
   has_many :contacts
+  has_many :receivables
   has_many :shipments
 
   serialize :shipment_string_patterns, Array

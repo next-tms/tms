@@ -244,10 +244,26 @@ class Shipment < ApplicationRecord
   scope :late, -> { where(id: late_per_promised_delivery_by).or(where(id: late_per_delivery_eta_on)).distinct }
   scope :not_late, -> { where.not(id: late) }
 
+  # Receivables
+
+  scope :with_carrier_bol, lambda {
+    left_joins(:carrier_bol_attachment)
+      .group(:id)
+      .having('COUNT(active_storage_attachments) != 0')
+  }
+
+  scope :with_carrier_pod, lambda {
+    left_joins(:carrier_pod_attachment)
+      .group(:id)
+      .having('COUNT(active_storage_attachments) != 0')
+  }
+
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
 
   has_many :commissions, dependent: :destroy
+
+  has_many :receivables
 
   has_many :tracking_events, dependent: :destroy
   accepts_nested_attributes_for :tracking_events, allow_destroy: true, reject_if: :all_blank
@@ -1088,6 +1104,62 @@ class Shipment < ApplicationRecord
         amount: amount
       )
     end
+  end
+
+  def self.receivable
+    shipment_ids = []
+
+    shipment_ids +=
+      delivered
+      .with_carrier_bol
+      .with_carrier_pod
+      .where(
+        broker_customer_id:
+        BrokerCustomer
+        .where(
+          requires_carrier_bol_on_receivables: true,
+          requires_carrier_pod_on_receivables: true
+        )
+        .ids
+      )
+      .ids
+
+    shipment_ids +=
+      delivered
+      .with_carrier_bol
+      .where(
+        broker_customer_id:
+        BrokerCustomer
+        .where(requires_carrier_bol_on_receivables: true)
+        .where.not(requires_carrier_pod_on_receivables: true)
+        .ids
+      )
+      .ids
+
+    shipment_ids +=
+      delivered
+      .with_carrier_pod
+      .where(
+        broker_customer_id:
+        BrokerCustomer
+        .where(requires_carrier_pod_on_receivables: true)
+        .where.not(requires_carrier_bol_on_receivables: true)
+        .ids
+      )
+      .ids
+
+    shipment_ids +=
+      pending_delivery
+      .where(
+        broker_customer_id:
+        BrokerCustomer
+        .where.not(requires_carrier_pod_on_receivables: true)
+        .where.not(requires_carrier_bol_on_receivables: true)
+        .ids
+      )
+      .ids
+
+    where(id: shipment_ids)
   end
 
   def to_param

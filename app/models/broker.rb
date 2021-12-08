@@ -31,8 +31,11 @@
 #
 class Broker < ApplicationRecord
   has_many :banks
-  has_many :users
+
   has_many :shipments
+  has_many :receivables, through: :shipments
+
+  has_many :users
   has_many :websites
 
   has_many :broker_carriers
