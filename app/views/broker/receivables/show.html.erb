@@ -8,17 +8,13 @@
       <span class="badge bg-success">Paid</span>
     <% end %>
     <small>
-      <%= link_to @receivable.broker_customer.customer.name, broker_broker_customer_path(@receivable.broker_customer) %></small>
+      <%= link_to @receivable.broker_customer.customer.name, broker_broker_customer_path(@receivable.broker_customer), target: '_blank' %></small>
     </small>
   </h1>
 
   <ul class="list-unstyled list-inline lead">
     <li class="list-inline-item">
-      <span class="text-primary">
-        <% unless @receivable.due_by.blank? %>
-          <%= link_to "Load #{@receivable.shipment.load_id}", broker_shipment_path(@receivable.shipment), target: '_blank' %>
-        <% end %>
-      </span>
+      Load <%= link_to @receivable.shipment.load_id, broker_shipment_path(@receivable.shipment), target: '_blank' %>
     </li>
     <li class="list-inline-item">
       <% unless @receivable.due_by.blank? %>

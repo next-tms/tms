@@ -11,7 +11,7 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def index
-    @display_paid = ['0', nil].include?(params.dig(:q, :paid_at_null))
+    @display_authorized = ['0', nil].include?(params.dig(:q, :authorized_at_null))
 
     @q = current_user.broker.receivables.includes(required_includes).ransack(params[:q])
     @q.sorts = 'due_by asc' if @q.sorts.blank?
@@ -29,6 +29,7 @@ class Broker::ReceivablesController < Broker::BrokerController
 
   def rebuild
     @receivable.build_from_shipment(@receivable.shipment)
+    @receivable.updated_by = current_user
     @receivable.save
 
     redirect_to broker_receivable_path(@receivable)
@@ -39,11 +40,16 @@ class Broker::ReceivablesController < Broker::BrokerController
   def edit; end
 
   def update
-    if !@receivable.update(receivable_params)
-      flash[:error] = 'Unable to update receivable'
-      render :edit
-    else
+    @receivable.assign_attributes(receivable_params)
+    @receivable.updated_by = current_user
+
+    @receivable.authorized_by = current_user unless receivable_params[:authorized_at].blank?
+
+    if @receivable.save
       redirect_to broker_receivable_path(@receivable)
+    else
+      flash[:error] = "Unable to update invoice: #{@receivable.errors.full_messages.join('<br>').html_safe}"
+      render :show
     end
   end
 
@@ -57,16 +63,17 @@ class Broker::ReceivablesController < Broker::BrokerController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_receivable
-    @receivable = Receivable.find(params[:id])
+    @receivable = current_user.broker.receivables.find(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def receivable_params
+    params.require(:receivable).permit(:id, :authorized_at, :invoiced)
   end
 
   # Query helpers
   def paid_or_pending_filter(q)
-    @display_paid ? q.result.paid : q.result.unpaid
+    @display_authorized ? q.result.authorized : q.result.unauthorized
   end
 
   def required_includes

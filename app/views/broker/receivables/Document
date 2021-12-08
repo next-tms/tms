@@ -1,4 +1,0 @@
-Shipment.where('delivered_at >= ?', 4.weeks.ago).receivable.find_each do |shipment|
-  receivable = Receivable.build_from_shipment(shipment)
-  receivable.save
-end

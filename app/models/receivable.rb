@@ -60,6 +60,8 @@ class Receivable < ApplicationRecord
   monetize :total_cents, allow_nil: false
 
   scope :authorized, -> { where.not(authorized_at: nil) }
+  scope :unauthorized, -> { where.not(id: authorized) }
+
   scope :paid, -> { where.not(paid_at: nil) }
   scope :unpaid, -> { where.not(id: paid) }
 
@@ -74,7 +76,7 @@ class Receivable < ApplicationRecord
   def build_from_shipment(shipment)
     assign_attributes(
       shipment: shipment,
-      due_by: (shipment.delivered_at + 30.days).end_of_day.in_time_zone('America/Los_Angeles')
+      due_by: (shipment.picked_up_at + 30.days).end_of_day.in_time_zone('America/Los_Angeles')
     )
 
     self.receivable_items.map(&:mark_for_destruction) unless self.receivable_items.blank?
@@ -91,7 +93,7 @@ class Receivable < ApplicationRecord
 
       self.receivable_items.build(
         charge: shipment_broker_accessorial.charge,
-        description: shipment_broker_accessorial.broker_accessorial.name
+        description: shipment_broker_accessorial.broker_accessorial.name.capitalize
       )
     end
     

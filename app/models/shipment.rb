@@ -1149,7 +1149,7 @@ class Shipment < ApplicationRecord
       .ids
 
     shipment_ids +=
-      delivered
+      pending_delivery
       .where(
         broker_customer_id:
         BrokerCustomer
