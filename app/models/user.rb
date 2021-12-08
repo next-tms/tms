@@ -104,6 +104,8 @@ class User < ApplicationRecord
 
   before_save :update_contact
 
+  before_validation :set_time_zone
+
   belongs_to :broker, required: true
   belongs_to :contact
   belongs_to :customer, required: false
@@ -219,6 +221,10 @@ class User < ApplicationRecord
   end
 
   private
+
+  def set_time_zone
+    self.time_zone = broker&.time_zone
+  end
 
   def update_contact
     contact = Contact.new if :new_record? && contact.blank?

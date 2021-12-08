@@ -58,6 +58,7 @@ class Broker < ApplicationRecord
   validates_presence_of :customer_service_email
   validates :customer_service_email, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates_presence_of :phone
+  validates_presence_of :time_zone
 
   phony_normalize :phone, default_country_code: 'US'
 
@@ -69,6 +70,8 @@ class Broker < ApplicationRecord
 
   after_create :copy_accessorials_to_broker_accessorials
   before_save :unique_countries
+
+  serialize :time_zone
 
   def last_load_id
     shipments.blank? ? first_load_id : shipments.order(load_id: :desc).limit(1).first.load_id
