@@ -12,6 +12,10 @@
   <%= f.check_box :can_quote, label: 'Company has access to online quoting' %>
   <%= f.check_box :always_show_quotes_based_on_calculated_classes, label: 'Always show rates based on calculated class rather than declared class' %>
 
+  <p class="col-title">Invoicing</p>
+  <%= f.check_box :requires_carrier_bol_on_receivables, label: 'Requires carrier BOL on invoices?' %>
+  <%= f.check_box :requires_carrier_pod_on_receivables, label: 'Requires carrier POD on invoices?' %>
+
   <p class="col-title">Rules</p>
   <p>Set pricing per unit based on minimum and maximum counts</p>
 
