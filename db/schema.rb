@@ -188,6 +188,8 @@ ActiveRecord::Schema.define(version: 2021_12_08_004730) do
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["primary_pickup_address_id"], name: "index_broker_customers_on_primary_pickup_address_id"
+    t.index ["requires_carrier_bol_on_receivables"], name: "index_broker_customers_on_requires_carrier_bol_on_receivables"
+    t.index ["requires_carrier_pod_on_receivables"], name: "index_broker_customers_on_requires_carrier_pod_on_receivables"
   end
 
   create_table "brokers", id: :serial, force: :cascade do |t|
