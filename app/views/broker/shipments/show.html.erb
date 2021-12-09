@@ -1,8 +1,6 @@
 <% provide :title, "Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
-<% provide :auto_refresh, 'yes' %>
 
-<%= render 'header', page_title: 'Overview' %>
+<%= render 'member_header' %>
 
 <% unless @shipment.broker_customer.internal_notes.blank? %>
   <div class="alert alert-danger">

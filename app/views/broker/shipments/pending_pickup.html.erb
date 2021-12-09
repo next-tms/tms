@@ -1,11 +1,6 @@
-<% provide :title, 'Dispatched — Shipments' %>
-<% provide :menu, render('menu') %>
-<% provide :auto_refresh, 'yes' if not @shipments_for_pickup_today.blank? or not @shipments_for_pickup_later.blank? %>
+<% provide :title, 'Dispatched' %>
 
-<div class="page-header">
-  <h1>Shipments</h1>
-  <p class="lead">Dispatched</p>
-</div>
+<%= render 'header' %>
 
 <% unless @shipments_missed_pickup.blank? %>
   <h2>Overdue</h2>

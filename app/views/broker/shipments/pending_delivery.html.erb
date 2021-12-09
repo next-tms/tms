@@ -1,11 +1,6 @@
-<% provide :title, 'In Transit — Shipments' %>
-<% provide :menu, render('menu') %>
-<% provide :auto_refresh, 'yes' %>
+<% provide :title, 'In Transit' %>
 
-<div class="page-header">
-  <h1>Shipments</h1>
-  <p class="lead">In Transit</p>
-</div>
+<%= render 'header' %>
 
 <h2>Missing ETA</h2>
 <%= turbo_frame_tag :shipments_without_delivery_eta_on, src: broker_shipments_pending_delivery_without_delivery_eta_on_path do %>

@@ -13,12 +13,23 @@ h1 small, .text-highlighted {
   background: #ffb380;
 }
 
+.page-header {
+  border: 0;
+  margin-top: -0.5rem;
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+
 h2 {
   margin-bottom: 1rem;
 }
 
 table thead tr th, table tbody tr th {
   font-weight: 600;
+}
+
+.page-header table thead tr th, .page-header table tbody tr th {
+  font-weight: 400;
 }
 
 table thead tr th, .lead, .brand {
@@ -29,6 +40,10 @@ table thead tr th {
   text-transform: uppercase;
 }
 
+.page-header table thead tr th {
+  text-transform: none;
+}
+
 .navbar-divider {
   padding-left: 1.4rem;
 }
@@ -37,9 +52,13 @@ table thead tr th {
   overflow: hidden;
 }
 
+aside {
+  background: #E2F8FF;
+}
+
 .navbar {
-  background: black;
-  color: rgba(255, 255, 255, 0.85);
+  // background: #E3F8FF;
+  background: #FF6606;
 }
 
 .navbar-menu {
@@ -82,21 +101,37 @@ main {
   background: #f6f6f6;
 }
 
-navbar, .navbar a, .navbar a:active, .navbar a:hover, .navbar a:visited,
-footer, footer a, footer a:active, footer a:hover, footer a:visited {
-  color: rgba(255, 255, 255, 0.9);
+.navbar, .navbar a, .navbar a:active, .navbar a:hover, .navbar a:visited {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+aside, aside a, aside a:active, aside a:hover, aside a:visited {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.page-header a, .page-header a:active, .page-header a:hover, .page-header a:visited {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.page-header a.active {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+// aside, aside a, aside a:active, aside a:hover, aside a:visited,
+.page-header a, .page-header a:active, .page-header a:hover, .page-header a:visited {
+  font-weight: 500;
 }
 
 a.sort_link, a.sort_link:active, a.sort_link:hover, a.sort_link:visited {
   color: rgb(0, 0, 0);
 }
 
-tr.bg-danger, tr.bg-danger a, tr.bg-danger a:active, tr.bg-danger a:hover, tr.bg-danger a:visited {
-  color: rgba(255, 255, 255, 0.9) !important;
+.btn-primary, .btn-primary:hover {
+ color: white; 
 }
 
-.navbar a, .navbar a:active, .navbar a:hover, .navbar a:visited {
-  font-weight: 500;
+tr.bg-danger, tr.bg-danger a, tr.bg-danger a:active, tr.bg-danger a:hover, tr.bg-danger a:visited {
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .modal-content a, .modal-content a:active, .modal-content a:hover, .modal-content a:visited {
@@ -189,10 +224,6 @@ main a, main a:active, main a:hover, main a:visited {
   font-weight: normal;
 }
 
-.page-header {
-  margin-bottom: 2.4rem;
-}
-
 .data-link {
   cursor: pointer;
 }
@@ -218,10 +249,6 @@ main {
 iframe {
   border: none;
   height: 15rem;
-}
-
-.btn-toolbar {
-  margin-bottom: 1rem;
 }
 
 footer .row {

@@ -1,8 +1,8 @@
 <% provide :title, "Notes — Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
 <% provide :no_cache, 'yes' %>
 
 <%= render 'header', page_title: 'Notes' %>
+<%= render 'member_menu' %>
 
 <%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment)) do |f| %>
   <%= f.text_area :broker_notes, label: 'Internal Notes', autofocus: 'autofocus', autocomplete: 'off' %>

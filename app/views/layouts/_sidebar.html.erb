@@ -1,0 +1,65 @@
+<aside class="col col-md-2 p-4">
+  <ul class="list-unstyled mt-4">
+    <% if current_user.has_role?('sales_rep') || current_user.has_role?('dispatch') %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('fas', 'pallet', 'Shipments'), broker_shipments_path, target: '_top', class: 'shipments' %>
+      </li>
+    <% end %>
+
+    <% if current_user.has_role? 'carrier_relations' %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('fas', 'truck-moving', 'Carriers'), broker_broker_carriers_path, target: '_top', class: 'broker-carriers' %>
+      </li>
+    <% end %>
+  
+    <% if current_user.has_role?('root') || current_user.has_role?('sales_rep') %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('fas', 'handshake', 'Customers'), broker_broker_customers_path, target: '_top', class: 'broker-customers' %>
+      </li>
+    <% end %>
+  </ul>
+
+  <ul class="list-unstyled mt-4">
+    <% if current_user.has_role?('admin') %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('fas', 'dollar-sign', 'Commissions'), broker_broker_customer_sales_reps_path, target: '_top', class: 'broker-customer-sales-reps' %>
+      </li>
+    <% elsif current_user.has_role? 'sales_rep' %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('fas', 'dollar-sign', 'Commissions'), commissions_broker_broker_customer_sales_rep_path(current_user), target: '_top', class: 'broker-customer-sales-reps' %>
+      </li>
+    <% end %>
+
+    <% if current_user.has_role? 'root' %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('fas', 'university', 'Banks'), broker_banks_path, target: '_top', class: 'banks' %>
+      </li>
+    <% end %>
+
+    <% if current_user.has_role? 'accounts_payable' or current_user.has_role? 'accounts_receivable' or current_user.has_role? 'controller' %>
+      <% if current_user.has_role? 'accounts_payable' %>
+        <li class="mb-2 p-2">
+          <%= link_to icon('fas', 'file-invoice', 'Payables'), broker_payments_path, target: '_top', class: 'payments' %>
+        </li>
+      <% end %>
+    
+      <% if current_user.has_role? 'accounts_receivable' %>
+        <li class="mb-2 p-2">
+          <%= link_to icon('fas', 'hand-holding-usd', 'Receivables'), broker_receivables_path %>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+
+  <ul class="list-unstyled mt-4">
+    <% if current_user.has_role? 'root' %>
+      <li class="mb-2 p-2"><%= link_to icon('fas', 'users', 'Users'), broker_users_path, target: '_top' %></li>
+    <% end %>
+  </ul>
+
+  <ul class="list-unstyled mt-4">
+    <li class="mb-2 p-2"><%= link_to icon('fas', 'user-circle', 'Account'), edit_user_registration_path %></li>
+    <li class="mb-2 p-2"><%= link_to icon('fas', 'cog', 'Settings'), broker_settings_path %></li>
+    <li class="mb-2 p-2"><%= link_to icon('fas', 'sign-out-alt', 'Logout'), destroy_user_session_path, data: { action: 'authentication#signout' } %></li>
+  </ul>
+</aside>

@@ -1,11 +1,6 @@
-<% provide :title, 'At Origin — Shipments' %>
-<% provide :menu, render('menu') %>
-<% provide :auto_refresh, 'yes' %>
+<% provide :title, 'Pending Departure' %>
 
-<div class="page-header">
-  <h1>Shipments</h1>
-  <p class="lead">Pending Departure</p>
-</div>
+<%= render 'header' %>
 
 <%= turbo_frame_tag :shipments do %>
   <%= render 'show_many_pending_departure', shipments: @shipments %>
