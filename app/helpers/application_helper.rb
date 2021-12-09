@@ -213,7 +213,7 @@ module ApplicationHelper
     when 'CENF'
       "http://centralfreight.com/website/mf/mfInquiry.aspx?inqmode=PRO&pro=#{real_pro(shipment)}"
     when 'CLNI'
-      "https://tracking.carrierlogistics.com/scripts/clf.pol/boldetail.htm?wbtn=PRO&wpro1=#{real_pro(shipment)}"
+      "https://ssworldtrak.com/WebtrakWTNew/ShipInquiry/QuickTrack.aspx?cmp=clearl&TrackType=HousebillNo&TrackNo=#{real_pro(shipment)}"
     when 'CNWY'
       "https://app.ltl.xpo.com/appjs/tracking/details/#{real_pro(shipment)}"
     when 'CTBV'
