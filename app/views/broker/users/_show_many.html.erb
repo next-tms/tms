@@ -14,6 +14,7 @@
             <th>Roles</th>
           <% end %>
           <th><%= sort_link @q, :email, 'Email' %></th>
+          <th class="text-nowrap"><%= sort_link @q, :invitation_sent_at, 'Invited' %></th>
           <th class="text-nowrap"><%= sort_link @q, :invitation_accepted_at, 'Invitation Accepted' %></th>
           <th class="text-nowrap"><%= sort_link @q, :last_sign_in_at, 'Last Sign In' %></th>
         </tr>
@@ -34,6 +35,9 @@
               <td><%= (user.roles.map(&:name) - ['root']).sort.join(', ') %></td>
             <% end %>
             <td cass="text-nowrap"><%= link_to user.email, "mailto:#{user.email}" %></td>
+            <td class="text-nowrap">
+              <%= pretty_date(user.invitation_sent_at, current_user.time_zone) || 'Never' %>
+            </td>
             <td class="text-nowrap">
               <%= pretty_date(user.invitation_accepted_at, current_user.time_zone) || 'Never' %>
             </td>
