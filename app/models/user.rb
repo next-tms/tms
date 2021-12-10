@@ -222,7 +222,7 @@ class User < ApplicationRecord
   private
 
   def set_contact
-    self.contact = broker.contacts.where(email: self.email)
+    self.contact = broker.contacts.where(email: email)&.first
   end
 
   def set_time_zone
