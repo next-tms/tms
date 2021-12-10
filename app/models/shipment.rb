@@ -368,6 +368,7 @@ class Shipment < ApplicationRecord
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
   validates :load_id, uniqueness: { scope: :broker }
+  validate :future_pickup_by, if: -> { dispatch_pickup }
 
   def applied_rate_uid=(rate_uid)
     rate = Rate.find_by_uid(rate_uid)
@@ -1167,6 +1168,10 @@ class Shipment < ApplicationRecord
   end
 
   private
+
+  def future_pickup_by
+    errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < DateTime.current
+  end
 
   def pro_or_tracking_carrier_pro_changed?
     pro_changed? || tracking_carrier_pro_changed?

@@ -2,8 +2,6 @@
 
 class DispatchShipmentPickupJob < ApplicationJob
   def perform(pickup)
-    if PickupsService.new(pickup: pickup).dispatch
-      UserMailer.pickup_service_dispatched(pickup.shipment).deliver_later
-    end
+    UserMailer.pickup_service_dispatched(pickup).deliver_later if PickupsService.new(pickup: pickup).dispatch
   end
 end
