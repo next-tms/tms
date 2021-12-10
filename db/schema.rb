@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_08_235247) do
+ActiveRecord::Schema.define(version: 2021_12_10_185205) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -404,6 +404,8 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.string "pro"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "dispatcher_id"
+    t.index ["dispatcher_id"], name: "index_pickups_on_dispatcher_id"
     t.index ["rate_id"], name: "index_pickups_on_rate_id"
     t.index ["shipment_id"], name: "index_pickups_on_shipment_id"
     t.index ["updated_by_id"], name: "index_pickups_on_updated_by_id"
@@ -788,6 +790,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
   add_foreign_key "payments", "users", column: "created_by_id"
   add_foreign_key "pickups", "rates"
   add_foreign_key "pickups", "shipments"
+  add_foreign_key "pickups", "users", column: "dispatcher_id"
   add_foreign_key "pickups", "users", column: "updated_by_id"
   add_foreign_key "pricing_rules", "broker_carriers"
   add_foreign_key "pricing_rules", "carrier_areas"
