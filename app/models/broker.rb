@@ -31,6 +31,7 @@
 #
 class Broker < ApplicationRecord
   has_many :banks
+  has_many :contacts
 
   has_many :shipments
   has_many :receivables, through: :shipments
