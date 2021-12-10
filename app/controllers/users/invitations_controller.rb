@@ -6,7 +6,7 @@ class Users::InvitationsController < Devise::InvitationsController
 
     resource.update(
       broker: current_user.broker,
-      time_zone: current_user.broker.users.first.time_zone
+      time_zone: current_user.broker.time_zone
     )
 
     resource_invited = resource.errors.empty?

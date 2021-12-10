@@ -102,8 +102,7 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :invitable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable
 
-  before_save :update_contact
-
+  before_validation :set_contact
   before_validation :set_time_zone
 
   belongs_to :broker, required: true
@@ -222,22 +221,11 @@ class User < ApplicationRecord
 
   private
 
-  def set_time_zone
-    self.time_zone = broker&.time_zone
+  def set_contact
+    self.contact = broker.contacts.where(email: self.email)
   end
 
-  def update_contact
-    contact = Contact.new if :new_record? && contact.blank?
-
-    contact.assign_attributes(
-      broker_customer: broker_customer,
-      broker: broker,
-      email: email,
-      first_name: first_name,
-      last_name: last_name
-    )
-
-    contact.save
-    self.contact = contact
+  def set_time_zone
+    self.time_zone = broker&.time_zone
   end
 end
