@@ -24,7 +24,7 @@ module InterstellarApiClient
           selenoid_options: {
             download_url: "#{ENV['SELENOID_BASE_URL']}/download"
           },
-          watir_args: [:chrome, { url: "#{ENV['SELENOID_BASE_URL']}/wd/hub/" }]
+          watir_args: [:chrome, { url: "#{ENV['SELENOID_BASE_URL']}/wd/hub/" }],
           test: !Rails.env.production?
         }
 
