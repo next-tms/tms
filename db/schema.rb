@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_10_185205) do
+ActiveRecord::Schema.define(version: 2021_12_11_010338) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -442,7 +442,6 @@ ActiveRecord::Schema.define(version: 2021_12_10_185205) do
     t.bigint "shipment_id", null: false
     t.integer "cost_cents", default: 0, null: false
     t.string "cost_currency", default: "USD", null: false
-    t.text "error"
     t.datetime "expires_at"
     t.string "reference"
     t.text "request"
@@ -455,7 +454,7 @@ ActiveRecord::Schema.define(version: 2021_12_10_185205) do
     t.string "shipment_fingerprint"
     t.string "uid"
     t.string "interstellar_service_type"
-    t.string "interstellar_error_class"
+    t.string "error_object"
     t.index ["broker_carrier_id"], name: "index_rates_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_rates_on_broker_customer_id"
     t.index ["interstellar_service_type"], name: "index_rates_on_interstellar_service_type"
