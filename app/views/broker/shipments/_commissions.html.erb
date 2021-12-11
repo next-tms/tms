@@ -19,7 +19,7 @@
         <% total_amount_cents += commission.amount_cents %>
         <% total_percent += commission.percent %>
         <tr>
-          <td><%= commission.user.contact.full_name %></td>
+          <td><%= commission.user.full_name %></td>
           <td><%= commission.percent * 100 %></td>
           <td><%= humanized_money_with_symbol commission.amount, no_cents_if_whole: false %></td>
           <td>
