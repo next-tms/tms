@@ -32,7 +32,7 @@ module InterstellarApiClient
     shipper_phone:,
     shipper_reference:,
     retry_on_timeout: true,
-    return_nil_on_error: true
+    return_nil_on_error: false
   )
     Services::CreatePickup.new(
       broker_carrier: broker_carrier,
