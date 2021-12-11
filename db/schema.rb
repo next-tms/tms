@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_11_015410) do
+ActiveRecord::Schema.define(version: 2021_12_11_020330) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -399,7 +399,6 @@ ActiveRecord::Schema.define(version: 2021_12_11_015410) do
     t.bigint "rate_id", null: false
     t.bigint "shipment_id", null: false
     t.bigint "updated_by_id"
-    t.string "error"
     t.string "pickup_confirmation"
     t.string "pro"
     t.datetime "created_at", precision: 6, null: false
