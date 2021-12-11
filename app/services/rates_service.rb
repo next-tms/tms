@@ -11,15 +11,7 @@ class RatesService
     calculated_freight_classes = items.map(&:calculated_freight_class)
     forced_freight_classes = items.map(&:forced_freight_class)
 
-    if calculated_freight_classes.blank? && forced_freight_classes.blank?
-      rate = new_rate
-
-      rate.assign_attributes(
-        error: '@shipment#update_quotes: calculated_freight_classes and forced_freight_classes are blank'
-      )
-
-      return [rate]
-    end
+    return [] if calculated_freight_classes.blank? && forced_freight_classes.blank?
 
     unless @broker_carrier.pricing_rules.blank?
       @broker_carrier
@@ -42,9 +34,10 @@ class RatesService
       end
     end
 
-    error = nil
-    interstellar_error_class = nil
+    return [] if @broker_carrier.as_interstellar_carrier.blank?
+
     response = nil
+    error = nil
 
     begin
       response = InterstellarApiClient.fetch_rates(
@@ -55,21 +48,12 @@ class RatesService
         accessorials: accessorials
       )
     rescue StandardError => e
-      error = "API Error: #{e.class.name}: #{e.message}"
-      interstellar_error_class = e.class.name
-      response = nil
-
-      case e.class
-      when Interstellar::InvalidCredentialsError
-        error = 'Invalid username/password'
-      when Interstellar::UnserviceableError
-        error = "No service (#{error})"
-      end
+      error = e
     end
 
-    if response.blank? || response.rates.blank?
+    if response.blank? || response&.rates.blank?
       rate = new_rate
-      rate.assign_attributes(error: error, interstellar_error_class: interstellar_error_class)
+      rate.assign_attributes(error_object: error)
 
       return [rate]
     end
@@ -80,10 +64,10 @@ class RatesService
     interstellar_rates.each do |interstellar_rate|
       cost = Money.new(interstellar_rate.price)
 
-      if cost == Money.new(0)
+      unless cost.positive?
         rate = new_rate
         rate.assign_attributes(
-          error: 'API Error: Cost was blank',
+          error_object: StandardError.new('Cost was empty'),
           request: response.request,
           response: response.params
         )
@@ -102,7 +86,7 @@ class RatesService
         if @broker_carrier.overlength_rules.blank?
           rate = new_rate
           rate.assign_attributes(
-            error: 'API Error: Unable to quote overlength fees as they are tariff-based, broker has not defined tariff rules',
+            error_object: StandardError.new('Unable to quote overlength fees as they are tariff-based, broker has not defined tariff rules'),
             request: response.request,
             response: response.params
           )
@@ -134,7 +118,7 @@ class RatesService
         if carrier_scac.blank? || carrier_name.blank?
           rate = new_rate
           rate.assign_attributes(
-            error: 'API Error: Carrier (acting as broker) API returned quote with missing carrier name and SCAC',
+            error_object: StandardError.new('Carrier (acting as broker) API returned quote with missing carrier name and SCAC'),
             request: response.request,
             response: response.params
           )

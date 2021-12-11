@@ -1,7 +1,7 @@
 <% unless @rates.blank? %>
   <%= turbo_stream.append "rates_#{!@rates.first.with_calculated_freight_classes?}" do %>
     <% @rates.each do |rate| %>
-      <% if !rate.interstellar_error_class.blank? %>
+      <% unless rate.error_object.blank? %>
         <% next if current_user.customer? %>
         <tr data-rate-id="<%= rate.id %>" class="table-warning">
           <td></td>
@@ -22,7 +22,7 @@
           </td>
           <td></td>
           <td data-sort="ZZZZ" colspan="<%= current_user.customer? ? 5 : 4 %>">
-            <%= rate.pretty_interstellar_error %>
+            <%= pretty_api_error(rate.error_object) %>
           </td>
         </tr>
         <% next %>

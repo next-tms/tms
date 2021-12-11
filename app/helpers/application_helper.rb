@@ -111,6 +111,41 @@ module ApplicationHelper
     pluralize(number_with_delimiter(count), singular, plural)
   end
 
+  def pretty_api_error(error)
+    return 'Unknown error' if error.blank?
+
+    if error.class.name.to_s.deconstantize == 'Interstellar'
+      case error.class.name.split('::').last
+      when 'ExpiredCredentialsError'
+        'Your username and/or password is expired'
+      when 'InvalidCredentialsError'
+        'Your username and/or password is incorrect'
+      when 'ResponseError'
+        'API error'
+      when 'UnserviceableError'
+        error.message.blank? ? 'Carrier unable to accept this shipment' : clean_sentence(error.message)
+      else
+        error.message
+      end
+    else
+      error.message
+    end
+  end
+
+  def clean_sentence(str)
+    str = str.split(':').last
+    str = str.split(' ').map do |word|
+            word.upcase == word ? word.titleize : word.downcase
+          end
+    str = str.join(' ')
+    str = str.squeeze
+    str = str.strip
+    str = str[0].upcase + str[1..]
+    str = str[0..-1] if str.last == '.'
+    str = str.gsub('Delivery', 'delivery')
+    str
+  end
+
   def valid_classes
     @valid_classes ||= [55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400]
   end
