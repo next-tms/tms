@@ -31,7 +31,7 @@ module InterstellarApiClient
     shipper_name:,
     shipper_phone:,
     shipper_reference:,
-    retry_on_timeout: false,
+    retry_on_timeout: true,
     return_nil_on_error: true
   )
     Services::CreatePickup.new(
