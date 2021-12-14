@@ -19,13 +19,14 @@ module InterstellarApiClient
         args = {
           account: broker_carrier.account,
           debug: config[:debugging],
+          test: config[:debugging],
           username: broker_carrier.username,
           password: broker_carrier.password,
+          tariff: broker_carrier.to_interstellar_tariff,
           selenoid_options: {
             download_url: "#{ENV['SELENOID_BASE_URL']}/download"
           },
-          watir_args: [:chrome, { url: "#{ENV['SELENOID_BASE_URL']}/wd/hub/" }],
-          test: !Rails.env.production?
+          watir_args: [:chrome, { url: "#{ENV['SELENOID_BASE_URL']}/wd/hub/" }]
         }
 
         if broker_carrier.carrier.has_seperate_website_credentials?

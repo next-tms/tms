@@ -90,14 +90,6 @@ class BrokerCarrier < ApplicationRecord
     !((account.blank? && username.blank?) || password.blank?)
   end
 
-  def overlength_rules
-    if !as_interstellar_carrier.blank? && !as_interstellar_carrier.rates_with_excessive_length_fees
-      super
-    else
-      OverlengthRule.none
-    end
-  end
-
   def broker_customer_specific_name
     if broker_customer.blank?
       carrier.name
@@ -120,10 +112,29 @@ class BrokerCarrier < ApplicationRecord
       customer_name: broker.name,
       debug: !Rails.env.production?,
       username: username,
-      password: password
+      password: password,
+      tariff: to_interstellar_tariff
     )
   rescue StandardError
     nil
+  end
+
+  def to_interstellar_tariff
+    return nil if overlength_rules.blank?
+
+    interstellar_overlength_rules = []
+
+    overlength_rules.each do |overlength_rule|
+      interstellar_overlength_rules << {
+        fee_cents: overlength_rule.cost_cents,
+        max_length: overlength_rule.max_length.blank? ? nil : Measured::Length.new(overlength_rule.max_length, :inches),
+        min_length: Measured::Length.new(overlength_rule.min_length, :inches)
+      }
+    end
+
+    Interstellar::Tariff.new(
+      overlength_rules: interstellar_overlength_rules
+    )
   end
 
   def pickup_number_is_tracking_number?

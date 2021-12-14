@@ -151,7 +151,8 @@ module ApplicationHelper
     str = str.strip
     str = str[0].upcase + str[1..]
     str = str[0..-1] if str.last == '.'
-    str.gsub('Delivery', 'delivery')
+    str = str.gsub('Delivery', 'delivery')
+    str.gsub('zip code', 'ZIP code')
   end
 
   def valid_classes
