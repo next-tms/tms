@@ -124,6 +124,13 @@ module ApplicationHelper
         'Your username and/or password is incorrect'
       when 'ResponseError'
         'API error'
+      when 'UnserviceableAccessorialsError'
+        accessorial_names = Accessorial
+                            .where(interstellar_code: error.accessorials)
+                            .pluck(:name)
+                            .map { |accessorial_name| accessorial_name.downcase }
+
+        "Unable to service #{accessorial_names.join(', ')}"
       when 'UnserviceableError'
         error.message.blank? ? 'Carrier unable to accept this shipment' : clean_sentence(error.message)
       else
