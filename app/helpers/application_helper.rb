@@ -72,19 +72,19 @@ module ApplicationHelper
   def pretty_date(date, time_zone)
     return nil unless date && time_zone
 
-    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone)
+    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
 
     if date.instance_of?(ActiveSupport::TimeWithZone)
       if date.year == DateTime.current.year
-        date.in_time_zone(time_zone.name).strftime("%m/%d %a %l:%M %p <small>#{time_zone.tzinfo.abbr(Date.current)}</small>").html_safe
+        date.in_time_zone(time_zone.name).strftime("%m/%d %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       else
-        date.in_time_zone(time_zone.name).strftime("%m/%d/%y %a %l:%M %p <small>#{time_zone.tzinfo.abbr(Date.current)}</small>").html_safe
+        date.in_time_zone(time_zone.name).strftime("%m/%d/%y %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       end
     elsif date.instance_of?(Date)
       if date.year == DateTime.current.year
-        date.in_time_zone(time_zone.name).strftime("%m/%d %a <small>#{time_zone.tzinfo.abbr(Date.current)}</small>").html_safe
+        date.in_time_zone(time_zone.name).strftime("%m/%d %a <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       else
-        date.in_time_zone(time_zone.name).strftime("%m/%d/%y <small>#{time_zone.tzinfo.abbr(Date.current)}</small>").html_safe
+        date.in_time_zone(time_zone.name).strftime("%m/%d/%y <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       end
     end
   end
