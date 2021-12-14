@@ -78,38 +78,6 @@ class RatesService
 
       cost += @broker_carrier.quote_padding unless @broker_carrier.quote_padding.blank?
 
-      dimensions = items.pluck(:l, :w).flatten
-      dimensions_contain_blank = !dimensions.size == (dimensions - [nil, '']).size
-      max_dimension = dimensions&.max || 48
-
-      if !interstellar_rate.with_excessive_length_fees && (max_dimension > 48 || dimensions_contain_blank)
-        if @broker_carrier.overlength_rules.blank?
-          rate = new_rate
-          rate.assign_attributes(
-            error_object: StandardError.new('Unable to quote overlength fees as they are tariff-based, broker has not defined tariff rules'),
-            request: response.request,
-            response: response.params
-          )
-
-          rates << rate
-          next
-        end
-
-        overlength_rule = @broker_carrier
-                          .overlength_rules.where('min_length <= ?', max_dimension)
-                          .where('max_length >= ?', max_dimension)
-                          &.first
-
-        if overlength_rule.blank?
-          overlength_rule = @broker_carrier
-                            .overlength_rules.where('min_length <= ?', max_dimension)
-                            .where(max_length: nil)
-                            &.first
-        end
-
-        cost += overlength_rule.cost unless overlength_rule.blank?
-      end
-
       tracking_carrier = nil
       if @broker_carrier.carrier.acts_as_broker?
         carrier_name = interstellar_rate.carrier.dig(:name)
@@ -175,7 +143,9 @@ class RatesService
   end
 
   def packages
-    @packages ||= @shipment.items.map { |i| i.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes) }
+    @packages ||= @shipment.items.map do |i|
+      i.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes)
+    end
   end
 
   def accessorials
