@@ -16,8 +16,8 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers
-  revision: 7ac87fc17a2633a4cef41152990b16cab0e3875c
-  ref: 7ac87fc17a2633a4cef41152990b16cab0e3875c
+  revision: 96e8a08eb3aba087458230bd24c4d1ca48df8b80
+  ref: 96e8a08eb3aba087458230bd24c4d1ca48df8b80
   specs:
     interstellar-next_carriers (0.1.pre1)
       interstellar (= 0.1.pre1)
