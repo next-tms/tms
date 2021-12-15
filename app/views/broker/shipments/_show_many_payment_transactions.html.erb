@@ -19,7 +19,7 @@
             <td><%= payment_transaction.broker_carrier.carrier.name %></td>
             <td>
               <% unless payment_transaction.payment.blank? %>
-                <%= link_to payment_transaction.payment.week, broker_payment_path(payment_transaction.payment) %>
+                <%= link_to payment_transaction.payment.id, broker_payment_path(payment_transaction.payment) %>
               <% end %>
             </td>
             <td><%= short_date payment_transaction.due_on, current_user.time_zone %></td>

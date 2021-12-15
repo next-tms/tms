@@ -190,6 +190,10 @@
 class Shipment < ApplicationRecord
   attr_accessor :dispatch_pickup
 
+  ransacker :load_id do
+    Arel.sql("to_char(\"#{table_name}\".\"load_id\", '99999999')")
+  end
+
   scope :canceled, -> { where.not(canceled_at: nil) }
   scope :canceled_recently, -> { canceled.where('canceled_at > ?', 1.day.ago) }
   scope :active, -> { where.not(id: canceled) }
@@ -233,7 +237,7 @@ class Shipment < ApplicationRecord
   scope :missing_charge, -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
   scope :missing_delivery_eta_on, -> { where(delivery_eta_on: ['', nil]) }
   scope :not_missing_delivery_eta_on, -> { where.not(id: missing_delivery_eta_on) }
-  scope :missing_pricing, -> { active.missing_cost.or(active.missing_charge) }
+  scope :missing_pricing, -> { active.missing_cost.or(active.missing_charge).where.not(picked_up_at: nil) }
 
   scope :delivered, -> { where.not(delivered_at: nil) }
   scope :late_per_delivery_eta_on, -> { where.not(id: delivered).where('delivery_eta_on < ?', Date.current) }

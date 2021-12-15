@@ -1,56 +1,38 @@
-<%= turbo_frame_tag :shipments do %>
-  <div class="btn-toolbar">
-    <div class="btn-group">
-      <% if @display_paid %>
-        <%= link_to 'Pending', url_for({ 'q' => { 'paid_on_null' => '1' } }), class: 'btn btn-light' %>
-        <%= link_to 'Paid', url_for({ 'q' => { 'paid_on_null' => '0' } }), class: 'btn btn-dark' %>
-      <% else %>
-        <%= link_to 'Pending', url_for({ 'q' => { 'paid_on_null' => '1' } }), class: 'btn btn-dark' %>
-        <%= link_to 'Paid', url_for({ 'q' => { 'paid_on_null' => '0' } }), class: 'btn btn-light' %>
-      <% end %>
-    </div>
-  </div>
+<%= turbo_frame_tag :payments do %>
+  <%= render 'broker/payments/search_form' %>
 
-  <%= render 'layouts/pagy', pagy: @pagy %>
   <% unless payments.blank? %>
     <div class="table-responsive">
       <table class="table table-condensed table-borderless table-striped table-hover h-100">
         <thead>
           <tr>
-            <% unless @display_paid %>
-              <th><%= sort_link(@q, :due_on, 'Due') %></th>
-            <% else %>
-              <th><%= sort_link(@q, :paid_on, 'Paid') %></th>
-              <th><%= sort_link(@q, :bank_name, 'Bank') %></th>
-            <% end %>
             <th><%= sort_link @q, :broker_carrier_carrier_name, 'Carrier' %></th>
-            <th><%= sort_link @q, :balance, 'Balance' %></th>
-            <th><%= sort_link @q, :paid, 'Pay' %></th>
+            <th><%= sort_link(@q, :due_on, 'Due') %></th>
+            <th><%= sort_link(@q, :paid_on, 'Paid') %></th>
+            <th><%= sort_link(@q, :bank_name, 'Bank') %></th>
+            <th><%= sort_link @q, :balance_cents, 'Balance' %></th>
+            <th><%= sort_link @q, :paid_cents, 'Pay' %></th>
           </tr>
         </thead>
         <tbody>
           <% payments.each do |payment| %>
             <tr>
-              <% unless @display_paid %>
-                <td>
-                  <%= link_to broker_payment_path(payment), target: '_top' do %>
-                    <% unless payment.due_on.blank? %>
-                      <%= payment.due_on.year.to_s.length == 2 ? "20#{payment.due_on.year}" : payment.due_on.year %>
-                    <% end %>
-                    <%= payment.week.blank? ? 'Unknown' : payment.week %>
-                  <% end %>
-                </td>
-              <% else %>
-                <td>
-                  <%= link_to short_date(payment.paid_on, current_user.time_zone), broker_payment_path(payment), target: '_top' %>
-                </td>
-                <td><%== payment.bank&.pretty_name %></td>
-              <% end %>
               <td>
                 <% unless payment.broker_carrier.blank? %>
                   <%= payment.broker_carrier.broker_customer_specific_name %>
                 <% end %>
               </td>
+              <td>
+                <% unless payment.due_on.blank? %>
+                  <%= link_to short_date(payment.due_on, current_user.time_zone), broker_payment_path(payment), target: '_top' %>
+                <% end %>
+              </td>
+              <td>
+                <% unless payment.paid_on.blank? %>
+                  <%= link_to short_date(payment.paid_on, current_user.time_zone), broker_payment_path(payment), target: '_top' %>
+                <% end %>
+              </td>
+              <td><%== payment.bank&.pretty_name %></td>
               <td><%= humanized_money_with_symbol payment.balance, no_cents_if_whole: false %></td>
               <td><%= humanized_money_with_symbol payment.paid, no_cents_if_whole: false %></td>
             </tr>
@@ -58,6 +40,7 @@
         </tbody>
       </table>
     </div>
+
     <%= render 'layouts/pagy', pagy: @pagy %>
   <% else %>
     <%= render 'layouts/no_content' %>

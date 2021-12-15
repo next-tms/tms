@@ -1,6 +1,7 @@
 <% provide :title, 'Pending Departure' %>
 
 <%= render 'header' %>
+<h2>Pending Departure</h2>
 
 <%= turbo_frame_tag :shipments do %>
   <%= render 'show_many_pending_departure', shipments: @shipments %>

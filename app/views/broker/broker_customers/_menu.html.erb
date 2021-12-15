@@ -1,27 +1,4 @@
-<nav class="navbar navbar-menu navbar-expand">
-  <div class="container-fluid">
-    <ul class="navbar-nav">
-      <% if not action_name == 'index' %>
-        <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Customers'), broker_broker_customers_path, class: 'nav-link' %></li>
-      <% end %>
-      <% if @broker_customer and @broker_customer.id %>
-        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', @broker_customer.customer.name), broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'plus', 'New Shipment'), new_broker_shipment_path(broker_customer_id: @broker_customer.id), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'industry', 'Shipments'), broker_broker_customer_shipments_path(@broker_customer), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'address-book', 'Contacts & Users'), contacts_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'truck', 'Carriers'), broker_carriers_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'sliders-h', 'Preferences'), edit_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'dollar-sign', 'Pricing'), edit_pricing_broker_broker_customer_path(@broker_customer), class: 'nav-link' %></li>
-      <% else %>
-        <% unless current_page? action: 'new' %>
-          <li class="navbar-item"><%= link_to icon('fas', 'plus', 'New'), new_broker_broker_customer_path, class: 'nav-link' %></li>
-          <% if current_user.has_role? 'accounting' %>
-            <li class="navbar-item"><%= link_to icon('fas', 'chart-pie', 'Profitability'), broker_customers_profitability_report_path, class: 'nav-link' %></li>
-          <% end %>
-        <% else %>
-          <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Reset'), new_broker_broker_customer_path, data: { confirm: 'Reset the form? Unsaved changes will be lost.' }, class: 'nav-link' %></li>
-        <% end %>
-      <% end %>
-    </ul>
-  </div>
+<nav class="nav border-top pt-4 mb-0">
+  <%= link_to 'All', broker_broker_customers_path, class: 'nav-link broker-customers-index' %>
+  <%= link_to 'Profitability', broker_customers_profitability_report_path, class: 'nav-link broker-customers-profitability-report' %>
 </nav>

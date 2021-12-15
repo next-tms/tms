@@ -1,22 +1,3 @@
-<nav class="navbar navbar-menu navbar-expand">
-  <div class="container-fluid">
-    <ul class="navbar-nav">
-      <% if !(controller.controller_name == 'broker_carriers' && action_name == 'index') %>
-        <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Carriers'), broker_broker_carriers_path, class: 'nav-link' %></li>
-      <% end %>
-      <% if @broker_carrier and @broker_carrier.id %>
-        <li class="navbar-item"><%= link_to icon('fas', 'asterisk', @broker_carrier.carrier.name), broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'industry', 'Shipments'), broker_broker_carrier_shipments_path(@broker_carrier), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'address-book', 'Contacts'), contacts_broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'sliders-h', 'Preferences'), edit_broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
-        <li class="navbar-item"><%= link_to icon('fas', 'file-contract', 'Tariff'), tariff_broker_broker_carrier_path(@broker_carrier), class: 'nav-link' %></li>
-      <% else %>
-        <% unless current_page? action: 'new' %>
-          <li class="navbar-item"><%= link_to icon('fas', 'plus', 'New'), new_broker_broker_carrier_path, class: 'nav-link' %></li>
-        <% else %>
-          <li class="navbar-item"><%= link_to icon('fas', 'bomb', 'Reset'), new_broker_broker_carrier_path, data: { confirm: 'Reset the form? Unsaved changes will be lost.' }, class: 'nav-link' %></li>
-        <% end %>
-      <% end %>
-    </ul>
-  </div>
+<nav class="nav border-top pt-4 mb-0">
+  <%= link_to 'All', broker_broker_carriers_path, class: 'nav-link broker-carriers-index' %>
 </nav>

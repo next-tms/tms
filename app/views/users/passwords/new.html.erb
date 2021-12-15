@@ -1,13 +1,16 @@
-<% provide :title, 'Forgot Password' %>
+<% provide :title, 'Forgot password' %>
 
 <div class="page-header mb-4">
-  <h1>Account</h1>
-  <p class="lead"><%= yield :title %></p>
+  <h1><%= yield :title %></h1>
 </div>
 
-<%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), data: { turbo: false }, layout: :horizontal, label_col: 'col-sm-1', control_col: 'col-sm-4') do |f| %>
-  <%= f.alert_message 'Unable to send email:' %>
-  <%= f.email_field :email, placeholder: 'Your email address', hide_label: true, class: 'form-control', required: true, autofocus: true %>
-  <%= f.submit 'Send email', class: 'btn btn-primary' %>
-  <%= link_to 'Remembered password?', new_session_path(resource_name), class: 'ml-2' %>
-<% end %>
+<div class="row">
+  <div class="col col-md-6">
+    <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), data: { turbo: false }, layout: :horizontal) do |f| %>
+      <%= f.alert_message 'Unable to send email:' %>
+      <%= f.email_field :email, placeholder: 'Your email address', class: 'form-control', required: true, autofocus: true %>
+      <%= f.submit 'Send email', class: 'btn btn-primary mr-2' %>
+      <%= link_to 'Remembered password?', new_session_path(resource_name) %>
+    <% end %>
+  </div>
+</div>

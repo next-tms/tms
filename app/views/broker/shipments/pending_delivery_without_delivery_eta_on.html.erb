@@ -1,3 +1,6 @@
 <%= turbo_frame_tag :shipments_without_delivery_eta_on do %>
-  <%= render 'show_many_pending_delivery', shipments: @shipments %>
+  <% unless @shipments.blank? %>
+    <h3>Missing ETA</h3>
+    <%= render 'show_many_pending_delivery', shipments: @shipments %>
+  <% end %>
 <% end %>

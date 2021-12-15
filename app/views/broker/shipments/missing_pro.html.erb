@@ -1,7 +1,8 @@
-<% provide :title, 'Pending Pro' %>
+<% provide :title, 'Missing Pro' %>
 
 <%= render 'header' %>
+<h2><%= yield :title %></h2>
 
 <%= turbo_frame_tag :shipments do %>
-  <%= render 'show_many', table: shipment_show_many_table(shipments: @shipments, td_names: ['id', 'status', 'broker_customer', 'origin', 'broker_carrier', 'destination', 'pro', 'picked_up_at', 'promised_delivery_by', 'delivery_at', 'size']) %>
+  <%= render 'show_many_pending_delivery', shipments: @shipments %>
 <% end %>

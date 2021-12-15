@@ -1,7 +1,6 @@
 <% provide :title, "Plan — Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
 
-<%= render 'header', page_title: 'Plan' %>
-<%= render 'member_menu' %>
+<%= render 'member_header' %>
+<h2>Plan</h2>
 
 <%= render 'form' %>

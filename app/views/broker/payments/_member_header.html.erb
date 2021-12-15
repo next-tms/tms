@@ -1,0 +1,47 @@
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6">Payment <%= @payment.id %></h1>
+
+  <% if !@payment.new_record? %>
+    <table class="table table-borderless w-auto">
+      <thead>
+        <tr>
+          <th>Bank</th>
+          <th>Ref</th>
+          <th>Carrier</th>
+          <th>Due</th>
+          <th>Paid</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="lead">
+            <% unless @payment.bank.blank? %>
+              <%= link_to @payment.bank&.pretty_name&.titleize, broker_bank_path, target: '_blank' %>
+            <% end %>
+          </td>
+
+          <td class="lead">
+            <%= @payment.payment_method&.name || 'Ref' %>
+            <%= @payment.method_reference %>
+          </td>
+
+          <td class="lead">
+            <%= link_to @payment.broker_carrier.carrier.name, broker_broker_carrier_path(@payment.broker_carrier), target: '_blank' %>
+          </td>
+
+          <td class="lead">
+            <%= short_date @payment.due_on, current_user.time_zone %>
+          </td>
+
+          <td class="lead">
+            <%= short_date @payment.paid_on, current_user.time_zone %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% unless @payment.new_record? %>
+    <%= render 'member_menu' %>
+  <% end %>
+</div>

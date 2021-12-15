@@ -2,6 +2,8 @@
 
 <%= render 'member_header' %>
 
+<h2>Overview</h2>
+
 <% unless @shipment.broker_customer.internal_notes.blank? %>
   <div class="alert alert-danger">
     <p class="lead">Customer guide</p>
@@ -9,7 +11,7 @@
   </div>
 <% end %>
 
-<% if @shipment.dispatch_incomplete? %>
+<% if @shipment.dispatch_incomplete? && @shipment.picked_up_at.blank? %>
   <div class="alert alert-warning">
     <p class="lead">Missing pickup confirmation number</p>
     <p>This shipment was dispatched but doesn’t have a pickup confirmation number.</p>
@@ -41,7 +43,7 @@
   </div>
 <% end %>
 
-<% if !@shipment.picked_up_at.blank? and @shipment.pro.blank? %>
+<% if !@shipment.picked_up_at.blank? && @shipment.delivered_at.blank? && @shipment.pro.blank? %>
   <div class="alert alert-warning">
     <p class="lead">Missing pro number</p>
     <p>This shipment is in transit but doesn’t have a pro number.</p>
@@ -297,21 +299,13 @@
   </div>
 <% end %>
 
-<% if current_user.has_role? 'accounts_receivable' or current_user.has_role? 'quoting' %>
-  <p class="col-title">Accounts Receivable</p>
-  <% unless @shipment.payments.blank? %>
-    <%= render 'show_many_payment_transactions', payment_transactions: @shipment.payment_transactions, link_to_payment: true %>
-  <% else %>
-    <p><em>Nothing to show</em></p>
-  <% end %>
-<% end %>
-
 <p class="col-title">BOL Instructions</p>
 <%= simple_format @shipment.broker.default_bol_notes %>
 <%= simple_format@shipment.broker_carrier.default_bol_notes unless @shipment.broker_carrier.blank? %>
 <%= simple_format @shipment.broker_customer.default_bol_notes %>
 <%= simple_format @shipment.bol_notes %>
 
+<% if false %>
 <% if current_user.has_role? 'accounts_receivable' or current_user.has_role? 'quoting' %>
   <h2>Easy Copy & Paste</h2>
 
@@ -374,4 +368,5 @@ Destination
     <% end %>
 
   </div>
+<% end %>
 <% end %>

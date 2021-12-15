@@ -1,8 +1,7 @@
 <% provide :title, "Routing — Load #{@shipment.load_id}" %>
-<% provide :no_cache, 'yes' %>
 
-<%= render 'header', page_title: 'Routing' %>
-<%= render 'member_menu' %>
+<%= render 'member_header' %>
+<h2>Routing</h2>
 
 <%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment), layout: :horizontal, label_col: 'col-sm-4', control_col: 'col-sm-8') do |f| %>
   <div class="row">
@@ -12,11 +11,11 @@
       <div class="form-group row">
         <label class="col-form-label col-sm-4">Carrier</label>
         <div class="col-sm-8">
-          <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.includes(:carrier).collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, include_blank: true, help: 'For manual quotes', selected: (@shipment.broker_carrier ? @shipment.broker_carrier.id : nil) }, class: 'form-select' %>
+          <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.includes(:carrier).collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, include_blank: true, help: 'For manual quotes', selected: (@shipment.broker_carrier ? @shipment.broker_carrier.id : nil), wrapper: false }, class: 'form-select' %>
           <% if not @shipment.broker_carrier.blank? and @shipment.broker_carrier.carrier.acts_as_broker? %>
-            <%= f.select :tracking_carrier_id, Carrier.all.collect { |carrier| [ carrier.name, carrier.id ] }.sort, { label: 'Carrier', hide_label: true, help: 'For tracking', selected: (@shipment.tracking_carrier ? @shipment.tracking_carrier.id : nil) }, class: 'form-select' %>
+            <%= f.select :tracking_carrier_id, Carrier.all.collect { |carrier| [ carrier.name, carrier.id ] }.sort, { label: 'Carrier', hide_label: true, help: 'For tracking', selected: (@shipment.tracking_carrier ? @shipment.tracking_carrier.id : nil), wrapper: false }, class: 'form-select' %>
           <% end %>
-          <%= link_to 'Find Rates', quote_broker_shipment_path(@shipment), class: 'btn btn-light' %>
+          <%= link_to 'Find Rates', quote_broker_shipment_path(@shipment), class: 'btn btn-outline-primary mt-2' %>
         </div>
       </div>
       <%= f.text_field :quoted_delivery_by, label: 'Quoted ETA', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.quoted_delivery_by, time_zone: f.object.receiver_address.time_zone) %>

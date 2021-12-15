@@ -1,6 +1,7 @@
 <% provide :title, 'Booked' %>
 
 <%= render 'header' %>
+<h2>Booked</h2>
 
 <%= turbo_frame_tag :shipments do %>
   <%= render 'show_many_pending_dispatch', shipments: @shipments %>

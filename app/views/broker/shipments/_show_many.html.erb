@@ -1,13 +1,10 @@
-<% if defined?(table) && !table.blank? %>
-  <% if @pagy %>
-    <%= render 'broker/shipments/search_form' %>
-  <% end %>
+<%= turbo_frame_tag :shipments do %>
+  <%= render 'broker/shipments/search_form' %>
   
-  <%= table %>
-  
-  <% if @pagy %>
+  <% if defined?(table) && !table.blank? %>
+    <%= table %>
     <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
   <% end %>
-<% else %>
-  <%= render 'layouts/no_content' %>
 <% end %>

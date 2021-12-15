@@ -12,14 +12,14 @@
       <th>Event</th>
     </thead>
     <tbody>
-      <% if shipment.tracking_events.where(event: Event.find_by_active_shipping_code('delivered')).blank? && !shipment.delivered_at.blank? && !shipment.broker_carrier.blank? %>
+      <% if shipment.tracking_events.includes(:event).where(event: Event.find_by_active_shipping_code('delivered')).blank? && !shipment.delivered_at.blank? && !shipment.broker_carrier.blank? %>
         <tr>
           <td><%= pretty_date shipment.delivered_at, shipment.receiver_address.time_zone %>
           <td><%= shipment.receiver_address.locality %></td>
           <td>Delivered</td>
         </tr>
       <% end %>
-      <% if shipment.tracking_events.where(event: Event.find_by_active_shipping_code('out_for_delivery')).blank? && !shipment.out_for_delivery_at.blank? %>
+      <% if shipment.tracking_events.includes(:event).where(event: Event.find_by_active_shipping_code('out_for_delivery')).blank? && !shipment.out_for_delivery_at.blank? %>
         <tr>
           <td><%= pretty_date shipment.out_for_delivery_at, shipment.receiver_address.time_zone %>
           <td><%= shipment.receiver_address.locality %></td>
@@ -46,8 +46,8 @@
           <td>Appointment pending</td>
         </tr>
       <% end %>
-      <% if !shipment.tracking_events.blank? %>
-       <% shipment.tracking_events.order(at: :desc).each do |tracking_event| %>
+      <% if !shipment.tracking_events.includes(:event).blank? %>
+       <% shipment.tracking_events.includes(:event).order(at: :desc).each do |tracking_event| %>
          <% next if !tracking_event.public? && !current_user.broker_customer.blank? %>
          <tr>
           <td><%= pretty_date tracking_event.at, tracking_event.time_zone %></td>
@@ -62,7 +62,7 @@
          </tr>
        <% end %>
       <% end %>
-      <% if shipment.tracking_events.where(event: Event.find_by_active_shipping_code('picked_up')).blank? && !shipment.picked_up_at.blank? && !shipment.broker_carrier.blank? %>
+      <% if shipment.tracking_events.includes(:event).where(event: Event.find_by_active_shipping_code('picked_up')).blank? && !shipment.picked_up_at.blank? && !shipment.broker_carrier.blank? %>
         <tr>
           <td><%= pretty_date shipment.picked_up_at, shipment.shipper_address.time_zone %>
           <td><%= shipment.shipper_address.locality %></td>

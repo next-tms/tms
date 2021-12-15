@@ -1,17 +1,3 @@
-<div class="navbar navbar-menu navbar-expand">
-  <div class="container-fluid">
-    <ul class="navbar-nav">
-      <% if not action_name == 'index' %>
-        <li class="navbar-item"><%= link_to icon('fas', 'level-up-alt', 'Sales Reps'), broker_broker_customer_sales_reps_path, class: 'nav-link' %></li>
-      <% end %>
-      <% if @broker_customer_sales_rep&.id %>
-        <li class="navbar-item">
-          <%= link_to icon('fas', 'asterisk', 'Overview'), broker_broker_customer_sales_rep_path(@broker_customer_sales_rep), class: 'nav-link' %>
-        </li>
-        <li class="navbar-item">
-          <%= link_to icon('fas', 'dollar-sign', 'Commissions'), commissions_broker_broker_customer_sales_rep_path(@broker_customer_sales_rep), class: 'nav-link' %>
-        </li>
-        <% end %>
-    </ul>
-  </div>
-</div>
+<nav class="nav border-top pt-4 mb-0">
+  <%= link_to 'All', broker_broker_customer_sales_reps_path, class: 'nav-link broker-customer-sales-reps-index' %>
+</nav>

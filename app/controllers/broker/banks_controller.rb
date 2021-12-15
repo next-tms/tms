@@ -17,14 +17,17 @@ class Broker::BanksController < Broker::BrokerController
       format.csv do
         csv = ''.dup
         csv += "#{@payments.first.export_headers.join(',')}\n"
-        csv += @payments.inject(''.dup) { |str, p| str << p.to_csv(false)  }
+        csv += @payments.inject(''.dup) { |str, p| str << p.to_csv(false) }
         send_data csv, filename: "#{@bank.pretty_name} Activity.csv"
       end
     end
   end
 
   def index
-    @pagy, @banks = pagy(current_user.broker.banks.order(:name))
+    @q = current_user.broker.banks.ransack(params[:q])
+    @q.sorts = 'name asc' if @q.sorts.blank?
+
+    @pagy, @banks = pagy(@q.result)
   end
 
   def new
@@ -53,9 +56,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def show
-    unless @bank.broker == current_user.broker
-      render file: 'public/401', layout: false, status: :unauthorized
-    end
+    render file: 'public/401', layout: false, status: :unauthorized unless @bank.broker == current_user.broker
   end
 
   private

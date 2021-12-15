@@ -1,0 +1,22 @@
+<% provide :title, "Accounting — Load #{@shipment.load_id}" %>
+
+<%= render 'member_header' %>
+<h2>Accounting</h2>
+
+<% if current_user.has_role?('accounts_payable') || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) %>
+  <p class="col-title">Payments</p>
+  <% unless @shipment.payments.blank? %>
+    <%= render 'show_many_payment_transactions', payment_transactions: @shipment.payment_transactions, link_to_payment: true %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
+<% end %>
+
+<% if current_user.has_role?('accounts_payable') || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) %>
+  <p class="col-title">Receivables</p>
+  <% unless @shipment.receivables.blank? %>
+    <%= render 'receivables/show_many', receivables: @shipment.receivables %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
+<% end %>

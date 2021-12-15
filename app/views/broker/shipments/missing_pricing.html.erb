@@ -1,7 +1,8 @@
 <% provide :title, 'Missing Pricing' %>
 
 <%= render 'header' %>
+<h2><%= yield :title %></h2>
 
 <%= turbo_frame_tag :shipments do %>
-  <%= render 'broker/shipments/show_many', table: shipment_show_many_table(shipments: @shipments, td_names: ['id', 'status', 'total_cost', 'total_charges', 'shipper', 'receiver', 'broker_carrier', 'pro', 'picked_up_at', 'delivery_eta_on', 'promised_delivery_by', 'size']) %>
+  <%= render 'show_many_pending_delivery', shipments: @shipments %>
 <% end %>

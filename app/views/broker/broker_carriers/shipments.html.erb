@@ -1,10 +1,7 @@
-<% provide :title, @broker_carrier.carrier.name %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'Shipments' %>
 
-<div class="page-header">
-  <h1><%= @broker_carrier.carrier.name %></h1>
-  <p class="lead">Shipments</h2>
-</div>
+<%= render 'member_header' %>
+<h2><%= yield :title %></h2>
 
 <%= turbo_frame_tag :shipments do %>
   <%= render 'broker/shipments/show_many_pricing', shipments: @shipments %>

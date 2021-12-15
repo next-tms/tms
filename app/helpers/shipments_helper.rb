@@ -7,7 +7,7 @@ module ShipmentsHelper
       ['broker_customer', 'Customer', :broker_customer_customer_name],
       ['created_at', 'Entered', :created_at],
       ['delivered_at', 'Delivered', :delivered_at],
-      ['delivery_by', 'ETA', :delivery_by],
+      ['delivery_appointment_at', 'Apt', :delivery_appointment_at],
       ['id', 'Load', :load_id],
       ['pickup_driver_assigned_at', 'Asgn', :pickup_driver_assigned_at],
       ['pickup_eta_at', 'ETA', :pickup_eta_at],
@@ -16,7 +16,7 @@ module ShipmentsHelper
       ['pickup_on', 'Pickup By', :pickup_on],
       ['pickup_confirmation', 'Ref', :pickup_confirmation],
       ['pro', 'Pro', :pro],
-      ['promised_delivery_by', 'Service', nil],
+      ['promised_delivery_by', 'Promised', :promised_delivery_by],
       ['receiver', 'Consignee', :receiver_name],
       ['shipper', 'Shipper', :shipper_name],
       ['shipper_contact_name', 'Contact', :shipper_contact_name],
@@ -30,28 +30,32 @@ module ShipmentsHelper
     str << '<table class="table table-condensed table-borderless table-striped table-hover">'
     str << '<thead>'
     str << '<tr>'
+
     td_names.each do |td_name|
       td_names_map.each do |td_names_map_line|
         next if td_names_map_line[0] == 'broker_carrier' && controller.controller_name == 'broker_carriers'
         next if td_names_map_line[0] == 'broker_customer' && controller.controller_name == 'broker_customers'
 
-        if defined?(@q)
-          if td_names_map_line[2].blank?
-            str << "<th>#{td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
-          elsif td_names_map_line[0] == td_name
-            str << "<th>#{sort_link @q, td_names_map_line[2],
-                                    td_names_map_line[1]}</th>"
-          end
+        if td_names_map_line[2].blank?
+          str << "<th class=\"text-nowrap\">#{td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
         elsif td_names_map_line[0] == td_name
-          str << "<th>#{td_names_map_line[1]}</th>"
+          str << "<th class=\"text-nowrap\">#{sort_link @q, td_names_map_line[2], td_names_map_line[1]}</th>"
         end
       end
     end
+
     str << '</tr>'
     str << '</thead>'
     str << '<tbody>'
+
     shipments.each do |shipment|
-      if shipment.pending_departure?
+      if action_name == 'pending_pickup'
+        if DateTime.current.in_time_zone(shipment.shipper_address.time_zone.name).to_date > shipment.pickup_on
+          str << '<tr class="table-danger">'
+        elsif DateTime.current.in_time_zone(shipment.shipper_address.time_zone.name).to_date < shipment.pickup_on
+          str << '<tr class="table-info">'
+        end
+      elsif shipment.pending_departure?
         str << '<tr class="table-danger">'
       else
         shipment.late? || !shipment.canceled_at.blank? || shipment.dispatch_incomplete? || (!shipment.picked_up_at.blank? && shipment.missing_delivery_eta_on?) ? str << '<tr class="table-warning">' : str << '<tr>'
@@ -70,6 +74,7 @@ module ShipmentsHelper
       end
       str << '</tr>'
     end
+
     str << '</tbody>'
     str << '</table>'
     str << '</div>'

@@ -1,6 +1,7 @@
 <% provide :title, 'Inbox' %>
 
 <%= render 'header' %>
+<h2>Inbox</h2>
 
 <%= turbo_frame_tag :shipments do %>
   <%= render 'show_many_pending_quotation', shipments: @shipments %>

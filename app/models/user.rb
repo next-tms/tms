@@ -120,6 +120,7 @@ class User < ApplicationRecord
   has_many :broker_customers, through: :broker_customer_sales_reps
 
   has_many :commissions
+  # has_many :shipments_as_dispatcher, class_name: 'Shipment', foreign_key: :dispatcher_id
 
   serialize :time_zone
   validates_presence_of :time_zone
@@ -150,6 +151,13 @@ class User < ApplicationRecord
     end
   end
 
+  def dispatcher_for?(shipment)
+    return false if shipment.blank?
+
+    has_role?('dispatcher')
+    # shipments_as_dispatcher.include?(shipment)
+  end
+
   def sales_rep_for?(broker_customer)
     return false if broker_customer.blank?
 
@@ -171,12 +179,12 @@ class User < ApplicationRecord
   end
 
   def has_role?(role_name)
-    role_names = roles.map(&:name)
-    return true if role_names.include? 'root'
+    @role_names ||= roles.pluck(:name)
+    return true if @role_names.include?('root')
 
-    role_names << 'broker' if broker?
-    role_names << 'customer' if customer?
-    role_names.include? role_name
+    @role_names << 'broker' if broker?
+    @role_names << 'customer' if customer?
+    @role_names.include? role_name
   end
 
   def self.with_role(role_name)
@@ -198,7 +206,7 @@ class User < ApplicationRecord
       return broker.shipments
     end
 
-    broker_customer_ids = sales_rep_for_broker_customers&.pluck(:id)
+    broker_customer_ids = sales_rep_for_broker_customers&.ids
 
     return Shipment.none if broker_customer_ids.blank?
 
@@ -206,7 +214,8 @@ class User < ApplicationRecord
   end
 
   def sales_rep_only?
-    roles.map(&:name) == ['sales_rep']
+    @role_names ||= roles.pluck(:name)
+    @role_names == ['sales_rep']
   end
 
   def enable_notifications

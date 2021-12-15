@@ -1,17 +1,7 @@
-<% provide :title, "Tariff for #{@broker_carrier.carrier.name}" %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'Tariff' %>
 
-<div class="page-header">
-  <h1><%= @broker_carrier.carrier.name %>
-  <small>
-    <%= @broker_carrier.account %>
-    <% unless @broker_carrier.broker_customer.blank? %>
-      <%= @broker_carrier.broker_customer.customer.name %>
-    <% end %>
-  </small>
-  </h1>
-  <p class="lead">Tariff</p>
-</div>
+<%= render 'member_header' %>
+<h2><%= yield :title %></h2>
 
 <% if !@broker_carrier.as_interstellar_carrier.blank? && !@broker_carrier.as_interstellar_carrier.rates_with_excessive_length_fees %>
   <%= bootstrap_form_with(model: [:broker, @broker_carrier], path: [:broker, @broker_carrier]) do |f| %>

@@ -1,4 +1,7 @@
-<h2><%= t "devise.invitations.new.header" %></h2>
+<% provide :title, 'Invite User' %>
+
+<%= render 'broker/users/member_header' %>
+<h2><%= yield :title %></h2>
 
 <%= form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :post }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>

@@ -1,8 +1,6 @@
-<% provide :title, 'Receivables' %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'All' %>
 
-<div class="page-header">
-  <h1><%= yield :title %></h1>
-</div>
+<%= render 'header' %>
+<h2><%= yield :title %></h2>
 
 <%= render 'show_many', receivables: @receivables %>

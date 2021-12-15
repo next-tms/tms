@@ -7,13 +7,9 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   before_action :authenticate_user!
 
   def index
-    @q = if current_user.sales_rep_only?
-           current_user.broker_customers
-         else
-           current_user.broker.broker_customers
-         end.includes(:customer).ransack(params[:q])
+    @q = current_user.broker_customers.includes(:customer).ransack(params[:q])
 
-    @q.sorts = "#{Customer.table_name + '.name'} desc" if @q.sorts.blank?
+    @q.sorts = "#{Customer.table_name.singularize}_name" if @q.sorts.blank?
     @pagy, @broker_customers = pagy(@q.result)
   end
 
@@ -30,7 +26,19 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
   def edit_broker_carriers; end
 
-  def broker_carriers; end
+  def broker_carriers
+    @q = @broker_customer
+         .broker_carriers
+         .includes(
+           [
+             :broker_customer, { broker_customer: :customer },
+             :carrier
+           ]
+         ).ransack(params[:q])
+
+    @q.sorts = "#{Carrier.table_name + '.name'} desc" if @q.sorts.blank?
+    @pagy, @broker_carriers = pagy(@q.result)
+  end
 
   def customer_contacts; end
 

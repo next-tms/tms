@@ -1,20 +1,7 @@
 <% provide :title, "Invite #{params[:broker_customer_id].blank? ? 'Staff' : 'Customer'}" %>
 <% @contact = params[:contact_id].blank? ? nil : Contact.find(params[:contact_id]) %>
 
-<div class="page-header">
-  <h1>
-    <%= yield :title %>
-    <small>
-      <%= params[:broker_customer_id].blank? ? current_user.broker.name : current_user.broker.broker_customers.find(params[:broker_customer_id]).customer.name %>
-    </small>
-  </h1>
-
-  <ul class="list-unstyled list-inline lead">
-    <li class="list-inline-item">
-      <%= params[:broker_customer_id].blank? ? 'Staff' : 'Customer' %>
-    </li>
-  </ul>
-</div>
+<%= render 'broker/users/member_header' %>
 
 <% if params[:broker_customer_id].blank? %>
   <div class="alert alert-warning">

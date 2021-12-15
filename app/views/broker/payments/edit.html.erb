@@ -1,9 +1,6 @@
-<% provide :title, 'Edit Payment' %>
-<% provide :menu, render('menu') %>
+<% provide :title, "Payment #{@payment.id}" %>
 
-<div class="page-header">
-  <h1>Payment <% unless @payment.broker_carrier.blank? %><small><%= link_to @payment.broker_carrier.broker_customer_specific_name, broker_broker_carrier_path(@payment.broker_carrier) %></small><% end %></h1>
-  <p class="lead"><%= yield :title %></p>
-</div>
+<%= render 'member_header' %>
+<h2>Edit</h2>
 
 <%= render 'form' %>

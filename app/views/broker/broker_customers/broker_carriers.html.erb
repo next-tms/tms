@@ -1,38 +1,8 @@
-<% provide :title, "Carriers for #{@broker_customer.customer.name}" %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'Carrier-Specific Pricing' %>
 
-<div class="row">
-  <div class="col-8">
-    <div class="page-header">
-      <h1><%= @broker_customer.customer.name %></h1>
-      <p class="lead">Carriers</h2>
-    </div>
-  </div>
-</div>
+<%= render 'member_header' %>
+<h2><%= yield :title %></h2>
 
-<div class="btn-toolbar">
-  <%= link_to 'New', new_broker_broker_carrier_path(@broker_customer), class: 'btn btn-primary' %>
-</div>
-
-<% unless @broker_customer.broker_carriers.blank? %>
-  <div class="table-responsive">
-    <table class="table table-borderless table-striped table-hover sortable">
-      <thead>
-        <tr>
-          <th>Carrier</th>
-          <th>Account</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @broker_customer.broker_carriers.each do |broker_broker_carrier| %>
-          <tr>
-            <td><%= link_to broker_broker_carrier.carrier.name, broker_broker_carrier_path(broker_broker_carrier) %></td>
-            <td><%= broker_broker_carrier.account %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-<% else %>
-  <%= render 'layouts/no_content' %>
+<%= turbo_frame_tag :broker_carriers do %>
+  <%= render 'broker/broker_carriers/show_many', broker_carriers: @broker_carriers %>
 <% end %>

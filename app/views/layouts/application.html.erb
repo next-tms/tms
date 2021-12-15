@@ -18,7 +18,7 @@
       <meta name="turbo-cache-control" content="no-cache"/>
     <% end %>
 
-    <meta name="theme-color" content="<%= @website&.manifest&.dig('head', 'meta', 'theme-color') || '#FF6606' %>">
+    <meta name="theme-color" content="<%= @website&.manifest&.dig('head', 'meta', 'theme-color') || 'black' %>">
 
     <link href="https://<%= @website.blank? ? 'tms.next-tms.com' : @website.domain %><%= request.fullpath %>" rel="canonical" />
 
@@ -53,14 +53,22 @@
 
     <div class="container-fluid">
       <div class="row">
-        <% if @website %>
+        <% if @website && current_user %>
           <%= render 'layouts/sidebar' %>
         <% end %>
  
-        <div class="col col-md-10 p-3" data-controller="emails">
-          <%= yield %>
-          <%= render 'layouts/footer' %>
-        </div>
+        <% if @website && current_user %>
+          <div class="col col-md-10 p-3" data-controller="emails">
+            <%= yield %>
+            <!--
+              <%= render 'layouts/footer' %>
+            -->
+          </div>
+        <% else %>
+          <div class="col m-4" data-controller="emails">
+            <%= yield %>
+          </div>
+        <% end %>
       </div>
     </div>
   </body>

@@ -1,11 +1,7 @@
 <% provide :title, 'Quoted' %>
 
 <%= render 'header' %>
-
-<div class="page-header">
-  <h1>Shipments</h1>
-  <p class="lead">Quoted</p>
-</div>
+<h2>Quoted</h2>
 
 <%= turbo_frame_tag :shipments do %>
   <%= render 'show_many_pending_dispatch', shipments: @shipments %>

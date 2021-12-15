@@ -1,8 +1,7 @@
 <% provide :title, "Find Rates — Load #{@shipment.load_id}" %>
-<% provide :no_cache, 'yes' %>
 
-<%= render 'header', page_title: 'Find Rates' %>
-<%= render 'member_menu' %>
+<%= render 'member_header' %>
+<h2>Find Rates</h2>
 
 <% if !@shipment.broker_carrier.blank? && !@shipment.pickup_confirmation.blank? %>
   <%= render 'layouts/message', classes: 'alert-warning', title: 'Dispatched', message: "You must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup #{@shipment.pickup_confirmation} or you may be charged." %>
