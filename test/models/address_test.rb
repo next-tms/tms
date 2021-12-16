@@ -44,14 +44,18 @@
 #   @return [Time]
 # @!attribute country_id
 #   @return [Integer]
+# @!attribute region_id
+#   @return []
 #
 # Indexes
 #
 #  index_addresses_on_country_id  (country_id)
+#  index_addresses_on_region_id   (region_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (country_id => countries.id)
+#  fk_rails_...  (region_id => regions.id)
 #
 require 'test_helper'
 
