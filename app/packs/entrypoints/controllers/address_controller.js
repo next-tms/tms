@@ -1,7 +1,7 @@
 import { Controller } from "stimulus"
 
 export default class extends Controller {
-    static targets = [ 'country' ]
+    static targets = ['country', 'regions']
 
     connect(e) {
         this.handle()
@@ -14,21 +14,35 @@ export default class extends Controller {
         const url = '/countries/' + country_id + '.json'
 
         fetch(url, {
-            credentials: 'include',
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': authenticityToken
-            }
-        })
-            .then(response => response.json())
-            .then(function(data) {
-                if (!data.country) {
-                    return
+                credentials: 'include',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': authenticityToken
                 }
-
-                console.log(data.country.regions)
             })
+            .then(response => response.json())
+            .then(response => this.populateRegions(response.country))
+    }
+
+    populateRegions(country) {
+        const selected_value = this.regionsTarget.options[this.regionsTarget.selectedIndex].value
+
+        Array.from(this.regionsTarget.options).forEach(function(option) {
+            option.remove()
+        })
+
+        country.regions.forEach(function(region) {
+            const option = document.createElement('option')
+            option.text = region.name
+            option.value = region.id
+
+            if (option.value == selected_value) {
+                option.selected = true
+            }
+
+            this.regionsTarget.add(option)
+        }.bind(this))
     }
 }

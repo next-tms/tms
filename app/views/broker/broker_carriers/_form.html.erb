@@ -16,15 +16,16 @@
     <%= f.check_box :create_invoice_on_pickup, label: 'Create invoice automaticaly when shipments pick up' %>
   <% end %>
 
-  <div class="form-group row">
+  <div class="form-group row" data-controller="address">
     <label class="col-form-label col-sm-2">Check Mailing Address</label>
     <div class="col-sm-10">
       <%= f.fields_for :check_mailing_address do |check_mailing_address_form| %>
         <%= check_mailing_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
         <%= check_mailing_address_form.text_field :street2, hide_label: true %>
         <%= check_mailing_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
-        <%= check_mailing_address_form.text_field :state, hide_label: true, placeholder: 'State' %>
+        <%= check_mailing_address_form.select :region_id, (check_mailing_address_form.object.region_id.blank? ? [[current_user.broker.address.region.name, current_user.broker.address.region.id]] : [[check_mailing_address_form.object.region.abbreviation, check_mailing_address_form.object.region_id]]), { hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
         <%= check_mailing_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
+        <%= check_mailing_address_form.select :country_id, Country.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, selected: (check_mailing_address_form.object.country_id.blank? ? current_user.broker.address.country_id : check_mailing_address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
       <% end %>
     </div>
   </div>
