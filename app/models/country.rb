@@ -27,4 +27,13 @@ class Country < ApplicationRecord
   validates :alpha2_code, presence: true
   validates :alpha3_code, presence: true
   validates :un_code, presence: true
+
+  def format_address(str)
+    return nil if str.blank?
+
+    case alpha2_code
+    when 'US'
+      StreetAddress::US.parse_address(str).to_s
+    end
+  end
 end
