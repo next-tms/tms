@@ -1,4 +1,19 @@
 GIT
+  remote: https://github.com/Civitium/street-address
+  revision: 25d47a0e95a2b7e29f2ad084bf1fd99e63e3589a
+  ref: 25d47a0e95a2b7e29f2ad084bf1fd99e63e3589a
+  specs:
+    StreetAddress (2.0.1.2)
+
+GIT
+  remote: https://github.com/brodyhoskins/mainstreet
+  revision: b8a57d132c89f872235183fdb6f16350fc2e308d
+  ref: b8a57d132c89f872235183fdb6f16350fc2e308d
+  specs:
+    mainstreet (0.2.2)
+      geocoder (>= 1.5.1)
+
+GIT
   remote: https://github.com/next-tms/interstellar
   revision: f040e08999f22731429acbe336b8fb195b0fc558
   ref: f040e08999f22731429acbe336b8fb195b0fc558
@@ -1402,8 +1417,6 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
-    mainstreet (0.2.2)
-      geocoder (>= 1.5.1)
     marcel (1.0.2)
     matrix (0.4.2)
     measured (2.8.1)
@@ -1597,6 +1610,7 @@ PLATFORMS
   x86_64-darwin-20
 
 DEPENDENCIES
+  StreetAddress!
   active_model_serializers
   annotate (~> 3.1.1)
   aws-sdk (~> 3.1.0)
@@ -1621,7 +1635,7 @@ DEPENDENCIES
   jbuilder (~> 2.11)
   jwt
   listen (>= 3.0.5, < 3.8)
-  mainstreet
+  mainstreet!
   money-rails (~> 1.14.0)
   open_street_map (~> 1.2.1)
   pagy
