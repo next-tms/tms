@@ -2,10 +2,10 @@ source 'https://rubygems.org'
 
 ruby '3.0.3'
 
-gem 'rails', '~> 6.1.4'
+gem 'rails', '~> 6.1.4.2'
 gem 'pg', '~> 1.2.0'
 gem 'puma', '~> 5.5.2'
-gem 'webpacker', '~> 6.0.0.rc.5'
+gem 'webpacker', '~> 6.0.0.rc.6'
 gem 'jbuilder', '~> 2.11'
 
 gem 'bootsnap', '>= 1.4.2', require: false
