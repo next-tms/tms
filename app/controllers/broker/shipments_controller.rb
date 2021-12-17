@@ -381,7 +381,9 @@ class Broker::ShipmentsController < Broker::BrokerController
       if @shipment.applied_rate.blank?
         @shipment.rates.destroy_all
       else
-        @shipment.rates.where.not(id: @shipment.applied_rate.id).destroy_all
+        @shipment.rates.where.not(
+          id: [@shipment.applied_rate.id] + @shipment.pickups.pluck(:rate_id)
+        ).destroy_all
       end
     end
 
