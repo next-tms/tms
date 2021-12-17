@@ -105,7 +105,7 @@ class BrokerCarrier < ApplicationRecord
       customer_address: {
         street: broker.address.street.sub('Apt', 'Ste'),
         city: broker.address.city,
-        state: broker.address.state,
+        state: broker.address.region.abbreviation,
         zip_code: broker.address.zip_code
       },
       customer_email: "robot@#{broker.customer_service_email.split('@')[1]}",

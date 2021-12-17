@@ -60,13 +60,12 @@
 #  fk_rails_...  (region_id => regions.id)
 #
 class Address < ApplicationRecord
-  # before_save :prettify_city, if: :city_changed?
-  # before_save :prettify_state, if: :state_changed?
+  before_save :prettify_city, if: :city_changed?
 
-  # before_save :standardize_address
-  # before_save :set_coordinates
-  # before_save :set_time_zone
-  # before_save :update_types
+  before_save :standardize_address
+  before_save :set_coordinates
+  before_save :set_time_zone
+  before_save :update_types
 
   before_validation :set_country
 
@@ -244,8 +243,6 @@ class Address < ApplicationRecord
   def standardize_address
     return self if smarty_streets_result.blank?
 
-    self.original_attributes = attributes.slice(:street, :street2, :city, :state, :zip_code)
-
     if smarty_streets_result.dig('delivery_line_1')
       self.street = smarty_streets_result.dig('delivery_line_1') || "#{street} #{street2}"
       self.street2 = nil
@@ -258,7 +255,8 @@ class Address < ApplicationRecord
     end
 
     self.city = smarty_streets_result.dig('components', 'city_name') || city
-    self.state = smarty_streets_result.dig('components', 'state_abbreviation') || state
+    self.region = Region.where(abbreviation: smarty_streets_result.dig('components',
+                                                                       'state_abbreviation'))&.first || region
     self.zip_code = smarty_streets_result.dig('components', 'zipcode') || zip_code
 
     # TODO: Remove this
@@ -367,9 +365,5 @@ class Address < ApplicationRecord
   # Prettify
   def prettify_city
     self.city = city.titleize if (city == city.downcase) || (city == city.upcase)
-  end
-
-  def prettify_state
-    self.state = state.upcase if state != state.upcase
   end
 end
