@@ -28,12 +28,13 @@
         <% next %>
       <% end %>
 
-      <% next if rate.cost_cents == 0 %>
+      <% next unless rate.cost.positive? %>
 
       <% if current_user.customer? %>
         <% upcharged_rate = current_user.broker_customer.carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment) %>
-        <% next if upcharged_rate.nil? || upcharged_rate == Money.new(0) %>
+        <% next if upcharged_rate.blank? || !upcharged_rate.positive? || upcharged_rate <= rate.cost %>
       <% end %>
+
       <tr data-rate-id="<%= rate.id %>" class="<%= (!@shipment.applied_rate.blank? && rate.id == @shipment.applied_rate.id) ? 'table-info' : nil %>">
         <td class="text-nowrap">
           <div class="btn-toolbar">
@@ -75,7 +76,7 @@
             <% end %>
           </td>
         <% end %>
-        <td data-sort="<%= rate.cost %>">
+        <td data-sort="<%= current_user.customer? ? upcharged_rate : rate.cost %>">
           <% if current_user.customer? %>
             <%= humanized_money_with_symbol upcharged_rate, no_cents_if_whole: false %>
           <% else %>

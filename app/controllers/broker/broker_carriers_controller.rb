@@ -15,7 +15,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
          .includes(
            [
              :broker_customer, { broker_customer: :customer },
-             :carrier,
+             :carrier
            ]
          ).ransack(params[:q])
 
@@ -51,17 +51,19 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def preferences; end
 
   def tariff
-    if !@broker_carrier.carrier.carrier_areas.blank?
-      if !@broker_carrier.pricing_rules.size == @broker_carrier.carrier.carrier_areas.size
-        @broker_carrier.carrier.carrier_areas.each do |carrier_area|
-          @broker_carrier.pricing_rules << PricingRule.new(carrier_area: carrier_area) if @broker_carrier.pricing_rules.where(carrier_area: carrier_area).blank?
+    if !@broker_carrier.carrier.carrier_areas.blank? && (!@broker_carrier.pricing_rules.size == @broker_carrier.carrier.carrier_areas.size)
+      @broker_carrier.carrier.carrier_areas.each do |carrier_area|
+        if @broker_carrier.pricing_rules.where(carrier_area: carrier_area).blank?
+          @broker_carrier.pricing_rules << PricingRule.new(carrier_area: carrier_area)
         end
       end
     end
   end
 
   def search_terminals
-    @terminals = Terminal.includes(:address).where('addresses.state ILIKE ?', params[:city]).where('addresses.city ILIKE ?', params[:state]).where(carrier: @broker_carrier.carrier).references(:address)
+    @terminals = Terminal.includes(:address).where('addresses.state ILIKE ?', params[:city]).where(
+      'addresses.city ILIKE ?', params[:state]
+    ).where(carrier: @broker_carrier.carrier).references(:address)
   end
 
   def update
@@ -77,15 +79,13 @@ class Broker::BrokerCarriersController < Broker::BrokerController
         unless shipments.blank?
           TrackShipmentsJob.perform_later(shipments.pluck(:id))
 
-          pending_delivery_shipment_ids = shipments.pending_delivery.pluck(:id)  
+          pending_delivery_shipment_ids = shipments.pending_delivery.pluck(:id)
           unless pending_delivery_shipment_ids.blank?
             FetchShipmentCarrierBolsJob.perform_later(pending_delivery_shipment_ids)
           end
 
           delivered_shipment_ids = shipments.delivered.pluck(:id)
-          unless delivered_shipment_ids.blank?
-            FetchShipmentCarrierPodsJob.perform_later(delivered_shipment_ids)
-          end
+          FetchShipmentCarrierPodsJob.perform_later(delivered_shipment_ids) unless delivered_shipment_ids.blank?
         end
       end
 
@@ -94,9 +94,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def contacts
-    if !current_user.broker == @broker_carrier.broker
-      unauthorized
-    end
+    unauthorized if !current_user.broker == @broker_carrier.broker
 
     @q = @broker_carrier.contacts.ransack(params[:q])
     @q.sorts = 'contacts.first_name desc' if @q.sorts.blank?
@@ -104,9 +102,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def shipments
-    if !current_user.broker == @broker_carrier.broker
-      unauthorized
-    end
+    unauthorized if !current_user.broker == @broker_carrier.broker
 
     @q = @broker_carrier
          .shipments
@@ -146,9 +142,10 @@ class Broker::BrokerCarriersController < Broker::BrokerController
                                            :username,
                                            :website_password,
                                            :website_username,
-                                           check_mailing_address_attributes: %i[id ref street street2 city state zip_code],
+                                           check_mailing_address_attributes: %i[id ref street street2 city region_id
+                                                                                zip_code],
                                            overlength_rules_attributes: %i[_destroy id max_length min_length cost],
-                                           pricing_rules_attributes: %i[id carrier_area_id max_pallets min_pallets cost_per_pallet]
-                                          )
+                                           pricing_rules_attributes: %i[id carrier_area_id max_pallets min_pallets
+                                                                        cost_per_pallet])
   end
 end

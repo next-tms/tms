@@ -650,13 +650,13 @@ class Shipment < ApplicationRecord
       interstellar_location = if shipment_event.status == :delivered && shipment_event.location.blank?
                                 Interstellar::Location.new(
                                   city: receiver_address.city,
-                                  state: receiver_address.state,
+                                  state: receiver_address.region.abbreviation,
                                   country: ActiveUtils::Country.find(receiver_address.country.alpha3_code)
                                 )
                               elsif shipment_event.status == :picked_up && shipment_event.location.blank?
                                 Interstellar::Location.new(
                                   city: shipper_address.city,
-                                  state: shipper_address.state,
+                                  state: shipper_address.region.abbreviation,
                                   country: ActiveUtils::Country.find(shipper_address.country.alpha3_code)
                                 )
                               else
@@ -680,10 +680,10 @@ class Shipment < ApplicationRecord
       tracking_event.assign_attributes(
         at: DateTime.parse(shipment_event.time),
         city: interstellar_location.city,
-        country_alpha2: interstellar_location.country_code(:alpha2),
+        country: Country.find_by_alpha2_code(interstellar_location.country_code(:alpha2)),
         event: event,
         interstellar_carrier_fingerprint: fingerprint,
-        state: interstellar_location.state
+        region: Region.find_by_abbreviation(interstellar_location.state)
       )
 
       next unless tracking_event.save

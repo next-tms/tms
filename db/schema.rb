@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_11_020330) do
+ActiveRecord::Schema.define(version: 2021_12_17_062927) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -57,7 +57,6 @@ ActiveRecord::Schema.define(version: 2021_12_11_020330) do
     t.string "street"
     t.string "street2"
     t.string "city"
-    t.string "state"
     t.string "zip_code"
     t.decimal "latitude", precision: 15, scale: 10
     t.decimal "longitude", precision: 15, scale: 10
@@ -74,7 +73,9 @@ ActiveRecord::Schema.define(version: 2021_12_11_020330) do
     t.datetime "google_places_spot_updated_at"
     t.datetime "smarty_streets_result_updated_at"
     t.datetime "open_street_map_result_updated_at"
+    t.bigint "region_id"
     t.index ["country_id"], name: "index_addresses_on_country_id"
+    t.index ["region_id"], name: "index_addresses_on_region_id"
   end
 
   create_table "areas", force: :cascade do |t|
@@ -495,6 +496,17 @@ ActiveRecord::Schema.define(version: 2021_12_11_020330) do
     t.index ["updated_by_id"], name: "index_receivables_on_updated_by_id"
   end
 
+  create_table "regions", force: :cascade do |t|
+    t.bigint "country_id", null: false
+    t.string "name", null: false
+    t.string "abbreviation", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["abbreviation"], name: "index_regions_on_abbreviation"
+    t.index ["country_id"], name: "index_regions_on_country_id"
+    t.index ["name"], name: "index_regions_on_name"
+  end
+
   create_table "roles", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
@@ -638,12 +650,15 @@ ActiveRecord::Schema.define(version: 2021_12_11_020330) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "terminal_id"
     t.string "city"
-    t.string "state"
     t.string "country_alpha2", limit: 2
     t.string "interstellar_carrier_fingerprint"
     t.bigint "user_id"
+    t.bigint "country_id"
+    t.bigint "region_id"
     t.index ["address_id"], name: "index_tracking_events_on_address_id"
+    t.index ["country_id"], name: "index_tracking_events_on_country_id"
     t.index ["event_id"], name: "index_tracking_events_on_event_id"
+    t.index ["region_id"], name: "index_tracking_events_on_region_id"
     t.index ["shipment_id"], name: "index_tracking_events_on_shipment_id"
     t.index ["terminal_id"], name: "index_tracking_events_on_terminal_id"
     t.index ["user_id"], name: "index_tracking_events_on_user_id"
@@ -741,6 +756,7 @@ ActiveRecord::Schema.define(version: 2021_12_11_020330) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "countries"
+  add_foreign_key "addresses", "regions"
   add_foreign_key "banks", "bank_types", column: "type_id"
   add_foreign_key "banks", "brokers"
   add_foreign_key "broker_accessorials", "accessorials"
@@ -804,6 +820,7 @@ ActiveRecord::Schema.define(version: 2021_12_11_020330) do
   add_foreign_key "receivables", "users", column: "authorized_by_id"
   add_foreign_key "receivables", "users", column: "created_by_id"
   add_foreign_key "receivables", "users", column: "updated_by_id"
+  add_foreign_key "regions", "countries"
   add_foreign_key "shipment_accessorials", "accessorials"
   add_foreign_key "shipment_accessorials", "shipments"
   add_foreign_key "shipment_broker_accessorials", "broker_accessorials"
@@ -820,7 +837,9 @@ ActiveRecord::Schema.define(version: 2021_12_11_020330) do
   add_foreign_key "terminals", "addresses"
   add_foreign_key "terminals", "carriers"
   add_foreign_key "tracking_events", "addresses"
+  add_foreign_key "tracking_events", "countries"
   add_foreign_key "tracking_events", "events"
+  add_foreign_key "tracking_events", "regions"
   add_foreign_key "tracking_events", "shipments"
   add_foreign_key "tracking_events", "terminals"
   add_foreign_key "tracking_events", "users"

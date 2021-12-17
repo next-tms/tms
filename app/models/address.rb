@@ -46,25 +46,31 @@
 #   @return [Time]
 # @!attribute country_id
 #   @return [Integer]
+# @!attribute region_id
+#   @return []
 #
 # Indexes
 #
 #  index_addresses_on_country_id  (country_id)
+#  index_addresses_on_region_id   (region_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (country_id => countries.id)
+#  fk_rails_...  (region_id => regions.id)
 #
 class Address < ApplicationRecord
   before_save :prettify_city, if: :city_changed?
-  before_save :prettify_state, if: :state_changed?
 
   before_save :standardize_address
   before_save :set_coordinates
   before_save :set_time_zone
   before_save :update_types
 
+  before_validation :set_country
+
   belongs_to :country
+  belongs_to :region
 
   serialize :google_places_spot_cached
   serialize :open_street_map_result_cached
@@ -73,11 +79,12 @@ class Address < ApplicationRecord
   serialize :types
   serialize :verification_info
 
+  validate :region_matches_country
+
   # Temporarily disabled, see https://github.com/ankane/mainstreet/issues/14
   # validates_address fields: [:street, :city, :state, :zip_code], geocode: true
 
   validates :city, presence: true
-  validates :state, presence: true
   validates :zip_code, presence: true
 
   def pretty(seperator)
@@ -85,7 +92,7 @@ class Address < ApplicationRecord
     str << "#{ref}#{seperator}" unless ref.blank?
     str << "#{street}#{seperator}" unless street.blank?
     str << "#{street2}#{seperator}" unless street2.blank?
-    str << "#{city}, #{state} #{zip_code}".sub(',  ', '')
+    str << "#{city}, #{region.abbreviation} #{zip_code}".sub(',  ', '')
     str
   end
 
@@ -93,12 +100,12 @@ class Address < ApplicationRecord
     str = ''.dup
     str << "#{street}#{seperator}" unless street.blank?
     str << "#{street2}#{seperator}" unless street2.blank?
-    str << "#{city}, #{state} #{zip_code}".sub(',  ', '')
+    str << "#{city}, #{region.abbreviation} #{zip_code}".sub(',  ', '')
     str
   end
 
   def locality
-    "#{city}, #{state}".sub(',  ', '')
+    "#{city}, #{region.abbreviation}".sub(',  ', '')
   end
 
   def permanently_closed?
@@ -124,7 +131,7 @@ class Address < ApplicationRecord
   end
 
   def full_address?
-    !street.blank? and !city.blank? and !state.blank?
+    !street.blank? and !city.blank? and !region.blank?
   end
 
   def blank_to_nil(obj)
@@ -196,7 +203,7 @@ class Address < ApplicationRecord
       client = OpenStreetMap::Client.new
 
       self.open_street_map_result_cached = client.search(
-        q: "#{street}, #{city}, #{state}, #{country.name}",
+        q: "#{street}, #{city}, #{region.abbreviation}, #{country.name}",
         format: 'json',
         addressdetails: '1',
         accept_language: 'en'
@@ -222,11 +229,11 @@ class Address < ApplicationRecord
       self.verification_info = twin.verification_info
     else
       logger.info 'Calling SmartyStreet API'
-      begin
-        self.verification_info = MainStreet::AddressVerifier.new(proper(', ')).result.data.to_hash
-      rescue StandardError
-        self.verification_info = nil
-      end
+      #      begin
+      self.verification_info = MainStreet::AddressVerifier.new(proper(', ')).result # .data.to_hash
+      #      rescue StandardError
+      #        self.verification_info = nil
+      #      end
     end
 
     self.smarty_streets_result_updated_at = DateTime.current
@@ -234,24 +241,25 @@ class Address < ApplicationRecord
   end
 
   def standardize_address
-    if full_address? && !smarty_streets_result.blank?
-      self.original_attributes = attributes.slice(:street, :street2, :city, :state, :zip_code)
+    return self if smarty_streets_result.blank?
 
-      if smarty_streets_result.dig('delivery_line_1')
-        self.street = smarty_streets_result.dig('delivery_line_1') || "#{street} #{street2}"
-        self.street2 = nil
-      elsif smarty_streets_result.dig('formatted_address')
-        self.street = smarty_streets_result.dig('formatted_address').split(',').first
-        self.street2 = nil
-      elsif smarty_streets_result.dig('display_name')
-        self.street = "#{smarty_streets_result['house_number']} #{smarty_streets_result['street']}"
-        self.street2 = nil
-      end
-
-      self.city = smarty_streets_result.dig('components', 'city_name') || city
-      self.state = smarty_streets_result.dig('components', 'state_abbreviation') || state
-      self.zip_code = smarty_streets_result.dig('components', 'zipcode') || zip_code
+    if smarty_streets_result.dig('delivery_line_1')
+      self.street = smarty_streets_result.dig('delivery_line_1') || "#{street} #{street2}"
+      self.street2 = nil
+    elsif smarty_streets_result.dig('formatted_address')
+      self.street = smarty_streets_result.dig('formatted_address').split(',').first
+      self.street2 = nil
+    elsif smarty_streets_result.dig('display_name')
+      self.street = "#{smarty_streets_result['house_number']} #{smarty_streets_result['street']}"
+      self.street2 = nil
     end
+
+    self.city = smarty_streets_result.dig('components', 'city_name') || city
+    self.region = Region.where(abbreviation: smarty_streets_result.dig('components',
+                                                                       'state_abbreviation'))&.first || region
+    self.zip_code = smarty_streets_result.dig('components', 'zipcode') || zip_code
+
+    # TODO: Remove this
     self
   end
 
@@ -277,8 +285,8 @@ class Address < ApplicationRecord
   def to_interstellar_shipping_address
     Interstellar::Location.new(
       address1: street,
-      country: 'US',
-      state: state,
+      country: country.alpha2_code,
+      state: region.abbreviation,
       city: city,
       zip: zip_code
     )
@@ -342,12 +350,20 @@ class Address < ApplicationRecord
 
   private
 
+  def set_country
+    return if region.blank? || !country.blank?
+
+    self.country = region.country
+  end
+
+  def region_matches_country
+    return if region.blank? || country.blank?
+
+    errors.add(:region, "isn't within #{country.name}") unless region.country == country
+  end
+
   # Prettify
   def prettify_city
     self.city = city.titleize if (city == city.downcase) || (city == city.upcase)
-  end
-
-  def prettify_state
-    self.state = state.upcase if state != state.upcase
   end
 end

@@ -336,8 +336,8 @@
 <textarea class="form-control" data-action="click->clipboard#copy" data-controller="clipboard" rows="4" readonly>
 Load <%= @shipment.pretty_id %>
 
-Origin: <%= @shipment.shipper_address.city %>, <%= @shipment.shipper_address.state %>, <%= @shipment.shipper_address.zip_code %>
-Destination: <%= @shipment.receiver_address.city %>, <%= @shipment.receiver_address.state %>, <%= @shipment.receiver_address.zip_code %>
+Origin: <%= @shipment.shipper_address.city %>, <%= @shipment.shipper_address.region.abbreviation %>, <%= @shipment.shipper_address.zip_code %>
+Destination: <%= @shipment.receiver_address.city %>, <%= @shipment.receiver_address.region.abbreviation %>, <%= @shipment.receiver_address.zip_code %>
 
 <% unless @shipment.shipment_broker_accessorials.blank? %>
 <% @shipment.shipment_broker_accessorials.each do |shipment_broker_accessorial| %>
