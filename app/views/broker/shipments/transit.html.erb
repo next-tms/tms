@@ -42,7 +42,7 @@
         <%= f.text_field :picked_up_at, label: 'Pickup', autocomplete: 'off', data: flatpickr_datetime_data(f.object.picked_up_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.picked_up_at, time_zone: f.object.shipper_address.time_zone) %>
         <%= f.text_field :departed_origin_terminal_at, label: 'Departed', autocomplete: 'off', data: flatpickr_datetime_data(f.object.departed_origin_terminal_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.departed_origin_terminal_at, time_zone: f.object.shipper_address.time_zone) %>
         <% unless @shipment.shipper_address.time_zone.blank? %>  
-          <p class="text-muted text-right">Pickup times in <%= @shipment.shipper_address.time_zone.abbr(Date.current) %></p>
+          <p class="text-muted text-right">Pickup times in </p>
         <% end %>
       <% end %>
     </div>
@@ -59,7 +59,7 @@
         <%= f.text_field :delivery_appointment_at, label: 'Appointment At', autocomplete: 'off', data: flatpickr_datetime_data(f.object.delivery_appointment_at, f.object.receiver_address.time_zone), value: maybe_in_time_zone(datetime: f.object.delivery_appointment_at, time_zone: f.object.shipper_address.time_zone) %>
         <%= f.text_field :delivered_at, label: 'Delivered', autocomplete: 'off', data: flatpickr_datetime_data(f.object.delivered_at, f.object.receiver_address.time_zone), value: maybe_in_time_zone(datetime: f.object.delivered_at, time_zone: f.object.shipper_address.time_zone) %>
         <% unless @shipment.receiver_address.time_zone.blank? %>
-          <p class="text-muted text-right">Delivery times in <%= @shipment.receiver_address.time_zone.abbr(Date.current) %></p>
+          <p class="text-muted text-right">Delivery times in </p>
         <% end %>
       <% end %>
     </div>
