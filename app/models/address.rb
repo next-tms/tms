@@ -68,8 +68,6 @@ class Address < ApplicationRecord
 
   before_validation :set_country
 
-  delegate :time_zone, to: :standardized_address
-
   belongs_to :country
   belongs_to :region
   belongs_to :standardized_address, counter_cache: true, optional: true
@@ -135,6 +133,10 @@ class Address < ApplicationRecord
       Shipment.where(shipper_address: self).pluck(:shipper_name) +
       Shipment.where(receiver_address: self).pluck(:receiver_name)
     ).uniq.reject { |name| name.blank? }
+  end
+
+  def time_zone
+    standardized_address&.time_zone
   end
 
   def twin
