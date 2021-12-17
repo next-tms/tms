@@ -72,6 +72,8 @@ class Address < ApplicationRecord
   belongs_to :region
   belongs_to :standardized_address, counter_cache: true, optional: true
 
+  serialize :types
+
   validate :region_matches_country
 
   validates :city, presence: true
