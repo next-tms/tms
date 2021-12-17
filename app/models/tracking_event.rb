@@ -76,7 +76,7 @@ class TrackingEvent < ApplicationRecord
   before_save :sanitize_at, if: :at_changed?
 
   def pretty_location
-    "#{city}, #{region.name}"
+    "#{city}, #{region.abbreviation}"
   end
 
   private

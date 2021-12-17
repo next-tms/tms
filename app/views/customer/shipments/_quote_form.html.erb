@@ -1,4 +1,4 @@
-<%= bootstrap_form_with(model: [:customer, @shipment], local: true, layout: :horizontal) do |f| %>
+<%= bootstrap_form_with(model: [:customer, @shipment], data: { turbo: false }, layout: :horizontal) do |f| %>
   <%= f.alert_message "Unable to create quote:" %>
   <%= f.hidden_field :quote_only, value: true %>
 

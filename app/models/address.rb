@@ -230,11 +230,11 @@ class Address < ApplicationRecord
       self.verification_info = twin.verification_info
     else
       logger.info 'Calling SmartyStreet API'
-#      begin
-        self.verification_info = MainStreet::AddressVerifier.new(proper(', ')).result # .data.to_hash
-#      rescue StandardError
-#        self.verification_info = nil
-#      end
+      #      begin
+      self.verification_info = MainStreet::AddressVerifier.new(proper(', ')).result # .data.to_hash
+      #      rescue StandardError
+      #        self.verification_info = nil
+      #      end
     end
 
     self.smarty_streets_result_updated_at = DateTime.current
@@ -261,7 +261,7 @@ class Address < ApplicationRecord
     self.state = smarty_streets_result.dig('components', 'state_abbreviation') || state
     self.zip_code = smarty_streets_result.dig('components', 'zipcode') || zip_code
 
-    # Todo: Remove this
+    # TODO: Remove this
     self
   end
 
@@ -354,12 +354,14 @@ class Address < ApplicationRecord
 
   def set_country
     return if region.blank? || !country.blank?
+
     self.country = region.country
   end
 
   def region_matches_country
     return if region.blank? || country.blank?
-    errors.add(:region, "isn't within #{country.name}")
+
+    errors.add(:region, "isn't within #{country.name}") unless region.country == country
   end
 
   # Prettify
