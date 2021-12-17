@@ -229,11 +229,11 @@ class Address < ApplicationRecord
       self.verification_info = twin.verification_info
     else
       logger.info 'Calling SmartyStreet API'
-      #      begin
-      self.verification_info = MainStreet::AddressVerifier.new(proper(', ')).result # .data.to_hash
-      #      rescue StandardError
-      #        self.verification_info = nil
-      #      end
+      begin
+        self.verification_info = MainStreet::AddressVerifier.new(proper(', ')).result&.data&.to_hash
+      rescue StandardError
+        self.verification_info = nil
+      end
     end
 
     self.smarty_streets_result_updated_at = DateTime.current
