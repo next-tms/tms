@@ -16,8 +16,6 @@
 #   @return [String]
 # @!attribute public
 #   @return [Boolean]
-# @!attribute state
-#   @return [String]
 # @!attribute time_zone
 #   @return [String]
 # @!attribute created_at
@@ -26,7 +24,11 @@
 #   @return [Time]
 # @!attribute address_id
 #   @return []
+# @!attribute country_id
+#   @return []
 # @!attribute event_id
+#   @return []
+# @!attribute region_id
 #   @return []
 # @!attribute shipment_id
 #   @return []
@@ -38,7 +40,9 @@
 # Indexes
 #
 #  index_tracking_events_on_address_id   (address_id)
+#  index_tracking_events_on_country_id   (country_id)
 #  index_tracking_events_on_event_id     (event_id)
+#  index_tracking_events_on_region_id    (region_id)
 #  index_tracking_events_on_shipment_id  (shipment_id)
 #  index_tracking_events_on_terminal_id  (terminal_id)
 #  index_tracking_events_on_user_id      (user_id)
@@ -46,7 +50,9 @@
 # Foreign Keys
 #
 #  fk_rails_...  (address_id => addresses.id)
+#  fk_rails_...  (country_id => countries.id)
 #  fk_rails_...  (event_id => events.id)
+#  fk_rails_...  (region_id => regions.id)
 #  fk_rails_...  (shipment_id => shipments.id)
 #  fk_rails_...  (terminal_id => terminals.id)
 #  fk_rails_...  (user_id => users.id)
@@ -57,6 +63,8 @@ class TrackingEvent < ApplicationRecord
   belongs_to :address, optional: true
   accepts_nested_attributes_for :address, allow_destroy: false, reject_if: :all_blank
 
+  belongs_to :country
+  belongs_to :region
   belongs_to :shipment
   belongs_to :terminal, optional: true
   belongs_to :user, optional: true
@@ -68,7 +76,7 @@ class TrackingEvent < ApplicationRecord
   before_save :sanitize_at, if: :at_changed?
 
   def pretty_location
-    "#{city}, #{state}"
+    "#{city}, #{region.name}"
   end
 
   private
@@ -86,14 +94,14 @@ class TrackingEvent < ApplicationRecord
   end
 
   def set_time_zone
-    time_zone = TrackingEvent.where(city: city, state: state).where.not(time_zone: [nil, ''])&.last&.time_zone
+    time_zone = TrackingEvent.where(city: city, region: region).where.not(time_zone: [nil, ''])&.last&.time_zone
 
     unless time_zone.blank?
       self.time_zone = time_zone
       return
     end
 
-    time_zone = Address.where(city: city, state: state).where.not(time_zone: [nil, ''])&.last&.time_zone
+    time_zone = Address.where(city: city, region: region).where.not(time_zone: [nil, ''])&.last&.time_zone
 
     unless time_zone.blank?
       self.time_zone = time_zone

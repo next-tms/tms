@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_16_074655) do
+ActiveRecord::Schema.define(version: 2021_12_17_062927) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -650,12 +650,15 @@ ActiveRecord::Schema.define(version: 2021_12_16_074655) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "terminal_id"
     t.string "city"
-    t.string "state"
     t.string "country_alpha2", limit: 2
     t.string "interstellar_carrier_fingerprint"
     t.bigint "user_id"
+    t.bigint "country_id"
+    t.bigint "region_id"
     t.index ["address_id"], name: "index_tracking_events_on_address_id"
+    t.index ["country_id"], name: "index_tracking_events_on_country_id"
     t.index ["event_id"], name: "index_tracking_events_on_event_id"
+    t.index ["region_id"], name: "index_tracking_events_on_region_id"
     t.index ["shipment_id"], name: "index_tracking_events_on_shipment_id"
     t.index ["terminal_id"], name: "index_tracking_events_on_terminal_id"
     t.index ["user_id"], name: "index_tracking_events_on_user_id"
@@ -834,7 +837,9 @@ ActiveRecord::Schema.define(version: 2021_12_16_074655) do
   add_foreign_key "terminals", "addresses"
   add_foreign_key "terminals", "carriers"
   add_foreign_key "tracking_events", "addresses"
+  add_foreign_key "tracking_events", "countries"
   add_foreign_key "tracking_events", "events"
+  add_foreign_key "tracking_events", "regions"
   add_foreign_key "tracking_events", "shipments"
   add_foreign_key "tracking_events", "terminals"
   add_foreign_key "tracking_events", "users"
