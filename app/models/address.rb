@@ -26,8 +26,6 @@
 #   @return [String]
 # @!attribute smarty_streets_result_updated_at
 #   @return [Time]
-# @!attribute state
-#   @return [String]
 # @!attribute street
 #   @return [String]
 # @!attribute street2
@@ -48,41 +46,35 @@
 #   @return [Integer]
 # @!attribute region_id
 #   @return []
+# @!attribute standardized_address_id
+#   @return []
 #
 # Indexes
 #
-#  index_addresses_on_country_id  (country_id)
-#  index_addresses_on_region_id   (region_id)
+#  index_addresses_on_country_id               (country_id)
+#  index_addresses_on_region_id                (region_id)
+#  index_addresses_on_standardized_address_id  (standardized_address_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (country_id => countries.id)
 #  fk_rails_...  (region_id => regions.id)
+#  fk_rails_...  (standardized_address_id => standardized_addresses.id)
 #
 class Address < ApplicationRecord
   before_save :prettify_city, if: :city_changed?
 
   before_save :standardize_address
-  before_save :set_coordinates
-  before_save :set_time_zone
-  before_save :update_types
 
   before_validation :set_country
 
+  delegate :time_zone, to: :standardized_address
+
   belongs_to :country
   belongs_to :region
-
-  serialize :google_places_spot_cached
-  serialize :open_street_map_result_cached
-  serialize :original_attributes
-  serialize :time_zone
-  serialize :types
-  serialize :verification_info
+  belongs_to :standardized_address, counter_cache: true, optional: true
 
   validate :region_matches_country
-
-  # Temporarily disabled, see https://github.com/ankane/mainstreet/issues/14
-  # validates_address fields: [:street, :city, :state, :zip_code], geocode: true
 
   validates :city, presence: true
   validates :zip_code, presence: true
@@ -240,29 +232,6 @@ class Address < ApplicationRecord
     @smarty_streets_result = verification_info
   end
 
-  def standardize_address
-    return self if smarty_streets_result.blank?
-
-    if smarty_streets_result.dig('delivery_line_1')
-      self.street = smarty_streets_result.dig('delivery_line_1') || "#{street} #{street2}"
-      self.street2 = nil
-    elsif smarty_streets_result.dig('formatted_address')
-      self.street = smarty_streets_result.dig('formatted_address').split(',').first
-      self.street2 = nil
-    elsif smarty_streets_result.dig('display_name')
-      self.street = "#{smarty_streets_result['house_number']} #{smarty_streets_result['street']}"
-      self.street2 = nil
-    end
-
-    self.city = smarty_streets_result.dig('components', 'city_name') || city
-    self.region = Region.where(abbreviation: smarty_streets_result.dig('components',
-                                                                       'state_abbreviation'))&.first || region
-    self.zip_code = smarty_streets_result.dig('components', 'zipcode') || zip_code
-
-    # TODO: Remove this
-    self
-  end
-
   def next_types
     next_types = []
     streets_formatted = "#{street || ''} #{street2 || ''}".downcase
@@ -319,33 +288,19 @@ class Address < ApplicationRecord
     self
   end
 
-  def set_coordinates
-    return self unless full_address?
+  def standardize_address
+    return if country.blank? || !full_address?
 
-    if !open_street_map_result.blank? && !open_street_map_result['lat'].blank? && !open_street_map_result['lon'].blank?
-      self.latitude = open_street_map_result['lat']
-      self.longitude = open_street_map_result['lon']
-      return true
-    end
+    key = country.format_address(pretty(', '))
+    new_standardized_address = StandardizedAddress.find_or_create_by(country: country, key: key)
 
-    if !google_places_spot.blank? && !google_places_spot&.lat.blank? && !google_places_spot&.lng.blank?
-      self.latitude = google_places_spot.lat
-      self.longitude = google_places_spot.lng
-      return true
-    end
+    self.standardized_address = new_standardized_address
 
-    false
-  end
-
-  def set_time_zone
-    set_coordinates if latitude.blank? || longitude.blank?
-
-    if latitude.blank? || longitude.blank?
-      self.time_zone = Timezone['America/Los_Angeles']
-      return
-    end
-
-    self.time_zone = Timezone.lookup(latitude, longitude)
+    self.street = standardized_address.street
+    self.street2 = standardized_address.street2
+    self.city = standardized_address.city
+    self.region = standardized_address.region
+    self.zip_code = standardized_address.postal_code
   end
 
   private
