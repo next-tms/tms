@@ -105,7 +105,7 @@ class Broker::PaymentsController < Broker::BrokerController
   end
 
   def show
-    @q = @payment.payment_transactions.ransack(params[:q])
+    @q = @payment.payment_transactions.includes(:broker_carrier, :shipment).ransack(params[:q])
     @q.sorts = 'due_on desc' if @q.sorts.blank?
 
     @pagy, @payment_transactions = pagy(@q.result)
@@ -129,6 +129,6 @@ class Broker::PaymentsController < Broker::BrokerController
   end
 
   def required_includes
-    [:bank, :broker_carrier, { broker_carrier: :carrier }]
+    [:broker_carrier, :payment_transactions, { bank: :type }, { broker_carrier: [:broker_customer, :carrier] }]
   end
 end

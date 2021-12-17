@@ -14,7 +14,7 @@
           <th>Paid?</th>
         </thead>
         <tbody>
-          <% commissions.each do |commission| %>
+          <% commissions.includes({shipment: { broker_customer: :customer}}).each do |commission| %>
             <tr class="
               <% if commission.shipment.picked_up_at.blank? || commission.shipment.delivered_at.blank? %>
                 <% if commission.paid? %>

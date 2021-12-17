@@ -16,7 +16,7 @@
         <tr>
           <td class="lead">
             <% unless @payment.bank.blank? %>
-              <%= link_to @payment.bank&.pretty_name&.titleize, broker_bank_path, target: '_blank' %>
+              <%= link_to @payment.bank&.pretty_name&.titleize, broker_bank_path(@payment.bank), target: '_blank' %>
             <% end %>
           </td>
 

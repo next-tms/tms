@@ -6,7 +6,10 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
   before_action :require_admin, except: %i[commissions]
 
   def index
-    @q = User.where(id: current_user.broker.broker_customer_sales_reps.pluck(:user_id)).ransack(params[:q])
+    @q = User
+         .where(id: current_user.broker.broker_customer_sales_reps.pluck(:user_id))
+         .includes(:broker, :broker_customer)
+         .ransack(params[:q])
     @q.sorts = 'first_name asc' if @q.sorts.blank?
 
     @pagy, @broker_customer_sales_reps = pagy(@q.result)

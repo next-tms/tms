@@ -8,7 +8,19 @@ class Broker::BanksController < Broker::BrokerController
   def activity
     @display_paid = ['0', nil].include?(params.dig(:q, :paid_on_null))
 
-    @q = @bank.payments.paid.ransack(params[:q])
+    @q = @bank
+        .payments
+        .paid
+        .includes(
+          :payment_transactions,
+          {
+            broker_carrier: [
+              :carrier,
+              { broker_customer: :customer}
+            ]
+          }
+        )
+        .ransack(params[:q])
     @q.sorts = 'paid_on DESC' if @q.sorts.blank?
     @pagy, @payments = pagy(paid_or_pending_filter(@q))
 
@@ -24,7 +36,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def index
-    @q = current_user.broker.banks.ransack(params[:q])
+    @q = current_user.broker.banks.includes(:type).ransack(params[:q])
     @q.sorts = 'name asc' if @q.sorts.blank?
 
     @pagy, @banks = pagy(@q.result)

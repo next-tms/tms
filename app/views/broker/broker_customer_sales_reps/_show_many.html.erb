@@ -34,7 +34,7 @@
           <% broker_customer_sales_reps.each do |broker_customer_sales_rep| %>
             <tr>
               <td>
-                <%= link_to broker_customer_sales_rep.contact.full_name, broker_broker_customer_sales_rep_path(broker_customer_sales_rep), target: '_top' %>
+                <%= link_to broker_customer_sales_rep.full_name, broker_broker_customer_sales_rep_path(broker_customer_sales_rep), target: '_top' %>
               </td>
               <td><%= BrokerCustomerSalesRep.where(user: broker_customer_sales_rep).size %></td>
               <td>

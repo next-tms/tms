@@ -71,40 +71,43 @@ module ApplicationHelper
 
   def pretty_date(date, time_zone)
     return nil unless date && time_zone
+    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
 
     if date.instance_of?(ActiveSupport::TimeWithZone)
       if date.year == DateTime.current.year
-        date.in_time_zone(time_zone.to_s).strftime("%m/%d %a %l:%M %p <small>#{time_zone.abbr(Date.current)}</small>").html_safe
+        date.in_time_zone(time_zone.name).strftime("%m/%d %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       else
-        date.in_time_zone(time_zone.to_s).strftime("%m/%d/%y %a %l:%M %p <small>#{time_zone.abbr(Date.current)}</small>").html_safe
+        date.in_time_zone(time_zone.name).strftime("%m/%d/%y %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       end
     elsif date.instance_of?(Date)
       if date.year == DateTime.current.year
-        date.in_time_zone(time_zone.to_s).strftime("%m/%d %a <small>#{time_zone.abbr(Date.current)}</small>").html_safe
+        date.in_time_zone(time_zone.name).strftime("%m/%d %a <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       else
-        date.in_time_zone(time_zone.to_s).strftime("%m/%d/%y <small>#{time_zone.abbr(Date.current)}</small>").html_safe
+        date.in_time_zone(time_zone.name).strftime("%m/%d/%y <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       end
     end
   end
 
   def short_date(date, time_zone)
     return nil unless date && time_zone
+    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
 
     if date.year == DateTime.current.year
-      date.in_time_zone(time_zone.to_s).strftime('%m/%d').html_safe
+      date.in_time_zone(time_zone.name).strftime('%m/%d').html_safe
     else
-      date.in_time_zone(time_zone.to_s).strftime('%m/%d/%y').html_safe
+      date.in_time_zone(time_zone.name).strftime('%m/%d/%y').html_safe
     end
   end
 
   def long_date(date, time_zone)
     return nil unless date && time_zone
+    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
 
-    date.in_time_zone(time_zone.to_s).strftime('%m/%d/%y').html_safe
+    date.in_time_zone(time_zone.name).strftime('%m/%d/%y').html_safe
   end
 
   def maybe_in_time_zone(datetime:, time_zone:)
-    datetime ? datetime.in_time_zone(time_zone.to_s).to_s[0..-10] : ''
+    datetime ? datetime.in_time_zone(time_zone.name).to_s[0..-10] : ''
   end
 
   def pluralize_with_delimiter(count, singular, plural = nil)
