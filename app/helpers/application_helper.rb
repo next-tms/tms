@@ -70,7 +70,7 @@ module ApplicationHelper
   end
 
   def pretty_date(date, time_zone)
-    return nil unless date && time_zone
+    return nil if date.blank? || time_zone.blank?
 
     time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
 
@@ -90,22 +90,27 @@ module ApplicationHelper
   end
 
   def short_date(date, time_zone)
-    return nil unless date && time_zone
+    return nil if date.blank? || time_zone.blank?
+    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
 
     if date.year == DateTime.current.year
-      date.in_time_zone(time_zone.name).strftime('%m/%d').html_safe
+      date.in_time_zone(time_zone).strftime('%m/%d').html_safe
     else
-      date.in_time_zone(time_zone.name).strftime('%m/%d/%y').html_safe
+      date.in_time_zone(time_zone).strftime('%m/%d/%y').html_safe
     end
   end
 
   def long_date(date, time_zone)
-    return nil unless date && time_zone
+    return nil if date.blank? || time_zone.blank?
+    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
 
     date.in_time_zone(time_zone.name).strftime('%m/%d/%y').html_safe
   end
 
   def maybe_in_time_zone(datetime:, time_zone:)
+    return '' if datetime.blank? || time_zone.blank?
+    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+
     datetime ? datetime.in_time_zone(time_zone.name).to_s[0..-10] : ''
   end
 
