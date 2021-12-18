@@ -68,11 +68,12 @@ class Address < ApplicationRecord
 
   before_validation :set_country
 
-  delegate :time_zone, to: :standardized_address
-
   belongs_to :country
   belongs_to :region
   belongs_to :standardized_address, counter_cache: true, optional: true
+
+  serialize :time_zone
+  serialize :types
 
   validate :region_matches_country
 
