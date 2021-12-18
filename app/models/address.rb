@@ -148,6 +148,10 @@ class Address < ApplicationRecord
     @twin = addresses&.first
   end
 
+  def time_zone
+    standardized_address&.time_zone || self[:time_zone]
+  end
+
   def google_places_spot
     if @google_places_spot && !(will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?)
       return @google_places_spot
