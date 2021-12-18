@@ -29,6 +29,8 @@ module ApplicationHelper
       )
     end
 
+    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+
     datetime = datetime.blank? ? DateTime.now.in_time_zone(time_zone.name) : datetime
     formatted_offset = datetime.formatted_offset
 
