@@ -69,14 +69,21 @@ class TrackingEvent < ApplicationRecord
   belongs_to :terminal, optional: true
   belongs_to :user, optional: true
 
-  serialize :time_zone
+  # TODO: Remove
+  serialize :legacy_time_zone
 
   # DateTime sanitization
-  before_save :set_time_zone
+  before_save :set_time_zone_name
   before_save :sanitize_at, if: :at_changed?
 
   def pretty_location
     "#{city}, #{region.abbreviation}"
+  end
+
+  def time_zone
+    return nil if time_zone_name.blank?
+
+    ActiveSupport::TimeZone.new(time_zone_name)
   end
 
   private
@@ -85,7 +92,7 @@ class TrackingEvent < ApplicationRecord
   def sanitize_datetime(datetime:, time_zone:)
     return nil if datetime.blank? || time_zone.blank?
 
-    time_zone.local_to_utc ActiveSupport::TimeZone[time_zone.to_s].parse(datetime.to_s)
+    time_zone.local_to_utc time_zone.parse(datetime.to_s)
   end
 
   def sanitize_at
@@ -93,18 +100,18 @@ class TrackingEvent < ApplicationRecord
     self.at = at.blank? ? DateTime.current : at
   end
 
-  def set_time_zone
-    time_zone = TrackingEvent.where(city: city, region: region).where.not(time_zone: [nil, ''])&.last&.time_zone
+  def set_time_zone_name
+    last_time_zone_name = StandardizedAddress.where(region: region)&.last&.time_zone_name
 
-    unless time_zone.blank?
-      self.time_zone = time_zone
+    unless last_time_zone_name.blank?
+      self.time_zone_name = last_time_zone_name
       return
     end
 
-    time_zone = Address.where(city: city, region: region).where.not(time_zone: [nil, ''])&.last&.time_zone
+    last_time_zone_name = TrackingEvent.where(region: region)&.last&.time_zone_name
 
-    unless time_zone.blank?
-      self.time_zone = time_zone
+    unless last_time_zone_name.blank?
+      self.time_zone_name = last_time_zone_name
       return
     end
 
@@ -112,15 +119,15 @@ class TrackingEvent < ApplicationRecord
 
     spots = client.spots_by_query(pretty_location)
     if spots.blank?
-      self.time_zone = nil
+      self.time_zone_name = nil
       return
     end
 
     spot = spots.first
     lat = spot.json_result_object.dig('geometry', 'location', 'lat')
     lng = spot.json_result_object.dig('geometry', 'location', 'lng')
-    return self.time_zone = nil if lat.blank? || lng.blank?
+    return self.time_zone_name = nil if lat.blank? || lng.blank?
 
-    self.time_zone = Timezone.lookup(lat, lng)
+    self.time_zone_name = Timezone.lookup(lat, lng)
   end
 end

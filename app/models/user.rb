@@ -120,11 +120,13 @@ class User < ApplicationRecord
 
   has_many :commissions
 
-  serialize :time_zone
-  validates_presence_of :time_zone
+  # TODO: Remove
+  serialize :legacy_time_zone
 
-  validates_presence_of :first_name
-  validates_presence_of :last_name
+  validates :time_zone_name, presence: true
+
+  validates :first_name, presence: true
+  validates :last_name, presence: true
 
   scope :broker, -> { where(broker_customer: nil) }
   scope :customer, -> { where.not(broker_customer: nil) }
@@ -217,6 +219,10 @@ class User < ApplicationRecord
       to: phone,
       url: 'https://tms.next-tms.com/Next%%20TMS.vcf'
     )
+  end
+
+  def time_zone
+    ActiveSupport::TimeZone.new(time_zone_name)
   end
 
   private

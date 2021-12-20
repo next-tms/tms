@@ -29,7 +29,10 @@ module ApplicationHelper
       )
     end
 
-    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
 
     datetime = datetime.blank? ? DateTime.now.in_time_zone(time_zone.name) : datetime
     formatted_offset = datetime.formatted_offset
@@ -74,7 +77,10 @@ module ApplicationHelper
   def pretty_date(date, time_zone)
     return nil if date.blank? || time_zone.blank?
 
-    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
 
     if date.instance_of?(ActiveSupport::TimeWithZone)
       if date.year == DateTime.current.year
@@ -93,7 +99,11 @@ module ApplicationHelper
 
   def short_date(date, time_zone)
     return nil if date.blank? || time_zone.blank?
-    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
 
     if date.year == DateTime.current.year
       date.in_time_zone(time_zone).strftime('%m/%d').html_safe
@@ -104,14 +114,22 @@ module ApplicationHelper
 
   def long_date(date, time_zone)
     return nil if date.blank? || time_zone.blank?
-    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
 
     date.in_time_zone(time_zone.name).strftime('%m/%d/%y').html_safe
   end
 
   def maybe_in_time_zone(datetime:, time_zone:)
     return '' if datetime.blank? || time_zone.blank?
-    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
 
     datetime ? datetime.in_time_zone(time_zone.name).to_s[0..-10] : ''
   end
