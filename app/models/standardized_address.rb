@@ -256,15 +256,8 @@ class StandardizedAddress < ApplicationRecord
     false
   end
 
-  def set_time_zone_name
-    set_coordinates if latitude.blank? || longitude.blank?
-
-    if latitude.blank? || longitude.blank?
-      self.time_zone_name = 'America/Los_Angeles'
-      return
-    end
-
-    self.time_zone_name = Timezone.lookup(latitude, longitude)&.name || 'America/Los_Angeles'
+  def time_zone
+    ActiveSupport::TimeZone.new(time_zone_name.blank? ? 'America/Los_Angeles' : time_zone_name)
   end
 
   # private
@@ -279,5 +272,16 @@ class StandardizedAddress < ApplicationRecord
     return if region.blank? || country.blank?
 
     errors.add(:region, "isn't within #{country.name}") unless region.country == country
+  end
+
+  def set_time_zone_name
+    set_coordinates if latitude.blank? || longitude.blank?
+
+    if latitude.blank? || longitude.blank?
+      self.time_zone_name = 'America/Los_Angeles'
+      return
+    end
+
+    self.time_zone_name = Timezone.lookup(latitude, longitude)&.name || 'America/Los_Angeles'
   end
 end
