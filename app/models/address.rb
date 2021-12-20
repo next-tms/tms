@@ -159,7 +159,23 @@ class Address < ApplicationRecord
     return unless full_address?
 
     key = region.country.format_address(pretty(', '))
-    new_standardized_address = StandardizedAddress.find_or_create_by(country: region.country, key: key)
+    key = pretty(', ') if key.blank?
+
+    new_standardized_address = StandardizedAddress.where(country: region.country, key: key)&.first
+
+    if new_standardized_address.blank?
+      new_standardized_address = StandardizedAddress.new(
+        street: street,
+        street2: street2,
+        city: city,
+        region_id: region_id,
+        postal_code: zip_code,
+        country_id: country_id,
+        key: key
+      )
+
+      new_standardized_address.save
+    end
 
     self.standardized_address = new_standardized_address
 
