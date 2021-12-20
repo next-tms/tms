@@ -195,7 +195,7 @@
             </tr>
           <% end %>
           <tr>
-            <td><%= pretty_date @shipment.created_at.in_time_zone(current_user.time_zone.to_s), current_user.time_zone %></td>
+            <td><%= pretty_date @shipment.created_at.in_time_zone(current_user.time_zone.name), current_user.time_zone %></td>
             <td>Shipment entered</td>
           </tr>
         </tbody>
