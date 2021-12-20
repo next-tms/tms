@@ -59,7 +59,7 @@
 class StandardizedAddress < ApplicationRecord
   before_validation :standardize_address
   before_validation :set_coordinates
-  before_validation :set_time_zone
+  before_validation :set_time_zone_name
 
   belongs_to :country
   belongs_to :region
@@ -121,7 +121,7 @@ class StandardizedAddress < ApplicationRecord
       self.google_places_spot_updated_at = nil
     end
 
-    if !google_places_spot_updated_at.blank? && google_places_spot_updated_at < 3.months.ago
+    if !google_places_spot_updated_at.blank? && google_places_spot_updated_at > 3.months.ago
       return @google_places_spot_cached = google_places_spot_cached
     end
 
@@ -143,7 +143,7 @@ class StandardizedAddress < ApplicationRecord
       self.open_street_map_result_updated_at = nil
     end
 
-    if !open_street_map_result_updated_at.blank? && open_street_map_result_updated_at < 3.months.ago
+    if !open_street_map_result_updated_at.blank? && open_street_map_result_updated_at > 3.months.ago
       return @open_street_map_result_cached = open_street_map_result_cached
     end
 
@@ -169,7 +169,7 @@ class StandardizedAddress < ApplicationRecord
       self.smarty_streets_result_updated_at = nil
     end
 
-    if !smarty_streets_result_updated_at.blank? && smarty_streets_result_updated_at < 3.months.ago
+    if !smarty_streets_result_updated_at.blank? && smarty_streets_result_updated_at > 3.months.ago
       return @smarty_streets_result = smarty_streets_result_cached
     end
 
@@ -219,7 +219,7 @@ class StandardizedAddress < ApplicationRecord
     next_types
   end
 
-  def update_types
+  def types
     types = []
 
     types = google_places_spot.types unless google_places_spot.blank?
@@ -256,15 +256,15 @@ class StandardizedAddress < ApplicationRecord
     false
   end
 
-  def set_time_zone
+  def set_time_zone_name
     set_coordinates if latitude.blank? || longitude.blank?
 
     if latitude.blank? || longitude.blank?
-      self.time_zone = Timezone['America/Los_Angeles']
+      self.time_zone_name = 'America/Los_Angeles'
       return
     end
 
-    self.time_zone = Timezone.lookup(latitude, longitude)
+    self.time_zone_name = Timezone.lookup(latitude, longitude)&.name || 'America/Los_Angeles'
   end
 
   # private

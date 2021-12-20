@@ -62,9 +62,9 @@
 #  fk_rails_...  (standardized_address_id => standardized_addresses.id)
 #
 class Address < ApplicationRecord
-  before_save :prettify_city, if: :city_changed?
-
-  before_save :standardize_address
+  before_save :sanitize_city
+  before_save :sanitize_street
+  before_save :set_standardized_address
 
   before_validation :set_country
 
@@ -72,7 +72,9 @@ class Address < ApplicationRecord
   belongs_to :region
   belongs_to :standardized_address, counter_cache: true, optional: true
 
-  serialize :time_zone
+  # TODO: Remove
+  serialize :legacy_time_zone
+
   serialize :types
 
   validate :region_matches_country
@@ -102,29 +104,23 @@ class Address < ApplicationRecord
   end
 
   def permanently_closed?
-    @permanently_closed ||= google_places_spot.permanently_closed
+    standardized_address&.permanently_closed?
   end
 
   def commercial?
-    return nil unless types
-
-    types.include? 'commercial'
+    standardized_address&.commercial?
   end
 
   def residential?
-    return nil unless types
-
-    types.include? 'residential'
+    standardized_address&.residential?
   end
 
   def restaurant?
-    return nil unless types
-
-    !(types & ['food', 'meal takeaway', 'restaurant']).empty?
+    standardized_address&.restaurant?
   end
 
   def full_address?
-    !street.blank? and !city.blank? and !region.blank?
+    !street.blank? && !city.blank? && !region.blank?
   end
 
   def blank_to_nil(obj)
@@ -138,122 +134,15 @@ class Address < ApplicationRecord
     ).uniq.reject { |name| name.blank? }
   end
 
-  def twin
-    addresses = Address.where(
-      street: blank_to_nil(street),
-      street2: blank_to_nil(street2),
-      city: blank_to_nil(city),
-      zip_code: blank_to_nil(zip_code)
-    ).where.not(id: id).where('updated_at > ?', 6.months.ago).order(updated_at: :desc).limit(1)
-    @twin = addresses&.first
-  end
-
   def time_zone
-    standardized_address&.time_zone || self[:time_zone]
+    return standardized_address.time_zone unless standardized_address.blank?
+    return ActiveSupport::TimeZone.new('America/Los_Angeles') if time_zone_name.blank?
+
+    ActiveSupport::TimeZone.new(time_zone_name)
   end
 
-  def google_places_spot
-    if @google_places_spot && !(will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?)
-      return @google_places_spot
-    end
-
-    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?
-      self.google_places_spot_cached = nil
-      self.google_places_spot_updated_at = nil
-    end
-
-    return @google_places_spot_cached = google_places_spot_cached unless google_places_spot_updated_at.blank?
-
-    if twin&.google_places_spot_cached
-      self.google_places_spot_cached = twin.google_places_spot_cached
-    else
-      logger.info 'Calling Google Places API'
-      self.google_places_spot_cached = GooglePlaces::Client.new(
-        ENV['GOOGLE_API_KEY']
-      ).spots_by_query(
-        (names&.first.blank? ? proper(', ') : "#{names&.first}, #{proper(', ')}")
-      ).first
-    end
-
-    self.google_places_spot_updated_at = DateTime.current
-    @google_places_spot = google_places_spot_cached
-  end
-
-  def open_street_map_result
-    if @open_street_map_result && !(will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?)
-      return @open_street_map_result
-    end
-
-    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?
-      self.open_street_map_result_updated_at = nil
-    end
-
-    unless open_street_map_result_updated_at.blank?
-      return @open_street_map_result_cached = open_street_map_result_cached
-    end
-
-    if twin&.open_street_map_result_cached
-      self.open_street_map_result_cached = twin.open_street_map_result_cached
-    else
-      logger.info 'Calling OpenStreetMap API'
-
-      client = OpenStreetMap::Client.new
-
-      self.open_street_map_result_cached = client.search(
-        q: "#{street}, #{city}, #{region.abbreviation}, #{country.name}",
-        format: 'json',
-        addressdetails: '1',
-        accept_language: 'en'
-      )&.first
-    end
-
-    self.open_street_map_result_updated_at = DateTime.current
-    @open_street_map_result = open_street_map_result_cached
-  end
-
-  def smarty_streets_result
-    if @smarty_streets_result && !(will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?)
-      return @smarty_streets_result
-    end
-
-    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_zip_code?
-      self.smarty_streets_result_updated_at = nil
-    end
-
-    return @smarty_streets_result = verification_info unless smarty_streets_result_updated_at.blank?
-
-    if twin&.verification_info
-      self.verification_info = twin.verification_info
-    else
-      logger.info 'Calling SmartyStreet API'
-      begin
-        self.verification_info = MainStreet::AddressVerifier.new(proper(', ')).result&.data&.to_hash
-      rescue StandardError
-        self.verification_info = nil
-      end
-    end
-
-    self.smarty_streets_result_updated_at = DateTime.current
-    @smarty_streets_result = verification_info
-  end
-
-  def next_types
-    next_types = []
-    streets_formatted = "#{street || ''} #{street2 || ''}".downcase
-    if %w[aero aircraft aviation avionic hangar].any? { |word| streets_formatted.include?(word) }
-      next_types << 'airport'
-    end
-
-    yaml = YAML.load_file(File.join(Rails.root, 'config', 'postal_codes.yml'))
-    military_postal_codes = yaml['MILITARY'].inject([]) { |arr, postal_code| arr << postal_code.to_s }
-    military_postal_codes.each do |military_postal_code|
-      if zip_code.start_with?(military_postal_code) || (zip_code == military_postal_code)
-        next_types << 'military'
-        break
-      end
-    end
-
-    next_types
+  def types
+    standardized_address&.types || []
   end
 
   def to_interstellar_shipping_address
@@ -266,38 +155,11 @@ class Address < ApplicationRecord
     )
   end
 
-  def update_types
-    return self unless full_address?
+  def set_standardized_address
+    return unless full_address?
 
-    types = []
-
-    if twin.blank?
-      types = google_places_spot.types unless google_places_spot.blank?
-      unless smarty_streets_result.blank?
-        types << smarty_streets_result.dig('metadata', 'rdi')
-        types -= %w[street_address premise]
-      end
-
-      begin
-        types = types.map(&:downcase).map { |t| t.gsub('_', ' ') }
-      rescue StandardError
-        types = []
-      end
-
-      types = types - ['subpremise'] + ['apartment'] if types.include? %w[residential subpremise]
-      types -= %w[establishment premise]
-    else
-      types = twin.types
-    end
-    self.types = (next_types + types).sort.uniq
-    self
-  end
-
-  def standardize_address
-    return if country.blank? || !full_address?
-
-    key = country.format_address(pretty(', '))
-    new_standardized_address = StandardizedAddress.find_or_create_by(country: country, key: key)
+    key = region.country.format_address(pretty(', '))
+    new_standardized_address = StandardizedAddress.find_or_create_by(country: region.country, key: key)
 
     self.standardized_address = new_standardized_address
 
@@ -310,6 +172,36 @@ class Address < ApplicationRecord
 
   private
 
+  def sanitize_city
+    new_city = city
+
+    new_city = new_city.titleize if (new_city == new_city.downcase) || (new_city == new_city.upcase)
+
+    until new_city.strip.last != ','
+      new_city.strip!
+      new_city = new_city[..-2]
+    end
+
+    new_city.strip!
+
+    self.city = new_city
+  end
+
+  def sanitize_street
+    new_street = street
+
+    new_street = new_street.titleize if (new_street == new_street.downcase) || (new_street == new_street.upcase)
+
+    until new_street.strip.last != ','
+      new_street.strip!
+      new_street = new_street[..-2]
+    end
+
+    new_street.strip!
+
+    self.street = new_street
+  end
+
   def set_country
     return if region.blank? || !country.blank?
 
@@ -320,10 +212,5 @@ class Address < ApplicationRecord
     return if region.blank? || country.blank?
 
     errors.add(:region, "isn't within #{country.name}") unless region.country == country
-  end
-
-  # Prettify
-  def prettify_city
-    self.city = city.titleize if (city == city.downcase) || (city == city.upcase)
   end
 end

@@ -83,7 +83,7 @@
           <td>
             Pickup scheduled for <%= pretty_date shipment.pickup_on, shipment.shipper_address.time_zone %>
             <% unless shipment.pickup_hours_start_at.blank? or shipment.pickup_hours_end_at.blank? %>
-              between <%= shipment.pickup_hours_start_at %> and <%= shipment.pickup_hours_end_at %> <small><%= shipment.shipper_address.time_zone.abbr(Date.current) %></small>
+              between <%= shipment.pickup_hours_start_at %> and <%= shipment.pickup_hours_end_at %> <small><%= shipment.shipper_address.time_zone.tzinfo.abbr %></small>
             <% end %>
           </td>
         </tr>

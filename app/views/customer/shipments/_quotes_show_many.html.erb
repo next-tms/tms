@@ -31,7 +31,7 @@
               <% unless rate.transit_days.blank? %>
                 <%= rate.transit_days %> <%= 'day'.pluralize(rate.transit_days ? rate.transit_days.to_i : 0) %>
                 <br/>
-                <%= short_date rate.transit_days.to_i.business_days.after(@shipment.shipper_available_at || Date.current).in_time_zone(@shipment.receiver_address.time_zone.to_s), @shipment.receiver_address.time_zone %>
+                <%= short_date rate.transit_days.to_i.business_days.after(@shipment.shipper_available_at || Date.current).in_time_zone(@shipment.receiver_address.time_zone_name), @shipment.receiver_address.time_zone %>
               <% else %>
                 <em>Not provided</em>
               <% end %>

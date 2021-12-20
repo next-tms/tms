@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_17_191138) do
+ActiveRecord::Schema.define(version: 2021_12_20_082127) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -64,9 +64,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_191138) do
     t.text "original_attributes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "types"
     t.string "ref"
-    t.string "time_zone"
     t.text "google_places_spot_cached"
     t.integer "country_id", null: false
     t.text "open_street_map_result_cached"
@@ -75,6 +73,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_191138) do
     t.datetime "open_street_map_result_updated_at"
     t.bigint "region_id"
     t.bigint "standardized_address_id"
+    t.string "time_zone_name"
     t.index ["country_id"], name: "index_addresses_on_country_id"
     t.index ["region_id"], name: "index_addresses_on_region_id"
     t.index ["standardized_address_id"], name: "index_addresses_on_standardized_address_id"
@@ -651,6 +650,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_191138) do
     t.text "smarty_streets_result_cached"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "time_zone_name", null: false
     t.index ["country_id"], name: "index_standardized_addresses_on_country_id"
     t.index ["key"], name: "index_standardized_addresses_on_key"
     t.index ["region_id"], name: "index_standardized_addresses_on_region_id"
@@ -672,7 +672,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_191138) do
     t.bigint "event_id", null: false
     t.boolean "public", default: true
     t.datetime "at"
-    t.string "time_zone"
+    t.string "legacy_time_zone"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "terminal_id"
@@ -682,6 +682,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_191138) do
     t.bigint "user_id"
     t.bigint "country_id"
     t.bigint "region_id"
+    t.string "time_zone_name"
     t.index ["address_id"], name: "index_tracking_events_on_address_id"
     t.index ["country_id"], name: "index_tracking_events_on_country_id"
     t.index ["event_id"], name: "index_tracking_events_on_event_id"
@@ -741,7 +742,6 @@ ActiveRecord::Schema.define(version: 2021_12_17_191138) do
     t.string "last_name"
     t.bigint "broker_customer_id"
     t.boolean "receive_email_notifications", default: true
-    t.string "time_zone"
     t.boolean "receive_notifications_from_self", default: true
     t.bigint "contact_id"
     t.string "invitation_token"
@@ -752,6 +752,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_191138) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.boolean "deactivated", default: false
+    t.string "time_zone_name", null: false
     t.index ["broker_customer_id"], name: "index_users_on_broker_customer_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"
