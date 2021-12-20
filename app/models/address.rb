@@ -163,11 +163,11 @@ class Address < ApplicationRecord
 
     self.standardized_address = new_standardized_address
 
-    self.street = standardized_address.street
-    self.street2 = standardized_address.street2
-    self.city = standardized_address.city
-    self.region = standardized_address.region
-    self.zip_code = standardized_address.postal_code
+    self.street = standardized_address.street || street
+    self.street2 = standardized_address.street2 || street2
+    self.city = standardized_address.city || city
+    self.region = standardized_address.region || region
+    self.zip_code = standardized_address.postal_code || zip_code
   end
 
   private
