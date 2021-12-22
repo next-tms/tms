@@ -1,5 +1,4 @@
 <% unless shipments.blank? %>
-
   <div class="table-responsive">
     <table class="table table-condensed table-borderless table-striped table-hover sortable">
       <thead>
@@ -16,8 +15,8 @@
         <% shipments.each do |shipment| %>
           <tr>
             <td>
-              <%= link_to shipment.load_id, customer_shipment_path(shipment) %>
-              <% if not shipment.out_for_delivery_at.blank? and shipment.delivered_at.blank? %>
+              <%= link_to shipment.load_id, customer_shipment_path(shipment), target: '_top' %>
+              <% if not shipment.out_for_delivery_at.blank? && shipment.delivered_at.blank? %>
                 <br>
                 <span class="text-muted">OFD</span>
               <% end %>
@@ -52,9 +51,6 @@
       </tbody>
     </table>
   </div>
-
 <% else %>
-  <div class="section">
-    <p><em>Nothing to show</em></p>
-  </div>
+  <%= render 'layouts/no_content' %>
 <% end %>

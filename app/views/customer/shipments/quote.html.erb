@@ -1,8 +1,8 @@
-<% provide :title, "Find Rates — Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
-<% provide :no_cache, 'yes' %>
+<% provide :title, 'Rates' %>
 
-<%= render 'header', page_title: 'Rates' %>
+<%= render 'member_header' %>
+
+<h2><%= yield :title %></h2>
 
 <% if !@shipment.quote_only? && @shipment.incomplete? %>
   <%= render 'layouts/message', classes: 'alert-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>

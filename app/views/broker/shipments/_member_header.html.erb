@@ -1,7 +1,7 @@
 <div class="page-header bg-light p-4 mb-4">
   <h1 class="mb-6">
     <% if @shipment.new_record? %>
-      Shipment
+      <%= action_name == 'quote_only' ? 'Shipment' : 'Quote' %>
     <% elsif @shipment.quote_only? %>
       Quote <%= @shipment.load_id %>
     <% else %>

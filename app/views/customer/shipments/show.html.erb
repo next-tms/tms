@@ -1,8 +1,8 @@
 <% provide :title, "Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
-<% provide :auto_refresh, 'yes' %>
 
-<%= render 'header', page_title: 'Overview' %>
+<%= render 'member_header' %>
+
+<h2>Overview</h2>
 
 <% unless @shipment.public_notes.blank? %>
   <div class="alert alert-info">
