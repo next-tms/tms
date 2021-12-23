@@ -142,7 +142,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
                                            :username,
                                            :website_password,
                                            :website_username,
-                                           check_mailing_address_attributes: %i[id ref street street2 city region_id
+                                           check_mailing_address_attributes: %i[id ref country_id street street2 city region_id
                                                                                 zip_code],
                                            overlength_rules_attributes: %i[_destroy id max_length min_length cost],
                                            pricing_rules_attributes: %i[id carrier_area_id max_pallets min_pallets
