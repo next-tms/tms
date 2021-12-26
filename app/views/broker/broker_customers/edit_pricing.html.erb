@@ -1,10 +1,7 @@
-<% provide :title, "Edit Pricing for #{@broker_customer.customer.name}" %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'Edit Pricing' %>
 
-<div class="page-header">
-  <h1><%= @broker_customer.customer.name %></h1>
-  <p class="lead">Edit Pricing</h2>
-</div>
+<%= render 'member_header' %>
+<h2><%= yield :title %></h2>
 
 <%= bootstrap_form_with(model: [:broker, @broker_customer], path: [:broker, @broker_customer], layout: :horizontal) do |f| %>
   <%= f.alert_message 'Unable to save customer:' %>
@@ -73,5 +70,5 @@
     <%= link_to icon('fas', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
   </div>
 
-  <%= f.submit 'Save', class: 'btn btn-primary' %>
+  <%= f.submit 'Save', class: 'btn btn-primary mt-4' %>
 <% end %>

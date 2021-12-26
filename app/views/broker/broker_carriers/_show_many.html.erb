@@ -1,42 +1,35 @@
-<% unless broker_carriers.blank? %>
-  <% if @pagy %>
-    <%= render 'broker/broker_carriers/search_form' %>
-  <% end %>
+<%= turbo_frame_tag :broker_carriers do %>
+  <%= render 'broker/broker_carriers/search_form' %>
 
-  <div class="table-responsive">
-    <table class="table table-borderless table-striped table-hover">
-      <thead>
-        <tr>
-          <% if @q %>
+  <% unless broker_carriers.blank? %>
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped table-hover">
+        <thead>
+          <tr>
             <th><%= sort_link @q, :carrier_name, 'Carrier' %></th>
             <th><%= sort_link @q, :broker_customer_customer_name, 'Account' %></th>
-          <% else %>
-            <th>Carrier</th>
-            <th>Account</th>
-          <% end %>
-          <th>Shipments</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% broker_carriers.each do |broker_carrier| %>
-          <tr>
-            <td><%= link_to broker_carrier.carrier.name, broker_broker_carrier_path(broker_carrier), target: '_top' %></td>
-            <td>
-              <%= current_user.broker.name %>
-              <% unless broker_carrier.broker_customer.blank? %>
-                <span class="text-muted"> / <%= broker_carrier.broker_customer.customer.name %></span>
-              <% end %>
-            </td>
-            <td><%= broker_carrier.shipments.size %></td>
+            <th><%= sort_link @q, :shipments_count, 'Shipments' %></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          <% broker_carriers.each do |broker_carrier| %>
+            <tr>
+              <td><%= link_to broker_carrier.carrier.name, broker_broker_carrier_path(broker_carrier), target: '_top' %></td>
+              <td>
+                <%= current_user.broker.name %>
+                <% unless broker_carrier.broker_customer.blank? %>
+                  <span class="text-muted"> / <%= broker_carrier.broker_customer.customer.name %></span>
+                <% end %>
+              </td>
+              <td><%= broker_carrier.shipments.size %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
 
-  <% if @pagy %>
     <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
   <% end %>
-<% else %>
-  <%= render 'layouts/no_content' %>
 <% end %>

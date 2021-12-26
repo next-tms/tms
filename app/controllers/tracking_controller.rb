@@ -28,6 +28,10 @@ class TrackingController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_load_id
     @load_id = params[:load_id]
-    @load_id = @load_id.to_s.gsub(/[[:space:]]/, '').to_i unless @load_id.blank?
+
+    unless @load_id.blank?
+      @load_id = @load_id.to_s.gsub(/[[:space:]]/, '').to_i
+      @load_id = '' if @load_id.zero?
+    end
   end
 end

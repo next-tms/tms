@@ -1,10 +1,7 @@
-<% provide :title, 'Overview — Shipments' %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'Overview' %>
 
-<div class="page-header">
-  <h1>Shipments</h1>
-  <p class="lead">Overview</p>
-</div>
+<%= render 'header' %>
+<h2>Overview</h2>
 
 <%= turbo_frame_tag :shipments do %>
   <%= render 'show_many', table: shipment_show_many_table(shipments: @shipments, td_names: ['created_at', 'id', 'status', 'broker_customer', 'origin', 'broker_carrier', 'destination', 'pro', 'picked_up_at', 'promised_delivery_by', 'delivery_at', 'size']) %>

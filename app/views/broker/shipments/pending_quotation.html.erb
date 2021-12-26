@@ -1,11 +1,7 @@
-<% provide :title, 'Inbox — Shipments' %>
-<% provide :menu, render('menu') %>
-<% provide :auto_refresh, 'yes' %>
+<% provide :title, 'Inbox' %>
 
-<div class="page-header">
-  <h1>Shipments</h1>
-  <p class="lead">Inbox</p>
-</div>
+<%= render 'header' %>
+<h2>Inbox</h2>
 
 <%= turbo_frame_tag :shipments do %>
   <%= render 'show_many_pending_quotation', shipments: @shipments %>

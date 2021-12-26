@@ -1,24 +1,30 @@
-<% unless banks.blank? %>
-  <div class="table-responsive">
-    <table class="table table-condensed table-borderless table-striped table-hover h-100">
-      <thead>
-        <tr>
-          <th>Bank</th>
-          <th>Type</th>
-          <th>Account</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% banks.each do |bank| %>
+<%= turbo_frame_tag :banks do %>
+  <% unless banks.blank? %>
+    <%= render 'layouts/pagy', pagy: @pagy %>
+
+    <div class="table-responsive">
+      <table class="table table-condensed table-borderless table-striped table-hover h-100">
+        <thead>
           <tr>
-            <td><%= link_to bank.name, broker_bank_path(bank), target: '_top' %></td>
-            <td><%= bank.account_number %></td>
-            <td><%= bank.type.name %></td>
+            <th><%= sort_link @q, :name, 'Bank' %></th>
+            <th><%= sort_link @q, :type_name, 'Type' %></th>
+            <th><%= sort_link @q, :account_number, 'Account' %></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-<% else %>
-  <%= render 'shared/no_content' %>
+        </thead>
+        <tbody>
+          <% banks.each do |bank| %>
+            <tr>
+              <td><%= link_to bank.name, broker_bank_path(bank), target: '_top' %></td>
+              <td><%= bank.type.name %></td>
+              <td><%= bank.account_number %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'shared/no_content' %>
+  <% end %>
 <% end %>

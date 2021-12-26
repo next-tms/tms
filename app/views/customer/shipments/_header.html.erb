@@ -1,12 +1,40 @@
-<div class="page-header">
-  <h1>Load <%= @shipment.load_id %></h1>
-  <ul class="list-unstyled list-inline lead">
-    <% unless @shipment.shipper_reference.blank? %>
-      <li class="list-inline-item"><strong>Shipper</strong> <%= @shipment.shipper_reference %></li>
-    <% end %>
-    <% unless @shipment.customer_reference.blank? %>
-      <li class="list-inline-item"><strong>PO</strong> <%= @shipment.customer_reference %></li>
-    <% end %>
-  </ul>
-  <p class="lead"><%= page_title %></p>
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6">Shipments</h1>
+
+  <table class="table table-borderless">
+    <thead>
+      <tr>
+        <th>Entered</th>
+        <th>Quoted</th>
+        <th>Pickups</th>
+        <th>In Transit</th>
+        <th>Delivered</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="display-6">
+          <%= link_to current_user.shipments.pending_quotation.size, customer_shipments_pending_quotation_path, class: 'shipments-pending-quotation' %>
+        </td>
+        <td class="display-6">
+          <%= link_to current_user.shipments.pending_dispatch.size, customer_shipments_pending_dispatch_path, class: 'shipments-pending-dispatch' %>
+        </td>
+        <td class="display-6">
+          <%= link_to current_user.shipments.pending_pickup.size, customer_shipments_pending_pickup_path, class: 'shipments-pending-pickup' %>
+        </td>
+        <td class="display-6">
+          <%= link_to current_user.shipments.pending_delivery.size, customer_shipments_pending_delivery_path, class: 'shipments-pending-delivery' %>
+        </td>
+        <td class="display-6">
+          <%= link_to current_user.shipments.delivered.size, customer_shipments_delivered_path, class: 'shipments-delivered' %>
+        </td>
+        <td class="display-6">
+          <%= link_to icon('fas', 'plus', 'Add'), new_customer_shipment_path, class: 'btn' %>
+          <%= link_to icon('fas', 'plus', 'Fast Quote'), customer_quote_only_path, class: 'btn' %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

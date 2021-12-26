@@ -1,8 +1,3 @@
-h1 small, .text-highlighted {
-  color: #ff4500;
-  font-weight: 400;
-}
-
 .text-red { color: red; }
 
 ::selection {
@@ -13,90 +8,77 @@ h1 small, .text-highlighted {
   background: #ffb380;
 }
 
-h2 {
-  margin-bottom: 1rem;
-}
-
 table thead tr th, table tbody tr th {
   font-weight: 600;
 }
 
-table thead tr th, .lead, .brand {
+.page-header table thead tr th, .page-header table tbody tr th {
+  font-weight: 400;
+}
+
+.lead, .brand {
   font-family: 'Nimbus Sans L', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-table thead tr th {
-  text-transform: uppercase;
+.col-title {
+  font-weight: 700;
 }
 
-.navbar-divider {
-  padding-left: 1.4rem;
-}
-
-.nav-wrapper {
-  overflow: hidden;
+aside {
+  background: #E2F8FF;
 }
 
 .navbar {
+  // background: #E3F8FF;
+  // background: #FF6606;
   background: black;
-  color: rgba(255, 255, 255, 0.85);
 }
 
 .navbar-menu {
   // background: #363636;
 }
 
-.navbar-nav {
-  font-weight: 400;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.navbar-nav::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-}
-
-.navbar-link {
-  text-transform: lowercase;
-}
-
-.navbar-menu ul.navbar-nav {
-  white-space: nowrap;
-  overflow-x: auto;
-}
-
 img.navbar-brand-logo {
   height: 0.95rem;
-}
-
-.navbar-menu ul.navbar-nav li.navbar-item {
-  display: inline-block;
-  float: none;
 }
 
 main {
   background: #f6f6f6;
 }
 
-navbar, .navbar a, .navbar a:active, .navbar a:hover, .navbar a:visited,
-footer, footer a, footer a:active, footer a:hover, footer a:visited {
-  color: rgba(255, 255, 255, 0.9);
+/*
+.navbar, .navbar a, .navbar a:active, .navbar a:hover, .navbar a:visited {
+  color: rgba(255, 255, 255, 0.65);
+}
+*/
+
+.page-header nav a, .page-header nav a:visited {
+  color: #23292F;
+}
+
+.page-header nav a:active, .page-header nav a:hover {
+  color: darken(#23292F, 0.6);
+}
+
+aside, aside a, aside a:active, aside a:hover, aside a:visited {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+// aside, aside a, aside a:active, aside a:hover, aside a:visited,
+.page-header a.active {
+  font-weight: 500;
 }
 
 a.sort_link, a.sort_link:active, a.sort_link:hover, a.sort_link:visited {
   color: rgb(0, 0, 0);
 }
 
-tr.bg-danger, tr.bg-danger a, tr.bg-danger a:active, tr.bg-danger a:hover, tr.bg-danger a:visited {
-  color: rgba(255, 255, 255, 0.9) !important;
+.btn-primary, .btn-primary:hover, .btn-outline-primary:hover {
+ color: white; 
 }
 
-.navbar a, .navbar a:active, .navbar a:hover, .navbar a:visited {
-  font-weight: 500;
+tr.bg-danger, tr.bg-danger a, tr.bg-danger a:active, tr.bg-danger a:hover, tr.bg-danger a:visited {
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .modal-content a, .modal-content a:active, .modal-content a:hover, .modal-content a:visited {
@@ -189,17 +171,8 @@ main a, main a:active, main a:hover, main a:visited {
   font-weight: normal;
 }
 
-.page-header {
-  margin-bottom: 2.4rem;
-}
-
 .data-link {
   cursor: pointer;
-}
-
-.col-title {
-  font-weight: bolder;
-  text-transform: uppercase;
 }
 
 .form-inline label {
@@ -218,10 +191,6 @@ main {
 iframe {
   border: none;
   height: 15rem;
-}
-
-.btn-toolbar {
-  margin-bottom: 1rem;
 }
 
 footer .row {

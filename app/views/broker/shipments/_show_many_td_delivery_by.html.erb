@@ -1,7 +1,0 @@
-<td>
-  <%= short_date shipment.delivery_eta_on, shipment.receiver_address.time_zone %>
-  <% unless shipment.quoted_delivery_by.blank? %>
-    <br>
-    <%= short_date shipment.quoted_delivery_by, shipment.receiver_address.time_zone %> <small class="text-muted text-uppercase">Quoted</small>
-  <% end %>
-</td>

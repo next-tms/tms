@@ -1,86 +1,90 @@
-<% unless broker_customer_sales_reps.blank? %>
-  <div class="table-responsive">
-    <table class="table table-borderless table-striped table-hover sortable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Customers</th>
-          <th>
-            <small class="text-muted">$</small>
-            <br>
-            Week
-          </th>
-          <th>
-            <small class="text-muted">#</small>
-            <br>
-            Week
-          </th>
-          <th>
-            <small class="text-muted">$</small>
-            <br>
-            YTD
-          </th>
-          <th>
-            <small class="text-muted">#</small>
-            <br>
-            YTD
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <% broker_customer_sales_reps.each do |broker_customer_sales_rep| %>
+<%= turbo_frame_tag :receivables do %>
+  <% unless broker_customer_sales_reps.blank? %>
+    <%= render 'layouts/pagy', pagy: @pagy %>
+
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped table-hover sortable">
+        <thead>
           <tr>
-            <td>
-              <%= link_to commissions_broker_broker_customer_sales_rep_path(broker_customer_sales_rep, target: '_top') do %>
-                <%= broker_customer_sales_rep.full_name %>
-              <% end %>
-            </td>
-            <td><%= BrokerCustomerSalesRep.where(user: broker_customer_sales_rep).size %></td>
-            <td>
-              <%=
-                number_to_currency(
-                  Money.new(
-                    broker_customer_sales_rep.commissions_between(
-                      DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).beginning_of_week,
-                      DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).end_of_week
-                    ).sum(:amount_cents)
-                  )
-                )
-              %>
-            </td>
-            <td>
-              <%=
-                broker_customer_sales_rep.commissions_between(
-                  DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).beginning_of_week,
-                  DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).end_of_week
-                ).size
-              %>
-            </td>
-            <td>
-              <%=
-                number_to_currency(
-                  Money.new(
-                    broker_customer_sales_rep.commissions_between(
-                      DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).beginning_of_year,
-                      DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name)
-                    ).sum(:amount_cents)
-                  )
-                )
-              %>
-            </td>
-            <td>
-              <%=
-                broker_customer_sales_rep.commissions_between(
-                  DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).beginning_of_year,
-                  DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name)
-                ).size
-              %>
-            </td>
+            <th>Name</th>
+            <th>Customers</th>
+            <th>
+              <small class="text-muted">$</small>
+              <br>
+              Week
+            </th>
+            <th>
+              <small class="text-muted">#</small>
+              <br>
+              Week
+            </th>
+            <th>
+              <small class="text-muted">$</small>
+              <br>
+              YTD
+            </th>
+            <th>
+              <small class="text-muted">#</small>
+              <br>
+              YTD
+            </th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-<% else %>
-  <%= render 'layouts/no_content' %>
+        </thead>
+        <tbody>
+          <% broker_customer_sales_reps.each do |broker_customer_sales_rep| %>
+            <tr>
+              <td>
+                <%= link_to broker_customer_sales_rep.full_name, broker_broker_customer_sales_rep_path(broker_customer_sales_rep), target: '_top' %>
+              </td>
+              <td><%= BrokerCustomerSalesRep.where(user: broker_customer_sales_rep).size %></td>
+              <td>
+                <%=
+                  number_to_currency(
+                    Money.new(
+                      broker_customer_sales_rep.commissions_between(
+                        DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).beginning_of_week,
+                        DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).end_of_week
+                      ).sum(:amount_cents)
+                    )
+                  )
+                %>
+              </td>
+              <td>
+                <%=
+                  broker_customer_sales_rep.commissions_between(
+                    DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).beginning_of_week,
+                    DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).end_of_week
+                  ).size
+                %>
+              </td>
+              <td>
+                <%=
+                  number_to_currency(
+                    Money.new(
+                      broker_customer_sales_rep.commissions_between(
+                        DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).beginning_of_year,
+                        DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name)
+                      ).sum(:amount_cents)
+                    )
+                  )
+                %>
+              </td>
+              <td>
+                <%=
+                  broker_customer_sales_rep.commissions_between(
+                    DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name).beginning_of_year,
+                    DateTime.current.in_time_zone(broker_customer_sales_rep.time_zone.name)
+                  ).size
+                %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
 <% end %>

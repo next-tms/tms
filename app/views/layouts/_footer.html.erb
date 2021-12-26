@@ -1,7 +1,7 @@
 <% if !@website&.manifest&.dig('footer', 'html').blank? %>
   <%= CGI.unescapeHTML(@website.manifest.dig('footer', 'html')).html_safe %>
 <% else %>
-  <footer class="mt-5 mb-5">
+  <footer class="mt-6">
     <div class="container-fluid">
       <div class="footer-bottom">
         <p class="h3"><%= @website.broker.name %></p>

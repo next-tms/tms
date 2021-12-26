@@ -1,9 +1,8 @@
-<% provide :title, "Documents — Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
-<% provide :no_cache, 'yes' %>
-<% provide :auto_refresh, 'yes' if @shipment.dispatched_at.blank? or @shipment.broker_carrier.blank? %>
+<% provide :title, 'Documents' %>
 
-<%= render 'header', page_title: 'Documents' %>
+<%= render 'member_header' %>
+
+<h2><%= yield :title %></h2>
 
 <div class="row">
   <div class="col col-md-8">

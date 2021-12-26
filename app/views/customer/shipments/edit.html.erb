@@ -1,6 +1,7 @@
-<% provide :title, "Edit — Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'Edit' %>
 
-<%= render 'header', page_title: 'Edit' %>
+<%= render 'member_header' %>
+
+<h2><%= yield :title %></h2>
 
 <%= render 'form' %>

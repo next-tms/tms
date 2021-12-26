@@ -259,13 +259,28 @@ module ApplicationHelper
     end
   end
 
+  def pod_uri(shipment)
+    return nil if shipment.broker_carrier.blank?
+    return nil if shipment.broker_carrier.carrier.scac.blank?
+
+    case shipment.broker_carrier.carrier.scac.upcase
+    when 'CNWY'
+      "https://ltl.xpo.com/webapp/imaging_app/imageretrieverequest.do?dest=fastdocview&PRO1=#{shipment.pro}&DocType1=DR"
+    when 'RDFS'
+      "http://tools.rrts.com/LTLTrack/Home/ShowImage?proNumber=#{shipment.pro}&imageType=POD"
+    end
+  end
+
   def quote_uri(shipment)
     return nil if shipment.broker_carrier.blank?
+    return nil if shipment.broker_carrier.carrier.scac.blank?
 
-    carrier = real_carrier(shipment)
-    return nil if carrier.scac.blank?
-
-    nil
+    case shipment.broker_carrier.carrier.scac.upcase
+    when 'RDFS'
+      "https://freight.rrts.com/Tools/LTL-RateQuote/Pages/RateQuoteResult.aspx?QuoteNumber=#{shipment.quote_id}"
+    when 'CNWY'
+      "https://ltl.xpo.com/webapp/rating_app/RatingRS.jsp?custCode=#{shipment.broker_carrier.account}&quoteKey=#{shipment.quote_id}"
+    end
   end
 
   def tracking_uri(shipment)

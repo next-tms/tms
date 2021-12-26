@@ -1,8 +1,7 @@
 <% provide :title, "Documents — Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
-<% provide :no_cache, 'yes' %>
 
-<%= render 'header', page_title: 'Documents' %>
+<%= render 'member_header' %>
+<h2>Documents</h2>
 
 <% if !@shipment.broker_bol_valid? && @shipment.pro.blank? && @shipment.broker_carrier&.as_interstellar_carrier&.bol_requires_tracking_number? %>
   <div class="alert alert-warning">

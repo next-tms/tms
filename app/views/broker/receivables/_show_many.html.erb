@@ -1,36 +1,19 @@
 <%= turbo_frame_tag :receivables do %>
-  <div class="btn-toolbar">
-    <div class="btn-group">
-      <% if @display_authorized %>
-        <%= link_to 'Pending', url_for({ 'q' => { 'authorized_at_null' => '1' } }), class: 'btn btn-light' %>
-        <%= link_to 'Approved', url_for({ 'q' => { 'authorized_at_null' => '0' } }), class: 'btn btn-dark' %>
-      <% else %>
-        <%= link_to 'Pending', url_for({ 'q' => { 'authorized_at_null' => '1' } }), class: 'btn btn-dark' %>
-        <%= link_to 'Approved', url_for({ 'q' => { 'authorized_at_null' => '0' } }), class: 'btn btn-light' %>
-      <% end %>
-    </div>
-  </div>
-
-  <%= render 'layouts/pagy', pagy: @pagy %>
   <% unless receivables.blank? %>
+    <%= render 'layouts/pagy', pagy: @pagy %>
+
     <div class="table-responsive">
       <table class="table table-condensed table-borderless table-striped table-hover h-100">
         <thead>
           <tr>
             <th><%= sort_link @q, :shipment_load_id, '#' %></th>
             <th><%= sort_link @q, :broker_customer_customer_name, 'Customer' %></th>
-            <% unless @display_authorized %>
-              <th class="text-nowrap"><%= sort_link @q, :shipment_picked_up_at, 'Picked Up' %></th>
-              <th><%= sort_link @q, :shipment_delivered_at, 'Delivered' %></th>
-            <% end %>
-            <% if @display_authorized %>
-              <th class="text-nowrap"><%= sort_link @q, :authorized_by_first_name, 'Approved By' %></th>
-              <th><%= sort_link @q, :invoiced_eq_true, 'Invoiced?' %></th>
-            <% end %>
+            <th class="text-nowrap"><%= sort_link @q, :shipment_picked_up_at, 'Picked Up' %></th>
+            <th><%= sort_link @q, :shipment_delivered_at, 'Delivered' %></th>
+            <th class="text-nowrap"><%= sort_link @q, :authorized_by_first_name, 'Approved By' %></th>
+            <th><%= sort_link @q, :invoiced_eq_true, 'Invoiced?' %></th>
             <th><%= sort_link @q, :due_by, 'Due' %></th>
-            <% if @display_authorized %>
-              <th class="text-nowrap"><%= sort_link @q, :paid_at, 'Paid On' %></th>
-            <% end %>
+            <th class="text-nowrap"><%= sort_link @q, :paid_at, 'Paid On' %></th>
             <th><%= sort_link @q, :total_cents, 'Total' %></th>
           </tr>
         </thead>
@@ -43,18 +26,12 @@
               <td>
                 <%= link_to receivable.broker_customer.customer.name, broker_broker_customer_path(receivable.broker_customer), target: '_new' %>
               </td>
-              <% unless @display_authorized %>
-                <td><%= short_date receivable.shipment.picked_up_at, current_user.time_zone %></td>
-                <td><%= short_date receivable.shipment.delivered_at, current_user.time_zone %></td>
-              <% end %>
-              <% if @display_authorized %>
-                <td class="text-nowrap"><%= receivable.authorized_by&.full_name %></td>
-                <td><% if receivable.invoiced? %>✓<% end %></td>
-              <% end %>
+              <td><%= short_date receivable.shipment.picked_up_at, current_user.time_zone %></td>
+              <td><%= short_date receivable.shipment.delivered_at, current_user.time_zone %></td>
+              <td class="text-nowrap"><%= receivable.authorized_by&.full_name %></td>
+              <td><% if receivable.invoiced? %>✓<% end %></td>
               <td><%= short_date receivable.due_by, current_user.time_zone %></td>
-              <% if @display_authorized %>
-                <td><%= short_date receivable.paid_at, current_user.time_zone %></td>
-              <% end %>
+              <td><%= short_date receivable.paid_at, current_user.time_zone %></td>
               <td>
                 <%= humanized_money_with_symbol receivable.total, no_cents_if_whole: false %>
               </td>
@@ -63,6 +40,7 @@
         </tbody>
       </table>
     </div>
+
     <%= render 'layouts/pagy', pagy: @pagy %>
   <% else %>
     <%= render 'layouts/no_content' %>

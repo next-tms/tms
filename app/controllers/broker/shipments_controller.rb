@@ -2,9 +2,11 @@
 
 class Broker::ShipmentsController < Broker::BrokerController
   before_action :set_shipment_by_load_id,
-                only: %i[book book_modal rate_uid documents create_tracking_event destroy edit edit_tracking_events
-                         notes pickup pickup_modal pricing quote send_document send_document_with_contact_mailer show
-                         tracking_events transit unbook update]
+                only: %i[
+                  accounting book book_modal rate_uid documents create_tracking_event destroy edit
+                  edit_tracking_events notes pickup pickup_modal pricing quote send_document
+                  send_document_with_contact_mailer show tracking_events transit unbook update
+                ]
   before_action :authenticate_user!
 
   def book
@@ -41,7 +43,20 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def index
-    @q = current_user.shipments.active.includes(required_includes).ransack(params[:q])
+    @q = current_user
+         .shipments
+         .active
+         .includes(
+           [
+             :items,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_carrier: :carrier },
+             { broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -87,14 +102,6 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def edit; end
-
-  def pickup; end
-
-  def pickup_modal
-    @applied_rate_uid = shipment_params[:applied_rate_uid]
-
-    render layout: 'modal'
-  end
 
   def update
     unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
@@ -176,157 +183,255 @@ class Broker::ShipmentsController < Broker::BrokerController
       @shipment.destroy
       flash[:notice] = 'Shipment deleted'
     end
+
     redirect_to shipments_path
   end
 
   def missing_delivery_appointment
-    @q = Shipment.where(broker_customer: [current_user.broker_customers]).missing_delivery_appointment.ransack(params[:q])
+    @q = current_user
+         .shipments
+         .where(broker_customer_id: current_user.broker_customers.ids)
+         .missing_delivery_appointment
+         .includes(
+           [
+             :broker_carrier,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
+
     @pagy, @shipments = pagy(@q.result)
   end
 
   def missing_pricing
-    @q = Shipment.where(broker_customer: [current_user.broker_customers]).active.missing_pricing.ransack(params[:q])
+    @q = current_user
+         .shipments
+         .active
+         .missing_pricing
+         .includes(
+           [
+             :broker_carrier,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
+
     @pagy, @shipments = pagy(@q.result)
   end
 
   def missing_pro
-    @q = Shipment.where(broker_customer: [current_user.broker_customers]).active.missing_pro.ransack(params[:q])
+    @q = current_user
+         .shipments
+         .active
+         .missing_pro
+         .includes(
+           [
+             :broker_carrier,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
+
     @pagy, @shipments = pagy(@q.result)
   end
 
   def booked
-    @q = Shipment.where(
-      broker_customer_id: current_user.broker_customers.pluck(:id)
-    ).active.booked.includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
+    @q = current_user
+         .shipments
+         .active
+         .booked
+         .includes(
+           [
+             :items,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_carrier: :carrier,
+               broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'booked_at desc' if @q.sorts.blank?
+
     @pagy, @shipments = pagy(@q.result)
   end
 
   def pending_dispatch
-    @q = current_user.shipments.active.pending_dispatch.includes([required_includes, :items,
-                                                                  :receiver_address].flatten).ransack(params[:q])
+    @q = current_user
+         .shipments
+         .active
+         .pending_dispatch
+         .includes(
+           [
+             :items,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_carrier: :carrier,
+               broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
+
     @pagy, @shipments = pagy(@q.result)
   end
 
   def pending_delivery
-    shipments = current_user.shipments.active.pending_delivery.includes(required_includes)
-
-    @missing_delivery_eta_on_shipments = shipments.missing_delivery_eta_on
-    unless @missing_delivery_eta_on_shipments.blank?
-      shipments = shipments.where.not(id: @missing_delivery_eta_on_shipments.map(&:id))
-    end
-
-    @late_shipments = shipments.late.order(:picked_up_at)
-    @shipments = shipments.not_late.order(:picked_up_at)
-  end
-
-  def pending_delivery; end
-
-  def pending_delivery_late
     @q = current_user
          .shipments
          .active
          .pending_delivery
-         .late
-         .not_missing_delivery_eta_on
-         .includes([required_includes, :receiver_address].flatten)
+         .includes(
+           [
+             :broker_carrier,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_customer: :customer }
+           ]
+         )
          .ransack(params[:q])
+    @q.sorts = 'picked_up_at desc, promised_delivery_by desc' if @q.sorts.blank?
 
-    @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
-    @pagy, @shipments = pagy(@q.result)
-  end
-
-  def pending_delivery_on_time
-    @q = current_user
-         .shipments
-         .active
-         .pending_delivery
-         .not_late
-         .not_missing_delivery_eta_on
-         .includes([required_includes, :receiver_address].flatten)
-         .ransack(params[:q])
-
-    @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
-    @pagy, @shipments = pagy(@q.result)
-  end
-
-  def pending_delivery_without_delivery_eta_on
-    @q = current_user
-         .shipments
-         .active
-         .pending_delivery
-         .missing_delivery_eta_on
-         .includes([required_includes, :receiver_address].flatten)
-         .ransack(params[:q])
-
-    @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
   end
 
   def pending_departure
-    @q = current_user.shipments.active.pending_departure.includes([required_includes, :items,
-                                                                   :receiver_address].flatten).ransack(params[:q])
+    @q = current_user
+         .shipments
+         .active
+         .pending_departure
+         .includes(
+           [
+             :items,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_carrier: :carrier,
+               broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
+
     @pagy, @shipments = pagy(@q.result)
   end
 
   def pending_found
-    @q = current_user.shipments.pending_found.includes(required_includes).ransack(params[:q])
+    @q = current_user
+         .shipments
+         .pending_found
+         .includes(
+           [
+             :broker_carrier,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'created_at asc' if @q.sorts.blank?
+
     @pagy, @shipments = pagy(@q.result)
   end
 
   def pending_pickup
-    pending_pickup = current_user
-                     .shipments
-                     .active
-                     .pending_pickup.includes([required_includes, :items, :receiver_address].flatten)
+    @q = current_user
+         .shipments
+         .active
+         .pending_pickup
+         .includes(
+           [
+             :items,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_carrier: :carrier,
+               broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
+    @q.sorts = 'pickup_on' if @q.sorts.blank?
 
-    @shipments_for_pickup_later = Shipment.none
-    @shipments_for_pickup_today = Shipment.none
-    @shipments_missed_pickup = Shipment.none
-
-    pending_pickup.each do |shipment|
-      if shipment.late?
-        @shipments_missed_pickup += [shipment]
-        next
-      end
-
-      if shipment.pickup_by.blank?
-        @shipments_for_pickup_today += [shipment]
-        next
-      end
-
-      if shipment.pickup_by >= shipment.shipper_address.time_zone.local_to_utc(Date.current.next_day.beginning_of_day)
-        @shipments_for_pickup_later += [shipment]
-      else
-        @shipments_for_pickup_today += [shipment]
-      end
-    end
+    @pagy, @shipments = pagy(@q.result)
   end
 
   def pending_quotation
-    @q = current_user.shipments.active.pending_quotation.or(
-      current_user.shipments.canceled_recently
-    ).includes([required_includes, :items, :receiver_address].flatten).ransack(params[:q])
+    @q = current_user
+         .shipments
+         .active
+         .pending_quotation
+         .or(
+           current_user
+           .shipments
+           .canceled_recently
+         )
+         .includes(
+           [
+             :items,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_carrier: :carrier,
+               broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
+
     @pagy, @shipments = pagy(@q.result(distinct: true))
   end
 
   def delivered
-    @q = current_user.shipments.active.delivered.includes(required_includes, :items,
-                                                          :receiver_address).ransack(params[:q])
+    @q = current_user
+         .shipments
+         .active
+         .delivered
+         .includes(
+           [
+             :items,
+             :receiver_address,
+             :shipper_address,
+             :tracking_carrier,
+             { broker_carrier: :carrier,
+               broker_customer: :customer }
+           ]
+         )
+         .ransack(params[:q])
     @q.sorts = 'delivered_at desc' if @q.sorts.blank?
+
     @pagy, @shipments = pagy(@q.result)
+  end
+
+  def accounting
+    if !current_user.has_role?('accounts_payable') && !current_user.has_role?('accounts_receivable') && !current_user.sales_rep_for?(@shipment.broker_customer) && !current_user.dispatcher_for?(@shipment)
+      unauthorized
+    end
   end
 
   def notes; end
 
   def pickup; end
+
+  def pickup_modal
+    @applied_rate_uid = shipment_params[:applied_rate_uid]
+
+    render layout: 'modal'
+  end
 
   def pricing
     if !current_user.has_role?('accounting') && !current_user.has_role?('dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
@@ -376,8 +481,6 @@ class Broker::ShipmentsController < Broker::BrokerController
     reset = true if !reset && !params[:force].blank?
 
     if reset
-      applied_rate = @shipment.applied_rate
-
       if @shipment.applied_rate.blank?
         @shipment.rates.destroy_all
       else
@@ -539,16 +642,5 @@ class Broker::ShipmentsController < Broker::BrokerController
                                        :region_id,
                                        { address_attributes: %i[id street street2 city region_id zip_code] }
                                      ])
-  end
-
-  # Query helpers
-  def required_includes
-    [
-      :broker_carrier, { broker_carrier: :carrier },
-      :broker_customer, { broker_customer: :customer },
-      :applied_rate,
-      :shipper_address,
-      :tracking_carrier
-    ]
   end
 end

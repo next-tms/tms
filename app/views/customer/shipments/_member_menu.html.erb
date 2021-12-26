@@ -1,0 +1,18 @@
+<nav class="nav border-top pt-4 mb-0">
+  <% if !@shipment.quote_only? %>
+    <%= link_to 'Overview', customer_shipment_path(@shipment), class: 'nav-link shipments-show' %>
+
+    <% if @shipment.booked_at.blank? && !@shipment.total_charges.blank? %>
+      <%= link_to 'Request Pickup', book_customer_shipment_path(@shipment), class: 'nav-link' %>
+      <%= link_to 'Edit', edit_customer_shipment_path(@shipment), class: 'nav-link shipments-edit' %>
+      <%= link_to 'Rates', quote_customer_shipment_path(@shipment), class: 'nav-link shipments-quote' %>
+    <% elsif !@shipment.booked_at.blank? %>
+      <%= link_to 'Pickup Requested', '#', class: 'nav-link disabled' %>
+      <%= link_to 'Documents', documents_customer_shipment_path(@shipment), class: 'nav-link shipments-documents' %>
+
+      <% unless @shipment.picked_up_at.blank? %>
+        <li class="navbar-item"><%= link_to 'Tracking', tracking_path(load_id: @shipment.load_id), class: 'nav-link' %></li>
+      <% end %>
+    <% end %>
+  <% end %>
+</nav>

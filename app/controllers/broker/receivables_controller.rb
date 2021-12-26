@@ -11,16 +11,9 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def index
-    @display_authorized = ['0', nil].include?(params.dig(:q, :authorized_at_null))
-
     @q = current_user.broker.receivables.includes(required_includes).ransack(params[:q])
     @q.sorts = 'due_by asc' if @q.sorts.blank?
-    @pagy, @receivables = pagy(paid_or_pending_filter(@q))
-  end
-
-  def paid
-    @q = Receivable.paid.includes(required_includes).ransack(params[:q])
-    @pagy, @receivables = pagy(@q.result(distinct: true))
+    @pagy, @receivables = pagy(@q.result)
   end
 
   def new
@@ -71,12 +64,7 @@ class Broker::ReceivablesController < Broker::BrokerController
     params.require(:receivable).permit(:id, :authorized_at, :invoiced)
   end
 
-  # Query helpers
-  def paid_or_pending_filter(q)
-    @display_authorized ? q.result.authorized : q.result.unauthorized
-  end
-
   def required_includes
-    [ :shipment, broker_customer: :customer ]
+    [:shipment, { broker_customer: :customer }]
   end
 end

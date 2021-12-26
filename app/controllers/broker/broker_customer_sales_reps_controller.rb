@@ -1,18 +1,24 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
-  before_action :set_user, only: %i[commissions destroy edit show update]
+  before_action :set_broker_customer_sales_rep, only: %i[commissions destroy edit show update]
   before_action :authenticate_user!, except: %i[commissions]
   before_action :require_admin, except: %i[commissions]
 
   def index
-    @broker_customer_sales_reps = User.where(id: current_user.broker.broker_customer_sales_reps.pluck(:user_id)).order(:first_name)
+    @q = User
+         .where(id: current_user.broker.broker_customer_sales_reps.pluck(:user_id))
+         .includes(:broker, :broker_customer)
+         .ransack(params[:q])
+    @q.sorts = 'first_name asc' if @q.sorts.blank?
+
+    @pagy, @broker_customer_sales_reps = pagy(@q.result)
   end
 
-  def commissions
-    require_admin unless @user.id == current_user.id
+  def show
+    require_admin unless @broker_customer_sales_rep.id == current_user.id
 
-    @q = @user.commissions.includes(required_includes).ransack(params[:q])
+    @q = @broker_customer_sales_rep.commissions.includes(required_includes).ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
     @pagy, @commissions = pagy(@q.result)
@@ -24,8 +30,8 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
     require_role 'admin'
   end
 
-  def set_user
-    @user = current_user.broker.users.find(params[:id])
+  def set_broker_customer_sales_rep
+    @broker_customer_sales_rep = current_user.broker.users.find(params[:id])
   end
 
   def set_user_params

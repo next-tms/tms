@@ -1,0 +1,5 @@
+<% if current_user.customer? %>
+  <%= render 'layouts/sidebar_customer' %>
+<% else %>
+  <%= render 'layouts/sidebar_broker' %>
+<% end %>

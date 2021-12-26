@@ -8,7 +8,19 @@ class Broker::BanksController < Broker::BrokerController
   def activity
     @display_paid = ['0', nil].include?(params.dig(:q, :paid_on_null))
 
-    @q = @bank.payments.paid.ransack(params[:q])
+    @q = @bank
+        .payments
+        .paid
+        .includes(
+          :payment_transactions,
+          {
+            broker_carrier: [
+              :carrier,
+              { broker_customer: :customer}
+            ]
+          }
+        )
+        .ransack(params[:q])
     @q.sorts = 'paid_on DESC' if @q.sorts.blank?
     @pagy, @payments = pagy(paid_or_pending_filter(@q))
 
@@ -17,14 +29,17 @@ class Broker::BanksController < Broker::BrokerController
       format.csv do
         csv = ''.dup
         csv += "#{@payments.first.export_headers.join(',')}\n"
-        csv += @payments.inject(''.dup) { |str, p| str << p.to_csv(false)  }
+        csv += @payments.inject(''.dup) { |str, p| str << p.to_csv(false) }
         send_data csv, filename: "#{@bank.pretty_name} Activity.csv"
       end
     end
   end
 
   def index
-    @pagy, @banks = pagy(current_user.broker.banks.order(:name))
+    @q = current_user.broker.banks.includes(:type).ransack(params[:q])
+    @q.sorts = 'name asc' if @q.sorts.blank?
+
+    @pagy, @banks = pagy(@q.result)
   end
 
   def new
@@ -53,9 +68,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def show
-    unless @bank.broker == current_user.broker
-      render file: 'public/401', layout: false, status: :unauthorized
-    end
+    render file: 'public/401', layout: false, status: :unauthorized unless @bank.broker == current_user.broker
   end
 
   private

@@ -7,7 +7,7 @@ class Broker::UsersController < Broker::BrokerController
 
   def index
     @q = current_user.broker.users.includes(required_includes).ransack(params[:q])
-    @q.sorts = 'contact.first_name desc' if @q.sorts.blank?
+    @q.sorts = 'first_name asc' if @q.sorts.blank?
 
     @pagy, @users = pagy(@q.result)
   end

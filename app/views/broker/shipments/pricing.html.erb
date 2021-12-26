@@ -1,8 +1,7 @@
 <% provide :title, "Pricing — Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
-<% provide :no_cache, 'yes' %>
 
-<%= render 'header', page_title: 'Pricing' %>
+<%= render 'member_header' %>
+<h2>Pricing</h2>
 
 <% unless @shipment.receivables.blank? %>
   <div class="alert alert-danger">

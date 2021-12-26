@@ -1,0 +1,7 @@
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6"><%= @user.full_name.blank? ? 'User' : @user.full_name %></h1>
+
+  <% unless @user.new_record? or controller.controller_name != 'users' %>
+    <%= render 'member_menu' %>
+  <% end %>
+</div>

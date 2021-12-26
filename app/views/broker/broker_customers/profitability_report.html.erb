@@ -1,19 +1,18 @@
-<% provide :title, 'Profitability Report' %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'Profitability' %>
 
-<div class="page-header">
-  <h1>Customers</h1>
-  <p class="lead">Profitability Report</p>
-</div>
+<%= render 'header' %>
+<h2><%= yield :title %></h2>
 
-<%= bootstrap_form_tag(url: broker_customers_profitability_report_path, method: 'get', layout: :inline) do |f| %>
-  <%= f.text_field :from_date, label: 'From', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), class: 'mr-2', value: (@from_date ? @from_date : '') %>
-  <%= f.text_field :to_date, label: 'Until', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), value: (@to_date ? @to_date : '') %>
-  <div class="form-group">
-    <%= f.submit class: 'btn btn-primary ml-2', value: 'Generate' %>
+<div class="row">
+  <div class="col col-md-4">
+    <%= bootstrap_form_tag(url: broker_customers_profitability_report_path, method: 'get', layout: :horizontal) do |f| %>
+      <%= f.text_field :from_date, label: 'From', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), class: 'mr-2', value: (@from_date ? @from_date : '') %>
+      <%= f.text_field :to_date, label: 'Until', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), value: (@to_date ? @to_date : '') %>
+    
+      <%= f.submit class: 'btn btn-primary', value: 'Generate' %>
+    <% end %>
   </div>
-<% end %>
-<div class="mb-4">&nbsp;</div>
+</div>
 
 <% unless current_user.broker.broker_customers.blank? %>
   <div class="table-responsive">

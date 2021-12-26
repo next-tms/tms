@@ -1,0 +1,92 @@
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6">
+    <% if @shipment.new_record? %>
+      <%= action_name == 'quote_only' ? 'Shipment' : 'Quote' %>
+    <% elsif @shipment.quote_only? %>
+      Quote <%= @shipment.load_id %>
+    <% else %>
+      Load <%= @shipment.load_id %>
+    <% end %>
+  </h1>
+
+  <% if !@shipment.new_record? && !@shipment.quote_only? %>
+    <table class="table table-borderless w-auto">
+      <thead>
+        <tr>
+          <th>Status</th>
+
+          <% unless @shipment.broker_carrier.blank? %>
+            <th>Carrier</th>
+          <% end %>
+
+          <% unless @shipment.shipper_reference.blank? %>
+            <th>Shipper Ref</th>
+          <% end %>
+
+          <% unless @shipment.customer_reference.blank? %>
+            <th>Customer Ref</th>
+          <% end %>
+
+          <% unless @shipment.bol.blank? %>
+            <th>BOL</th>
+          <% end %>
+
+          <% unless real_pro(@shipment).blank? %>
+            <th>Pro</th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="lead">
+            <% if @shipment.status.include?('—') %>
+              <%= @shipment.status.split('—').last.strip %>
+            <% else %>
+              <%= @shipment.status %>
+            <% end %>
+          </td>
+
+          <% unless @shipment.broker_carrier.blank? %>
+            <td class="lead">
+              <% if @shipment.broker_carrier.carrier.acts_as_broker? and not @shipment.tracking_carrier.blank? %>
+                <li class="list-inline-item">
+                  <%= @shipment.tracking_carrier.name %>
+                </li>
+              <% else %>
+                <li class="list-inline-item">
+                  <%= @shipment.broker_carrier.carrier.name %>
+                </li>
+              <% end %>
+            </td>
+          <% end %>
+
+          <% unless @shipment.shipper_reference.blank? %>
+            <td class="lead"><%= @shipment.shipper_reference %></td>
+          <% end %>
+
+          <% unless @shipment.customer_reference.blank? %>
+            <td class="lead"><%= @shipment.customer_reference %></td>
+          <% end %>
+
+          <% unless @shipment.bol.blank? %>
+            <td class="lead"><%= @shipment.bol %></td>
+          <% end %>
+
+          <% unless real_pro(@shipment).blank? %>
+            <td class="lead">
+              <% if tracking_uri(@shipment).blank? %>
+                <%= real_pro(@shipment) %>
+              <% else %>
+                <%= link_to real_pro(@shipment), tracking_uri(@shipment), target: '_blank' %>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% unless @shipment.new_record? %>
+    <%= render 'member_menu' %>
+  <% end %>
+</div>

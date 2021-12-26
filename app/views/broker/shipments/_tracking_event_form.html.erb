@@ -1,6 +1,6 @@
 <div class="tracking-event-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-controller="address" data-new-record="<%= f.object.new_record? %>">
   <div class="col-auto">
-    <%= f.select :event_id, Event.all.sort_by { |event| event.name }.collect { |event| [ event.name.capitalize, event.id ] }, { label: 'Event', hide_label: true }, class: 'form-select' %>
+    <%= f.select :event_id, Event.order(:name).collect { |event| [ event.name.capitalize, event.id ] }, { label: 'Event', hide_label: true }, class: 'form-select' %>
   </div>
 
   <div class="col-auto">

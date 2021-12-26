@@ -1,13 +1,13 @@
 <%= bootstrap_form_with(model: [:broker, @broker_carrier], path: [:broker, @broker_carrier], layout: :horizontal) do |f| %>
   <%= f.alert_message "Unable to create account:" %>
 
-  <h2>Account</h2>
+  <h3>Account</h3>
   <%= f.select :carrier_id, Carrier.all.order(:name).all.order(:name).collect {|c| [ c.name, c.id ] }, { label: 'Carrier', selected: (@broker_carrier.carrier ? @broker_carrier.carrier.id : nil) }, class: 'form-select' %>
   <%= f.select :broker_customer_id, [['None — Blanket Pricing', nil]] + current_user.broker.broker_customers.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@broker_carrier.broker_customer ? @broker_carrier.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, class: 'form-select' %>
   <%= f.text_field :account, placeholder: 'Account #', autocomplete: 'off' %>
   <%= f.text_field :account_desc, placeholder: 'Description', autocomplete: 'off' %>
 
-  <h2>Billing Details</h2>
+  <h3>Billing Details</h3>
   <%= f.text_area :accounting_notes, rows: 7 %>
 
   <%= f.number_field :days_to_pay_after_invoice_date, label: 'Days Until Due', help: 'Used to generate payment due dates when they are not specified on account statements', min: 0 %>
@@ -30,21 +30,23 @@
     </div>
   </div>
 
-  <h2>Credentials</h2>
-  <p class="col-title">
+  <% unless f.object.as_interstellar_carrier.blank? %>
+    <h3>
+      <% if f.object.carrier&.has_seperate_website_credentials? %>
+        API & Website Credentials
+      <% else %>
+        API Credentials
+      <% end %>
+    </h3>
+  
+    <%= f.text_field :username, placeholder: 'Username', autocomplete: 'off' %>
+    <%= f.text_field :password, placeholder: 'Password', autocomplete: 'off' %>
+  
     <% if f.object.carrier&.has_seperate_website_credentials? %>
-      API & Website Credentials
-    <% else %>
-      API Credentials
+      <h3>Website Credentials</h3>
+      <%= f.text_field :website_username, placeholder: 'Username', autocomplete: 'off' %>
+      <%= f.text_field :website_password, placeholder: 'Password', autocomplete: 'off' %>
     <% end %>
-  </p>
-  <%= f.text_field :username, placeholder: 'Username', autocomplete: 'off' %>
-  <%= f.text_field :password, placeholder: 'Password', autocomplete: 'off' %>
-
-  <% if f.object.carrier&.has_seperate_website_credentials? %>
-    <p class="col-title">Website Credentials</p>
-    <%= f.text_field :website_username, placeholder: 'Username', autocomplete: 'off' %>
-    <%= f.text_field :website_password, placeholder: 'Password', autocomplete: 'off' %>
   <% end %>
 
   <%= f.text_area :default_bol_notes, label: 'Default BOL Notes', rows: 7 %>

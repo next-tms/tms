@@ -1,12 +1,12 @@
 <% provide :title, "Notes — Load #{@shipment.load_id}" %>
-<% provide :menu, render('menu') %>
-<% provide :no_cache, 'yes' %>
 
-<%= render 'header', page_title: 'Notes' %>
+<%= render 'member_header' %>
+<h2>Notes</h2>
 
-<%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment)) do |f| %>
-  <%= f.text_area :broker_notes, label: 'Internal Notes', autofocus: 'autofocus', autocomplete: 'off' %>
-  <%= f.text_area :public_notes, label: 'Public Notes', autocomplete: 'off' %>
+<%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment), layout: :horizontal) do |f| %>
+  <%= f.text_area :broker_notes, label: 'Internal', help: "Visible by #{@website.broker.name} only", autofocus: 'autofocus', rows: 5, autocomplete: 'off' %>
+  <%= f.text_area :public_notes, label: 'Public', help: "Visible by everyone including #{@website.broker.name}, #{@shipment.broker_customer.customer.name}, and the public on tracking pages", rows: 5, autocomplete: 'off' %>
+  <%= f.text_area :bol_notes, label: 'Bill of Lading', rows: 5 %>
   <div class="form-group">
     <%= f.submit class: 'btn btn-primary', value: 'Save' %>
   </div>

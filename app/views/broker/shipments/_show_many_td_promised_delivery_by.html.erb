@@ -1,10 +1,3 @@
 <td>
-  <ul class="list-unstyled">
-    <% unless shipment.promised_delivery_by.blank? %>
-      <li><%= short_date shipment.promised_delivery_by, shipment.receiver_address.time_zone %></li>
-    <% end %>
-    <% if !shipment.applied_rate.blank? && !shipment.applied_rate.pretty_service_type.blank? %>
-      <li><span class="text-nowrap"><%= shipment.applied_rate.pretty_service_type %></span></li>
-    <% end %>
-  </ul>
+  <%= short_date shipment.promised_delivery_by, shipment.receiver_address.time_zone %>
 </td>

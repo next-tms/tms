@@ -1,11 +1,7 @@
-<% provide :title, 'Booked — Shipments' %>
-<% provide :menu, render('menu') %>
-<% provide :auto_refresh, 'yes' %>
+<% provide :title, 'Booked' %>
 
-<div class="page-header">
-  <h1>Shipments</h1>
-  <p class="lead">Booked</p>
-</div>
+<%= render 'header' %>
+<h2>Booked</h2>
 
 <%= turbo_frame_tag :shipments do %>
   <%= render 'show_many_pending_dispatch', shipments: @shipments %>

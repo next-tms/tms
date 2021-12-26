@@ -16,10 +16,10 @@ class Broker::PaymentsController < Broker::BrokerController
   end
 
   def index
-    @display_paid = ['0', nil].include?(params.dig(:q, :paid_on_null))
-
     @q = Payment.includes(required_includes).ransack(params[:q])
-    @pagy, @payments = pagy(paid_or_pending_filter(@q))
+    @q.sorts = 'due_on desc' if @q.sorts.blank?
+
+    @pagy, @payments = pagy(@q.result)
   end
 
   def paid
@@ -66,7 +66,9 @@ class Broker::PaymentsController < Broker::BrokerController
 
         next if paid_cents.blank? || legacy_load_id.blank? || pro.blank?
 
-        payment_transaction = PaymentTransaction.create(broker: BrokerCarrier.find(payment_params[:broker_carrier_id]).broker, broker_carrier: BrokerCarrier.find(payment_params[:broker_carrier_id]), created_by: current_user, legacy_load_id: legacy_load_id, notes: notes, paid_cents: paid_cents, pro: pro)
+        payment_transaction = PaymentTransaction.create(
+          broker: BrokerCarrier.find(payment_params[:broker_carrier_id]).broker, broker_carrier: BrokerCarrier.find(payment_params[:broker_carrier_id]), created_by: current_user, legacy_load_id: legacy_load_id, notes: notes, paid_cents: paid_cents, pro: pro
+        )
         payment_transactions << payment_transaction
       end
 
@@ -102,7 +104,12 @@ class Broker::PaymentsController < Broker::BrokerController
     @payment.paid_on = Date.current
   end
 
-  def show; end
+  def show
+    @q = @payment.payment_transactions.includes(:broker_carrier, :shipment).ransack(params[:q])
+    @q.sorts = 'due_on desc' if @q.sorts.blank?
+
+    @pagy, @payment_transactions = pagy(@q.result)
+  end
 
   private
 
@@ -117,15 +124,11 @@ class Broker::PaymentsController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def payment_params
-    params.require(:payment).permit(:id, :approved_by_id, :bank_id, :broker_carrier_id, :legacy_csv, :due_on, :legacy_csv, :method_reference, :payment_method_id, :paid_on, payment_transactions_attributes: %i[_destroy id additional_charge balance invoice legacy_load_id notes paid pro shipment_load_id])
-  end
-
-  # Query helpers
-  def paid_or_pending_filter(q)
-    @display_paid ? q.result.paid : q.result.unpaid
+    params.require(:payment).permit(:id, :approved_by_id, :bank_id, :broker_carrier_id, :legacy_csv, :due_on,
+                                    :legacy_csv, :method_reference, :payment_method_id, :paid_on, payment_transactions_attributes: %i[_destroy id additional_charge balance invoice legacy_load_id notes paid pro shipment_load_id])
   end
 
   def required_includes
-    [ :bank, :broker_carrier, { broker_carrier: :carrier } ]
+    [:broker_carrier, :payment_transactions, { bank: :type }, { broker_carrier: [:broker_customer, :carrier] }]
   end
 end

@@ -1,10 +1,8 @@
-<% provide :title, 'Delivered — Shipments' %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'Delivered' %>
 
-<div class="page-header">
-  <h1>Shipments</h1>
-  <p class="lead">Delivered</p>
-</div>
+<%= render 'header' %>
+<h2><%= yield :title %></h2>
 
-<%= render 'show_many', shipments: @shipments %>
-<%= render 'layouts/pagy', pagy: @pagy %>
+<%= turbo_frame_tag :shipments do %>
+  <%= render 'show_many', shipments: @shipments %>
+<% end %>

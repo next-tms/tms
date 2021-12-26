@@ -1,11 +1,6 @@
-<% provide :title, 'Users' %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'All' %>
 
-<div class="page-header">
-  <h1>Users</h1>
-  <p class="lead"><%= current_user.broker.name %></p>
-</div>
+<%= render 'header' %>
+<h2><%= yield :title %></h2>
 
-<%= turbo_frame_tag :users do %>
-  <%= render 'show_many', users: @users %>
-<% end %>
+<%= render 'show_many', users: @users %>

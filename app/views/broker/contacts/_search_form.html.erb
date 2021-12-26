@@ -1,4 +1,4 @@
-<div class="row mb-2">
+<div class="row">
   <div class="col">
     <%= render 'layouts/pagy', pagy: @pagy %>
   </div>
@@ -7,7 +7,7 @@
       <div class="btn-group">
         <%= search_form_for(@q, url: request.path, method: :get, local: true, class: 'form-inline') do |f| %>
           <%= f.hidden_field :sorts, value: params[:q].try(:[], :s) %>
-          <%= f.text_field :first_name_or_last_name_cont, placeholder: 'Filter', class: 'form-control mr-2' %>
+          <%= f.text_field :first_name_or_last_name_or_broker_customer_customer_name_or_broker_carrier_carrier_name_cont, placeholder: 'Filter', class: 'form-control mr-2' %>
           <%= f.submit 'Filter', class: 'btn btn-primary' %>
         <% end %>
       </div>

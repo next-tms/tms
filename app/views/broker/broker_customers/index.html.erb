@@ -1,10 +1,7 @@
-<% provide :title, 'Overview | Customers' %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'All' %>
 
-<div class="page-header">
-  <h1>Customers</h1>
-  <p class="lead">Overview</p>
-</div>
+<%= render 'header' %>
+<h2><%= yield :title %></h2>
 
 <%= turbo_frame_tag :broker_customers do %>
   <%= render 'show_many', broker_customers: @broker_customers %>

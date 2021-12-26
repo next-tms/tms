@@ -1,32 +1,26 @@
-<% unless @broker_customers.blank? %>
+<%= turbo_frame_tag :broker_customers do %>
   <%= render 'broker/broker_customers/search_form' %>
-  <div class="table-responsive">
-    <table class="table table-borderless table-striped table-hover sortable">
-      <thead>
-        <tr>
-          <% if @q %>
-            <th><%= sort_link @q, :name, 'Name' %></th>
-            <th>Shipments</th>
-          <% else %>
-            <th>Name</th>
-            <th>Shipments</th>
-          <% end %>
-        </tr>
-      </thead>
-      <tbody>
-        <% broker_customers.each do |broker_customer| %>
-          <tr>
-            <td><%= link_to broker_customer.customer.name, broker_broker_customer_path(broker_customer), target: '_top' %></td>
-            <td><%= broker_customer.shipments.active.size %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
 
-  <% if @pagy %>
-    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% unless broker_customers.blank? %>
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped table-hover">
+        <thead>
+          <tr>
+            <th><%= sort_link @q, :customer_name, 'Name' %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% broker_customers.each do |broker_customer| %>
+            <tr>
+              <td><%= link_to broker_customer.customer.name, broker_broker_customer_path(broker_customer), target: '_top' %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+   <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
   <% end %>
-<% else %>
-  <%= render 'layouts/no_content' %>
 <% end %>

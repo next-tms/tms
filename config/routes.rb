@@ -58,12 +58,6 @@ Rails.application.routes.draw do
 
     resources :contacts
 
-    get 'ap/invoices/import', to: 'payment_transactions#import'
-    post 'ap/invoices/import', to: 'payment_transactions#import_create'
-
-    resources :payment_transactions, path: 'ap/invoices' do
-    end
-
     resources :banks, except: %i[destroy], path: 'bank-accounts' do
       member { get 'activity', to: 'banks#activity' }
     end
@@ -121,6 +115,7 @@ Rails.application.routes.draw do
         post 'documents/send/:active_storage_blob_id' => 'shipments#send_document_with_contact_mailer',
              as: :send_document_with_contact_mailer
       end
+      member { get 'accounting', as: :accounting }
       member { get 'notes', as: :notes }
       member { get 'pickup-modal', as: :pickup_modal }
       member { get 'pricing', as: :pricing }

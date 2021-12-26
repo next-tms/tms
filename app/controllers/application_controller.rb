@@ -36,12 +36,10 @@ class ApplicationController < ActionController::Base
 
   def check_if_website_belongs_to_broker
     if current_user
-      if @website
-        raise ApplicationController::NotAuthorized unless current_user.broker == @website.broker
-      else
-        # User logged into Liftoff directly
-        raise ApplicationController::NotAuthorized
-      end
+      raise ApplicationController::NotAuthorized if !@website || current_user.broker_id != @website.broker_id
+
+      # User logged into Liftoff directly
+      raise ApplicationController::NotAuthorized unless @website
     end
   end
 
