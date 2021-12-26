@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   before_action :add_floc_opt_out_header
   before_action :check_website, :check_if_website_belongs_to_broker
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :sign_out_deactivated_user
 
   protect_from_forgery with: :exception
 
@@ -45,6 +46,10 @@ class ApplicationController < ActionController::Base
   def check_website
     @website ||= Website.find_by_domain(request.host) || nil
     redirect_to 'https://next-tms.com/' and return if @website.blank?
+  end
+
+  def sign_out_deactivated_user
+    sign_out_and_redirect(current_user) and return if signed_in? && current_user.deactivated?
   end
 
   def user_sign_in_path

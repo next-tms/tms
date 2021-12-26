@@ -2,10 +2,10 @@ source 'https://rubygems.org'
 
 ruby '3.0.3'
 
-gem 'rails', '~> 6.1.4'
+gem 'rails', '~> 6.1.4.4'
 gem 'pg', '~> 1.2.0'
 gem 'puma', '~> 5.5.2'
-gem 'webpacker', '~> 6.0.0.rc.5'
+gem 'webpacker', '~> 6.0.0.rc.6'
 gem 'jbuilder', '~> 2.11'
 
 gem 'bootsnap', '>= 1.4.2', require: false
@@ -54,9 +54,9 @@ gem 'devise_invitable', '~> 2.0.5'
 # liftoff.rocks
 gem 'turbo-rails', '~> 0.9.0'
 
-gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'f00f1259cf903e153bca8c8e8023969fcb7b776a'
-gem 'interstellar-next_platforms', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms', ref: '43688c7426f561519baedf262d98a4f1ca63c46a'
-gem 'interstellar-next_carriers', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers', ref: '0880a106e4ba8560d04fd4cadbc71d9ded26b7e7'
+gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'f040e08999f22731429acbe336b8fb195b0fc558'
+gem 'interstellar-next_platforms', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms', ref: 'ce71ea41be5cfbf962eaaa1ae0a0d683058fa1fa'
+gem 'interstellar-next_carriers', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers', ref: '8e155233bb023153170d883c6cd55176e017c80e'
 
 gem 'rollbar'
 
@@ -70,13 +70,14 @@ gem 'business_time'
 gem 'timezone', '~> 1.3'
 gem 'money-rails', '~> 1.14.0'
 gem 'httparty'
-gem 'mainstreet'
 gem 'postmark-rails'
 gem 'barby'
 
 gem 'geocoder', '~> 1.6.7'
 gem 'google_places', '~> 2.0.0'
+gem 'mainstreet', git: 'https://github.com/brodyhoskins/mainstreet', ref: 'b8a57d132c89f872235183fdb6f16350fc2e308d'
 gem 'open_street_map', '~> 1.2.1'
+gem 'StreetAddress', git: 'https://github.com/Civitium/street-address', ref: '25d47a0e95a2b7e29f2ad084bf1fd99e63e3589a', require: 'street_address'
 
 gem 'phony_rails'
 gem 'htmlentities'

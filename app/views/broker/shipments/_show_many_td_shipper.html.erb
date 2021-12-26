@@ -4,6 +4,6 @@
   <% else %>
     <%= shipment.shipper_name %>
     <br>
-    <span class="text-nowrap"><%= shipment.shipper_address.city %>, <%= shipment.shipper_address.state %><?span>
+    <span class="text-nowrap"><%= shipment.shipper_address.city %>, <%= shipment.shipper_address.region.abbreviation %><?span>
   <% end %>
 </td>

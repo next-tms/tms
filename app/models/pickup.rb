@@ -20,6 +20,8 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
+# @!attribute dispatcher_id
+#   @return []
 # @!attribute rate_id
 #   @return []
 # @!attribute shipment_id
@@ -29,12 +31,14 @@
 #
 # Indexes
 #
+#  index_pickups_on_dispatcher_id  (dispatcher_id)
 #  index_pickups_on_rate_id        (rate_id)
 #  index_pickups_on_shipment_id    (shipment_id)
 #  index_pickups_on_updated_by_id  (updated_by_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (dispatcher_id => users.id)
 #  fk_rails_...  (rate_id => rates.id)
 #  fk_rails_...  (shipment_id => shipments.id)
 #  fk_rails_...  (updated_by_id => users.id)
@@ -42,6 +46,7 @@
 class Pickup < ApplicationRecord
   after_commit :update_shipment
 
+  belongs_to :dispatcher, class_name: 'User', required: true
   belongs_to :rate
   belongs_to :shipment
   belongs_to :updated_by, class_name: 'User', required: false
@@ -53,6 +58,8 @@ class Pickup < ApplicationRecord
 
   scope :confirmed, -> { where.not(pickup_confirmation: nil) }
   scope :pending, -> { where(pickup_confirmation: nil) }
+
+  serialize :error_object
 
   validate :shipment_complete
 

@@ -10,7 +10,7 @@
 #   @return [Integer]
 # @!attribute cost_currency
 #   @return [String]
-# @!attribute error
+# @!attribute error_object
 #   @return [String]
 # @!attribute expires_at
 #   @return [Time]
@@ -86,7 +86,7 @@ class Rate < ApplicationRecord
   has_many :rate_accessorials, dependent: :destroy
   has_many :accessorials, through: :rate_accessorials
 
-  serialize :interstellar_error_class
+  serialize :error_object
   serialize :request
   serialize :response
 
@@ -98,27 +98,6 @@ class Rate < ApplicationRecord
       tracking_carrier
     else
       broker_carrier
-    end
-  end
-
-  def pretty_interstellar_error
-    return nil if interstellar_error_class.blank?
-
-    formatted_error = error.blank? ? '' : error.split(':').last.strip.downcase
-
-    case interstellar_error_class
-    when 'Interstellar::InvalidCredentialsError'
-      'API Error: Invalid username or password'
-    when 'Interstellar::ResponseError'
-      'API Error: Invalid response'
-    when 'Interstellar::UnserviceableError'
-      if error.blank?
-        'No service'
-      else
-        "No service: #{formatted_error}"
-      end
-    else
-      "API error: #{formatted_error}"
     end
   end
 

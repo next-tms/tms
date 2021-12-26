@@ -29,7 +29,7 @@
               <% else %>
                 <%= shipment.shipper_name %>
                 <br>
-                <%= shipment.shipper_address.city %>, <%= shipment.shipper_address.state %>
+                <%= shipment.shipper_address.city %>, <%= shipment.shipper_address.region.abbreviation %>
               <% end %>
             </td>
             <td>
@@ -38,7 +38,7 @@
               <% else %>
                 <%= shipment.receiver_name %>
                 <br>
-                <%= shipment.receiver_address.city %>, <%= shipment.receiver_address.state %>
+                <%= shipment.receiver_address.city %>, <%= shipment.receiver_address.region.abbreviation %>
               <% end %>
             </td>
             <td>

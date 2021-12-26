@@ -102,8 +102,7 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :invitable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable
 
-  before_save :update_contact
-
+  before_validation :set_contact
   before_validation :set_time_zone
 
   belongs_to :broker, required: true
@@ -122,11 +121,13 @@ class User < ApplicationRecord
   has_many :commissions
   # has_many :shipments_as_dispatcher, class_name: 'Shipment', foreign_key: :dispatcher_id
 
-  serialize :time_zone
-  validates_presence_of :time_zone
+  # TODO: Remove
+  serialize :legacy_time_zone
 
-  validates_presence_of :first_name
-  validates_presence_of :last_name
+  validates :time_zone_name, presence: true
+
+  validates :first_name, presence: true
+  validates :last_name, presence: true
 
   scope :broker, -> { where(broker_customer: nil) }
   scope :customer, -> { where.not(broker_customer: nil) }
@@ -229,24 +230,17 @@ class User < ApplicationRecord
     )
   end
 
+  def time_zone
+    ActiveSupport::TimeZone.new(time_zone_name)
+  end
+
   private
+
+  def set_contact
+    self.contact = broker.contacts.where(email: email)&.first
+  end
 
   def set_time_zone
     self.time_zone = broker&.time_zone
-  end
-
-  def update_contact
-    contact = Contact.new if :new_record? && contact.blank?
-
-    contact.assign_attributes(
-      broker_customer: broker_customer,
-      broker: broker,
-      email: email,
-      first_name: first_name,
-      last_name: last_name
-    )
-
-    contact.save
-    self.contact = contact
   end
 end

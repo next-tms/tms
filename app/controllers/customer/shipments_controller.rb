@@ -276,9 +276,9 @@ class Customer::ShipmentsController < Customer::CustomerController
                                      :tracking_carrier_id,
                                      :truckload,
                                      :value,
-                                     shipper_address_attributes: %i[id ref street street2 city state zip_code
+                                     shipper_address_attributes: %i[id ref street street2 city region_id zip_code
                                                                     country_id],
-                                     receiver_address_attributes: %i[id ref street street2 city state zip_code
+                                     receiver_address_attributes: %i[id ref street street2 city region_id zip_code
                                                                      country_id],
                                      items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat
                                                           refrigerated desc weight quantity],

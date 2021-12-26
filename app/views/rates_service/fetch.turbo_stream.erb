@@ -1,7 +1,7 @@
 <% unless @rates.blank? %>
   <%= turbo_stream.append "rates_#{!@rates.first.with_calculated_freight_classes?}" do %>
     <% @rates.each do |rate| %>
-      <% if !rate.interstellar_error_class.blank? %>
+      <% unless rate.error_object.blank? %>
         <% next if current_user.customer? %>
         <tr data-rate-id="<%= rate.id %>" class="table-warning">
           <td></td>
@@ -22,18 +22,19 @@
           </td>
           <td></td>
           <td data-sort="ZZZZ" colspan="<%= current_user.customer? ? 5 : 4 %>">
-            <%= rate.pretty_interstellar_error %>
+            <%= pretty_api_error(rate.error_object) %>
           </td>
         </tr>
         <% next %>
       <% end %>
 
-      <% next if rate.cost_cents == 0 %>
+      <% next unless rate.cost.positive? %>
 
       <% if current_user.customer? %>
         <% upcharged_rate = current_user.broker_customer.carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment) %>
-        <% next if upcharged_rate.nil? || upcharged_rate == Money.new(0) %>
+        <% next if upcharged_rate.blank? || !upcharged_rate.positive? || upcharged_rate <= rate.cost %>
       <% end %>
+
       <tr data-rate-id="<%= rate.id %>" class="<%= (!@shipment.applied_rate.blank? && rate.id == @shipment.applied_rate.id) ? 'table-info' : nil %>">
         <td class="text-nowrap">
           <div class="btn-toolbar">
@@ -75,7 +76,7 @@
             <% end %>
           </td>
         <% end %>
-        <td data-sort="<%= rate.cost %>">
+        <td data-sort="<%= current_user.customer? ? upcharged_rate : rate.cost %>">
           <% if current_user.customer? %>
             <%= humanized_money_with_symbol upcharged_rate, no_cents_if_whole: false %>
           <% else %>
@@ -87,7 +88,7 @@
           <% unless rate.transit_days.blank? %>
             <%= rate.transit_days %> <%= 'day'.pluralize(rate.transit_days ? rate.transit_days.to_i : 0) %>
             <br/>
-            <%= short_date rate.transit_days.to_i.business_days.after(@shipment.shipper_available_at || Date.current).in_time_zone(@shipment.receiver_address.time_zone.to_s), @shipment.receiver_address.time_zone %>
+            <%= short_date rate.transit_days.to_i.business_days.after(@shipment.shipper_available_at || Date.current).in_time_zone(@shipment.receiver_address.time_zone.name), @shipment.receiver_address.time_zone %>
           <% else %>
             <em>Not provided</em>
           <% end %>

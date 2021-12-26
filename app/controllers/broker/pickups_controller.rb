@@ -5,6 +5,7 @@ class Broker::PickupsController < Broker::BrokerController
 
   def create
     @pickup = Pickup.new(pickup_params)
+    @pickup.dispatcher = current_user
     @pickup.updated_by = current_user
 
     if @pickup.save

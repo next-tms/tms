@@ -29,6 +29,11 @@ module ApplicationHelper
       )
     end
 
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
+
     datetime = datetime.blank? ? DateTime.now.in_time_zone(time_zone.name) : datetime
     formatted_offset = datetime.formatted_offset
 
@@ -70,8 +75,12 @@ module ApplicationHelper
   end
 
   def pretty_date(date, time_zone)
-    return nil unless date && time_zone
-    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+    return nil if date.blank? || time_zone.blank?
+
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
 
     if date.instance_of?(ActiveSupport::TimeWithZone)
       if date.year == DateTime.current.year
@@ -89,29 +98,86 @@ module ApplicationHelper
   end
 
   def short_date(date, time_zone)
-    return nil unless date && time_zone
-    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+    return nil if date.blank? || time_zone.blank?
+
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
 
     if date.year == DateTime.current.year
-      date.in_time_zone(time_zone.name).strftime('%m/%d').html_safe
+      date.in_time_zone(time_zone).strftime('%m/%d').html_safe
     else
-      date.in_time_zone(time_zone.name).strftime('%m/%d/%y').html_safe
+      date.in_time_zone(time_zone).strftime('%m/%d/%y').html_safe
     end
   end
 
   def long_date(date, time_zone)
-    return nil unless date && time_zone
-    time_zone = ActiveSupport::TimeZone.new(time_zone.name) if time_zone.is_a?(Timezone::Zone)
+    return nil if date.blank? || time_zone.blank?
+
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
 
     date.in_time_zone(time_zone.name).strftime('%m/%d/%y').html_safe
   end
 
   def maybe_in_time_zone(datetime:, time_zone:)
+    return '' if datetime.blank? || time_zone.blank?
+
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError,
+            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
+
     datetime ? datetime.in_time_zone(time_zone.name).to_s[0..-10] : ''
   end
 
   def pluralize_with_delimiter(count, singular, plural = nil)
     pluralize(number_with_delimiter(count), singular, plural)
+  end
+
+  def pretty_api_error(error)
+    return 'Unknown error' if error.blank?
+
+    if error.class.name.to_s.deconstantize == 'Interstellar'
+      case error.class.name.split('::').last
+      when 'ExpiredCredentialsError'
+        'Your username and/or password is expired'
+      when 'InvalidCredentialsError'
+        'Your username and/or password is incorrect'
+      when 'ResponseError'
+        'API error'
+      when 'UnserviceableAccessorialsError'
+        accessorial_names = Accessorial
+                            .where(interstellar_code: error.accessorials)
+                            .pluck(:name)
+                            .map { |accessorial_name| accessorial_name.downcase }
+
+        "Unable to service #{accessorial_names.join(', ')}"
+      when 'UnserviceableError'
+        error.message.blank? ? 'Carrier unable to accept this shipment' : clean_sentence(error.message)
+      else
+        error.message
+      end
+    else
+      error.message
+    end
+  end
+
+  def clean_sentence(str)
+    str = str.split(':').last
+    str = str.split(' ').map do |word|
+      word.upcase == word ? word.titleize : word.downcase
+    end
+    str = str.join(' ')
+    str = str.squeeze
+    str = str.strip
+    str = str[0].upcase + str[1..]
+    str = str[0..-1] if str.last == '.'
+    str = str.gsub('Delivery', 'delivery')
+    str.gsub('zip code', 'ZIP code')
   end
 
   def valid_classes
@@ -290,62 +356,27 @@ module ApplicationHelper
     end
   end
 
-  def states_and_abbreviations
-    [
-      %w[Alabama AL],
-      %w[Alaska AK],
-      %w[Arizona AZ],
-      %w[Arkansas AR],
-      %w[California CA],
-      %w[Colorado CO],
-      %w[Connecticut CT],
-      %w[Delaware DE],
-      %w[Florida FL],
-      %w[Georgia GA],
-      %w[Hawaii HI],
-      %w[Idaho ID],
-      %w[Illinois IL],
-      %w[Indiana IN],
-      %w[Iowa IA],
-      %w[Kansas KS],
-      %w[Kentucky KY],
-      %w[Louisiana LA],
-      %w[Maine ME],
-      %w[Maryland MD],
-      %w[Massachusetts MA],
-      %w[Michigan MI],
-      %w[Minnesota MN],
-      %w[Mississippi MS],
-      %w[Missouri MO],
-      %w[Montana MT],
-      %w[Nebraska NE],
-      %w[Nevada NV],
-      ['New Hampshire', 'NH'],
-      ['New Jersey', 'NJ'],
-      ['New Mexico', 'NM'],
-      ['New York', 'NY'],
-      ['North Carolina', 'NC'],
-      ['North Dakota', 'ND'],
-      %w[Ohio OH],
-      %w[Oklahoma OK],
-      %w[Oregon OR],
-      %w[Pennsylvania PA],
-      ['Rhode Island', 'RI'],
-      ['South Carolina', 'SC'],
-      ['South Dakota', 'SD'],
-      %w[Tennessee TN],
-      %w[Texas TX],
-      %w[Utah UT],
-      %w[Vermont VT],
-      %w[Virginia VA],
-      %w[Washington WA],
-      ['West Virginia', 'WV'],
-      %w[Wisconsin WI],
-      %w[Wyoming WY],
-      ['District of Columbia', 'DC'],
-      ['Marshall Islands', 'MH'],
-      %w[Guam GU],
-      ['Puerto Rico', 'PR']
-    ]
+  def pod_uri(shipment)
+    return nil if shipment.broker_carrier.blank?
+    return nil if shipment.broker_carrier.carrier.scac.blank?
+
+    case shipment.broker_carrier.carrier.scac.upcase
+    when 'CNWY'
+      "https://ltl.xpo.com/webapp/imaging_app/imageretrieverequest.do?dest=fastdocview&PRO1=#{shipment.pro}&DocType1=DR"
+    when 'RDFS'
+      "http://tools.rrts.com/LTLTrack/Home/ShowImage?proNumber=#{shipment.pro}&imageType=POD"
+    end
+  end
+
+  def quote_uri(shipment)
+    return nil if shipment.broker_carrier.blank?
+    return nil if shipment.broker_carrier.carrier.scac.blank?
+
+    case shipment.broker_carrier.carrier.scac.upcase
+    when 'RDFS'
+      "https://freight.rrts.com/Tools/LTL-RateQuote/Pages/RateQuoteResult.aspx?QuoteNumber=#{shipment.quote_id}"
+    when 'CNWY'
+      "https://ltl.xpo.com/webapp/rating_app/RatingRS.jsp?custCode=#{shipment.broker_carrier.account}&quoteKey=#{shipment.quote_id}"
+    end
   end
 end

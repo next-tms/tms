@@ -53,7 +53,7 @@
           <td><%= pretty_date tracking_event.at, tracking_event.time_zone %></td>
           <td>
             <% if defined?(search_terminals_links) && search_terminals_links %>
-              <%= link_to tracking_event.pretty_location, search_terminals_broker_broker_carrier_path(shipment.broker_carrier, city: tracking_event.city, state: tracking_event.state) %>
+              <%= link_to tracking_event.pretty_location, search_terminals_broker_broker_carrier_path(shipment.broker_carrier, city: tracking_event.city, state: tracking_event.region.abbreviation) %>
             <% else %>
               <%= tracking_event.pretty_location %>
             <% end %>
@@ -83,7 +83,7 @@
           <td>
             Pickup scheduled for <%= pretty_date shipment.pickup_on, shipment.shipper_address.time_zone %>
             <% unless shipment.pickup_hours_start_at.blank? or shipment.pickup_hours_end_at.blank? %>
-              between <%= shipment.pickup_hours_start_at %> and <%= shipment.pickup_hours_end_at %> <small><%= shipment.shipper_address.time_zone.abbr(Date.current) %></small>
+              between <%= shipment.pickup_hours_start_at %> and <%= shipment.pickup_hours_end_at %> <small><%= shipment.shipper_address.time_zone.tzinfo.abbr %></small>
             <% end %>
           </td>
         </tr>

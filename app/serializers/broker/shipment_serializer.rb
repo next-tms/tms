@@ -6,7 +6,7 @@ class Broker::ShipmentSerializer < ActiveModel::Serializer
       street: address.street,
       street2: address.street2,
       city: address.city,
-      state: address.state,
+      state: address.region.abbreviation,
       zip_code: address.zip_code,
       types: address.types
     }

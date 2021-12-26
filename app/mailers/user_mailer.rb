@@ -93,15 +93,15 @@ class UserMailer < ActionMailer::Base
     )
   end
 
-  def pickup_service_dispatched(shipment)
-    @shipment = shipment
-    return if @shipment.pickup.blank? || !@shipment.updated_by.blank? || @shipment.pickup_confirmation.blank?
+  def pickup_service_dispatched(pickup)
+    @pickup = pickup
+    return if !@pickup.shipment.updated_by.blank? || @pickup.shipment.pickup_confirmation.blank?
 
     mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Dispatched Load #{shipment.load_id}"
+      from: from(@pickup.shipment),
+      reply_to: reply_to(@pickup.shipment, __method__),
+      to: to(pickup.shipment, __method__),
+      subject: "#{@pickup.dispatcher.first_name} #{@pickup.dispatcher.last_name} Dispatched Load #{@pickup.shipment.load_id}"
     )
   end
 

@@ -145,8 +145,9 @@
               <% else %>
                 Between
               <% end %>
+
               <% unless @shipment.pickup_hours_start_at.blank? or @shipment.pickup_hours_end_at.blank? %>
-                <%= @shipment.pickup_hours_start_at %> and <%= @shipment.pickup_hours_end_at %> <small><%= @shipment.shipper_address.time_zone.abbr(Date.current) %></small>
+                <%= @shipment.pickup_hours_start_at %> and <%= @shipment.pickup_hours_end_at %> <small><%= @shipment.shipper_address.time_zone.tzinfo.abbr %></small>
               <% end %>
             </td>
           </tr>
@@ -159,7 +160,7 @@
                 <%= short_date @shipment.promised_delivery_by, @shipment.receiver_address.time_zone %>
               <% end %>
               <% unless @shipment.delivery_hours_start_at.blank? or @shipment.delivery_hours_end_at.blank? %>
-                between <%= @shipment.delivery_hours_start_at %> and <%= @shipment.delivery_hours_end_at %> <small><%= @shipment.shipper_address.time_zone.abbr(Date.current) %></small>
+                between <%= @shipment.delivery_hours_start_at %> and <%= @shipment.delivery_hours_end_at %> <small><%= @shipment.shipper_address.time_zone.tzinfo.abbr %></small>
               <% end %>
             </td>
           </tr>
@@ -170,7 +171,7 @@
                 <td>
                   <%= short_date @shipment.delivery_eta_on, @shipment.receiver_address.time_zone %>
                   <% unless @shipment.delivery_hours_start_at.blank? or @shipment.delivery_hours_end_at.blank? %>
-                    between <%= @shipment.delivery_hours_start_at %> and <%= @shipment.delivery_hours_end_at %> <small><%= @shipment.shipper_address.time_zone.abbr(Date.current) %></small>
+                    between <%= @shipment.delivery_hours_start_at %> and <%= @shipment.delivery_hours_end_at %> <small><%= @shipment.shipper_address.time_zone.tzinfo.abbr %></small>
                   <% end %>
                 </td>
               </tr>
@@ -317,8 +318,8 @@
 <textarea class="form-control" data-action="click->clipboard#copy" data-controller="clipboard" rows="4" readonly>
 Load <%= @shipment.load_id %>
 
-Origin: <%= @shipment.shipper_address.city %>, <%= @shipment.shipper_address.state %>, <%= @shipment.shipper_address.zip_code %>
-Destination: <%= @shipment.receiver_address.city %>, <%= @shipment.receiver_address.state %>, <%= @shipment.receiver_address.zip_code %>
+Origin: <%= @shipment.shipper_address.city %>, <%= @shipment.shipper_address.region.abbreviation %>, <%= @shipment.shipper_address.zip_code %>
+Destination: <%= @shipment.receiver_address.city %>, <%= @shipment.receiver_address.region.abbreviation %>, <%= @shipment.receiver_address.zip_code %>
 
 <% unless @shipment.shipment_broker_accessorials.blank? %>
 <% @shipment.shipment_broker_accessorials.each do |shipment_broker_accessorial| %>

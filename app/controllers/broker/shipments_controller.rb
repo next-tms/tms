@@ -484,7 +484,9 @@ class Broker::ShipmentsController < Broker::BrokerController
       if @shipment.applied_rate.blank?
         @shipment.rates.destroy_all
       else
-        @shipment.rates.where.not(id: @shipment.applied_rate.id).destroy_all
+        @shipment.rates.where.not(
+          id: [@shipment.applied_rate.id] + @shipment.pickups.pluck(:rate_id)
+        ).destroy_all
       end
     end
 
@@ -554,7 +556,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                            :at,
                                            :event_id,
                                            :time_zone,
-                                           address_attributes: %i[id city state zip_code])
+                                           address_attributes: %i[id city region_id zip_code])
   end
 
   def shipment_params
@@ -622,9 +624,9 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :value,
                                      items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat
                                                           refrigerated desc weight quantity],
-                                     receiver_address_attributes: %i[id ref street street2 city state zip_code
+                                     receiver_address_attributes: %i[id ref street street2 city region_id zip_code
                                                                      country_id],
-                                     shipper_address_attributes: %i[id ref street street2 city state zip_code
+                                     shipper_address_attributes: %i[id ref street street2 city region_id zip_code
                                                                     country_id],
                                      shipment_accessorials_attributes: %i[_destroy accessorial_id],
                                      shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id
@@ -634,11 +636,11 @@ class Broker::ShipmentsController < Broker::BrokerController
                                        :id,
                                        :at,
                                        :city,
-                                       :state,
-                                       :country_alpha2,
+                                       :country_id,
                                        :event_id,
                                        :public,
-                                       { address_attributes: %i[id street street2 city state zip_code] }
+                                       :region_id,
+                                       { address_attributes: %i[id street street2 city region_id zip_code] }
                                      ])
   end
 end

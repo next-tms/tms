@@ -293,7 +293,7 @@ class Shipment < ApplicationRecord
   accepts_nested_attributes_for :shipment_broker_accessorials, allow_destroy: true, reject_if: :all_blank
   has_many :broker_accessorials, through: :shipment_broker_accessorials
 
-  has_one :pickup
+  has_many :pickups
 
   has_one_attached :broker_bol
   has_one_attached :broker_dispatch_sheet
@@ -372,6 +372,7 @@ class Shipment < ApplicationRecord
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
   validates :load_id, uniqueness: { scope: :broker }
+  validate :future_pickup_by, if: -> { dispatch_pickup }
 
   def applied_rate_uid=(rate_uid)
     rate = Rate.find_by_uid(rate_uid)
@@ -653,13 +654,13 @@ class Shipment < ApplicationRecord
       interstellar_location = if shipment_event.status == :delivered && shipment_event.location.blank?
                                 Interstellar::Location.new(
                                   city: receiver_address.city,
-                                  state: receiver_address.state,
+                                  state: receiver_address.region.abbreviation,
                                   country: ActiveUtils::Country.find(receiver_address.country.alpha3_code)
                                 )
                               elsif shipment_event.status == :picked_up && shipment_event.location.blank?
                                 Interstellar::Location.new(
                                   city: shipper_address.city,
-                                  state: shipper_address.state,
+                                  state: shipper_address.region.abbreviation,
                                   country: ActiveUtils::Country.find(shipper_address.country.alpha3_code)
                                 )
                               else
@@ -683,10 +684,10 @@ class Shipment < ApplicationRecord
       tracking_event.assign_attributes(
         at: DateTime.parse(shipment_event.time),
         city: interstellar_location.city,
-        country_alpha2: interstellar_location.country_code(:alpha2),
+        country: Country.find_by_alpha2_code(interstellar_location.country_code(:alpha2)),
         event: event,
         interstellar_carrier_fingerprint: fingerprint,
-        state: interstellar_location.state
+        region: Region.find_by_abbreviation(interstellar_location.state)
       )
 
       next unless tracking_event.save
@@ -1171,6 +1172,10 @@ class Shipment < ApplicationRecord
   end
 
   private
+
+  def future_pickup_by
+    errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < DateTime.current
+  end
 
   def pro_or_tracking_carrier_pro_changed?
     pro_changed? || tracking_carrier_pro_changed?

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_08_235247) do
+ActiveRecord::Schema.define(version: 2021_12_20_082127) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -57,7 +57,6 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.string "street"
     t.string "street2"
     t.string "city"
-    t.string "state"
     t.string "zip_code"
     t.decimal "latitude", precision: 15, scale: 10
     t.decimal "longitude", precision: 15, scale: 10
@@ -65,16 +64,19 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.text "original_attributes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "types"
     t.string "ref"
-    t.string "time_zone"
     t.text "google_places_spot_cached"
     t.integer "country_id", null: false
     t.text "open_street_map_result_cached"
     t.datetime "google_places_spot_updated_at"
     t.datetime "smarty_streets_result_updated_at"
     t.datetime "open_street_map_result_updated_at"
+    t.bigint "region_id"
+    t.bigint "standardized_address_id"
+    t.string "time_zone_name"
     t.index ["country_id"], name: "index_addresses_on_country_id"
+    t.index ["region_id"], name: "index_addresses_on_region_id"
+    t.index ["standardized_address_id"], name: "index_addresses_on_standardized_address_id"
   end
 
   create_table "areas", force: :cascade do |t|
@@ -399,11 +401,13 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.bigint "rate_id", null: false
     t.bigint "shipment_id", null: false
     t.bigint "updated_by_id"
-    t.string "error"
     t.string "pickup_confirmation"
     t.string "pro"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "dispatcher_id"
+    t.text "error_object"
+    t.index ["dispatcher_id"], name: "index_pickups_on_dispatcher_id"
     t.index ["rate_id"], name: "index_pickups_on_rate_id"
     t.index ["shipment_id"], name: "index_pickups_on_shipment_id"
     t.index ["updated_by_id"], name: "index_pickups_on_updated_by_id"
@@ -440,7 +444,6 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.bigint "shipment_id", null: false
     t.integer "cost_cents", default: 0, null: false
     t.string "cost_currency", default: "USD", null: false
-    t.text "error"
     t.datetime "expires_at"
     t.string "reference"
     t.text "request"
@@ -453,7 +456,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.string "shipment_fingerprint"
     t.string "uid"
     t.string "interstellar_service_type"
-    t.string "interstellar_error_class"
+    t.string "error_object"
     t.index ["broker_carrier_id"], name: "index_rates_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_rates_on_broker_customer_id"
     t.index ["interstellar_service_type"], name: "index_rates_on_interstellar_service_type"
@@ -492,6 +495,17 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.index ["paid_at"], name: "index_receivables_on_paid_at"
     t.index ["shipment_id"], name: "index_receivables_on_shipment_id"
     t.index ["updated_by_id"], name: "index_receivables_on_updated_by_id"
+  end
+
+  create_table "regions", force: :cascade do |t|
+    t.bigint "country_id", null: false
+    t.string "name", null: false
+    t.string "abbreviation", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["abbreviation"], name: "index_regions_on_abbreviation"
+    t.index ["country_id"], name: "index_regions_on_country_id"
+    t.index ["name"], name: "index_regions_on_name"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -616,6 +630,32 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.index ["updated_by_id"], name: "index_shipments_on_updated_by_id"
   end
 
+  create_table "standardized_addresses", force: :cascade do |t|
+    t.datetime "google_places_spot_updated_at"
+    t.datetime "open_street_map_result_updated_at"
+    t.datetime "smarty_streets_result_updated_at"
+    t.integer "addresses_count"
+    t.bigint "country_id", null: false
+    t.bigint "region_id", null: false
+    t.string "city"
+    t.string "key"
+    t.string "latitude"
+    t.string "longitude"
+    t.string "postal_code"
+    t.string "street"
+    t.string "street2"
+    t.string "time_zone"
+    t.text "google_places_spot_cached"
+    t.text "open_street_map_result_cached"
+    t.text "smarty_streets_result_cached"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "time_zone_name", null: false
+    t.index ["country_id"], name: "index_standardized_addresses_on_country_id"
+    t.index ["key"], name: "index_standardized_addresses_on_key"
+    t.index ["region_id"], name: "index_standardized_addresses_on_region_id"
+  end
+
   create_table "terminals", force: :cascade do |t|
     t.bigint "address_id", null: false
     t.bigint "carrier_id", null: false
@@ -632,17 +672,21 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.bigint "event_id", null: false
     t.boolean "public", default: true
     t.datetime "at"
-    t.string "time_zone"
+    t.string "legacy_time_zone"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "terminal_id"
     t.string "city"
-    t.string "state"
     t.string "country_alpha2", limit: 2
     t.string "interstellar_carrier_fingerprint"
     t.bigint "user_id"
+    t.bigint "country_id"
+    t.bigint "region_id"
+    t.string "time_zone_name"
     t.index ["address_id"], name: "index_tracking_events_on_address_id"
+    t.index ["country_id"], name: "index_tracking_events_on_country_id"
     t.index ["event_id"], name: "index_tracking_events_on_event_id"
+    t.index ["region_id"], name: "index_tracking_events_on_region_id"
     t.index ["shipment_id"], name: "index_tracking_events_on_shipment_id"
     t.index ["terminal_id"], name: "index_tracking_events_on_terminal_id"
     t.index ["user_id"], name: "index_tracking_events_on_user_id"
@@ -698,7 +742,6 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.string "last_name"
     t.bigint "broker_customer_id"
     t.boolean "receive_email_notifications", default: true
-    t.string "time_zone"
     t.boolean "receive_notifications_from_self", default: true
     t.bigint "contact_id"
     t.string "invitation_token"
@@ -709,6 +752,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.boolean "deactivated", default: false
+    t.string "time_zone_name", null: false
     t.index ["broker_customer_id"], name: "index_users_on_broker_customer_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"
@@ -740,6 +784,8 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "countries"
+  add_foreign_key "addresses", "regions"
+  add_foreign_key "addresses", "standardized_addresses"
   add_foreign_key "banks", "bank_types", column: "type_id"
   add_foreign_key "banks", "brokers"
   add_foreign_key "broker_accessorials", "accessorials"
@@ -788,6 +834,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
   add_foreign_key "payments", "users", column: "created_by_id"
   add_foreign_key "pickups", "rates"
   add_foreign_key "pickups", "shipments"
+  add_foreign_key "pickups", "users", column: "dispatcher_id"
   add_foreign_key "pickups", "users", column: "updated_by_id"
   add_foreign_key "pricing_rules", "broker_carriers"
   add_foreign_key "pricing_rules", "carrier_areas"
@@ -802,6 +849,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
   add_foreign_key "receivables", "users", column: "authorized_by_id"
   add_foreign_key "receivables", "users", column: "created_by_id"
   add_foreign_key "receivables", "users", column: "updated_by_id"
+  add_foreign_key "regions", "countries"
   add_foreign_key "shipment_accessorials", "accessorials"
   add_foreign_key "shipment_accessorials", "shipments"
   add_foreign_key "shipment_broker_accessorials", "broker_accessorials"
@@ -815,10 +863,14 @@ ActiveRecord::Schema.define(version: 2021_12_08_235247) do
   add_foreign_key "shipments", "rates", column: "applied_rate_id"
   add_foreign_key "shipments", "users", column: "created_by_id"
   add_foreign_key "shipments", "users", column: "updated_by_id"
+  add_foreign_key "standardized_addresses", "countries"
+  add_foreign_key "standardized_addresses", "regions"
   add_foreign_key "terminals", "addresses"
   add_foreign_key "terminals", "carriers"
   add_foreign_key "tracking_events", "addresses"
+  add_foreign_key "tracking_events", "countries"
   add_foreign_key "tracking_events", "events"
+  add_foreign_key "tracking_events", "regions"
   add_foreign_key "tracking_events", "shipments"
   add_foreign_key "tracking_events", "terminals"
   add_foreign_key "tracking_events", "users"
