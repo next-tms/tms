@@ -1,16 +1,18 @@
-<div class="row">
-  <div class="col">
-    <%= render 'layouts/pagy', pagy: @pagy %>
-  </div>
-  <div class="col-auto float-right">
-    <div class="btn-toolbar mb-3">
-      <div class="btn-group">
-        <%= search_form_for(@q, url: request.path, method: :get, local: true, class: 'form-inline') do |f| %>
-          <%= f.hidden_field :sorts, value: params[:q].try(:[], :s) %>
-          <%= f.text_field :first_name_or_last_name_or_broker_customer_customer_name_or_broker_carrier_carrier_name_cont, placeholder: 'Filter', class: 'form-control mr-2' %>
-          <%= f.submit 'Filter', class: 'btn btn-primary' %>
-        <% end %>
+<% unless @q.blank? %>
+  <div class="row">
+    <div class="col">
+      <%= render 'layouts/pagy', pagy: @pagy %>
+    </div>
+    <div class="col-auto float-right">
+      <div class="btn-toolbar mb-3">
+        <div class="btn-group">
+          <%= search_form_for(@q, url: request.path, method: :get, local: true, class: 'form-inline') do |f| %>
+            <%= f.hidden_field :sorts, value: params[:q].try(:[], :s) %>
+            <%= f.text_field :first_name_or_last_name_or_broker_customer_customer_name_or_broker_carrier_carrier_name_cont, placeholder: 'Filter', class: 'form-control mr-2' %>
+            <%= f.submit 'Filter', class: 'btn btn-primary' %>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
-</div>
+<% end %>

@@ -36,7 +36,7 @@ module ShipmentsHelper
         next if td_names_map_line[0] == 'broker_carrier' && controller.controller_name == 'broker_carriers'
         next if td_names_map_line[0] == 'broker_customer' && controller.controller_name == 'broker_customers'
 
-        if td_names_map_line[2].blank?
+        if td_names_map_line[2].blank? || @q.blank?
           str << "<th class=\"text-nowrap\">#{td_names_map_line[1]}</th>" if td_names_map_line[0] == td_name
         elsif td_names_map_line[0] == td_name
           str << "<th class=\"text-nowrap\">#{sort_link @q, td_names_map_line[2], td_names_map_line[1]}</th>"
