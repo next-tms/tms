@@ -101,7 +101,7 @@ class BrokerCustomer < ApplicationRecord
     return @eligible_broker_carriers if @eligible_broker_carriers
 
     broker_customer_carriers = broker_carriers
-    broker_carriers = broker.broker_carriers.where(broker_customer: nil).where.not(carrier_id: [broker_customer_carriers.map(&:id)])
+    broker_carriers = broker.broker_carriers.where(broker_customer: nil).where.not(carrier_id: broker_customer_carriers.pluck(:carrier_id))
 
     @eligible_broker_carriers = broker_customer_carriers.or(broker_carriers)
   end
