@@ -19,7 +19,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
            ]
          ).ransack(params[:q])
 
-    @q.sorts = "#{Carrier.table_name + '.name'} desc" if @q.sorts.blank?
+    @q.sorts = "#{Carrier.table_name.singularize}_name" if @q.sorts.blank?
     @pagy, @broker_carriers = pagy(@q.result)
   end
 
