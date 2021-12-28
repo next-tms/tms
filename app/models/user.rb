@@ -103,7 +103,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :invitable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable
 
   before_validation :set_contact
-  before_validation :set_time_zone
+  before_validation :set_time_zone_name
 
   belongs_to :broker, required: true
   belongs_to :contact
@@ -240,7 +240,7 @@ class User < ApplicationRecord
     self.contact = broker.contacts.where(email: email)&.first
   end
 
-  def set_time_zone
-    self.time_zone = broker&.time_zone
+  def set_time_zone_name
+    self.time_zone_name = broker&.time_zone_name
   end
 end

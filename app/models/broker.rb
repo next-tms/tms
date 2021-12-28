@@ -55,11 +55,11 @@ class Broker < ApplicationRecord
 
   belongs_to :address
 
-  validates_presence_of :name
-  validates_presence_of :customer_service_email
   validates :customer_service_email, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates_presence_of :phone
-  validates_presence_of :time_zone
+  validates :customer_service_email, presence: true
+  validates :name, presence: true
+  validates :phone, presence: true
+  validates :time_zone_name, presence: true
 
   phony_normalize :phone, default_country_code: 'US'
 
@@ -82,6 +82,10 @@ class Broker < ApplicationRecord
     return false unless user.broker_carrier
 
     user.broker_carrier.broker == self
+  end
+
+  def time_zone
+    ActiveSupport::TimeZone.new(time_zone_name)
   end
 
   private
