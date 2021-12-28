@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
 
   def check_website
     @website ||= Website.find_by_domain(request.host) || nil
-    redirect_to 'https://next-tms.com/' and return if @website.blank?
+    redirect_to('https://next-tms.com/', allow_other_host: true) if @website.blank?
   end
 
   def sign_out_deactivated_user
@@ -68,10 +68,10 @@ class ApplicationController < ActionController::Base
     stored_location_for(resource_or_scope) || user_sign_in_path
   end
 
-  def after_sign_out_path_for(_resource_or_scope)
-    check_website
-    @website.manifest.dig('landings', 'sign-out', 'url') || root_path
-  end
+  # def after_sign_out_path_for(_resource_or_scope)
+  #   check_website
+  #   @website.manifest.dig('landings', 'sign-out', 'url') || root_path
+  # end
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(
