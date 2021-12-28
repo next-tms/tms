@@ -204,8 +204,9 @@ class Address < ApplicationRecord
   end
 
   def sanitize_street
-    new_street = street
+    return if street.blank?
 
+    new_street = street
     new_street = new_street.titleize if (new_street == new_street.downcase) || (new_street == new_street.upcase)
 
     until new_street.strip.last != ','
