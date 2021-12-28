@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.0.3'
 
-gem 'rails', '~> 6.1.4.4'
+gem 'rails', '~> 7.0.0'
 gem 'pg', '~> 1.2.0'
 gem 'puma', '~> 5.5.2'
 gem 'webpacker', '~> 6.0.0.rc.6'
@@ -15,12 +15,11 @@ group :development, :test do
 end
 
 group :development do
-  gem 'annotate', '~> 3.1.1'
-  gem 'bullet', '~> 6.1.5'
+  gem 'annotate', git: 'https://github.com/dabit/annotate_models', branch: 'rails-7'
+  gem 'bullet', '~> 7.0.0'
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.8'
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'spring', '~> 4.0.0'
   gem 'traceroute'
 end
 
@@ -43,7 +42,7 @@ gem 'responders'
 source 'https://rails-assets.org' do
   gem 'rails-assets-tether', '>= 1.3.3'
 end
-gem 'bootstrap_form', '~> 4.5'
+gem 'bootstrap_form', '~> 5.0.0'
 
 gem 'aws-sdk', '~> 3.1.0', group: :production
 gem 'image_processing', '~> 1.12.1'
@@ -52,23 +51,23 @@ gem 'devise', '~> 4.8.0'
 gem 'devise_invitable', '~> 2.0.5'
 
 # liftoff.rocks
-gem 'turbo-rails', '~> 0.9.0'
+gem 'turbo-rails', '~> 1.0.0'
 
-gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'f040e08999f22731429acbe336b8fb195b0fc558'
+gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'f9edd49b4a377b4c06b8c31816497801e7d3475b'
 gem 'interstellar-next_platforms', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms', ref: 'ce71ea41be5cfbf962eaaa1ae0a0d683058fa1fa'
 gem 'interstellar-next_carriers', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers', ref: '8e155233bb023153170d883c6cd55176e017c80e'
 
 gem 'rollbar'
 
 gem 'jwt'
-gem 'active_model_serializers'
+gem 'active_model_serializers', git: 'https://github.com/jpawlyn/active_model_serializers', ref: '5d64851ad054ecc24bee0371203b6eb0e60d28b2'
 gem 'simple_command'
 gem 'redis'
 gem 'hiredis'
 gem 'sidekiq'
 gem 'business_time'
 gem 'timezone', '~> 1.3'
-gem 'money-rails', '~> 1.14.0'
+gem 'money-rails', '~> 1.15.0'
 gem 'httparty'
 gem 'postmark-rails'
 gem 'barby'
@@ -87,7 +86,7 @@ gem 'wkhtmltopdf-heroku', '~> 2.12.6.0', groups: %i[production staging]
 gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0', groups: %i[development]
 
 gem 'pagy'
-gem 'ransack', '~> 2.4.2'
+gem 'ransack', '~> 2.5.0'
 
 gem 'public_suffix'
 gem 'rqrcode'
