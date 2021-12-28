@@ -19,7 +19,7 @@ module ApplicationHelper
     end
   end
 
-  def flatpickr_datetime_data(datetime, time_zone)
+  def flatpickr_datetime_data(_datetime, time_zone)
     if time_zone.blank?
       return flatpickr_data.deep_merge(
         flatpickr_alt_input: true,
@@ -34,8 +34,7 @@ module ApplicationHelper
             "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
     end
 
-    datetime = datetime.blank? ? DateTime.now.in_time_zone(time_zone.name) : datetime
-    formatted_offset = datetime.formatted_offset
+    formatted_offset = time_zone.formatted_offset
 
     flatpickr_data.deep_merge(
       flatpickr_alt_input: true,
