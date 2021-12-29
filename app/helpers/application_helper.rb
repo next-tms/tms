@@ -247,7 +247,7 @@ module ApplicationHelper
     when 'FWDA'
       "https://www.forwardair.com/tracking?type=waybill&numbers=#{real_pickup_confirmation(shipment)}"
     when 'RDFS'
-      "http://tools.rrts.com/LTLTrack/?searchValues=#{real_pickup_confirmation(shipment)}"
+      "https://tools.rrts.com/LTLTrack/?searchValues=#{real_pickup_confirmation(shipment)}"
     when 'SMTL'
       "http://profoundui.smtl.com/profoundui/start?pgm=profoundui%2Fmwp705c&p1=+#{real_pickup_confirmation(shipment)}&l1=11&p2=none&l2=4&p3=none&l3=4&Quick_Button=Get+Pro"
     when 'TOTL'
@@ -266,7 +266,7 @@ module ApplicationHelper
     when 'CNWY'
       "https://ltl.xpo.com/webapp/imaging_app/imageretrieverequest.do?dest=fastdocview&PRO1=#{shipment.pro}&DocType1=DR"
     when 'RDFS'
-      "http://tools.rrts.com/LTLTrack/Home/ShowImage?proNumber=#{shipment.pro}&imageType=POD"
+      "https://tools.rrts.com/LTLTrack/Home/ShowImage?proNumber=#{shipment.pro}&imageType=POD"
     end
   end
 
@@ -294,7 +294,7 @@ module ApplicationHelper
       # "https://www.bestovernite.com/tracking.aspx?boereq=track&scac=&pro=#{real_pro(shipment)}"
       "https://tgif.bestovernite.com/cgi-bin/wbprotrk?wbfb=#{real_pro(shipment)}&wbscac="
     when 'CENF'
-      "http://centralfreight.com/website/mf/mfInquiry.aspx?inqmode=PRO&pro=#{real_pro(shipment)}"
+      "https://centralfreight.com/website/mf/mfInquiry.aspx?inqmode=PRO&pro=#{real_pro(shipment)}"
     when 'CLNI'
       "https://ssworldtrak.com/WebtrakWTNew/ShipInquiry/QuickTrack.aspx?cmp=clearl&TrackType=HousebillNo&TrackNo=#{real_pro(shipment)}"
     when 'CNWY'
@@ -343,7 +343,7 @@ module ApplicationHelper
       # No way to send tracking number along with GET
       'https://trax.tql.com/#/shipmenttracking'
     when 'TXWL'
-      "http://www.alohafreight.com/cgi-bin/fccgi.exe?w3exec=aff.display.pro&pn=#{real_pro(shipment)}&w3serverpool=default"
+      "https://www.alohafreight.com/cgi-bin/fccgi.exe?w3exec=aff.display.pro&pn=#{real_pro(shipment)}&w3serverpool=default"
     when 'UPGF'
       "https://www.ups.com/track?loc=en_US&tracknum=#{real_pro(shipment)}&requester=WT/trackdetails"
     when 'VSXP'
@@ -363,7 +363,7 @@ module ApplicationHelper
     when 'CNWY'
       "https://ltl.xpo.com/webapp/imaging_app/imageretrieverequest.do?dest=fastdocview&PRO1=#{shipment.pro}&DocType1=DR"
     when 'RDFS'
-      "http://tools.rrts.com/LTLTrack/Home/ShowImage?proNumber=#{shipment.pro}&imageType=POD"
+      "https://tools.rrts.com/LTLTrack/Home/ShowImage?proNumber=#{shipment.pro}&imageType=POD"
     end
   end
 
