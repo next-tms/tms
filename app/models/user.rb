@@ -237,10 +237,14 @@ class User < ApplicationRecord
   private
 
   def set_contact
-    self.contact = broker.contacts.where(email: email)&.first
+    return if email.blank?
+
+    self.contact = broker.contacts.where(email: email.downcase)&.first
   end
 
   def set_time_zone_name
-    self.time_zone_name = broker&.time_zone_name
+    return if broker.blank?
+
+    self.time_zone_name = broker.time_zone_name
   end
 end
