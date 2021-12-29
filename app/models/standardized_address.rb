@@ -203,9 +203,9 @@ class StandardizedAddress < ApplicationRecord
   def next_types
     next_types = []
     streets_formatted = "#{street || ''} #{street2 || ''}".downcase
-    if %w[aero aircraft aviation avionic hangar].any? { |word| streets_formatted.include?(word) }
-      next_types << 'airport'
-    end
+
+    # Removed "aero", "aviation" as they can lead to incorrect type
+    next_types << 'airport' if %w[aircraft avionic hangar].any? { |word| streets_formatted.include?(word) }
 
     yaml = YAML.load_file(File.join(Rails.root, 'config', 'postal_codes.yml'))
     military_postal_codes = yaml['MILITARY'].inject([]) { |arr, postal_code| arr << postal_code.to_s }
