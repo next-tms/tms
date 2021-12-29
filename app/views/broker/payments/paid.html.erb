@@ -7,7 +7,7 @@
 </div>
 
 <% unless @payments.blank? %>
-  <%= render 'show_many', payments: @payments %>
+  <%= render 'show_many', payments: @payments, q: @q %>
   <%= render 'layouts/pagy', pagy: @pagy %>
 <% else %>
   <%= render 'layouts/no_content' %>

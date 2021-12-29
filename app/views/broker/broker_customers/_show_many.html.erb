@@ -1,12 +1,12 @@
 <%= turbo_frame_tag :broker_customers do %>
-  <%= render 'broker/broker_customers/search_form' %>
+  <%= render 'broker/broker_customers/search_form', q: q %>
 
   <% unless broker_customers.blank? %>
     <div class="table-responsive">
       <table class="table table-borderless table-striped table-hover">
         <thead>
           <tr>
-            <th><%= sort_link @q, :customer_name, 'Name' %></th>
+            <th><%= sort_link q, :customer_name, 'Name' %></th>
           </tr>
         </thead>
         <tbody>

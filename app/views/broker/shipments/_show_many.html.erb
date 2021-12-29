@@ -1,5 +1,5 @@
 <%= turbo_frame_tag :shipments do %>
-  <%= render 'broker/shipments/search_form' %>
+  <%= render 'broker/shipments/search_form', q: q %>
   
   <% if defined?(table) && !table.blank? %>
     <%= table %>

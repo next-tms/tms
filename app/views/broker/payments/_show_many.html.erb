@@ -1,17 +1,17 @@
 <%= turbo_frame_tag :payments do %>
-  <%= render 'broker/payments/search_form' %>
+  <%= render 'broker/payments/search_form', q: q %>
 
   <% unless payments.blank? %>
     <div class="table-responsive">
       <table class="table table-condensed table-borderless table-striped table-hover h-100">
         <thead>
           <tr>
-            <th><%= sort_link @q, :broker_carrier_carrier_name, 'Carrier' %></th>
-            <th><%= sort_link(@q, :due_on, 'Due') %></th>
-            <th><%= sort_link(@q, :paid_on, 'Paid') %></th>
-            <th><%= sort_link(@q, :bank_name, 'Bank') %></th>
-            <th><%= sort_link @q, :balance_cents, 'Balance' %></th>
-            <th><%= sort_link @q, :paid_cents, 'Pay' %></th>
+            <th><%= sort_link q, :broker_carrier_carrier_name, 'Carrier' %></th>
+            <th><%= sort_link(q, :due_on, 'Due') %></th>
+            <th><%= sort_link(q, :paid_on, 'Paid') %></th>
+            <th><%= sort_link(q, :bank_name, 'Bank') %></th>
+            <th><%= sort_link q, :balance_cents, 'Balance' %></th>
+            <th><%= sort_link q, :paid_cents, 'Pay' %></th>
           </tr>
         </thead>
         <tbody>

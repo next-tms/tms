@@ -1,10 +1,10 @@
-<% unless @q.blank? %>
+<% unless q.blank? %>
   <div class="row">
     <div class="col">
       <%= render 'layouts/pagy', pagy: @pagy %>
     </div>
     <div class="col-auto float-right">
-      <%= search_form_for(@q, url: request.path, class: 'form-inline mb-3') do |f| %>
+      <%= search_form_for(q, url: request.path, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :sorts, value: params[:q].try(:[], :s) %>
         <%= f.text_field :created_at_gteq, placeholder: 'From', autocomplete: 'off', data: flatpickr_data({ flatpickr_max_date: Date.current }), class: 'form-control mr-1' %>
         <%= f.text_field :delivered_at_lteq, placeholder: 'Until', autocomplete: 'off', data: flatpickr_data({ flatpickr_max_date: Date.current }), class: 'form-control mr-1' %>

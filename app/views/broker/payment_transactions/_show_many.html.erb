@@ -1,5 +1,5 @@
 <%= turbo_frame_tag :banks do %>
-  <%= render 'broker/payment_transactions/search_form' %>
+  <%= render 'broker/payment_transactions/search_form', q: q %>
 
   <% unless payment_transactions.blank? %>
     <div class="table-responsive">

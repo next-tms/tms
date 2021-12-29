@@ -7,5 +7,5 @@
 </div>
 
 <%= turbo_frame_tag :broker_carrier_contacts do %>
-  <%= render 'show_many', broker_carrier_contacts: @broker_carrier_contacts %>
+  <%= render 'show_many', broker_carrier_contacts: @broker_carrier_contacts, q: @q %>
 <% end %>

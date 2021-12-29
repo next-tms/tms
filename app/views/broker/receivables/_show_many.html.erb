@@ -6,15 +6,15 @@
       <table class="table table-condensed table-borderless table-striped table-hover h-100">
         <thead>
           <tr>
-            <th><%= sort_link @q, :shipment_load_id, '#' %></th>
-            <th><%= sort_link @q, :broker_customer_customer_name, 'Customer' %></th>
-            <th class="text-nowrap"><%= sort_link @q, :shipment_picked_up_at, 'Picked Up' %></th>
-            <th><%= sort_link @q, :shipment_delivered_at, 'Delivered' %></th>
-            <th class="text-nowrap"><%= sort_link @q, :authorized_by_first_name, 'Approved By' %></th>
-            <th><%= sort_link @q, :invoiced_eq_true, 'Invoiced?' %></th>
-            <th><%= sort_link @q, :due_by, 'Due' %></th>
-            <th class="text-nowrap"><%= sort_link @q, :paid_at, 'Paid On' %></th>
-            <th><%= sort_link @q, :total_cents, 'Total' %></th>
+            <th><%= sort_link q, :shipment_load_id, '#' %></th>
+            <th><%= sort_link q, :broker_customer_customer_name, 'Customer' %></th>
+            <th class="text-nowrap"><%= sort_link q, :shipment_picked_up_at, 'Picked Up' %></th>
+            <th><%= sort_link q, :shipment_delivered_at, 'Delivered' %></th>
+            <th class="text-nowrap"><%= sort_link q, :authorized_by_first_name, 'Approved By' %></th>
+            <th><%= sort_link q, :invoiced_eq_true, 'Invoiced?' %></th>
+            <th><%= sort_link q, :due_by, 'Due' %></th>
+            <th class="text-nowrap"><%= sort_link q, :paid_at, 'Paid On' %></th>
+            <th><%= sort_link q, :total_cents, 'Total' %></th>
           </tr>
         </thead>
         <tbody>

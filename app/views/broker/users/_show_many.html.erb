@@ -1,22 +1,22 @@
 <%= turbo_frame_tag :users do %>
-  <%= render 'broker/users/search_form' %>
+  <%= render 'broker/users/search_form', q: q %>
 
   <% unless users.blank? %>
     <div class="table-responsive">
       <table class="table table-borderless table-striped">
         <thead>
           <tr>
-            <th><%= sort_link @q, :first_name, 'Name' %></th>
+            <th><%= sort_link q, :first_name, 'Name' %></th>
             <% if controller_name == 'users' %>
-              <th><%= sort_link @q, :broker_customer_id, 'Kind' %></th>
+              <th><%= sort_link q, :broker_customer_id, 'Kind' %></th>
               <th>Active?</th>
             <% end %>
             <% if controller_name != 'broker_customers' %>
               <th>Roles</th>
             <% end %>
-            <th><%= sort_link @q, :email, 'Email' %></th>
-            <th class="text-nowrap"><%= sort_link @q, :invitation_accepted_at, 'Invitation Accepted' %></th>
-            <th class="text-nowrap"><%= sort_link @q, :last_sign_in_at, 'Last Sign In' %></th>
+            <th><%= sort_link q, :email, 'Email' %></th>
+            <th class="text-nowrap"><%= sort_link q, :invitation_accepted_at, 'Invitation Accepted' %></th>
+            <th class="text-nowrap"><%= sort_link q, :last_sign_in_at, 'Last Sign In' %></th>
           </tr>
         </thead>
         <tbody>
