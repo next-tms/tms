@@ -108,7 +108,7 @@ class UserMailer < ActionMailer::Base
   private
 
   def from(shipment)
-    "#{shipment.broker.name} <#{@shipment.broker.robot_email}>"
+    "#{shipment.broker.name} <#{shipment.broker.robot_email}>"
   end
 
   def to(shipment, method)
