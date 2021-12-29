@@ -5,7 +5,7 @@
     </div>
     <div class="col-auto float-right">
       <%= search_form_for(q, url: request.path, class: 'form-inline mb-3') do |f| %>
-        <%= f.hidden_field :sorts, value: params[:q].try(:[], :s) %>
+        <%= f.hidden_field :sorts, value: q.sorts %>
         <%= f.text_field :created_at_gteq, placeholder: 'From', autocomplete: 'off', data: flatpickr_data({ flatpickr_max_date: Date.current }), class: 'form-control mr-1' %>
         <%= f.text_field :delivered_at_lteq, placeholder: 'Until', autocomplete: 'off', data: flatpickr_data({ flatpickr_max_date: Date.current }), class: 'form-control mr-1' %>
         <%= f.text_field :bol_notes_or_broker_carrier_carrier_name_or_broker_carrier_carrier_scac_or_broker_customer_customer_name_or_broker_notes_or_load_id_or_shipper_name_or_shipper_contact_name_or_receiver_name_or_receiver_contact_name_or_shipper_address_city_or_receiver_address_city_or_shipper_address_zip_code_or_receiver_address_zip_code_or_pro_or_tracking_carrier_pro_cont, placeholder: 'Filter', class: 'form-control mr-2' %>
