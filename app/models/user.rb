@@ -240,6 +240,14 @@ class User < ApplicationRecord
     return if email.blank?
 
     self.contact = broker.contacts.where(email: email.downcase)&.first
+    return unless self.contact.blank?
+
+    self.contact = Contact.new(
+      broker_id: broker_id,
+      email: email,
+      first_name: first_name,
+      last_name: last_name
+    )
   end
 
   def set_time_zone_name
