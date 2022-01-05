@@ -20,10 +20,35 @@
       <%== @receivable.shipment.shipper_address.pretty('<br>') %>
     </div>
   </div>
+
   <div class="col col-md-4">
     <p class="col-title">Receiver</p>
     <div class="bg-light rounded p-3">
       <%== @receivable.shipment.receiver_address.pretty('<br>') %>
+    </div>
+  </div>
+
+  <div class="col col-md-4">
+    <p class="col-title">References</p>
+    <div class="bg-light rounded p-3">
+      <% parts = [] %>
+      <% unless @receivable.shipment.shipper_reference.blank? %>
+        <% parts << "Shipper Ref: #{@receivable.shipment.shipper_reference}" %>
+      <% end %>
+      
+      <% unless @receivable.shipment.customer_reference.blank? %>
+        <% parts << "PO: #{@receivable.shipment.customer_reference}" %>
+      <% end %>
+      
+      <% unless @receivable.shipment.bol.blank? %>
+        <% parts << "BOL: #{@receivable.shipment.bol}" %>
+      <% end %>
+      
+      <% unless real_pro(@receivable.shipment).blank? %>
+        <% parts << "Pro: #{real_pro(@receivable.shipment)}" %>
+      <% end %>
+
+      <%== parts.join('<br>') %>
     </div>
   </div>
 </div>
