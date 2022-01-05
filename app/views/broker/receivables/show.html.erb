@@ -17,6 +17,8 @@
   <div class="col col-md-4">
     <p class="col-title">Shipper</p>
     <div class="bg-light rounded p-3">
+      <%= @receivable.shipment.shipper_name %>
+      <br>
       <%== @receivable.shipment.shipper_address.pretty('<br>') %>
     </div>
   </div>
@@ -24,6 +26,8 @@
   <div class="col col-md-4">
     <p class="col-title">Receiver</p>
     <div class="bg-light rounded p-3">
+      <%= @receivable.shipment.receiver_name %>
+      <br>
       <%== @receivable.shipment.receiver_address.pretty('<br>') %>
     </div>
   </div>
