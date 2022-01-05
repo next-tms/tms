@@ -11,5 +11,5 @@
 <% end %>
 
 <%= turbo_frame_tag :shipments do %>
-  <%= render 'broker/shipments/show_many_pricing', shipments: @shipments %>
+  <%= render 'broker/shipments/show_many_pricing', shipments: @shipments, q: @q %>
 <% end %>
