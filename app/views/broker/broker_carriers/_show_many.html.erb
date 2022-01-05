@@ -1,6 +1,9 @@
 <%= turbo_frame_tag :broker_carriers do %>
   <%= render 'broker/broker_carriers/search_form', q: q %>
 
+  <%= q %>
+  <%= q.class %>
+
   <% unless broker_carriers.blank? %>
     <div class="table-responsive">
       <table class="table table-borderless table-striped table-hover">

@@ -1,5 +1,5 @@
 <%= bootstrap_form_tag(url: broker_search_path, method: 'get', layout: :inline) do |f| %>
-  <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search', autofocus: 'autofocus', value: (@search ? @search : '') %>
+  <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search', autofocus: 'autofocus', value: params[:q] %>
   <div class="form-group">
     <%= f.submit class: 'btn btn-primary ml-2', value: 'Search' %>
   </div>
