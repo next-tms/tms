@@ -1,14 +1,17 @@
 <%= turbo_frame_tag :broker_carriers do %>
-  <%= render 'broker/broker_carriers/search_form' %>
+  <%= render 'broker/broker_carriers/search_form', q: q %>
+
+  <%= q %>
+  <%= q.class %>
 
   <% unless broker_carriers.blank? %>
     <div class="table-responsive">
       <table class="table table-borderless table-striped table-hover">
         <thead>
           <tr>
-            <th><%= sort_link @q, :carrier_name, 'Carrier' %></th>
-            <th><%= sort_link @q, :broker_customer_customer_name, 'Account' %></th>
-            <th><%= sort_link @q, :shipments_count, 'Shipments' %></th>
+            <th><%= sort_link q, :carrier_name, 'Carrier' %></th>
+            <th><%= sort_link q, :broker_customer_customer_name, 'Account' %></th>
+            <th><%= sort_link q, :shipments_count, 'Shipments' %></th>
           </tr>
         </thead>
         <tbody>

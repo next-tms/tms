@@ -1,11 +1,11 @@
-<% unless @q.blank? %>
+<% unless q.blank? %>
   <div class="row">
     <div class="col">
       <%= render 'layouts/pagy', pagy: @pagy %>
     </div>
     <div class="col-auto float-right">
-      <%= search_form_for(@q, url: request.path, class: 'form-inline mb-3') do |f| %>
-        <%= f.hidden_field :sorts, value: params[:q].try(:[], :s) %>
+      <%= search_form_for(q, url: request.path, class: 'form-inline mb-3') do |f| %>
+        <%= f.hidden_field :sorts, value: q.sorts %>
         <%= f.text_field :shipment_broker_customer_customer_name_cont, placeholder: 'Filter', class: 'form-control mr-2' %>
         <%= f.submit 'Filter', class: 'btn btn-primary' %>
       <% end %>

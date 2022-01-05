@@ -4,5 +4,5 @@
 <h2><%= yield :title %></h2>
 
 <%= turbo_frame_tag :shipments do %>
-  <%= render 'show_many', shipments: @shipments %>
+  <%= render 'show_many', shipments: @shipments, q: @q %>
 <% end %>

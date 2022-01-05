@@ -1,14 +1,14 @@
 <%= turbo_frame_tag :contacts do %>
-  <%= render 'broker/contacts/search_form' %>
+  <%= render 'broker/contacts/search_form', q: q %>
 
   <% unless contacts.blank? %>
     <div class="table-responsive">
       <table class="table table-borderless table-striped table-hover">
         <thead>
           <tr>
-            <th><%= sort_link @q, :first_name, 'Name' %></th>
+            <th><%= sort_link q, :first_name, 'Name' %></th>
             <th>Phone</th>
-            <th><%= sort_link @q, :email, 'Email' %></th>
+            <th><%= sort_link q, :email, 'Email' %></th>
             <th>User?</th>
           </tr>
         </thead>
