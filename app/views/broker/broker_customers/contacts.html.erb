@@ -10,5 +10,5 @@
 </div>
 
 <%= turbo_frame_tag :contacts do %>
-  <%= render 'broker/contacts/show_many', contacts: @contacts %>
+  <%= render 'broker/contacts/show_many', contacts: @contacts, q: @q %>
 <% end %>
