@@ -35,12 +35,12 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: c2832e6184424181494f036070b05424fe13e383
-  ref: c2832e6184424181494f036070b05424fe13e383
+  revision: ec3084db567b35870122a6ad521d00d596082fa4
+  ref: ec3084db567b35870122a6ad521d00d596082fa4
   specs:
     interstellar (0.1.pre1)
       active_utils (~> 3.3.1)
-      activesupport (>= 4.2, < 7.1)
+      activesupport (>= 4.2, < 7.0.2)
       httparty (~> 0.10)
       measured (>= 2.0)
       mimemagic (~> 0.4.3)
@@ -51,8 +51,8 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers
-  revision: 7d96323b4f19bb6b56f9b9bee88644c118f26e4d
-  ref: 7d96323b4f19bb6b56f9b9bee88644c118f26e4d
+  revision: cffcd9f5896586d0de9b4784548f50b2aa1df782
+  ref: cffcd9f5896586d0de9b4784548f50b2aa1df782
   specs:
     interstellar-next_carriers (0.1.pre1)
       interstellar (= 0.1.pre1)
