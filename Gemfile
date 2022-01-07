@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.0.3'
 
-gem 'rails', '~> 7.0.0'
+gem 'rails', '~> 7.0.1'
 gem 'pg', '~> 1.2.0'
 gem 'puma', '~> 5.5.2'
 gem 'webpacker', '~> 6.0.0.rc.6'
