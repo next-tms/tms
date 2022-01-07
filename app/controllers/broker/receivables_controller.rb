@@ -16,6 +16,30 @@ class Broker::ReceivablesController < Broker::BrokerController
     @pagy, @receivables = pagy(@q.result)
   end
 
+  def authorized
+    @q = current_user.broker.receivables.authorized.not_invoiced.includes(required_includes).ransack(params[:q])
+    @q.sorts = 'due_by asc' if @q.sorts.blank?
+    @pagy, @receivables = pagy(@q.result)
+  end
+
+  def invoiced
+    @q = current_user.broker.receivables.invoiced.includes(required_includes).ransack(params[:q])
+    @q.sorts = 'due_by asc' if @q.sorts.blank?
+    @pagy, @receivables = pagy(@q.result)
+  end
+
+  def paid
+    @q = current_user.broker.receivables.paid.includes(required_includes).ransack(params[:q])
+    @q.sorts = 'due_by asc' if @q.sorts.blank?
+    @pagy, @receivables = pagy(@q.result)
+  end
+
+  def unauthorized
+    @q = current_user.broker.receivables.unauthorized.not_invoiced.includes(required_includes).ransack(params[:q])
+    @q.sorts = 'due_by asc' if @q.sorts.blank?
+    @pagy, @receivables = pagy(@q.result)
+  end
+
   def new
     @receivable = Receivable.new
   end
