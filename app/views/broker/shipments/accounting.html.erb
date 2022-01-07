@@ -15,7 +15,7 @@
 <% if current_user.has_role?('accounts_payable') || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) %>
   <p class="col-title">Receivables</p>
   <% unless @shipment.receivables.blank? %>
-    <%= render 'receivables/show_many', receivables: @shipment.receivables %>
+    <%= render 'broker/receivables/show_many', receivables: @shipment.receivables %>
   <% else %>
     <%= render 'layouts/no_content' %>
   <% end %>
