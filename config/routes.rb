@@ -73,6 +73,10 @@ Rails.application.routes.draw do
     end
 
     resources :receivables, path: 'ap/receivables' do
+      collection { get :authorized }
+      collection { get :invoiced }
+      collection { get :paid }
+      collection { get :unauthorized }
       member { get 'rebuild', as: :rebuild }
     end
 
@@ -155,7 +159,7 @@ Rails.application.routes.draw do
     get 'search' => 'search#search'
   end
 
-  resources :countries, only: %[show] do
+  resources :countries, only: %(show) do
     member { get 'regions' }
   end
 end

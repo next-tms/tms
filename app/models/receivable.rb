@@ -62,6 +62,9 @@ class Receivable < ApplicationRecord
   scope :authorized, -> { where.not(authorized_at: nil) }
   scope :unauthorized, -> { where.not(id: authorized) }
 
+  scope :invoiced, -> { where.not(invoiced: false) }
+  scope :not_invoiced, -> { where.not(id: invoiced) }
+
   scope :paid, -> { where.not(paid_at: nil) }
   scope :unpaid, -> { where.not(id: paid) }
 
@@ -79,35 +82,38 @@ class Receivable < ApplicationRecord
       due_by: (shipment.picked_up_at + 30.days).end_of_day.in_time_zone('America/Los_Angeles')
     )
 
-    self.receivable_items.map(&:mark_for_destruction) unless self.receivable_items.blank?
+    receivable_items.map(&:mark_for_destruction) unless receivable_items.blank?
 
-    self.receivable_items.build(
+    receivable_items.build(
       charge: shipment.carrier_charge,
       description: shipment.items.map do |item|
         "#{item.quantity} #{item.packaging.name} #{item.desc} #{item.l && item.w && item.h ? "#{item.l}x#{item.w}x#{item.h}" : ''} #{item.forced_freight_class.blank? ? item.calculated_freight_class : item.forced_freight_class} #{ActionController::Base.helpers.number_with_delimiter item.weight} lbs"
       end.join("\n")
     )
-  
-    shipment.shipment_broker_accessorials.sort_by{ |shipment_broker_accessorial| shipment_broker_accessorial.broker_accessorial.name }.each do |shipment_broker_accessorial|
+
+    shipment.shipment_broker_accessorials.sort_by do |shipment_broker_accessorial|
+      shipment_broker_accessorial.broker_accessorial.name
+    end.each do |shipment_broker_accessorial|
       next if shipment_broker_accessorial.broker_accessorial.broker_only?
 
-      self.receivable_items.build(
+      receivable_items.build(
         charge: shipment_broker_accessorial.charge,
         description: shipment_broker_accessorial.broker_accessorial.name.capitalize
       )
     end
-    
+
     self
   end
 
   private
 
   def set_total
-    return if self.receivable_items.blank?
+    return if receivable_items.blank?
 
     new_total = Money.new(0)
-    self.receivable_items.each do |receivable_item|
+    receivable_items.each do |receivable_item|
       next if receivable_item.marked_for_destruction?
+
       new_total += receivable_item.charge
     end
 

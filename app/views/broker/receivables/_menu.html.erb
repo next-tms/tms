@@ -1,3 +1,7 @@
 <nav class="nav border-top pt-4 mb-0">
   <%= link_to 'All', broker_receivables_path, class: 'nav-link receivables-index' %>
+  <%= link_to 'Pending Approval', unauthorized_broker_receivables_path, class: 'nav-link receivables-unauthorized' %>
+  <%= link_to 'Pending Invoice', authorized_broker_receivables_path, class: 'nav-link receivables-authorized' %>
+  <%= link_to 'Due', invoiced_broker_receivables_path, class: 'nav-link receivables-invoiced' %>
+  <%= link_to 'Paid', paid_broker_receivables_path, class: 'nav-link receivables-paid' %>
 </nav>
