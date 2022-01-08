@@ -172,6 +172,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             :default_upcharge,
                                             :default_upcharge_percentage,
                                             :default_bol_notes,
+                                            :ignore_value_on_api_quotes,
                                             :internal_notes,
                                             :requires_carrier_bol_on_receivables,
                                             :requires_carrier_pod_on_receivables,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_28_202113) do
+ActiveRecord::Schema.define(version: 2022_01_08_003301) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -187,6 +187,7 @@ ActiveRecord::Schema.define(version: 2021_12_28_202113) do
     t.text "internal_notes"
     t.boolean "requires_carrier_bol_on_receivables", default: true
     t.boolean "requires_carrier_pod_on_receivables", default: true
+    t.boolean "ignore_value_on_api_quotes", default: false
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["primary_pickup_address_id"], name: "index_broker_customers_on_primary_pickup_address_id"
