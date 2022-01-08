@@ -108,7 +108,7 @@ class Receivable < ApplicationRecord
   def missing_carrier_bol?
     return false unless shipment.broker_customer.requires_carrier_bol_on_receivables?
 
-    shipment.carrier_bol_valid?
+    !shipment.carrier_bol.blank?
   end
 
   def missing_carrier_pod?
