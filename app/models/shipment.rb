@@ -1116,6 +1116,8 @@ class Shipment < ApplicationRecord
 
     broker_customer.broker_customer_sales_reps.find_each do |broker_customer_sales_rep|
       amount = profit * (broker_customer_sales_rep.commission_percent.to_f / 100).round(2)
+      next if amount.zero?
+
       commissions.build(
         user_id: broker_customer_sales_rep.user_id,
         amount:
