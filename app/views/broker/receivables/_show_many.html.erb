@@ -1,6 +1,6 @@
 <%= turbo_frame_tag :receivables do %>
   <% unless receivables.blank? %>
-    <%= render 'layouts/pagy', pagy: @pagy %>
+    <%= render 'broker/receivables/search_form', q: q %>
 
     <div class="table-responsive">
       <table class="table table-condensed table-borderless table-striped table-hover h-100">
