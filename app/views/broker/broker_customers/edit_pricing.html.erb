@@ -8,6 +8,7 @@
 
   <%= f.check_box :can_quote, label: 'Company has access to online quoting' %>
   <%= f.check_box :always_show_quotes_based_on_calculated_classes, label: 'Always show rates based on calculated class rather than declared class' %>
+  <%= f.check_box :ignore_value_on_api_quotes, label: 'Ignore declared value when retrieving API quotes' %>
 
   <p class="col-title">Invoicing</p>
   <%= f.check_box :requires_carrier_bol_on_receivables, label: 'Requires carrier BOL on invoices?' %>
