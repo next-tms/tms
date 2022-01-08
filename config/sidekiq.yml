@@ -1,0 +1,25 @@
+:schedule:
+  create_receivables:
+    cron: '45 */2 * * *'
+    class: CreateReceivablesJob
+  fetch_carrier_bols:
+    cron: '15 */6 * * *'
+    class: FetchCarrierBolsJob
+  fetch_carrier_pods:
+    cron: '15 */3 * * *'
+    class: FetchCarrierPodsJob
+  fetch_pros:
+    cron: '*/15 * * * *'
+    class: FetchProsJob
+  fetch_website_manifests:
+    cron: '10 */4 * * *'
+    class: FetchWebsiteManifestsJob
+  track_shipments_pending_delivery:
+    cron: '15 * * * *'
+    class: TrackShipmentsPendingDeliveryJob
+  track_shipments_pending_departure:
+    cron: '15 */6 * * *'
+    class: TrackShipmentsPendingDepartureJob
+  track_shipments_pending_pickups:
+    cron: '*/15 * * * *'
+    class: TrackShipmentsPendingPickupJob
