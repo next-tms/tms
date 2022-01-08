@@ -500,6 +500,10 @@ class Shipment < ApplicationRecord
     str += shipper_address.pretty(', ') unless shipper_address.blank?
     str += receiver_address.pretty(', ') unless receiver_address.blank?
 
+    if !created_at.blank? && created_at.in_time_zone('America/Los_Angeles').to_date >= Date.parse('2022-01-09')
+      str += value_cents.to_s
+    end
+
     Digest::SHA2.hexdigest(str)
   end
 
@@ -708,9 +712,10 @@ class Shipment < ApplicationRecord
       when 'delivered'
         self.delivered_at = tracking_event.at if delivered_at.blank?
       when 'delivery_appointment_scheduled'
-        if shipment_event.message.is_a?(DateTime)
+        case shipment_event.message
+        when DateTime
           self.delivery_appointment_at = shipment_event.message
-        elsif shipment_event.message.is_a?(Date)
+        when Date
           self.delivery_appointment_on = shipment_event.message
         else
           next
@@ -1362,7 +1367,7 @@ class Shipment < ApplicationRecord
   end
 
   def send_notification
-    changed_attributes.keys.each do |key|
+    changed_attributes.each_key do |key|
       return false if !UserMailer.respond_to?(key) || changes[key][1].blank?
 
       mailer = UserMailer.send(key, self)
