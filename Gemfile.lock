@@ -1400,8 +1400,14 @@ GEM
       actionmailer (>= 5.0)
       devise (>= 4.6)
     digest (3.1.0)
+    e2mmap (0.1.0)
     erubi (1.10.0)
+    et-orbi (1.2.6)
+      tzinfo
     ffi (1.15.4)
+    fugit (1.5.2)
+      et-orbi (~> 1.1, >= 1.1.8)
+      raabro (~> 1.4)
     geocoder (1.6.7)
     globalid (1.0.0)
       activesupport (>= 5.0)
@@ -1409,7 +1415,6 @@ GEM
       httparty (>= 0.13.1)
     gyoku (1.3.1)
       builder (>= 2.1.2)
-    hiredis (0.6.3)
     htmlentities (4.3.4)
     httparty (0.20.0)
       mime-types (~> 3.0)
@@ -1501,6 +1506,7 @@ GEM
     public_suffix (4.0.6)
     puma (5.5.2)
       nio4r (~> 2.0)
+    raabro (1.4.0)
     racc (1.6.0)
     rack (2.2.3)
     rack-proxy (0.7.2)
@@ -1561,6 +1567,8 @@ GEM
     ruby-vips (2.1.4)
       ffi (~> 1.12)
     rubyzip (2.3.2)
+    rufus-scheduler (3.8.0)
+      fugit (~> 1.1, >= 1.1.6)
     savon (2.12.1)
       akami (~> 1.2)
       builder (>= 2.1.2)
@@ -1579,6 +1587,13 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
+    sidekiq-scheduler (3.1.0)
+      e2mmap
+      redis (>= 3, < 5)
+      rufus-scheduler (~> 3.2)
+      sidekiq (>= 3)
+      thwait
+      tilt (>= 1.4.0)
     simple_command (0.1.0)
     socksify (1.7.1)
     sorted_set (1.0.3)
@@ -1594,6 +1609,9 @@ GEM
       sprockets (>= 3.0.0)
     strscan (3.0.1)
     thor (1.2.1)
+    thwait (0.2.0)
+      e2mmap
+    tilt (2.0.10)
     timeout (0.2.0)
     timezone (1.3.15)
     traceroute (0.8.1)
@@ -1658,7 +1676,6 @@ DEPENDENCIES
   devise_invitable (~> 2.0.5)
   geocoder (~> 1.6.7)
   google_places (~> 2.0.0)
-  hiredis
   htmlentities
   httparty
   image_processing (~> 1.12.1)
@@ -1681,12 +1698,12 @@ DEPENDENCIES
   rails-assets-tether (>= 1.3.3)!
   rails_real_favicon
   ransack (~> 2.5.0)
-  redis
   responders
   rollbar
   rqrcode
   selenium-webdriver
-  sidekiq
+  sidekiq (~> 6.3.1)
+  sidekiq-scheduler (~> 3.1.0)
   simple_command
   spring (~> 4.0.0)
   sprockets-rails (~> 3.4.2)
