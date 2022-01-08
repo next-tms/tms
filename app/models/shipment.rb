@@ -262,6 +262,18 @@ class Shipment < ApplicationRecord
       .having('COUNT(active_storage_attachments) != 0')
   }
 
+  scope :without_carrier_bol, lambda {
+    left_joins(:carrier_bol_attachment)
+      .group(:id)
+      .having('COUNT(active_storage_attachments) = 0')
+  }
+
+  scope :without_carrier_pod, lambda {
+    left_joins(:carrier_pod_attachment)
+      .group(:id)
+      .having('COUNT(active_storage_attachments) = 0')
+  }
+
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
 
@@ -413,7 +425,7 @@ class Shipment < ApplicationRecord
   def fetch_carrier_bol
     return nil if pro.blank?
 
-    path = InterstellarApiClient.fetch_bol(broker_carrier: broker_carrier, tracking_number: pro)
+    path = InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
     return nil if path.blank?
 
     unless path.is_a?(String)
@@ -427,7 +439,7 @@ class Shipment < ApplicationRecord
   def fetch_carrier_pod
     return nil if pro.blank?
 
-    path = InterstellarApiClient.fetch_pod(broker_carrier: broker_carrier, tracking_number: pro)
+    path = InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
     return nil if path.blank?
 
     carrier_pod.attach(io: File.open(path), filename: "#{load_id} POD.pdf", content_type: 'application/pdf')
@@ -437,37 +449,37 @@ class Shipment < ApplicationRecord
     return nil if pickup_confirmation.blank?
 
     pro = nil
-    pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+    pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                           date: pickup_on)
 
     if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                             date: dispatched_at.to_date)
     end
 
     if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                             date: pickup_on - 1.day)
     end
 
     if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                             date: pickup_on + 1.day)
     end
 
     if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                             date: pickup_on + 2.days)
     end
 
     if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier: broker_carrier, pickup_number: pickup_confirmation,
+      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                             date: dispatched_at.to_date + 1.day)
     end
 
     return if pro.blank?
 
-    update(pro: pro, updated_by: nil)
+    update(pro:, updated_by: nil)
   end
 
   def fingerprint
@@ -640,8 +652,8 @@ class Shipment < ApplicationRecord
     return nil if tracking_number.blank?
 
     @interstellar_tracking = InterstellarApiClient.fetch_tracking(
-      broker_carrier: broker_carrier,
-      tracking_number: tracking_number
+      broker_carrier:,
+      tracking_number:
     )
   end
 
@@ -685,7 +697,7 @@ class Shipment < ApplicationRecord
         at: DateTime.parse(shipment_event.time),
         city: interstellar_location.city,
         country: Country.find_by_alpha2_code(interstellar_location.country_code(:alpha2)),
-        event: event,
+        event:,
         interstellar_carrier_fingerprint: fingerprint,
         region: Region.find_by_abbreviation(interstellar_location.state)
       )
@@ -792,9 +804,9 @@ class Shipment < ApplicationRecord
     codes = codes.gsub(', ', ',').split(',') if codes.instance_of?(String)
     broker_accessorials = []
     codes.each do |code|
-      broker_accessorial = broker_customer.broker_accessorials.where(code: code)
+      broker_accessorial = broker_customer.broker_accessorials.where(code:)
       if broker_accessorial.blank?
-        broker_accessorial = broker_customer.broker.broker_accessorials.where(code: code)
+        broker_accessorial = broker_customer.broker.broker_accessorials.where(code:)
         broker_accessorials << broker_accessorial.first unless broker_accessorial.blank?
       else
         broker_accessorials << broker_accessorial.first
@@ -905,7 +917,7 @@ class Shipment < ApplicationRecord
   end
 
   def freight_classes(use_forced_freight_class:)
-    items.inject([]) { |arr, item| arr << item.api_freight_class(use_forced_freight_class: use_forced_freight_class) }
+    items.inject([]) { |arr, item| arr << item.api_freight_class(use_forced_freight_class:) }
   end
 
   def calculated_freight_classes
@@ -1106,7 +1118,7 @@ class Shipment < ApplicationRecord
       amount = profit * (broker_customer_sales_rep.commission_percent.to_f / 100).round(2)
       commissions.build(
         user_id: broker_customer_sales_rep.user_id,
-        amount: amount
+        amount:
       )
     end
   end
@@ -1114,57 +1126,47 @@ class Shipment < ApplicationRecord
   def self.receivable
     shipment_ids = []
 
-    shipment_ids +=
-      delivered
-      .with_carrier_bol
-      .with_carrier_pod
-      .where(
-        broker_customer_id:
-        BrokerCustomer
-        .where(
-          requires_carrier_bol_on_receivables: true,
-          requires_carrier_pod_on_receivables: true
-        )
-        .ids
-      )
-      .ids
+    only_after = Date.parse('2021-12-01').to_date.in_time_zone('America/Los_Angeles').beginning_of_day
+    shipments = where('picked_up_at > ?', only_after)
 
     shipment_ids +=
-      delivered
-      .with_carrier_bol
-      .where(
-        broker_customer_id:
-        BrokerCustomer
-        .where(requires_carrier_bol_on_receivables: true)
-        .where.not(requires_carrier_pod_on_receivables: true)
-        .ids
-      )
-      .ids
-
-    shipment_ids +=
-      delivered
-      .with_carrier_pod
+      shipments
+      .delivered
       .where(
         broker_customer_id:
         BrokerCustomer
         .where(requires_carrier_pod_on_receivables: true)
-        .where.not(requires_carrier_bol_on_receivables: true)
         .ids
       )
       .ids
 
     shipment_ids +=
-      pending_delivery
+      shipments
+      .pending_delivery
       .where(
         broker_customer_id:
         BrokerCustomer
-        .where.not(requires_carrier_pod_on_receivables: true)
-        .where.not(requires_carrier_bol_on_receivables: true)
+        .where(requires_carrier_bol_on_receivables: true)
         .ids
       )
       .ids
 
-    where(id: shipment_ids)
+    shipment_ids +=
+      shipments
+      .pending_delivery
+      .where(
+        broker_customer_id:
+        BrokerCustomer
+        .where(requires_carrier_pod_on_receivables: false)
+        .where(requires_carrier_bol_on_receivables: false)
+        .ids
+      )
+      .ids
+
+    shipment_ids.uniq!
+    shipments_with_receivables_ids = Receivable.where(shipment_id: shipment_ids).pluck(:shipment_id)
+
+    where(id: shipment_ids).where.not(id: shipments_with_receivables_ids)
   end
 
   def to_param
@@ -1227,14 +1229,13 @@ class Shipment < ApplicationRecord
 
     PaymentTransaction.create(
       shipment: self,
-      broker: broker,
-      broker_carrier:
-      broker_carrier,
+      broker:,
+      broker_carrier:,
       created_by: updated_by,
       balance: total_cost,
       paid: total_cost,
       due_on: Date.current + broker_carrier.days_to_pay_after_invoice_date.days,
-      pro: pro
+      pro:
     )
   end
 

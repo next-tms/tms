@@ -13,6 +13,24 @@
   </div>
 <% end %>
 
+<% if @receivable.missing_carrier_bol? || @receivable.missing_carrier_pod? %>
+  <div class="alert alert-danger">
+    <p class="lead">
+      Missing required <%= 'document'.pluralize([@receivable.missing_carrier_bol?, @receivable.missing_carrier_pod?].count(true)) %>
+    </p>
+    <p><%= @receivable.broker_customer.customer.name %> requires these documents:</p>
+    <ul class="list-unstyled list-inline">
+      <% if @receivable.missing_carrier_bol? %>
+        <li class="list-inline-item">Carrier BOL</li>
+      <% end %>
+
+      <% if @receivable.missing_carrier_pod? %>
+        <li class="list-inline-item">Carrier POD</li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <div class="row">
   <div class="col col-md-4">
     <p class="col-title">Shipper</p>

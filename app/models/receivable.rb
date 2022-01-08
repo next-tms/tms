@@ -78,7 +78,7 @@ class Receivable < ApplicationRecord
 
   def build_from_shipment(shipment)
     assign_attributes(
-      shipment: shipment,
+      shipment:,
       due_by: (shipment.picked_up_at + 30.days).end_of_day.in_time_zone('America/Los_Angeles')
     )
 
@@ -103,6 +103,18 @@ class Receivable < ApplicationRecord
     end
 
     self
+  end
+
+  def missing_carrier_bol?
+    return false unless shipment.broker_customer.requires_carrier_bol_on_receivables?
+
+    shipment.carrier_bol_valid?
+  end
+
+  def missing_carrier_pod?
+    return false unless shipment.broker_customer.requires_carrier_pod_on_receivables?
+
+    !shipment.carrier_pod.blank?
   end
 
   private

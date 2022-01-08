@@ -19,7 +19,10 @@
         </thead>
         <tbody>
           <% receivables.each do |receivable| %>
-          <tr class="<%= receivable.total != receivable.shipment.total_charges ? 'table-danger' : '' %>">
+          <tr class="
+            <%= receivable.total != receivable.shipment.total_charges ? 'table-danger' : '' %>
+            <%= (receivable.missing_carrier_bol? || receivable.missing_carrier_pod?) ? ' table-warning' : '' %>
+          ">
               <td>
                 <%= link_to receivable.shipment.load_id, broker_receivable_path(receivable), target: '_top' %>
               </td>
