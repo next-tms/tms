@@ -28,7 +28,7 @@ class RatesService
         cost += @broker_carrier.quote_padding unless @broker_carrier.quote_padding.blank?
 
         rate = new_rate
-        rate.assign_attributes(cost: cost)
+        rate.assign_attributes(cost:)
 
         return [rate]
       end
@@ -39,13 +39,23 @@ class RatesService
     response = nil
     error = nil
 
+    if !@shipment.broker_customer.ignore_value_on_api_quotes? && !@shipment.value.zero? && !@broker_carrier.as_interstellar_carrier.find_rates_with_declared_value?
+      error = StandardError.new('Carrier doesn’t support quoting with declared value')
+
+      rate = new_rate
+      rate.assign_attributes(error_object: error)
+
+      return [rate]
+    end
+
     begin
       response = InterstellarApiClient.fetch_rates(
         broker_carrier: @broker_carrier,
         origin: @shipment.shipper_address.to_interstellar_shipping_address,
         destination: @shipment.receiver_address.to_interstellar_shipping_address,
-        packages: packages,
-        accessorials: accessorials
+        packages:,
+        accessorials:,
+        declared_value_cents: @shipment.value_cents
       )
     rescue StandardError => e
       error = e
@@ -80,8 +90,8 @@ class RatesService
 
       tracking_carrier = nil
       if @broker_carrier.carrier.acts_as_broker?
-        carrier_name = interstellar_rate.carrier.dig(:name)
-        carrier_scac = interstellar_rate.carrier.dig(:scac)
+        carrier_name = interstellar_rate.carrier[:name]
+        carrier_scac = interstellar_rate.carrier[:scac]
 
         if carrier_scac.blank? || carrier_name.blank?
           rate = new_rate
@@ -105,9 +115,9 @@ class RatesService
 
       rate = new_rate
       rate.assign_attributes(
-        cost: cost,
+        cost:,
         reference: interstellar_rate.estimate_reference,
-        tracking_carrier: tracking_carrier,
+        tracking_carrier:,
         transit_days: interstellar_rate.transit_days,
         interstellar_service_type: interstellar_rate.service_name.to_s,
         request: response.request,
