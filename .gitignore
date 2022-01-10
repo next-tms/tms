@@ -32,3 +32,5 @@ yarn-debug.log*
 config/initializers/01_development_env.rb 
 
 /storage
+
+*.dump
