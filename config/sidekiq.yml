@@ -23,3 +23,6 @@
   track_shipments_pending_pickups:
     cron: '*/15 * * * *'
     class: TrackShipmentsPendingPickupJob
+:queues:
+  - default
+  - mailers
