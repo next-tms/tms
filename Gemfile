@@ -82,8 +82,7 @@ gem 'phony_rails'
 gem 'htmlentities'
 
 gem 'wicked_pdf', '~> 2.1.0'
-gem 'wkhtmltopdf-heroku', '~> 2.12.6.0', groups: %i[production staging]
-gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0', groups: %i[development]
+gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0'
 gem 'sprockets-rails', '~> 3.4.2'
 
 gem 'pagy'
