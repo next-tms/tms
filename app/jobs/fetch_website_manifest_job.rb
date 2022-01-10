@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FetchWebsiteManifest < ApplicationJob
+class FetchWebsiteManifestJob < ApplicationJob
   def perform(website_id)
     Website.find(website_id).update_manifest
   end
