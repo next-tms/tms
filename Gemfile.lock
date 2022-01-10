@@ -1651,6 +1651,7 @@ GEM
     wicked_pdf (2.1.0)
       activesupport
     wkhtmltopdf-binary-edge (0.12.6.0)
+    wkhtmltopdf-heroku (2.12.6.0)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.5.3)
@@ -1715,6 +1716,7 @@ DEPENDENCIES
   webpacker (~> 6.0.0.rc.6)
   wicked_pdf (~> 2.1.0)
   wkhtmltopdf-binary-edge (~> 0.12.6.0)
+  wkhtmltopdf-heroku (~> 2.12.6.0)
 
 RUBY VERSION
    ruby 3.1.0p0
