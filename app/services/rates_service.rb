@@ -48,14 +48,18 @@ class RatesService
       return [rate]
     end
 
+    api_shipment = Interstellar::Shipment.new(
+      accessorials:,
+      declared_value_cents: @shipment.value_cents,
+      origin: @shipment.shipper_address.to_interstellar_shipping_address,
+      destination: @shipment.receiver_address.to_interstellar_shipping_address,
+      packages:
+    )
+
     begin
       response = InterstellarApiClient.fetch_rates(
         broker_carrier: @broker_carrier,
-        origin: @shipment.shipper_address.to_interstellar_shipping_address,
-        destination: @shipment.receiver_address.to_interstellar_shipping_address,
-        packages:,
-        accessorials:,
-        declared_value_cents: @shipment.value_cents
+        shipment: api_shipment
       )
     rescue StandardError => e
       error = e

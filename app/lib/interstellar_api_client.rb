@@ -94,14 +94,14 @@ module InterstellarApiClient
     ).find(pickup_number, date)
   end
 
-  def fetch_rates(broker_carrier:, origin:, destination:, packages:, accessorials:, declared_value_cents:, retry_on_timeout: false, return_nil_on_error: false)
+  def fetch_rates(broker_carrier:, shipment:, retry_on_timeout: false, return_nil_on_error: false)
     return nil unless broker_carrier.as_interstellar_carrier&.find_rates_implemented?
 
     Services::FetchRates.new(
       broker_carrier:,
       retry_on_timeout:,
       return_nil_on_error:
-    ).find(origin, destination, packages, accessorials, declared_value_cents)
+    ).find(shipment:)
   end
 
   def fetch_tracking(broker_carrier:, tracking_number:, retry_on_timeout: false, return_nil_on_error: true)
