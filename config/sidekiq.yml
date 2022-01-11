@@ -5,10 +5,10 @@
     class: CreateReceivablesJob
   fetch_carrier_bols:
     cron: '15 */6 * * *'
-    class: FetchCarrierBolsJob
+    class: FetchShipmentCarrierBolsJob
   fetch_carrier_pods:
     cron: '15 */3 * * *'
-    class: FetchCarrierPodsJob
+    class: FetchShipmentCarrierPodsJob
   fetch_shipment_pros:
     cron: '*/15 * * * *'
     class: FetchShipmentProsJob
