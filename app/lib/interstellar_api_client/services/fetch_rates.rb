@@ -3,15 +3,9 @@
 module InterstellarApiClient
   module Services
     class FetchRates < Base
-      def find(origin, destination, packages, accessorials, declared_value_cents)
+      def find(shipment:)
         interstellar_api_call_block do
-          carrier_client&.find_rates(
-            origin,
-            destination,
-            packages,
-            accessorials:,
-            declared_value_cents:
-          )
+          carrier_client&.find_rates(shipment:)
         end
       end
     end

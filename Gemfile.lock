@@ -35,36 +35,37 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 281e7e57044cdc22ceda67b10aea4356e65335d1
-  ref: 281e7e57044cdc22ceda67b10aea4356e65335d1
+  revision: 838e0046ba905285cfa885dccd9908371ecbaf2e
+  ref: 838e0046ba905285cfa885dccd9908371ecbaf2e
   specs:
-    interstellar (0.1.pre1)
+    interstellar (0.1.pre2)
       active_utils (~> 3.3.1)
+      activemodel (>= 4.2, < 7.0.2)
       activesupport (>= 4.2, < 7.0.2)
       httparty (~> 0.10)
-      measured (>= 2.0)
+      measured (>= 2.0, < 2.8.3)
       mimemagic (~> 0.4.3)
-      nokogiri (>= 1.6)
+      nokogiri (>= 1.6, < 1.13.1)
       rmagick (>= 4.1, < 4.3)
       savon (>= 2.0, < 2.13)
       watir (>= 7.0, < 7.2)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers
-  revision: 0726a12ab33d2c945a44dfbcb5fe8003fc1f8234
-  ref: 0726a12ab33d2c945a44dfbcb5fe8003fc1f8234
+  revision: 6756d860ff01d39d616d3a90653d75112cc6fdc3
+  ref: 6756d860ff01d39d616d3a90653d75112cc6fdc3
   specs:
-    interstellar-next_carriers (0.1.pre1)
-      interstellar (= 0.1.pre1)
-      interstellar-next_platforms (= 0.1.pre1)
+    interstellar-next_carriers (0.1.pre2)
+      interstellar (= 0.1.pre2)
+      interstellar-next_platforms (= 0.1.pre2)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms
-  revision: ce71ea41be5cfbf962eaaa1ae0a0d683058fa1fa
-  ref: ce71ea41be5cfbf962eaaa1ae0a0d683058fa1fa
+  revision: c094eb1a7d66474ba3b6b6a2aac408aa8b553978
+  ref: c094eb1a7d66474ba3b6b6a2aac408aa8b553978
   specs:
-    interstellar-next_platforms (0.1.pre1)
-      interstellar (= 0.1.pre1)
+    interstellar-next_platforms (0.1.pre2)
+      interstellar (= 0.1.pre2)
 
 GEM
   remote: https://rails-assets.org/
