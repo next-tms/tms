@@ -39,8 +39,14 @@ class RatesService
     response = nil
     error = nil
 
-    if !@shipment.broker_customer.ignore_value_on_api_quotes? && !@shipment.value.zero? && !@broker_carrier.as_interstellar_carrier.find_rates_with_declared_value?
-      error = StandardError.new('Carrier doesn’t support quoting with declared value')
+    ignore_value = if @shipment.broker_customer.blank?
+                     false
+                   else
+                     @shipment.broker_customer.ignore_value_on_api_quotes?
+                   end
+
+    if !ignore_value && !@shipment.value.zero? && !@broker_carrier.as_interstellar_carrier.find_rates_with_declared_value?
+      error = StandardError.new('Carrier doesn’t support quoting shipments with declared value')
 
       rate = new_rate
       rate.assign_attributes(error_object: error)
