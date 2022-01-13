@@ -100,7 +100,7 @@ class User < ApplicationRecord
   scope :customers, -> { where.not(broker_customer: nil) }
   scope :brokers, -> { where.not(id: customers) }
 
-  devise :database_authenticatable, :invitable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable
+  devise :database_authenticatable, :invitable, :pwned_password, :recoverable, :rememberable, :timeoutable, :trackable, :validatable
 
   before_validation :set_contact
   before_validation :set_time_zone_name

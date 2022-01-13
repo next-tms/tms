@@ -65,6 +65,8 @@ class ApplicationController < ActionController::Base
   # Devise
 
   def after_sign_in_path_for(resource_or_scope)
+    set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
+
     stored_location_for(resource_or_scope) || user_sign_in_path
   end
 
