@@ -49,6 +49,7 @@ gem 'image_processing', '~> 1.12.1'
 
 gem 'devise', '~> 4.8.0'
 gem 'devise_invitable', '~> 2.0.5'
+gem 'devise-pwned_password', '~> 0.1.9'
 
 # liftoff.rocks
 gem 'turbo-rails', '~> 1.0.0'
