@@ -16,49 +16,57 @@ class PickupsService
     response = nil
     error = nil
 
+    interstellar_destination = @shipment.shipper_address.to_interstellar_shipping_address
+    interstellar_destination.contact = Interstellar::Contact.new(
+                                         company_name: @shipment.receiver_name,
+                                         name: @shipment.receiver_contact_name
+                                       )
+
+    interstellar_origin = @shipment.shipper_address.to_interstellar_shipping_address
+    interstellar_origin.contact = Interstellar::Contact.new(
+                                    company_name: @shipment.shipper_name,
+                                    name: @shipment.shipper_contact_name
+                                  )
+
+    interstellar_shipment = Interstellar::Shipment.new(
+                              accessorials:,
+                              destination: interstellar_destination,
+                              order_number: @shipment.shipper_reference,
+                              origin: interstellar_origin,
+                              packages:,
+                              po_number: @shipment.customer_reference
+                            )
+
+    interstellar_dispatcher = Interstellar::Contact.new(
+                                name: @pickup.dispatcher.full_name.blank? ? 'Dispatcher' : @pickup.dispatcher.full_name,
+                                phone: @pickup.dispatcher.phone,
+                                email: @pickup.dispatcher.email
+                              )
+
+    delivery_from = (@shipment.delivery_from || @shipment.pickup_by + 5.business_days)
+
     begin
       response = InterstellarApiClient.create_pickup(
-        accessorials: accessorials,
-        broker_carrier: @broker_carrier,
-        customer_reference: @shipment.customer_reference,
-        delivery_from: @shipment.delivery_from || @shipment.pickup_by + 5.business_days,
-        delivery_to: @shipment.delivery_by,
-        destination: @shipment.receiver_address.to_interstellar_shipping_address,
-        dispatcher_email: @pickup.dispatcher.email,
-        dispatcher_name: @pickup.dispatcher.full_name.blank? ? 'Dispatcher' : @pickup.dispatcher.full_name,
-        dispatcher_phone: @pickup.dispatcher.phone || '',
-        origin: @shipment.shipper_address.to_interstellar_shipping_address,
-        packages: packages,
-        pickup_from: @shipment.pickup_from,
-        pickup_to: @shipment.pickup_by,
-        receiver_contact_name: contact_name(:receiver),
-        receiver_name: @shipment.receiver_name || '',
-        receiver_phone: @shipment.receiver_contact_phone || '',
-        receiver_reference: @shipment.customer_reference,
-        scac: scac,
-        service: @shipment.applied_rate.interstellar_service_type.to_sym,
-        shipper_contact_name: contact_name(:shipper) || '',
-        shipper_name: @shipment.shipper_name || '',
-        shipper_phone: @shipment.shipper_contact_phone || '',
-        shipper_reference: @shipment.shipper_reference
-      )
+                   delivery_from: delivery_from.in_time_zone(@shipment.receiver_address.time_zone),
+                   delivery_to: @shipment.delivery_by.in_time_zone(@shipment.receiver_address.time_zone),
+                   dispatcher: interstellar_dispatcher,
+                   pickup_from: @shipment.pickup_from.in_time_zone(@shipment.shipper_address.time_zone),
+                   pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
+                   scac: @broker_carrier.carrier.scac,
+                   service: @shipment.applied_rate.interstellar_service_type.to_sym,
+                   shipment: interstellar_shipment
+                 )
     rescue StandardError => e
       error = e
     end
 
     if response.blank?
-      @pickup.update(
-        error_object: error,
-        updated_by: nil
-      )
+      @pickup.update(error_object: error, updated_by: nil)
 
       return false
     end
 
-    @pickup.update(
-      pickup_confirmation: response,
-      updated_by: nil
-    )
+    @pickup.update(pickup_confirmation: response, updated_by: nil)
   end
 
   private
