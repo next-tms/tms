@@ -13,9 +13,9 @@
         <%= primary_pickup_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
         <%= primary_pickup_address_form.text_field :street2, hide_label: true %>
         <%= primary_pickup_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
-        <%= primary_pickup_address_form.select :region_id, (primary_pickup_address_form.object.region_id.blank? ? [[current_user.broker_customer.primary_pickup_address.region.name, current_user.broker_customer.primary_pickup_address.region.id]] : [[primary_pickup_address_form.object.region.abbreviation, primary_pickup_address_form.object.region_id]]), { include_blank: true, hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
+        <%= primary_pickup_address_form.select :region_id, [], { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
         <%= primary_pickup_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
-        <%= primary_pickup_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+        <%= primary_pickup_address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, selected: (primary_pickup_address_form.object.country_id.blank? ? current_user.broker.address.country_id : primary_pickup_address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
       <% end %>
     </div>
   </div>
