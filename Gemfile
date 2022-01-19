@@ -55,8 +55,8 @@ gem 'devise-pwned_password', '~> 0.1.9'
 gem 'turbo-rails', '~> 1.0.0'
 
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: '9ee103ca976d9a602e630bef033c9d1bb54037b6'
-gem 'interstellar-next_platforms', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms', ref: '5daf54fb0d6b9d3e50544d93f56989cb532bb976'
-gem 'interstellar-next_carriers', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers', ref: 'ee3d6c64a488980f8c3e90acffb815011f94389b'
+gem 'interstellar-next_platforms', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms', ref: '088e2d42fbd9927ac7ca2e3bc3cbfff6b5a505e1'
+gem 'interstellar-next_carriers', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers', ref: '934d43a267582346c535ae21c0d598f26ea96e61'
 
 gem 'rollbar'
 
