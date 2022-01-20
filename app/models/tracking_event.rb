@@ -58,6 +58,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class TrackingEvent < ApplicationRecord
+  attr_writer :at_without_time_zone_string
+
   belongs_to :event
 
   belongs_to :address, optional: true
@@ -73,8 +75,8 @@ class TrackingEvent < ApplicationRecord
   serialize :legacy_time_zone
 
   # DateTime sanitization
-  before_save :set_time_zone_name
-  before_save :sanitize_at, if: :at_changed?
+  before_validation :set_time_zone_name
+  before_validation :set_at_from_at_without_time_zone_string
 
   def pretty_location
     "#{city}, #{region.abbreviation}"
@@ -88,27 +90,29 @@ class TrackingEvent < ApplicationRecord
 
   private
 
-  # DateTime sanitization
   def sanitize_datetime(datetime:, time_zone:)
+    return nil unless datetime.is_a?(String)
     return nil if datetime.blank? || time_zone.blank?
 
-    time_zone.local_to_utc time_zone.parse(datetime.to_s)
+    time_zone.parse(datetime)
   end
 
-  def sanitize_at
-    at = sanitize_datetime(datetime: self.at, time_zone: time_zone)
-    self.at = at.blank? ? DateTime.current : at
+  def set_at_from_at_without_time_zone_string
+    return if @at_without_time_zone_string.blank?
+
+    new_at = sanitize_datetime(datetime: @at_without_time_zone_string, time_zone:)
+    self.at = new_at.blank? ? DateTime.current : new_at
   end
 
   def set_time_zone_name
-    last_time_zone_name = StandardizedAddress.where(region: region)&.last&.time_zone_name
+    last_time_zone_name = StandardizedAddress.where(region:)&.last&.time_zone_name
 
     unless last_time_zone_name.blank?
       self.time_zone_name = last_time_zone_name
       return
     end
 
-    last_time_zone_name = TrackingEvent.where(region: region)&.last&.time_zone_name
+    last_time_zone_name = TrackingEvent.where(region:)&.last&.time_zone_name
 
     unless last_time_zone_name.blank?
       self.time_zone_name = last_time_zone_name
