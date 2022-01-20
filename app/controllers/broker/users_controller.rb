@@ -42,6 +42,7 @@ class Broker::UsersController < Broker::BrokerController
       :email,
       :first_name,
       :last_name,
+      :phone,
       user_roles_attributes: %i[
         _destroy
         id

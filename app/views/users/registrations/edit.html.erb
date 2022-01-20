@@ -12,6 +12,8 @@
     <div class="col-sm-4">
       <p class="col-title"><%= icon 'fas', 'user', 'Profile' %>
       <%= f.email_field :email, placeholder: 'Your email address', class: 'form-control', autofocus: true %>
+      <%= f.phone_field :phone, placeholder: 'Your phone', class: 'form-control' %>
+
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
         <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
       <% end %>

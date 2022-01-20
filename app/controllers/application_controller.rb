@@ -78,12 +78,12 @@ class ApplicationController < ActionController::Base
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(
       :account_update,
-      keys: %i[email first_name last_name password password_confirmation]
+      keys: %i[email first_name last_name password password_confirmation phone]
     )
 
     devise_parameter_sanitizer.permit(
       :accept_invitation,
-      keys: %i[email broker_customer_id first_name last_name]
+      keys: %i[email broker_customer_id first_name last_name phone]
     )
 
     devise_parameter_sanitizer.permit(
@@ -94,6 +94,7 @@ class ApplicationController < ActionController::Base
         :contact_id,
         :first_name,
         :last_name,
+        :phone,
         { user_roles_attributes: %i[_destroy role_id] }
       ]
     )
