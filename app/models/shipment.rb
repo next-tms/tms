@@ -694,11 +694,12 @@ class Shipment < ApplicationRecord
       tracking_event = tracking_events.where(interstellar_carrier_fingerprint: fingerprint)&.first
       tracking_event = tracking_events.new if tracking_event.blank?
 
+      tracking_event.at_without_time_zone_string = shipment_event.time
+
       event = Event.find_by_active_shipping_code(shipment_event.status.to_s)
       next if event.blank?
 
       tracking_event.assign_attributes(
-        at: DateTime.parse(shipment_event.time),
         city: interstellar_location.city,
         country: Country.find_by_alpha2_code(interstellar_location.country_code(:alpha2)),
         event:,
