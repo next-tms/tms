@@ -23,17 +23,6 @@ GIT
       rake (>= 10.4, < 14.0)
 
 GIT
-  remote: https://github.com/jpawlyn/active_model_serializers
-  revision: 5d64851ad054ecc24bee0371203b6eb0e60d28b2
-  ref: 5d64851ad054ecc24bee0371203b6eb0e60d28b2
-  specs:
-    active_model_serializers (0.10.12)
-      actionpack (>= 4.1, < 7.1)
-      activemodel (>= 4.1, < 7.1)
-      case_transform (>= 0.2)
-      jsonapi-renderer (>= 0.1.1.beta1, < 0.3)
-
-GIT
   remote: https://github.com/next-tms/interstellar
   revision: 9ee103ca976d9a602e630bef033c9d1bb54037b6
   ref: 9ee103ca976d9a602e630bef033c9d1bb54037b6
@@ -120,6 +109,11 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
+    active_model_serializers (0.10.13)
+      actionpack (>= 4.1, < 7.1)
+      activemodel (>= 4.1, < 7.1)
+      case_transform (>= 0.2)
+      jsonapi-renderer (>= 0.1.1.beta1, < 0.3)
     active_utils (3.3.19)
       activesupport (>= 4.2)
       i18n
@@ -1667,7 +1661,7 @@ PLATFORMS
 
 DEPENDENCIES
   StreetAddress!
-  active_model_serializers!
+  active_model_serializers (~> 0.10.13)
   annotate!
   aws-sdk (~> 3.1.0)
   barby

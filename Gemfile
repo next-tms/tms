@@ -64,7 +64,7 @@ gem 'sidekiq', '~> 6.3.1'
 gem 'sidekiq-scheduler', '~> 3.1.0'
 
 gem 'jwt'
-gem 'active_model_serializers', git: 'https://github.com/jpawlyn/active_model_serializers', ref: '5d64851ad054ecc24bee0371203b6eb0e60d28b2'
+gem 'active_model_serializers', '~> 0.10.13'
 gem 'simple_command'
 gem 'business_time'
 gem 'timezone', '~> 1.3'
