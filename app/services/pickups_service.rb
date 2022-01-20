@@ -18,44 +18,50 @@ class PickupsService
 
     interstellar_destination = @shipment.shipper_address.to_interstellar_shipping_address
     interstellar_destination.contact = Interstellar::Contact.new(
-                                         company_name: @shipment.receiver_name,
-                                         name: @shipment.receiver_contact_name
-                                       )
+      company_name: @shipment.receiver_name,
+      email: @shipment.receiver_contact_email,
+      name: @shipment.receiver_contact_name,
+      phone: @shipment.receiver_contact_phone
+    )
 
     interstellar_origin = @shipment.shipper_address.to_interstellar_shipping_address
     interstellar_origin.contact = Interstellar::Contact.new(
-                                    company_name: @shipment.shipper_name,
-                                    name: @shipment.shipper_contact_name
-                                  )
+      company_name: @shipment.shipper_name,
+      email: @shipment.shipper_contact_email,
+      name: @shipment.shipper_contact_name,
+      phone: @shipment.shipper_contact_phone
+    )
 
     interstellar_shipment = Interstellar::Shipment.new(
-                              accessorials:,
-                              destination: interstellar_destination,
-                              order_number: @shipment.shipper_reference,
-                              origin: interstellar_origin,
-                              packages:,
-                              po_number: @shipment.customer_reference
-                            )
+      accessorials:,
+      declared_value_cents: @shipment.value_cents,
+      destination: interstellar_destination,
+      order_number: @shipment.shipper_reference,
+      origin: interstellar_origin,
+      packages:,
+      po_number: @shipment.customer_reference
+    )
 
     interstellar_dispatcher = Interstellar::Contact.new(
-                                name: @pickup.dispatcher.full_name.blank? ? 'Dispatcher' : @pickup.dispatcher.full_name,
-                                phone: @pickup.dispatcher.phone,
-                                email: @pickup.dispatcher.email
-                              )
+      email: @pickup.dispatcher.email,
+      name: @pickup.dispatcher.full_name.blank? ? 'Dispatcher' : @pickup.dispatcher.full_name,
+      phone: @pickup.dispatcher.phone
+    )
 
     delivery_from = (@shipment.delivery_from || @shipment.pickup_by + 5.business_days)
 
     begin
       response = InterstellarApiClient.create_pickup(
-                   delivery_from: delivery_from.in_time_zone(@shipment.receiver_address.time_zone),
-                   delivery_to: @shipment.delivery_by.in_time_zone(@shipment.receiver_address.time_zone),
-                   dispatcher: interstellar_dispatcher,
-                   pickup_from: @shipment.pickup_from.in_time_zone(@shipment.shipper_address.time_zone),
-                   pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
-                   scac: @broker_carrier.carrier.scac,
-                   service: @shipment.applied_rate.interstellar_service_type.to_sym,
-                   shipment: interstellar_shipment
-                 )
+        broker_carrier: @broker_carrier,
+        delivery_from: delivery_from.in_time_zone(@shipment.receiver_address.time_zone),
+        delivery_to: @shipment.delivery_by.in_time_zone(@shipment.receiver_address.time_zone),
+        dispatcher: interstellar_dispatcher,
+        pickup_from: @shipment.pickup_from.in_time_zone(@shipment.shipper_address.time_zone),
+        pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
+        scac: @broker_carrier.carrier.scac,
+        service: @shipment.applied_rate.interstellar_service_type.to_sym,
+        shipment: interstellar_shipment
+      )
     rescue StandardError => e
       error = e
     end

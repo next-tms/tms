@@ -8,29 +8,15 @@ module InterstellarApiClient
   end
 
   def create_pickup(
-    accessorials:,
     broker_carrier:,
-    customer_reference:,
     delivery_from:,
     delivery_to:,
-    destination:,
-    dispatcher_email:,
-    dispatcher_name:,
-    dispatcher_phone:,
-    origin:,
-    packages:,
+    dispatcher:,
     pickup_from:,
     pickup_to:,
-    receiver_contact_name:,
-    receiver_name:,
-    receiver_phone:,
-    receiver_reference:,
     scac:,
     service:,
-    shipper_contact_name:,
-    shipper_name:,
-    shipper_phone:,
-    shipper_reference:,
+    shipment:,
     retry_on_timeout: true,
     return_nil_on_error: false
   )
@@ -39,28 +25,14 @@ module InterstellarApiClient
       retry_on_timeout:,
       return_nil_on_error:
     ).create(
-      accessorials:,
-      customer_reference:,
       delivery_from:,
       delivery_to:,
-      destination:,
-      dispatcher_email:,
-      dispatcher_name:,
-      dispatcher_phone:,
-      origin:,
-      packages:,
+      dispatcher:,
       pickup_from:,
       pickup_to:,
-      receiver_contact_name:,
-      receiver_name:,
-      receiver_phone:,
-      receiver_reference:,
       scac:,
       service:,
-      shipper_contact_name:,
-      shipper_name:,
-      shipper_phone:,
-      shipper_reference:
+      shipment:
     )
   end
 
