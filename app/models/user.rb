@@ -100,7 +100,8 @@ class User < ApplicationRecord
   scope :customers, -> { where.not(broker_customer: nil) }
   scope :brokers, -> { where.not(id: customers) }
 
-  devise :database_authenticatable, :invitable, :pwned_password, :recoverable, :rememberable, :timeoutable, :trackable, :validatable
+  devise :database_authenticatable, :invitable, :pwned_password, :recoverable, :rememberable, :timeoutable, :trackable,
+         :validatable
 
   before_validation :set_contact
   before_validation :set_time_zone_name
@@ -121,6 +122,8 @@ class User < ApplicationRecord
   has_many :commissions
   # has_many :shipments_as_dispatcher, class_name: 'Shipment', foreign_key: :dispatcher_id
 
+  phony_normalize :phone, default_country_code: 'US'
+
   # TODO: Remove
   serialize :legacy_time_zone
 
@@ -128,12 +131,17 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true
   validates :last_name, presence: true
+  validates :phone, presence: true
 
   scope :broker, -> { where(broker_customer: nil) }
   scope :customer, -> { where.not(broker_customer: nil) }
 
   def active_for_authentication?
     super && !deactivated
+  end
+
+  def country_code
+    broker&.address&.country&.alpha2_code || 'US'
   end
 
   def full_name
@@ -240,13 +248,13 @@ class User < ApplicationRecord
     return if email.blank?
 
     self.contact = broker.contacts.where(email: email.downcase)&.first
-    return unless self.contact.blank?
+    return unless contact.blank?
 
     self.contact = Contact.new(
-      broker_id: broker_id,
-      email: email,
-      first_name: first_name,
-      last_name: last_name
+      broker_id:,
+      email:,
+      first_name:,
+      last_name:
     )
   end
 
