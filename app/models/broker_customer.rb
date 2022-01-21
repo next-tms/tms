@@ -58,18 +58,13 @@
 class BrokerCustomer < ApplicationRecord
   belongs_to :broker
 
-  has_many :contacts
-  has_many :receivables
-  has_many :shipments
-
-  serialize :shipment_string_patterns, Array
-  serialize :valid_freight_classes, Array
-
   belongs_to :primary_pickup_address, class_name: 'Address', dependent: :delete
   accepts_nested_attributes_for :primary_pickup_address, allow_destroy: true
 
   belongs_to :customer
   accepts_nested_attributes_for :customer
+
+  has_many :contacts
 
   has_many :broker_customer_sales_reps, dependent: :destroy
   has_many :sales_reps, through: :broker_customer_sales_reps, source: 'user'
@@ -81,10 +76,19 @@ class BrokerCustomer < ApplicationRecord
   has_many :broker_carriers
   accepts_nested_attributes_for :broker_carriers, allow_destroy: true, reject_if: :all_blank
 
-  monetize :default_upcharge_cents, allow_nil: true
+  has_many :document_preferences
+  accepts_nested_attributes_for :document_preferences, allow_destroy: true, reject_if: :all_blank
+
+  has_many :receivables
+  has_many :shipments
 
   has_many :upcharge_rules
   accepts_nested_attributes_for :upcharge_rules, allow_destroy: true, reject_if: :all_blank
+
+  monetize :default_upcharge_cents, allow_nil: true
+
+  serialize :shipment_string_patterns, Array
+  serialize :valid_freight_classes, Array
 
   validate :check_pricing_rules
 
@@ -121,7 +125,7 @@ class BrokerCustomer < ApplicationRecord
 
     packaging_ids = shipment.items.pluck(:packaging_id)
     packaging_ids.each do |packaging_id|
-      quantity = shipment.items.where(packaging_id: packaging_id).sum(:quantity)
+      quantity = shipment.items.where(packaging_id:).sum(:quantity)
       try_upcharge_rules = upcharge_rules
                            .where(packaging: packaging_id)
                            .where('min <= ?', quantity)
@@ -202,10 +206,10 @@ class BrokerCustomer < ApplicationRecord
 
       {
         total_shipments: shipments.size,
-        total_cost: total_cost,
-        total_charges: total_charges,
-        total_profit: total_profit,
-        total_margin: total_margin
+        total_cost:,
+        total_charges:,
+        total_profit:,
+        total_margin:
       }
     end
   end
