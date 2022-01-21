@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_08_003301) do
+ActiveRecord::Schema.define(version: 2022_01_21_061213) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
   create_table "accessorials", force: :cascade do |t|
@@ -204,6 +205,7 @@ ActiveRecord::Schema.define(version: 2022_01_08_003301) do
     t.text "default_bol_notes"
     t.string "robot_email"
     t.string "time_zone_name", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["address_id"], name: "index_brokers_on_address_id"
   end
 
