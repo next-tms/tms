@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_08_003301) do
+ActiveRecord::Schema.define(version: 2022_01_21_172154) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -286,6 +286,19 @@ ActiveRecord::Schema.define(version: 2022_01_08_003301) do
 
   create_table "customers", force: :cascade do |t|
     t.string "name"
+  end
+
+  create_table "document_preferences", force: :cascade do |t|
+    t.bigint "broker_customer_id"
+    t.bigint "broker_id", null: false
+    t.bigint "contact_id", null: false
+    t.string "kind"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["broker_customer_id"], name: "index_document_preferences_on_broker_customer_id"
+    t.index ["broker_id"], name: "index_document_preferences_on_broker_id"
+    t.index ["contact_id"], name: "index_document_preferences_on_contact_id"
+    t.index ["kind"], name: "index_document_preferences_on_kind"
   end
 
   create_table "events", force: :cascade do |t|
@@ -819,6 +832,9 @@ ActiveRecord::Schema.define(version: 2022_01_08_003301) do
   add_foreign_key "customer_contacts", "brokers"
   add_foreign_key "customer_contacts", "contacts"
   add_foreign_key "customer_contacts", "customers"
+  add_foreign_key "document_preferences", "broker_customers"
+  add_foreign_key "document_preferences", "brokers"
+  add_foreign_key "document_preferences", "contacts"
   add_foreign_key "location_areas", "areas"
   add_foreign_key "location_areas", "locations"
   add_foreign_key "overlength_rules", "broker_carriers"
