@@ -158,8 +158,8 @@ class Address < ApplicationRecord
   def set_standardized_address
     return unless full_address?
 
-    key = region.country.format_address(pretty(', '))
-    key = pretty(', ') if key.blank?
+    key = region.country.format_address(proper(', '))
+    key = proper(', ') if key.blank?
 
     new_standardized_address = StandardizedAddress.where(country: region.country, key: key)&.first
 
