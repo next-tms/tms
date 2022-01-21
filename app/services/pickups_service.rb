@@ -68,6 +68,7 @@ class PickupsService
 
     if response.blank?
       @pickup.update(error_object: error, updated_by: nil)
+      Rollbar.critical(error.message, pickup_attributes: @pickup.attributes) unless Rails.env.development?
 
       return false
     end
