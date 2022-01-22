@@ -24,10 +24,10 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 9ee103ca976d9a602e630bef033c9d1bb54037b6
-  ref: 9ee103ca976d9a602e630bef033c9d1bb54037b6
+  revision: 8418b30040435e5b9336c61d529d93a7c909089a
+  ref: 8418b30040435e5b9336c61d529d93a7c909089a
   specs:
-    interstellar (0.1.pre3)
+    interstellar (0.1.pre4)
       active_utils (~> 3.3.1)
       activemodel (>= 4.2, < 7.0.2)
       activesupport (>= 4.2, < 7.0.2)
@@ -40,21 +40,12 @@ GIT
       watir (>= 7.0, < 7.2)
 
 GIT
-  remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_carriers
-  revision: 6279412b77725e1f69154706c9ca92f8029ea56e
-  ref: 6279412b77725e1f69154706c9ca92f8029ea56e
+  remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
+  revision: 88a72d8c688709387dbe1b0de40c0ce2708cdb0d
+  ref: 88a72d8c688709387dbe1b0de40c0ce2708cdb0d
   specs:
-    interstellar-next_carriers (0.1.pre3)
-      interstellar (= 0.1.pre3)
-      interstellar-next_platforms (= 0.1.pre3)
-
-GIT
-  remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next_platforms
-  revision: 97c851b2d054506ebd1a7a74142c346ffd244dfc
-  ref: 97c851b2d054506ebd1a7a74142c346ffd244dfc
-  specs:
-    interstellar-next_platforms (0.1.pre3)
-      interstellar (= 0.1.pre3)
+    interstellar-next (0.1.pre4)
+      interstellar (= 0.1.pre4)
 
 GEM
   remote: https://rails-assets.org/
@@ -1680,8 +1671,7 @@ DEPENDENCIES
   httparty
   image_processing (~> 1.12.1)
   interstellar!
-  interstellar-next_carriers!
-  interstellar-next_platforms!
+  interstellar-next!
   jbuilder (~> 2.11)
   jwt
   listen (>= 3.0.5, < 3.8)
