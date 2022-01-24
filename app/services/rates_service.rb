@@ -100,8 +100,8 @@ class RatesService
 
       tracking_carrier = nil
       if @broker_carrier.carrier.acts_as_broker?
-        carrier_name = interstellar_rate.carrier[:name]
-        carrier_scac = interstellar_rate.carrier[:scac]
+        carrier_name = interstellar_rate.carrier_name
+        carrier_scac = interstellar_rate.scac
 
         if carrier_scac.blank? || carrier_name.blank?
           rate = new_rate
