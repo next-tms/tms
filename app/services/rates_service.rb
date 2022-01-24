@@ -68,7 +68,16 @@ class RatesService
         shipment: api_shipment
       )
     rescue StandardError => e
-      error = e
+      unless Rails.env.development?
+        attributes = {
+          broker_carrier_id: @broker_carrier&.id,
+          shipment_id: @shipment&.id,
+          use_forced_freight_classes: @use_forced_freight_classes
+        }
+
+        Rollbar.critical(e, attributes)
+        error = e
+      end
     end
 
     if response.blank? || response&.rates.blank?
