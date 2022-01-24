@@ -76,8 +76,9 @@ class RatesService
         }
 
         Rollbar.critical(e, attributes)
-        error = e
       end
+
+      error = e
     end
 
     if response.blank? || response&.rates.blank?
