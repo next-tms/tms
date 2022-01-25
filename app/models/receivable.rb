@@ -57,6 +57,8 @@ class Receivable < ApplicationRecord
 
   has_many :receivable_items, autosave: true, dependent: :destroy
 
+  has_one :broker, through: :shipment
+
   monetize :total_cents, allow_nil: false
 
   scope :authorized, -> { where.not(authorized_at: nil) }
@@ -115,6 +117,50 @@ class Receivable < ApplicationRecord
     return false unless shipment.broker_customer.requires_carrier_pod_on_receivables?
 
     !shipment.carrier_pod.blank?
+  end
+
+  def create_quickbooks_invoice
+    return nil unless broker.intuit_account&.connected?
+    return @quickbooks_invoice unless @quickbooks_invoice.blank?
+
+    result = quickbooks_invoice
+    return result unless result.blank?
+
+    if broker_customer.quickbooks_customer.blank?
+      raise "BrokerCustomer id=#{broker_cusotmer.id} must exist in QuickBooks"
+    end
+
+    result = QuickbooksApiClient::Invoices.new(broker:).create(self)
+    return nil if result.blank?
+
+    update!(quickbooks_invoice_id: result.id)
+    @quickbooks_invoice = result
+  end
+
+  def quickbooks_invoice
+    return nil unless broker.intuit_account&.connected?
+    return @quickbooks_invoice unless @quickbooks_invoice.blank?
+
+    result = nil
+
+    result = QuickbooksApiClient::Invoices.new(broker:).find(quickbooks_invoice_id) unless quickbooks_invoice_id.blank?
+    return @quickbooks_invoice = result unless result.blank?
+
+    nil
+  end
+
+  def update_quickbooks_invoice
+    return nil unless broker.intuit_account&.connected?
+
+    if broker_customer.quickbooks_customer.blank?
+      raise "BrokerCustomer id=#{broker_cusotmer.id} must exist in QuickBooks"
+    end
+
+    result = QuickbooksApiClient::Invoices.new(broker:).update(self)
+    return nil if result.blank?
+
+    update!(quickbooks_invoice_id: result.id)
+    @quickbooks_invoice = result
   end
 
   private

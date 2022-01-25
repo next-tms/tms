@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_21_061213) do
+ActiveRecord::Schema.define(version: 2022_01_23_014712) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -189,6 +189,7 @@ ActiveRecord::Schema.define(version: 2022_01_21_061213) do
     t.boolean "requires_carrier_bol_on_receivables", default: true
     t.boolean "requires_carrier_pod_on_receivables", default: true
     t.boolean "ignore_value_on_api_quotes", default: false
+    t.string "quickbooks_customer_id"
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["primary_pickup_address_id"], name: "index_broker_customers_on_primary_pickup_address_id"
@@ -290,11 +291,36 @@ ActiveRecord::Schema.define(version: 2022_01_21_061213) do
     t.string "name"
   end
 
+  create_table "document_preferences", force: :cascade do |t|
+    t.bigint "broker_customer_id"
+    t.bigint "broker_id", null: false
+    t.bigint "contact_id", null: false
+    t.string "kind"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["broker_customer_id"], name: "index_document_preferences_on_broker_customer_id"
+    t.index ["broker_id"], name: "index_document_preferences_on_broker_id"
+    t.index ["contact_id"], name: "index_document_preferences_on_contact_id"
+    t.index ["kind"], name: "index_document_preferences_on_kind"
+  end
+
   create_table "events", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "active_shipping_code"
+  end
+
+  create_table "intuit_accounts", force: :cascade do |t|
+    t.datetime "oauth2_access_token_expires_at", precision: 6
+    t.datetime "oauth2_refresh_token_expires_at", precision: 6
+    t.bigint "broker_id"
+    t.text "oauth2_access_token"
+    t.text "oauth2_refresh_token"
+    t.text "realm_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["broker_id"], name: "index_intuit_accounts_on_broker_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -490,6 +516,7 @@ ActiveRecord::Schema.define(version: 2022_01_21_061213) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "total_cents", default: 0, null: false
     t.string "total_currency", default: "USD", null: false
+    t.string "quickbooks_invoice_id"
     t.index ["authorized_at"], name: "index_receivables_on_authorized_at"
     t.index ["authorized_by_id"], name: "index_receivables_on_authorized_by_id"
     t.index ["created_by_id"], name: "index_receivables_on_created_by_id"
@@ -821,6 +848,9 @@ ActiveRecord::Schema.define(version: 2022_01_21_061213) do
   add_foreign_key "customer_contacts", "brokers"
   add_foreign_key "customer_contacts", "contacts"
   add_foreign_key "customer_contacts", "customers"
+  add_foreign_key "document_preferences", "broker_customers"
+  add_foreign_key "document_preferences", "brokers"
+  add_foreign_key "document_preferences", "contacts"
   add_foreign_key "location_areas", "areas"
   add_foreign_key "location_areas", "locations"
   add_foreign_key "overlength_rules", "broker_carriers"

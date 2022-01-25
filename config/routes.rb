@@ -32,9 +32,14 @@ Rails.application.routes.draw do
   get 'rates/fetch', to: 'rates_service#fetch'
   get 'tracking' => 'tracking#show'
 
+  get 'gateway/accounts/intuit/authenticate', as: :authenticate_intuit_account, to: 'intuit_accounts#authenticate'
+  get 'gateway/accounts/intuit/oauth-callback', as: :oauth_callback_intuit_account, to: 'intuit_accounts#oauth_callback'
+
   namespace :broker do
     get 'customers/profitability-report' => 'broker_customers#profitability_report'
+    get 'customers/:id/receivables' => 'broker_customers#receivables', as: :broker_customer_receivables
     get 'customers/:id/shipments' => 'broker_customers#shipments', as: :broker_customer_shipments
+
     resources :broker_customers, path: 'customers' do
       member { get 'carriers' => 'broker_customers#broker_carriers', as: :broker_carriers }
       member { get 'carriers/edit' => 'broker_customers#edit_broker_carriers', as: :edit_broker_carriers }
@@ -61,6 +66,8 @@ Rails.application.routes.draw do
     resources :banks, except: %i[destroy], path: 'bank-accounts' do
       member { get 'activity', to: 'banks#activity' }
     end
+
+    get 'settings/intuit', to: 'intuit_account#show'
 
     get 'ap/payments/overdue', to: 'payments#overdue'
     get 'ap/payments/paid', to: 'payments#paid'
