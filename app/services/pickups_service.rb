@@ -63,7 +63,7 @@ class PickupsService
         shipment: interstellar_shipment
       )
     rescue StandardError => e
-      unless Rails.env.development?
+      if !Rails.env.development? && !e.is_a?(Interstellar::Error)
         attributes = {
           broker_carrier_id: @broker_carrier&.id,
           pickup_id: @pickup&.id,

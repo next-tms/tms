@@ -68,7 +68,7 @@ class RatesService
         shipment: api_shipment
       )
     rescue StandardError => e
-      unless Rails.env.development?
+      if !Rails.env.development? && !e.is_a?(Interstellar::Error)
         attributes = {
           broker_carrier_id: @broker_carrier&.id,
           shipment_id: @shipment&.id,
