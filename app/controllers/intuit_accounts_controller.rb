@@ -29,10 +29,12 @@ class IntuitAccountsController < ApplicationController
         )
 
         intuit_account.save
+        FetchQuickbooksCustomerIdsJob.perform_later(broker:)
       end
     end
 
-    redirect_to "http://localhost:3000/" and return if Rails.env.development?
+    redirect_to 'http://localhost:3000/' and return if Rails.env.development?
+
     redirect_to "https://#{broker.websites.first.domain}/", allow_other_host: true
   end
 
@@ -44,11 +46,11 @@ class IntuitAccountsController < ApplicationController
 
   def intuit_oauth2_client
     intuit_oauth_params = {
-      site: "https://appcenter.intuit.com/connect/oauth2",
-      authorize_url: "https://appcenter.intuit.com/connect/oauth2",
-      token_url: "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
+      site: 'https://appcenter.intuit.com/connect/oauth2',
+      authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
+      token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
     }
-    
+
     intuit_oauth2_client = OAuth2::Client.new(ENV['INTUIT_CLIENT_ID'], ENV['INTUIT_CLIENT_SECRET'], intuit_oauth_params)
   end
 

@@ -30,6 +30,15 @@ module QuickbooksApiClient
       end
     end
 
+    def find_by_doc_number(doc_number)
+      broker.intuit_account.perform_authenticated_request do |access_token|
+        service = build_service(access_token)
+        results = service.find_by(:doc_number, doc_number)
+
+        results.count == 1 ? nil : results.first
+      end
+    end
+
     def update(receivable)
       invoice = build_invoice(receivable)
 
@@ -69,7 +78,7 @@ module QuickbooksApiClient
       service = Quickbooks::Service::Invoice.new
       service.company_id = broker.intuit_account.realm_id
       service.access_token = access_token
-  
+
       service
     end
   end

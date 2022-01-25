@@ -3,10 +3,7 @@
 module QuickbooksApiClient
   class Customers < Base
     def create(broker_customer)
-      customer = Quickbooks::Model::Customer.new(
-        company_name: broker_customer.customer.name,
-        display_name: broker_customer.customer.name
-      )
+      customer = broker_customer.to_quickbooks_customer
 
       broker.intuit_account.perform_authenticated_request do |access_token|
         service = build_service(access_token)
@@ -38,7 +35,7 @@ module QuickbooksApiClient
         service = build_service(access_token)
         results = service.find_by(:company_name, name)
 
-        results.count.zero? ? nil : results.first
+        results.count == 1 ? nil : results.first
       end
     end
 
@@ -46,7 +43,7 @@ module QuickbooksApiClient
       service = Quickbooks::Service::Customer.new
       service.company_id = broker.intuit_account.realm_id
       service.access_token = access_token
-  
+
       service
     end
   end

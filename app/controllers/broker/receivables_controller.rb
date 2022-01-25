@@ -63,14 +63,22 @@ class Broker::ReceivablesController < Broker::BrokerController
     @receivable.authorized_by = current_user unless receivable_params[:authorized_at].blank?
 
     if @receivable.save
-      redirect_to broker_receivable_path(@receivable)
-    else
-      flash[:error] = "Unable to update invoice: #{@receivable.errors.full_messages.join('<br>').html_safe}"
-      render :show
+      if current_user.broker.intuit_account&.connected?
+        PushReceivableToQuickbooksJob.perform_now(receivable: @receivable)
+      end
+
+      redirect_to broker_receivable_path(@receivable) and return
     end
+
+    flash[:error] = "Unable to update invoice: #{@receivable.errors.full_messages.join('<br>').html_safe}"
+    render :show
   end
 
-  def show; end
+  def show
+    if current_user.broker.intuit_account&.connected? && @receivable.authorized_by_id.blank?
+      @receivable.quickbooks_invoice
+    end
+  end
 
   private
 

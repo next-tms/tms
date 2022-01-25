@@ -123,7 +123,7 @@ class BrokerCustomer < ApplicationRecord
 
     packaging_ids = shipment.items.pluck(:packaging_id)
     packaging_ids.each do |packaging_id|
-      quantity = shipment.items.where(packaging_id: packaging_id).sum(:quantity)
+      quantity = shipment.items.where(packaging_id:).sum(:quantity)
       try_upcharge_rules = upcharge_rules
                            .where(packaging: packaging_id)
                            .where('min <= ?', quantity)
@@ -204,10 +204,10 @@ class BrokerCustomer < ApplicationRecord
 
       {
         total_shipments: shipments.size,
-        total_cost: total_cost,
-        total_charges: total_charges,
-        total_profit: total_profit,
-        total_margin: total_margin
+        total_cost:,
+        total_charges:,
+        total_profit:,
+        total_margin:
       }
     end
   end
@@ -232,7 +232,9 @@ class BrokerCustomer < ApplicationRecord
 
     result = nil
 
-    result = QuickbooksApiClient::Customers.new(broker:).find(quickbooks_customer_id) unless quickbooks_customer_id.blank?
+    unless quickbooks_customer_id.blank?
+      result = QuickbooksApiClient::Customers.new(broker:).find(quickbooks_customer_id)
+    end
     return @quickbooks_customer = result unless result.blank?
 
     result = QuickbooksApiClient::Customers.new(broker:).find_by_name(customer.name)
@@ -240,6 +242,15 @@ class BrokerCustomer < ApplicationRecord
 
     update!(quickbooks_customer_id: result.id)
     @quickbooks_customer = result
+  end
+
+  def to_quickbooks_customer
+    Quickbooks::Model::Customer.new(
+      billing_address: broker_customer.primary_pickup_address.to_quickbooks_physical_address,
+      company_name: broker_customer.customer.name,
+      display_name: broker_customer.customer.name,
+      shipping_address: nil
+    )
   end
 
   private

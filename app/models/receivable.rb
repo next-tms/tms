@@ -146,11 +146,20 @@ class Receivable < ApplicationRecord
     result = QuickbooksApiClient::Invoices.new(broker:).find(quickbooks_invoice_id) unless quickbooks_invoice_id.blank?
     return @quickbooks_invoice = result unless result.blank?
 
+    result = QuickbooksApiClient::Invoices.new(broker:).find_by_doc_number(shipment.load_id)
+    return @quickbooks_invoice = result unless result.blank?
+
     nil
   end
 
   def update_quickbooks_invoice
     return nil unless broker.intuit_account&.connected?
+
+    # Find existing record if it doesn't exist yet
+    if quickbooks_invoice_id.blank? && !quickbooks_invoice.blank?
+      update!(quickbooks_invoice_id: result.id)
+      return update_quickbooks_invoice
+    end
 
     if broker_customer.quickbooks_customer.blank?
       raise "BrokerCustomer id=#{broker_cusotmer.id} must exist in QuickBooks"
@@ -159,7 +168,7 @@ class Receivable < ApplicationRecord
     result = QuickbooksApiClient::Invoices.new(broker:).update(self)
     return nil if result.blank?
 
-    update!(quickbooks_invoice_id: result.id)
+    update!(quickbooks_invoice_id: result.id, invoiced: true)
     @quickbooks_invoice = result
   end
 
