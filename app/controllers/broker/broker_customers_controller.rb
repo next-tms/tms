@@ -176,15 +176,50 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             :internal_notes,
                                             :requires_carrier_bol_on_receivables,
                                             :requires_carrier_pod_on_receivables,
-                                            broker_customer_sales_reps_attributes: %i[_destroy id commission_flat
-                                                                                      commission_percent user_id],
-                                            broker_accessorials_attributes: %i[_destroy id accessorial_id flat_charge
-                                                                               code name upcharge upcharge_percent],
+                                            broker_customer_sales_reps_attributes: %i[
+                                              _destroy
+                                              id
+                                              commission_flat
+                                              commission_percent
+                                              user_id
+                                            ],
+                                            broker_accessorials_attributes: %i[
+                                              _destroy
+                                              id
+                                              accessorial_id
+                                              code
+                                              flat_charge
+                                              name
+                                              upcharge
+                                              upcharge_percent
+                                            ],
                                             customer_attributes: %i[_destroy id name],
                                             document_preferences_attributes: %i[_destroy id contact_id kind],
-                                            primary_pickup_address_attributes: %i[id street street2 city region_id zip_code
-                                                                                  country_id],
-                                            upcharge_rules_attributes: %i[_destroy id max min packaging_id upcharge
-                                                                          upcharge_percentage])
+                                            office_address_attributes: %i[
+                                              id
+                                              street
+                                              street2
+                                              city
+                                              region_id
+                                              zip_code
+                                              country_id
+                                            ],
+                                            primary_pickup_address_attributes: %i[
+                                              id
+                                              street
+                                              street2
+                                              city
+                                              region_id
+                                              zip_code
+                                              country_id
+                                            ],
+                                            upcharge_rules_attributes: %i[
+                                              _destroy
+                                              id
+                                              max
+                                              min
+                                              packaging_id upcharge
+                                              upcharge_percentage
+                                            ])
   end
 end
