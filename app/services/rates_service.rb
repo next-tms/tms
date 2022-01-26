@@ -68,6 +68,16 @@ class RatesService
         shipment: api_shipment
       )
     rescue StandardError => e
+      if !Rails.env.development? && !e.is_a?(Interstellar::Error)
+        attributes = {
+          broker_carrier_id: @broker_carrier&.id,
+          shipment_id: @shipment&.id,
+          use_forced_freight_classes: @use_forced_freight_classes
+        }
+
+        Rollbar.critical(e, attributes)
+      end
+
       error = e
     end
 
@@ -100,8 +110,8 @@ class RatesService
 
       tracking_carrier = nil
       if @broker_carrier.carrier.acts_as_broker?
-        carrier_name = interstellar_rate.carrier[:name]
-        carrier_scac = interstellar_rate.carrier[:scac]
+        carrier_name = interstellar_rate.carrier_name
+        carrier_scac = interstellar_rate.scac
 
         if carrier_scac.blank? || carrier_name.blank?
           rate = new_rate

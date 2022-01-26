@@ -9,9 +9,9 @@ class ContactMailer < ActionMailer::Base
     send_document(
       document: shipment.broker_bol,
       document_name: 'Bill of Lading',
-      shipment: shipment,
-      from_user: from_user,
-      to_contact: to_contact,
+      shipment:,
+      from_user:,
+      to_contact:
     )
   end
 
@@ -21,9 +21,9 @@ class ContactMailer < ActionMailer::Base
     send_document(
       document: shipment.broker_dispatch_sheet,
       document_name: 'Dispatch Sheet',
-      shipment: shipment,
-      from_user: from_user,
-      to_contact: to_contact,
+      shipment:,
+      from_user:,
+      to_contact:
     )
   end
 
@@ -33,9 +33,9 @@ class ContactMailer < ActionMailer::Base
     send_document(
       document: shipment.broker_quote,
       document_name: 'Quote',
-      shipment: shipment,
-      from_user: from_user,
-      to_contact: to_contact,
+      shipment:,
+      from_user:,
+      to_contact:
     )
   end
 
@@ -45,9 +45,9 @@ class ContactMailer < ActionMailer::Base
     send_document(
       document: shipment.carrier_bol,
       document_name: 'Scanned Bill of Lading',
-      shipment: shipment,
-      from_user: from_user,
-      to_contact: to_contact,
+      shipment:,
+      from_user:,
+      to_contact:
     )
   end
 
@@ -57,9 +57,9 @@ class ContactMailer < ActionMailer::Base
     send_document(
       document: shipment.carrier_pod,
       document_name: 'Proof of Delivery',
-      shipment: shipment,
-      from_user: from_user,
-      to_contact: to_contact,
+      shipment:,
+      from_user:,
+      to_contact:
     )
   end
 
@@ -72,15 +72,17 @@ class ContactMailer < ActionMailer::Base
     }
 
     # Avoid SendGrid::DuplicatePersonalizationError
-    cc = if from_user.email == to_contact.email
-           nil
-         else
-           pretty_email(from_user)
+    cc = if from_user.is_a?(User)
+           if from_user.email == to_contact.email
+             nil
+           else
+             pretty_email(from_user)
+           end
          end
 
     mail(
       from: "#{shipment.broker.name} <#{shipment.broker.robot_email}>",
-      cc: cc,
+      cc:,
       reply_to: pretty_email(from_user),
       to: pretty_email(to_contact),
       subject: "#{document_name} for Load #{shipment.load_id}"

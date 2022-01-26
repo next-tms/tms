@@ -63,11 +63,23 @@ class PickupsService
         shipment: interstellar_shipment
       )
     rescue StandardError => e
+      if !Rails.env.development? && !e.is_a?(Interstellar::Error)
+        attributes = {
+          broker_carrier_id: @broker_carrier&.id,
+          pickup_id: @pickup&.id,
+          shipment_id: @pickup&.shipment_id,
+          use_forced_freight_classes: @use_forced_freight_classes
+        }
+
+        Rollbar.critical(e, attributes)
+      end
+
       error = e
     end
 
     if response.blank?
       @pickup.update(error_object: error, updated_by: nil)
+      Rollbar.critical(error.message, pickup_attributes: @pickup.attributes) unless Rails.env.development?
 
       return false
     end

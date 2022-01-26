@@ -434,6 +434,10 @@ class Shipment < ApplicationRecord
     end
 
     carrier_bol.attach(io: File.open(path), filename: "#{load_id} BOL (Carrier).pdf", content_type: 'application/pdf')
+
+    Contact.where(id: broker_customer.document_preferences.where(kind: 'carrier_bol').pluck(:contact_id)).find_each do |contact|
+      ContactMailer.carrier_bol(from_user: nil, to_contact: contact, shipment: self).deliver_later
+    end
   end
 
   def fetch_carrier_pod
@@ -443,6 +447,10 @@ class Shipment < ApplicationRecord
     return nil if path.blank?
 
     carrier_pod.attach(io: File.open(path), filename: "#{load_id} POD.pdf", content_type: 'application/pdf')
+
+    Contact.where(id: broker_customer.document_preferences.where(kind: 'carrier_pod').pluck(:contact_id)).find_each do |contact|
+      ContactMailer.carrier_pod(from_user: nil, to_contact: contact, shipment: self).deliver_later
+    end
   end
 
   def fetch_pro

@@ -171,7 +171,7 @@ module ApplicationHelper
       word.upcase == word ? word.titleize : word.downcase
     end
     str = str.join(' ')
-    str = str.squeeze
+    str = str.squish
     str = str.strip
     str = str[0].upcase + str[1..]
     str = str[0..-1] if str.last == '.'

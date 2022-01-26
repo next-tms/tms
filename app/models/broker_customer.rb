@@ -20,6 +20,8 @@
 #   @return [Float]
 # @!attribute enable_auto_freight_class
 #   @return [Boolean]
+# @!attribute ignore_value_on_api_quotes
+#   @return [Boolean]
 # @!attribute internal_notes
 #   @return [String]
 # @!attribute requires_carrier_bol_on_receivables
@@ -38,13 +40,18 @@
 #   @return []
 # @!attribute customer_id
 #   @return []
+# @!attribute office_address_id
+#   @return []
 # @!attribute primary_pickup_address_id
 #   @return []
+# @!attribute quickbooks_customer_id
+#   @return [String]
 #
 # Indexes
 #
 #  index_broker_customers_on_broker_id                            (broker_id)
 #  index_broker_customers_on_customer_id                          (customer_id)
+#  index_broker_customers_on_office_address_id                    (office_address_id)
 #  index_broker_customers_on_primary_pickup_address_id            (primary_pickup_address_id)
 #  index_broker_customers_on_requires_carrier_bol_on_receivables  (requires_carrier_bol_on_receivables)
 #  index_broker_customers_on_requires_carrier_pod_on_receivables  (requires_carrier_pod_on_receivables)
@@ -53,23 +60,22 @@
 #
 #  fk_rails_...  (broker_id => brokers.id)
 #  fk_rails_...  (customer_id => customers.id)
+#  fk_rails_...  (office_address_id => addresses.id)
 #  fk_rails_...  (primary_pickup_address_id => addresses.id)
 #
 class BrokerCustomer < ApplicationRecord
   belongs_to :broker
 
-  has_many :contacts
-  has_many :receivables
-  has_many :shipments
-
-  serialize :shipment_string_patterns, Array
-  serialize :valid_freight_classes, Array
+  belongs_to :office_address, class_name: 'Address', dependent: :delete
+  accepts_nested_attributes_for :office_address, allow_destroy: true
 
   belongs_to :primary_pickup_address, class_name: 'Address', dependent: :delete
   accepts_nested_attributes_for :primary_pickup_address, allow_destroy: true
 
   belongs_to :customer
   accepts_nested_attributes_for :customer
+
+  has_many :contacts
 
   has_many :broker_customer_sales_reps, dependent: :destroy
   has_many :sales_reps, through: :broker_customer_sales_reps, source: 'user'
@@ -81,12 +87,21 @@ class BrokerCustomer < ApplicationRecord
   has_many :broker_carriers
   accepts_nested_attributes_for :broker_carriers, allow_destroy: true, reject_if: :all_blank
 
-  monetize :default_upcharge_cents, allow_nil: true
+  has_many :document_preferences
+  accepts_nested_attributes_for :document_preferences, allow_destroy: true, reject_if: :all_blank
+
+  has_many :receivables
+  has_many :shipments
 
   has_many :receivables, through: :shipments
 
   has_many :upcharge_rules
   accepts_nested_attributes_for :upcharge_rules, allow_destroy: true, reject_if: :all_blank
+
+  monetize :default_upcharge_cents, allow_nil: true
+
+  serialize :shipment_string_patterns, Array
+  serialize :valid_freight_classes, Array
 
   validate :check_pricing_rules
 

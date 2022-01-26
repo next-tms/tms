@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_23_014712) do
+ActiveRecord::Schema.define(version: 2022_01_26_193359) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -190,8 +190,13 @@ ActiveRecord::Schema.define(version: 2022_01_23_014712) do
     t.boolean "requires_carrier_pod_on_receivables", default: true
     t.boolean "ignore_value_on_api_quotes", default: false
     t.string "quickbooks_customer_id"
+<<<<<<< HEAD
+=======
+    t.bigint "office_address_id", null: false
+>>>>>>> add-broker-customer-office-address
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
+    t.index ["office_address_id"], name: "index_broker_customers_on_office_address_id"
     t.index ["primary_pickup_address_id"], name: "index_broker_customers_on_primary_pickup_address_id"
     t.index ["requires_carrier_bol_on_receivables"], name: "index_broker_customers_on_requires_carrier_bol_on_receivables"
     t.index ["requires_carrier_pod_on_receivables"], name: "index_broker_customers_on_requires_carrier_pod_on_receivables"
@@ -828,6 +833,7 @@ ActiveRecord::Schema.define(version: 2022_01_23_014712) do
   add_foreign_key "broker_countries", "countries"
   add_foreign_key "broker_customer_sales_reps", "broker_customers"
   add_foreign_key "broker_customer_sales_reps", "users"
+  add_foreign_key "broker_customers", "addresses", column: "office_address_id"
   add_foreign_key "broker_customers", "addresses", column: "primary_pickup_address_id"
   add_foreign_key "broker_customers", "brokers"
   add_foreign_key "broker_customers", "customers"

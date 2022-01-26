@@ -46,6 +46,8 @@ class Contact < ApplicationRecord
   belongs_to :broker_carrier, optional: true
   belongs_to :broker_customer, optional: true
 
+  has_many :document_preferences
+
   has_one :user
 
   phony_normalize :mobile_phone, default_country_code: 'US'
