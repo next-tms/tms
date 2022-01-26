@@ -229,7 +229,6 @@ class BrokerCustomer < ApplicationRecord
 
   def create_quickbooks_customer
     return nil unless broker.intuit_account&.connected?
-    return @quickbooks_customer unless @quickbooks_customer.blank?
 
     result = quickbooks_customer
     return result unless result.blank?
@@ -238,6 +237,15 @@ class BrokerCustomer < ApplicationRecord
     return nil if result.blank?
 
     update!(quickbooks_customer_id: result.id)
+    @quickbooks_customer = result
+  end
+
+  def update_quickbooks_customer
+    return nil unless broker.intuit_account&.connected?
+
+    result = QuickbooksApiClient::Customers.new(broker:).update(self)
+    return nil if result.blank?
+
     @quickbooks_customer = result
   end
 
@@ -261,10 +269,10 @@ class BrokerCustomer < ApplicationRecord
 
   def to_quickbooks_customer
     Quickbooks::Model::Customer.new(
-      billing_address: broker_customer.primary_pickup_address.to_quickbooks_physical_address,
-      company_name: broker_customer.customer.name,
-      display_name: broker_customer.customer.name,
-      shipping_address: nil
+      billing_address: office_address.to_quickbooks_physical_address,
+      company_name: customer.name,
+      display_name: customer.name,
+      shipping_address: primary_pickup_address&.to_quickbooks_physical_address
     )
   end
 
