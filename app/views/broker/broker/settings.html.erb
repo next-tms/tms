@@ -7,3 +7,28 @@
 </div>
 
 <%= render 'form' %>
+
+<% if current_user.has_role?('root') %>
+  <h2>Integrations</h2>
+  
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped">
+      <thead>
+        <th>Service</th>
+        <th>Connected?</th>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <%= link_to 'Intuit QuickBooks', broker_settings_intuit_path, target: '_blank' %>
+          </td>
+          <td>
+            <% if current_user.broker.intuit_account&.connected? %>
+              ✓
+            <% end %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<% end %>

@@ -1,0 +1,8 @@
+<% provide :title, 'Receivables' %>
+
+<%= render 'member_header' %>
+<h2><%= yield :title %></h2>
+
+<%= turbo_frame_tag :receivables do %>
+  <%= render 'broker/receivables/show_many', receivables: @receivables, q: @q %>
+<% end %>

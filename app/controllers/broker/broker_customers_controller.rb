@@ -3,7 +3,7 @@
 class Broker::BrokerCustomersController < Broker::BrokerController
   before_action :set_broker_customer,
                 only: %i[contacts edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing
-                         primary_pickup_address sales_reps shipments show update]
+                         primary_pickup_address receivables sales_reps shipments show update]
   before_action :authenticate_user!
 
   def index
@@ -134,6 +134,19 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @q = @broker_customer.contacts.ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
+  end
+
+  def receivables
+    if !current_user.has_role?('accounts_receivable')
+      unauthorized
+    end
+
+    @q = @broker_customer
+         .receivables
+         .ransack(params[:q])
+
+    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @pagy, @receivables = pagy(@q.result)
   end
 
   def shipments

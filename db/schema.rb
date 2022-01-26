@@ -190,7 +190,10 @@ ActiveRecord::Schema.define(version: 2022_01_26_193359) do
     t.boolean "requires_carrier_pod_on_receivables", default: true
     t.boolean "ignore_value_on_api_quotes", default: false
     t.string "quickbooks_customer_id"
+<<<<<<< HEAD
+=======
     t.bigint "office_address_id", null: false
+>>>>>>> add-broker-customer-office-address
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["office_address_id"], name: "index_broker_customers_on_office_address_id"

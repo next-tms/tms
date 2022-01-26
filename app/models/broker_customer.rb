@@ -93,6 +93,8 @@ class BrokerCustomer < ApplicationRecord
   has_many :receivables
   has_many :shipments
 
+  has_many :receivables, through: :shipments
+
   has_many :upcharge_rules
   accepts_nested_attributes_for :upcharge_rules, allow_destroy: true, reject_if: :all_blank
 
@@ -223,6 +225,55 @@ class BrokerCustomer < ApplicationRecord
         total_margin:
       }
     end
+  end
+
+  def create_quickbooks_customer
+    return nil unless broker.intuit_account&.connected?
+
+    result = quickbooks_customer
+    return result unless result.blank?
+
+    result = QuickbooksApiClient::Customers.new(broker:).create(self)
+    return nil if result.blank?
+
+    update!(quickbooks_customer_id: result.id)
+    @quickbooks_customer = result
+  end
+
+  def update_quickbooks_customer
+    return nil unless broker.intuit_account&.connected?
+
+    result = QuickbooksApiClient::Customers.new(broker:).update(self)
+    return nil if result.blank?
+
+    @quickbooks_customer = result
+  end
+
+  def quickbooks_customer
+    return nil unless broker.intuit_account&.connected?
+    return @quickbooks_customer unless @quickbooks_customer.blank?
+
+    result = nil
+
+    unless quickbooks_customer_id.blank?
+      result = QuickbooksApiClient::Customers.new(broker:).find(quickbooks_customer_id)
+    end
+    return @quickbooks_customer = result unless result.blank?
+
+    result = QuickbooksApiClient::Customers.new(broker:).find_by_name(customer.name)
+    return nil if result.blank?
+
+    update!(quickbooks_customer_id: result.id)
+    @quickbooks_customer = result
+  end
+
+  def to_quickbooks_customer
+    Quickbooks::Model::Customer.new(
+      billing_address: office_address.to_quickbooks_physical_address,
+      company_name: customer.name,
+      display_name: customer.name,
+      shipping_address: primary_pickup_address&.to_quickbooks_physical_address
+    )
   end
 
   private

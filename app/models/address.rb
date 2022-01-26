@@ -150,7 +150,7 @@ class Address < ApplicationRecord
       address1: street,
       country: country.alpha2_code,
       state: region.abbreviation,
-      city: city,
+      city:,
       zip: zip_code
     )
   end
@@ -161,17 +161,17 @@ class Address < ApplicationRecord
     key = region.country.format_address(proper(', '))
     key = proper(', ') if key.blank?
 
-    new_standardized_address = StandardizedAddress.where(country: region.country, key: key)&.first
+    new_standardized_address = StandardizedAddress.where(country: region.country, key:)&.first
 
     if new_standardized_address.blank?
       new_standardized_address = StandardizedAddress.new(
-        street: street,
-        street2: street2,
-        city: city,
-        region_id: region_id,
+        street:,
+        street2:,
+        city:,
+        region_id:,
         postal_code: zip_code,
-        country_id: country_id,
-        key: key
+        country_id:,
+        key:
       )
 
       new_standardized_address.save
@@ -184,6 +184,16 @@ class Address < ApplicationRecord
     self.city = standardized_address.city || city
     self.region = standardized_address.region || region
     self.zip_code = standardized_address.postal_code || zip_code
+  end
+
+  def to_quickbooks_physical_address
+    Quickbooks::Model::PhysicalAddress.new(
+      line1: street,
+      line2: street2,
+      city:,
+      country_sub_division_code: region.abbreviation,
+      postal_code: zip_code
+    )
   end
 
   private

@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   include Pagy::Backend
 
   before_action :add_floc_opt_out_header
-  before_action :check_website, :check_if_website_belongs_to_broker
+  before_action :check_website, :check_if_website_belongs_to_broker, unless: :global_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :sign_out_deactivated_user
 
@@ -46,6 +46,10 @@ class ApplicationController < ActionController::Base
   def check_website
     @website ||= Website.find_by_domain(request.host) || nil
     redirect_to('https://next-tms.com/', allow_other_host: true) if @website.blank?
+  end
+
+  def global_controller?
+    false
   end
 
   def sign_out_deactivated_user

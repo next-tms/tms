@@ -53,6 +53,8 @@ class Broker < ApplicationRecord
   has_many :broker_accessorials
   accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
 
+  has_one :intuit_account
+
   belongs_to :address
 
   validates :customer_service_email, format: { with: URI::MailTo::EMAIL_REGEXP }
