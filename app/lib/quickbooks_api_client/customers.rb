@@ -44,7 +44,7 @@ module QuickbooksApiClient
         service = build_service(access_token)
         results = service.find_by(:company_name, name)
 
-        results.count == 1 ? nil : results.first
+        results.count == 1 ? results.first : nil
       end
     end
 

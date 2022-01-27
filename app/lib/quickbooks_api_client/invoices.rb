@@ -35,7 +35,7 @@ module QuickbooksApiClient
         service = build_service(access_token)
         results = service.find_by(:doc_number, doc_number)
 
-        results.count == 1 ? nil : results.first
+        results.count == 1 ? results.first : nil
       end
     end
 
