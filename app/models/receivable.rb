@@ -175,6 +175,8 @@ class Receivable < ApplicationRecord
   private
 
   def set_invoiced
+    return if invoiced?
+
     self.invoiced = true unless quickbooks_invoice.blank?
   end
 
