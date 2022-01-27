@@ -126,9 +126,7 @@ class Receivable < ApplicationRecord
     result = quickbooks_invoice
     return result unless result.blank?
 
-    if broker_customer.quickbooks_customer.blank?
-      raise "BrokerCustomer id=#{broker_cusotmer.id} must exist in QuickBooks"
-    end
+    broker_customer.create_quickbooks_customer if broker_customer.quickbooks_customer.blank?
 
     result = QuickbooksApiClient::Invoices.new(broker:).create(self)
     return nil if result.blank?
