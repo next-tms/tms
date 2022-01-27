@@ -46,6 +46,7 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Receivable < ApplicationRecord
+  before_save :set_authorized_at
   before_save :set_invoiced
 
   before_validation :set_total
@@ -174,10 +175,18 @@ class Receivable < ApplicationRecord
 
   private
 
+  def set_authorized_at
+    return unless set_authorized_at.blank?
+
+    if broker_customer.broker.intuit_account&.connected? && !quickbooks_invoice.blank?
+      self.set_authorized_at = DateTime.current
+    end
+  end
+
   def set_invoiced
     return if invoiced?
 
-    self.invoiced = true unless quickbooks_invoice.blank?
+    self.invoiced = true if broker_customer.broker.intuit_account&.connected? && !quickbooks_invoice.blank?
   end
 
   def set_total
