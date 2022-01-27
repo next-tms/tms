@@ -1617,7 +1617,7 @@ GEM
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
     set (1.0.2)
-    sidekiq (6.3.1)
+    sidekiq (6.4.0)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
@@ -1737,7 +1737,7 @@ DEPENDENCIES
   rollbar
   rqrcode
   selenium-webdriver
-  sidekiq (~> 6.3.1)
+  sidekiq (~> 6.4.0)
   sidekiq-scheduler (~> 3.1.0)
   simple_command
   spring (~> 4.0.0)
