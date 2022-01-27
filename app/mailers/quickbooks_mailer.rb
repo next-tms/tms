@@ -4,9 +4,8 @@ class QuickbooksMailer < ActionMailer::Base
 
   def unknown_customers(broker_customers:)
     broker = broker_customers.first.broker
-    users = User.where(id: broker.users.with_role('accounts-receivable').ids +
-                           broker.users.with_role('root').ids
-                      )
+    users = User.where(id: broker.users.broker.with_role('accounts-receivable').ids +
+                           broker.users.broker.with_role('root').ids)
 
     @broker_customers = broker_customers.includes(:customer).order('customers.name')
 
@@ -15,7 +14,7 @@ class QuickbooksMailer < ActionMailer::Base
 
       mail(
         to: @user.email,
-        reply_to: "Next TMS <hello@next-tms.com>",
+        reply_to: 'Next TMS <hello@next-tms.com>',
         subject: 'QuickBooks Customer Sync Failure'
       )
     end
