@@ -46,6 +46,8 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Receivable < ApplicationRecord
+  before_save :set_invoiced
+
   before_validation :set_total
 
   belongs_to :authorized_by, class_name: 'User', optional: true
@@ -171,6 +173,10 @@ class Receivable < ApplicationRecord
   end
 
   private
+
+  def set_invoiced
+    self.invoiced = true unless quickbooks_invoice.blank?
+  end
 
   def set_total
     return if receivable_items.blank?
