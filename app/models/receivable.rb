@@ -179,7 +179,7 @@ class Receivable < ApplicationRecord
     return unless authorized_at.blank?
 
     if broker_customer.broker.intuit_account&.connected? && !quickbooks_invoice.blank?
-      self.set_authorized_at = quickbooks_invoice.meta_data.create_time
+      self.authorized_at = quickbooks_invoice.meta_data.create_time
     end
   end
 
