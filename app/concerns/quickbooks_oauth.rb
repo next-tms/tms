@@ -58,7 +58,7 @@ module QuickbooksOauth
         authorize_url: "https://appcenter.intuit.com/connect/oauth2",
         token_url: "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
       }
-      OAuth2::Client.new(ENV['INTUIT_OAUTH2_CLIENT_ID'], ENV['INTUIT_OAUTH2_CLIENT_SECRET'], options)
+      OAuth2::Client.new(ENV['INTUIT_CLIENT_ID'], ENV['INTUIT_CLIENT_SECRET'], options)
     end
 
   end
