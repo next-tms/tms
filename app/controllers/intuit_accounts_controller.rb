@@ -57,6 +57,6 @@ class IntuitAccountsController < ApplicationController
   def oauth_callback_intuit_account_url_with_host
     return oauth_callback_intuit_account_url if Rails.env.development?
 
-    oauth_callback_intuit_account_url(host: 'tms.next-tms.com')
+    oauth_callback_intuit_account_url(host: 'tms.next-tms.com', protocol: 'https')
   end
 end
