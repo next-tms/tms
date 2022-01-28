@@ -40,8 +40,10 @@ module QuickbooksApiClient
     end
 
     def update(receivable)
-      # invoice = build_invoice(receivable)
-      invoice = find(receivable.quickbooks_invoice.id)
+      invoice = receivable.quickbooks_invoice
+      return create(receivable) if invoice.blank?
+
+      invoice = find(invoice.id)
 
       broker.intuit_account.perform_authenticated_request do |access_token|
         service = build_service(access_token)

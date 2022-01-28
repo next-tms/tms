@@ -12,7 +12,10 @@ module QuickbooksApiClient
     end
 
     def update(broker_customer)
-      customer = find(broker_customer.quickbooks_customer.id)
+      quickbooks_customer = broker_customer.quickbooks_customer
+      return create(broker_customer) if quickbooks_customer.blank?
+
+      quickbooks_customer = find(quickbooks_customer.id)
 
       broker.intuit_account.perform_authenticated_request do |access_token|
         service = build_service(access_token)
