@@ -236,7 +236,7 @@ class BrokerCustomer < ApplicationRecord
     result = QuickbooksApiClient::Customers.new(broker:).create(self)
     return nil if result.blank?
 
-    update!(quickbooks_customer_id: result.id)
+    update_columns(quickbooks_customer_id: result.id)
     @quickbooks_customer = result
   end
 
@@ -263,7 +263,7 @@ class BrokerCustomer < ApplicationRecord
     result = QuickbooksApiClient::Customers.new(broker:).find_by_name(customer.name)
     return nil if result.blank?
 
-    update!(quickbooks_customer_id: result.id)
+    update_columns(quickbooks_customer_id: result.id)
     @quickbooks_customer = result
   end
 
