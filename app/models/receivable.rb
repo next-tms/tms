@@ -168,8 +168,8 @@ class Receivable < ApplicationRecord
       return update_quickbooks_invoice
     end
 
-    if broker_customer.quickbooks_customer.blank?
-      raise "BrokerCustomer id=#{broker_cusotmer.id} must exist in QuickBooks"
+    if shipment.broker_customer.quickbooks_customer.blank?
+      raise "BrokerCustomer id=#{shipment.broker_cusotmer.id} must exist in QuickBooks"
     end
 
     result = QuickbooksApiClient::Invoices.new(broker:).update(self)
