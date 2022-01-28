@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_26_193359) do
+ActiveRecord::Schema.define(version: 2022_01_28_015951) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -182,7 +182,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_193359) do
     t.string "default_upcharge_currency", default: "USD", null: false
     t.float "default_upcharge_percentage", default: 0.0
     t.boolean "always_show_quotes_based_on_calculated_classes", default: true
-    t.bigint "primary_pickup_address_id"
+    t.bigint "primary_pickup_address_id", null: false
     t.text "valid_freight_classes"
     t.boolean "enable_auto_freight_class", default: true
     t.text "internal_notes"
@@ -190,10 +190,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_193359) do
     t.boolean "requires_carrier_pod_on_receivables", default: true
     t.boolean "ignore_value_on_api_quotes", default: false
     t.string "quickbooks_customer_id"
-<<<<<<< HEAD
-=======
     t.bigint "office_address_id", null: false
->>>>>>> add-broker-customer-office-address
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["office_address_id"], name: "index_broker_customers_on_office_address_id"
