@@ -156,7 +156,7 @@ class Receivable < ApplicationRecord
   def update_from_quickbooks_invoice
     return if quickbooks_invoice.blank?
 
-    assign_attributes(paid: !quickbooks_invoice.balance.positive?)
+    update_columns(paid_at: DateTime.current) unless quickbooks_invoice.balance.positive?
   end
 
   def update_quickbooks_invoice
