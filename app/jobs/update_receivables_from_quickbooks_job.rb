@@ -6,7 +6,7 @@ class UpdateReceivablesFromQuickbooksJob < ApplicationJob
       next unless intuit_account&.connected?
 
       intuit_account.broker.receivables.unpaid.find_each do |receivable|
-        UpdateReceivableFromQuickbooksJob.perform_later(receivable)
+        UpdateReceivableFromQuickbooksJob.perform_later(receivable:)
       end
     end
   end
