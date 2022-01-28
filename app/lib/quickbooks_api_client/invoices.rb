@@ -54,7 +54,6 @@ module QuickbooksApiClient
     def build_invoice(receivable, invoice: nil)
       if invoice.blank?
         invoice = Quickbooks::Model::Invoice.new(
-          billing_address:,
           customer_id: receivable.broker_customer.quickbooks_customer_id,
           txn_date: DateTime.current.in_time_zone(receivable.broker_customer.broker.time_zone),
           doc_number: receivable.shipment.load_id.to_s
@@ -64,6 +63,28 @@ module QuickbooksApiClient
       billing_address = receivable.broker_customer.office_address.to_quickbooks_physical_address
       billing_address.line2 = billing_address.line1
       billing_address.line1 = receivable.broker_customer.customer.name
+      invoice.billing_address = billing_address
+
+      shipping_address = receivable.shipment.receiver_address.to_quickbooks_physical_address
+      shipping_address.line2 = shipping_address.line1
+      shipping_address.line1 = receivable.shipment.receiver_name
+      invoice.shipping_address = shipping_address
+
+      carrier = if receivable.shipment.broker_carrier.blank?
+                  nil
+                elsif receivable.shipment.broker_carrier.carrier.acts_as_broker
+                  receivable.shipment.tracking_carrier.blank? ? receivable.shipment.broker_carrier.carrier : receivable.shipment.tracking_carrier
+                else
+                  receivable.shipment.broker_carrier.carrier
+                end
+
+      unless carrier.blank?
+        ship_method_ref = Quickbooks::Model::BaseReference.new(carrier.name[..30], value: carrier.name[..30])
+
+        invoice.ship_method_ref = ship_method_ref
+      end
+
+      invoice.tracking_num = receivable.shipment.load_id
 
       references = []
       unless receivable.shipment.shipper_reference.blank?
@@ -76,33 +97,32 @@ module QuickbooksApiClient
 
       unless references.blank?
         line_item = Quickbooks::Model::InvoiceLineItem.new(
-          amount: 0,
-          description: references.join("\n")
+          description: references.join("\n"),
+          detail_type: 'DescriptionOnly'
         )
-
-        line_item.sales_item! do |detail|
-          detail.unit_price = 0
-          detail.quantity = 0
-          # detail.item_id = 500
-        end
 
         invoice.line_items << line_item
       end
 
       unless receivable.broker_customer.office_address.proper(', ') == receivable.shipment.shipper_address.proper(', ')
         line_item = Quickbooks::Model::InvoiceLineItem.new(
-          amount: 0,
-          description: "Pickup from:\n\n#{receivable.shipment.shipper_name}\n#{receivable.shipment.shipper_address.proper("\n")}"
+          description: "Pickup from:\n\n#{receivable.shipment.shipper_name}\n#{receivable.shipment.shipper_address.proper("\n")}",
+          detail_type: 'DescriptionOnly'
         )
-
-        line_item.sales_item! do |detail|
-          detail.unit_price = 0
-          detail.quantity = 0
-          # detail.item_id = 500
-        end
 
         invoice.line_items << line_item
       end
+
+      invoice.due_date = receivable
+                         .due_by
+                         .in_time_zone(receivable.broker_customer.broker.time_zone)
+                         .to_date
+
+      invoice.ship_date = receivable
+                          .shipment
+                          .picked_up_at
+                          .in_time_zone(receivable.broker_customer.broker.time_zone)
+                          .to_date
 
       receivable.receivable_items.each do |receivable_item|
         amount = (receivable_item.charge_cents.to_f / 100)
@@ -117,6 +137,10 @@ module QuickbooksApiClient
 
         invoice.line_items << line_item
       end
+
+      pp '-------------------> Debug invoice:'
+      pp invoice
+      pp invoice.errors
 
       invoice
     end
