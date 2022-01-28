@@ -153,6 +153,12 @@ class Receivable < ApplicationRecord
     nil
   end
 
+  def update_from_quickbooks_invoice
+    return if quickbooks_invoice.blank?
+
+    assign_attributes(paid: !quickbooks_invoice.balance.positive?)
+  end
+
   def update_quickbooks_invoice
     return nil unless broker.intuit_account&.connected?
 

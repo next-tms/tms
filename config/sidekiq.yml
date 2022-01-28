@@ -24,6 +24,9 @@
   track_shipments_pending_pickups:
     cron: '*/15 * * * *'
     class: TrackShipmentsPendingPickupJob
+  update_receivables_from_quickbooks_job:
+    cron: '40 */2 * * *'
+    class: UpdateReceivablesFromQuickbooksJob
 :queues:
   - default
   - mailers
