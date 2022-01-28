@@ -134,7 +134,7 @@ class Receivable < ApplicationRecord
     result = QuickbooksApiClient::Invoices.new(broker:).create(self)
     return nil if result.blank?
 
-    update!(quickbooks_invoice_id: result.id)
+    update_columns(quickbooks_invoice_id: result.id)
     @quickbooks_invoice = result
   end
 
@@ -158,7 +158,7 @@ class Receivable < ApplicationRecord
 
     # Find existing record if it doesn't exist yet
     if quickbooks_invoice_id.blank? && !quickbooks_invoice.blank?
-      update!(quickbooks_invoice_id: quickbooks_invoice.id)
+      update_columns(quickbooks_invoice_id: quickbooks_invoice.id)
       return update_quickbooks_invoice
     end
 
@@ -169,7 +169,7 @@ class Receivable < ApplicationRecord
     result = QuickbooksApiClient::Invoices.new(broker:).update(self)
     return nil if result.blank?
 
-    update!(quickbooks_invoice_id: result.id, invoiced: true)
+    update_columns(quickbooks_invoice_id: result.id, invoiced: true)
     @quickbooks_invoice = result
   end
 
