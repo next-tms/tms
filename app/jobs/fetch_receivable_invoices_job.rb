@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-class FetchReceivableInvoices < ApplicationJob
+class FetchReceivableInvoicesJob < ApplicationJob
   def perform
     Receivable.without_invoice.find_each do |receivable|
-      FetchReceivableInvoice.perform_later(receivable)
+      FetchReceivableInvoiceJob.perform_later(receivable)
     end
   end
 end
