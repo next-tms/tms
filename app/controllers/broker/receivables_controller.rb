@@ -23,7 +23,7 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def invoiced
-    @q = current_user.broker.receivables.invoiced.includes(required_includes).ransack(params[:q])
+    @q = current_user.broker.receivables.invoiced.unpaid.includes(required_includes).ransack(params[:q])
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
