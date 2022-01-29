@@ -39,6 +39,18 @@ module QuickbooksApiClient
       end
     end
 
+    def pdf(invoice)
+      broker.intuit_account.perform_authenticated_request do |access_token|
+        service = build_service(access_token)
+
+        begin
+          service.pdf(invoice)
+        rescue Quickbooks::IntuitRequestException => e
+          nil
+        end
+      end
+    end
+
     def update(receivable)
       invoice = receivable.quickbooks_invoice
       return create(receivable) if invoice.blank?
