@@ -62,6 +62,8 @@ class Receivable < ApplicationRecord
 
   has_one :broker, through: :shipment
 
+  has_one_attached :invoice
+
   monetize :total_cents, allow_nil: false
 
   scope :authorized, -> { where.not(authorized_at: nil) }
@@ -72,6 +74,18 @@ class Receivable < ApplicationRecord
 
   scope :paid, -> { where.not(paid_at: nil) }
   scope :unpaid, -> { where.not(id: paid) }
+
+  scope :with_invoice, lambda {
+    left_joins(:invoice_attachment)
+      .group(:id)
+      .having('COUNT(active_storage_attachments) != 0')
+  }
+
+  scope :without_invoice, lambda {
+    left_joins(:invoice_attachment)
+      .group(:id)
+      .having('COUNT(active_storage_attachments) = 0')
+  }
 
   validates :due_by, presence: true
 
@@ -108,6 +122,10 @@ class Receivable < ApplicationRecord
     end
 
     self
+  end
+
+  def fetch_invoice
+    quickbooks_invoice_pdf unless broker.intuit_account&.connected?
   end
 
   def missing_carrier_bol?
@@ -151,6 +169,22 @@ class Receivable < ApplicationRecord
     return @quickbooks_invoice = result unless result.blank?
 
     nil
+  end
+
+  def quickbooks_invoice_pdf
+    return nil if !broker.intuit_account&.connected? || quickbooks_invoice.blank?
+
+    data = QuickbooksApiClient::Invoices.new(broker:).pdf(quickbooks_invoice)
+    return nil if data.blank?
+
+    filename = "#{shipment.load_id} Invoice.pdf"
+    path = File.join(Dir.tmpdir, filename)
+
+    File.open(path, 'wb') do |file|
+      file.write(data)
+    end
+
+    invoice.attach(io: File.open(path), filename:, content_type: 'application/pdf')
   end
 
   def update_from_quickbooks_invoice

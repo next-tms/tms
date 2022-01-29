@@ -9,6 +9,9 @@
   fetch_carrier_pods:
     cron: '15 */3 * * *'
     class: FetchShipmentCarrierPodsJob
+  fetch_receivable_invoices:
+    cron: '50 * * * *'
+    class: FetchReceivableInvoicesJob
   fetch_shipment_pros:
     cron: '*/15 * * * *'
     class: FetchShipmentProsJob
