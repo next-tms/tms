@@ -83,7 +83,7 @@ class ContactMailer < ActionMailer::Base
     mail(
       from: "#{shipment.broker.name} <#{shipment.broker.robot_email}>",
       cc:,
-      reply_to: pretty_email(from_user),
+      reply_to: from_user.blank? ? nil : pretty_email(from_user),
       to: pretty_email(to_contact),
       subject: "#{document_name} for Load #{shipment.load_id}"
     )
