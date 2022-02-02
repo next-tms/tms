@@ -1514,7 +1514,8 @@ GEM
     open_street_map (1.2.2)
       httparty (~> 0.17)
     orm_adapter (0.5.0)
-    pagy (5.6.10)
+    pagy (5.9.3)
+      activesupport
     pg (1.2.3)
     phony (2.19.7)
     phony_rails (0.15.0)
