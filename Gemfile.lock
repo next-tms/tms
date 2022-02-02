@@ -1523,7 +1523,7 @@ GEM
       phony (>= 2.18.12)
     postmark (1.22.0)
       json
-    postmark-rails (0.21.0)
+    postmark-rails (0.22.0)
       actionmailer (>= 3.0.0)
       postmark (>= 1.21.3, < 2.0)
     public_suffix (4.0.6)
