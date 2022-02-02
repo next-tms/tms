@@ -1602,7 +1602,7 @@ GEM
       ffi (~> 1.12)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
-    rufus-scheduler (3.8.0)
+    rufus-scheduler (3.8.1)
       fugit (~> 1.1, >= 1.1.6)
     savon (2.12.1)
       akami (~> 1.2)
@@ -1622,7 +1622,7 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
-    sidekiq-scheduler (3.1.0)
+    sidekiq-scheduler (3.1.1)
       e2mmap
       redis (>= 3, < 5)
       rufus-scheduler (~> 3.2)
@@ -1740,7 +1740,7 @@ DEPENDENCIES
   rqrcode
   selenium-webdriver
   sidekiq (~> 6.4.0)
-  sidekiq-scheduler (~> 3.1.0)
+  sidekiq-scheduler (~> 3.1.1)
   simple_command
   spring (~> 4.0.0)
   sprockets-rails (~> 3.4.2)
