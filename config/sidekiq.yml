@@ -4,10 +4,10 @@
     cron: '45 */2 * * *'
     class: CreateReceivablesJob
   fetch_carrier_bols:
-    cron: '15 */6 * * *'
+    cron: '0 */4 * * *'
     class: FetchShipmentCarrierBolsJob
   fetch_carrier_pods:
-    cron: '15 */3 * * *'
+    cron: '30 */4 * * *'
     class: FetchShipmentCarrierPodsJob
   fetch_receivable_invoices:
     cron: '50 * * * *'
@@ -19,10 +19,10 @@
     cron: '10 */4 * * *'
     class: FetchWebsiteManifestsJob
   track_shipments_pending_delivery:
-    cron: '15 * * * *'
+    cron: '*/30 * * * *'
     class: TrackShipmentsPendingDeliveryJob
   track_shipments_pending_departure:
-    cron: '15 */6 * * *'
+    cron: '15 */4 * * *'
     class: TrackShipmentsPendingDepartureJob
   track_shipments_pending_pickups:
     cron: '*/15 * * * *'
