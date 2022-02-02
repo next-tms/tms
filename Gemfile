@@ -74,7 +74,7 @@ gem 'barby'
 
 gem 'quickbooks-ruby', '~> 1.0.19'
 
-gem 'geocoder', '~> 1.6.7'
+gem 'geocoder', '~> 1.7.3'
 gem 'google_places', '~> 2.0.0'
 gem 'mainstreet', git: 'https://github.com/brodyhoskins/mainstreet', ref: 'b8a57d132c89f872235183fdb6f16350fc2e308d'
 gem 'open_street_map', '~> 1.2.1'
