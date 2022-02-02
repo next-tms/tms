@@ -67,6 +67,8 @@ Rails.application.routes.draw do
       member { get 'activity', to: 'banks#activity' }
     end
 
+    get 'rates/:uid/breakdown-modal', as: 'rate_breakdown_modal', to: 'rates#breakdown_modal'
+
     get 'settings/intuit', to: 'intuit_account#show'
 
     get 'ap/payments/overdue', to: 'payments#overdue'

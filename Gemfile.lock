@@ -24,28 +24,28 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 8418b30040435e5b9336c61d529d93a7c909089a
-  ref: 8418b30040435e5b9336c61d529d93a7c909089a
+  revision: 820633c5337dd7bfad3338edad145e084bb16d56
+  ref: 820633c5337dd7bfad3338edad145e084bb16d56
   specs:
-    interstellar (0.1.pre4)
+    interstellar (0.1.pre5)
       active_utils (~> 3.3.1)
       activemodel (>= 4.2, < 7.0.2)
       activesupport (>= 4.2, < 7.0.2)
       httparty (~> 0.10)
       measured (>= 2.0, < 2.8.3)
       mimemagic (~> 0.4.3)
-      nokogiri (>= 1.6, < 1.13.1)
+      nokogiri (>= 1.6, < 1.13.2)
       rmagick (>= 4.1, < 4.3)
       savon (>= 2.0, < 2.13)
       watir (>= 7.0, < 7.2)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: 7e0c5cb17d3fd0e841297bf0e67e62c42ac713c1
-  ref: 7e0c5cb17d3fd0e841297bf0e67e62c42ac713c1
+  revision: aeb6e50ce8daccabb2e3d59a245738d674e7ffca
+  ref: aeb6e50ce8daccabb2e3d59a245738d674e7ffca
   specs:
-    interstellar-next (0.1.pre4)
-      interstellar (= 0.1.pre4)
+    interstellar-next (0.1.pre5)
+      interstellar (= 0.1.pre5)
 
 GEM
   remote: https://rails-assets.org/
@@ -1658,7 +1658,7 @@ GEM
     uniform_notifier (1.14.2)
     warden (1.2.9)
       rack (>= 2.0.9)
-    wasabi (3.6.1)
+    wasabi (3.7.0)
       addressable
       httpi (~> 2.0)
       nokogiri (>= 1.4.2)

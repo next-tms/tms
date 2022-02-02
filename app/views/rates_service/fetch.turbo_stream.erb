@@ -81,6 +81,8 @@
             <%= humanized_money_with_symbol upcharged_rate, no_cents_if_whole: false %>
           <% else %>
             <%= humanized_money_with_symbol rate.cost, no_cents_if_whole: false %>
+
+            <%= link_to 'Details', broker_rate_breakdown_modal_path(rate), data: { 'turbo-frame': 'modal' }, class: 'btn btn-sm btn-outline-secondary' %>
           <% end %>
         </td>
         <td><%= rate.pretty_service_type %></td>

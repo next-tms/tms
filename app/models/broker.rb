@@ -34,6 +34,7 @@ class Broker < ApplicationRecord
   has_many :contacts
 
   has_many :shipments
+  has_many :rates, through: :shipments
   has_many :receivables, through: :shipments
 
   has_many :users
@@ -98,7 +99,7 @@ class Broker < ApplicationRecord
 
   def copy_accessorials_to_broker_accessorials
     Accessorial.all.each do |accessorial|
-      BrokerAccessorial.create(broker: self, accessorial: accessorial, code: accessorial.code, name: accessorial.name)
+      BrokerAccessorial.create(broker: self, accessorial:, code: accessorial.code, name: accessorial.name)
     end
   end
 
