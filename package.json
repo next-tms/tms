@@ -10,7 +10,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@hotwired/turbo-rails": "^7.1.0",
+    "@hotwired/turbo-rails": "^7.1.1",
     "@popperjs/core": "^2.10.1",
     "@rails/actioncable": "latest",
     "@rails/activestorage": "latest",
