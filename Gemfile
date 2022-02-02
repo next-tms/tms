@@ -16,7 +16,7 @@ end
 
 group :development do
   gem 'annotate', git: 'https://github.com/dabit/annotate_models', branch: 'rails-7'
-  gem 'bullet', '~> 7.0.0'
+  gem 'bullet', '~> 7.0.1'
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.8'
   gem 'spring', '~> 4.0.0'
