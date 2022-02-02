@@ -321,6 +321,8 @@ module ApplicationHelper
       "http://apps.hawaiianexpress.com/track_freight.php?prono=#{real_pro(shipment)}"
     when 'NUMK'
       "http://tracking.numarktransportation.net/cgibin/wbprotrk?wbfb=#{real_pro(shipment)}&wbscac=&idbutton=Trace"
+    when 'OTCL'
+      "https://www.ontrac.com/trackingresults.asp?tracking_number=#{real_pro(shipment)}"
     when 'PYLE'
       "https://www.aduiepyle.com/LTL/ShipmentTracking?Pro=#{real_pro(shipment)}"
     when 'RDFS'
