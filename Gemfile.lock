@@ -1352,7 +1352,7 @@ GEM
       actionpack (>= 5.2)
       activemodel (>= 5.2)
     builder (3.2.4)
-    bullet (7.0.0)
+    bullet (7.0.1)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
     business_time (0.11.0)
@@ -1434,7 +1434,7 @@ GEM
     httpi (2.5.0)
       rack
       socksify
-    i18n (1.8.11)
+    i18n (1.9.1)
       concurrent-ruby (~> 1.0)
     image_processing (1.12.1)
       mini_magick (>= 4.9.5, < 5)
@@ -1702,7 +1702,7 @@ DEPENDENCIES
   barby
   bootsnap (>= 1.4.2)
   bootstrap_form (~> 5.0.0)
-  bullet (~> 7.0.0)
+  bullet (~> 7.0.1)
   business_time
   byebug
   capybara (>= 3.35.3)
