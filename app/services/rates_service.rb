@@ -106,7 +106,8 @@ class RatesService
         next
       end
 
-      cost += @broker_carrier.quote_padding unless @broker_carrier.quote_padding.blank?
+      # cost += @broker_carrier.quote_padding unless @broker_carrier.quote_padding.blank?
+      breakdown = interstellar_rate.prices
 
       tracking_carrier = nil
       if @broker_carrier.carrier.acts_as_broker?
@@ -135,6 +136,7 @@ class RatesService
 
       rate = new_rate
       rate.assign_attributes(
+        breakdown:,
         cost:,
         reference: interstellar_rate.estimate_reference,
         tracking_carrier:,

@@ -1,0 +1,23 @@
+<%= provide :title, 'Rate' %>
+
+<div class="table-responsive">
+  <table class="table table-borderless table-striped">
+    <thead>
+      <th>Description</th>
+      <th>Charge</th>
+    </thead>
+    <tbody>
+      <% @rate.breakdown.each do |line| %>
+        <tr>
+          <td><%= line['description'] %></td>
+          <td><%= humanized_money_with_symbol (line['cents'].to_f / 100), no_cents_if_whole: false %></td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td>&nbsp;</td>
+        <td><strong><%= humanized_money_with_symbol @rate.cost, no_cents_if_whole: false %></strong></td>
+    </tfoot>
+  </table>
+</div>
