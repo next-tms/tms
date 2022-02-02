@@ -92,7 +92,7 @@ class RatesService
 
     interstellar_rates = response.rates
     interstellar_rates.each do |interstellar_rate|
-      cost = Money.new(interstellar_rate.price)
+      cost = Money.new(interstellar_rate.total_cents)
 
       unless cost.positive?
         rate = new_rate
