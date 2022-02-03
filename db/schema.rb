@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_02_031308) do
+ActiveRecord::Schema.define(version: 2022_02_03_231629) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -209,6 +209,7 @@ ActiveRecord::Schema.define(version: 2022_02_02_031308) do
     t.string "robot_email"
     t.string "time_zone_name", null: false
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.boolean "automatically_authorize_receivables", default: false
     t.index ["address_id"], name: "index_brokers_on_address_id"
   end
 
