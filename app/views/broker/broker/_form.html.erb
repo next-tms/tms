@@ -1,17 +1,22 @@
 <%= bootstrap_form_with(model: [:broker, @broker], url: broker_update_settings_path, layout: :horizontal) do |f| %>
   <%= f.alert_message "Unable to save customer:" %>
 
-  <div class="form-group row">
+  <div class="form-row">
     <label class="col-form-label col-sm-2">Service Countries</label>
-      <div class="col-sm-10">
+    <div class="col-sm-10">
       <%= f.fields_for :broker_countries do |broker_countries_form| %>
         <%= render 'broker_country_fields', f: broker_countries_form %>
       <% end %>
+
       <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :broker_countries, 'btn btn-light mt-2 mb-4' %>
     </div>
   </div>
 
-  <%= f.form_group do %>
+  <div class="form-row">
+    <%= f.check_box :automatically_authorize_receivables %>
+  </div>
+
+  <div class="form-row">
     <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>
-  <% end %>
+  </div>
 <% end %>

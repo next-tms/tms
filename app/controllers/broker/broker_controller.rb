@@ -20,10 +20,11 @@ class Broker::BrokerController < ApplicationController
   def broker_params
     params.require(:broker).permit(
       :id,
-      broker_countries_attributes: [
-        :_destroy,
-        :country_id,
-        :id
+      :automatically_authorize_receivables,
+      broker_countries_attributes: %i[
+        _destroy
+        country_id
+        id
       ]
     )
   end
