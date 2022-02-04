@@ -538,6 +538,7 @@ class Shipment < ApplicationRecord
     str += total_charges_cents&.to_s || ''
     str += total_cost_cents&.to_s || ''
     str += tracking_carrier_id&.to_s || ''
+    str += value_cents
 
     Digest::SHA2.hexdigest(str)
   end
