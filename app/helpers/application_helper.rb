@@ -216,7 +216,7 @@ module ApplicationHelper
       render("#{association.to_s.singularize}_fields", f: builder)
     end
 
-    link_to name, '#', class: "add-fields #{classes}", data: { id: id, fields: fields.gsub("\n", '') }
+    link_to name, '#', class: "add-fields #{classes}", data: { id:, fields: fields.gsub("\n", '') }
   end
 
   def real_carrier(shipment)
@@ -296,7 +296,7 @@ module ApplicationHelper
     when 'CENF'
       "https://centralfreight.com/website/mf/mfInquiry.aspx?inqmode=PRO&pro=#{real_pro(shipment)}"
     when 'CLNI'
-      "https://ssworldtrak.com/WebtrakWTNew/ShipInquiry/QuickTrack.aspx?cmp=clearl&TrackType=HousebillNo&TrackNo=#{real_pro(shipment)}"
+      "https://ssworldtrak.com/WebtrakWTNew/ShipInquiry/ShipInfo.aspx?OrderNo=51868&Back=QuickTrack&TrackType=HousebillNo&TrackNo=#{real_pro(shipment)}"
     when 'CNWY'
       "https://app.ltl.xpo.com/appjs/tracking/details/#{real_pro(shipment)}"
     when 'CTBV'
