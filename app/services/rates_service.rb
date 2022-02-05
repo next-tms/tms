@@ -99,7 +99,7 @@ class RatesService
         rate.assign_attributes(
           error_object: StandardError.new('Cost was empty'),
           request: response.request,
-          response: response.params
+          response: response.response
         )
 
         rates << rate
@@ -119,7 +119,7 @@ class RatesService
           rate.assign_attributes(
             error_object: StandardError.new('Carrier (acting as broker) API returned quote with missing carrier name and SCAC'),
             request: response.request,
-            response: response.params
+            response: response.response
           )
 
           rates << rate
@@ -143,7 +143,7 @@ class RatesService
         transit_days: interstellar_rate.transit_days,
         interstellar_service_type: interstellar_rate.service_name.to_s,
         request: response.request,
-        response: response.params
+        response: response.response
       )
 
       rates << rate
