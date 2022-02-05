@@ -54,8 +54,8 @@ gem 'devise-pwned_password', '~> 0.1.9'
 # liftoff.rocks
 gem 'turbo-rails', '~> 1.0.1'
 
-gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'bbf7903eb119f0f13692b14c72470977ff915c6c'
-gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next', ref: '937b04a36ac339279cf23fd5ab3466a4061a1f76'
+gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'bc7ad9fd86c9390643e50d089a65d90405571e42'
+gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next', ref: 'de85892b8af07204763bf0f5ec2ae2bce29a6900'
 
 gem 'rollbar'
 
