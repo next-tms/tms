@@ -671,7 +671,7 @@ class Shipment < ApplicationRecord
   end
 
   def update_tracking_events
-    return if interstellar_tracking.blank?
+    return if interstellar_tracking&.shipment_events.blank?
 
     interstellar_tracking.shipment_events.each do |shipment_event|
       next if shipment_event.time.blank? || shipment_event.time >= 1.day.from_now || shipment_event.status.blank?
