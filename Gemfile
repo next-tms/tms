@@ -59,7 +59,7 @@ gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tm
 
 gem 'rollbar'
 
-gem 'sidekiq', '~> 6.4.0'
+gem 'sidekiq', '~> 6.4.1'
 gem 'sidekiq-scheduler', '~> 3.1.1'
 
 gem 'jwt'
