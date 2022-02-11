@@ -1514,7 +1514,7 @@ GEM
     open_street_map (1.2.2)
       httparty (~> 0.17)
     orm_adapter (0.5.0)
-    pagy (5.9.3)
+    pagy (5.10.1)
       activesupport
     pg (1.3.1)
     phony (2.19.7)
@@ -1618,7 +1618,7 @@ GEM
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
     set (1.0.2)
-    sidekiq (6.4.0)
+    sidekiq (6.4.1)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
@@ -1739,7 +1739,7 @@ DEPENDENCIES
   rollbar
   rqrcode
   selenium-webdriver
-  sidekiq (~> 6.4.0)
+  sidekiq (~> 6.4.1)
   sidekiq-scheduler (~> 3.1.1)
   simple_command
   spring (~> 4.0.0)
