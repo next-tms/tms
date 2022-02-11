@@ -25,7 +25,7 @@
             <td>
               <% unless rate.reference.blank? %>
                 <%= rate.reference %>
-                <span class="text-nowrap"><%= link_to icon('fas', 'eye', 'Show'), quote_uri(@shipment), target: '_blank' unless quote_uri(@shipment).blank? %></span>
+                <span class="text-nowrap"><%= link_to icon('solid', 'eye', 'Show'), quote_uri(@shipment), target: '_blank' unless quote_uri(@shipment).blank? %></span>
               <% else %>
                 <em>Not provided</em>
               <% end %>

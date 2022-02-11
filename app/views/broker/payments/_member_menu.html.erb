@@ -5,15 +5,15 @@
 
   <% if current_user.has_role?('accounts_payable') %>
     <% unless @payment.approved_at.blank? %>
-      <%= link_to icon('fas', 'thumbs-up', 'Approve'), broker_payment_path(@payment, payment: { approved_by_id: current_user.id }), method: :patch, class: 'nav-link' %>
+      <%= link_to icon('solid', 'thumbs-up', 'Approve'), broker_payment_path(@payment, payment: { approved_by_id: current_user.id }), method: :patch, class: 'nav-link' %>
     <% end %>
 
     <% if @payment.paid_on.blank? %>
-      <%= link_to icon('fas', 'credit-card', 'Pay'), pay_broker_payment_path(@payment), class: 'nav-link' %>
+      <%= link_to icon('solid', 'credit-card', 'Pay'), pay_broker_payment_path(@payment), class: 'nav-link' %>
     <% else %>
-      <%= link_to icon('fas', 'undo-alt', 'Undo Payment'), broker_payment_path(@payment, payment: { paid_on: nil }), method: :patch, data: { confirm: 'Are you sure you want to undo this payment?' }, class: 'nav-link' %>
+      <%= link_to icon('solid', 'undo-alt', 'Undo Payment'), broker_payment_path(@payment, payment: { paid_on: nil }), method: :patch, data: { confirm: 'Are you sure you want to undo this payment?' }, class: 'nav-link' %>
     <% end %>
 
-    <%= link_to icon('fas', 'bomb', 'Delete'), broker_payment_path(@payment), method: :delete, data: { confirm: 'Are you sure you want to permanently delete this payment?' }, class: 'nav-link' %>
+    <%= link_to icon('solid', 'bomb', 'Delete'), broker_payment_path(@payment), method: :delete, data: { confirm: 'Are you sure you want to permanently delete this payment?' }, class: 'nav-link' %>
   <% end %>
 </nav>

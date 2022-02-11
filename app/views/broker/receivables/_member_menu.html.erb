@@ -3,14 +3,14 @@
 
   <% if current_user.has_role?('accounts_receivable') %>
     <% if @receivable.authorized_at.blank? %>
-      <%= link_to icon('fas', 'thumbs-up', 'Approve'), broker_receivable_path(@receivable, receivable: { authorized_at: DateTime.current }), method: :patch, class: 'nav-link' %>
+      <%= link_to icon('solid', 'thumbs-up', 'Approve'), broker_receivable_path(@receivable, receivable: { authorized_at: DateTime.current }), method: :patch, class: 'nav-link' %>
     <% else %>
-      <%= link_to icon('fas', 'thumbs-down', 'Unapprove'), broker_receivable_path(@receivable, receivable: { authorized_at: nil }), method: :patch, class: 'nav-link' %>
+      <%= link_to icon('solid', 'thumbs-down', 'Unapprove'), broker_receivable_path(@receivable, receivable: { authorized_at: nil }), method: :patch, class: 'nav-link' %>
 
       <% if @receivable.invoiced? %>
-        <%= link_to icon('fas', 'thumbs-down', 'Not Invoiced'), broker_receivable_path(@receivable, receivable: { invoiced: false }), method: :patch, class: 'nav-link' %>
+        <%= link_to icon('solid', 'thumbs-down', 'Not Invoiced'), broker_receivable_path(@receivable, receivable: { invoiced: false }), method: :patch, class: 'nav-link' %>
       <% else %>
-        <%= link_to icon('fas', 'thumbs-up', 'Invoiced'), broker_receivable_path(@receivable, receivable: { invoiced: true }), method: :patch, class: 'nav-link' %>
+        <%= link_to icon('solid', 'thumbs-up', 'Invoiced'), broker_receivable_path(@receivable, receivable: { invoiced: true }), method: :patch, class: 'nav-link' %>
       <% end %>
     <% end %>
   <% end %>

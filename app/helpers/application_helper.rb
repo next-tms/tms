@@ -44,14 +44,13 @@ module ApplicationHelper
     )
   end
 
-  # From font-awesome-sass-5.12.0 gem
   def icon(style, name, text = nil, html_options = {})
     if text.is_a?(Hash)
       html_options = text
       text = nil
     end
 
-    content_class = "#{style} fa-#{name}"
+    content_class = "fa-#{style} fa-#{name}"
     content_class << " #{html_options[:class]}" if html_options.key?(:class)
     html_options[:class] = content_class
 
