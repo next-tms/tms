@@ -9,7 +9,7 @@
   <%= f.fields_for :broker_customer_sales_reps do |broker_customer_sales_reps_form| %>
     <%= render 'broker_customer_sales_rep_fields', f: broker_customer_sales_reps_form %>
   <% end %>
-  <%= link_to_add_fields icon('fas', 'plus', 'Add'), f, :broker_customer_sales_reps, 'btn btn-light mt-2 mb-4' %>
+  <%= link_to_add_fields icon('solid', 'plus', 'Add'), f, :broker_customer_sales_reps, 'btn btn-light mt-2 mb-4' %>
 
   <div class="form-group">
     <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>

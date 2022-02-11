@@ -37,7 +37,7 @@
     <%= link_to 'Documents', documents_broker_shipment_path(@shipment), class: 'nav-link shipments-documents' %>
     <%= link_to 'Notes', notes_broker_shipment_path(@shipment), class: 'nav-link shipments-notes' %>
   <% elsif @shipment.quote_only? %>
-    <%= link_to icon('fas', 'pencil-alt', 'Edit'), edit_broker_shipment_path(@shipment), class: 'nav-link shipments-edit' %>
-    <%= link_to icon('fas', 'bell', 'Book'), book_modal_broker_shipment_path(@shipment), data: { 'turbo-frame': 'modal' }, class: 'nav-link' %>
+    <%= link_to icon('solid', 'pencil-alt', 'Edit'), edit_broker_shipment_path(@shipment), class: 'nav-link shipments-edit' %>
+    <%= link_to icon('solid', 'bell', 'Book'), book_modal_broker_shipment_path(@shipment), data: { 'turbo-frame': 'modal' }, class: 'nav-link' %>
   <% end %>
 </nav>
