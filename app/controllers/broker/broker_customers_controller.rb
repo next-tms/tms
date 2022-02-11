@@ -54,6 +54,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer = BrokerCustomer.new
     @broker_customer.broker = current_user.broker
     @broker_customer.customer = Customer.new
+    @broker_customer.office_address = Address.new
     @broker_customer.primary_pickup_address = Address.new
     @broker_customer.sales_reps = [current_user]
   end
