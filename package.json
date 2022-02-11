@@ -35,7 +35,7 @@
     "style-loader": "^3.3.1",
     "urix": "^0.1.0",
     "webpack": "^5.51.1",
-    "webpack-cli": "^4.8.0"
+    "webpack-cli": "^4.9.2"
   },
   "version": "0.1.0",
   "babel": {
