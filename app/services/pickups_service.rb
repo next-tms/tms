@@ -50,6 +50,8 @@ class PickupsService
 
     delivery_from = (@shipment.delivery_from || @shipment.pickup_by + 5.business_days)
 
+    error = nil
+
     begin
       response = InterstellarApiClient.create_pickup(
         broker_carrier: @broker_carrier,
@@ -63,7 +65,13 @@ class PickupsService
         shipment: interstellar_shipment
       )
     rescue StandardError => e
-      if !Rails.env.development? && !e.is_a?(Interstellar::Error)
+      error = e
+    end
+
+    error ||= response&.error
+
+    unless error.blank?
+      if !Rails.env.development? && !error.is_a?(Interstellar::Error)
         attributes = {
           broker_carrier_id: @broker_carrier&.id,
           pickup_id: @pickup&.id,
@@ -71,20 +79,19 @@ class PickupsService
           use_forced_freight_classes: @use_forced_freight_classes
         }
 
-        Rollbar.critical(e, attributes)
+        Rollbar.critical(error, attributes)
       end
 
-      error = e
-    end
+      error_object = response || error
 
-    if response.blank?
-      @pickup.update(error_object: error, updated_by: nil)
+      @pickup.update(error_object:, updated_by: nil)
       Rollbar.critical(error.message, pickup_attributes: @pickup.attributes) unless Rails.env.development?
 
       return false
     end
 
-    @pickup.update(pickup_confirmation: response, updated_by: nil)
+    pickup_confirmation = response.pickup_number
+    @pickup.update(pickup_confirmation:, updated_by: nil)
   end
 
   private
