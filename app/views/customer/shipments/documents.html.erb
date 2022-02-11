@@ -26,25 +26,24 @@
             </tr>
           <% end %>
 
-          <% if @shipment.broker_bol_valid? %>
-            <tr>
-              <td><%= @shipment.broker.name %></td>
-              <td>Bill of Lading</td>
-              <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_bol, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
-              <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_bol, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL.pdf" %></td>
-            </tr>
-          <% end %>
-
-          <% unless @shipment.carrier_bol.blank? %>
+          <% unless @shipment.carrier_label.blank? %>
             <tr>
               <td><%= @shipment.broker_carrier.carrier.name %></td>
               <td>Bill of Lading</td>
-              <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.carrier_bol, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
-              <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_bol, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL - #{@shipment.broker_carrier.carrier.name}.pdf" %></td>
+              <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.carrier_label, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
+              <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_label, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL.pdf" %></td>
             </tr>
           <% end %>
 
-          <!--
+          <% if @shipment.broker_bol_valid? %>
+            <tr>
+              <td><%= @shipment.broker.name %></td>
+              <td>Scanned Bill of Lading</td>
+              <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_bol, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
+              <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_bol, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL (Scanned).pdf" %></td>
+            </tr>
+          <% end %>
+
           <% unless @shipment.carrier_pod.blank? %>
             <tr>
               <td><%= @shipment.broker_carrier.carrier.name %></td>
@@ -53,7 +52,6 @@
               <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_pod, disposition: 'attachment'), download: "#{@shipment.load_id} POD.pdf" %></td>
             </tr>
           <% end %>
-          -->
         <tbody>
       </table>
     </div>

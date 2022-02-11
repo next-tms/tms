@@ -310,7 +310,8 @@ class Shipment < ApplicationRecord
   has_one_attached :broker_bol
   has_one_attached :broker_dispatch_sheet
   has_one_attached :broker_quote
-  has_one_attached :carrier_bol
+  has_one_attached :carrier_bol   # TODO: Rename to carrier_scanned_bol
+  has_one_attached :carrier_label # TODO: Rename to carrier_bol
   has_one_attached :carrier_pod
 
   belongs_to :receiver_address, class_name: 'Address', required: true
