@@ -57,6 +57,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.office_address = Address.new
     @broker_customer.primary_pickup_address = Address.new
     @broker_customer.sales_reps = [current_user]
+    @broker_customer.receivables_contact = Contact.new
   end
 
   def create
