@@ -46,6 +46,8 @@
 #   @return []
 # @!attribute quickbooks_customer_id
 #   @return [String]
+# @!attribute receivables_contact_id
+#   @return []
 #
 # Indexes
 #
@@ -53,6 +55,7 @@
 #  index_broker_customers_on_customer_id                          (customer_id)
 #  index_broker_customers_on_office_address_id                    (office_address_id)
 #  index_broker_customers_on_primary_pickup_address_id            (primary_pickup_address_id)
+#  index_broker_customers_on_receivables_contact_id               (receivables_contact_id)
 #  index_broker_customers_on_requires_carrier_bol_on_receivables  (requires_carrier_bol_on_receivables)
 #  index_broker_customers_on_requires_carrier_pod_on_receivables  (requires_carrier_pod_on_receivables)
 #
@@ -62,6 +65,7 @@
 #  fk_rails_...  (customer_id => customers.id)
 #  fk_rails_...  (office_address_id => addresses.id)
 #  fk_rails_...  (primary_pickup_address_id => addresses.id)
+#  fk_rails_...  (receivables_contact_id => contacts.id)
 #
 class BrokerCustomer < ApplicationRecord
   belongs_to :broker
@@ -74,6 +78,9 @@ class BrokerCustomer < ApplicationRecord
 
   belongs_to :customer
   accepts_nested_attributes_for :customer
+
+  belongs_to :receivables_contact, class_name: 'Contact'
+  accepts_nested_attributes_for :receivables_contact, allow_destroy: false
 
   has_many :contacts
 

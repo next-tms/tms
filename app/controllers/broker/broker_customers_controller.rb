@@ -138,9 +138,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def receivables
-    if !current_user.has_role?('accounts_receivable')
-      unauthorized
-    end
+    unauthorized unless current_user.has_role?('accounts_receivable')
 
     @q = @broker_customer
          .receivables
@@ -226,6 +224,12 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                               region_id
                                               zip_code
                                               country_id
+                                            ],
+                                            receivables_contact_attributes: %i[
+                                              id
+                                              email
+                                              first_name
+                                              last_name
                                             ],
                                             upcharge_rules_attributes: %i[
                                               _destroy
