@@ -6,7 +6,8 @@ module InterstellarApiClient
       def self.call(broker_carrier:)
         return nil if broker_carrier.carrier&.scac.blank?
 
-        config = { debugging: !Rails.env.production?, timeout: 60 }
+        # config = { debugging: !Rails.env.production?, timeout: 60 }
+        config = { debugging: false, timeout: 60 }
 
         carrier = begin
           Interstellar.const_get(broker_carrier.carrier.scac)
