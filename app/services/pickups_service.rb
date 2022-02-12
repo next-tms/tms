@@ -16,7 +16,7 @@ class PickupsService
     response = nil
     error = nil
 
-    interstellar_destination = @shipment.shipper_address.to_interstellar_shipping_address
+    interstellar_destination = @shipment.receiver_address.to_interstellar_shipping_address
     interstellar_destination.contact = Interstellar::Contact.new(
       company_name: @shipment.receiver_name,
       email: @shipment.receiver_contact_email,
