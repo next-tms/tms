@@ -97,11 +97,11 @@ class PickupsService
 
     label_paths = []
 
-    resonse.labels.each do |_api_label|
+    response.labels.each do |api_label|
       path = File.join(Dir.tmpdir, "#{DateTime.current.to_i}.pdf")
 
       File.open(path, 'wb') do |f|
-        f.write(Base64.decode64(label.data))
+        f.write(Base64.decode64(api_label.data))
       end
 
       label_paths << path
@@ -109,7 +109,7 @@ class PickupsService
 
     pdf = CombinePDF.new
 
-    label_paths.each do
+    label_paths.each do |label_path|
       pdf << CombinePDF.load(label_path)
     end
 
