@@ -52,21 +52,21 @@ class PickupsService
 
     error = nil
 
-    #    begin
-    response = InterstellarApiClient.create_pickup(
-      broker_carrier: @broker_carrier,
-      delivery_from: delivery_from.in_time_zone(@shipment.receiver_address.time_zone),
-      delivery_to: @shipment.delivery_by.in_time_zone(@shipment.receiver_address.time_zone),
-      dispatcher: interstellar_dispatcher,
-      pickup_from: @shipment.pickup_from.in_time_zone(@shipment.shipper_address.time_zone),
-      pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
-      scac: @broker_carrier.carrier.scac,
-      service: @shipment.applied_rate.interstellar_service_type.to_sym,
-      shipment: interstellar_shipment
-    )
-    #    rescue StandardError => e
-    #      error = e
-    #    end
+    begin
+      response = InterstellarApiClient.create_pickup(
+        broker_carrier: @broker_carrier,
+        delivery_from: delivery_from.in_time_zone(@shipment.receiver_address.time_zone),
+        delivery_to: @shipment.delivery_by.in_time_zone(@shipment.receiver_address.time_zone),
+        dispatcher: interstellar_dispatcher,
+        pickup_from: @shipment.pickup_from.in_time_zone(@shipment.shipper_address.time_zone),
+        pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
+        scac: @broker_carrier.carrier.scac,
+        service: @shipment.applied_rate.interstellar_service_type.to_sym,
+        shipment: interstellar_shipment
+      )
+    rescue StandardError => e
+      error = e
+    end
 
     error ||= response&.error
 
