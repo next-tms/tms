@@ -55,7 +55,7 @@ gem 'devise-pwned_password', '~> 0.1.9'
 gem 'turbo-rails', '~> 1.0.1'
 
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'ef2f8898e54f19a2ed7732e0afcf26b0c815cf2b'
-gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next', ref: 'de4fb7a8f0adfe694a1173276209e7f231f2baa5'
+gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next', ref: '61e1b48c03bb3b36ddcdca652b2665e7a7a6c22c'
 
 gem 'rollbar'
 
@@ -83,6 +83,7 @@ gem 'StreetAddress', git: 'https://github.com/Civitium/street-address', ref: '25
 gem 'phony_rails'
 gem 'htmlentities'
 
+gem 'combine_pdf', '~> 1.0.22'
 gem 'wicked_pdf', '~> 2.1.0'
 gem 'wkhtmltopdf-heroku', '~> 2.12.6.0', groups: %i[production staging]
 gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0', groups: %i[development]

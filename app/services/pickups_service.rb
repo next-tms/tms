@@ -92,6 +92,32 @@ class PickupsService
 
     pickup_confirmation = response.pickup_number
     @pickup.update(pickup_confirmation:, updated_by: nil)
+
+    return if response&.labels.empty?
+
+    label_paths = []
+
+    resonse.labels.each do |_api_label|
+      path = File.join(Dir.tmpdir, "#{DateTime.current.to_i}.pdf")
+
+      File.open(path, 'wb') do |f|
+        f.write(Base64.decode64(label.data))
+      end
+
+      label_paths << path
+    end
+
+    pdf = CombinePDF.new
+
+    label_paths.each do
+      pdf << CombinePDF.load(label_path)
+    end
+
+    filename = "#{DateTime.current.to_i}.pdf"
+    path = File.join(Dir.tmpdir, filename)
+    pdf.save(path)
+
+    @shipment.carrier_label.attach(io: File.open(path), filename:)
   end
 
   private
