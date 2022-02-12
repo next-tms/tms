@@ -274,6 +274,8 @@ class Shipment < ApplicationRecord
       .having('COUNT(active_storage_attachments) = 0')
   }
 
+  after_save :create_receivable
+
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
 
@@ -1187,11 +1189,29 @@ class Shipment < ApplicationRecord
     where(id: shipment_ids).where.not(id: shipments_with_receivables_ids)
   end
 
+  def receivable?
+    unless broker_customer.requires_carrier_bol_on_receivables? || broker_customer.requires_carrier_pod_on_receivables?
+      return true
+    end
+
+    if broker_customer.requires_carrier_bol_on_receivables? && broker_customer.requires_carrier_pod_on_receivables?
+      return carrier_bol.present? && carrier_pod.present?
+    end
+
+    return carrier_bol.present? if broker_customer.requires_carrier_bol_on_receivables?
+
+    carrier_pod.present?
+  end
+
   def to_param
     load_id.to_s
   end
 
   private
+
+  def create_receivable
+    CreateReceivableJob.perform_later(self)
+  end
 
   def future_pickup_by
     errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < DateTime.current
