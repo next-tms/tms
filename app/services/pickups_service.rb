@@ -52,21 +52,21 @@ class PickupsService
 
     error = nil
 
-    begin
-      response = InterstellarApiClient.create_pickup(
-        broker_carrier: @broker_carrier,
-        delivery_from: delivery_from.in_time_zone(@shipment.receiver_address.time_zone),
-        delivery_to: @shipment.delivery_by.in_time_zone(@shipment.receiver_address.time_zone),
-        dispatcher: interstellar_dispatcher,
-        pickup_from: @shipment.pickup_from.in_time_zone(@shipment.shipper_address.time_zone),
-        pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
-        scac: @broker_carrier.carrier.scac,
-        service: @shipment.applied_rate.interstellar_service_type.to_sym,
-        shipment: interstellar_shipment
-      )
-    rescue StandardError => e
-      error = e
-    end
+    #    begin
+    response = InterstellarApiClient.create_pickup(
+      broker_carrier: @broker_carrier,
+      delivery_from: delivery_from.in_time_zone(@shipment.receiver_address.time_zone),
+      delivery_to: @shipment.delivery_by.in_time_zone(@shipment.receiver_address.time_zone),
+      dispatcher: interstellar_dispatcher,
+      pickup_from: @shipment.pickup_from.in_time_zone(@shipment.shipper_address.time_zone),
+      pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
+      scac: @broker_carrier.carrier.scac,
+      service: @shipment.applied_rate.interstellar_service_type.to_sym,
+      shipment: interstellar_shipment
+    )
+    #    rescue StandardError => e
+    #      error = e
+    #    end
 
     error ||= response&.error
 
@@ -97,11 +97,11 @@ class PickupsService
 
     label_paths = []
 
-    resonse.labels.each do |_api_label|
+    response.labels.each do |api_label|
       path = File.join(Dir.tmpdir, "#{DateTime.current.to_i}.pdf")
 
       File.open(path, 'wb') do |f|
-        f.write(Base64.decode64(label.data))
+        f.write(Base64.decode64(api_label.data))
       end
 
       label_paths << path
@@ -109,7 +109,7 @@ class PickupsService
 
     pdf = CombinePDF.new
 
-    label_paths.each do
+    label_paths.each do |label_path|
       pdf << CombinePDF.load(label_path)
     end
 
