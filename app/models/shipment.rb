@@ -1190,8 +1190,24 @@ class Shipment < ApplicationRecord
   end
 
   def receivable?
+    return false unless receivables.blank?
+
     unless broker_customer.requires_carrier_bol_on_receivables? || broker_customer.requires_carrier_pod_on_receivables?
       return true
+    end
+
+    unless broker_customer.receivables_schedule == 'immediately'
+      now = DateTime.current.in_time_zone(broker_customer.broker.time_zone)
+
+      # Always send batches between 9 PM - 12 AM
+      return false unless now.hour >= 21
+
+      case broker_customer.receivables_schedule
+      when 'weekly'
+        return false unless now.wday == 0 # Sunday
+      when 'monthly'
+        return false unless now.to_date == now.end_of_month.to_date
+      end
     end
 
     if broker_customer.requires_carrier_bol_on_receivables? && broker_customer.requires_carrier_pod_on_receivables?
