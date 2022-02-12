@@ -186,6 +186,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             :default_bol_notes,
                                             :ignore_value_on_api_quotes,
                                             :internal_notes,
+                                            :receivables_schedule,
                                             :requires_carrier_bol_on_receivables,
                                             :requires_carrier_pod_on_receivables,
                                             broker_customer_sales_reps_attributes: %i[

@@ -105,6 +105,8 @@ class BrokerCustomer < ApplicationRecord
   has_many :upcharge_rules
   accepts_nested_attributes_for :upcharge_rules, allow_destroy: true, reject_if: :all_blank
 
+  enum receivables_schedule: { daily: 'daily', picked_up: 'picked_up', weekly: 'weekly', monthly: 'monthly' }
+
   monetize :default_upcharge_cents, allow_nil: true
 
   serialize :shipment_string_patterns, Array
