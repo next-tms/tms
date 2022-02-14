@@ -164,13 +164,13 @@ class Receivable < ApplicationRecord
 
     result = QuickbooksApiClient::Invoices.new(broker:).find(quickbooks_invoice_id) unless quickbooks_invoice_id.blank?
     unless result.blank?
-      update_columns(quickbooks_invoice_id: result.id)
+      persisted? ? update_columns(quickbooks_invoice_id: result.id) : quickbooks_invoice_id = result.id
       return @quickbooks_invoice = result
     end
 
     result = QuickbooksApiClient::Invoices.new(broker:).find_by_doc_number(shipment.load_id)
     unless result.blank?
-      update_columns(quickbooks_invoice_id: result.id)
+      persisted? ? update_columns(quickbooks_invoice_id: result.id) : quickbooks_invoice_id = result.id
       return @quickbooks_invoice = result
     end
 
