@@ -1191,7 +1191,7 @@ class Shipment < ApplicationRecord
 
   def receivable?
     return false unless receivables.blank?
-    return false if picked_up_at.blank?
+    return false if broker_customer.blank? || picked_up_at.blank?
 
     unless broker_customer.requires_carrier_bol_on_receivables? || broker_customer.requires_carrier_pod_on_receivables?
       return true
