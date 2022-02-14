@@ -42,6 +42,8 @@
     <turbo-frame id="modal"></turbo-frame>
 
     <% flash.each do |type, message| %>
+      <% next if type.to_s == 'timedout' %>
+
       <div class="flash-alert alert alert-<%= flash_class type %> mb-0 border-0 rounded-0">
         <div class="container-fluid">
           <p><%= message %></p>
