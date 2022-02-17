@@ -5,7 +5,7 @@ ruby '3.1.0'
 gem 'rails', '~> 7.0.2.2'
 gem 'pg', '~> 1.3.1'
 gem 'puma', '~> 5.6.1'
-gem 'shakapacker', '~> 6.0.2'
+gem 'shakapacker', '~> 6.1.1'
 gem 'jbuilder', '~> 2.11'
 
 gem 'bootsnap', '>= 1.4.2', require: false
