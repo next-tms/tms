@@ -79,13 +79,13 @@ class PickupsService
           use_forced_freight_classes: @use_forced_freight_classes
         }
 
-        Rollbar.critical(error, attributes)
+        Honeybadger.notify(error, attributes)
       end
 
       error_object = response || error
 
       @pickup.update(error_object:, updated_by: nil)
-      Rollbar.critical(error.message, pickup_attributes: @pickup.attributes) unless Rails.env.development?
+      Honeybadger.notify(error.message, pickup_attributes: @pickup.attributes) unless Rails.env.development?
 
       return false
     end

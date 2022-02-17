@@ -432,7 +432,7 @@ class Shipment < ApplicationRecord
     return nil if path.blank?
 
     unless path.is_a?(String)
-      Rollbar.debug("Shipment#fetch_carrier_bol id=#{id}, path is a #{path.class}")
+      Honeybadger.notify("Shipment#fetch_carrier_bol id=#{id}, path is a #{path.class}")
       return nil
     end
 

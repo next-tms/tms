@@ -75,7 +75,7 @@ class RatesService
           use_forced_freight_classes: @use_forced_freight_classes
         }
 
-        Rollbar.critical(e, attributes)
+        Honeybadger.notify(e, attributes)
       end
 
       error = e
