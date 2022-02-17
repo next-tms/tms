@@ -93,7 +93,7 @@ class ContactMailer < ActionMailer::Base
     if model.label.blank?
       model.email
     else
-      # Temporarily disable due to Rollbar #34
+      # Postmark doesn't like this format:
       # "#{model.label} <#{model.email}>"
       model.email
     end
