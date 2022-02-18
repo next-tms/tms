@@ -1,7 +1,7 @@
 :concurrency: <%= ENV.fetch("SIDEKIQ_CONCURRENCY") { 2 } %>
 :schedule:
   create_receivables:
-    cron: '45 */2 * * *'
+    cron: '10 */2 * * *'
     class: CreateReceivablesJob
   fetch_carrier_bols:
     cron: '0 */4 * * *'
@@ -27,6 +27,9 @@
   track_shipments_pending_pickups:
     cron: '*/15 * * * *'
     class: TrackShipmentsPendingPickupJob
+  send_receivables:
+    cron: '45 */2 * * *'
+    class: SendReceivablesJob
   update_receivables_from_quickbooks_job:
     cron: '40 */2 * * *'
     class: UpdateReceivablesFromQuickbooksJob
