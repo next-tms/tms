@@ -6,5 +6,6 @@ class PushReceivableToQuickbooksJob < ApplicationJob
 
     receivable.update_quickbooks_invoice
     receivable.quickbooks_invoice_pdf
+    receivable.save # to save invoice PDF
   end
 end
