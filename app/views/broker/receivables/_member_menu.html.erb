@@ -9,6 +9,12 @@
 
       <% if @receivable.invoiced? %>
         <%= link_to icon('solid', 'thumbs-down', 'Not Invoiced'), broker_receivable_path(@receivable, receivable: { invoiced: false }), method: :patch, class: 'nav-link' %>
+
+        <% if @receivable.sent_at? %>
+          <%= link_to icon('solid', 'thumbs-down', 'Not Sent'), broker_receivable_path(@receivable, receivable: { sent_at: nil }), method: :patch, class: 'nav-link' %>
+        <% else %>
+          <%= link_to icon('solid', 'thumbs-up', 'Sent'), broker_receivable_path(@receivable, receivable: { sent_at: DateTime.current }), method: :patch, class: 'nav-link' %>
+        <% end %>
       <% else %>
         <%= link_to icon('solid', 'thumbs-up', 'Invoiced'), broker_receivable_path(@receivable, receivable: { invoiced: true }), method: :patch, class: 'nav-link' %>
       <% end %>

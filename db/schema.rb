@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_02_12_222039) do
+ActiveRecord::Schema[7.0].define(version: 2022_02_18_215215) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -523,12 +523,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_02_12_222039) do
     t.integer "total_cents", default: 0, null: false
     t.string "total_currency", default: "USD", null: false
     t.string "quickbooks_invoice_id"
+    t.datetime "sent_at"
+    t.bigint "sent_by_id"
     t.index ["authorized_at"], name: "index_receivables_on_authorized_at"
     t.index ["authorized_by_id"], name: "index_receivables_on_authorized_by_id"
     t.index ["created_by_id"], name: "index_receivables_on_created_by_id"
     t.index ["due_by"], name: "index_receivables_on_due_by"
     t.index ["invoiced"], name: "index_receivables_on_invoiced"
     t.index ["paid_at"], name: "index_receivables_on_paid_at"
+    t.index ["sent_by_id"], name: "index_receivables_on_sent_by_id"
     t.index ["shipment_id"], name: "index_receivables_on_shipment_id"
     t.index ["updated_by_id"], name: "index_receivables_on_updated_by_id"
   end
@@ -889,6 +892,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_02_12_222039) do
   add_foreign_key "receivables", "shipments"
   add_foreign_key "receivables", "users", column: "authorized_by_id"
   add_foreign_key "receivables", "users", column: "created_by_id"
+  add_foreign_key "receivables", "users", column: "sent_by_id"
   add_foreign_key "receivables", "users", column: "updated_by_id"
   add_foreign_key "regions", "countries"
   add_foreign_key "shipment_accessorials", "accessorials"
