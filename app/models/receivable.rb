@@ -14,6 +14,12 @@
 #   @return [Boolean]
 # @!attribute paid_at
 #   @return [Time]
+# @!attribute sent_at
+#   @return [Time]
+# @!attribute total_cents
+#   @return [Integer]
+# @!attribute total_currency
+#   @return [String]
 # @!attribute created_at
 #   @return [Time]
 # @!attribute updated_at
@@ -21,6 +27,10 @@
 # @!attribute authorized_by_id
 #   @return []
 # @!attribute created_by_id
+#   @return []
+# @!attribute quickbooks_invoice_id
+#   @return [String]
+# @!attribute sent_by_id
 #   @return []
 # @!attribute shipment_id
 #   @return []
@@ -35,6 +45,7 @@
 #  index_receivables_on_due_by            (due_by)
 #  index_receivables_on_invoiced          (invoiced)
 #  index_receivables_on_paid_at           (paid_at)
+#  index_receivables_on_sent_by_id        (sent_by_id)
 #  index_receivables_on_shipment_id       (shipment_id)
 #  index_receivables_on_updated_by_id     (updated_by_id)
 #
@@ -42,17 +53,21 @@
 #
 #  fk_rails_...  (authorized_by_id => users.id)
 #  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (sent_by_id => users.id)
 #  fk_rails_...  (shipment_id => shipments.id)
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Receivable < ApplicationRecord
   before_save :set_authorized_at
   before_save :set_invoiced
+  before_save :set_sent_at
+  before_save :set_sent_by
 
   before_validation :set_total
 
   belongs_to :authorized_by, class_name: 'User', optional: true
   belongs_to :created_by, class_name: 'User', optional: true
+  belongs_to :sent_by, class_name: 'User', optional: true
   belongs_to :updated_by, class_name: 'User', optional: true
 
   belongs_to :shipment
@@ -74,6 +89,9 @@ class Receivable < ApplicationRecord
 
   scope :paid, -> { where.not(paid_at: nil) }
   scope :unpaid, -> { where.not(id: paid) }
+
+  scope :sent, -> { where.not(sent_at: nil) }
+  scope :unsent, -> { where.not(id: sent) }
 
   scope :with_invoice, lambda {
     left_joins(:invoice_attachment)
@@ -233,6 +251,14 @@ class Receivable < ApplicationRecord
     return if invoiced?
 
     self.invoiced = true if broker_customer.broker.intuit_account&.connected? && !quickbooks_invoice.blank?
+  end
+
+  def set_sent_at
+    self.sent_at = nil unless invoiced? && !authorized_at.blank?
+  end
+
+  def set_sent_by
+    self.sent_by = nil unless invoiced? && !authorized_at.blank?
   end
 
   def set_total

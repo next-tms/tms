@@ -14,6 +14,7 @@
             <th><%= sort_link q, :shipment_delivered_at, 'Delivered' %></th>
             <th class="text-nowrap"><%= sort_link q, :authorized_by_first_name, 'Approved By' %></th>
             <th><%= sort_link q, :invoiced_eq_true, 'Invoiced?' %></th>
+            <th><%= sort_link q, :sent_at, 'Sent' %></th>
             <th><%= sort_link q, :due_by, 'Due' %></th>
             <th class="text-nowrap"><%= sort_link q, :paid_at, 'Paid On' %></th>
             <th><%= sort_link q, :total_cents, 'Total' %></th>
@@ -37,6 +38,7 @@
               <td><%= short_date receivable.shipment.delivered_at, current_user.time_zone %></td>
               <td class="text-nowrap"><%= receivable.authorized_by&.full_name %></td>
               <td><% if receivable.invoiced? %>✓<% end %></td>
+              <td><%= short_date receivable.sent_at, current_user.time_zone %></td>
               <td><%= short_date receivable.due_by, current_user.time_zone %></td>
               <td><%= short_date receivable.paid_at, current_user.time_zone %></td>
               <td>

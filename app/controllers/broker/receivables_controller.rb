@@ -61,6 +61,7 @@ class Broker::ReceivablesController < Broker::BrokerController
     @receivable.updated_by = current_user
 
     @receivable.authorized_by = current_user unless receivable_params[:authorized_at].blank?
+    @receivable.sent_by = current_user unless receivable_params[:sent_at].blank?
 
     if @receivable.save
       if current_user.broker.intuit_account&.connected?
@@ -75,9 +76,9 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def show
-    if current_user.broker.intuit_account&.connected? && @receivable.authorized_by_id.blank?
-      @receivable.quickbooks_invoice
-    end
+#    if current_user.broker.intuit_account&.connected? && @receivable.authorized_by_id.blank?
+#      @receivable.quickbooks_invoice
+#    end
   end
 
   private
