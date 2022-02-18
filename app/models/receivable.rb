@@ -158,6 +158,32 @@ class Receivable < ApplicationRecord
     !shipment.carrier_pod.blank?
   end
 
+  def sendable?
+    return false if broker_customer.blank? || shipment.picked_up_at.blank?
+
+    unless broker_customer.receivables_schedule == 'immediately'
+      now = DateTime.current.in_time_zone(broker_customer.broker.time_zone)
+
+      # Always send batches between 9 PM - 12 AM
+      return false unless now.hour >= 21
+
+      case broker_customer.receivables_schedule
+      when 'weekly'
+        return false unless now.wday == 0 # Sunday
+      when 'monthly'
+        return false unless now.to_date == now.end_of_month.to_date
+      end
+    end
+
+    if broker_customer.requires_carrier_bol_on_receivables? && broker_customer.requires_carrier_pod_on_receivables?
+      return shipment.carrier_bol.present? && shipment.carrier_pod.present?
+    end
+
+    return shipment.carrier_bol.present? if broker_customer.requires_carrier_bol_on_receivables?
+
+    shipment.carrier_pod.present?
+  end
+
   def create_quickbooks_invoice
     return nil unless broker.intuit_account&.connected?
     return @quickbooks_invoice unless @quickbooks_invoice.blank?
