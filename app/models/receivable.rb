@@ -161,6 +161,12 @@ class Receivable < ApplicationRecord
   def sendable?
     return false if broker_customer.blank? || shipment.picked_up_at.blank?
 
+    unless invoice.present?
+      fetch_invoice
+
+      return invoice.present?
+    end
+
     unless broker_customer.receivables_schedule == 'immediately'
       now = DateTime.current.in_time_zone(broker_customer.broker.time_zone)
 
