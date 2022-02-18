@@ -5,5 +5,6 @@ class PushReceivableToQuickbooksJob < ApplicationJob
     return false if receivable.shipment.picked_up_at.blank?
 
     receivable.update_quickbooks_invoice
+    receivable.quickbooks_invoice_pdf
   end
 end
