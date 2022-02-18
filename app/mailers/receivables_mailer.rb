@@ -11,10 +11,16 @@ class ReceivablesMailer < ActionMailer::Base
       content: File.open(pdf_path)
     }
 
+    bcc = []
+    broker_customer.broker.users.broker.find_each do |user|
+      bcc << user.email if user.has_role?('accounts_receivable')
+    end
+
     mail(
       from: "#{shipment.broker.name} <#{shipment.broker.robot_email}>",
       reply_to: broker_customer.broker.customer_service_email,
       to: pretty_email(broker_customer.receivables_contact),
+      bcc:,
       subject: load_ids.size > 1 ? 'Batch Invoices' : "Invoice #{load_ids[0]}"
     )
   end

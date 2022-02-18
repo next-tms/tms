@@ -11,7 +11,10 @@ class SendReceivablesJob < ApplicationJob
       load_ids = []
 
       receivables.each do |receivable|
-        next unless receivable.sendable?
+        unless receivable.sendable?
+          receivables -= receivable
+          next
+        end
 
         load_ids << receivable.shipment.load_id
 
@@ -25,7 +28,8 @@ class SendReceivablesJob < ApplicationJob
       pdf.save(path)
 
       # Using deliver_now because PDF may not persist
-      ReceivablesMailer.batch(broker_customer:, load_ids:, pdf_path: path).deliver_now
+      receivables.update_all(sent_at: DateTime.current) if ReceivablesMailer.batch(broker_customer:, load_ids:,
+                                                                                   pdf_path: path).deliver_now
     end
   end
 end
