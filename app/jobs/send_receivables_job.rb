@@ -18,9 +18,9 @@ class SendReceivablesJob < ApplicationJob
         load_ids << receivable.shipment.load_id
         sendable_receivable_ids << receivable.id
 
-        pdf << CombinePDF.load(receivable.invoice.url)
-        pdf << CombinePDF.load(receivable.shipment.carrier_bol) if broker_customer.requires_carrier_bol_on_receivables?
-        pdf << CombinePDF.load(receivable.shipment.carrier_pod) if broker_customer.requires_carrier_pod_on_receivables?
+        pdf << CombinePDF.parse(receivable.invoice.download)
+        pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download) if broker_customer.requires_carrier_bol_on_receivables?
+        pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download) if broker_customer.requires_carrier_pod_on_receivables?
       end
 
       filename = "Batch Invoices - #{broker_customer.customer.name} #{DateTime.current.to_i}.pdf"
