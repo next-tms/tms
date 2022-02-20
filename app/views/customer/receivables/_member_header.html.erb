@@ -1,0 +1,83 @@
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6">Invoice <%= @receivable.shipment.load_id %></h1>
+
+  <% if !@receivable.new_record? %>
+    <table class="table table-borderless w-auto">
+      <thead>
+        <tr>
+          <% unless @receivable.shipment.broker_carrier.blank? %>
+            <th>Carrier</th>
+          <% end %>
+
+          <th>Load</th>
+
+          <% unless @receivable.shipment.shipper_reference.blank? %>
+            <th>Shipper Ref</th>
+          <% end %>
+
+          <% unless @receivable.shipment.customer_reference.blank? %>
+            <th>Customer Ref</th>
+          <% end %>
+
+          <% unless @receivable.shipment.bol.blank? %>
+            <th>BOL</th>
+          <% end %>
+
+          <% unless real_pro(@receivable.shipment).blank? %>
+            <th>Pro</th>
+          <% end %>
+
+          <th>Due</th>
+          <th>Paid</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <% unless @receivable.shipment.broker_carrier.blank? %>
+            <td class="lead">
+              <li class="list-inline-item"><%= @receivable.shipment.tracking_carrier&.name || @receivable.shipment.broker_carrier&.carrier&.name %></li>
+            </td>
+          <% end %>
+
+          <td class="lead">
+            <%= link_to @receivable.shipment.load_id, broker_shipment_path(@receivable.shipment), target: '_blank' %>
+          </td>
+
+          <% unless @receivable.shipment.shipper_reference.blank? %>
+            <td class="lead"><%= @receivable.shipment.shipper_reference %></td>
+          <% end %>
+
+          <% unless @receivable.shipment.customer_reference.blank? %>
+            <td class="lead"><%= @receivable.shipment.customer_reference %></td>
+          <% end %>
+
+          <% unless @receivable.shipment.bol.blank? %>
+            <td class="lead"><%= @receivable.shipment.bol %></td>
+          <% end %>
+
+          <% unless real_pro(@receivable.shipment).blank? %>
+            <td class="lead">
+              <% if tracking_uri(@receivable.shipment).blank? %>
+                <%= real_pro(@receivable.shipment) %>
+              <% else %>
+                <%= link_to real_pro(@receivable.shipment), tracking_uri(@receivable.shipment), target: '_blank' %>
+              <% end %>
+            </td>
+          <% end %>
+
+          <td class="lead">
+            <%= short_date @receivable.due_by, current_user.time_zone %>
+          </td>
+
+          <td class="lead">
+            <%= short_date @receivable.paid_at, current_user.time_zone %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% unless @receivable.new_record? %>
+    <%= render 'member_menu' %>
+  <% end %>
+</div>
