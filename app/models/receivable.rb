@@ -187,7 +187,9 @@ class Receivable < ApplicationRecord
 
     return shipment.carrier_bol.present? if broker_customer.requires_carrier_bol_on_receivables?
 
-    shipment.carrier_pod.present?
+    return shipment.carrier_pod.present? if broker_customer.requires_carrier_pod_on_receivables?
+
+    true
   end
 
   def create_quickbooks_invoice
