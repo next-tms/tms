@@ -1,0 +1,78 @@
+<% provide :title, "Invoice #{@receivable.shipment.load_id}" %>
+
+<%= render 'member_header' %>
+<h2>Overview</h2>
+
+<% unless @receivable.total == @receivable.shipment.total_charges %>
+  <div class="alert alert-danger">
+    <p class="lead">Invoice doesn’t match load</p>
+    <p>The charges on this invoice do not match the load.</p>
+    <ul class="list-unstyled list-inline">
+      <li class="list-inline-item"><%= link_to 'Recalculate', rebuild_broker_receivable_path(@receivable), target: '_top', class: 'btn btn-light' %></li>
+    </ul>
+  </div>
+<% end %>
+
+<% if @receivable.missing_carrier_bol? || @receivable.missing_carrier_pod? %>
+  <div class="alert alert-danger">
+    <p class="lead">
+      Missing required <%= 'document'.pluralize([@receivable.missing_carrier_bol?, @receivable.missing_carrier_pod?].count(true)) %>
+    </p>
+    <p><%= @receivable.broker_customer.customer.name %> requires these documents:</p>
+    <ul class="list-unstyled list-inline">
+      <% if @receivable.missing_carrier_bol? %>
+        <li class="list-inline-item">Carrier BOL</li>
+      <% end %>
+
+      <% if @receivable.missing_carrier_pod? %>
+        <li class="list-inline-item">Carrier POD</li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="row">
+  <div class="col col-md-4">
+    <p class="col-title">Shipper</p>
+    <div class="bg-light rounded p-3">
+      <%= @receivable.shipment.shipper_name %>
+      <br>
+      <%== @receivable.shipment.shipper_address.pretty('<br>') %>
+    </div>
+  </div>
+
+  <div class="col col-md-4">
+    <p class="col-title">Receiver</p>
+    <div class="bg-light rounded p-3">
+      <%= @receivable.shipment.receiver_name %>
+      <br>
+      <%== @receivable.shipment.receiver_address.pretty('<br>') %>
+    </div>
+  </div>
+
+  <div class="col col-md-4">
+    <p class="col-title">References</p>
+    <div class="bg-light rounded p-3">
+      <% parts = [] %>
+      <% unless @receivable.shipment.shipper_reference.blank? %>
+        <% parts << "Shipper Ref: #{@receivable.shipment.shipper_reference}" %>
+      <% end %>
+      
+      <% unless @receivable.shipment.customer_reference.blank? %>
+        <% parts << "PO: #{@receivable.shipment.customer_reference}" %>
+      <% end %>
+      
+      <% unless @receivable.shipment.bol.blank? %>
+        <% parts << "BOL: #{@receivable.shipment.bol}" %>
+      <% end %>
+      
+      <% unless real_pro(@receivable.shipment).blank? %>
+        <% parts << "Pro: #{real_pro(@receivable.shipment)}" %>
+      <% end %>
+
+      <%== parts.join('<br>') %>
+    </div>
+  </div>
+</div>
+
+<%= render 'receivable_items', receivable_items: @receivable.receivable_items %>

@@ -149,6 +149,11 @@ Rails.application.routes.draw do
   namespace :customer do
     root 'shipments#index'
 
+    resources :receivables, path: 'invoices' do
+      collection { get :invoiced }
+      collection { get :paid }
+    end
+
     get 'shipments/booked', to: 'shipments#booked'
     get 'shipments/delivered', to: 'shipments#delivered'
     get 'shipments/pending-delivery', to: 'shipments#pending_delivery'

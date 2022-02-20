@@ -1,0 +1,36 @@
+<% unless receivable_items.blank? %>
+  <div class="row">
+    <div class="col col-md-8">
+      <div class="table-responsive">
+        <table class="table table-condensed table-borderless table-striped h-100">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% receivable_items.each do |receivable_item| %>
+              <tr>
+                <td><%= simple_format receivable_item.description %></td>
+                <td>
+                  <% unless receivable_item.charge.zero? %>
+                    <%= humanized_money_with_symbol receivable_item.charge, no_cents_if_whole: false %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th>&nbsp;</th>
+              <th><%= humanized_money_with_symbol Money.new(receivable_items.sum(:charge_cents)), no_cents_if_whole: false %></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>
