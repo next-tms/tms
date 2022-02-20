@@ -6,9 +6,9 @@ class ReceivablesMailer < ActionMailer::Base
   def batch(broker_customer:, load_ids:, pdf_path:)
     @load_ids = load_ids.sort
 
-    attachments[pdf_path] = {
+    attachments[File.basename(pdf_path)] = {
       mime_type: 'application/pdf',
-      content: File.open(pdf_path)
+      content: File.read(pdf_path)
     }
 
     bcc = []
