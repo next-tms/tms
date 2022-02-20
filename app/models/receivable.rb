@@ -248,7 +248,10 @@ class Receivable < ApplicationRecord
   def update_from_quickbooks_invoice
     return if quickbooks_invoice.blank?
 
-    update_columns(paid_at: DateTime.current) unless quickbooks_invoice.balance.positive?
+    now = DateTime.current
+
+    update_columns(paid_at: now) if quickbooks_invoice.balance.zero?
+    update_columns(sent_at: now) if quickbooks_invoice.email_status == 'EmailSent'
   end
 
   def update_quickbooks_invoice
