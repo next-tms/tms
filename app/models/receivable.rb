@@ -143,7 +143,7 @@ class Receivable < ApplicationRecord
   end
 
   def fetch_invoice
-    quickbooks_invoice_pdf unless broker.intuit_account&.connected?
+    quickbooks_invoice_pdf if broker.intuit_account&.connected?
   end
 
   def missing_carrier_bol?
