@@ -18,6 +18,7 @@ module InterstellarApiClient
       API_TIMEOUT_EXCEPTIONS = [
         EOFError,
         Errno::ECONNREFUSED,
+        Errno::ECONNRESET,
         Net::OpenTimeout,
         Net::ReadTimeout
       ].freeze
@@ -34,7 +35,7 @@ module InterstellarApiClient
       ].freeze
 
       def initialize(broker_carrier:, retry_on_timeout: true, return_nil_on_error: true)
-        @carrier_client = InterstellarApiClient.build_client(broker_carrier: broker_carrier)
+        @carrier_client = InterstellarApiClient.build_client(broker_carrier:)
         @broker_carrier = broker_carrier
         @retry_on_timeout = retry_on_timeout
         @return_nil_on_error = return_nil_on_error
