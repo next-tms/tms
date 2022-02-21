@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_02_18_215215) do
+ActiveRecord::Schema[7.0].define(version: 2022_02_21_201626) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -532,7 +532,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_02_18_215215) do
     t.index ["invoiced"], name: "index_receivables_on_invoiced"
     t.index ["paid_at"], name: "index_receivables_on_paid_at"
     t.index ["sent_by_id"], name: "index_receivables_on_sent_by_id"
-    t.index ["shipment_id"], name: "index_receivables_on_shipment_id"
+    t.index ["shipment_id"], name: "index_receivables_on_shipment_id", unique: true
     t.index ["updated_by_id"], name: "index_receivables_on_updated_by_id"
   end
 
