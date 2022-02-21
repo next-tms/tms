@@ -160,6 +160,7 @@ class Receivable < ApplicationRecord
 
   def sendable?
     return false if broker_customer.blank? || shipment.picked_up_at.blank?
+    return false unless paid_at.blank?
 
     unless invoice.present?
       fetch_invoice
