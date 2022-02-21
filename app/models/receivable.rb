@@ -135,7 +135,7 @@ class Receivable < ApplicationRecord
 
       receivable_items.build(
         charge: shipment_broker_accessorial.charge,
-        description: shipment_broker_accessorial.broker_accessorial.name.capitalize
+        description: shipment_broker_accessorial.broker_accessorial.name
       )
     end
 
