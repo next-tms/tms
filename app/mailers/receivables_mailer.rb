@@ -17,7 +17,7 @@ class ReceivablesMailer < ActionMailer::Base
     end
 
     mail(
-      from: "#{shipment.broker.name} <#{shipment.broker.robot_email}>",
+      from: "#{broker_customer.broker.name} <#{broker_customer.broker.robot_email}>",
       reply_to: broker_customer.broker.customer_service_email,
       to: pretty_email(broker_customer.receivables_contact),
       bcc:,
