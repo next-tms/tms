@@ -146,6 +146,10 @@ class Receivable < ApplicationRecord
     quickbooks_invoice_pdf if broker.intuit_account&.connected?
   end
 
+  def update_from_api
+    quickbooks_invoice if broker.intuit_account&.connected?
+  end
+
   def missing_carrier_bol?
     return false unless shipment.broker_customer.requires_carrier_bol_on_receivables?
 
@@ -160,12 +164,15 @@ class Receivable < ApplicationRecord
 
   def sendable?
     return false if broker_customer.blank? || shipment.picked_up_at.blank?
+
+    update_from_api if persisted?
+
     return false unless paid_at.blank?
 
     unless invoice.present?
       fetch_invoice
 
-      return invoice.present?
+      return false unless invoice.present?
     end
 
     unless broker_customer.receivables_schedule == 'immediately'
