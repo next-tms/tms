@@ -46,7 +46,7 @@
 #  index_receivables_on_invoiced          (invoiced)
 #  index_receivables_on_paid_at           (paid_at)
 #  index_receivables_on_sent_by_id        (sent_by_id)
-#  index_receivables_on_shipment_id       (shipment_id)
+#  index_receivables_on_shipment_id       (shipment_id) UNIQUE
 #  index_receivables_on_updated_by_id     (updated_by_id)
 #
 # Foreign Keys
