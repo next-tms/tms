@@ -23,6 +23,8 @@ class SendReceivablesJob < ApplicationJob
         pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download) if broker_customer.requires_carrier_pod_on_receivables?
       end
 
+      next if sendable_receivable_ids.blank?
+
       filename = "Batch Invoices - #{broker_customer.customer.name} #{DateTime.current.to_i}.pdf"
       path = File.join(Dir.tmpdir, filename)
       pdf.save(path)
