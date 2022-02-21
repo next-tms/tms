@@ -274,7 +274,7 @@ class Shipment < ApplicationRecord
       .having('COUNT(active_storage_attachments) = 0')
   }
 
-  after_save :create_receivable
+  after_commit :create_receivable
 
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
