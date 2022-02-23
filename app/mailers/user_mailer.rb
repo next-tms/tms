@@ -33,6 +33,16 @@ class UserMailer < ActionMailer::Base
     )
   end
 
+  def canceled_at(shipment)
+    @shipment = shipment
+    mail(
+      from: from(shipment),
+      reply_to: reply_to(shipment, __method__),
+      to: to(shipment, __method__),
+      subject: "#{who_performed(shipment)} Canceled Load #{shipment.load_id}"
+    )
+  end
+
   def delivered_at(shipment)
     @shipment = shipment
     mail(
