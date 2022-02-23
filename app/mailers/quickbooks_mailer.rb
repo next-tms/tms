@@ -1,4 +1,4 @@
-class QuickbooksMailer < ActionMailer::Base
+class QuickbooksMailer < ApplicationMailer
   default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
   helper :application
 

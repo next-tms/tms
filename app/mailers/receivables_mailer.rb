@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ReceivablesMailer < ActionMailer::Base
+class ReceivablesMailer < ApplicationMailer
   default from: 'Next TMS <robot@tms.next-tms.com>'
 
   def batch(broker_customer:, load_ids:, pdf_path:)
