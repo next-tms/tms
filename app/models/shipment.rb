@@ -195,7 +195,7 @@ class Shipment < ApplicationRecord
   end
 
   scope :canceled, -> { where.not(canceled_at: nil) }
-  scope :canceled_recently, -> { canceled.where('canceled_at > ?', 1.day.ago) }
+  scope :canceled_recently, -> { where('canceled_at > ?', 1.day.ago) }
   scope :active, -> { where.not(id: canceled) }
 
   scope :booked, -> { active.where.not(booked_at: nil).where(dispatched_at: nil) }
@@ -204,7 +204,15 @@ class Shipment < ApplicationRecord
                            }
   scope :pending_found, -> { active.pending_delivery.where.not(lost_on: nil) }
   scope :pending_pickup, -> { active.where.not(dispatched_at: nil).where(picked_up_at: nil) }
-  scope :pending_quotation, -> { where(broker_carrier: nil) } # Include canceled
+
+  scope :pending_quotation, lambda {
+    where(broker_carrier: nil, canceled_at: nil)
+      .or(
+        where(broker_carrier: nil)
+        .where(id: canceled_recently)
+      )
+  }
+
   scope :pending_delivery, lambda {
                              active.where.not(picked_up_at: nil).where.not(departed_origin_terminal_at: nil).where(delivered_at: nil)
                            }
