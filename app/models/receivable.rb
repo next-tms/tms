@@ -149,7 +149,7 @@ class Receivable < ApplicationRecord
   end
 
   def update_from_api
-    quickbooks_invoice if broker.intuit_account&.connected?
+    update_from_quickbooks_invoice if broker.intuit_account&.connected?
   end
 
   def missing_carrier_bol?
