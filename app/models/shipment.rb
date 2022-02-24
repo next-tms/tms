@@ -214,11 +214,17 @@ class Shipment < ApplicationRecord
   }
 
   scope :pending_delivery, lambda {
-                             active.where.not(picked_up_at: nil).where.not(departed_origin_terminal_at: nil).where(delivered_at: nil)
-                           }
+    active
+      .where.not(picked_up_at: nil)
+      .where(delivered_at: nil)
+  }
+
   scope :pending_departure, lambda {
-                              active.where.not(picked_up_at: nil).where(departed_origin_terminal_at: nil).where(delivered_at: nil)
-                            }
+    active
+      .where.not(picked_up_at: nil)
+      .where(departed_origin_terminal_at: nil)
+      .where(delivered_at: nil)
+  }
 
   scope :missing_delivery_appointment, lambda {
     joins(:broker_accessorials)
@@ -240,20 +246,39 @@ class Shipment < ApplicationRecord
       .where(delivery_appointment_on: nil)
       .where(delivery_appointment_at: nil)
   }
+
   scope :missing_pro, -> { active.pending_delivery.where(pro: ['', nil]) }
+
   scope :missing_cost, -> { active.where.not(id: pending_quotation).where(carrier_cost_cents: 0) }
+
   scope :missing_charge, -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
+
   scope :missing_delivery_eta_on, -> { where(delivery_eta_on: ['', nil]) }
+
   scope :not_missing_delivery_eta_on, -> { where.not(id: missing_delivery_eta_on) }
-  scope :missing_pricing, -> { active.missing_cost.or(active.missing_charge).where.not(picked_up_at: nil) }
+
+  scope :missing_pricing, lambda {
+    active.missing_cost.or(active.missing_charge).where.not(picked_up_at: nil)
+  }
 
   scope :delivered, -> { where.not(delivered_at: nil) }
-  scope :late_per_delivery_eta_on, -> { where.not(id: delivered).where('delivery_eta_on < ?', Date.current) }
-  scope :late_per_promised_delivery_by, -> { where.not(id: delivered).where('promised_delivery_by < ?', Date.current) }
+
+  scope :late_per_delivery_eta_on, lambda {
+    where.not(id: delivered).where('delivery_eta_on < ?', Date.current)
+  }
+
+  scope :late_per_promised_delivery_by, lambda {
+    where.not(id: delivered).where('promised_delivery_by < ?', Date.current)
+  }
+
   scope :late_per_quoted_delivery_by, lambda {
-                                        where.not(id: delivered).where('quoted_delivery_by < ?', Date.current + 3.days)
-                                      }
-  scope :late, -> { where(id: late_per_promised_delivery_by).or(where(id: late_per_delivery_eta_on)).distinct }
+    where.not(id: delivered).where('quoted_delivery_by < ?', Date.current + 3.days)
+  }
+
+  scope :late, lambda {
+    where(id: late_per_promised_delivery_by).or(where(id: late_per_delivery_eta_on)).distinct
+  }
+
   scope :not_late, -> { where.not(id: late) }
 
   # Receivables
@@ -1155,7 +1180,7 @@ class Shipment < ApplicationRecord
     shipment_ids = []
 
     only_after = Date.parse('2021-12-01').to_date.in_time_zone('America/Los_Angeles').beginning_of_day
-    shipments = where.not(picked_up_at: [nil, '']).where('picked_up_at > ?', only_after)
+    shipments = active.where('picked_up_at > ?', only_after)
 
     shipment_ids +=
       shipments
@@ -1170,7 +1195,6 @@ class Shipment < ApplicationRecord
 
     shipment_ids +=
       shipments
-      .pending_delivery
       .where(
         broker_customer_id:
         BrokerCustomer
@@ -1181,7 +1205,6 @@ class Shipment < ApplicationRecord
 
     shipment_ids +=
       shipments
-      .pending_delivery
       .where(
         broker_customer_id:
         BrokerCustomer
