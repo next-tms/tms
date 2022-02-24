@@ -139,6 +139,8 @@ class Receivable < ApplicationRecord
       )
     end
 
+    self.total = receivable_items.reject(&:marked_for_destruction?).sum(&:charge)
+
     self
   end
 
