@@ -41,8 +41,8 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: cda74d9691d7f993f8f244b746e380574841cf69
-  ref: cda74d9691d7f993f8f244b746e380574841cf69
+  revision: fa9d631900a4306980e16ae88318a4f2f9828925
+  ref: fa9d631900a4306980e16ae88318a4f2f9828925
   specs:
     interstellar-next (0.1.pre11)
       interstellar (= 0.1.pre11)
