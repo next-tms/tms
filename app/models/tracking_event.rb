@@ -78,6 +78,8 @@ class TrackingEvent < ApplicationRecord
   before_validation :set_time_zone_name
   before_validation :set_at_from_at_without_time_zone_string
 
+  validate :reasonable_at
+
   def pretty_location
     "#{city}, #{region.abbreviation}"
   end
@@ -89,6 +91,11 @@ class TrackingEvent < ApplicationRecord
   end
 
   private
+
+  def reasonable_at
+    errors.add(:at, 'must not be later than six hours in the future') if at >= DateTime.now + 6.hours
+    errors.add(:at, 'must not be sooner than one week in the past') if at <= DateTime.now - 1.week
+  end
 
   def sanitize_datetime(datetime:, time_zone:)
     return nil unless datetime.is_a?(String)

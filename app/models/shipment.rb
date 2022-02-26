@@ -752,7 +752,9 @@ class Shipment < ApplicationRecord
         region: Region.find_by_abbreviation(interstellar_location.state)
       )
 
-      next unless tracking_event.save
+      next unless tracking_event.valid?
+
+      tracking_event.save
 
       case tracking_event.event.active_shipping_code
       when 'delivered'
