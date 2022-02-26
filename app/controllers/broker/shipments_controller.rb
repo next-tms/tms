@@ -546,8 +546,6 @@ class Broker::ShipmentsController < Broker::BrokerController
         shipment: @shipment
       )
     end
-
-    FetchShipmentCarrierBolsJob.perform_later([@shipment.id]) if @shipment.carrier_bol.blank?
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
