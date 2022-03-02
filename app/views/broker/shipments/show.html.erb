@@ -52,7 +52,7 @@
 
 <% if @shipment.dispatched_at.blank? and not @shipment.suggested_broker_accessorials.blank?  %>
   <div class="alert alert-warning">
-    <p class="lead"><%= icon 'fas', 'dollar-sign', 'Missing Services' %></p>
+    <p class="lead"><%= icon 'solid', 'dollar-sign', 'Missing Services' %></p>
     <p>Based on the shipment information the following services may be required and charged by the carrier:</p>
     <ul class="list-unstyled list-inline">
       <% @shipment.suggested_broker_accessorials.each do |broker_accessorial| %>
@@ -67,7 +67,7 @@
 <div class="row">
   <% cache [@shipment, @shipment.shipper_address] do %>
     <div class="col-sm-3">
-      <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
+      <p class="col-title"><%= icon 'solid', 'industry', 'Shipper' %></p>
         <% unless @shipment.shipper_address.types.blank? %>
           <ul class="list-inline list-unstyled text-muted text-uppercase">
             <% @shipment.shipper_address.types.each do |type| %>
@@ -101,7 +101,7 @@
 
   <% cache [@shipment, @shipment.receiver_address] do %>
     <div class="col-sm-3">
-      <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
+      <p class="col-title"><%= icon 'solid', 'cart-arrow-down', 'Receiver' %></p>
       <% unless @shipment.receiver_address.types.blank? %>
         <ul class="list-inline list-unstyled text-muted text-uppercase">
           <% @shipment.receiver_address.types.each do |type| %>
@@ -134,7 +134,7 @@
 
   <% cache [@shipment, 'schedule'] do %>
     <div class="col-sm-3">
-      <p class="col-title"><%= icon 'fas', 'map-signs', 'Routing' %></p>
+      <p class="col-title"><%= icon 'solid', 'map-signs', 'Routing' %></p>
       <table class="table table-borderless table-condensed">
         <tbody>
           <tr>
@@ -188,7 +188,7 @@
   <% end %>
 
   <div class="col-sm-3">
-    <p class="col-title"><%= icon 'fas', 'sticky-note', 'Notes' %></p>
+    <p class="col-title"><%= icon 'solid', 'sticky-note', 'Notes' %></p>
     <div class="notes">
       <% unless @shipment.broker_notes.blank? %>
         <%= simple_format @shipment.broker_notes %>
@@ -201,7 +201,7 @@
       <% end %>
     </div>
 
-    <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Value' %></p>
+    <p class="col-title"><%= icon 'solid', 'dollar-sign', 'Value' %></p>
     <% if @shipment.value > 0 %>
       <ul class="list-unstyled">
         <li><%= humanized_money_with_symbol @shipment.value, no_cents_if_whole: false %></li>
@@ -213,7 +213,7 @@
   </div>
 
   <div class="col-sm-6">
-    <p class="col-title"><%= icon 'fas', 'map-pin', 'Tracking' %></p>
+    <p class="col-title"><%= icon 'solid', 'map-pin', 'Tracking' %></p>
     <%= render 'tracking/tracking', shipment: @shipment, search_terminals_links: true %>
   </div>
 
@@ -228,7 +228,7 @@
 
 </div>
 
-<p class="col-title"><%= icon 'fas', 'pallet', 'Freight' %></p>
+<p class="col-title"><%= icon 'solid', 'pallet', 'Freight' %></p>
 <% if not @shipment.items.count == 0 %>
   <div class="table-responsive">
     <table class="table table-borderless table-striped table-hover">

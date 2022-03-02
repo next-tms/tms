@@ -7,7 +7,7 @@
 
   <div class="row">
     <div class="col-sm-6 col-md-4">
-      <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
+      <p class="col-title"><%= icon 'solid', 'industry', 'Shipper' %></p>
       <%= f.text_field :shipper_name, label: 'Name', autofocus: 'autofocus' %>
       <%= f.text_field :pickup_on, label: 'Pickup', data: flatpickr_data %>
       <%= f.text_field :pickup_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
@@ -30,7 +30,7 @@
     </div>
 
     <div class="col-sm-6 col-md-4">
-      <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
+      <p class="col-title"><%= icon 'solid', 'cart-arrow-down', 'Receiver' %></p>
       <%= f.text_field :receiver_name, label: 'Name' %>
       <%= f.text_field :delivery_appointment_on, label: 'Appointment', data: flatpickr_data %>
       <%= f.text_field :delivery_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
@@ -53,13 +53,13 @@
     </div>
 
     <div class="col-sm-6 col-md-4">
-      <p class="col-title"><%= icon 'fas', 'barcode', 'References' %></p>
+      <p class="col-title"><%= icon 'solid', 'barcode', 'References' %></p>
       <%= f.text_field :shipper_reference, label: 'Shipper', autocomplete: 'off' %>
       <%= f.text_field :customer_reference, label: 'PO', autocomplete: 'off' %>
       <%= f.text_field :bol, label: 'BOL', autocomplete: 'off' %>
       <%= f.text_field :pro, label: 'Pro', autocomplete: 'off' %>
 
-      <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Value' %></p>
+      <p class="col-title"><%= icon 'solid', 'dollar-sign', 'Value' %></p>
       <%= f.text_field :value, label: 'Total', prepend: '$', data: money_controller_data, autocomplete: 'off' %>
     </div>
   </div>
