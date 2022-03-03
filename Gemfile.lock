@@ -1440,7 +1440,7 @@ GEM
       socksify
     i18n (1.10.0)
       concurrent-ruby (~> 1.0)
-    image_processing (1.12.1)
+    image_processing (1.12.2)
       mini_magick (>= 4.9.5, < 5)
       ruby-vips (>= 2.0.17, < 3)
     io-wait (0.2.1)
@@ -1720,7 +1720,7 @@ DEPENDENCIES
   honeybadger (~> 4.0)
   htmlentities
   httparty
-  image_processing (~> 1.12.1)
+  image_processing (~> 1.12.2)
   interstellar!
   interstellar-next!
   jbuilder (~> 2.11)
