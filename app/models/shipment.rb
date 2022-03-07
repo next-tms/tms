@@ -1182,41 +1182,7 @@ class Shipment < ApplicationRecord
     shipment_ids = []
 
     only_after = Date.parse('2021-12-01').to_date.in_time_zone('America/Los_Angeles').beginning_of_day
-    shipments = active.where('picked_up_at > ?', only_after)
-
-    shipment_ids +=
-      shipments
-      .delivered
-      .where(
-        broker_customer_id:
-        BrokerCustomer
-        .where(requires_carrier_pod_on_receivables: true)
-        .ids
-      )
-      .ids
-
-    shipment_ids +=
-      shipments
-      .where(
-        broker_customer_id:
-        BrokerCustomer
-        .where(requires_carrier_bol_on_receivables: true)
-        .ids
-      )
-      .ids
-
-    shipment_ids +=
-      shipments
-      .where(
-        broker_customer_id:
-        BrokerCustomer
-        .where(requires_carrier_pod_on_receivables: false)
-        .where(requires_carrier_bol_on_receivables: false)
-        .ids
-      )
-      .ids
-
-    shipment_ids.uniq!
+    shipment_ids = active.where('picked_up_at > ?', only_after).ids
     shipments_with_receivables_ids = Receivable.where(shipment_id: shipment_ids).pluck(:shipment_id)
 
     where(id: shipment_ids).where.not(id: shipments_with_receivables_ids)
@@ -1226,17 +1192,7 @@ class Shipment < ApplicationRecord
     return false unless receivables.blank?
     return false if broker_customer.blank? || picked_up_at.blank?
 
-    unless broker_customer.requires_carrier_bol_on_receivables? || broker_customer.requires_carrier_pod_on_receivables?
-      return true
-    end
-
-    if broker_customer.requires_carrier_bol_on_receivables? && broker_customer.requires_carrier_pod_on_receivables?
-      return carrier_bol.present? && carrier_pod.present?
-    end
-
-    return carrier_bol.present? if broker_customer.requires_carrier_bol_on_receivables?
-
-    carrier_pod.present?
+    true
   end
 
   def to_param
