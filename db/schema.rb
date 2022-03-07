@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_02_21_201626) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_07_214907) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -460,6 +460,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_02_21_201626) do
     t.index ["carrier_area_id"], name: "index_pricing_rules_on_carrier_area_id"
     t.index ["max_pallets"], name: "index_pricing_rules_on_max_pallets"
     t.index ["min_pallets"], name: "index_pricing_rules_on_min_pallets"
+  end
+
+  create_table "problem_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_problem_types_on_name"
   end
 
   create_table "rate_accessorials", force: :cascade do |t|
