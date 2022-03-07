@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: problem_types
@@ -16,5 +18,7 @@
 #  index_problem_types_on_name  (name)
 #
 class ProblemType < ApplicationRecord
+  has_many :problems
+
   validates :name, uniqueness: true
 end

@@ -322,6 +322,8 @@ class Shipment < ApplicationRecord
   has_many :payment_transactions
   has_many :payments, through: :payment_transactions
 
+  has_many :problems
+
   belongs_to :created_by, class_name: 'User', required: false
   belongs_to :updated_by, class_name: 'User', required: false
 

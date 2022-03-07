@@ -20,6 +20,14 @@
   </ul>
 
   <ul class="list-unstyled mt-4">
+    <% if current_user.has_role?('root') || current_user.problems.any? %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('solid', 'circle-exclamation', 'Exceptions'), broker_problems_path, class: 'problems' %>
+      </li>
+    <% end %>
+  </ul>
+
+  <ul class="list-unstyled mt-4">
     <% if current_user.has_role?('admin') %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'dollar-sign', 'Commissions'), broker_broker_customer_sales_reps_path, class: 'broker-customer-sales-reps' %>

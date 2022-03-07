@@ -1,0 +1,42 @@
+<% provide :title, @problem.carrier.name %>
+
+<%= render 'member_header' %>
+<h2>Overview</h2>
+
+<div class="row">
+  <div class="col col-md-8">
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <th>Account #</th>
+            <td><%= @problem.account %></td>
+          </tr>
+          <tr>
+            <th>Account Description</th>
+            <td><%= @problem.account_desc %></td>
+          </tr>
+          <tr>
+            <th>Customer-Specific Pricing</th>
+            <td>
+              <% unless @problem.broker_customer.blank? %>
+                <br>
+                <%= link_to @problem.broker_customer.customer.name, broker_broker_customer_path(@problem.broker_customer), target: '_blank' %>
+              <% else %>
+                N/A
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <th>Check Mailing Address</th>
+            <td>
+              <% unless @problem.check_mailing_address.blank? %>
+                <address><%= @problem.check_mailing_address.pretty('<br>').html_safe %></address>
+              <% end %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
