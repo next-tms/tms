@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.1.1'
 
-gem 'rails', '~> 7.0.2.2'
+gem 'rails', '~> 7.0.2.3'
 gem 'pg', '~> 1.3.3'
 gem 'puma', '~> 5.6.1'
 gem 'shakapacker', '~> 6.1.1'
