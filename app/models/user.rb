@@ -210,6 +210,14 @@ class User < ApplicationRecord
     @broker ||= !customer?
   end
 
+  def problems
+    return [] unless broker?
+
+    return broker.problems if has_role?('root')
+
+    Problem.where(assigned_to: self).or(Problem.where(resolved_by: self))
+  end
+
   def shipments
     return broker_customer.shipments if customer?
 

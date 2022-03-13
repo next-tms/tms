@@ -97,6 +97,11 @@ Rails.application.routes.draw do
     resources :pickups, only: %i[create]
     get 'pickups', to: 'pickups#create' # used by Broker::ShipmentsControlller
 
+    resources :problems, except: %i[destroy], path: 'exceptions' do
+      collection { get :resolved } 
+      collection { get :unresolved } 
+    end
+
     get 'shipments/booked', to: 'shipments#booked'
     get 'shipments/pending-dispatch', to: 'shipments#pending_dispatch'
     get 'shipments/late', to: 'shipments#late'

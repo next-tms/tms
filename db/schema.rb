@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_02_21_201626) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_07_215126) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -462,6 +462,32 @@ ActiveRecord::Schema[7.0].define(version: 2022_02_21_201626) do
     t.index ["min_pallets"], name: "index_pricing_rules_on_min_pallets"
   end
 
+  create_table "problem_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_problem_types_on_name"
+  end
+
+  create_table "problems", force: :cascade do |t|
+    t.datetime "resolved_at"
+    t.bigint "assigned_to_id", null: false
+    t.bigint "problem_type_id", null: false
+    t.bigint "resolved_by_id"
+    t.bigint "shipment_id", null: false
+    t.string "title"
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_to_id"], name: "index_problems_on_assigned_to_id"
+    t.index ["body"], name: "index_problems_on_body"
+    t.index ["problem_type_id"], name: "index_problems_on_problem_type_id"
+    t.index ["resolved_at"], name: "index_problems_on_resolved_at"
+    t.index ["resolved_by_id"], name: "index_problems_on_resolved_by_id"
+    t.index ["shipment_id"], name: "index_problems_on_shipment_id"
+    t.index ["title"], name: "index_problems_on_title"
+  end
+
   create_table "rate_accessorials", force: :cascade do |t|
     t.bigint "rate_id", null: false
     t.bigint "accessorial_id", null: false
@@ -882,6 +908,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_02_21_201626) do
   add_foreign_key "pickups", "users", column: "updated_by_id"
   add_foreign_key "pricing_rules", "broker_carriers"
   add_foreign_key "pricing_rules", "carrier_areas"
+  add_foreign_key "problems", "problem_types"
+  add_foreign_key "problems", "shipments"
+  add_foreign_key "problems", "users", column: "assigned_to_id"
+  add_foreign_key "problems", "users", column: "resolved_by_id"
   add_foreign_key "rate_accessorials", "accessorials"
   add_foreign_key "rate_accessorials", "rates"
   add_foreign_key "rates", "broker_carriers"

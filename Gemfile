@@ -85,7 +85,8 @@ gem 'htmlentities'
 
 gem 'combine_pdf', '~> 1.0.22'
 gem 'wicked_pdf', '~> 2.1.0'
-gem 'wkhtmltopdf-heroku', '~> 2.12.6.0', groups: %i[production staging]
+# gem 'wkhtmltopdf-heroku', '~> 2.12.6.0', groups: %i[production staging]
+gem 'wkhtmltopdf-binary', '~> 0.12.6.5', groups: %i[production staging]
 gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0', groups: %i[development]
 gem 'sprockets-rails', '~> 3.4.2'
 

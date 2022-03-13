@@ -1,0 +1,24 @@
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6"><%= @problem&.id || 'Exception' %></h1>
+
+  <% unless @problem.new_record? %>
+    <table class="table table-borderless w-auto">
+      <thead>
+        <tr>
+          <th>Shipment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="lead">
+            <%= link_to @problem.shipment.load_id, broker_shipment_path(@problem.shipment), class: 'broker-carriers-shipments', target: '_blank' %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% unless @problem.new_record? %>
+    <%= render 'member_menu' %>
+  <% end %>
+</div>

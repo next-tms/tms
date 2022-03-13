@@ -1,0 +1,24 @@
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6">Exceptions</h1>
+
+  <table class="table table-borderless">
+    <thead>
+      <tr>
+        <th>Inbox</th>
+        <th>Resolved</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="display-6">
+          <%= link_to current_user.problems.unresolved.size, unresolved_broker_problems_path, class: 'problems-unresolved' %>
+        </td>
+        <td class="display-6">
+          <%= link_to current_user.problems.resolved.size, resolved_broker_problems_path, class: 'problems-resolved' %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <%= render 'menu' %>
+</div>

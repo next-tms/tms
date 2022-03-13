@@ -1,0 +1,6 @@
+<% provide :title, 'Resolved' %>
+
+<%= render 'header' %>
+<h2><%= yield :title %></h2>
+
+<%= render 'show_many', problems: @problems, q: @q %>

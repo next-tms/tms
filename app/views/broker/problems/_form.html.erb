@@ -1,0 +1,12 @@
+<%= bootstrap_form_with(model: [:broker, @problem]) do |f| %>
+  <%= f.alert_message "Unable to save exception:" %>
+
+  <%= f.hidden_field :shipment_id, value: params[:shipment_id] %>
+
+  <%= f.text_field :title, autofocus: true %>
+  <%= f.text_area :body, label: 'Description', rows: 14 %>
+
+  <%= f.form_group do %>
+    <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>
+  <% end %>
+<% end %>
