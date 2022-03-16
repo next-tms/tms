@@ -421,6 +421,19 @@ class Shipment < ApplicationRecord
 
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
+  # Remove broker documents when cost/charge changes
+  before_save :purge_broker_bol, if: lambda {
+    will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
+  }
+
+  before_save :purge_broker_dispatch_sheet, if: lambda {
+    will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
+  }
+
+  before_save :purge_broker_quote, if: lambda {
+    will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
+  }
+
   validates :load_id, uniqueness: { scope: :broker }
   validate :future_pickup_by, if: -> { dispatch_pickup }
 
@@ -1269,6 +1282,19 @@ class Shipment < ApplicationRecord
       due_on: Date.current + broker_carrier.days_to_pay_after_invoice_date.days,
       pro:
     )
+  end
+
+  # Remove broker documents when cost/charge changes
+  def purge_broker_bol
+    broker_bol&.purge
+  end
+
+  def purge_broker_dispatch_sheet
+    broker_dispatch_sheet&.purge
+  end
+
+  def purge_broker_quote
+    broker_dispatch_sheet&.purge
   end
 
   # Fix broker_accessorials when broker_customer changes
