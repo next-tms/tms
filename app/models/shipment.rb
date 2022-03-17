@@ -582,7 +582,9 @@ class Shipment < ApplicationRecord
     str += pickup_hours_start_at || ''
     str += pro || ''
     str += quote_id || ''
+    str += receiver_name || ''
     str += receiver_address.pretty(', ') unless receiver_address.blank?
+    str += shipper_name || ''
     str += shipper_address.pretty(', ') unless shipper_address.blank?
     str += shipper_bol || ''
     str += shipper_reference || ''
