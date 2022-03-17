@@ -10,6 +10,13 @@
   </div>
 <% end %>
 
+<% if !@shipment.broker_bol_valid? && (@shipment.shipper_name.blank? || @shipment.receiver_name.blank?) %>
+  <div class="alert alert-warning">
+    <p class="lead">Missing shipper or receiver name</p>
+    <p>Some documents for this shipment were not generated because the shipper or receiver name is blank.</p>
+  </div>
+<% end %>
+
 <div class="table-responsive">
   <table class="table table-borderless table-striped">
     <thead>
@@ -71,7 +78,7 @@
         <tr>
           <td><%= @shipment.broker_carrier.carrier.name %></td>
           <td>Scanned Bill of Lading</td>
-  
+
           <% if @shipment.carrier_bol.blank? %>
             <td colspan="4">
               <%= bootstrap_form_with(model: [:broker, @shipment], class: 'row') do |f| %>
@@ -105,7 +112,7 @@
         <tr>
           <td><%= @shipment.broker_carrier.carrier.name %></td>
           <td>Proof of Delivery</td>
-  
+
           <% if @shipment.carrier_pod.blank? %>
             <td colspan="4">
               <%= bootstrap_form_with(model: [:broker, @shipment], class: 'row') do |f| %>
