@@ -897,12 +897,12 @@ class Shipment < ApplicationRecord
     @assumed_accessorials = []
 
     # Airports
-    if !receiver_name.blank? && %w[aero aircraft airport aviation avionic hangar].any? do |word|
+    if !receiver_name.blank? && %w[airport hangar].any? do |word|
          receiver_name.downcase.include?(word)
        end
       @assumed_accessorials << Accessorial.find_by_code('DAIR')
     end
-    if !shipper_name.blank? && %w[aero aircraft airport aviation avionic hangar].any? do |word|
+    if !shipper_name.blank? && %w[airport hangar].any? do |word|
          shipper_name.downcase.include?(word)
        end
       @assumed_accessorials << Accessorial.find_by_code('PAIR')
