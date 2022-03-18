@@ -10,10 +10,9 @@
     <% end %>
   </small>
   </h1>
-  <p class="lead">Search Terminals</p>
+  <p class="lead">Terminals</p>
 </div>
 
-<h2>Terminals</h2>
 <% unless @terminals.blank? %>
   <div class="table-responsive">
     <table class="table table-condensed table-borderless table-striped table-hover table-unsortable h-100">
@@ -25,12 +24,12 @@
         <% @terminals.each do |terminal| %>
           <tr>
             <td><%= terminal.address.pretty(', ') %></td>
-            <td><%= link_to terminal.phone.phoney_formatted, "tel:#{terminal.phone.phoney_formatted}" %></td>
+            <td><%= link_to terminal.phone.phony_formatted, "tel:#{terminal.phone.phony_formatted}" %></td>
           </tr>
         <% end %>
       </tbody>
     </table>
   </div>
 <% else %>
-  <p><em>Nothing to show</em></p>
+  <%= render 'layouts/no_content' %>
 <% end %>

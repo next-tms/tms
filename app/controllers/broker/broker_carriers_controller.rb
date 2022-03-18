@@ -53,17 +53,25 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def tariff
     if !@broker_carrier.carrier.carrier_areas.blank? && (!@broker_carrier.pricing_rules.size == @broker_carrier.carrier.carrier_areas.size)
       @broker_carrier.carrier.carrier_areas.each do |carrier_area|
-        if @broker_carrier.pricing_rules.where(carrier_area: carrier_area).blank?
-          @broker_carrier.pricing_rules << PricingRule.new(carrier_area: carrier_area)
+        if @broker_carrier.pricing_rules.where(carrier_area:).blank?
+          @broker_carrier.pricing_rules << PricingRule.new(carrier_area:)
         end
       end
     end
   end
 
   def search_terminals
-    @terminals = Terminal.includes(:address).where('addresses.state ILIKE ?', params[:city]).where(
-      'addresses.city ILIKE ?', params[:state]
-    ).where(carrier: @broker_carrier.carrier).references(:address)
+    region_ids = Region
+                 .where('name ILIKE ?', params[:state])
+                 .or(Region.where('abbreviation ILIKE ?', params[:state]))
+                 .ids
+
+    @terminals = Terminal
+                 .includes(:address)
+                 .where(carrier_id: current_user.broker.carriers.ids)
+                 .where('addresses.region_id IN (?)', region_ids)
+                 .where('addresses.city ILIKE ?', params[:city])
+                 .references(:address)
   end
 
   def update
