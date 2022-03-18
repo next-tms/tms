@@ -125,9 +125,23 @@
         <br>
         <%= @shipment.receiver_address.pretty('<br>').html_safe %>
       </address>
+
       <ul class="list-inline list-unstyled">
-        <li class="list-inline-item"><%= link_to icon('brands', 'google', 'Map'), "https://www.google.com/maps/search/?api=1&query=#{URI.encode_www_form_component(@shipment.receiver_address.proper(', '))}", target: '_blank' %></li>
-        <li class="list-inline-item"><%= link_to icon('brands', 'apple', 'Map'), "https://maps.apple.com/?address=#{URI.encode_www_form_component(@shipment.receiver_address.proper(', '))}", target: '_blank' %></li>
+        <li class="list-inline-item">
+          <%= link_to icon('brands', 'google', 'Map'), "https://www.google.com/maps/search/?api=1&query=#{URI.encode_www_form_component(@shipment.receiver_address.proper(', '))}", target: '_blank' %>
+        </li>
+        <li class="list-inline-item">
+          <%= link_to icon('brands', 'apple', 'Map'), "https://maps.apple.com/?address=#{URI.encode_www_form_component(@shipment.receiver_address.proper(', '))}", target: '_blank' %>
+        </li>
+      </ul>
+
+      <ul class="list-inline list-unstyled">
+        <li class="list-inline-item">
+          <%= link_to icon('brands', 'google', 'Directions'), "https://www.google.com/maps/search/?api=1&query=#{URI.encode_www_form_component(@shipment.shipper_address.proper(', '))}%20to%20#{URI.encode_www_form_component(@shipment.receiver_address.proper(', '))}", target: '_blank' %>
+        </li>
+        <li class="list-inline-item">
+          <%= link_to icon('brands', 'apple', 'Directions'), "https://maps.apple.com/?saddr=#{URI.encode_www_form_component(@shipment.shipper_address.proper(', '))}&daddr=#{URI.encode_www_form_component(@shipment.receiver_address.proper(', '))}", target: '_blank' %>
+        </li>
       </ul>
     </div>
   <% end %>
