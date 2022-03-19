@@ -18,6 +18,8 @@
       <meta name="turbo-cache-control" content="no-cache"/>
     <% end %>
 
+    <%= yield :alt_links %>
+
     <meta name="theme-color" content="<%= @website&.manifest&.dig('head', 'meta', 'theme-color') || 'black' %>">
 
     <link href="https://<%= @website.blank? ? 'tms.next-tms.com' : @website.domain %><%= request.fullpath %>" rel="canonical" />
