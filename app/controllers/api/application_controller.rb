@@ -3,6 +3,7 @@
 module Api
   class ApplicationController < ActionController::API
     before_action :authenticate_request
+
     before_action :set_website
     attr_reader :current_api_user
 

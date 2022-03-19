@@ -10,9 +10,15 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       post 'authenticate', to: 'authentication#authenticate'
+
+      resources :shipments, param: :load_id do
+        member { get 'tracking-events', as: :tracking_events }
+      end
+
       namespace :broker do
         resources :shipments, param: :load_id
       end
+
       namespace :customer do
         resources :shipments, param: :load_id do
           member { get 'quote', as: :quote }
