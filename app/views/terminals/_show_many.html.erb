@@ -1,0 +1,26 @@
+<%= turbo_frame_tag :terminals do %>
+  <%= render 'terminals/search_form', q: q %>
+
+  <% unless @terminals.blank? %>
+    <div class="table-responsive">
+      <table class="table table-condensed table-borderless table-striped table-hover table-unsortable h-100">
+        <thead>
+          <th>Location</th>
+          <th>Phone</th>
+        </thead>
+        <tbody>
+          <% @terminals.each do |terminal| %>
+            <tr>
+              <td><%= terminal.address.pretty(', ') %></td>
+              <td><%= link_to terminal.phone.phony_formatted, "tel:#{terminal.phone.phony_formatted}" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
+<% end %>

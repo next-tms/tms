@@ -2,7 +2,8 @@
 
 class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :authenticate_user!
-  before_action :set_broker_carrier, only: %i[contacts edit preferences search_terminals shipments show tariff update]
+  before_action :set_broker_carrier,
+                only: %i[contacts edit preferences search_terminals shipments show tariff terminals update]
 
   def edit
     @broker_carrier.check_mailing_address = Address.new if @broker_carrier.check_mailing_address.blank?
@@ -60,6 +61,15 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     end
   end
 
+  def terminals
+    unauthorized unless current_user.broker == @broker_carrier.broker
+
+    @carrier = @broker_carrier.carrier
+
+    @q = @carrier.terminals.ransack(params[:q])
+    @pagy, @terminals = pagy(@q.result)
+  end
+
   def search_terminals
     region_ids = Region
                  .where('name ILIKE ?', params[:state])
@@ -102,7 +112,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def contacts
-    unauthorized if !current_user.broker == @broker_carrier.broker
+    unauthorized unless current_user.broker == @broker_carrier.broker
 
     @q = @broker_carrier.contacts.ransack(params[:q])
     @q.sorts = 'contacts.first_name desc' if @q.sorts.blank?
@@ -110,7 +120,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def shipments
-    unauthorized if !current_user.broker == @broker_carrier.broker
+    unauthorized unless current_user.broker == @broker_carrier.broker
 
     @q = @broker_carrier
          .shipments

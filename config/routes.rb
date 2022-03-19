@@ -58,6 +58,7 @@ Rails.application.routes.draw do
     resources :broker_carriers, path: 'carriers' do
       member { get 'contacts' => 'broker_carriers#contacts', as: :contacts }
       member { get 'tariff' => 'broker_carriers#tariff', as: :tariff }
+      member { get 'terminals' => 'broker_carriers#terminals', as: :terminals }
       member { get 'terminals/search' => 'broker_carriers#search_terminals', as: :search_terminals }
     end
 
@@ -98,8 +99,8 @@ Rails.application.routes.draw do
     get 'pickups', to: 'pickups#create' # used by Broker::ShipmentsControlller
 
     resources :problems, except: %i[destroy], path: 'exceptions' do
-      collection { get :resolved } 
-      collection { get :unresolved } 
+      collection { get :resolved }
+      collection { get :unresolved }
     end
 
     get 'shipments/booked', to: 'shipments#booked'
