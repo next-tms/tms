@@ -76,6 +76,7 @@ class BrokerCarrier < ApplicationRecord
   has_many :pricing_rules
   has_many :rates
   has_many :shipments
+  has_many :terminals, through: :carrier
 
   has_many :pickups, through: :rates
 
@@ -101,7 +102,7 @@ class BrokerCarrier < ApplicationRecord
   def as_interstellar_carrier
     carrier = Interstellar.const_get(self.carrier.scac)
     carrier.new(
-      account: account,
+      account:,
       customer_address: {
         street: broker.address.street.sub('Apt', 'Ste'),
         city: broker.address.city,
@@ -111,8 +112,8 @@ class BrokerCarrier < ApplicationRecord
       customer_email: "robot@#{broker.customer_service_email.split('@')[1]}",
       customer_name: broker.name,
       debug: !Rails.env.production?,
-      username: username,
-      password: password,
+      username:,
+      password:,
       tariff: to_interstellar_tariff
     )
   rescue StandardError

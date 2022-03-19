@@ -39,6 +39,7 @@ class Carrier < ApplicationRecord
   has_many :areas, through: :carrier_areas
 
   has_many :shipments
+  has_many :terminals
 
   belongs_to :broker_billing_address, class_name: 'Address', required: false
 
