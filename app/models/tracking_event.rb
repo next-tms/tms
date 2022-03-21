@@ -60,6 +60,10 @@
 class TrackingEvent < ApplicationRecord
   attr_writer :at_without_time_zone_string
 
+  after_create :maybe_create_problem
+
+  before_create :set_public
+
   belongs_to :event
 
   belongs_to :address, optional: true
@@ -84,6 +88,10 @@ class TrackingEvent < ApplicationRecord
     "#{city}, #{region.abbreviation}"
   end
 
+  def problem_type
+    ProblemType.where(code: event.active_shipping_code)&.first
+  end
+
   def time_zone
     return nil if time_zone_name.blank?
 
@@ -91,6 +99,34 @@ class TrackingEvent < ApplicationRecord
   end
 
   private
+
+  def maybe_create_problem
+    return if problem_type.blank?
+
+    # TODO: Use shipment.dispatcher when implemented
+    assigned_to = Role
+                  .find_by_name('dispatch')
+                  .users
+                  .broker
+                  .where(broker: shipment.broker)
+                  .order(Arel.sql('RANDOM()'))
+                  &.last
+
+    if assigned_to.blank?
+      assigned_to = Role
+                    .find_by_name('root')
+                    .users
+                    .broker
+                    .where(broker: shipment.broker)
+                    .order(Arel.sql('RANDOM()'))
+                    &.last
+    end
+
+    title = "Load #{shipment.load_id} #{event.name}"
+    body = "Load #{shipment.load_id} is #{event.name} per #{shipment.broker_carrier.carrier.name} API"
+
+    Problem.create(assigned_to:, body:, problem_type:, shipment:, title:)
+  end
 
   def reasonable_at
     errors.add(:at, 'must not be later than six hours in the future') if at >= DateTime.now + 6.hours
@@ -109,6 +145,12 @@ class TrackingEvent < ApplicationRecord
 
     new_at = sanitize_datetime(datetime: @at_without_time_zone_string, time_zone:)
     self.at = new_at.blank? ? DateTime.current : new_at
+  end
+
+  def set_public
+    return if event.blank?
+
+    self[:public] = event.public_by_default?
   end
 
   def set_time_zone_name
