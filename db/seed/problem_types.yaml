@@ -1,0 +1,5 @@
+problem_types:
+  - code: delayed_due_to_weather
+    name: delayed due to weather
+  - code: lost
+    name: lost

@@ -42,6 +42,7 @@ end
 import_seeds(
   [
     { name: 'events', key: :active_shipping_code },
-    { name: 'packagings', key: :name }
+    { name: 'packagings', key: :name },
+    { name: 'problem_types', key: :code }
   ]
 )
