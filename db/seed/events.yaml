@@ -1,0 +1,49 @@
+events:
+  - :active_shipping_code: arrived_at_terminal
+    :name: arrived
+    :public_by_default: true
+  - :active_shipping_code: delivered
+    :name: delivered
+    :public_by_default: true
+  - :active_shipping_code: delivery_appointment_scheduled
+    :name: delivery appointment scheduled
+    :public_by_default: true
+  - :active_shipping_code: departed
+    :name: departed
+    :public_by_default: true
+  - :active_shipping_code: found
+    :name: found
+    :public_by_default: false
+  - :active_shipping_code: located
+    :name: located
+    :public_by_default: true
+  - :active_shipping_code: lost
+    :name: lost
+    :public_by_default: false
+  - :active_shipping_code: out_for_delivery
+    :name: out for delivery
+    :public_by_default: true
+  - :active_shipping_code: pending_delivery_appointment
+    :name: pending delivery appointment
+    :public_by_default: true
+  - :active_shipping_code: picked_up
+    :name: picked up
+    :public_by_default: true
+  - :active_shipping_code: pickup_driver_assigned
+    :name: driver assigned
+    :public_by_default: true
+  - :active_shipping_code: pickup_information_received_by_carrier
+    :name: pickup information received by carrier
+    :public_by_default: true
+  - :active_shipping_code: pickup_information_sent_to_carrier
+    :name: pickup information sent to carrier
+    :public_by_default: true
+  - :active_shipping_code: sailed
+    :name: sailed
+    :public_by_default: true
+  - :active_shipping_code: trailer_closed
+    :name: loaded on trailer
+    :public_by_default: true
+  - :active_shipping_code: trailer_unloaded
+    :name: unloaded from trailer
+    :public_by_default: true
