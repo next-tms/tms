@@ -32,7 +32,7 @@ class Broker::ProblemsController < Broker::BrokerController
   def update
     @problem.assign_attributes(problem_params)
 
-    @problem.resolved_by = current_user if @problem.will_save_change_to_resolved_at
+    @problem.resolved_by = current_user if @problem.will_save_change_to_resolved_at? && !@problem.resolved_at.blank?
 
     if @problem.save
       redirect_to broker_problem_path(@problem)
@@ -70,6 +70,7 @@ class Broker::ProblemsController < Broker::BrokerController
     params.require(:problem).permit(
       :id,
       :body,
+      :resolved_at,
       :shipment_id,
       :title
     )

@@ -50,6 +50,14 @@ class Problem < ApplicationRecord
 
   has_one :broker, through: :shipment
 
+  ransacker :id do
+    Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")
+  end
+
   scope :unresolved, -> { where(resolved_at: nil) }
   scope :resolved, -> { where.not(id: unresolved) }
+
+  def resolved?
+    !resolved_at.blank?
+  end
 end
