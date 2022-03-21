@@ -10,7 +10,7 @@ def load_yaml(table)
         "#{table}.yaml"
       )
     ),
-    permitted_classes: [NilClass]
+    permitted_classes: [NilClass, Symbol]
   )&.with_indifferent_access&.dig(table)
 end
 
@@ -41,6 +41,7 @@ end
 
 import_seeds(
   [
+    { name: 'events', key: :active_shipping_code },
     { name: 'packagings', key: :name }
   ]
 )
