@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_07_215126) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_21_211450) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -314,6 +314,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_07_215126) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "active_shipping_code"
+    t.boolean "public_by_default", default: true, null: false
   end
 
   create_table "intuit_accounts", force: :cascade do |t|
