@@ -3,6 +3,13 @@
 <%= render 'member_header' %>
 <h2>Overview</h2>
 
+<% if @receivable.total_changed_externally? %>
+  <div class="alert alert-danger">
+    <p class="lead">Invoice total updated elsewhere</p>
+    <p>The charges on this invoice were updated from the accounting integration. The charges no longer match those calculated here.</p>
+  </div>
+<% end %>
+
 <% unless @receivable.total == @receivable.shipment.total_charges %>
   <div class="alert alert-danger">
     <p class="lead">Invoice doesn’t match load</p>
@@ -57,15 +64,15 @@
       <% unless @receivable.shipment.shipper_reference.blank? %>
         <% parts << "Shipper Ref: #{@receivable.shipment.shipper_reference}" %>
       <% end %>
-      
+
       <% unless @receivable.shipment.customer_reference.blank? %>
         <% parts << "PO: #{@receivable.shipment.customer_reference}" %>
       <% end %>
-      
+
       <% unless @receivable.shipment.bol.blank? %>
         <% parts << "BOL: #{@receivable.shipment.bol}" %>
       <% end %>
-      
+
       <% unless real_pro(@receivable.shipment).blank? %>
         <% parts << "Pro: #{real_pro(@receivable.shipment)}" %>
       <% end %>
@@ -75,4 +82,4 @@
   </div>
 </div>
 
-<%= render 'receivable_items', receivable_items: @receivable.receivable_items %>
+<%= render 'receivable_items', receivable: @receivable %>

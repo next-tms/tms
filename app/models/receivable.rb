@@ -79,6 +79,7 @@ class Receivable < ApplicationRecord
 
   has_one_attached :invoice
 
+  monetize :balance_cents, allow_nil: false
   monetize :total_cents, allow_nil: false
 
   scope :authorized, -> { where.not(authorized_at: nil) }
@@ -87,8 +88,8 @@ class Receivable < ApplicationRecord
   scope :invoiced, -> { where.not(invoiced: false) }
   scope :not_invoiced, -> { where.not(id: invoiced) }
 
-  scope :paid, -> { where.not(paid_at: nil) }
-  scope :unpaid, -> { where.not(id: paid) }
+  scope :paid, -> { where(balance_cents: 0) }
+  scope :unpaid, -> { where.not(balance_cents: 0) }
 
   scope :sent, -> { where.not(sent_at: nil) }
   scope :unsent, -> { where.not(id: sent) }
@@ -202,6 +203,19 @@ class Receivable < ApplicationRecord
     true
   end
 
+  def total_changed_externally?
+    return false if receivable_items.blank?
+
+    calculated_total = Money.new(0)
+    receivable_items.each do |receivable_item|
+      next if receivable_item.marked_for_destruction?
+
+      calculated_total += receivable_item.charge
+    end
+
+    calculated_total != total
+  end
+
   def create_quickbooks_invoice
     return nil unless broker.intuit_account&.connected?
     return @quickbooks_invoice unless @quickbooks_invoice.blank?
@@ -260,8 +274,11 @@ class Receivable < ApplicationRecord
 
     now = DateTime.current
 
+    # Using update_columns so we can bypass the validation that recalculates amounts
+    update_columns(balance: Money.new(quickbooks_invoice.balance.to_f * 100))
     update_columns(paid_at: now) if quickbooks_invoice.balance.zero?
     update_columns(sent_at: now) if quickbooks_invoice.email_status == 'EmailSent'
+    update_columns(total: Money.new(quickbooks_invoice.total.to_f * 100))
   end
 
   def update_quickbooks_invoice

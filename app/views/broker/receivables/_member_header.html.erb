@@ -7,10 +7,6 @@
         <tr>
           <th>Customer</th>
 
-          <% unless @receivable.shipment.broker_carrier.blank? %>
-            <th>Carrier</th>
-          <% end %>
-
           <th>Load</th>
 
           <% unless @receivable.shipment.shipper_reference.blank? %>
@@ -29,6 +25,9 @@
             <th>Pro</th>
           <% end %>
 
+          <th>Balance</th>
+          <th>Total</th>
+
           <th>Due</th>
           <th>Paid</th>
         </tr>
@@ -38,16 +37,6 @@
           <td class="lead">
             <%= link_to @receivable.broker_customer.customer.name, broker_broker_customer_path(@receivable.broker_customer), target: '_blank' %>
           </td>
-
-          <% unless @receivable.shipment.broker_carrier.blank? %>
-            <td class="lead">
-              <% if @receivable.shipment.broker_carrier.carrier.acts_as_broker? and not @receivable.shipment.tracking_carrier.blank? %>
-                <li class="list-inline-item"><%= @receivable.shipment.tracking_carrier.name %> via <%= link_to @receivable.shipment.broker_carrier.carrier.name, broker_broker_carrier_path(@receivable.shipment.broker_carrier), target: '_blank' %></li>
-              <% else %>
-                <li class="list-inline-item"><%= link_to @receivable.shipment.broker_carrier.carrier.name, broker_broker_carrier_path(@receivable.shipment.broker_carrier), target: '_blank' %></li>
-              <% end %>
-            </td>
-          <% end %>
 
           <td class="lead">
             <%= link_to @receivable.shipment.load_id, broker_shipment_path(@receivable.shipment), target: '_blank' %>
@@ -74,6 +63,14 @@
               <% end %>
             </td>
           <% end %>
+
+          <td class="lead">
+            <%= humanized_money_with_symbol @receivable.balance, no_cents_if_whole: true %>
+          </td>
+
+          <td class="lead">
+            <%= humanized_money_with_symbol @receivable.total, no_cents_if_whole: true %>
+          </td>
 
           <td class="lead">
             <%= short_date @receivable.due_by, current_user.time_zone %>
