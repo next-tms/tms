@@ -1,4 +1,4 @@
-<% unless receivable_items.blank? %>
+<% unless receivable.receivable_items.blank? %>
   <div class="row">
     <div class="col col-md-8">
       <div class="table-responsive">
@@ -10,7 +10,7 @@
             </tr>
           </thead>
           <tbody>
-            <% receivable_items.each do |receivable_item| %>
+            <% receivable.receivable_items.each do |receivable_item| %>
               <tr>
                 <td><%= simple_format receivable_item.description %></td>
                 <td>
@@ -24,7 +24,16 @@
           <tfoot>
             <tr>
               <th>&nbsp;</th>
-              <th><%= humanized_money_with_symbol Money.new(receivable_items.sum(:charge_cents)), no_cents_if_whole: false %></th>
+              <th>
+                <%= humanized_money_with_symbol Money.new(receivable.receivable_items.sum(:charge_cents)), no_cents_if_whole: false %>
+                <% if receivable.total_changed_externally? %>
+                  <br>
+                  <span class="text-danger">
+                    <%= humanized_money_with_symbol receivable.total, no_cents_if_whole: false %>
+                    per accounting integration
+                  </span>
+                <% end %>
+              </th>
             </tr>
           </tfoot>
         </table>
