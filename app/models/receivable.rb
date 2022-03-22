@@ -63,7 +63,7 @@ class Receivable < ApplicationRecord
   before_save :set_sent_at
   before_save :set_sent_by
 
-  before_validation :set_total
+  before_validation :set_balance_and_total
 
   belongs_to :authorized_by, class_name: 'User', optional: true
   belongs_to :created_by, class_name: 'User', optional: true
@@ -294,6 +294,20 @@ class Receivable < ApplicationRecord
     end
   end
 
+  def set_balance_and_total
+    return if receivable_items.blank?
+
+    new_balance = Money.new(0)
+    receivable_items.each do |receivable_item|
+      next if receivable_item.marked_for_destruction?
+
+      new_balance += receivable_item.charge
+    end
+
+    self.balance = new_balance
+    self.total = new_balance
+  end
+
   def set_invoiced
     return if invoiced?
 
@@ -306,18 +320,5 @@ class Receivable < ApplicationRecord
 
   def set_sent_by
     self.sent_by = nil unless invoiced? && !authorized_at.blank?
-  end
-
-  def set_total
-    return if receivable_items.blank?
-
-    new_total = Money.new(0)
-    receivable_items.each do |receivable_item|
-      next if receivable_item.marked_for_destruction?
-
-      new_total += receivable_item.charge
-    end
-
-    self.total = new_total
   end
 end

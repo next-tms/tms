@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_21_213833) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_22_214321) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -553,6 +553,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_21_213833) do
     t.string "quickbooks_invoice_id"
     t.datetime "sent_at"
     t.bigint "sent_by_id"
+    t.integer "balance_cents", default: 0, null: false
+    t.string "balance_currency", default: "USD", null: false
     t.index ["authorized_at"], name: "index_receivables_on_authorized_at"
     t.index ["authorized_by_id"], name: "index_receivables_on_authorized_by_id"
     t.index ["created_by_id"], name: "index_receivables_on_created_by_id"
