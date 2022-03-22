@@ -54,11 +54,21 @@ class SendReceivablesJob < ApplicationJob
         pdf << CombinePDF.parse(receivable.invoice.download)
 
         if broker_customer.requires_carrier_bol_on_receivables?
-          pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
+          begin
+            pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
+          rescue CombinePDF::ParsingError
+            Honeybadger.notify("SendReceivablesJob receivable.shipment.id=#{receivable.shipment.id}, invalid BOL")
+            next
+          end
         end
 
         if broker_customer.requires_carrier_pod_on_receivables?
-          pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
+          begin
+            pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
+          rescue CombinePDF::ParsingError
+            Honeybadger.notify("SendReceivablesJob receivable.shipment.id=#{receivable.shipment.id}, invalid POD")
+            next
+          end
         end
 
         filename = "#{receivable.shipment.load_id} Invoice.pdf"
