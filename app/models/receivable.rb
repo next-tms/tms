@@ -275,10 +275,10 @@ class Receivable < ApplicationRecord
     now = DateTime.current
 
     # Using update_columns so we can bypass the validation that recalculates amounts
-    update_columns(balance: Money.new(quickbooks_invoice.balance.to_f * 100))
+    update_columns(balance_cents: Money.new(quickbooks_invoice.balance.to_f * 100))
     update_columns(paid_at: now) if quickbooks_invoice.balance.zero?
     update_columns(sent_at: now) if quickbooks_invoice.email_status == 'EmailSent'
-    update_columns(total: Money.new(quickbooks_invoice.total.to_f * 100))
+    update_columns(total_cents: Money.new(quickbooks_invoice.total.to_f * 100))
   end
 
   def update_quickbooks_invoice
