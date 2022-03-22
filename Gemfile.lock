@@ -1376,7 +1376,7 @@ GEM
     combine_pdf (1.0.22)
       matrix
       ruby-rc4 (>= 0.1.5)
-    concurrent-ruby (1.1.9)
+    concurrent-ruby (1.1.10)
     connection_pool (2.2.5)
     crass (1.0.6)
     devise (4.8.1)
@@ -1454,7 +1454,7 @@ GEM
     listen (3.7.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
-    loofah (2.14.0)
+    loofah (2.15.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -1623,7 +1623,7 @@ GEM
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
     set (1.0.2)
-    shakapacker (6.1.1)
+    shakapacker (6.2.0)
       activesupport (>= 5.2)
       rack-proxy (>= 0.6.1)
       railties (>= 5.2)
@@ -1745,7 +1745,7 @@ DEPENDENCIES
   responders
   rqrcode
   selenium-webdriver
-  shakapacker (~> 6.1.1)
+  shakapacker (~> 6.2.0)
   sidekiq (~> 6.4.1)
   sidekiq-scheduler (~> 3.1.1)
   simple_command
