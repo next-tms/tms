@@ -489,6 +489,15 @@ class Shipment < ApplicationRecord
     Contact.where(id: broker_customer.document_preferences.where(kind: 'carrier_bol').pluck(:contact_id)).find_each do |contact|
       ContactMailer.carrier_bol(from_user: nil, to_contact: contact, shipment: self).deliver_later
     end
+
+    problem_type = ProblemType.find_by_code('receivable_missing_carrier_bol')
+    problems = Problem.where(problem_type:, shipment: self)
+
+    return true if problems.blank?
+
+    problems.each { |problem| problem.update(resolved_at: DateTime.current) }
+
+    true
   end
 
   def fetch_carrier_pod
@@ -502,6 +511,15 @@ class Shipment < ApplicationRecord
     Contact.where(id: broker_customer.document_preferences.where(kind: 'carrier_pod').pluck(:contact_id)).find_each do |contact|
       ContactMailer.carrier_pod(from_user: nil, to_contact: contact, shipment: self).deliver_later
     end
+
+    problem_type = ProblemType.find_by_code('receivable_missing_carrier_pod')
+    problems = Problem.where(problem_type:, shipment: self)
+
+    return true if problems.blank?
+
+    problems.each { |problem| problem.update(resolved_at: DateTime.current) }
+
+    true
   end
 
   def fetch_pro
