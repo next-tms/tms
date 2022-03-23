@@ -25,6 +25,7 @@
 #
 #  index_carriers_on_broker_billing_address_id  (broker_billing_address_id)
 #  index_carriers_on_check_mailing_address_id   (check_mailing_address_id)
+#  index_carriers_on_name                       (name) UNIQUE
 #
 # Foreign Keys
 #
