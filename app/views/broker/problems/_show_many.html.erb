@@ -9,6 +9,9 @@
             <th><%= sort_link q, :id, '#' %></th>
             <th><%= sort_link q, :shipment_load_id, 'Shipment' %></th>
             <th><%= sort_link q, :problem_type_id, 'Issue' %></th>
+            <th>
+              <span class="text-nowrap"><%= sort_link q, :assigned_to_first_name, 'Assigned To' %></span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -17,6 +20,7 @@
               <td><%= link_to problem.id, broker_problem_path(problem), target: '_top' %></td>
               <td><%= link_to problem.shipment.load_id, broker_shipment_path(problem.shipment), target: '_blank' %></td>
               <td><%= problem.problem_type.name %></td>
+              <td><%= icon 'solid', 'user-circle', problem.assigned_to.full_name %></td>
             </tr>
           <% end %>
         </tbody>

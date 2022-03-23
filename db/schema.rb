@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_23_012050) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_23_223743) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -470,7 +470,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_23_012050) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "code", null: false
+    t.bigint "role_id", null: false
     t.index ["name"], name: "index_problem_types_on_name"
+    t.index ["role_id"], name: "index_problem_types_on_role_id"
   end
 
   create_table "problems", force: :cascade do |t|
@@ -914,6 +916,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_23_012050) do
   add_foreign_key "pickups", "users", column: "updated_by_id"
   add_foreign_key "pricing_rules", "broker_carriers"
   add_foreign_key "pricing_rules", "carrier_areas"
+  add_foreign_key "problem_types", "roles"
   add_foreign_key "problems", "problem_types"
   add_foreign_key "problems", "shipments"
   add_foreign_key "problems", "users", column: "assigned_to_id"

@@ -10,7 +10,28 @@
       <%= search_form_for(q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :sorts, value: q.sorts %>
         <%= f.text_field :shipment_load_id_cont, placeholder: 'Filter', class: 'form-control mr-2' %>
-        <%= f.select :problem_type_id_eq, ProblemType.order(:name).collect { |t| [t.name, t.id] }, { include_blank: 'Issue' }, class: 'form-control form-select mr-2' %>
+
+        <% if current_user.roles.size > 1 %>
+          <% role_ids = if current_user.has_role?('root')
+                          (Role.all.ids & ProblemType.where(id: current_user.broker.problems.pluck(:problem_type_id)).pluck(:role_id))
+                        else
+                          (current_User.roles.ids & ProblemType.where(id: current_user.broker.problems.pluck(:problem_type_id)).pluck(:role_id))
+                        end
+          %>
+
+          <%= f.select :problem_type_role_id_eq,
+                       Role.where(id: role_ids).order(:name).collect { |t| [t.name, t.id] },
+                       { include_blank: 'Kind' },
+                       class: 'form-control form-select mr-2'
+          %>
+        <% end %>
+
+        <%= f.select :problem_type_id_eq,
+                     ProblemType.where(role_id: role_ids).order(:name).collect { |t| [t.name, t.id] },
+                     { include_blank: 'Issue' },
+                     class: 'form-control form-select mr-2'
+        %>
+
         <%= f.submit 'Filter', class: 'btn btn-primary' %>
       <% end %>
     </div>
