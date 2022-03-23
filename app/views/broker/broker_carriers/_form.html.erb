@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <% unless f.object.carrier.as_interstellar_carrier.blank? %>
+  <% unless f.object.carrier&.as_interstellar_carrier.blank? %>
     <h3>
       <% if f.object.carrier&.has_seperate_website_credentials? %>
         API & Website Credentials
