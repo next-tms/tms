@@ -25,6 +25,8 @@
 #
 #  index_carriers_on_broker_billing_address_id  (broker_billing_address_id)
 #  index_carriers_on_check_mailing_address_id   (check_mailing_address_id)
+#  index_carriers_on_name                       (name) UNIQUE
+#  index_carriers_on_scac                       (scac) UNIQUE
 #
 # Foreign Keys
 #
@@ -50,6 +52,9 @@ class Carrier < ApplicationRecord
   has_many :contacts, through: :carrier_contacts
 
   accepts_nested_attributes_for :check_mailing_address
+
+  validates :name, uniqueness: true
+  validates :scac, uniqueness: true
 
   def as_interstellar_carrier
     carrier = Interstellar.const_get(scac)

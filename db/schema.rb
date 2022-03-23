@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_22_214321) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_23_012050) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -243,6 +243,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_22_214321) do
     t.boolean "has_seperate_website_credentials", default: false
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
+    t.index ["name"], name: "index_carriers_on_name", unique: true
+    t.index ["scac"], name: "index_carriers_on_scac", unique: true
   end
 
   create_table "commissions", force: :cascade do |t|
