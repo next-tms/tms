@@ -31,9 +31,11 @@ class CreateReceivableProblemJob < ApplicationJob
       problem_type = ProblemType.find_by_code(problem_code)
       shipment = receivable.shipment
 
+      next if Problem.where(problem_type:, shipment:).any?
+
       title = "Receivable #{receivable.shipment.load_id} is #{problem_type.name}"
       body = "Receivable #{receivable.shipment.load_id} is #{problem_type.name}"
-  
+
       Problem.create(assigned_to:, body:, problem_type:, shipment:, title:)
     end
   end
