@@ -15,7 +15,7 @@
           <% problems.each do |problem| %>
             <tr>
               <td><%= link_to problem.id, broker_problem_path(problem), target: '_top' %></td>
-              <td><%= link_to problem.shipment.load_id, broker_problem_path(problem), target: '_blank' %></td>
+              <td><%= link_to problem.shipment.load_id, broker_shipment_path(problem.shipment), target: '_blank' %></td>
               <td><%= problem.problem_type.name %></td>
             </tr>
           <% end %>
