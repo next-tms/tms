@@ -49,6 +49,7 @@ class Problem < ApplicationRecord
   belongs_to :shipment
 
   has_one :broker, through: :shipment
+  has_one :role, through: :problem_type
 
   ransacker :id do
     Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")

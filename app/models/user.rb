@@ -215,7 +215,13 @@ class User < ApplicationRecord
 
     return broker.problems if has_role?('root')
 
-    Problem.where(assigned_to: self).or(Problem.where(resolved_by: self))
+    problem_ids = []
+    problem_ids += Problem.where(assigned_to: self).ids
+    problem_ids += Problem.where(resolved_by: self).ids
+    problem_ids += Problem.where(problem_type_id: ProblemType.where(role: roles)).ids
+    problem_ids.uniq!
+
+    Problem.where(id: problem_ids)
   end
 
   def shipments
