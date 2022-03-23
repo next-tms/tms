@@ -77,6 +77,6 @@ class Broker::ProblemsController < Broker::BrokerController
   end
 
   def required_includes
-    %i[shipment]
+    %i[problem_type shipment]
   end
 end
