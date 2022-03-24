@@ -3,10 +3,8 @@
 class CreateReceivableProblemJob < ApplicationJob
   def perform(receivable)
     return unless receivable.missing_carrier_bol? || receivable.missing_carrier_pod?
-
-    next unless receivable.missing_carrier_bol? || receivable.missing_carrier_pod?
-    next if receivable.missing_carrier_bol? && !receivable.shipment.picked_up?
-    next if receivable.missing_carrier_pod? && !receivable.shipment.delivered?
+    return if receivable.missing_carrier_bol? && !receivable.shipment.picked_up?
+    return if receivable.missing_carrier_pod? && !receivable.shipment.delivered?
 
     problem_codes = []
     problem_codes << 'receivable_missing_carrier_bol' if receivable.missing_carrier_bol?
