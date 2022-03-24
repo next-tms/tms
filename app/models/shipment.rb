@@ -638,6 +638,10 @@ class Shipment < ApplicationRecord
     "#{((1 - (total_cost / total_charges)) * 100).round(1)}%"
   end
 
+  def delivered?
+    !delivered_at.blank?
+  end
+
   def delivered_in_days
     return 'unknown' if picked_up_at.blank? || delivered_at.blank?
     return 'unknown' if delivered_at < picked_up_at
