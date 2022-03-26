@@ -58,6 +58,8 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Receivable < ApplicationRecord
+  after_save :resolve_problems
+
   before_save :set_authorized_at
   before_save :set_invoiced
   before_save :set_sent_at
@@ -299,6 +301,17 @@ class Receivable < ApplicationRecord
   end
 
   private
+
+  def resolve_problems
+    return unless balance.zero?
+
+    problem_types = ProblemType.where(code: %i[receivable_missing_carrier_bol receivable_missing_carrier_pod])
+    problems = Problem.where(problem_type: problem_types, shipment:)
+
+    return true if problems.blank?
+
+    problems.update_all(resolved_at: DateTime.current, resolved_by: nil)
+  end
 
   def set_authorized_at
     return unless authorized_at.blank?
