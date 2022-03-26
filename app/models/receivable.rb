@@ -310,7 +310,7 @@ class Receivable < ApplicationRecord
 
     return true if problems.blank?
 
-    problems.update_all(resolved_at: DateTime.current, resolved_by: nil)
+    problems.update_all(resolved_at: DateTime.current, resolved_by_id: nil)
   end
 
   def set_authorized_at

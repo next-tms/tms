@@ -495,7 +495,7 @@ class Shipment < ApplicationRecord
 
     return true if problems.blank?
 
-    problems.each { |problem| problem.update(resolved_at: DateTime.current) }
+    problems.update_all(resolved_at: DateTime.current, resolved_by_id: nil)
 
     true
   end
@@ -517,7 +517,7 @@ class Shipment < ApplicationRecord
 
     return true if problems.blank?
 
-    problems.each { |problem| problem.update(resolved_at: DateTime.current) }
+    problems.update_all(resolved_at: DateTime.current, resolved_by_id: nil)
 
     true
   end
