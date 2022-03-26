@@ -170,13 +170,8 @@ class Receivable < ApplicationRecord
 
     update_from_api if persisted?
 
-    return false unless paid_at.blank?
-
-    unless invoice.present?
-      fetch_invoice
-
-      return false unless invoice.present?
-    end
+    return false if balance_cents.zero?
+    return false unless invoice.attached? || fetch_invoice
 
     unless broker_customer.receivables_schedule == 'immediately'
       now = DateTime.current.in_time_zone(broker_customer.broker.time_zone)
@@ -279,6 +274,8 @@ class Receivable < ApplicationRecord
     update_columns(paid_at: now) if quickbooks_invoice.balance.zero?
     update_columns(sent_at: now) if quickbooks_invoice.email_status == 'EmailSent'
     update_columns(total_cents: (quickbooks_invoice.total.to_f * 100).to_i)
+
+    reload
   end
 
   def update_quickbooks_invoice
