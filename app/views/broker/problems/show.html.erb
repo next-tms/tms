@@ -7,7 +7,7 @@
   <div class="alert alert-success">
     <p class="lead">Resolved</p>
     <p>
-      <%= @problem.resolved_by.full_name %>
+      <%= @problem.resolved_by&.full_name || 'robot' %>
       reported this issue resolved at
       <%= pretty_date(@problem.resolved_at, current_user.time_zone) %>
     </p>
@@ -15,4 +15,3 @@
 <% end %>
 
 <p class="lead pt-4"><%= @problem.body %></p>
-
