@@ -7,7 +7,7 @@ class FetchShipmentCarrierPodsJob < ApplicationJob
                     .left_joins(:carrier_pod_attachment)
                     .group(:id)
                     .having('COUNT(active_storage_attachments) = 0')
-                    .where('delivered_at >= ?', 12.hours.ago)
+                    .where('delivered_at <= ?', 12.hours.ago)
                     .includes(:broker_carrier)
                 else
                   Shipment.where(id: shipment_ids).includes(:broker_carrier)
