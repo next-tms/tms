@@ -60,5 +60,16 @@
 #  fk_rails_...  (standardized_address_id => standardized_addresses.id)
 #
 class AddressSerializer < ActiveModel::Serializer
-  attributes :street, :street2, :city, :state, :zip_code, :latitude, :longitude, :time_zone
+  attributes :street, :street2, :city, :region, :zip_code, :latitude, :longitude, :time_zone
+
+  def time_zone
+    {
+      name: object.time_zone.name,
+      utc_offset: object.time_zone.utc_offset
+    }
+  end
+
+  def region
+    ActiveModel::SerializableResource.new(object.region)
+  end
 end

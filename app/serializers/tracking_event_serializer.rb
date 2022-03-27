@@ -58,33 +58,27 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class TrackingEventSerializer < ActiveModel::Serializer
-  attributes :address, :at, :event, :region
+  attributes :address, :at, :event
 
   def address
-    return nil if object.terminal.blank?
+    if object.terminal.blank?
+      region = object.region
+      address = Address.new(city: object.city, region:)
+
+      return ActiveModel::SerializableResource.new(address)
+    end
 
     ActiveModel::SerializableResource.new(object.terminal&.address)
   end
 
   def at
     {
-      utc: {
-        iso8604: object.at,
-        unix: object.at.to_i
-      },
-      time_zone: {
-        dst: object.at.dst?,
-        name: object.time_zone.name,
-        utc_offset: object.time_zone.utc_offset
-      }
+      localized: { iso8601: object.at.in_time_zone(object.time_zone).iso8601(0) },
+      utc: { iso8601: object.at.iso8601(0), unix: object.at.to_i }
     }
   end
 
   def event
     ActiveModel::SerializableResource.new(object.event)
-  end
-
-  def region
-    ActiveModel::SerializableResource.new(object.region)
   end
 end
