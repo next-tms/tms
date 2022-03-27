@@ -213,6 +213,10 @@ class Receivable < ApplicationRecord
     calculated_total != total
   end
 
+  def sent?
+    !sent_at.blank?
+  end
+
   def create_quickbooks_invoice
     return nil unless broker.intuit_account&.connected?
     return @quickbooks_invoice unless @quickbooks_invoice.blank?
@@ -303,7 +307,7 @@ class Receivable < ApplicationRecord
   private
 
   def resolve_problems
-    return unless balance.zero?
+    return unless sent?
 
     problem_types = ProblemType.where(code: %i[receivable_missing_carrier_bol receivable_missing_carrier_pod])
     problems = Problem.where(problem_type: problem_types, shipment:)
