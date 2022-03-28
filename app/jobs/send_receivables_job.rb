@@ -32,7 +32,7 @@ class SendReceivablesJob < ApplicationJob
       next if sendable_receivable_ids.blank?
 
       filename = "Batch Invoices - #{broker_customer.customer.name} #{DateTime.current.to_i}.pdf"
-      path = File.join(Dir.tmpdir, filename)
+      path = Rails.root.join('tmp').join(filename)
       pdf.save(path)
 
       receivables = Receivable.where(id: sendable_receivable_ids).order(order)
