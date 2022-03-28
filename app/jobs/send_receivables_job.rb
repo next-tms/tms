@@ -32,7 +32,7 @@ class SendReceivablesJob < ApplicationJob
       next if sendable_receivable_ids.blank?
 
       pdf_filename = "Batch Invoices - #{broker_customer.customer.name}.pdf"
-      pdf_filename = ActiveStorage::Filename.new(filename).sanitized
+      pdf_filename = ActiveStorage::Filename.new(pdf_filename).sanitized
 
       receivables = Receivable.where(id: sendable_receivable_ids).order(order)
 
@@ -71,7 +71,7 @@ class SendReceivablesJob < ApplicationJob
         end
 
         pdf_filename = "#{receivable.shipment.load_id} Invoice.pdf"
-        pdf_filename = ActiveStorage::Filename.new(filename).sanitized
+        pdf_filename = ActiveStorage::Filename.new(pdf_filename).sanitized
 
         # Using deliver_now because PDF may not persist
         next unless ReceivablesMailer.batch(
