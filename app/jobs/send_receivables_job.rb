@@ -37,7 +37,7 @@ class SendReceivablesJob < ApplicationJob
       receivables = Receivable.where(id: sendable_receivable_ids).order(order)
 
       # Using deliver_now because PDF may not persist
-      next unless ReceivablesMailer.batch(broker_customer:, load_ids:, pdf_filename:).deliver_now
+      next unless ReceivablesMailer.batch(broker_customer:, load_ids:, pdf:, pdf_filename:).deliver_now
 
       receivables.update_all(sent_at: DateTime.current)
     end
