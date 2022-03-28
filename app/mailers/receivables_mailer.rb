@@ -3,12 +3,12 @@
 class ReceivablesMailer < ApplicationMailer
   default from: 'Next TMS <robot@tms.next-tms.com>'
 
-  def batch(broker_customer:, load_ids:, pdf_path:)
+  def batch(broker_customer:, load_ids:, pdf:, pdf_filename:)
     @load_ids = load_ids.sort
 
-    attachments[File.basename(pdf_path)] = {
+    attachments[pdf_filename] = {
       mime_type: 'application/pdf',
-      content: File.read(pdf_path)
+      content: pdf.to_pdf
     }
 
     bcc = []

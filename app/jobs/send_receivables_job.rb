@@ -31,9 +31,7 @@ class SendReceivablesJob < ApplicationJob
 
       next if sendable_receivable_ids.blank?
 
-      filename = "Batch Invoices - #{broker_customer.customer.name} #{DateTime.current.to_i}.pdf"
-      path = Rails.root.join('tmp').join(filename)
-      pdf.save(path)
+      pdf_filename = "Batch Invoices - #{broker_customer.customer.name}.pdf"
 
       receivables = Receivable.where(id: sendable_receivable_ids).order(order)
 
@@ -71,15 +69,14 @@ class SendReceivablesJob < ApplicationJob
           end
         end
 
-        filename = "#{receivable.shipment.load_id} Invoice.pdf"
-        path = File.join(Dir.tmpdir, filename)
-        pdf.save(path)
+        pdf_filename = "#{receivable.shipment.load_id} Invoice.pdf"
 
         # Using deliver_now because PDF may not persist
         next unless ReceivablesMailer.batch(
           broker_customer:,
           load_ids: [receivable.shipment.load_id],
-          pdf_path: path
+          pdf:,
+          pdf_filename:
         ).deliver_now
 
         receivable.update_columns(sent_at: DateTime.current)
