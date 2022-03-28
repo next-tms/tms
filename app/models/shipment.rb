@@ -476,7 +476,12 @@ class Shipment < ApplicationRecord
   def fetch_carrier_bol
     return nil if pro.blank?
 
-    path = InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
+    begin
+      path = InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
+    rescue Errno::ENETUNREACH
+      return nil
+    end
+
     return nil if path.blank?
 
     unless path.is_a?(String)
@@ -508,7 +513,12 @@ class Shipment < ApplicationRecord
   def fetch_carrier_pod
     return nil if pro.blank?
 
-    path = InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
+    begin
+      path = InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
+    rescue Errno::ENETUNREACH
+      return nil
+    end
+
     return nil if path.blank?
 
     if File.zero?(path)
