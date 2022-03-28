@@ -484,6 +484,11 @@ class Shipment < ApplicationRecord
       return nil
     end
 
+    if File.zero?(path)
+      Honeybadger.notify("Shipment#fetch_carrier_bol id=#{id}, carrier_bol was zero-length")
+      return nil
+    end
+
     carrier_bol.attach(io: File.open(path), filename: "#{load_id} BOL (Carrier).pdf", content_type: 'application/pdf')
 
     Contact.where(id: broker_customer.document_preferences.where(kind: 'carrier_bol').pluck(:contact_id)).find_each do |contact|
@@ -505,6 +510,11 @@ class Shipment < ApplicationRecord
 
     path = InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
     return nil if path.blank?
+
+    if File.zero?(path)
+      Honeybadger.notify("Shipment#fetch_carrier_pod id=#{id}, carrier_pod was zero-length")
+      return nil
+    end
 
     carrier_pod.attach(io: File.open(path), filename: "#{load_id} POD.pdf", content_type: 'application/pdf')
 
