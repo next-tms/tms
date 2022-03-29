@@ -68,7 +68,7 @@ module QuickbooksApiClient
     def build_invoice(receivable, invoice: nil)
       if invoice.blank?
         invoice = Quickbooks::Model::Invoice.new(
-          bill_email: receivable.broker_customer.receivables_contact.email,
+          billing_email_address: receivable.broker_customer.receivables_contact.email,
           customer_id: receivable.broker_customer.quickbooks_customer_id,
           doc_number: receivable.shipment.load_id.to_s,
           txn_date: DateTime.current.in_time_zone(receivable.broker_customer.broker.time_zone)
