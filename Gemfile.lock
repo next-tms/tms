@@ -24,10 +24,10 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 60c89ee79fabdb8d690ce18f83e3cf5df213b049
-  ref: 60c89ee79fabdb8d690ce18f83e3cf5df213b049
+  revision: 3996cdcc32afc28d3fd93d88051b5738e4bbc4df
+  ref: 3996cdcc32afc28d3fd93d88051b5738e4bbc4df
   specs:
-    interstellar (0.1.pre12)
+    interstellar (0.1.pre13)
       active_utils (~> 3.3.1)
       activemodel (>= 4.2, < 7.0.3)
       activesupport (>= 4.2, < 7.0.3)
@@ -41,11 +41,11 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: 0f67e1d66fcd56ad3092a2e3f1299511c2f20045
-  ref: 0f67e1d66fcd56ad3092a2e3f1299511c2f20045
+  revision: 3d03b771678da6ac1d529539d6e7e77252c23c5a
+  ref: 3d03b771678da6ac1d529539d6e7e77252c23c5a
   specs:
-    interstellar-next (0.1.pre12)
-      interstellar (= 0.1.pre12)
+    interstellar-next (0.1.pre13)
+      interstellar (= 0.1.pre13)
 
 GEM
   remote: https://rails-assets.org/
