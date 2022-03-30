@@ -435,7 +435,9 @@ class Shipment < ApplicationRecord
   }
 
   validates :load_id, uniqueness: { scope: :broker }
+
   validate :future_pickup_by, if: -> { dispatch_pickup }
+  validate :pro_and_tracking_carrier_pro
 
   def applied_rate_uid=(rate_uid)
     rate = Rate.find_by_uid(rate_uid)
@@ -1266,6 +1268,34 @@ class Shipment < ApplicationRecord
 
   def future_pickup_by
     errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < DateTime.current
+  end
+
+  def pro_and_tracking_carrier_pro
+    return unless pro_changed? || tracking_carrier_pro_changed?
+
+    error = NotImplementedError
+
+    unless tracking_carrier&.as_interstellar_carrier.blank? || tracking_carrier_pro.blank?
+      begin
+        carrier = tracking_carrier&.as_interstellar_carrier
+
+        if carrier && carrier.valid_tracking_number?(tracking_carrier_pro) == false
+          errors.add(:base, "Carrier pro #{tracking_carrier_pro} is invalid for #{tracking_carrier.name}")
+        end
+      rescue error
+      end
+    end
+
+    return if broker_carrier.blank?
+
+    begin
+      carrier = broker_carrier.carrier&.as_interstellar_carrier
+
+      if carrier && carrier.valid_tracking_number?(pro) == false
+        errors.add(:base, "Pro #{pro} is invalid for #{broker_carrier.carrier.name}")
+      end
+    rescue error
+    end
   end
 
   def pro_or_tracking_carrier_pro_changed?
