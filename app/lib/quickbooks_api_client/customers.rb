@@ -11,7 +11,7 @@ module QuickbooksApiClient
 
         begin
           service.create(customer)
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
@@ -32,7 +32,7 @@ module QuickbooksApiClient
 
         begin
           service.update(customer, sparse: true)
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
@@ -48,7 +48,7 @@ module QuickbooksApiClient
 
         begin
           service.query
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
@@ -66,7 +66,7 @@ module QuickbooksApiClient
           service.fetch_by_id(id)
         rescue Quickbooks::IntuitRequestException
           nil
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
@@ -83,7 +83,7 @@ module QuickbooksApiClient
         begin
           results = service.find_by(:company_name, name)
           results.count == 1 ? results.first : nil
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
