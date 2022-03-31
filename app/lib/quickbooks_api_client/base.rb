@@ -2,7 +2,9 @@
 
 module QuickbooksApiClient
   class Base
+    BACKOFF_EXCEPTIONS = [Quickbooks::TooManyRequests].freeze
     HTTP_TIMEOUT_CODES = [429, 504].freeze
+    RETRY_MAX_WAIT_SECONDS = 30
 
     attr_accessor :service
     attr_reader :broker, :retry_on_timeout, :return_nil_on_404
