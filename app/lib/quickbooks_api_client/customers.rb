@@ -7,7 +7,16 @@ module QuickbooksApiClient
 
       broker.intuit_account.perform_authenticated_request do |access_token|
         service = build_service(access_token)
-        service.create(customer)
+        tries = 0
+
+        begin
+          service.create(customer)
+        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+          raise if tries > 10
+
+          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+          retry
+        end
       end
     end
 
@@ -15,29 +24,53 @@ module QuickbooksApiClient
       quickbooks_customer = broker_customer.quickbooks_customer
       return create(broker_customer) if quickbooks_customer.blank?
 
-      quickbooks_customer = find(quickbooks_customer.id)
+      customer = broker_customer.to_quickbooks_customer
 
       broker.intuit_account.perform_authenticated_request do |access_token|
         service = build_service(access_token)
-        service.update(customer, sparse: true)
+        tries = 0
+
+        begin
+          service.update(customer, sparse: true)
+        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+          raise if tries > 10
+
+          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+          retry
+        end
       end
     end
 
     def find_all
       broker.intuit_account.perform_authenticated_request do |access_token|
         service = build_service(access_token)
-        service.query
+        tries = 0
+
+        begin
+          service.query
+        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+          raise if tries > 10
+
+          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+          retry
+        end
       end
     end
 
     def find(id)
       broker.intuit_account.perform_authenticated_request do |access_token|
         service = build_service(access_token)
+        tries = 0
 
         begin
           service.fetch_by_id(id)
-        rescue Quickbooks::IntuitRequestException => e
+        rescue Quickbooks::IntuitRequestException
           nil
+        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+          raise if tries > 10
+
+          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+          retry
         end
       end
     end
@@ -45,9 +78,17 @@ module QuickbooksApiClient
     def find_by_name(name)
       broker.intuit_account.perform_authenticated_request do |access_token|
         service = build_service(access_token)
-        results = service.find_by(:company_name, name)
+        tries = 0
 
-        results.count == 1 ? results.first : nil
+        begin
+          results = service.find_by(:company_name, name)
+          results.count == 1 ? results.first : nil
+        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+          raise if tries > 10
+
+          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+          retry
+        end
       end
     end
 
