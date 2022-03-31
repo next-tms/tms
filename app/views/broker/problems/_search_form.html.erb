@@ -15,7 +15,7 @@
           <% role_ids = if current_user.has_role?('root')
                           (Role.all.ids & ProblemType.where(id: current_user.broker.problems.pluck(:problem_type_id)).pluck(:role_id))
                         else
-                          (current_User.roles.ids & ProblemType.where(id: current_user.broker.problems.pluck(:problem_type_id)).pluck(:role_id))
+                          (current_user.roles.ids & ProblemType.where(id: current_user.broker.problems.pluck(:problem_type_id)).pluck(:role_id))
                         end
           %>
 
