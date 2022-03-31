@@ -478,11 +478,11 @@ class Shipment < ApplicationRecord
   def fetch_carrier_bol
     return nil if pro.blank?
 
-    begin
-      path = InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
-    rescue Errno::ENETUNREACH
-      return nil
-    end
+    path = begin
+             InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
+           rescue Errno::ENETUNREACH
+             nil
+           end
 
     return nil if path.blank?
 
@@ -515,11 +515,15 @@ class Shipment < ApplicationRecord
   def fetch_carrier_pod
     return nil if pro.blank?
 
-    begin
-      path = InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
-    rescue Errno::ENETUNREACH
-      return nil
-    end
+    path = if broker_carrier.carrier.scac == 'OTCL'
+             Rails.root.join('public', 'blank.pdf')
+           else
+             begin
+               InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
+             rescue Errno::ENETUNREACH
+               nil
+             end
+           end
 
     return nil if path.blank?
 
