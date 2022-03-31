@@ -11,7 +11,7 @@ module QuickbooksApiClient
 
         begin
           service.create(invoice)
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
@@ -27,7 +27,7 @@ module QuickbooksApiClient
 
         begin
           service.query
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
@@ -45,7 +45,7 @@ module QuickbooksApiClient
           service.fetch_by_id(id)
         rescue Quickbooks::IntuitRequestException
           nil
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
@@ -62,7 +62,7 @@ module QuickbooksApiClient
         begin
           results = service.find_by(:doc_number, doc_number)
           results.count == 1 ? results.first : nil
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
@@ -80,7 +80,7 @@ module QuickbooksApiClient
           service.pdf(invoice)
         rescue Quickbooks::IntuitRequestException
           nil
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
@@ -101,7 +101,7 @@ module QuickbooksApiClient
 
         begin
           service.update(invoice, sparse: true)
-        rescue QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
