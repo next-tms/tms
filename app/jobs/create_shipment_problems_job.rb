@@ -3,9 +3,9 @@
 class CreateShipmentProblemsJob < ApplicationJob
   def perform
     Broker.all.find_each do |broker|
-      yesterday = 1.day.ago.in_time_zone(broker.time_zone).to_date
+      one_week_ago = 7.days.ago.in_time_zone(broker.time_zone).to_date
 
-      Shipment.pending_pickup.where('pickup_on <= ?', yesterday).find_each do |shipment|
+      Shipment.pending_pickup.where('pickup_on >= ?', one_week_ago).find_each do |shipment|
         assigned_to = Role
                       .find_by_name('dispatch')
                       .users
