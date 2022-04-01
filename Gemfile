@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 ruby '3.1.1'
 
 gem 'rails', '~> 7.0.2.3'
-gem 'pg', '~> 1.3.4'
+gem 'pg', '~> 1.3.5'
 gem 'puma', '~> 5.6.4'
 gem 'shakapacker', '~> 6.2.0'
 gem 'jbuilder', '~> 2.11'
