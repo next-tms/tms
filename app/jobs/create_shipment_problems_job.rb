@@ -13,7 +13,7 @@ class CreateShipmentProblemsJob < ApplicationJob
                       .where(broker:)
                       .order(Arel.sql('RANDOM()'))
                       &.last
-    
+
         if assigned_to.blank?
           assigned_to = Role
                         .find_by_name('root')
@@ -25,10 +25,14 @@ class CreateShipmentProblemsJob < ApplicationJob
         end
 
         problem_type = ProblemType.find_by_code('not_picked_up')
-  
+
+        next if shipment.problems.unresolved.where(problem_type:).any?
+
         title = "Load #{shipment.load_id} is #{problem_type.name}"
-        body = "Load #{shipment.load_id} was scheduled for pickup on #{ApplicationController.helpers.short_date(shipment.pickup_on, broker.time_zone)} but was not marked picked up"
-  
+        body = "Load #{shipment.load_id} was scheduled for pickup on #{ApplicationController.helpers.short_date(
+          shipment.pickup_on, broker.time_zone
+        )} but was not marked picked up"
+
         Problem.create(assigned_to:, body:, problem_type:, shipment:, title:)
       end
     end
