@@ -190,9 +190,9 @@
 class Shipment < ApplicationRecord
   include Shipment::Documentable
   include Shipment::Fingerprintable
+  include Shipment::HasPaymentTransactions
+  include Shipment::HasReceivables
   include Shipment::Interstellarable
-  include Shipment::Receivable
-  include Shipment::PaymentTransactionable
 
   attr_accessor :dispatch_pickup
 
