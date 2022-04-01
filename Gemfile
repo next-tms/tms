@@ -57,7 +57,7 @@ gem 'turbo-rails', '~> 1.0.1'
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'a732e4e2ea201072885597755ae910422fbae78b'
 gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next', ref: 'a0c0ea4a7585624f64f1d140e44f7712d96cf5d3'
 
-gem 'honeybadger', '~> 4.0'
+gem 'honeybadger', '~> 4.12'
 
 gem 'sidekiq', '~> 6.4.1'
 gem 'sidekiq-scheduler', '~> 3.1.1'
