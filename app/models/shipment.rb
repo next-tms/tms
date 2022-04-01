@@ -922,7 +922,7 @@ class Shipment < ApplicationRecord
       end
     end
 
-    return if broker_carrier.blank?
+    return if broker_carrier.blank? || pro.blank?
 
     begin
       carrier = broker_carrier.carrier&.as_interstellar_carrier
