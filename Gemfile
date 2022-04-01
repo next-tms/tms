@@ -91,7 +91,7 @@ gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0', groups: %i[development]
 gem 'sprockets-rails', '~> 3.4.2'
 
 gem 'pagy'
-gem 'ransack', '~> 2.6.0'
+gem 'ransack', '~> 3.0.0'
 
 gem 'public_suffix'
 gem 'rqrcode'
