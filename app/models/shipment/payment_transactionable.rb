@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Shipment::PayableTransactionable
+module Shipment::PaymentTransactionable
   extend ActiveSupport::Concern
 
   included do
