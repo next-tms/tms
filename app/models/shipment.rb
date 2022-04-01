@@ -192,7 +192,7 @@ class Shipment < ApplicationRecord
   include Shipment::Fingerprintable
   include Shipment::Interstellarable
   include Shipment::Receivable
-  include Shipment::PayableTransactionable
+  include Shipment::PaymentTransactionable
 
   attr_accessor :dispatch_pickup
 
