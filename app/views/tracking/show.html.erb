@@ -6,6 +6,7 @@
 
 <% unless @shipment.blank? %>
   <%= render 'results', load_id: @load_id, shipment: @shipment %>
+  <%= render 'form', load_id: @load_id %>
 <% else %>
   <div class="page-header mb-4">
     <h1><%= yield :title %></h1>

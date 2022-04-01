@@ -4,6 +4,17 @@
   </div>
 <% end %>
 
+<nav class="nav border-top pt-4 mb-0">
+  <a class="nav-link dropdown-toggle" href="#" id="shipment-mark-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Subscribe
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="shipment-mark-dropdown"> 
+    <%= link_to 'RSS', tracking_path(load_id: @shipment.load_id, format: 'rss'), target: '_blank', class: 'dropdown-item' %>
+    <div class="dropdown-divider"></div>
+    <%= link_to 'API (JSON)', tracking_events_api_v1_shipment_path(@shipment), target: '_blank', class: 'dropdown-item' %>
+  </ul>
+</nav>
+
 <div class="table-responsive">
   <table class="table table-condensed table-borderless table-striped table-hover table-unsortable h-100">
     <thead>
