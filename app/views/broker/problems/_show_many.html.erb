@@ -8,10 +8,26 @@
           <tr>
             <th><%= sort_link q, :id, '#' %></th>
             <th><%= sort_link q, :shipment_load_id, 'Shipment' %></th>
+            <th><%= sort_link q, :created_at, 'Opened' %>
+
+            <% if action_name == 'resolved' %>
+              <th><%= sort_link q, :resolved_at, 'Closed' %>
+            <% end %>
+
+            <% if current_user.has_role?('root') %>
+              <th><%= sort_link q, :problem_type_role_name, 'Kind' %>
+            <% end %>
+
             <th><%= sort_link q, :problem_type_id, 'Issue' %></th>
             <th>
               <span class="text-nowrap"><%= sort_link q, :assigned_to_first_name, 'Assigned To' %></span>
             </th>
+
+            <% if action_name == 'resolved' %>
+              <th>
+                <span class="text-nowrap"><%= sort_link q, :resovled_by_first_name, 'Closed By' %></span>
+              </th>
+            <% end %>
           </tr>
         </thead>
         <tbody>
@@ -19,8 +35,28 @@
             <tr>
               <td><%= link_to problem.id, broker_problem_path(problem), target: '_top' %></td>
               <td><%= link_to problem.shipment.load_id, broker_shipment_path(problem.shipment), target: '_blank' %></td>
+
+              <td><%= pretty_date(problem.created_at, current_user.time_zone) %></td>
+
+              <% if action_name == 'resolved' %>
+                <td><%= pretty_date(problem.resolved_at, current_user.time_zone) %></td>
+              <% end %>
+
+              <% if current_user.has_role?('root') %>
+                <td><%= problem.problem_type.role.name %></td>
+              <% end %>
+
               <td><%= problem.problem_type.name %></td>
+
               <td><%= icon 'solid', 'user-circle', problem.assigned_to.full_name %></td>
+
+              <% if action_name == 'resolved' %>
+                <% if problem.resolved_by.blank? %>
+                  <td><%= icon 'solid', 'robot', 'Robot' %></td>
+                <% else %>
+                  <td><%= icon 'solid', 'user-circle', problem.resolved_by&.full_name || 'Robot' %></td>
+                <% end %>
+              <% end %>
             </tr>
           <% end %>
         </tbody>

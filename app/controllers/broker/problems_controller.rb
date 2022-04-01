@@ -6,7 +6,7 @@ class Broker::ProblemsController < Broker::BrokerController
 
   def index
     @q = current_user.problems.includes(required_includes).ransack(params[:q])
-    @q.sorts = 'due_on desc' if @q.sorts.blank?
+    @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
   end
@@ -53,7 +53,7 @@ class Broker::ProblemsController < Broker::BrokerController
 
   def unresolved
     @q = current_user.problems.unresolved.includes(required_includes).ransack(params[:q])
-    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
   end
