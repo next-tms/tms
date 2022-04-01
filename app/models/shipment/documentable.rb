@@ -28,15 +28,15 @@ module Shipment::Documentable
     def broker_bol_valid?
       return false if broker_carrier&.as_interstellar_carrier&.bol_requires_tracking_number? && pro.blank?
 
-      @broker_bol_valid ||= !broker_bol.blank? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
+      @broker_bol_valid ||= broker_bol.attached? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
     end
 
     def broker_dispatch_sheet_valid?
-      @broker_dispatch_sheet_valid ||= !broker_dispatch_sheet.blank? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
+      @broker_dispatch_sheet_valid ||= broker_dispatch_sheet.attached? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
     end
 
     def broker_quote_valid?
-      @broker_quote_valid ||= !broker_quote.blank? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
+      @broker_quote_valid ||= broker_quote.attached? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
     end
   end
 end

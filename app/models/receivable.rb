@@ -190,12 +190,12 @@ class Receivable < ApplicationRecord
     end
 
     if broker_customer.requires_carrier_bol_on_receivables? && broker_customer.requires_carrier_pod_on_receivables?
-      return shipment.carrier_bol.present? && shipment.carrier_pod.present?
+      return shipment.carrier_bol.attached? && shipment.carrier_pod.attached?
     end
 
-    return shipment.carrier_bol.present? if broker_customer.requires_carrier_bol_on_receivables?
+    return shipment.carrier_bol.attached? if broker_customer.requires_carrier_bol_on_receivables?
 
-    return shipment.carrier_pod.present? if broker_customer.requires_carrier_pod_on_receivables?
+    return shipment.carrier_pod.attached? if broker_customer.requires_carrier_pod_on_receivables?
 
     true
   end

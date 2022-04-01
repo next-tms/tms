@@ -92,22 +92,18 @@ class Customer::ShipmentsController < Customer::CustomerController
     end
 
     unless @shipment.quote_only?
-      TrackShipmentJob.perform_later(@shipment) if Rails.env.development? || @shipment.delivered_at.blank?
+      TrackShipmentJob.perform_later(@shipment) unless @shipment.delivered?
 
-      if !@shipment.broker_bol_valid? || @shipment.incomplete?
+      unless @shipment.broker_bol_valid? && !@shipment.incomplete?
         CreateShipmentBrokerBolJob.perform_later(domain: request.host, shipment: @shipment)
       end
 
-      if !@shipment.broker_dispatch_sheet_valid? || @shipment.incomplete?
+      unless @shipment.broker_dispatch_sheet_valid? && !@shipment.incomplete?
         CreateShipmentBrokerDispatchSheetJob.perform_later(domain: request.host, shipment: @shipment)
       end
 
-      if Rails.env.development? || @shipment.carrier_bol.blank?
-        FetchShipmentCarrierBolsJob.perform_later([@shipment.id])
-      end
-      if Rails.env.development? || @shipment.carrier_pod.blank?
-        FetchShipmentCarrierPodsJob.perform_later([@shipment.id])
-      end
+      FetchShipmentCarrierBolsJob.perform_later([@shipment.id]) unless @shipment.carrier_bol.attached?
+      FetchShipmentCarrierPodsJob.perform_later([@shipment.id]) unless @shipment.carrier_pod.attached?
     end
   end
 
