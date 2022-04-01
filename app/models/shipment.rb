@@ -191,6 +191,7 @@ class Shipment < ApplicationRecord
   include Shipment::Documentable
   include Shipment::Fingerprintable
   include Shipment::Interstellarable
+  include Shipment::Receivable
 
   attr_accessor :dispatch_pickup
 
@@ -285,40 +286,10 @@ class Shipment < ApplicationRecord
 
   scope :not_late, -> { where.not(id: late) }
 
-  # Receivables
-
-  scope :with_carrier_bol, lambda {
-    left_joins(:carrier_bol_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) != 0')
-  }
-
-  scope :with_carrier_pod, lambda {
-    left_joins(:carrier_pod_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) != 0')
-  }
-
-  scope :without_carrier_bol, lambda {
-    left_joins(:carrier_bol_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) = 0')
-  }
-
-  scope :without_carrier_pod, lambda {
-    left_joins(:carrier_pod_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) = 0')
-  }
-
-  after_commit :create_receivable
-
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
 
   has_many :commissions, dependent: :destroy
-
-  has_many :receivables
 
   has_many :tracking_events, dependent: :destroy
   accepts_nested_attributes_for :tracking_events, allow_destroy: true, reject_if: :all_blank
@@ -934,32 +905,11 @@ class Shipment < ApplicationRecord
     end
   end
 
-  def self.receivable
-    shipment_ids = []
-
-    only_after = Date.parse('2021-12-01').to_date.in_time_zone('America/Los_Angeles').beginning_of_day
-    shipment_ids = active.where('picked_up_at > ?', only_after).ids
-    shipments_with_receivables_ids = Receivable.where(shipment_id: shipment_ids).pluck(:shipment_id)
-
-    where(id: shipment_ids).where.not(id: shipments_with_receivables_ids)
-  end
-
-  def receivable?
-    return false unless receivables.blank?
-    return false if broker_customer.blank? || picked_up_at.blank?
-
-    true
-  end
-
   def to_param
     load_id.to_s
   end
 
   private
-
-  def create_receivable
-    CreateReceivableJob.perform_later(self)
-  end
 
   def future_pickup_by
     errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < DateTime.current
