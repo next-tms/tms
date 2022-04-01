@@ -8,7 +8,7 @@ class CreateShipmentProblemsJob < ApplicationJob
       from = today - 7.days
       to = today - 1.day
 
-      Shipment.pending_pickup.where(pickup_on, (from..to)).find_each do |shipment|
+      Shipment.pending_pickup.where(pickup_on: (from..to)).find_each do |shipment|
         assigned_to = Role
                       .find_by_name('dispatch')
                       .users
