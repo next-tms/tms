@@ -91,7 +91,7 @@ class Receivable < ApplicationRecord
   scope :not_invoiced, -> { where.not(id: invoiced) }
 
   scope :paid, -> { where(balance_cents: 0) }
-  scope :unpaid, -> { where.not(balance_cents: 0) }
+  scope :unpaid, -> { where.not(balance_cents: 0).where(paid_at: nil) }
 
   scope :sent, -> { where.not(sent_at: nil) }
   scope :unsent, -> { where.not(id: sent) }
