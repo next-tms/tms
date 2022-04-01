@@ -50,3 +50,4 @@ th { font-weight: bold; text-align: left; }
 .lowercase { text-transform: lowercase !important; }
 tiny { font-size: xx-small; }
 .p-r { padding-right: 12pt; }
+img { padding-bottom: 6pt; padding-right: 6pt; padding-top: 12pt; }
