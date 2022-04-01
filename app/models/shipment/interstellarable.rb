@@ -193,6 +193,8 @@ module Shipment::Interstellarable
                               else
                                 now
                               end
+
+          tracking_event.at_without_time_zone_string = nil
         end
 
         tracking_event.save
