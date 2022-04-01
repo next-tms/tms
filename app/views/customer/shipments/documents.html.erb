@@ -26,7 +26,7 @@
             </tr>
           <% end %>
 
-          <% unless @shipment.carrier_label.blank? %>
+          <% if @shipment.carrier_label.attached? %>
             <tr>
               <td><%= @shipment.broker_carrier.carrier.name %></td>
               <td>Bill of Lading</td>
@@ -44,7 +44,7 @@
             </tr>
           <% end %>
 
-          <% unless @shipment.carrier_pod.blank? %>
+          <% if @shipment.carrier_pod.attached? %>
             <tr>
               <td><%= @shipment.broker_carrier.carrier.name %></td>
               <td>Proof of Delivery</td>
