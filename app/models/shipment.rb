@@ -188,6 +188,12 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Shipment < ApplicationRecord
+  include Shipment::Documentable
+  include Shipment::Fingerprintable
+  include Shipment::Interstellarable
+  include Shipment::Receivable
+  include Shipment::PayableTransactionable
+
   attr_accessor :dispatch_pickup
 
   ransacker :load_id do
@@ -281,40 +287,10 @@ class Shipment < ApplicationRecord
 
   scope :not_late, -> { where.not(id: late) }
 
-  # Receivables
-
-  scope :with_carrier_bol, lambda {
-    left_joins(:carrier_bol_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) != 0')
-  }
-
-  scope :with_carrier_pod, lambda {
-    left_joins(:carrier_pod_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) != 0')
-  }
-
-  scope :without_carrier_bol, lambda {
-    left_joins(:carrier_bol_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) = 0')
-  }
-
-  scope :without_carrier_pod, lambda {
-    left_joins(:carrier_pod_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) = 0')
-  }
-
-  after_commit :create_receivable
-
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
 
   has_many :commissions, dependent: :destroy
-
-  has_many :receivables
 
   has_many :tracking_events, dependent: :destroy
   accepts_nested_attributes_for :tracking_events, allow_destroy: true, reject_if: :all_blank
@@ -344,13 +320,6 @@ class Shipment < ApplicationRecord
 
   has_many :pickups
 
-  has_one_attached :broker_bol
-  has_one_attached :broker_dispatch_sheet
-  has_one_attached :broker_quote
-  has_one_attached :carrier_bol   # TODO: Rename to carrier_scanned_bol
-  has_one_attached :carrier_label # TODO: Rename to carrier_bol
-  has_one_attached :carrier_pod
-
   belongs_to :receiver_address, class_name: 'Address', required: true
   belongs_to :shipper_address, class_name: 'Address', required: true
 
@@ -364,8 +333,7 @@ class Shipment < ApplicationRecord
   accepts_nested_attributes_for :shipper_address
   validates_associated :shipper_address, presence: true
 
-  before_save :maybe_create_payment_transaction, if: :picked_up_at_changed?
-  before_save :remove_tracking_events, if: :pro_or_tracking_carrier_pro_changed?
+  before_save :remove_tracking_events, if: -> { pro_changed? || tracking_carrier_pro_changed? }
 
   # Fix broker_accessorials when broker_customer changes
   before_save :recalculate_broker_accessorials, if: :broker_customer_id_changed?
@@ -421,19 +389,6 @@ class Shipment < ApplicationRecord
 
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
-  # Remove broker documents when cost/charge changes
-  before_save :purge_broker_bol, if: lambda {
-    will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
-  }
-
-  before_save :purge_broker_dispatch_sheet, if: lambda {
-    will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
-  }
-
-  before_save :purge_broker_quote, if: lambda {
-    will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
-  }
-
   validates :load_id, uniqueness: { scope: :broker }
 
   validate :future_pickup_by, if: -> { dispatch_pickup }
@@ -458,14 +413,6 @@ class Shipment < ApplicationRecord
     end
   end
 
-  def carrier_cost_encoded=(str)
-    self.carrier_cost = Money.new(Base64.decode64(str).to_f * 100)
-  end
-
-  def carrier_charge_encoded=(str)
-    self.carrier_charge = Money.new(Base64.decode64(str).to_f * 100)
-  end
-
   def dispatch_incomplete?
     true_pickup_confirmation = tracking_carrier.blank? ? pickup_confirmation : tracking_carrier_pickup_confirmation
     if !broker_carrier.blank? && !dispatched_at.blank? && true_pickup_confirmation.blank? && (dispatched_at < DateTime.current - 15.minutes)
@@ -473,171 +420,6 @@ class Shipment < ApplicationRecord
     end
 
     false
-  end
-
-  def fetch_carrier_bol
-    return nil if pro.blank?
-
-    path = begin
-      InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
-    rescue Errno::ENETUNREACH
-      nil
-    end
-
-    return nil if path.blank?
-
-    unless path.is_a?(String)
-      Honeybadger.notify("Shipment#fetch_carrier_bol id=#{id}, path is a #{path.class}")
-      return nil
-    end
-
-    if File.zero?(path)
-      Honeybadger.notify("Shipment#fetch_carrier_bol id=#{id}, carrier_bol was zero-length")
-      return nil
-    end
-
-    carrier_bol.attach(io: File.open(path), filename: "#{load_id} BOL (Carrier).pdf", content_type: 'application/pdf')
-
-    Contact.where(id: broker_customer.document_preferences.where(kind: 'carrier_bol').pluck(:contact_id)).find_each do |contact|
-      ContactMailer.carrier_bol(from_user: nil, to_contact: contact, shipment: self).deliver_later
-    end
-
-    problem_type = ProblemType.find_by_code('receivable_missing_carrier_bol')
-    problems = Problem.where(problem_type:, shipment: self)
-
-    return true if problems.blank?
-
-    problems.update_all(resolved_at: DateTime.current, resolved_by_id: nil)
-
-    true
-  end
-
-  def fetch_carrier_pod
-    return nil if pro.blank?
-
-    path = if broker_carrier.carrier.scac == 'OTCL'
-             Rails.root.join('public', 'blank.pdf')
-           else
-             begin
-               InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
-             rescue Errno::ENETUNREACH
-               nil
-             end
-           end
-
-    return nil if path.blank?
-
-    if File.zero?(path)
-      Honeybadger.notify("Shipment#fetch_carrier_pod id=#{id}, carrier_pod was zero-length")
-      return nil
-    end
-
-    carrier_pod.attach(io: File.open(path), filename: "#{load_id} POD.pdf", content_type: 'application/pdf')
-
-    Contact.where(id: broker_customer.document_preferences.where(kind: 'carrier_pod').pluck(:contact_id)).find_each do |contact|
-      ContactMailer.carrier_pod(from_user: nil, to_contact: contact, shipment: self).deliver_later
-    end
-
-    problem_type = ProblemType.find_by_code('receivable_missing_carrier_pod')
-    problems = Problem.where(problem_type:, shipment: self)
-
-    return true if problems.blank?
-
-    problems.update_all(resolved_at: DateTime.current, resolved_by_id: nil)
-
-    true
-  end
-
-  def fetch_pro
-    return nil if pickup_confirmation.blank?
-
-    pro = nil
-    pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
-                                          date: pickup_on)
-
-    if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
-                                            date: dispatched_at.to_date)
-    end
-
-    if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
-                                            date: pickup_on - 1.day)
-    end
-
-    if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
-                                            date: pickup_on + 1.day)
-    end
-
-    if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
-                                            date: pickup_on + 2.days)
-    end
-
-    if pro.blank?
-      pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
-                                            date: dispatched_at.to_date + 1.day)
-    end
-
-    return if pro.blank?
-
-    update(pro:, updated_by: nil)
-  end
-
-  def fingerprint
-    str = ''.dup
-
-    unless flattened_items.blank?
-      flattened_items.each do |flattened_item|
-        str += flattened_item
-               .attributes
-               .except(
-                 *%w[created_at updated_at]
-               )
-               .to_s
-      end
-    end
-
-    str += accessorial_codes.to_json
-    str += shipper_address.pretty(', ') unless shipper_address.blank?
-    str += receiver_address.pretty(', ') unless receiver_address.blank?
-
-    if !created_at.blank? && created_at.in_time_zone('America/Los_Angeles').to_date >= Date.parse('2022-01-09')
-      str += value_cents.to_s
-    end
-
-    Digest::SHA2.hexdigest(str)
-  end
-
-  def broker_documents_fingerprint
-    str = ''.dup
-    str += accessorial_codes&.to_json || ''
-    str += bol || ''
-    str += bol_notes || ''
-    str += broker_carrier_id&.to_s || ''
-    str += delivery_eta_on.to_s || ''
-    str += delivery_appointment_at.to_s || ''
-    str += delivery_appointment_on.to_s || ''
-    str += delivery_hours_end_at.to_s || ''
-    str += delivery_hours_start_at.to_s || ''
-    str += flattened_items&.to_json || ''
-    str += pickup_hours_end_at || ''
-    str += pickup_hours_start_at || ''
-    str += pro || ''
-    str += quote_id || ''
-    str += receiver_name || ''
-    str += receiver_address.pretty(', ') unless receiver_address.blank?
-    str += shipper_name || ''
-    str += shipper_address.pretty(', ') unless shipper_address.blank?
-    str += shipper_bol || ''
-    str += shipper_reference || ''
-    str += total_charges_cents&.to_s || ''
-    str += total_cost_cents&.to_s || ''
-    str += tracking_carrier_id&.to_s || ''
-    str += value_cents.to_s
-
-    Digest::SHA2.hexdigest(str)
   end
 
   def missing_delivery_eta_on?
@@ -748,133 +530,6 @@ class Shipment < ApplicationRecord
     formatted_offset = DateTime.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
 
     DateTime.parse("#{pickup_on} #{pickup_hours_end_at} #{formatted_offset}")
-  end
-
-  # Interstellar
-  def interstellar_tracking
-    return @interstellar_tracking if @interstellar_tracking
-
-    # Do not check broker_carrier.account, broker_carrier.username, broker_carrier.password as `nil` can be passed on
-    return nil if pro.blank? && pickup_confirmation.blank?
-    return nil if broker_carrier.blank? || broker_carrier.carrier.scac.blank?
-
-    tracking_number = if pro.blank?
-                        broker_carrier.carrier.has_traceable_pickup_confirmation? ? pickup_confirmation : nil
-                      else
-                        pro
-                      end
-    return nil if tracking_number.blank?
-
-    @interstellar_tracking = InterstellarApiClient.fetch_tracking(
-      broker_carrier:,
-      tracking_number:
-    )
-  end
-
-  def update_tracking_events
-    return if interstellar_tracking&.shipment_events.blank?
-
-    interstellar_tracking.shipment_events.each do |shipment_event|
-      next if shipment_event.time.blank? || shipment_event.time >= 1.day.from_now || shipment_event.status.blank?
-
-      interstellar_location = if shipment_event.status == :delivered && shipment_event.location.blank?
-                                Interstellar::Location.new(
-                                  city: receiver_address.city,
-                                  state: receiver_address.region.abbreviation,
-                                  country: ActiveUtils::Country.find(receiver_address.country.alpha3_code)
-                                )
-                              elsif shipment_event.status == :picked_up && shipment_event.location.blank?
-                                Interstellar::Location.new(
-                                  city: shipper_address.city,
-                                  state: shipper_address.region.abbreviation,
-                                  country: ActiveUtils::Country.find(shipper_address.country.alpha3_code)
-                                )
-                              else
-                                shipment_event.location
-                              end
-
-      if interstellar_location.blank? || interstellar_location.city.blank? || interstellar_location.state.blank? || interstellar_location.country.blank?
-        next
-      end
-
-      fingerprint = Digest::SHA2.hexdigest(
-        shipment_event.time +
-        shipment_event.status.to_s
-      )
-      tracking_event = tracking_events.where(interstellar_carrier_fingerprint: fingerprint)&.first
-      tracking_event = tracking_events.new if tracking_event.blank?
-
-      tracking_event.at_without_time_zone_string = shipment_event.time
-
-      event = Event.find_by_active_shipping_code(shipment_event.status.to_s)
-      next if event.blank?
-
-      tracking_event.assign_attributes(
-        city: interstellar_location.city,
-        country: Country.find_by_alpha2_code(interstellar_location.country_code(:alpha2)),
-        event:,
-        interstellar_carrier_fingerprint: fingerprint,
-        region: Region.find_by_abbreviation(interstellar_location.state)
-      )
-
-      next unless tracking_event.valid?
-
-      # This is a cheap hack for API's that always set the time as 12 AM
-      # Wait until validation to get TrackingEvent#at
-
-      now = DateTime.current.in_time_zone(tracking_event.time_zone)
-
-      if tracking_event.at == now.beginning_of_day
-        tracking_event.at = if tracking_event.event == Event.find_by_name('delivered')
-                              now + 1.second # so that it's after out for delivery
-                            else
-                              now
-                            end
-      end
-
-      tracking_event.save
-
-      case tracking_event.event.active_shipping_code
-      when 'delivered'
-        self.delivered_at = tracking_event.at if delivered_at.blank?
-      when 'delivery_appointment_scheduled'
-        case shipment_event.message
-        when DateTime
-          self.delivery_appointment_at = shipment_event.message
-        when Date
-          self.delivery_appointment_on = shipment_event.message
-        else
-          next
-        end
-      when 'out_for_delivery'
-        self.out_for_delivery_at = tracking_event.at if out_for_delivery_at.blank?
-      when 'pending_delivery_appointment'
-        self.pending_appointment_since = tracking_event.at if pending_appointment_since.blank?
-      when 'picked_up'
-        self.picked_up_at = tracking_event.at if picked_up_at.blank?
-      end
-
-      if changed?
-        self.updated_by = nil # robot
-        save
-      end
-
-      next unless departed_origin_terminal_at.blank?
-
-      tracking_event = tracking_events.where(
-        event: Event.find_by_active_shipping_code('departed')
-      ).order(at: :desc).limit(1)&.first
-
-      next if tracking_event.blank?
-
-      # TrackingEvent expects localized format and converts to UTC
-      update(
-        departed_origin_terminal_at: (tracking_event.at + shipper_address.time_zone.utc_offset.seconds).to_s(:db),
-        updated_by: nil
-      )
-    end
-
-    tracking_events
   end
 
   def status
@@ -1200,20 +855,6 @@ class Shipment < ApplicationRecord
     # @linear_ft = ( @linear_ft / 12.to_f )
   end
 
-  def broker_bol_valid?
-    return false if broker_carrier&.as_interstellar_carrier&.bol_requires_tracking_number? && pro.blank?
-
-    @broker_bol_valid ||= !broker_bol.blank? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
-  end
-
-  def broker_dispatch_sheet_valid?
-    @broker_dispatch_sheet_valid ||= !broker_dispatch_sheet.blank? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
-  end
-
-  def broker_quote_valid?
-    @broker_quote_valid ||= !broker_quote.blank? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
-  end
-
   def accessible_by?(user)
     return false unless user.is_a?(User)
 
@@ -1230,7 +871,12 @@ class Shipment < ApplicationRecord
     false
   end
 
-  # TODO: Move to private
+  def to_param
+    load_id.to_s
+  end
+
+  private
+
   def build_commissions
     return if broker_customer.blank? || total_cost == Money.new(0) || total_charges == Money.new(0)
 
@@ -1254,33 +900,6 @@ class Shipment < ApplicationRecord
         amount:
       )
     end
-  end
-
-  def self.receivable
-    shipment_ids = []
-
-    only_after = Date.parse('2021-12-01').to_date.in_time_zone('America/Los_Angeles').beginning_of_day
-    shipment_ids = active.where('picked_up_at > ?', only_after).ids
-    shipments_with_receivables_ids = Receivable.where(shipment_id: shipment_ids).pluck(:shipment_id)
-
-    where(id: shipment_ids).where.not(id: shipments_with_receivables_ids)
-  end
-
-  def receivable?
-    return false unless receivables.blank?
-    return false if broker_customer.blank? || picked_up_at.blank?
-
-    true
-  end
-
-  def to_param
-    load_id.to_s
-  end
-
-  private
-
-  def create_receivable
-    CreateReceivableJob.perform_later(self)
   end
 
   def future_pickup_by
@@ -1313,10 +932,6 @@ class Shipment < ApplicationRecord
       end
     rescue error
     end
-  end
-
-  def pro_or_tracking_carrier_pro_changed?
-    pro_changed? || tracking_carrier_pro_changed?
   end
 
   def remove_tracking_events
@@ -1358,34 +973,6 @@ class Shipment < ApplicationRecord
   # Remove applied_rate when carrier changes
   def remove_applied_rate
     self.applied_rate = nil
-  end
-
-  def maybe_create_payment_transaction
-    return unless !broker_carrier.blank? && broker_carrier.create_invoice_on_pickup? && payment_transactions.blank?
-
-    PaymentTransaction.create(
-      shipment: self,
-      broker:,
-      broker_carrier:,
-      created_by: updated_by,
-      balance: total_cost,
-      paid: total_cost,
-      due_on: Date.current + broker_carrier.days_to_pay_after_invoice_date.days,
-      pro:
-    )
-  end
-
-  # Remove broker documents when cost/charge changes
-  def purge_broker_bol
-    broker_bol&.purge
-  end
-
-  def purge_broker_dispatch_sheet
-    broker_dispatch_sheet&.purge
-  end
-
-  def purge_broker_quote
-    broker_dispatch_sheet&.purge
   end
 
   # Fix broker_accessorials when broker_customer changes
