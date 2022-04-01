@@ -192,6 +192,7 @@ class Shipment < ApplicationRecord
   include Shipment::Fingerprintable
   include Shipment::Interstellarable
   include Shipment::Receivable
+  include Shipment::PayableTransactionable
 
   attr_accessor :dispatch_pickup
 
@@ -332,8 +333,7 @@ class Shipment < ApplicationRecord
   accepts_nested_attributes_for :shipper_address
   validates_associated :shipper_address, presence: true
 
-  before_save :maybe_create_payment_transaction, if: :picked_up_at_changed?
-  before_save :remove_tracking_events, if: :pro_or_tracking_carrier_pro_changed?
+  before_save :remove_tracking_events, if: -> { pro_changed? || tracking_carrier_pro_changed? }
 
   # Fix broker_accessorials when broker_customer changes
   before_save :recalculate_broker_accessorials, if: :broker_customer_id_changed?
@@ -943,10 +943,6 @@ class Shipment < ApplicationRecord
     end
   end
 
-  def pro_or_tracking_carrier_pro_changed?
-    pro_changed? || tracking_carrier_pro_changed?
-  end
-
   def remove_tracking_events
     tracking_events.destroy_all
   end
@@ -986,21 +982,6 @@ class Shipment < ApplicationRecord
   # Remove applied_rate when carrier changes
   def remove_applied_rate
     self.applied_rate = nil
-  end
-
-  def maybe_create_payment_transaction
-    return unless !broker_carrier.blank? && broker_carrier.create_invoice_on_pickup? && payment_transactions.blank?
-
-    PaymentTransaction.create(
-      shipment: self,
-      broker:,
-      broker_carrier:,
-      created_by: updated_by,
-      balance: total_cost,
-      paid: total_cost,
-      due_on: Date.current + broker_carrier.days_to_pay_after_invoice_date.days,
-      pro:
-    )
   end
 
   # Fix broker_accessorials when broker_customer changes
