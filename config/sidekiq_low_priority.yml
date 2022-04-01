@@ -40,6 +40,4 @@
     cron: '40 */2 * * *'
     class: UpdateReceivablesFromQuickbooksJob
 :queues:
-  - ['high_priority', 2]
-  - ['mailers', 2]
-  - ['default', 1]
+  - 'default'
