@@ -479,10 +479,10 @@ class Shipment < ApplicationRecord
     return nil if pro.blank?
 
     path = begin
-             InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
-           rescue Errno::ENETUNREACH
-             nil
-           end
+      InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
+    rescue Errno::ENETUNREACH
+      nil
+    end
 
     return nil if path.blank?
 
@@ -818,6 +818,19 @@ class Shipment < ApplicationRecord
       )
 
       next unless tracking_event.valid?
+
+      # This is a cheap hack for API's that always set the time as 12 AM
+      # Wait until validation to get TrackingEvent#at
+
+      now = DateTime.current.in_time_zone(tracking_event.time_zone)
+
+      if tracking_event.at == now.beginning_of_day
+        tracking_event.at = if tracking_event.event == Event.find_by_name('delivered')
+                              now + 1.second # so that it's after out for delivery
+                            else
+                              now
+                            end
+      end
 
       tracking_event.save
 
