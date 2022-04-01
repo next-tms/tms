@@ -109,8 +109,6 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
                                      :broker_notes,
                                      :canceled_at,
                                      :carrier_id,
-                                     :carrier_charge_encoded,
-                                     :carrier_cost_encoded,
                                      :customer_notes,
                                      :customer_reference,
                                      :delivery_eta_on,

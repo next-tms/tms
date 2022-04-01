@@ -413,14 +413,6 @@ class Shipment < ApplicationRecord
     end
   end
 
-  def carrier_cost_encoded=(str)
-    self.carrier_cost = Money.new(Base64.decode64(str).to_f * 100)
-  end
-
-  def carrier_charge_encoded=(str)
-    self.carrier_charge = Money.new(Base64.decode64(str).to_f * 100)
-  end
-
   def dispatch_incomplete?
     true_pickup_confirmation = tracking_carrier.blank? ? pickup_confirmation : tracking_carrier_pickup_confirmation
     if !broker_carrier.blank? && !dispatched_at.blank? && true_pickup_confirmation.blank? && (dispatched_at < DateTime.current - 15.minutes)
