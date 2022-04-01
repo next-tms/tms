@@ -3,3 +3,5 @@ problem_types:
     name: delayed due to weather
   - code: lost
     name: lost
+  - code: not_picked_up
+    name: not picked up

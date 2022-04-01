@@ -9,6 +9,9 @@
   create_receivable_problems:
     cron: '*/15 * * * *'
     class: CreateReceivableProblemsJob
+  create_shipment_problems:
+    cron: '*/15 * * * *'
+    class: CreateShipmentProblemsJob
   fetch_carrier_bols:
     cron: '0 */4 * * *'
     class: FetchShipmentCarrierBolsJob
