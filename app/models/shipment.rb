@@ -188,6 +188,7 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Shipment < ApplicationRecord
+  include Shipment::Documentable
   include Shipment::Fingerprintable
   include Shipment::Interstellarable
 
@@ -347,13 +348,6 @@ class Shipment < ApplicationRecord
 
   has_many :pickups
 
-  has_one_attached :broker_bol
-  has_one_attached :broker_dispatch_sheet
-  has_one_attached :broker_quote
-  has_one_attached :carrier_bol   # TODO: Rename to carrier_scanned_bol
-  has_one_attached :carrier_label # TODO: Rename to carrier_bol
-  has_one_attached :carrier_pod
-
   belongs_to :receiver_address, class_name: 'Address', required: true
   belongs_to :shipper_address, class_name: 'Address', required: true
 
@@ -423,19 +417,6 @@ class Shipment < ApplicationRecord
   before_save :remove_applied_rate, if: :will_save_change_to_tracking_carrier_id?
 
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
-
-  # Remove broker documents when cost/charge changes
-  before_save :purge_broker_bol, if: lambda {
-    will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
-  }
-
-  before_save :purge_broker_dispatch_sheet, if: lambda {
-    will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
-  }
-
-  before_save :purge_broker_quote, if: lambda {
-    will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
-  }
 
   validates :load_id, uniqueness: { scope: :broker }
 
@@ -911,20 +892,6 @@ class Shipment < ApplicationRecord
     # @linear_ft = ( @linear_ft / 12.to_f )
   end
 
-  def broker_bol_valid?
-    return false if broker_carrier&.as_interstellar_carrier&.bol_requires_tracking_number? && pro.blank?
-
-    @broker_bol_valid ||= !broker_bol.blank? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
-  end
-
-  def broker_dispatch_sheet_valid?
-    @broker_dispatch_sheet_valid ||= !broker_dispatch_sheet.blank? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
-  end
-
-  def broker_quote_valid?
-    @broker_quote_valid ||= !broker_quote.blank? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
-  end
-
   def accessible_by?(user)
     return false unless user.is_a?(User)
 
@@ -1084,19 +1051,6 @@ class Shipment < ApplicationRecord
       due_on: Date.current + broker_carrier.days_to_pay_after_invoice_date.days,
       pro:
     )
-  end
-
-  # Remove broker documents when cost/charge changes
-  def purge_broker_bol
-    broker_bol&.purge
-  end
-
-  def purge_broker_dispatch_sheet
-    broker_dispatch_sheet&.purge
-  end
-
-  def purge_broker_quote
-    broker_dispatch_sheet&.purge
   end
 
   # Fix broker_accessorials when broker_customer changes
