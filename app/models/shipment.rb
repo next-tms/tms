@@ -871,7 +871,12 @@ class Shipment < ApplicationRecord
     false
   end
 
-  # TODO: Move to private
+  def to_param
+    load_id.to_s
+  end
+
+  private
+
   def build_commissions
     return if broker_customer.blank? || total_cost == Money.new(0) || total_charges == Money.new(0)
 
@@ -896,12 +901,6 @@ class Shipment < ApplicationRecord
       )
     end
   end
-
-  def to_param
-    load_id.to_s
-  end
-
-  private
 
   def future_pickup_by
     errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < DateTime.current
