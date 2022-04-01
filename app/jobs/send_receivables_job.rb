@@ -6,7 +6,7 @@ class SendReceivablesJob < ApplicationJob
     order = :created_at
 
     broker_customers.where.not(receivables_schedule: 'immediately').find_each do |broker_customer|
-      receivables = broker_customer.receivables.unsent.with_attached_invoice.order(order)
+      receivables = broker_customer.receivables.unpaid.unsent.with_attached_invoice.order(order)
       sendable_receivable_ids = []
 
       pdf = CombinePDF.new
