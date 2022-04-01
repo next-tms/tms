@@ -96,5 +96,7 @@ gem 'ransack', '~> 2.6.0'
 gem 'public_suffix'
 gem 'rqrcode'
 
+gem 'rss_creator'
+
 # Use Redis for Action Cable
 gem 'redis', '~> 4.6'

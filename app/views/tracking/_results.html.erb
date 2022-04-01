@@ -1,5 +1,6 @@
 <% content_for(:alt_links) do %>
   <link rel="alternate" type="application/json" title="JSON" href="<%= tracking_events_api_v1_shipment_path(@shipment) %>" />
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="<%= tracking_path(load_id: @shipment.load_id) %>" />
 <% end %>
 
 <div class="page-header mb-4">

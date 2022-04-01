@@ -21,9 +21,43 @@ class TrackingController < ApplicationController
     end
 
     @shipment.update_tracking_events unless @shipment.blank?
+
+    respond_to do |format|
+      format.html
+      format.rss do
+        render :no_content and return if @shipment.blank?
+
+        render plain: rss, content_type: 'application/rss+xml'
+      end
+    end
   end
 
   private
+
+  def rss
+    rss = RSScreator.new
+
+    rss.title = "Load #{@shipment.load_id}"
+
+    desc = "Tracking events for Load #{@shipment.load_id} (#{@website.broker.name})".dup
+    desc += "\n\nNotes:\n#{@shipment.public_notes.blank?}"
+
+    rss.desc = desc
+
+    @shipment.tracking_events.includes(:event).find_each do |tracking_event|
+      rss.add(
+        {
+          title: tracking_event.event.name.titleize,
+          link: tracking_url(load_id: @shipment),
+          description: "#{tracking_event.event.name.capitalize} in #{tracking_event.pretty_location} at #{ApplicationController.helpers.strip_tags(ApplicationController.helpers.pretty_date(
+                                                                                                                                                     tracking_event.at, tracking_event.time_zone
+                                                                                                                                                   ))}"
+        }
+      )
+    end
+
+    rss
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_load_id
