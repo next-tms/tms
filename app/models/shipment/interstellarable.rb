@@ -138,15 +138,13 @@ module Shipment::Interstellarable
       return if interstellar_tracking&.shipment_events.blank?
 
       interstellar_tracking.shipment_events.each do |shipment_event|
-        next if shipment_event.time.blank? || shipment_event.time >= 1.day.from_now || shipment_event.status.blank?
-
-        interstellar_location = if shipment_event.status == :delivered && shipment_event.location.blank?
+        interstellar_location = if shipment_event.type_code == :delivered && shipment_event.location.blank?
                                   Interstellar::Location.new(
                                     city: receiver_address.city,
                                     state: receiver_address.region.abbreviation,
                                     country: ActiveUtils::Country.find(receiver_address.country.alpha3_code)
                                   )
-                                elsif shipment_event.status == :picked_up && shipment_event.location.blank?
+                                elsif shipment_event.type_code == :picked_up && shipment_event.location.blank?
                                   Interstellar::Location.new(
                                     city: shipper_address.city,
                                     state: shipper_address.region.abbreviation,
@@ -161,15 +159,25 @@ module Shipment::Interstellarable
         end
 
         fingerprint = Digest::SHA2.hexdigest(
-          shipment_event.time +
-          shipment_event.status.to_s
+          [
+            (shipment_event.date_time.local_date_time || ''),
+            shipment_event.type_code.to_s
+          ].join
         )
         tracking_event = tracking_events.where(interstellar_carrier_fingerprint: fingerprint)&.first
         tracking_event = tracking_events.new if tracking_event.blank?
 
-        tracking_event.at_without_time_zone_string = shipment_event.time
+        date_time = shipment_event.date_time
+        if !date_time.date_time_with_zone.blank?
+          tracking_event.at = shipment_event.date_time.date_time_with_zone
+          tracking_event.time_zone_name = shipment_event.date_time.date_time_with_zone.time_zone.name
+        elsif !shipment_event.date_time.local_date_time.blank?
+          tracking_event.at_without_time_zone_string = shipment_event.date_time.local_date_time
+        elsif !shipment_event.date_time.local_date.blank?
+          tracking_event.at = shipment_event.date_time.local_date.beginning_of_day
+        end
 
-        event = Event.find_by_active_shipping_code(shipment_event.status.to_s)
+        event = Event.find_by_active_shipping_code(shipment_event.type_code.to_s)
         next if event.blank?
 
         tracking_event.assign_attributes(
@@ -183,7 +191,7 @@ module Shipment::Interstellarable
         next unless tracking_event.valid?
 
         # This is a cheap hack for API's that always set the time as 12 AM
-        # Wait until validation to get TrackingEvent#at
+        # Wait until validation to ensure TrackingEvent#at
 
         now = DateTime.current.in_time_zone(tracking_event.time_zone)
 
@@ -202,15 +210,6 @@ module Shipment::Interstellarable
         case tracking_event.event.active_shipping_code
         when 'delivered'
           self.delivered_at = tracking_event.at if delivered_at.blank?
-        when 'delivery_appointment_scheduled'
-          case shipment_event.message
-          when DateTime
-            self.delivery_appointment_at = shipment_event.message
-          when Date
-            self.delivery_appointment_on = shipment_event.message
-          else
-            next
-          end
         when 'out_for_delivery'
           self.out_for_delivery_at = tracking_event.at if out_for_delivery_at.blank?
         when 'pending_delivery_appointment'
