@@ -24,10 +24,10 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: a732e4e2ea201072885597755ae910422fbae78b
-  ref: a732e4e2ea201072885597755ae910422fbae78b
+  revision: 1365a4a928182fe042c3cd5226ad69d2bf56a66f
+  ref: 1365a4a928182fe042c3cd5226ad69d2bf56a66f
   specs:
-    interstellar (0.1.pre14)
+    interstellar (0.1.pre16)
       active_utils (~> 3.3.1)
       activemodel (>= 4.2, < 7.0.3)
       activesupport (>= 4.2, < 7.0.3)
@@ -41,11 +41,11 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: a0c0ea4a7585624f64f1d140e44f7712d96cf5d3
-  ref: a0c0ea4a7585624f64f1d140e44f7712d96cf5d3
+  revision: cfa3843968dadad9773746e89d8781c3cc456306
+  ref: cfa3843968dadad9773746e89d8781c3cc456306
   specs:
-    interstellar-next (0.1.pre14)
-      interstellar (= 0.1.pre14)
+    interstellar-next (0.1.pre16)
+      interstellar (= 0.1.pre16)
 
 GEM
   remote: https://rails-assets.org/
@@ -1450,8 +1450,9 @@ GEM
     google_places (2.0.0)
       httparty (>= 0.13.1)
     gpd-request (0.3.0)
-    gyoku (1.3.1)
+    gyoku (1.4.0)
       builder (>= 2.1.2)
+      rexml (~> 3.0)
     honeybadger (4.12.0)
     htmlentities (4.3.4)
     http-accept (1.7.0)
