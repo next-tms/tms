@@ -78,11 +78,9 @@ class TrackingEvent < ApplicationRecord
   # TODO: Remove
   serialize :legacy_time_zone
 
-  # DateTime sanitization
-  before_validation :set_time_zone_name
-  before_validation :set_at_from_at_without_time_zone_string
-
   validate :reasonable_at
+
+  validates :time_zone_name, presence: true
 
   def pretty_location
     "#{city}, #{region.abbreviation}"
@@ -133,54 +131,9 @@ class TrackingEvent < ApplicationRecord
     errors.add(:at, 'must not be sooner than one week in the past') if at <= DateTime.now - 1.week
   end
 
-  def sanitize_datetime(datetime:, time_zone:)
-    return nil unless datetime.is_a?(String)
-    return nil if datetime.blank? || time_zone.blank?
-
-    time_zone.parse(datetime)
-  end
-
-  def set_at_from_at_without_time_zone_string
-    return if @at_without_time_zone_string.blank?
-
-    new_at = sanitize_datetime(datetime: @at_without_time_zone_string, time_zone:)
-    self.at = new_at.blank? ? DateTime.current : new_at
-  end
-
   def set_public
     return if event.blank?
 
     self[:public] = event.public_by_default?
-  end
-
-  def set_time_zone_name
-    last_time_zone_name = StandardizedAddress.where(region:)&.last&.time_zone_name
-
-    unless last_time_zone_name.blank?
-      self.time_zone_name = last_time_zone_name
-      return
-    end
-
-    last_time_zone_name = TrackingEvent.where(region:)&.last&.time_zone_name
-
-    unless last_time_zone_name.blank?
-      self.time_zone_name = last_time_zone_name
-      return
-    end
-
-    client = GooglePlaces::Client.new(ENV['GOOGLE_API_KEY'])
-
-    spots = client.spots_by_query(pretty_location)
-    if spots.blank?
-      self.time_zone_name = nil
-      return
-    end
-
-    spot = spots.first
-    lat = spot.json_result_object.dig('geometry', 'location', 'lat')
-    lng = spot.json_result_object.dig('geometry', 'location', 'lng')
-    return self.time_zone_name = nil if lat.blank? || lng.blank?
-
-    self.time_zone_name = Timezone.lookup(lat, lng)
   end
 end
