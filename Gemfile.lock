@@ -24,10 +24,10 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 1365a4a928182fe042c3cd5226ad69d2bf56a66f
-  ref: 1365a4a928182fe042c3cd5226ad69d2bf56a66f
+  revision: 7c44e77321b7fc12eed0c6f4efb7f088480cd02a
+  ref: 7c44e77321b7fc12eed0c6f4efb7f088480cd02a
   specs:
-    interstellar (0.1.pre16)
+    interstellar (0.1.pre17)
       active_utils (~> 3.3.1)
       activemodel (>= 4.2, < 7.0.3)
       activesupport (>= 4.2, < 7.0.3)
@@ -37,15 +37,25 @@ GIT
       nokogiri (>= 1.6, < 1.13.4)
       rmagick (>= 4.1, < 4.3)
       savon (>= 2.0, < 2.13)
+      spacetime (~> 0.1.pre1)
       watir (>= 7.0, < 7.2)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: cfa3843968dadad9773746e89d8781c3cc456306
-  ref: cfa3843968dadad9773746e89d8781c3cc456306
+  revision: 61ec98baf4c8a09a22f619a3d2ac45cc621ffd02
+  ref: 61ec98baf4c8a09a22f619a3d2ac45cc621ffd02
   specs:
-    interstellar-next (0.1.pre16)
-      interstellar (= 0.1.pre16)
+    interstellar-next (0.1.pre17)
+      interstellar (= 0.1.pre17)
+
+GIT
+  remote: https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime
+  revision: b430558c2458c6d674ec1803246ff5fcccacff94
+  ref: b430558c2458c6d674ec1803246ff5fcccacff94
+  specs:
+    spacetime (0.1.0)
+      activesupport (>= 6.0.0, < 7.1)
+      fastcsv (~> 0.0.6)
 
 GEM
   remote: https://rails-assets.org/
@@ -1440,6 +1450,7 @@ GEM
     faraday-patron (1.0.0)
     faraday-rack (1.0.0)
     faraday-retry (1.0.3)
+    fastcsv (0.0.6)
     ffi (1.15.5)
     fugit (1.5.2)
       et-orbi (~> 1.1, >= 1.1.8)
@@ -1826,6 +1837,7 @@ DEPENDENCIES
   sidekiq (~> 6.4.1)
   sidekiq-scheduler (~> 3.1.1)
   simple_command
+  spacetime!
   spring (~> 4.0.0)
   sprockets-rails (~> 3.4.2)
   timezone (~> 1.3)
