@@ -168,6 +168,8 @@ module Shipment::Interstellarable
         tracking_event = tracking_events.new if tracking_event.blank?
 
         at = TimeZoneService.from_interstellar_date_time(shipment_event.date_time)
+
+        # Hack for carriers that return Midnight on everything
         now = DateTime.current.in_time_zone(at.time_zone)
         at = now if at == now.beginning_of_day
 
@@ -177,7 +179,6 @@ module Shipment::Interstellarable
         next if event.blank?
 
         tracking_event.assign_attributes(
-          at:,
           city: interstellar_location.city,
           country: Country.find_by_alpha2_code(interstellar_location.country_code(:alpha2)),
           event:,
@@ -185,6 +186,9 @@ module Shipment::Interstellarable
           region: Region.find_by_abbreviation(interstellar_location.state),
           time_zone_name:
         )
+
+        # Keep original time since sometimes we "hack" it above
+        tracking_event.at = at if tracking_event.at.blank?
 
         next unless tracking_event.valid?
 
