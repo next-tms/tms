@@ -58,8 +58,6 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class TrackingEvent < ApplicationRecord
-  include TrackingEvent::Snitchable
-
   attr_writer :at_without_time_zone_string
 
   after_create :maybe_create_problem

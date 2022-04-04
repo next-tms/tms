@@ -3,15 +3,12 @@
 class TimeZoneService
   DEFAULT_TIME_ZONE_NAME = 'America/Los_Angeles'
 
+  attr_reader :output, :time_zone
+
   def self.from_interstellar_date_time(date_time)
     raise ArgumentError, 'date_time must be an `Interstellar::DateTime`' unless date_time.is_a?(Interstellar::DateTime)
 
     return date_time.date_time_with_zone unless date_time.date_time_with_zone.blank?
-
-    SnitchService.snitch(
-      self,
-      "has Interstellar::TrackingEvent with blank #date_time_with_zone: #{date_time.date_time_with_zone}"
-    )
 
     unless date_time.local_date_time.blank?
       interstellar_city = date_time.location&.city
