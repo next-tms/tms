@@ -58,6 +58,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class TrackingEvent < ApplicationRecord
+  include TrackingEvent::Snitchable
+
   attr_writer :at_without_time_zone_string
 
   after_create :maybe_create_problem
@@ -77,8 +79,6 @@ class TrackingEvent < ApplicationRecord
 
   # TODO: Remove
   serialize :legacy_time_zone
-
-  validate :reasonable_at
 
   validates :time_zone_name, presence: true
 
@@ -124,11 +124,6 @@ class TrackingEvent < ApplicationRecord
     body = "Load #{shipment.load_id} is #{event.name} per #{shipment.broker_carrier.carrier.name} API"
 
     Problem.create(assigned_to:, body:, problem_type:, shipment:, title:)
-  end
-
-  def reasonable_at
-    errors.add(:at, 'must not be later than six hours in the future') if at >= DateTime.now + 6.hours
-    errors.add(:at, 'must not be sooner than one week in the past') if at <= DateTime.now - 1.week
   end
 
   def set_public
