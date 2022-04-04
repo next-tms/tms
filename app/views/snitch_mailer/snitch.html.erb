@@ -4,7 +4,7 @@
 
 <p><% @messages.join('<br>') %></p>
 
-<p><%= @object_name %> # <%= @record.id %>:</p>
+<p><%= @object_name %><%= @record&.id ? " #{@record&.id}" : nil %>:</p>
 <code><%= @object_attributes %></code>
 
 <p>Traceback</p>
