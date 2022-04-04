@@ -6,7 +6,7 @@ class SnitchMailer < ApplicationMailer
   def snitch(object_name, object_attributes, messages)
     messages = [message] unless messages.is_a?(Array)
 
-    @callers = callers
+    @caller = caller
     @messages = messages
     @object_attributes = object_attributes
     @object_name = object_name
