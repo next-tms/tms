@@ -8,7 +8,8 @@ class TimeZoneService
 
     return date_time.date_time_with_zone unless date_time.date_time_with_zone.blank?
 
-    SnitchService.snitch(self, "has Interstellar::TrackingEvent with blank #date_time_with_zone: #{#date_time_with_zone}")
+    SnitchService.snitch(self,
+                         "has Interstellar::TrackingEvent with blank #date_time_with_zone: #{date_time_with_zone}")
 
     unless date_time.local_date_time.blank?
       interstellar_city = date_time.location&.city
