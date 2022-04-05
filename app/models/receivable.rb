@@ -172,7 +172,7 @@ class Receivable < ApplicationRecord
 
     update_from_api if persisted?
 
-    return false if balance_cents.zero?
+    return false if sent? || balance_cents.zero?
     return false unless invoice.attached? || fetch_invoice
 
     unless broker_customer.receivables_schedule == 'immediately'
@@ -346,7 +346,7 @@ class Receivable < ApplicationRecord
   end
 
   def set_sent_at
-    self.sent_at = nil unless invoiced? && !authorized_at.blank?
+    self.sent_at = paid_at if sent_at.blank?
   end
 
   def set_sent_by
