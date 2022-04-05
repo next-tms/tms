@@ -5,7 +5,7 @@ module Shipment::Interstellarable
 
   included do
     def fetch_carrier_bol
-      return nil if pro.blank?
+      return nil if pro.blank? || carrier_bol.attached?
 
       path = begin
         InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
@@ -42,7 +42,7 @@ module Shipment::Interstellarable
     end
 
     def fetch_carrier_pod
-      return nil if pro.blank?
+      return nil if pro.blank? || carrier_pod.attached?
 
       path = if broker_carrier.carrier.scac == 'OTCL'
                Rails.root.join('public', 'blank.pdf')
