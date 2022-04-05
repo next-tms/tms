@@ -121,7 +121,7 @@ class TrackingEvent < ApplicationRecord
     title = "Load #{shipment.load_id} #{event.name}"
     body = "Load #{shipment.load_id} is #{event.name} per #{shipment.broker_carrier.carrier.name} API"
 
-    Problem.create(assigned_to:, body:, problem_type:, shipment:, title:)
+    Problem.create(assigned_to:, body:, problem_type:, resolvable: shipment, title:)
   end
 
   def set_public

@@ -32,7 +32,7 @@ module Shipment::Interstellarable
       end
 
       problem_type = ProblemType.find_by_code('receivable_missing_carrier_bol')
-      problems = Problem.where(problem_type:, shipment: self)
+      problems = Problem.where(problem_type:, resolvable: self)
 
       return true if problems.blank?
 
@@ -68,7 +68,7 @@ module Shipment::Interstellarable
       end
 
       problem_type = ProblemType.find_by_code('receivable_missing_carrier_pod')
-      problems = Problem.where(problem_type:, shipment: self)
+      problems = Problem.where(problem_type:, resolvable: self)
 
       return true if problems.blank?
 

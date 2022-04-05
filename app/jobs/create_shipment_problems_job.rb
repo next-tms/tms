@@ -36,7 +36,7 @@ class CreateShipmentProblemsJob < ApplicationJob
           shipment.pickup_on, broker.time_zone
         )} but was not marked picked up"
 
-        Problem.create(assigned_to:, body:, problem_type:, shipment:, title:)
+        Problem.create(assigned_to:, body:, problem_type:, resolvable: shipment, title:)
       end
     end
   end
