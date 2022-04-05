@@ -71,12 +71,13 @@ class Broker::ProblemsController < Broker::BrokerController
       :id,
       :body,
       :resolved_at,
-      :shipment_id,
+      :resolvable_id,
+      :resolvable_type,
       :title
     )
   end
 
   def required_includes
-    %i[problem_type shipment]
+    %i[problem_type resolvable]
   end
 end

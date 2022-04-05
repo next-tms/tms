@@ -213,7 +213,7 @@ class User < ApplicationRecord
   def problems
     return [] unless broker?
 
-    return broker.problems if has_role?('root')
+    return Problem.where(assigned_to: broker.users.broker) if has_role?('root')
 
     problem_ids = []
     problem_ids += Problem.where(assigned_to: self).ids
