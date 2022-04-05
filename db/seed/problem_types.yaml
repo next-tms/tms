@@ -3,5 +3,21 @@ problem_types:
     name: delayed due to weather
   - code: lost
     name: lost
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: lost_at
+    resolves_when_class_attribute_is: blank
   - code: not_picked_up
     name: not picked up
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: picked_up_at
+    resolves_when_class_attribute_is: blank_false
+  - code: receivable_missing_carrier_bol
+    name: missing carrier BOL
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: carrier_bol
+    resolves_when_class_attribute_is: attached
+  - code: receivable_missing_carrier_pod
+    name: missing carrier POD
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: carrier_pod
+    resolves_when_class_attribute_is: attached

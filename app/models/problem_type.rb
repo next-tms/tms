@@ -29,6 +29,13 @@
 class ProblemType < ApplicationRecord
   belongs_to :role
 
+  # Cannot use "not" as prefix
+  enum resolves_when_class_attribute_is: {
+    attached: 'attached',
+    blank: 'blank',
+    blank_false: 'blank_false'
+  }
+
   has_many :problems
 
   validates :name, uniqueness: true

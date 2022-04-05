@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_23_223743) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_04_235442) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -471,6 +471,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_23_223743) do
     t.datetime "updated_at", null: false
     t.string "code", null: false
     t.bigint "role_id", null: false
+    t.string "resolvable_class_name"
+    t.string "resolvable_class_attribute_name"
+    t.string "resolves_when_class_attribute_is"
     t.index ["name"], name: "index_problem_types_on_name"
     t.index ["role_id"], name: "index_problem_types_on_role_id"
   end
@@ -480,17 +483,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_23_223743) do
     t.bigint "assigned_to_id", null: false
     t.bigint "problem_type_id", null: false
     t.bigint "resolved_by_id"
-    t.bigint "shipment_id", null: false
     t.string "title"
     t.text "body"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "resolvable_type"
+    t.bigint "resolvable_id"
     t.index ["assigned_to_id"], name: "index_problems_on_assigned_to_id"
     t.index ["body"], name: "index_problems_on_body"
     t.index ["problem_type_id"], name: "index_problems_on_problem_type_id"
+    t.index ["resolvable_type", "resolvable_id"], name: "index_problems_on_resolvable"
     t.index ["resolved_at"], name: "index_problems_on_resolved_at"
     t.index ["resolved_by_id"], name: "index_problems_on_resolved_by_id"
-    t.index ["shipment_id"], name: "index_problems_on_shipment_id"
     t.index ["title"], name: "index_problems_on_title"
   end
 
@@ -918,7 +922,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_23_223743) do
   add_foreign_key "pricing_rules", "carrier_areas"
   add_foreign_key "problem_types", "roles"
   add_foreign_key "problems", "problem_types"
-  add_foreign_key "problems", "shipments"
   add_foreign_key "problems", "users", column: "assigned_to_id"
   add_foreign_key "problems", "users", column: "resolved_by_id"
   add_foreign_key "rate_accessorials", "accessorials"

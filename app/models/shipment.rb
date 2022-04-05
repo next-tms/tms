@@ -194,6 +194,8 @@ class Shipment < ApplicationRecord
   include Shipment::HasReceivables
   include Shipment::Interstellarable
 
+  include Resolvable
+
   attr_accessor :dispatch_pickup
 
   ransacker :load_id do
