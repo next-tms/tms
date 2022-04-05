@@ -310,9 +310,9 @@ class Receivable < ApplicationRecord
     return unless sent?
 
     problem_types = ProblemType.where(code: %i[receivable_missing_carrier_bol receivable_missing_carrier_pod])
-    problems = Problem.where(problem_type: problem_types, shipment:)
+    problems = Problem.unresolved.where(problem_type: problem_types, resolvable: shipment)
 
-    return true if problems.blank?
+    return true unless problems.any?
 
     problems.update_all(resolved_at: DateTime.current, resolved_by_id: nil)
   end
