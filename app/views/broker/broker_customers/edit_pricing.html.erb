@@ -11,7 +11,8 @@
   <%= f.check_box :ignore_value_on_api_quotes, label: 'Ignore declared value when retrieving API quotes' %>
 
   <p class="col-title">Receivables</p>
-  <%= f.check_box :requires_carrier_bol_on_receivables, label: 'Requires carrier BOL on receivables?' %>
+  <%= f.check_box :requires_shipment_delivery_before_receivable, label: 'Requires shipment to deliver before sending receivable?' %>
+  <%= f.check_box :requires_carrier_pod_on_receivables, label: 'Requires carrier POD on receivables?' %>
   <%= f.check_box :requires_carrier_pod_on_receivables, label: 'Requires carrier POD on receivables?' %>
 
   <p class="mt-2">Send receivable</p>

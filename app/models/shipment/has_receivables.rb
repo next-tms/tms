@@ -47,6 +47,7 @@ module Shipment::HasReceivables
     def receivable?
       return false unless receivables.blank?
       return false if broker_customer.blank? || picked_up_at.blank?
+      return false if broker_customer.requires_shipment_delivery_before_receivable? && delivered_at.blank?
 
       true
     end
