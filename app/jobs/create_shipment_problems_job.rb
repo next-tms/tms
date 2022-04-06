@@ -29,7 +29,7 @@ class CreateShipmentProblemsJob < ApplicationJob
 
         problem_type = ProblemType.find_by_code('not_picked_up')
 
-        next if shipment.problems.unresolved.where(problem_type:).any?
+        next if Problem.where(resolvable: shipment).unresolved.where(problem_type:).any?
 
         title = "Load #{shipment.load_id} is #{problem_type.name}"
         body = "Load #{shipment.load_id} was scheduled for pickup on #{ApplicationController.helpers.short_date(
