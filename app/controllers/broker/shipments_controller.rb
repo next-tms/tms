@@ -490,6 +490,8 @@ class Broker::ShipmentsController < Broker::BrokerController
       end
     end
 
+    @shipment.rates.where.not(error_object: nil).destroy_all
+
     broker_carrier_ids = []
     broker_carrier_ids += if @shipment.broker_customer.blank?
                             @shipment.broker.broker_carriers.blanket.api_configured.pluck(:id)
