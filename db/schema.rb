@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_05_175215) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_06_032937) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -475,6 +475,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_05_175215) do
     t.string "resolvable_class_name"
     t.string "resolvable_class_attribute_name"
     t.string "resolves_when_class_attribute_is"
+    t.string "resolvable_class_since_attribute_name"
     t.index ["name"], name: "index_problem_types_on_name"
     t.index ["role_id"], name: "index_problem_types_on_role_id"
   end

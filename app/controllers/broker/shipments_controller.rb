@@ -104,9 +104,8 @@ class Broker::ShipmentsController < Broker::BrokerController
   def edit; end
 
   def update
-    unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
-      unauthorized
-    end
+    unauthorized and return unless @shipment.accessible_by?(current_user)
+
     @shipment.assign_attributes(shipment_params)
     @shipment.updated_by = current_user
 
@@ -131,9 +130,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def show
-    unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
-      unauthorized
-    end
+    unauthorized and return unless @shipment.accessible_by?(current_user)
 
     if @shipment.quote_only?
       redirect_to quote_broker_shipment_path(@shipment) and return
@@ -450,25 +447,25 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def edit_tracking_events
-    unauthorized unless @shipment.accessible_by?(current_user)
+    unauthorized and return unless @shipment.accessible_by?(current_user)
   end
 
   def tracking_events
-    unauthorized unless @shipment.accessible_by?(current_user)
+    unauthorized and return unless @shipment.accessible_by?(current_user)
   end
 
   def transit
-    unauthorized unless @shipment.accessible_by?(current_user)
+    unauthorized and return unless current_user.has_role?('dispatch')
   end
 
   def transit_edit
-    unauthorized unless @shipment.accessible_by?(current_user)
+    unauthorized and return unless current_user.has_role?('dispatch')
   end
 
   def delivery; end
 
   def quote
-    unauthorized unless @shipment.accessible_by?(current_user)
+    unauthorized and return unless @shipment.accessible_by?(current_user)
 
     reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
               false

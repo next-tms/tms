@@ -1,23 +1,78 @@
 problem_types:
-  - code: delayed_due_to_weather
-    name: delayed due to weather
   - code: lost
     name: lost
+    resolvable_class_attribute_name: lost_on
     resolvable_class_name: Shipment
-    resolvable_class_attribute_name: lost_at
+    resolvable_class_since_attribute_name: picked_up_at
     resolves_when_class_attribute_is: blank
+    role_name: dispatch
+  - code: missing_carrier_bol
+    name: missing carrier BOL
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: carrier_bol
+    resolvable_class_since_attribute_name: picked_up_at
+    resolves_when_class_attribute_is: attached
+    role_name: accounts_receivable
+  - code: missing_carrier_pod
+    name: missing carrier POD
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: carrier_pod
+    resolvable_class_since_attribute_name: delivered_at
+    resolves_when_class_attribute_is: attached
+    role_name: accounts_receivable
+  - code: missing_delivery_appointment
+    name: missing delivery appointment
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: delivery_appointment_on
+    resolvable_class_since_attribute_name: picked_up_at
+    resolves_when_class_attribute_is: blank_false
+    role_name: dispatch
+  - code: missing_delivery_eta
+    name: missing delivery ETA
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: delivery_appointment_on
+    resolvable_class_since_attribute_name: picked_up_at
+    resolves_when_class_attribute_is: blank_false
+    role_name: dispatch
+  - code: missing_pickup_confirmation
+    name: missing pickup confirmation number
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: pickup_confirmation
+    resolvable_class_since_attribute_name: dispatched_at
+    resolves_when_class_attribute_is: blank_false
+    role_name: dispatch
+  - code: missing_pro
+    name: missing tracking number
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: pro
+    resolvable_class_since_attribute_name: picked_up_at
+    resolves_when_class_attribute_is: blank_false
+    role_name: dispatch
+  - code: missing_tracking_carrier_pro
+    name: missing tracking number (not the broker's)
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: tracking_carrier_pro
+    resolvable_class_since_attribute_name: picked_up_at
+    resolves_when_class_attribute_is: blank_false
+    role_name: dispatch
+  - code: missing_total_charge_cents
+    name: missing charge
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: total_charges_cents
+    resolvable_class_since_attribute_name: dispatched_at
+    resolves_when_class_attribute_is: zero_false
+    role_name: dispatch
+  - code: missing_total_cost_cents
+    name: missing cost
+    resolvable_class_name: Shipment
+    resolvable_class_attribute_name: total_cost_cents
+    resolvable_class_since_attribute_name: dispatched_at
+    resolves_when_class_attribute_is: zero_false
+    role_name: dispatch
   - code: not_picked_up
     name: not picked up
     resolvable_class_name: Shipment
     resolvable_class_attribute_name: picked_up_at
+    resolvable_class_since_attribute_name: dispatched_at
     resolves_when_class_attribute_is: blank_false
-  - code: receivable_missing_carrier_bol
-    name: missing carrier BOL
-    resolvable_class_name: Shipment
-    resolvable_class_attribute_name: carrier_bol
-    resolves_when_class_attribute_is: attached
-  - code: receivable_missing_carrier_pod
-    name: missing carrier POD
-    resolvable_class_name: Shipment
-    resolvable_class_attribute_name: carrier_pod
-    resolves_when_class_attribute_is: attached
+    role_name: dispatch

@@ -33,10 +33,19 @@ class ProblemType < ApplicationRecord
   enum resolves_when_class_attribute_is: {
     attached: 'attached',
     blank: 'blank',
-    blank_false: 'blank_false'
+    blank_false: 'blank_false',
+    zero_false: 'zero_false'
   }
 
   has_many :problems
 
   validates :name, uniqueness: true
+
+  def role_name
+    role.name
+  end
+
+  def role_name=(name)
+    self.role = Role.find_by_name(name)
+  end
 end

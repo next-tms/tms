@@ -31,7 +31,7 @@ module Shipment::Interstellarable
         ContactMailer.carrier_bol(from_user: nil, to_contact: contact, shipment: self).deliver_later
       end
 
-      problem_type = ProblemType.find_by_code('receivable_missing_carrier_bol')
+      problem_type = ProblemType.find_by_code('missing_carrier_bol')
       problems = Problem.where(problem_type:, resolvable: self)
 
       return true if problems.blank?
@@ -67,7 +67,7 @@ module Shipment::Interstellarable
         ContactMailer.carrier_pod(from_user: nil, to_contact: contact, shipment: self).deliver_later
       end
 
-      problem_type = ProblemType.find_by_code('receivable_missing_carrier_pod')
+      problem_type = ProblemType.find_by_code('missing_carrier_pod')
       problems = Problem.where(problem_type:, resolvable: self)
 
       return true if problems.blank?

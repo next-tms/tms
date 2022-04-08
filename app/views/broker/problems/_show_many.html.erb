@@ -1,13 +1,19 @@
 <%= turbo_frame_tag :problems do %>
-  <%= render 'broker/problems/search_form', q: q %>
+  <% if controller.controller_name == 'problems' %>
+    <%= render 'broker/problems/search_form', q: q %>
+  <% end %>
 
   <% unless problems.blank? %>
     <div class="table-responsive">
-      <table class="table table-borderless table-striped table-hover">
+      <table class="table table-borderless table-striped">
         <thead>
           <tr>
             <th><%= sort_link q, :id, '#' %></th>
-            <th>Reference</th>
+
+            <% if controller.controller_name == 'problems' %>
+              <th>Reference</th>
+            <% end %>
+
             <th><%= sort_link q, :created_at, 'Opened' %>
 
             <% if action_name == 'resolved' %>
@@ -15,7 +21,7 @@
             <% end %>
 
             <% if current_user.has_role?('root') %>
-              <th><%= sort_link q, :problem_type_role_name, 'Kind' %>
+              <th><%= sort_link q, :problem_type_role_name, 'Team' %>
             <% end %>
 
             <th><%= sort_link q, :problem_type_id, 'Issue' %></th>
@@ -23,7 +29,7 @@
               <span class="text-nowrap"><%= sort_link q, :assigned_to_first_name, 'Assigned To' %></span>
             </th>
 
-            <% if action_name == 'resolved' %>
+            <% if controller.controller_name != 'problems' || action_name == 'resolved' %>
               <th>
                 <span class="text-nowrap"><%= sort_link q, :resovled_by_first_name, 'Closed By' %></span>
               </th>
@@ -32,36 +38,53 @@
         </thead>
         <tbody>
           <% problems.each do |problem| %>
-            <tr>
-              <td><%= link_to problem.id, broker_problem_path(problem), target: '_top' %></td>
-
+            <tr class="<%= if controller.controller_name != 'problems' && problem.resolved?
+                             'text-decoration-line-through'
+                           else
+                             nil
+                           end
+                       %>
+            ">
               <td>
-                <%= link_to "#{problem.resolvable.model_name.human} #{problem.resolvable.to_param}",
-                            [:broker, problem.resolvable],
-                            target: '_blank'
+                <%= link_to problem.id,
+                            broker_problem_path(problem),
+                            target: (controller_name == 'problems' ? '_top' : '_blank')
                 %>
               </td>
 
-              <td><%= pretty_date(problem.created_at, current_user.time_zone) %></td>
+              <% if controller.controller_name == 'problems' %>
+                <td>
+                  <%= link_to "#{problem.resolvable.model_name.human} #{problem.resolvable.to_param}",
+                              [:broker, problem.resolvable],
+                              target: '_blank'
+                  %>
+                </td>
+              <% end %>
+
+              <td class="text-nowrap"><%= pretty_date(problem.created_at, current_user.time_zone) %></td>
 
               <% if action_name == 'resolved' %>
-                <td><%= pretty_date(problem.resolved_at, current_user.time_zone) %></td>
+                <td class="text-nowrap"><%= pretty_date(problem.resolved_at, current_user.time_zone) %></td>
               <% end %>
 
               <% if current_user.has_role?('root') %>
-                <td><%= problem.problem_type.role.name %></td>
+                <td><%= problem.problem_type.role.name.humanize.downcase %></td>
               <% end %>
 
               <td><%= problem.problem_type.name %></td>
 
-              <td><%= icon 'solid', 'user-circle', problem.assigned_to.full_name %></td>
+              <td class="text-nowrap"><%= icon 'solid', 'user-circle', problem.assigned_to.full_name %></td>
 
-              <% if action_name == 'resolved' %>
-                <% if problem.resolved_by.blank? %>
-                  <td><%= icon 'solid', 'robot', 'Robot' %></td>
-                <% else %>
-                  <td><%= icon 'solid', 'user-circle', problem.resolved_by&.full_name || 'Robot' %></td>
-                <% end %>
+              <% if controller.controller_name != 'problems' || action_name == 'resolved' %>
+                <td class="text-nowrap text-decoration-none">
+                  <% if problem.resolved? %>
+                    <% if problem.resolved_by.blank? %>
+                      <%= icon 'solid', 'robot', 'Robot' %>
+                    <% else %>
+                      <%= icon 'solid', 'user-circle', problem.resolved_by&.full_name || 'Robot' %>
+                    <% end %>
+                  <% end %>
+                </td>
               <% end %>
             </tr>
           <% end %>

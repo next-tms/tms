@@ -22,8 +22,8 @@ def import_seeds(tables)
       key = table.dig(:key).to_sym
       val = entry[key]
 
-      database_entry = model.find_by(Hash[key, val])
-      database_entry = model.new(entry) if database_entry.blank?
+      database_entry = model.where(Hash[key, val])&.first
+      database_entry = model.new(entry) if database_entry.nil?
 
       database_entry.assign_attributes(entry)
       if database_entry.save

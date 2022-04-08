@@ -1,24 +1,3 @@
 <nav class="nav border-top pt-4 mb-0">
   <%= link_to 'Overview', broker_problem_path(@problem), class: 'nav-link problems-show' %>
-
-  <a class="nav-link dropdown-toggle" href="#" id="shipment-mark-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Update
-  </a>
-  <ul class="dropdown-menu" aria-labelledby="shipment-mark-dropdown"> 
-    <% if @problem.resolved? %>
-      <%= link_to 'Mark Unresolved',
-                  broker_problem_path(@problem, problem: { resolved_at: nil }),
-                  target: '_top',
-                  class: 'dropdown-item',
-                  method: :patch
-      %>
-    <% else %>
-      <%= link_to 'Mark Resolved',
-                  broker_problem_path(@problem, problem: { resolved_at: DateTime.current }),
-                  target: '_top',
-                  class: 'dropdown-item',
-                  method: :patch
-      %>
-    <% end %>
-  </ul>
 </nav>

@@ -1,22 +1,40 @@
 <div class="page-header bg-light p-4 mb-4">
-  <h1 class="mb-6"><%= @problem&.id || 'Exception' %></h1>
+  <h1 class="mb-6">
+    Task <%= @problem.id %>
+  </h1>
 
   <% unless @problem.new_record? %>
     <table class="table table-borderless w-auto">
       <thead>
         <tr>
+          <th>Team</th>
+          <th>Assigned To</th>
           <th><%= @problem.resolvable.model_name.human %></th>
           <th>Status</th>
+          <th>Issue</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="lead">
+            <%= @problem.problem_type.role.name.humanize %>
+          </td>
+
+          <td class="lead">
+            <%= @problem.assigned_to.full_name %>
+          </td>
+
+          <td class="lead">
             <%= link_to @problem.resolvable.to_param, [:broker, @problem.resolvable], class: 'broker-carriers-shipments', target: '_blank' %>
           </td>
 
           <td class="lead">
-            <%= @problem.resolved? ? 'Resolved' : 'Unresolved' %>
+            <%= @problem.resolved? ? 'Closed' : 'Open' %>
+          </td>
+
+          <td class="lead">
+            <%= @problem.problem_type.resolvable_class_name %>
+            <%= @problem.problem_type.name %>
           </td>
         </tr>
       </tbody>

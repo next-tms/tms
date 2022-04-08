@@ -90,6 +90,10 @@ main a, main a:active, main a:hover, main a:visited {
   font-weight: 500;
 }
 
+.text-decoration-line-through {
+  text-decoration: line-through;
+}
+
 .alert a, .alert a:active, .alert a:hover, .alert a:visited {
   color: black;
 }

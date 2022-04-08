@@ -193,6 +193,7 @@ class Shipment < ApplicationRecord
   include Shipment::HasPaymentTransactions
   include Shipment::HasReceivables
   include Shipment::Interstellarable
+  include Shipment::Problematic
 
   include Resolvable
 
@@ -300,7 +301,7 @@ class Shipment < ApplicationRecord
   has_many :payment_transactions
   has_many :payments, through: :payment_transactions
 
-  has_many :problems
+  has_many :problems, as: :resolvable
 
   belongs_to :created_by, class_name: 'User', required: false
   belongs_to :updated_by, class_name: 'User', required: false
@@ -360,6 +361,7 @@ class Shipment < ApplicationRecord
   # Fill in missing DateTimes
   # before_save :maybe_update_dispatched_at_to_now, if: :pickup_confirmation_changed?
   before_save :maybe_update_out_for_delivery_at_to_delivered_at, if: :delivered_at_changed?
+  before_save :set_delivery_appointment_on
   before_save :update_delivery_eta_on_to_out_for_delivery_at, if: :out_for_delivery_at_changed?
 
   before_save :maybe_book, if: :dispatched_at_changed?
@@ -861,11 +863,7 @@ class Shipment < ApplicationRecord
     return false unless user.is_a?(User)
 
     if user.broker?
-      if user.has_role?('dispatch') || user.has_role?('sales_rep')
-        return true if broker_customer.blank?
-
-        return user.sales_rep_for?(broker_customer)
-      end
+      return true if user.has_role?('dispatch') || user.has_role?('sales_rep') || user.has_role?('accounting')
     elsif user.customer?
       return broker_customer == user.broker_customer
     end
@@ -1033,6 +1031,12 @@ class Shipment < ApplicationRecord
 
   def maybe_update_dispatched_at_to_now
     self.dispatched_at = DateTime.current if dispatched_at.blank?
+  end
+
+  def set_delivery_appointment_on
+    return unless delivery_appointment_on.blank? && !delivery_appointment_at.blank?
+
+    self.delivery_appointment_on = delivery_appointment_at.in_time_zone(shipper_address.time_zone).to_date
   end
 
   def maybe_book

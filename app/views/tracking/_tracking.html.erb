@@ -4,7 +4,7 @@
   </div>
 <% end %>
 
-<nav class="nav border-top pt-4 mb-0">
+<div class="btn-toolbar">
   <a class="nav-link dropdown-toggle" href="#" id="shipment-mark-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Subscribe
   </a>
@@ -13,7 +13,7 @@
     <div class="dropdown-divider"></div>
     <%= link_to 'API (JSON)', tracking_events_api_v1_shipment_path(@shipment), target: '_blank', class: 'dropdown-item' %>
   </ul>
-</nav>
+</div>
 
 <div class="table-responsive">
   <table class="table table-condensed table-borderless table-striped table-hover table-unsortable h-100">

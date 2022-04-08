@@ -43,7 +43,7 @@ class Broker::ProblemsController < Broker::BrokerController
   end
 
   def resolved
-    @q = current_user.problems.resolved.includes(required_includes).ransack(params[:q])
+    @q = current_user.eligible_problems.resolved.includes(required_includes).ransack(params[:q])
     @q.sorts = 'resolved_at desc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
@@ -52,7 +52,7 @@ class Broker::ProblemsController < Broker::BrokerController
   def show; end
 
   def unresolved
-    @q = current_user.problems.unresolved.includes(required_includes).ransack(params[:q])
+    @q = current_user.eligible_problems.unresolved.includes(required_includes).ransack(params[:q])
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
