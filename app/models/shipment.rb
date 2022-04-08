@@ -362,6 +362,7 @@ class Shipment < ApplicationRecord
   # before_save :maybe_update_dispatched_at_to_now, if: :pickup_confirmation_changed?
   before_save :maybe_update_out_for_delivery_at_to_delivered_at, if: :delivered_at_changed?
   before_save :set_delivery_appointment_on
+  before_save :set_delivery_eta_on
   before_save :update_delivery_eta_on_to_out_for_delivery_at, if: :out_for_delivery_at_changed?
 
   before_save :maybe_book, if: :dispatched_at_changed?
@@ -1037,6 +1038,12 @@ class Shipment < ApplicationRecord
     return unless delivery_appointment_on.blank? && !delivery_appointment_at.blank?
 
     self.delivery_appointment_on = delivery_appointment_at.in_time_zone(shipper_address.time_zone).to_date
+  end
+
+  def set_delivery_eta_on
+    return unless delivery_eta_on.blank? && !delivery_appointment_on.blank?
+
+    self.delivery_eta_on = delivery_appointment_on
   end
 
   def maybe_book
