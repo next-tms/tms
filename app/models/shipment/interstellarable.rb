@@ -158,16 +158,11 @@ module Shipment::Interstellarable
           next
         end
 
-        fingerprint = Digest::SHA2.hexdigest(
-          [
-            (shipment_event.date_time.local_date_time || ''),
-            shipment_event.type_code.to_s
-          ].join
-        )
+        at = TimeZoneService.from_interstellar_date_time(shipment_event.date_time)
+
+        fingerprint = Digest::SHA2.hexdigest([at.to_fs(:db), shipment_event.type_code.to_s].join)
         tracking_event = tracking_events.where(interstellar_carrier_fingerprint: fingerprint)&.first
         tracking_event = tracking_events.new if tracking_event.blank?
-
-        at = TimeZoneService.from_interstellar_date_time(shipment_event.date_time)
 
         # Hack for carriers that return Midnight on everything
         now = DateTime.current.in_time_zone(at.time_zone)
