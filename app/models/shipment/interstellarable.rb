@@ -208,6 +208,13 @@ module Shipment::Interstellarable
         end
       end
 
+      unless interstellar_tracking.estimated_delivery_date.blank?
+        d = TimeZoneService.from_interstellar_date_time(interstellar_tracking.estimated_delivery_date)
+        d = d.to_date
+
+        self.delivery_eta_on = d
+      end
+
       unless interstellar_tracking.scheduled_delivery_date.blank?
         d = TimeZoneService.from_interstellar_date_time(interstellar_tracking.scheduled_delivery_date)
 
