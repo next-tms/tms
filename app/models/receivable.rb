@@ -172,7 +172,7 @@ class Receivable < ApplicationRecord
 
     update_from_api if persisted?
 
-    return false if balance_cents.zero?
+    return false if sent? || balance_cents.zero?
     return false unless invoice.attached? || fetch_invoice
 
     unless broker_customer.receivables_schedule == 'immediately'
@@ -278,8 +278,11 @@ class Receivable < ApplicationRecord
     # Using update_columns so we can bypass the validation that recalculates amounts
     update_columns(balance_cents: (quickbooks_invoice.balance.to_f * 100).to_i)
     update_columns(paid_at: now) if quickbooks_invoice.balance.zero?
-    update_columns(sent_at: now) if quickbooks_invoice.email_status == 'EmailSent'
     update_columns(total_cents: (quickbooks_invoice.total.to_f * 100).to_i)
+
+    if !sent? && (quickbooks_invoice.balance.zero? || quickbooks_invoice.email_status == 'EmailSent')
+      update_columns(sent_at: now)
+    end
 
     reload
   end
@@ -310,9 +313,9 @@ class Receivable < ApplicationRecord
     return unless sent?
 
     problem_types = ProblemType.where(code: %i[missing_carrier_bol missing_carrier_pod])
-    problems = Problem.where(problem_type: problem_types, shipment:)
+    problems = Problem.unresolved.where(problem_type: problem_types, resolvable: shipment)
 
-    return true if problems.blank?
+    return true unless problems.any?
 
     problems.update_all(resolved_at: DateTime.current, resolved_by_id: nil)
   end
@@ -346,7 +349,7 @@ class Receivable < ApplicationRecord
   end
 
   def set_sent_at
-    self.sent_at = nil unless invoiced? && !authorized_at.blank?
+    self.sent_at = paid_at if sent_at.blank?
   end
 
   def set_sent_by

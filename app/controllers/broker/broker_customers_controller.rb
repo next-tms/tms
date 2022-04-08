@@ -190,6 +190,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             :receivables_schedule,
                                             :requires_carrier_bol_on_receivables,
                                             :requires_carrier_pod_on_receivables,
+                                            :requires_shipment_delivery_before_receivable,
                                             broker_customer_sales_reps_attributes: %i[
                                               _destroy
                                               id

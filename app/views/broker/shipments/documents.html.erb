@@ -17,6 +17,13 @@
   </div>
 <% end %>
 
+<% if !@shipment.broker_bol_valid? && !(@shipment.shipper_address.full_address? && @shipment.receiver_address.full_address?) %>
+  <div class="alert alert-warning">
+    <p class="lead">Missing shipper or receiver address</p>
+    <p>Some documents for this shipment were not generated because the shipper or receiver address is incomplete.</p>
+  </div>
+<% end %>
+
 <div class="table-responsive">
   <table class="table table-borderless table-striped">
     <thead>
