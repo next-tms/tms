@@ -6,16 +6,16 @@ module Shipment::Problematic
   included do
     def self.problematic_carrier_bol_not_attached
       left_joins(:carrier_bol_blob)
-      .where(broker_customer: BrokerCustomer.where(requires_carrier_bol_on_receivables: true))
-      .where(id: Receivable.unpaid.unsent.pluck(:shipment_id))
-      .where(active_storage_attachments: { id: nil })
+        .where(broker_customer: BrokerCustomer.where(requires_carrier_bol_on_receivables: true))
+        .where(id: Receivable.unpaid.unsent.pluck(:shipment_id))
+        .where(active_storage_attachments: { id: nil })
     end
 
     def self.problematic_carrier_pod_not_attached
       left_joins(:carrier_pod_blob)
-      .where(broker_customer: BrokerCustomer.where(requires_carrier_pod_on_receivables: true))
-      .where(id: Receivable.unpaid.unsent.pluck(:shipment_id))
-      .where(active_storage_attachments: { id: nil })
+        .where(broker_customer: BrokerCustomer.where(requires_carrier_pod_on_receivables: true))
+        .where(id: Receivable.unpaid.unsent.pluck(:shipment_id))
+        .where(active_storage_attachments: { id: nil })
     end
 
     def self.problematic_delivery_appointment_on_blank
@@ -32,11 +32,7 @@ module Shipment::Problematic
 
     def self.problematic_picked_up_at_blank
       ids = pending_pickup.map do |shipment|
-        if shipment.pickup_on < DateTime.current.in_time_zone(shipment.shipper_address.time_zone)
-          shipment.id
-        else
-          nil
-        end
+        shipment.id if shipment.pickup_on < DateTime.current.in_time_zone(shipment.shipper_address.time_zone).to_date
       end
 
       where(id: ids.compact)
@@ -44,11 +40,7 @@ module Shipment::Problematic
 
     def self.problematic_pickup_confirmation_blank
       ids = pending_pickup.where(pickup_confirmation: [nil, '']).map do |shipment|
-        if shipment.pickup_on <= DateTime.current.in_time_zone(shipment.shipper_address.time_zone)
-          shipment.id
-        else
-          nil
-        end
+        shipment.id if shipment.pickup_on <= DateTime.current.in_time_zone(shipment.shipper_address.time_zone).to_date
       end
 
       Shipment.where(id: ids.compact)
