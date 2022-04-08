@@ -73,6 +73,16 @@ class UserMailer < ApplicationMailer
     )
   end
 
+  def delivery_eta_on(shipment)
+    @shipment = shipment
+    mail(
+      from: from(shipment),
+      reply_to: reply_to(shipment, __method__),
+      to: to(shipment, __method__),
+      subject: "#{who_performed(shipment)} Updated Load #{shipment.load_id} ETA"
+    )
+  end
+
   def departed_origin_terminal_at(shipment)
     @shipment = shipment
     mail(
