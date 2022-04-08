@@ -309,7 +309,7 @@ class Receivable < ApplicationRecord
   def resolve_problems
     return unless sent?
 
-    problem_types = ProblemType.where(code: %i[receivable_missing_carrier_bol receivable_missing_carrier_pod])
+    problem_types = ProblemType.where(code: %i[missing_carrier_bol missing_carrier_pod])
     problems = Problem.where(problem_type: problem_types, shipment:)
 
     return true if problems.blank?

@@ -10,17 +10,17 @@
       <%= search_form_for(q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :sorts, value: q.sorts %>
 
-        <% if current_user.roles.size > 1 %>
-          <% role_ids = if current_user.has_role?('root')
-                          (Role.all.ids & ProblemType.where(id: Problem.where(assigned_to: current_user.broker.users.broker).pluck(:problem_type_id)).pluck(:role_id))
-                        else
-                          (current_user.roles.ids & ProblemType.where(id: Problem.where(assigned_to: current_user.broker.users.broker).pluck(:problem_type_id)).pluck(:role_id))
-                        end
-          %>
+        <% role_ids = if current_user.has_role?('root')
+                        (Role.all.ids & ProblemType.where(id: Problem.where(assigned_to: current_user.broker.users.broker).pluck(:problem_type_id)).pluck(:role_id))
+                      else
+                        (current_user.roles.ids & ProblemType.where(id: Problem.where(assigned_to: current_user.broker.users.broker).pluck(:problem_type_id)).pluck(:role_id))
+                      end
+        %>
 
+        <% if role_ids.size > 1 %>
           <%= f.select :problem_type_role_id_eq,
-                       Role.where(id: role_ids).order(:name).collect { |t| [t.name, t.id] },
-                       { include_blank: 'Kind' },
+                       Role.where(id: role_ids).order(:name).collect { |t| [t.name.humanize.downcase, t.id] },
+                       { include_blank: 'Team' },
                        class: 'form-control form-select mr-2'
           %>
         <% end %>

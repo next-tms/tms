@@ -1,17 +1,55 @@
 <div class="page-header bg-light p-4 mb-4">
-  <h1 class="mb-6">Exceptions</h1>
+  <h1 class="mb-6">Tasks</h1>
 
   <table class="table table-borderless">
     <thead>
       <tr>
         <th>Open</th>
+        <% if current_user.has_role?('root') %>
+          <th>% Closed</th>
+        <% else %>
+          <th>Your % Team Closed</th>
+          <th>Team Total % Closed</th>
+        <% end %>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td class="display-6">
-          <%= link_to current_user.problems.unresolved.size, unresolved_broker_problems_path, class: 'problems-unresolved' %>
+          <%= link_to current_user.eligible_problems.unresolved.size, unresolved_broker_problems_path, class: 'problems-unresolved' %>
         </td>
+
+        <% if current_user.has_role?('root') %>
+          <td class="display-6">
+            <%= link_to resolved_broker_problems_path, class: 'problems-resolved' do %>
+              <%= number_to_percentage(
+                    (Problem.where(assigned_to: current_user.broker.users).resolved.size.to_f / Problem.where(assigned_to: current_user.broker.users).size) * 100,
+                    precision: 1
+                  )
+              %>
+            <% end %>
+          </td>
+        <% else %>
+          <td class="display-6">
+            <%= link_to resolved_broker_problems_path, class: 'problems-resolved' do %>
+              <%= number_to_percentage(
+                    (current_user.eligible_problems.where(resolved_by: current_user).size.to_f / current_user.eligible_problems.size) * 100,
+                    precision: 1
+                  )
+              %>
+            <% end %>
+          </td>
+
+          <td class="display-6">
+            <%= link_to resolved_broker_problems_path, class: 'problems-resolved' do %>
+              <%= number_to_percentage(
+                    (current_user.eligible_problems.resolved.size.to_f / current_user.eligible_problems.size) * 100,
+                    precision: 1
+                  )
+              %>
+            <% end %>
+          </td>
+        <% end %>
       </tr>
     </tbody>
   </table>

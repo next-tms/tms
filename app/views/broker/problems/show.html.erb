@@ -1,17 +1,19 @@
-<% provide :title, @problem.title %>
+<% provide :title, "Task #{@problem.id}" %>
 
 <%= render 'member_header' %>
-<h2>Overview</h2>
 
 <% if @problem.resolved? %>
   <div class="alert alert-success">
-    <p class="lead">Resolved</p>
+    <p class="lead"><%= icon 'solid', 'clipboard-check', 'Closed' %></p>
     <p>
       <%= @problem.resolved_by&.full_name || 'robot' %>
-      reported this issue resolved at
+      closed this at
       <%= pretty_date(@problem.resolved_at, current_user.time_zone) %>
     </p>
   </div>
+<% else %>
+  <div class="alert alert-warning">
+    <p class="lead"><%= icon 'solid', 'hourglass', 'Open' %></p>
+    <p>Pending resolution.</p>
+  </div>
 <% end %>
-
-<p class="lead pt-4"><%= @problem.body %></p>

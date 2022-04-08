@@ -122,6 +122,8 @@ class User < ApplicationRecord
   has_many :commissions
   # has_many :shipments_as_dispatcher, class_name: 'Shipment', foreign_key: :dispatcher_id
 
+  has_many :problems, foreign_key: 'assigned_to_id'
+
   phony_normalize :phone, default_country_code: 'US'
 
   # TODO: Remove
@@ -210,18 +212,20 @@ class User < ApplicationRecord
     @broker ||= !customer?
   end
 
-  def problems
-    return [] unless broker?
+  def coworkers
+    return nil unless broker?
+
+    return broker.users.broker if has_role?('root')
+
+    User.where(id: UserRole.where(role: roles).where(user: broker.users.broker).pluck(:user_id))
+  end
+
+  def eligible_problems
+    return nil unless broker?
 
     return Problem.where(assigned_to: broker.users.broker) if has_role?('root')
 
-    problem_ids = []
-    problem_ids += Problem.where(assigned_to: self).ids
-    problem_ids += Problem.where(resolved_by: self).ids
-    problem_ids += Problem.where(problem_type_id: ProblemType.where(role: roles)).ids
-    problem_ids.uniq!
-
-    Problem.where(id: problem_ids)
+    Problem.where(assigned_to: coworkers)
   end
 
   def shipments

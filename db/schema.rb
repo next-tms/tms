@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_04_235442) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_06_032937) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -192,6 +192,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_04_235442) do
     t.string "quickbooks_customer_id"
     t.bigint "receivables_contact_id", null: false
     t.string "receivables_schedule", default: "immediately"
+    t.boolean "requires_shipment_delivery_before_receivable", default: true
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["office_address_id"], name: "index_broker_customers_on_office_address_id"
@@ -474,6 +475,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_04_235442) do
     t.string "resolvable_class_name"
     t.string "resolvable_class_attribute_name"
     t.string "resolves_when_class_attribute_is"
+    t.string "resolvable_class_since_attribute_name"
     t.index ["name"], name: "index_problem_types_on_name"
     t.index ["role_id"], name: "index_problem_types_on_role_id"
   end
