@@ -17,6 +17,10 @@
   </div>
 
   <div class="form-row">
+    <%= f.check_box :automatically_update_shipment_tracking_based_on_carrier_apis %>
+  </div>
+
+  <div class="form-row">
     <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>
   </div>
 <% end %>

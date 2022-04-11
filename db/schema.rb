@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_06_032937) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_11_033732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -213,6 +213,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_06_032937) do
     t.string "time_zone_name", null: false
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.boolean "automatically_authorize_receivables", default: false
+    t.boolean "automatically_update_shipment_tracking_based_on_carrier_apis", default: true
     t.index ["address_id"], name: "index_brokers_on_address_id"
   end
 

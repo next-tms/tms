@@ -189,6 +189,8 @@ module Shipment::Interstellarable
 
         tracking_event.save
 
+        next unless broker.automatically_update_shipment_tracking_based_on_carrier_apis?
+
         case tracking_event.event.active_shipping_code
         when 'delivered'
           self.delivered_at = tracking_event.at if delivered_at.blank?
@@ -202,6 +204,8 @@ module Shipment::Interstellarable
           self.picked_up_at = tracking_event.at if picked_up_at.blank?
         end
       end
+
+      return unless broker.automatically_update_shipment_tracking_based_on_carrier_apis?
 
       unless interstellar_tracking.estimated_delivery_date.blank?
         d = TimeZoneService.from_interstellar_date_time(interstellar_tracking.estimated_delivery_date)

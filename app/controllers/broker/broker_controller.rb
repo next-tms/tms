@@ -21,6 +21,7 @@ class Broker::BrokerController < ApplicationController
     params.require(:broker).permit(
       :id,
       :automatically_authorize_receivables,
+      :automatically_update_shipment_tracking_based_on_carrier_apis,
       broker_countries_attributes: %i[
         _destroy
         country_id
