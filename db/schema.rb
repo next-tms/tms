@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_11_041555) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_13_050836) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -402,7 +402,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_11_041555) do
     t.bigint "broker_carrier_id"
     t.bigint "broker_id", null: false
     t.integer "week"
-    t.bigint "created_by_id", null: false
+    t.bigint "created_by_id"
     t.string "invoice"
     t.string "legacy_load_id"
     t.index ["broker_carrier_id"], name: "index_payment_transactions_on_broker_carrier_id"
