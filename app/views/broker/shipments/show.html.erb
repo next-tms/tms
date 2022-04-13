@@ -10,12 +10,12 @@
 <% if problems.any? %>
   <div class="alert">
     <p class="col-title"><%= icon 'solid', 'table-list', 'Tasks' %></p>
-  
+
     <%= render 'broker/problems/show_many', problems: problems, q: problems.ransack %>
   </div>
 <% end %>
 
-<% unless @shipment.broker_customer.internal_notes.blank? %>
+<% if @shipment.broker_customer.present? && !@shipment.broker_customer.internal_notes.blank? %>
   <div class="alert alert-danger">
     <p class="lead">Customer guide</p>
     <%= simple_format @shipment.broker_customer.internal_notes %>
@@ -229,14 +229,16 @@
   </div>
 
   <div class="col-sm-6">
-    <% if current_user.has_role?('dispatch') or current_user.has_role?('accounting') or @shipment.broker_customer.sales_reps.include? current_user %>
+    <% if current_user.has_role?('dispatch') ||
+          current_user.has_role?('accounting') ||
+          (@shipment.broker_customer.present? && @shipment.broker_customer.sales_reps.include?(current_user))
+    %>
       <%= render 'pricing', shipment: @shipment %>
       <%= render 'commissions', shipment: @shipment %>
     <% else %>
       <p>&nbsp;</p>
     <% end %>
   </div>
-
 </div>
 
 <p class="col-title"><%= icon 'solid', 'pallet', 'Freight' %></p>
@@ -313,8 +315,8 @@
 
 <p class="col-title">BOL Instructions</p>
 <%= simple_format @shipment.broker.default_bol_notes %>
-<%= simple_format@shipment.broker_carrier.default_bol_notes unless @shipment.broker_carrier.blank? %>
-<%= simple_format @shipment.broker_customer.default_bol_notes %>
+<%= simple_format @shipment.broker_carrier.default_bol_notes unless @shipment.broker_carrier.blank? %>
+<%= simple_format @shipment.broker_customer.default_bol_notes unless @shipment.broker_customer.blank? %>
 <%= simple_format @shipment.bol_notes %>
 
 <% if false %>
