@@ -49,7 +49,7 @@ module ShipmentsHelper
     str << '<tbody>'
 
     shipments.each do |shipment|
-      if action_name == 'pending_pickup'
+      if action_name == 'pending_pickup' && !shipment.pickup_on.blank?
         if DateTime.current.in_time_zone(shipment.shipper_address.time_zone.name).to_date > shipment.pickup_on
           str << '<tr class="table-danger">'
         elsif DateTime.current.in_time_zone(shipment.shipper_address.time_zone.name).to_date < shipment.pickup_on
