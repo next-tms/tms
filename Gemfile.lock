@@ -1464,7 +1464,7 @@ GEM
     gyoku (1.4.0)
       builder (>= 2.1.2)
       rexml (~> 3.0)
-    honeybadger (4.12.0)
+    honeybadger (4.12.1)
     htmlentities (4.3.4)
     http-accept (1.7.0)
     http-cookie (1.0.4)
