@@ -2747,10 +2747,10 @@ mkdirp@^0.5.5:
   resolved "https://registry.yarnpkg.com/morphdom/-/morphdom-2.6.1.tgz#e868e24f989fa3183004b159aed643e628b4306e"
   integrity sha512-Y8YRbAEP3eKykroIBWrjcfMw7mmwJfjhqdpSvoqinu8Y702nAwikpXcNFDiIkyvfCLxLM9Wu95RZqo4a9jFBaA==
 
-mrujs@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/mrujs/-/mrujs-0.9.0.tgz#aff7efb36d7a318511bd47f448b8439e9d74d1ae"
-  integrity sha512-ebajLt6PXPN5b7+TxjT+EsN/7vi9XOaN1KfWVXCOXaCxAQmUmS3RhL+hEv6KyFl1UbkAkRhCCK4/Na7rQw2KFg==
+mrujs@^0.10.1:
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/mrujs/-/mrujs-0.10.1.tgz#63f64a37fc6dd9ce14a7296a09a5efaac54a322f"
+  integrity sha512-VRilxqfFi0PAEsaNHUQvtf3QKpU7p9xXA97HyksIc4Jb13Bap/9d212dUddC31TnEGby7GymWU+EKRiZIcOJmQ==
   dependencies:
     morphdom ">=2.6.0 <3.0.0"
 
