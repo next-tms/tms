@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_11_033732) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_11_041555) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -446,6 +446,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_11_033732) do
     t.datetime "updated_at", null: false
     t.bigint "dispatcher_id"
     t.text "error_object"
+    t.text "api_request"
+    t.text "api_response"
     t.index ["dispatcher_id"], name: "index_pickups_on_dispatcher_id"
     t.index ["rate_id"], name: "index_pickups_on_rate_id"
     t.index ["shipment_id"], name: "index_pickups_on_shipment_id"
@@ -519,8 +521,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_11_033732) do
     t.string "cost_currency", default: "USD", null: false
     t.datetime "expires_at", precision: nil
     t.string "reference"
-    t.text "request"
-    t.text "response"
+    t.text "api_request"
+    t.text "api_response"
     t.integer "transit_days"
     t.boolean "with_calculated_freight_classes"
     t.datetime "created_at", null: false
@@ -763,6 +765,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_11_033732) do
     t.bigint "country_id"
     t.bigint "region_id"
     t.string "time_zone_name"
+    t.text "api_request"
+    t.text "api_response"
     t.index ["address_id"], name: "index_tracking_events_on_address_id"
     t.index ["country_id"], name: "index_tracking_events_on_country_id"
     t.index ["event_id"], name: "index_tracking_events_on_event_id"

@@ -97,9 +97,9 @@ class RatesService
       unless cost.positive?
         rate = new_rate
         rate.assign_attributes(
-          error_object: StandardError.new('Cost was empty'),
-          request: response.request,
-          response: response.response
+          api_request: response.request,
+          api_response: response.response,
+          error_object: StandardError.new('Cost was empty')
         )
 
         rates << rate
@@ -117,9 +117,9 @@ class RatesService
         if carrier_scac.blank? || carrier_name.blank?
           rate = new_rate
           rate.assign_attributes(
-            error_object: StandardError.new('Carrier (acting as broker) API returned quote with missing carrier name and SCAC'),
-            request: response.request,
-            response: response.response
+            api_request: response.request,
+            api_response: response.response,
+            error_object: StandardError.new('Carrier (acting as broker) API returned quote with missing carrier name and SCAC')
           )
 
           rates << rate
@@ -136,14 +136,14 @@ class RatesService
 
       rate = new_rate
       rate.assign_attributes(
+        api_request: response.request,
+        api_response: response.response,
         breakdown:,
         cost:,
+        interstellar_service_type: interstellar_rate.service_name.to_s,
         reference: interstellar_rate.estimate_reference,
         tracking_carrier:,
-        transit_days: interstellar_rate.transit_days,
-        interstellar_service_type: interstellar_rate.service_name.to_s,
-        request: response.request,
-        response: response.response
+        transit_days: interstellar_rate.transit_days
       )
 
       rates << rate
