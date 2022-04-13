@@ -44,7 +44,9 @@
       <tbody>
         <tr>
           <td class="lead">
-            <%= link_to @shipment.broker_customer.customer.name, broker_broker_customer_path(@shipment.broker_customer), target: '_blank' %>
+            <% unless @shipment.broker_customer.blank? %>
+              <%= link_to @shipment.broker_customer.customer.name, broker_broker_customer_path(@shipment.broker_customer), target: '_blank' %>
+            <% end %>
           </td>
 
           <td class="lead">
