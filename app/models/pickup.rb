@@ -44,6 +44,8 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Pickup < ApplicationRecord
+  include Apiable
+
   after_commit :update_shipment
 
   belongs_to :dispatcher, class_name: 'User', required: true
@@ -90,8 +92,8 @@ class Pickup < ApplicationRecord
     shipment.assign_attributes(
       applied_rate: rate,
       dispatched_at: DateTime.current,
-      pickup_confirmation: pickup_confirmation,
-      updated_by: updated_by
+      pickup_confirmation:,
+      updated_by:
     )
 
     shipment.pro = pro if saved_change_to_pro?

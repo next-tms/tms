@@ -61,6 +61,8 @@
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
 #
 class Rate < ApplicationRecord
+  include Apiable
+
   scope :with_calculated_freight_classes, -> { where(with_calculated_freight_classes: true) }
   scope :with_forced_freight_classes, -> { where(with_calculated_freight_classes: false) }
   scope :with_error, -> { where.not(error: nil).where.not(error: '') }
@@ -87,8 +89,6 @@ class Rate < ApplicationRecord
   has_many :accessorials, through: :rate_accessorials
 
   serialize :error_object
-  serialize :request
-  serialize :response
 
   # Returns the actual carrier rather than any broker associated
   def carrier
