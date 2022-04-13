@@ -9,7 +9,7 @@ module Shipment::HasPaymentTransactions
     def create_payment_transaction
       return unless picked_up_at_changed? && broker_carrier&.create_invoice_on_pickup? && payment_transactions.blank?
 
-      shipment.payment_transactions.create(
+      payment_transactions.create(
         balance: total_cost,
         broker_carrier:,
         broker:,
