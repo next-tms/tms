@@ -24,8 +24,8 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 850aae300a78c574d062c7ab4cb2aadf220e3178
-  ref: 850aae300a78c574d062c7ab4cb2aadf220e3178
+  revision: 5f72ac8a3472913e090c725f043e46804f3fc37d
+  ref: 5f72ac8a3472913e090c725f043e46804f3fc37d
   specs:
     interstellar (0.1.pre18)
       active_utils (~> 3.3.1)
@@ -34,7 +34,7 @@ GIT
       httparty (~> 0.10)
       measured (>= 2.0, < 2.8.3)
       mimemagic (~> 0.4.3)
-      nokogiri (>= 1.6, < 1.13.4)
+      nokogiri (>= 1.6, < 1.13.5)
       rmagick (>= 4.1, < 4.3)
       savon (>= 2.0, < 2.13)
       spacetime (~> 0.1.pre1)
