@@ -84,14 +84,19 @@ class PickupsService
 
       error_object = response || error
 
-      @pickup.update(error_object:, updated_by: nil)
+      @pickup.update(api_request: response.request, api_response: response.response, error_object:, updated_by: nil)
       Honeybadger.notify(error.message, pickup_attributes: @pickup.attributes) unless Rails.env.development?
 
       return false
     end
 
     pickup_confirmation = response.pickup_number
-    @pickup.update(pickup_confirmation:, updated_by: nil)
+    @pickup.update(
+      api_request: response.request,
+      api_response: response.response,
+      pickup_confirmation:,
+      updated_by: nil
+    )
 
     return if response&.labels.empty?
 
