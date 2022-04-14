@@ -8,15 +8,15 @@ class TrackingController < ApplicationController
 
     @shipment = Shipment.none
     unless @load_id.blank?
-      @shipment = @website.broker.shipments.where(load_id: @load_id)
+      @shipment = @website.broker.shipments.active.where(load_id: @load_id)
       @shipment = @shipment.first unless @shipment.blank?
     end
     if @shipment.blank? && !@load_id.blank?
-      @shipment = @website.broker.shipments.where(pro: @load_id)
+      @shipment = @website.broker.shipments.active.where(pro: @load_id)
       @shipment = @shipment.first unless @shipment.blank?
     end
     if @shipment.blank? && !@load_id.blank?
-      @shipment = @website.broker.shipments.where(bol: @load_id)
+      @shipment = @website.broker.shipments.active.where(bol: @load_id)
       @shipment = @shipment.first unless @shipment.blank?
     end
 
@@ -63,9 +63,9 @@ class TrackingController < ApplicationController
   def set_load_id
     @load_id = params[:load_id]
 
-    unless @load_id.blank?
-      @load_id = @load_id.to_s.gsub(/[[:space:]]/, '').to_i
-      @load_id = '' if @load_id.zero?
-    end
+    return if @load_id.blank?
+
+    @load_id = @load_id.to_s.gsub(/[[:space:]]/, '').to_i
+    @load_id = '' if @load_id.zero?
   end
 end
