@@ -19,7 +19,7 @@
     "bootstrap": "^5.1.3",
     "compression-webpack-plugin": "9",
     "css-loader": "^6.7.1",
-    "flatpickr": "^4.6.11",
+    "flatpickr": "^4.6.13",
     "mini-css-extract-plugin": "^2.6.0",
     "mrujs": "^0.10.1",
     "postcss": "^8.4.12",
