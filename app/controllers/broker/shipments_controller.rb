@@ -45,7 +45,6 @@ class Broker::ShipmentsController < Broker::BrokerController
   def index
     @q = current_user
          .shipments
-         .active
          .includes(
            [
              :items,
