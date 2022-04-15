@@ -132,9 +132,10 @@ class UserMailer < ApplicationMailer
   end
 
   def to(shipment, method)
-    users = (shipment.broker_customer&.sales_reps || []) + shipment.broker.users.with_role('dispatch')
-    users.uniq!
-    users -= shipment.broker.users.with_role('notifications:-dispatch') unless [:new_shipment].include?(method)
+    user_ids = (shipment.broker_customer&.sales_reps.ids || []) + shipment.broker.users.with_role('dispatch').ids
+    user_ids -= shipment.broker.users.with_role('notifications:-dispatch').ids unless [:new_shipment].include?(method)
+
+    users = User.distinct.active.where(id: user_ids)
 
     users.inject('') do |str, user|
       str = user.receive_email_notifications? ? str + "#{user.first_name} #{user.last_name} <#{user.email}>, " : str + ''

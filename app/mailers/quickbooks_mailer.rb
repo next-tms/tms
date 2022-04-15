@@ -4,8 +4,8 @@ class QuickbooksMailer < ApplicationMailer
 
   def unknown_customers(broker_customers:)
     broker = broker_customers.first.broker
-    users = User.where(id: broker.users.broker.with_role('accounts-receivable').ids +
-                           broker.users.broker.with_role('root').ids)
+    users = User.active.where(id: broker.users.broker.with_role('accounts-receivable').ids +
+                                  broker.users.broker.with_role('root').ids)
 
     @broker_customers = broker_customers.includes(:customer).order('customers.name')
 
