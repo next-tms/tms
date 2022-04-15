@@ -97,6 +97,7 @@
 #  fk_rails_...  (invited_by_id => users.id)
 #
 class User < ApplicationRecord
+  scope :active, -> { where.not(deactivated: true) }
   scope :customers, -> { where.not(broker_customer: nil) }
   scope :brokers, -> { where.not(id: customers) }
 
