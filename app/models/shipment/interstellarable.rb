@@ -128,10 +128,20 @@ module Shipment::Interstellarable
                         end
       return nil if tracking_number.blank?
 
-      @interstellar_tracking = InterstellarApiClient.fetch_tracking(
-        broker_carrier:,
-        tracking_number:
-      )
+      interstellar_tracking = InterstellarApiClient.fetch_tracking(broker_carrier:, tracking_number:)
+
+      unless interstellar_tracking.error.blank?
+        InterstellarSnitchService.snitch(
+          error: interstellar_tracking.error,
+          record: self,
+          request: interstellar_tracking.request,
+          response: interstellar_tracking.response
+        )
+
+        return @interstellar_tracking = nil
+      end
+
+      @interstellar_tracking = interstellar_tracking
     end
 
     def update_tracking_events
@@ -154,7 +164,7 @@ module Shipment::Interstellarable
                                   shipment_event.location
                                 end
 
-        if interstellar_location.blank? || interstellar_location.city.blank? || interstellar_location.state.blank? || interstellar_location.country.blank?
+        if interstellar_location.blank? || interstellar_location.city.blank? || interstellar_location.province.blank? || interstellar_location.country.blank?
           next
         end
 
@@ -174,11 +184,13 @@ module Shipment::Interstellarable
         next if event.blank?
 
         tracking_event.assign_attributes(
+          api_request: interstellar_tracking.request,
+          api_response: interstellar_tracking.response,
           city: interstellar_location.city,
-          country: Country.find_by_alpha2_code(interstellar_location.country_code(:alpha2)),
+          country: Country.find_by_alpha2_code(interstellar_location.country.code(:alpha2).to_s),
           event:,
           interstellar_carrier_fingerprint: fingerprint,
-          region: Region.find_by_abbreviation(interstellar_location.state),
+          region: Region.find_by_abbreviation(interstellar_location.province),
           time_zone_name:
         )
 

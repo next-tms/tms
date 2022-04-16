@@ -4,7 +4,7 @@ module Apiable
   extend ActiveSupport::Concern
 
   included do
-    serialize :api_request
-    serialize :api_response
+    # serialize :api_request
+    # serialize :api_response
   end
 end

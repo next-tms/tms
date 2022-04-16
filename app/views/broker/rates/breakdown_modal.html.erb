@@ -20,4 +20,14 @@
         <td><strong><%= humanized_money_with_symbol @rate.cost, no_cents_if_whole: false %></strong></td>
     </tfoot>
   </table>
+
+  <p class="col-title">Request</p>
+<textarea class="form-control mb-3" data-action="click->clipboard#copy" data-controller="clipboard" rows="5" readonly>
+<%= @rate.api_request %>
+</textarea>
+
+  <p class="col-title">Response</p>
+<textarea class="form-control" data-action="click->clipboard#copy" data-controller="clipboard" rows="5" readonly>
+<%= @rate.api_response %>
+</textarea>
 </div>

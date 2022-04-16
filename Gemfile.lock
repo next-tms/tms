@@ -24,10 +24,10 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 5f72ac8a3472913e090c725f043e46804f3fc37d
-  ref: 5f72ac8a3472913e090c725f043e46804f3fc37d
+  revision: 01d2942e39d30fbce91d2ba5f3e7ee1ed8ae8156
+  ref: 01d2942e39d30fbce91d2ba5f3e7ee1ed8ae8156
   specs:
-    interstellar (0.1.pre18)
+    interstellar (0.1.pre19)
       active_utils (~> 3.3.1)
       activemodel (>= 4.2, < 7.0.3)
       activesupport (>= 4.2, < 7.0.3)
@@ -35,18 +35,17 @@ GIT
       measured (>= 2.0, < 2.8.3)
       mimemagic (~> 0.4.3)
       nokogiri (>= 1.6, < 1.13.5)
-      rmagick (>= 4.1, < 4.3)
       savon (>= 2.0, < 2.13)
       spacetime (~> 0.1.pre1)
       watir (>= 7.0, < 7.2)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: e69e7656f3a62240ea386c36cf6a572f768dfb15
-  ref: e69e7656f3a62240ea386c36cf6a572f768dfb15
+  revision: f85b1be34e7a822c3fda7d85521fe98a6663ff43
+  ref: f85b1be34e7a822c3fda7d85521fe98a6663ff43
   specs:
-    interstellar-next (0.1.pre18)
-      interstellar (= 0.1.pre18)
+    interstellar-next (0.1.pre19)
+      interstellar (= 0.1.pre19)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime
@@ -1657,7 +1656,6 @@ GEM
     rexslt (0.8.0)
       rexle (~> 1.5, >= 1.5.14)
       rxfreader (~> 0.2, >= 0.2.1)
-    rmagick (4.2.5)
     rowx (0.8.0)
       line-tree (~> 0.9, >= 0.9.3)
     roxml (4.2.0)
