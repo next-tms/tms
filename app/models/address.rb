@@ -148,10 +148,10 @@ class Address < ApplicationRecord
   def to_interstellar_shipping_address
     Interstellar::Location.new(
       address1: street,
-      country: country.alpha2_code,
-      state: region.abbreviation,
       city:,
-      zip: zip_code
+      country: ActiveUtils::Country.find(country.alpha2_code),
+      postal_code: zip_code,
+      province: region.abbreviation
     )
   end
 

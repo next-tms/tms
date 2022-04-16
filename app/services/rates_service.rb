@@ -81,8 +81,10 @@ class RatesService
       error = e
     end
 
+    rate = new_rate
+    rate.assign_attributes(api_request: response&.request, api_response: response&.response)
+
     if response.blank? || response&.rates.blank?
-      rate = new_rate
       rate.assign_attributes(error_object: error)
 
       return [rate]
@@ -95,12 +97,7 @@ class RatesService
       cost = Money.new(interstellar_rate.total_cents)
 
       unless cost.positive?
-        rate = new_rate
-        rate.assign_attributes(
-          api_request: response.request,
-          api_response: response.response,
-          error_object: StandardError.new('Cost was empty')
-        )
+        rate.assign_attributes(error_object: StandardError.new('Cost was empty'))
 
         rates << rate
         next
@@ -115,10 +112,7 @@ class RatesService
         carrier_scac = interstellar_rate.scac
 
         if carrier_scac.blank? || carrier_name.blank?
-          rate = new_rate
           rate.assign_attributes(
-            api_request: response.request,
-            api_response: response.response,
             error_object: StandardError.new('Carrier (acting as broker) API returned quote with missing carrier name and SCAC')
           )
 
@@ -134,10 +128,7 @@ class RatesService
                            end
       end
 
-      rate = new_rate
       rate.assign_attributes(
-        api_request: response.request,
-        api_response: response.response,
         breakdown:,
         cost:,
         interstellar_service_type: interstellar_rate.service_name.to_s,

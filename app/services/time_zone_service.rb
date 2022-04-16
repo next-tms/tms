@@ -13,15 +13,15 @@ class TimeZoneService
     unless date_time.local_date_time.blank?
       interstellar_city = date_time.location&.city
       interstellar_country = date_time.location&.country
-      interstellar_state = date_time.location&.state
+      interstellar_province = date_time.location&.province
 
-      if [interstellar_city, interstellar_country, interstellar_state].any?(&:blank?)
+      if [interstellar_city, interstellar_country, interstellar_province].any?(&:blank?)
         tz = default_time_zone
         return tz.parse(date_time.local_date_time)
       end
 
       country = Country.find_by_alpha2_code(interstellar_country.code(:alpha2).value)
-      region = country.regions.where(abbreviation: date_time.location.state)&.first
+      region = country.regions.where(abbreviation: date_time.location.province)&.first
 
       city = date_time.location.city
 
