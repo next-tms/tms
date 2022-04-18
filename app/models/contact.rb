@@ -53,8 +53,6 @@ class Contact < ApplicationRecord
   phony_normalize :mobile_phone, default_country_code: 'US'
   phony_normalize :work_phone, default_country_code: 'US'
 
-  validates :email, presence: true, uniqueness: { scope: :broker }
-
   def full_name
     if first_name.blank? && last_name.blank?
       return read_attribute(:label) if first_name.blank? && last_name.blank? && job_title.blank?
