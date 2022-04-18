@@ -78,23 +78,34 @@ class RatesService
         Honeybadger.notify(e, attributes)
       end
 
-      error = e
+      rate = new_rate
+      rate.error_object = e
+
+      return [rate]
     end
 
-    rate = new_rate
+    interstellar_rates = response.rates
 
-    if response.blank? || response&.rates.blank?
-      rate.assign_attributes(error_object: error)
+    if interstellar_rates.blank?
+      rate = new_rate
+      rate.assign_attributes(
+        api_request: response.request,
+        api_response: response.response,
+        error_object: response.error || StandardError.new('No rates return from API')
+      )
 
       return [rate]
     end
 
     rates = []
 
-    interstellar_rates = response.rates
     interstellar_rates.each do |interstellar_rate|
       rate = new_rate
-      rate.assign_attributes(api_request: response&.request, api_response: response&.response)
+      rate.assign_attributes(
+        api_request: response.request,
+        api_response: response.response,
+        error_object: response.error
+      )
 
       cost = Money.new(interstellar_rate.total_cents)
 
