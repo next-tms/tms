@@ -89,12 +89,13 @@ class RatesService
       return [rate]
     end
 
-    rate.assign_attributes(api_request: response&.request, api_response: response&.response)
-
     rates = []
 
     interstellar_rates = response.rates
     interstellar_rates.each do |interstellar_rate|
+      rate = new_rate
+      rate.assign_attributes(api_request: response&.request, api_response: response&.response)
+
       cost = Money.new(interstellar_rate.total_cents)
 
       unless cost.positive?
