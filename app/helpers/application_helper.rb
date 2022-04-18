@@ -145,8 +145,6 @@ module ApplicationHelper
         'Your username and/or password is expired'
       when 'InvalidCredentialsError'
         'Your username and/or password is incorrect'
-      when 'ResponseError'
-        'API error'
       when 'UnserviceableAccessorialsError'
         accessorial_names = Accessorial
                             .where(interstellar_code: error.accessorials)
