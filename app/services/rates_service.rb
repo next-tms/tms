@@ -82,13 +82,14 @@ class RatesService
     end
 
     rate = new_rate
-    rate.assign_attributes(api_request: response&.request, api_response: response&.response)
 
     if response.blank? || response&.rates.blank?
       rate.assign_attributes(error_object: error)
 
       return [rate]
     end
+
+    rate.assign_attributes(api_request: response&.request, api_response: response&.response)
 
     rates = []
 
