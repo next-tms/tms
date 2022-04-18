@@ -33,15 +33,15 @@ module InterstellarApiClient
   end
 
   def fetch_bol(broker_carrier:, tracking_number:)
-    return nil unless broker_carrier.as_interstellar_carrier&.find_bol_implemented?
-
     Services::FetchBol.new(broker_carrier:).find(tracking_number)
+  rescue NotImplementedError
+    nil
   end
 
   def fetch_pod(broker_carrier:, tracking_number:)
-    return nil unless broker_carrier.as_interstellar_carrier&.find_pod_implemented?
-
     Services::FetchPod.new(broker_carrier:).find(tracking_number)
+  rescue NotImplementedError
+    nil
   end
 
   def fetch_pro(broker_carrier:, pickup_number:, date:)
