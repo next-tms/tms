@@ -132,10 +132,6 @@ class User < ApplicationRecord
 
   validates :time_zone_name, presence: true
 
-  validates :first_name, presence: true
-  validates :last_name, presence: true
-  validates :phone, presence: true
-
   scope :broker, -> { where(broker_customer: nil) }
   scope :customer, -> { where.not(broker_customer: nil) }
 
