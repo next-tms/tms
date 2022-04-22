@@ -60,7 +60,7 @@ gem 'spacetime', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacet
 
 gem 'honeybadger', '~> 4.12'
 
-gem 'sidekiq', '~> 6.4.1'
+gem 'sidekiq', '~> 6.4.2'
 gem 'sidekiq-scheduler', '~> 3.2.0'
 
 gem 'jwt'
