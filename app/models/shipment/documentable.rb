@@ -4,18 +4,16 @@ module Shipment::Documentable
   extend ActiveSupport::Concern
 
   included do
-    # Remove broker documents when cost/charge changes
-
-    before_save do
-      broker_bol.purge if will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
+    after_save do
+      broker_bol.purge unless broker_bol_valid?
     end
 
-    before_save do
-      broker_dispatch_sheet.purge if will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
+    after_save do
+      broker_dispatch_sheet.purge unless broker_dispatch_sheet_valid?
     end
 
-    before_save do
-      broker_quote.purge if will_save_change_to_total_cost_cents? || will_save_change_to_total_charges_cents?
+    after_save do
+      broker_quote.purge unless broker_quote_valid?
     end
 
     has_one_attached :broker_bol
