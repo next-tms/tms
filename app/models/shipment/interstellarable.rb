@@ -130,6 +130,14 @@ module Shipment::Interstellarable
 
       interstellar_tracking = InterstellarApiClient.fetch_tracking(broker_carrier:, tracking_number:)
 
+      if interstellar_tracking.blank?
+        Honeybadger.notify(
+          "interstellar_tracking was blank for Shipment id=#{id} broker_carrier_id=#{broker_carrier&.id}"
+        )
+
+        return nil
+      end
+
       unless interstellar_tracking.error.blank?
         InterstellarSnitchService.snitch(
           error: interstellar_tracking.error,
