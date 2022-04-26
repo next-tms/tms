@@ -7,25 +7,19 @@ module Shipment::Interstellarable
     def fetch_carrier_bol
       return nil if pro.blank? || carrier_bol.attached?
 
-      path = begin
+      interstellar_document_response = begin
         InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
       rescue Errno::ENETUNREACH
         nil
       end
 
-      return nil if path.blank?
+      return nil if interstellar_document_response&.data&.blank?
 
-      unless path.is_a?(String)
-        Honeybadger.notify("Shipment#fetch_carrier_bol id=#{id}, path is a #{path.class}")
-        return nil
-      end
-
-      if File.zero?(path)
-        Honeybadger.notify("Shipment#fetch_carrier_bol id=#{id}, carrier_bol was zero-length")
-        return nil
-      end
-
-      carrier_bol.attach(io: File.open(path), filename: "#{load_id} BOL (Carrier).pdf", content_type: 'application/pdf')
+      carrier_bol.attach(
+        io: StringIO.new(interstellar_document_response.data),
+        filename: "#{load_id} BOL (Carrier).#{Rack::Mime::MIME_TYPES.invert[interstellar_document_response.content_type]}",
+        content_type: interstellar_document_response.content_type
+      )
 
       Contact.where(id: broker_customer.document_preferences.where(kind: 'carrier_bol').pluck(:contact_id)).find_each do |contact|
         ContactMailer.carrier_bol(from_user: nil, to_contact: contact, shipment: self).deliver_later
@@ -44,24 +38,19 @@ module Shipment::Interstellarable
     def fetch_carrier_pod
       return nil if pro.blank? || carrier_pod.attached?
 
-      path = if broker_carrier.carrier.scac == 'OTCL'
-               Rails.root.join('public', 'blank.pdf')
-             else
-               begin
-                 InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
-               rescue Errno::ENETUNREACH
-                 nil
-               end
-             end
-
-      return nil if path.blank?
-
-      if File.zero?(path)
-        Honeybadger.notify("Shipment#fetch_carrier_pod id=#{id}, carrier_pod was zero-length")
-        return nil
+      interstellar_document_response = begin
+        InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
+      rescue Errno::ENETUNREACH
+        nil
       end
 
-      carrier_pod.attach(io: File.open(path), filename: "#{load_id} POD.pdf", content_type: 'application/pdf')
+      return nil if interstellar_document_response&.data&.blank?
+
+      carrier_pod.attach(
+        io: StringIO.new(interstellar_document_response.data),
+        filename: "#{load_id} POD (Carrier).#{Rack::Mime::MIME_TYPES.invert[interstellar_document_response.content_type]}",
+        content_type: interstellar_document_response.content_type
+      )
 
       Contact.where(id: broker_customer.document_preferences.where(kind: 'carrier_pod').pluck(:contact_id)).find_each do |contact|
         ContactMailer.carrier_pod(from_user: nil, to_contact: contact, shipment: self).deliver_later
