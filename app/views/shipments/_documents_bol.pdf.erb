@@ -138,7 +138,7 @@
             <% end %>
           <% end %>
           <% if !shipment.broker_carrier.blank? && !shipment.broker_carrier.carrier.acts_as_broker? %>
-            <% if !shipment.quote_id.blank? || ! %>
+            <% unless shipment.quote_id.blank? %>
               Quote #: <%= shipment.quote_id %><br>
             <% end %>
           <% end %>
