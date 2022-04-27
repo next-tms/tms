@@ -94,6 +94,7 @@ module QuickbooksApiClient
       return create(receivable) if invoice.blank?
 
       invoice = find(invoice.id)
+      invoice = build_invoice(receivable, invoice)
 
       broker.intuit_account.perform_authenticated_request do |access_token|
         service = build_service(access_token)
@@ -113,14 +114,13 @@ module QuickbooksApiClient
     private
 
     def build_invoice(receivable, invoice: nil)
-      if invoice.blank?
-        invoice = Quickbooks::Model::Invoice.new(
-          billing_email_address: receivable.broker_customer.receivables_contact.email,
-          customer_id: receivable.broker_customer.quickbooks_customer_id,
-          doc_number: receivable.shipment.load_id.to_s,
-          txn_date: DateTime.current.in_time_zone(receivable.broker_customer.broker.time_zone)
-        )
-      end
+      invoice = Quickbooks::Model::Invoice.new if invoice.blank?
+      invoice.line_items = [] # for update
+
+      invoice.billing_email_address = receivable.broker_customer.receivables_contact.email,
+                                      invoice.customer_id = receivable.broker_customer.quickbooks_customer_id,
+                                      invoice.doc_number = receivable.shipment.load_id.to_s,
+                                      invoice.txn_date = DateTime.current.in_time_zone(receivable.broker_customer.broker.time_zone)
 
       billing_address = receivable.broker_customer.office_address.to_quickbooks_physical_address
       billing_address.line2 = billing_address.line1
