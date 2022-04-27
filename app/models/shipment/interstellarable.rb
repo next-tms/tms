@@ -117,14 +117,6 @@ module Shipment::Interstellarable
         return @interstellar_tracking = nil
       end
 
-      if interstellar_tracking.blank?
-        Honeybadger.notify(
-          "interstellar_tracking was blank for Shipment id=#{id} broker_carrier_id=#{broker_carrier&.id}"
-        )
-
-        return nil
-      end
-
       unless interstellar_tracking.error.blank?
         InterstellarSnitchService.snitch(
           error: interstellar_tracking.error,
