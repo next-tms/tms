@@ -60,5 +60,7 @@ module InterstellarApiClient
     return nil unless broker_carrier.as_interstellar_carrier&.find_tracking_info_implemented?
 
     Services::FetchTracking.new(broker_carrier:).find(tracking_number)
+  rescue NotImplementedError
+    nil
   end
 end
