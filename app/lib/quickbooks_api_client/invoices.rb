@@ -113,7 +113,7 @@ module QuickbooksApiClient
 
     private
 
-    def build_invoice(receivable, invoice: nil)
+    def build_invoice(receivable, invoice = nil)
       invoice = Quickbooks::Model::Invoice.new if invoice.blank?
       invoice.line_items = [] # for update
 
