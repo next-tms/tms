@@ -7,13 +7,9 @@ module Shipment::Interstellarable
     def fetch_carrier_bol
       return nil if pro.blank? || carrier_bol.attached?
 
-      interstellar_document_response = begin
-        InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
-      rescue Errno::ENETUNREACH
-        nil
-      end
+      interstellar_document_response = InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
 
-      return nil if interstellar_document_response&.data&.blank?
+      return nil if interstellar_document_response.data.blank?
 
       carrier_bol.attach(
         io: StringIO.new(interstellar_document_response.data),
@@ -38,13 +34,9 @@ module Shipment::Interstellarable
     def fetch_carrier_pod
       return nil if pro.blank? || carrier_pod.attached?
 
-      interstellar_document_response = begin
-        InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
-      rescue Errno::ENETUNREACH
-        nil
-      end
+      interstellar_document_response = InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
 
-      return nil if interstellar_document_response&.data&.blank?
+      return nil if interstellar_document_response.data&.blank?
 
       carrier_pod.attach(
         io: StringIO.new(interstellar_document_response.data),
