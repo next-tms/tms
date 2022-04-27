@@ -30,7 +30,9 @@ class Customer::ShipmentsController < Customer::CustomerController
     redirect_to [:customer, @shipment]
   end
 
-  def documents; end
+  def documents
+    refresh_documents
+  end
 
   def index
     @pagy, @shipments = pagy(current_user.broker_customer.shipments.active.order(created_at: :desc))
@@ -86,25 +88,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   def edit; end
 
   def show
-    unless @shipment.broker_quote_valid?
-      CreateShipmentBrokerQuoteJob.perform_later(domain: request.host,
-                                                 shipment: @shipment)
-    end
-
-    unless @shipment.quote_only?
-      TrackShipmentJob.perform_later(@shipment) unless @shipment.delivered?
-
-      unless @shipment.broker_bol_valid? && !@shipment.incomplete?
-        CreateShipmentBrokerBolJob.perform_later(domain: request.host, shipment: @shipment)
-      end
-
-      unless @shipment.broker_dispatch_sheet_valid? && !@shipment.incomplete?
-        CreateShipmentBrokerDispatchSheetJob.perform_later(domain: request.host, shipment: @shipment)
-      end
-
-      FetchShipmentCarrierBolsJob.perform_later([@shipment.id]) unless @shipment.carrier_bol.attached?
-      FetchShipmentCarrierPodsJob.perform_later([@shipment.id]) unless @shipment.carrier_pod.attached?
-    end
+    refresh_documents
   end
 
   def update
@@ -226,6 +210,31 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def set_shipment_by_load_id
     @shipment = Shipment.find_by_load_id(params[:load_id])
+  end
+
+  def refresh_documents
+    unless @shipment.broker_quote_valid?
+      CreateShipmentBrokerQuoteJob.perform_later(
+        domain: @website.homepage_domain,
+        shipment: @shipment
+      )
+    end
+
+    return if @shipment.incomplete?
+
+    unless @shipment.broker_bol_valid?
+      CreateShipmentBrokerBolJob.perform_later(
+        domain: @website.homepage_domain,
+        shipment: @shipment
+      )
+    end
+
+    unless @shipment.broker_dispatch_sheet_valid?
+      CreateShipmentBrokerDispatchSheetJob.perform_later(
+        domain: @website.homepage_domain,
+        shipment: @shipment
+      )
+    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
