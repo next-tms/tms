@@ -73,7 +73,7 @@ gem 'httparty'
 gem 'postmark-rails'
 gem 'barby'
 
-gem 'quickbooks-ruby', '~> 1.0.20'
+gem 'quickbooks-ruby', '~> 1.0.21'
 
 gem 'geocoder', '~> 1.7.5'
 gem 'google_places', '~> 2.0.0'
