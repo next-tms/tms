@@ -9,7 +9,7 @@ module Shipment::Interstellarable
 
       interstellar_document_response = InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
 
-      return nil if interstellar_document_response.data.blank?
+      return nil unless interstellar_document_response&.data.present?
 
       carrier_bol.attach(
         io: StringIO.new(interstellar_document_response.data),
@@ -36,7 +36,7 @@ module Shipment::Interstellarable
 
       interstellar_document_response = InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: pro)
 
-      return nil if interstellar_document_response.data.blank?
+      return nil unless interstellar_document_response&.data.present?
 
       carrier_pod.attach(
         io: StringIO.new(interstellar_document_response.data),
