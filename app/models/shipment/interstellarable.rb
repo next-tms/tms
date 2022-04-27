@@ -111,24 +111,13 @@ module Shipment::Interstellarable
 
       interstellar_tracking = InterstellarApiClient.fetch_tracking(broker_carrier:, tracking_number:)
 
-      return nil unless interstellar_tracking
-
-      unless interstellar_tracking.error.blank?
-        InterstellarSnitchService.snitch(
-          error: interstellar_tracking.error,
-          record: self,
-          request: interstellar_tracking.request,
-          response: interstellar_tracking.response
-        )
-
-        return @interstellar_tracking = nil
-      end
+      return nil unless interstellar_tracking&.shipment_events.present?
 
       @interstellar_tracking = interstellar_tracking
     end
 
     def update_tracking_events
-      return if interstellar_tracking&.shipment_events.blank?
+      return unless interstellar_tracking&.shipment_events.present?
 
       interstellar_tracking.shipment_events.each do |shipment_event|
         interstellar_location = if shipment_event.type_code == :delivered && shipment_event.location.blank?
