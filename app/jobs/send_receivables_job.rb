@@ -28,6 +28,7 @@ class SendReceivablesJob < ApplicationJob
                       .source(receivable.shipment.carrier_bol.download)
                       .convert('pdf')
                       .call
+                      .read
 
             pdf << CombinePDF.parse(new_pdf)
           end
@@ -41,6 +42,7 @@ class SendReceivablesJob < ApplicationJob
                       .source(receivable.shipment.carrier_pod.download)
                       .convert('pdf')
                       .call
+                      .read
 
             pdf << CombinePDF.parse(new_pdf)
           end
@@ -87,6 +89,7 @@ class SendReceivablesJob < ApplicationJob
                       .source(receivable.shipment.carrier_bol.download)
                       .convert('pdf')
                       .call
+                      .read
 
             pdf << CombinePDF.parse(new_pdf)
           end
@@ -100,6 +103,7 @@ class SendReceivablesJob < ApplicationJob
                       .source(receivable.shipment.carrier_pod.download)
                       .convert('pdf')
                       .call
+                      .read
 
             pdf << CombinePDF.parse(new_pdf)
           end
