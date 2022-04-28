@@ -132,7 +132,7 @@ class UserMailer < ApplicationMailer
   end
 
   def to(shipment, method)
-    user_ids = (shipment.broker_customer&.sales_reps.ids || []) + shipment.broker.users.with_role('dispatch').ids
+    user_ids = (shipment.broker_customer&.sales_reps&.ids || []) + shipment.broker.users.with_role('dispatch')&.ids || []
     user_ids -= shipment.broker.users.with_role('notifications:-dispatch').ids unless [:new_shipment].include?(method)
 
     users = User.distinct.active.where(id: user_ids)
