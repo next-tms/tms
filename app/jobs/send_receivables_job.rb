@@ -24,13 +24,14 @@ class SendReceivablesJob < ApplicationJob
           if receivable.shipment.carrier_bol.content_type == 'application/pdf'
             pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
           else
-            new_pdf = ImageProcessing::MiniMagick
-                      .source(receivable.shipment.carrier_bol.download)
-                      .convert('pdf')
-                      .call
-                      .read
-
-            pdf << CombinePDF.parse(new_pdf)
+            receivable.shipment.carrier_bol.open do |f|
+              new_pdf = ImageProcessing::MiniMagick
+                        .source(f)
+                        .convert('pdf')
+                        .call
+                        .read
+              pdf << CombinePDF.parse(new_pdf)
+            end
           end
         end
 
@@ -38,13 +39,14 @@ class SendReceivablesJob < ApplicationJob
           if receivable.shipment.carrier_pod.content_type == 'application/pdf'
             pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
           else
-            new_pdf = ImageProcessing::MiniMagick
-                      .source(receivable.shipment.carrier_pod.download)
-                      .convert('pdf')
-                      .call
-                      .read
-
-            pdf << CombinePDF.parse(new_pdf)
+            receivable.shipment.carrier_pod.open do |f|
+              new_pdf = ImageProcessing::MiniMagick
+                        .source(f)
+                        .convert('pdf')
+                        .call
+                        .read
+              pdf << CombinePDF.parse(new_pdf)
+            end
           end
         end
       end
@@ -73,25 +75,27 @@ class SendReceivablesJob < ApplicationJob
         if receivable.invoice.content_type == 'application/pdf'
           pdf << CombinePDF.parse(receivable.invoice.download)
         else
-          new_pdf = ImageProcessing::MiniMagick
-                    .source(receivable.invoice.download)
-                    .convert('pdf')
-                    .call
-
-          pdf << CombinePDF.parse(new_pdf)
+          receivable.invoice.open do |f|
+            new_pdf = ImageProcessing::MiniMagick
+                      .source(f)
+                      .convert('pdf')
+                      .call
+            pdf << CombinePDF.parse(new_pdf)
+          end
         end
 
         if broker_customer.requires_carrier_bol_on_receivables?
           if receivable.shipment.carrier_bol.content_type == 'application/pdf'
             pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
           else
-            new_pdf = ImageProcessing::MiniMagick
-                      .source(receivable.shipment.carrier_bol.download)
-                      .convert('pdf')
-                      .call
-                      .read
-
-            pdf << CombinePDF.parse(new_pdf)
+            receivable.shipment.carrier_bol.open do |f|
+              new_pdf = ImageProcessing::MiniMagick
+                        .source(f)
+                        .convert('pdf')
+                        .call
+                        .read
+              pdf << CombinePDF.parse(new_pdf)
+            end
           end
         end
 
@@ -99,13 +103,15 @@ class SendReceivablesJob < ApplicationJob
           if receivable.shipment.carrier_pod.content_type == 'application/pdf'
             pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
           else
-            new_pdf = ImageProcessing::MiniMagick
-                      .source(receivable.shipment.carrier_pod.download)
-                      .convert('pdf')
-                      .call
-                      .read
+            receivable.shipment.carrier_pod.download do |f|
+              new_pdf = ImageProcessing::MiniMagick
+                        .source(f)
+                        .convert('pdf')
+                        .call
+                        .read
 
-            pdf << CombinePDF.parse(new_pdf)
+              pdf << CombinePDF.parse(new_pdf)
+            end
           end
         end
 
