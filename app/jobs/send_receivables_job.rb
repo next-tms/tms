@@ -21,11 +21,29 @@ class SendReceivablesJob < ApplicationJob
         pdf << CombinePDF.parse(receivable.invoice.download)
 
         if broker_customer.requires_carrier_bol_on_receivables?
-          pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
+          if receivable.shipment.carrier_bol.content_type == 'application/pdf'
+            pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
+          else
+            new_pdf = ImageProcessing::MiniMagick
+                      .source(receivable.shipment.carrier_bol.download)
+                      .convert('pdf')
+                      .call
+
+            pdf << CombinePDF.parse(new_pdf)
+          end
         end
 
         if broker_customer.requires_carrier_pod_on_receivables?
-          pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
+          if receivable.shipment.carrier_pod.content_type == 'application/pdf'
+            pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
+          else
+            new_pdf = ImageProcessing::MiniMagick
+                      .source(receivable.shipment.carrier_pod.download)
+                      .convert('pdf')
+                      .call
+
+            pdf << CombinePDF.parse(new_pdf)
+          end
         end
       end
 
