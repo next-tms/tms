@@ -1716,7 +1716,7 @@ GEM
       sidekiq (>= 3)
       thwait
       tilt (>= 1.4.0)
-    simple_command (0.1.0)
+    simple_command (1.0.1)
     socksify (1.7.1)
     sorted_set (1.0.3)
       rbtree
