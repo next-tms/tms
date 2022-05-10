@@ -140,6 +140,11 @@ module Shipment::Interstellarable
           next
         end
 
+        if shipment_event.date_time.blank?
+          Honeybadger.notify("Shipment id=#{id} #interstellar_tracking returned ShipmentEvent with invalid date_time: #{shipment_event.attributes}")
+          next
+        end
+
         at = TimeZoneService.from_interstellar_date_time(shipment_event.date_time)
 
         fingerprint = Digest::SHA2.hexdigest([at.to_fs(:db), shipment_event.type_code.to_s].join)
