@@ -89,11 +89,23 @@ class SendReceivablesJob < ApplicationJob
             pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
           else
             receivable.shipment.carrier_bol.open do |f|
-              new_pdf = ImageProcessing::MiniMagick
-                        .source(f)
-                        .convert('pdf')
-                        .call
-                        .read
+              begin
+                new_pdf = ImageProcessing::MiniMagick
+                          .source(f)
+                          .convert('pdf')
+                          .call
+                          .read
+              rescue ArgumentError => e
+                Honeybadger.notify(
+                  <<~STR.squish
+                    Shipment id=#{receivable.shipment.id} carrier_bol:
+                    #{e.message}
+                  STR
+                )
+
+                next
+              end
+
               pdf << CombinePDF.parse(new_pdf)
             end
           end
@@ -104,11 +116,22 @@ class SendReceivablesJob < ApplicationJob
             pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
           else
             receivable.shipment.carrier_pod.download do |f|
-              new_pdf = ImageProcessing::MiniMagick
-                        .source(f)
-                        .convert('pdf')
-                        .call
-                        .read
+              begin
+                new_pdf = ImageProcessing::MiniMagick
+                          .source(f)
+                          .convert('pdf')
+                          .call
+                          .read
+              rescue ArgumentError => e
+                Honeybadger.notify(
+                  <<~STR.squish
+                    Shipment id=#{receivable.shipment.id} carrier_pod:
+                    #{e.message}
+                  STR
+                )
+
+                next
+              end
 
               pdf << CombinePDF.parse(new_pdf)
             end
