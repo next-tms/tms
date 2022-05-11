@@ -24,12 +24,22 @@ class SendReceivablesJob < ApplicationJob
           if receivable.shipment.carrier_bol.content_type == 'application/pdf'
             pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
           else
-            receivable.shipment.carrier_bol.open do |f|
+            data = receivable.shipment.carrier_bol.download
+
+            Dir.mktmpdir do |dir|
+              extension = MimeMagic.new(content_type).extensions&.first
+              path = File.join(dir, "#{DateTime.current.to_i}.#{extension}")
+
+              f = File.new(path, 'wb')
+              f.write(data)
+              f.close
+
               new_pdf = ImageProcessing::MiniMagick
-                        .source(f)
+                        .source(path)
                         .convert('pdf')
                         .call
                         .read
+
               pdf << CombinePDF.parse(new_pdf)
             end
           end
@@ -39,12 +49,22 @@ class SendReceivablesJob < ApplicationJob
           if receivable.shipment.carrier_pod.content_type == 'application/pdf'
             pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
           else
-            receivable.shipment.carrier_pod.open do |f|
+            data = receivable.shipment.carrier_pod.download
+
+            Dir.mktmpdir do |dir|
+              extension = MimeMagic.new(content_type).extensions&.first
+              path = File.join(dir, "#{DateTime.current.to_i}.#{extension}")
+
+              f = File.new(path, 'wb')
+              f.write(data)
+              f.close
+
               new_pdf = ImageProcessing::MiniMagick
-                        .source(f)
+                        .source(path)
                         .convert('pdf')
                         .call
                         .read
+
               pdf << CombinePDF.parse(new_pdf)
             end
           end
@@ -88,23 +108,21 @@ class SendReceivablesJob < ApplicationJob
           if receivable.shipment.carrier_bol.content_type == 'application/pdf'
             pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
           else
-            receivable.shipment.carrier_bol.open do |f|
-              begin
-                new_pdf = ImageProcessing::MiniMagick
-                          .source(f)
-                          .convert('pdf')
-                          .call
-                          .read
-              rescue ArgumentError => e
-                Honeybadger.notify(
-                  <<~STR.squish
-                    Shipment id=#{receivable.shipment.id} carrier_bol:
-                    #{e.message}
-                  STR
-                )
+            data = receivable.shipment.carrier_bol.download
 
-                next
-              end
+            Dir.mktmpdir do |dir|
+              extension = MimeMagic.new(content_type).extensions&.first
+              path = File.join(dir, "#{DateTime.current.to_i}.#{extension}")
+
+              f = File.new(path, 'wb')
+              f.write(data)
+              f.close
+
+              new_pdf = ImageProcessing::MiniMagick
+                        .source(path)
+                        .convert('pdf')
+                        .call
+                        .read
 
               pdf << CombinePDF.parse(new_pdf)
             end
@@ -115,26 +133,24 @@ class SendReceivablesJob < ApplicationJob
           if receivable.shipment.carrier_pod.content_type == 'application/pdf'
             pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
           else
-            receivable.shipment.carrier_pod.download do |f|
-              begin
-                new_pdf = ImageProcessing::MiniMagick
-                          .source(f)
-                          .convert('pdf')
-                          .call
-                          .read
-              rescue ArgumentError => e
-                Honeybadger.notify(
-                  <<~STR.squish
-                    Shipment id=#{receivable.shipment.id} carrier_pod:
-                    #{e.message}
-                  STR
-                )
+            data = receivable.shipment.carrier_pod.download
 
-                next
-              end
+            Dir.mktmpdir do |dir|
+              extension = MimeMagic.new(content_type).extensions&.first
+              path = File.join(dir, "#{DateTime.current.to_i}.#{extension}")
 
-              pdf << CombinePDF.parse(new_pdf)
+              f = File.new(path, 'wb')
+              f.write(data)
+              f.close
+
+              new_pdf = ImageProcessing::MiniMagick
+                        .source(path)
+                        .convert('pdf')
+                        .call
+                        .read
             end
+
+            pdf << CombinePDF.parse(new_pdf)
           end
         end
 
