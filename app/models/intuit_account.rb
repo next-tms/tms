@@ -32,8 +32,8 @@ class IntuitAccount < ApplicationRecord
 
   belongs_to :broker
 
-  encrypts :oauth2_access_token
-  encrypts :oauth2_refresh_token
+  encrypts :encrypted_oauth2_access_token
+  encrypts :encrypted_oauth2_refresh_token
 
   def connected?
     return true unless encrypted_oauth2_refresh_token.blank?
