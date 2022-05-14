@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_13_050836) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_14_054833) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -325,11 +325,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_13_050836) do
     t.datetime "oauth2_access_token_expires_at"
     t.datetime "oauth2_refresh_token_expires_at"
     t.bigint "broker_id"
-    t.text "oauth2_access_token"
-    t.text "oauth2_refresh_token"
     t.text "realm_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "encrypted_oauth2_access_token"
+    t.string "encrypted_oauth2_refresh_token"
     t.index ["broker_id"], name: "index_intuit_accounts_on_broker_id"
   end
 
