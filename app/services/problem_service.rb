@@ -7,6 +7,7 @@ class ProblemService
     # User with least amount of problems
     assigned_to = users
                   .left_outer_joins(:problems)
+                  .active
                   .group('users.id')
                   .order('count(problems.assigned_to_id) ASC')
                   .limit(1)
@@ -17,6 +18,7 @@ class ProblemService
     Role
     .find_by_name('root')
     .users
+    .active
     .where(broker:)
     .broker
     .order(Arel.sql('RANDOM()'))
@@ -44,7 +46,7 @@ class ProblemService
           next
         end
 
-        assigned_to = self.assign(resolvable.broker, problem_type)
+        assigned_to = assign(resolvable.broker, problem_type)
 
         Problem.create(assigned_to:, problem_type:, resolvable:, title: problem_type.name.titleize)
       end
