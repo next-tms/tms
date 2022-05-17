@@ -104,6 +104,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :invitable, :pwned_password, :recoverable, :rememberable, :timeoutable, :trackable,
          :validatable
 
+  after_save :reassign_problems
+
   before_validation :set_contact
   before_validation :set_time_zone_name
 
@@ -260,6 +262,12 @@ class User < ApplicationRecord
   end
 
   private
+
+  def reassign_problems
+    return unless saved_change_to_deactivated && deactivated?
+
+    problems.unresolved.find_each { |p| p.update(assigned_to: ProblemService.assign(broker, p.problem_type)) }
+  end
 
   def set_contact
     return if email.blank?
