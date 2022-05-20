@@ -24,28 +24,28 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 01d2942e39d30fbce91d2ba5f3e7ee1ed8ae8156
-  ref: 01d2942e39d30fbce91d2ba5f3e7ee1ed8ae8156
+  revision: 56bf8b6d5a7dd2bbc3d6edf70885f9df827bff6b
+  ref: 56bf8b6d5a7dd2bbc3d6edf70885f9df827bff6b
   specs:
-    interstellar (0.1.pre19)
+    interstellar (0.1.pre20)
       active_utils (~> 3.3.1)
       activemodel (>= 4.2, < 7.0.3)
       activesupport (>= 4.2, < 7.0.3)
       httparty (~> 0.10)
       measured (>= 2.0, < 2.8.3)
       mimemagic (~> 0.4.3)
-      nokogiri (>= 1.6, < 1.13.5)
+      nokogiri (>= 1.6, < 1.13.7)
       savon (>= 2.0, < 2.13)
       spacetime (~> 0.1.pre1)
       watir (>= 7.0, < 7.2)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: 516f3f6d035394e46356da21b67713420de932d4
-  ref: 516f3f6d035394e46356da21b67713420de932d4
+  revision: c2dd569b4223f093b64d234c4f33643cac44041e
+  ref: c2dd569b4223f093b64d234c4f33643cac44041e
   specs:
-    interstellar-next (0.1.pre19)
-      interstellar (= 0.1.pre19)
+    interstellar-next (0.1.pre20)
+      interstellar (= 0.1.pre20)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime
