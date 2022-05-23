@@ -23,8 +23,8 @@ class IntuitAccountsController < ApplicationController
         intuit_account = broker.intuit_account || broker.build_intuit_account
 
         intuit_account.assign_attributes(
-          oauth2_access_token: response.token,
-          oauth2_refresh_token: response.refresh_token,
+          encrypted_oauth2_access_token: response.token,
+          encrypted_oauth2_refresh_token: response.refresh_token,
           realm_id: params[:realmId]
         )
 
