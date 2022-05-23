@@ -146,6 +146,7 @@ module Shipment::Interstellarable
         end
 
         at = TimeZoneService.from_interstellar_date_time(shipment_event.date_time)
+        at = DateTime.current if at.blank?
 
         fingerprint = Digest::SHA2.hexdigest([at.to_fs(:db), shipment_event.type_code.to_s].join)
         tracking_event = tracking_events.where(interstellar_carrier_fingerprint: fingerprint)&.first
