@@ -43,12 +43,15 @@ module Shipment::HasReceivables
     end
 
     def create_receivable
+      return unless receivable?
+
       CreateReceivableJob.perform_later(self)
     end
 
     def receivable?
       return false unless receivables.blank?
       return false if broker_customer.blank? || picked_up_at.blank?
+      return false if broker_customer.receivables_schedule == 'never'
       return false if broker_customer.requires_shipment_delivery_before_receivable? && delivered_at.blank?
 
       true
