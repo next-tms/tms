@@ -65,27 +65,27 @@ module Shipment::Interstellarable
       pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                             date: pickup_on)
 
-      if pro.blank?
+      if pro.blank? && dispatched_at.present?
         pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                               date: dispatched_at.to_date)
       end
 
-      if pro.blank?
+      if pro.blank? && pickup_on.present?
         pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                               date: pickup_on - 1.day)
       end
 
-      if pro.blank?
+      if pro.blank? && pickup_on.present?
         pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                               date: pickup_on + 1.day)
       end
 
-      if pro.blank?
+      if pro.blank? && pickup_on.present?
         pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                               date: pickup_on + 2.days)
       end
 
-      if pro.blank?
+      if pro.blank? && dispatched_at.present?
         pro = InterstellarApiClient.fetch_pro(broker_carrier:, pickup_number: pickup_confirmation,
                                               date: dispatched_at.to_date + 1.day)
       end
