@@ -230,9 +230,8 @@ class User < ApplicationRecord
   def shipments
     return broker_customer.shipments if customer?
 
-    if !sales_rep_only? && (has_role?('sales_rep_for_all_broker_customers') || has_role?('dispatch'))
-      return broker.shipments
-    end
+    all_shipments = (roles.pluck(:name) & %w[dispatch sales_rep_for_all_broker_customers accounts_receivable]).any?
+    return broker.shipments if !sales_rep_only? && all_shipments
 
     broker_customer_ids = sales_rep_for_broker_customers&.ids
 
