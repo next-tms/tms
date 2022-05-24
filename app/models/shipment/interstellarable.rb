@@ -141,12 +141,20 @@ module Shipment::Interstellarable
         end
 
         if shipment_event.date_time.blank?
-          Honeybadger.notify("Shipment id=#{id} #interstellar_tracking returned ShipmentEvent with invalid date_time: #{shipment_event.attributes}")
+          Honeybadger.notify("Shipment id=#{id} #interstellar_tracking returned ShipmentEvent from #{broker_carrier.carrier.name} with invalid #date_time: #{shipment_event.attributes}")
           next
         end
 
         at = TimeZoneService.from_interstellar_date_time(shipment_event.date_time)
-        at = DateTime.current if at.blank?
+
+        if at.blank?
+          Honeybadger.notify("Shipment id=#{id} #interstellar_tracking returned ShipmentEvent from #{broker_carrier.carrier.name} with invalid #location: #{shipment_event.attributes}")
+
+          next if shipment_event.location&.time_zone.blank?
+
+          # Dodgy hack
+          at = DateTime.current.in_time_zone(shipment_event.location.time_zone)
+        end
 
         fingerprint = Digest::SHA2.hexdigest([at.to_fs(:db), shipment_event.type_code.to_s].join)
         tracking_event = tracking_events.where(interstellar_carrier_fingerprint: fingerprint)&.first
