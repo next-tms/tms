@@ -1736,8 +1736,9 @@ GEM
     timezone (1.3.16)
     traceroute (0.8.1)
       rails (>= 3.0.0)
-    turbo-rails (1.0.1)
+    turbo-rails (1.1.1)
       actionpack (>= 6.0.0)
+      activejob (>= 6.0.0)
       railties (>= 6.0.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
@@ -1833,7 +1834,7 @@ DEPENDENCIES
   sprockets-rails (~> 3.4.2)
   timezone (~> 1.3)
   traceroute
-  turbo-rails (~> 1.0.1)
+  turbo-rails (~> 1.1.1)
   tzinfo-data
   web-console (>= 3.3.0)
   webdrivers
