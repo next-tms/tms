@@ -117,10 +117,8 @@ class Receivable < ApplicationRecord
   end
 
   def build_from_shipment(shipment)
-    assign_attributes(
-      shipment:,
-      due_by: (shipment.picked_up_at + 30.days).end_of_day.in_time_zone('America/Los_Angeles')
-    )
+    due_by = (DateTime.current + 30.days).in_time_zone(shipment.broker.time_zone).end_of_day
+    assign_attributes(due_by:, shipment:)
 
     receivable_items.map(&:mark_for_destruction) unless receivable_items.blank?
 
@@ -183,7 +181,7 @@ class Receivable < ApplicationRecord
 
       case broker_customer.receivables_schedule
       when 'weekly'
-        return false unless now.wday == 0 # Sunday
+        return false unless now.wday.zero? # Sunday
       when 'monthly'
         return false unless now.to_date == now.end_of_month.to_date
       end
