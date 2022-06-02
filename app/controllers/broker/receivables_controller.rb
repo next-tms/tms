@@ -76,9 +76,9 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def show
-#    if current_user.broker.intuit_account&.connected? && @receivable.authorized_by_id.blank?
-#      @receivable.quickbooks_invoice
-#    end
+    #    if current_user.broker.intuit_account&.connected? && @receivable.authorized_by_id.blank?
+    #      @receivable.quickbooks_invoice
+    #    end
   end
 
   private
@@ -94,7 +94,7 @@ class Broker::ReceivablesController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def receivable_params
-    params.require(:receivable).permit(:id, :authorized_at, :invoiced)
+    params.require(:receivable).permit(:id, :authorized_at, :invoiced, :sent_at)
   end
 
   def required_includes
