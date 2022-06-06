@@ -23,7 +23,7 @@ class RatesServiceController < ApplicationController
               )
 
       @rates = fetch.to_rates
-      @rates.each { |rate| rate.save }
+      @rates&.each { |rate| rate.save }
     end
 
     respond_to do |format|
@@ -42,6 +42,6 @@ class RatesServiceController < ApplicationController
   end
 
   def set_use_forced_freight_classes
-    @use_forced_freight_classes = params[:use_forced_freight_classes] == 'true' ? true : false
+    @use_forced_freight_classes = params[:use_forced_freight_classes] == 'true'
   end
 end

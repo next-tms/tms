@@ -70,6 +70,8 @@ class BrokerCarrier < ApplicationRecord
 
   belongs_to :check_mailing_address, class_name: 'Address', required: false
 
+  delegate :scac, to: :carrier
+
   has_many :contacts
   has_many :overlength_rules
   has_many :payment_transactions
@@ -100,24 +102,7 @@ class BrokerCarrier < ApplicationRecord
   end
 
   def as_interstellar_carrier
-    carrier = Interstellar.const_get(self.carrier.scac)
-    carrier.new(
-      account:,
-      customer_address: {
-        street: broker.address.street.sub('Apt', 'Ste'),
-        city: broker.address.city,
-        state: broker.address.region.abbreviation,
-        zip_code: broker.address.zip_code
-      },
-      customer_email: "robot@#{broker.customer_service_email.split('@')[1]}",
-      customer_name: broker.name,
-      debug: !Rails.env.production?,
-      username:,
-      password:,
-      tariff: to_interstellar_tariff
-    )
-  rescue StandardError
-    nil
+    @as_interstellar_carrier ||= InterstellarApiClient::Services::BuildApiClient.call(broker_carrier: self)
   end
 
   def to_interstellar_tariff

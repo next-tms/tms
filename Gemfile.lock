@@ -24,10 +24,10 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 56bf8b6d5a7dd2bbc3d6edf70885f9df827bff6b
-  ref: 56bf8b6d5a7dd2bbc3d6edf70885f9df827bff6b
+  revision: 53be8e1986fcd89f43ebdf4529a45a52628e3515
+  ref: 53be8e1986fcd89f43ebdf4529a45a52628e3515
   specs:
-    interstellar (0.1.pre20)
+    interstellar (0.1.pre23)
       active_utils (~> 3.3.1)
       activemodel (>= 4.2, < 7.0.3)
       activesupport (>= 4.2, < 7.0.3)
@@ -41,11 +41,12 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: ba4fbc7fde005df17ee1e8b8963d4920abedd4fd
-  ref: ba4fbc7fde005df17ee1e8b8963d4920abedd4fd
+  revision: 15f0373b627db2021f0baf151afe4a7d29e1f3a3
+  ref: 15f0373b627db2021f0baf151afe4a7d29e1f3a3
   specs:
-    interstellar-next (0.1.pre20)
-      interstellar (= 0.1.pre20)
+    interstellar-next (0.1.pre23)
+      interstellar (= 0.1.pre23)
+      rmagick (~> 4.2.5)
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime
@@ -1653,6 +1654,7 @@ GEM
     rexslt (0.8.0)
       rexle (~> 1.5, >= 1.5.14)
       rxfreader (~> 0.2, >= 0.2.1)
+    rmagick (4.2.5)
     rowx (0.8.0)
       line-tree (~> 0.9, >= 0.9.3)
     roxml (4.2.0)

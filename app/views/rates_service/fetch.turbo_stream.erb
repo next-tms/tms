@@ -45,7 +45,7 @@
                 <%= link_to 'Book', book_modal_broker_shipment_path(@shipment, shipment: { applied_rate_uid: rate.uid }), data: { 'turbo-frame': 'modal' }, class: 'btn btn-sm btn-primary' %>
               <% end %>
 
-              <% if current_user.broker? && rate.broker_carrier.api_configured? &&  rate.broker_carrier.as_interstellar_carrier.create_pickup_implemented? %>
+              <% if current_user.broker? && rate.broker_carrier.api_configured? && rate.broker_carrier.as_interstellar_carrier&.create_pickup_implemented? %>
                 <%= link_to 'Pickup', pickup_modal_broker_shipment_path(@shipment, shipment: { applied_rate_uid: rate.uid }), data: { 'turbo-frame': 'modal' }, class: 'btn btn-sm btn-outline-primary' %>
               <% end %>
             </div>
