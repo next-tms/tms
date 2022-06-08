@@ -1484,7 +1484,7 @@ GEM
     jmespath (1.6.1)
     json (2.6.1)
     jsonapi-renderer (0.2.2)
-    jwt (2.3.0)
+    jwt (2.4.0)
     kvx (1.1.0)
       line-tree (~> 0.9, >= 0.9.3)
       rxfreadwrite (~> 0.1, >= 0.1.1)
