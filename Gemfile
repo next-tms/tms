@@ -5,7 +5,7 @@ ruby '3.1.2'
 gem 'rails', '~> 7.0.2.4'
 gem 'pg', '~> 1.3.5'
 gem 'puma', '~> 5.6.4'
-gem 'shakapacker', '~> 6.4.0'
+gem 'shakapacker', '~> 6.4.1'
 gem 'jbuilder', '~> 2.11'
 
 gem 'bootsnap', '>= 1.4.2', require: false
@@ -60,8 +60,8 @@ gem 'spacetime', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacet
 
 gem 'honeybadger', '~> 4.12'
 
-gem 'sidekiq', '~> 6.4.2'
-gem 'sidekiq-scheduler', '~> 4.0.0'
+gem 'sidekiq', '~> 6.5.0'
+gem 'sidekiq-scheduler', '~> 4.0.1'
 
 gem 'jwt'
 gem 'active_model_serializers', '~> 0.10.13'
