@@ -15,7 +15,7 @@ module InterstellarApiClient
         return nil if carrier.blank?
 
         customer_location = broker_carrier.broker.as_interstellar_location
-        credentials = build_credentials
+        credentials = build_credentials(broker_carrier:)
         tariff = broker_carrier.to_interstellar_tariff
 
         carrier.new(credentials, customer_location:, tariff:)
