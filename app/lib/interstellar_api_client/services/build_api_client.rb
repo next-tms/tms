@@ -14,6 +14,14 @@ module InterstellarApiClient
 
         return nil if carrier.blank?
 
+        customer_location = broker_carrier.broker.as_interstellar_location
+        credentials = build_credentials
+        tariff = broker_carrier.to_interstellar_tariff
+
+        carrier.new(credentials, customer_location:, tariff:)
+      end
+
+      def self.build_credentials(broker_carrier:)
         credentials = [
           Interstellar::Credential.new(
             type: :api,
@@ -23,7 +31,7 @@ module InterstellarApiClient
           ),
           Interstellar::Credential.new(
             type: :selenoid,
-            base_url: URI.parse(ENV['SELENOID_BASE_URL']),
+            base_url: URI.parse(ENV.fetch('SELENOID_BASE_URL', nil)),
             browser: :chrome
           )
         ]
@@ -43,10 +51,7 @@ module InterstellarApiClient
                          )
                        end
 
-        customer_location = broker_carrier.broker.as_interstellar_location
-        tariff = broker_carrier.to_interstellar_tariff
-
-        carrier.new(credentials, customer_location:, tariff:)
+        credentials
       end
     end
   end
