@@ -91,6 +91,20 @@ class Broker < ApplicationRecord
     ActiveSupport::TimeZone.new(time_zone_name)
   end
 
+  def as_interstellar_location
+    Interstellar::Location.new(
+      contact: Interstellar::Contact.new(
+        company_name: name,
+        email: "robot@#{customer_service_email.split('@')[1]}"
+      ),
+      address1: address.street.sub('Apt', 'Ste'),
+      city: address.city,
+      postal_code: address.zip_code,
+      province: address.region.abbreviation,
+      country: ActiveUtils::Country.find(address.country.alpha2_code)
+    )
+  end
+
   private
 
   def normalize_phone(phone_number:, country_code:)

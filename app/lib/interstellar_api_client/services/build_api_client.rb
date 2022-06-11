@@ -6,8 +6,6 @@ module InterstellarApiClient
       def self.call(broker_carrier:)
         return nil if broker_carrier.carrier&.scac.blank?
 
-        config = { debugging: false, timeout: 60 }
-
         carrier = begin
           Interstellar.const_get(broker_carrier.carrier.scac)
         rescue NameError
@@ -16,25 +14,44 @@ module InterstellarApiClient
 
         return nil if carrier.blank?
 
-        args = {
-          account: broker_carrier.account,
-          debug: config[:debugging],
-          test: config[:debugging],
-          username: broker_carrier.username,
-          password: broker_carrier.password,
-          tariff: broker_carrier.to_interstellar_tariff,
-          selenoid_options: {
-            download_url: "#{ENV['SELENOID_BASE_URL']}/download"
-          },
-          watir_args: [:chrome, { url: "#{ENV['SELENOID_BASE_URL']}/wd/hub/" }]
-        }
+        customer_location = broker_carrier.broker.as_interstellar_location
+        credentials = build_credentials(broker_carrier:)
+        tariff = broker_carrier.to_interstellar_tariff
 
-        if broker_carrier.carrier.has_seperate_website_credentials?
-          args[:website_username] = broker_carrier.website_username
-          args[:website_password] = broker_carrier.website_password
-        end
+        carrier.new(credentials, customer_location:, tariff:)
+      end
 
-        new_carrier_client ||= carrier.new(args)
+      def self.build_credentials(broker_carrier:)
+        credentials = [
+          Interstellar::Credential.new(
+            type: :api,
+            account: broker_carrier.account,
+            username: broker_carrier.username,
+            password: broker_carrier.password
+          ),
+          Interstellar::Credential.new(
+            type: :selenoid,
+            base_url: URI.parse(ENV.fetch('SELENOID_BASE_URL', nil)),
+            browser: :chrome
+          )
+        ]
+
+        credentials << if broker_carrier.carrier.has_seperate_website_credentials?
+                         Interstellar::Credential.new(
+                           type: :website,
+                           username: broker_carrier.website_username,
+                           password: broker_carrier.website_password
+                         )
+                       else
+                         Interstellar::Credential.new(
+                           type: :website,
+                           account: broker_carrier.account,
+                           username: broker_carrier.username,
+                           password: broker_carrier.password
+                         )
+                       end
+
+        credentials
       end
     end
   end

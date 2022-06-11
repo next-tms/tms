@@ -37,7 +37,6 @@ class RatesService
     return [] if @broker_carrier.as_interstellar_carrier.blank?
 
     response = nil
-    error = nil
 
     ignore_value = if @shipment.broker_customer.blank?
                      false
@@ -45,7 +44,9 @@ class RatesService
                      @shipment.broker_customer.ignore_value_on_api_quotes?
                    end
 
-    if !ignore_value && !@shipment.value.zero? && !@broker_carrier.as_interstellar_carrier.find_rates_with_declared_value?
+    if !ignore_value &&
+       !@shipment.value.zero? &&
+       !@broker_carrier.as_interstellar_carrier.find_rates_with_declared_value?
       error = StandardError.new('Carrier doesn’t support quoting shipments with declared value')
 
       rate = new_rate
@@ -84,14 +85,14 @@ class RatesService
       return [rate]
     end
 
-    interstellar_rates = response.rates
+    interstellar_rates = response&.rates
 
     if interstellar_rates.blank?
       rate = new_rate
       rate.assign_attributes(
-        api_request: response.request,
-        api_response: response.response,
-        error_object: response.error || StandardError.new('No rates return from API')
+        api_request: response&.request,
+        api_response: response&.response,
+        error_object: response&.error || StandardError.new('No rates returned from API')
       )
 
       return [rate]
@@ -126,7 +127,9 @@ class RatesService
 
         if carrier_scac.blank? || carrier_name.blank?
           rate.assign_attributes(
-            error_object: StandardError.new('Carrier (acting as broker) API returned quote with missing carrier name and SCAC')
+            error_object: StandardError.new(
+              'Carrier (acting as broker) API returned quote with missing carrier name and SCAC'
+            )
           )
 
           rates << rate
