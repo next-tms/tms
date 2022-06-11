@@ -156,9 +156,9 @@ class SendReceivablesJob < ApplicationJob
                         .convert('pdf')
                         .call
                         .read
-            end
 
-            pdf << CombinePDF.parse(new_pdf)
+              pdf << CombinePDF.parse(new_pdf)
+            end
           end
         end
 
