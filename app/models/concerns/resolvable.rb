@@ -10,6 +10,13 @@ module Resolvable
       unresolved_problems = Problem.where(resolvable: self).unresolved
       return unless unresolved_problems.any? && methods.include?(:broker)
 
+      resolved_by_id = methods.include?(:updated_by_id) ? updated_by_id : nil
+
+      if methods.include?(:canceled_at) && !canceled_at.blank?
+        unresolved_problems.destroy_all
+        return
+      end
+
       problem_types = ProblemType.where(resolvable_class_name: self.class.name)
 
       return if problem_types.blank?
@@ -37,7 +44,6 @@ module Resolvable
 
           next unless resolved
 
-          resolved_by_id = methods.include?(:updated_by_id) ? send(:updated_by_id) : nil
           problem.update(resolved_at: DateTime.current, resolved_by_id:)
         end
       end
