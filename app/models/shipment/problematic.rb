@@ -4,6 +4,10 @@ module Shipment::Problematic
   extend ActiveSupport::Concern
 
   included do
+    def self.problematic_broker_carrier_id_blank
+      active.pending_quotation
+    end
+
     def self.problematic_carrier_bol_not_attached
       left_joins(:carrier_bol_blob)
         .where(broker_customer: BrokerCustomer.where(requires_carrier_bol_on_receivables: true))
