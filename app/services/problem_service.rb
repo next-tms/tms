@@ -12,16 +12,16 @@ class ProblemService
                   .order('count(problems.assigned_to_id) ASC')
                   .limit(1)
                   &.first
-  
+
     return assigned_to unless assigned_to.blank?
-    
+
     Role
-    .find_by_name('root')
-    .users
-    .active
-    .where(broker:)
-    .broker
-    .order(Arel.sql('RANDOM()'))
+      .find_by_name('root')
+      .users
+      .active
+      .where(broker:)
+      .broker
+      .order(Arel.sql('RANDOM()'))
     &.last
   end
 
@@ -51,5 +51,16 @@ class ProblemService
         Problem.create(assigned_to:, problem_type:, resolvable:, title: problem_type.name.titleize)
       end
     end
+  end
+
+  def self.resolve_problems
+    problems = Problem
+               .unresolved
+               .where(resolvable_type: 'Shipment')
+               .where(resolvable_id: Receivable.paid.pluck(:shipment_id))
+    problems.update_all(
+      resolved_at: DateTime.current,
+      resolved_by_id: nil
+    )
   end
 end
