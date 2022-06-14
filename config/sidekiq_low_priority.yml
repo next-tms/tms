@@ -24,6 +24,9 @@
   fetch_website_manifests:
     cron: '10 */4 * * *'
     class: FetchWebsiteManifestsJob
+  resolve_problems:
+    cron: '*/15 * * * *'
+    class: ResolveProblemsJob
   track_shipments_pending_delivery:
     cron: '*/30 * * * *'
     class: TrackShipmentsPendingDeliveryJob
