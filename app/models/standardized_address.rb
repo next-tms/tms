@@ -149,19 +149,20 @@ class StandardizedAddress < ApplicationRecord
       return @open_street_map_result_cached = open_street_map_result_cached
     end
 
-    logger.info 'Calling OpenStreetMap API'
+    # logger.info 'Calling OpenStreetMap API'
+    #
+    # client = OpenStreetMap::Client.new
+    #
+    # self.open_street_map_result_cached = client.search(
+    #   q: "#{key}, #{country.name}",
+    #   format: 'json',
+    #   addressdetails: '1',
+    #   accept_language: 'en'
+    # )&.first
 
-    client = OpenStreetMap::Client.new
-
-    self.open_street_map_result_cached = client.search(
-      q: "#{key}, #{country.name}",
-      format: 'json',
-      addressdetails: '1',
-      accept_language: 'en'
-    )&.first
-
-    self.open_street_map_result_updated_at = DateTime.current
-    @open_street_map_result = open_street_map_result_cached
+    # self.open_street_map_result_updated_at = DateTime.current
+    # @open_street_map_result = open_street_map_result_cached
+    @open_street_map_result = nil
   end
 
   def smarty_streets_result
