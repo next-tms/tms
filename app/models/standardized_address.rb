@@ -129,7 +129,7 @@ class StandardizedAddress < ApplicationRecord
 
     logger.info 'Calling Google Places API'
     self.google_places_spot_cached = GooglePlaces::Client.new(
-      ENV['GOOGLE_API_KEY']
+      ENV.fetch('GOOGLE_API_KEY', nil)
     ).spots_by_query(
       (names&.first.blank? ? key : "#{names&.first}, #{key}")
     ).first
@@ -284,6 +284,10 @@ class StandardizedAddress < ApplicationRecord
       return
     end
 
-    self.time_zone_name = Timezone.lookup(latitude, longitude)&.name || 'America/Los_Angeles'
+    begin
+      self.time_zone_name = Timezone.lookup(latitude, longitude)&.name || 'America/Los_Angeles'
+    rescue Timezone::Error::GeoNames
+      self.time_zone_name = 'America/Los_Angeles'
+    end
   end
 end
