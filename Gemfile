@@ -55,7 +55,7 @@ gem 'devise-pwned_password', '~> 0.1.9'
 gem 'turbo-rails', '~> 1.1.1'
 
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: '3e59e1e8dacfc1917058af3711adaddf3f76853e'
-gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next', ref: 'eba36dcacd3e0de814456a0223bd4482ed9fcc80'
+gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next', ref: 'e03a5e265fcc0623fe92c291d1013cca173adac6'
 gem 'spacetime', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime', ref: 'b430558c2458c6d674ec1803246ff5fcccacff94'
 
 gem 'honeybadger', '~> 4.12'
