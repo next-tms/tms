@@ -24,10 +24,10 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 3e59e1e8dacfc1917058af3711adaddf3f76853e
-  ref: 3e59e1e8dacfc1917058af3711adaddf3f76853e
+  revision: 3a03ab27499d7d41444de669d23d39eb41a5cfa1
+  ref: 3a03ab27499d7d41444de669d23d39eb41a5cfa1
   specs:
-    interstellar (0.1.pre24)
+    interstellar (0.1.pre25)
       active_utils (~> 3.3.1)
       activemodel (>= 4.2, < 7.0.3)
       activesupport (>= 4.2, < 7.0.3)
@@ -41,11 +41,11 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: e03a5e265fcc0623fe92c291d1013cca173adac6
-  ref: e03a5e265fcc0623fe92c291d1013cca173adac6
+  revision: ee5a645385f281886849c60660d25eac51ba8aaf
+  ref: ee5a645385f281886849c60660d25eac51ba8aaf
   specs:
     interstellar-next (0.1.pre24)
-      interstellar (= 0.1.pre24)
+      interstellar (= 0.1.pre25)
       rmagick (~> 4.2.5)
 
 GIT

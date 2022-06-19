@@ -34,6 +34,8 @@
 #  fk_rails_...  (check_mailing_address_id => addresses.id)
 #
 class Carrier < ApplicationRecord
+  encrypts :encrypted_api_key
+
   has_many :broker_carriers
   has_many :brokers, through: :broker_customers
 
