@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_14_054833) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_19_003212) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -243,6 +243,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_14_054833) do
     t.boolean "has_traceable_pickup_confirmation", default: false
     t.bigint "broker_billing_address_id"
     t.boolean "has_seperate_website_credentials", default: false
+    t.string "encrypted_api_key"
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
     t.index ["name"], name: "index_carriers_on_name", unique: true

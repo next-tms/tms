@@ -524,7 +524,7 @@ class Shipment < ApplicationRecord
 
     formatted_offset = DateTime.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
 
-    DateTime.parse("#{pickup_on} #{pickup_hours_start_at} #{formatted_offset}")
+    DateTime.parse("#{pickup_on} #{pickup_hours_start_at} #{formatted_offset}").in_time_zone(shipper_address.time_zone)
   end
 
   def pickup_by

@@ -26,6 +26,7 @@ module InterstellarApiClient
           Interstellar::Credential.new(
             type: :api,
             account: broker_carrier.account,
+            api_key: broker_carrier.carrier.encrypted_api_key,
             username: broker_carrier.username,
             password: broker_carrier.password
           ),

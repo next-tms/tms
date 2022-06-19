@@ -60,7 +60,8 @@ class RatesService
       declared_value_cents: @shipment.value_cents,
       origin: @shipment.shipper_address.to_interstellar_shipping_address,
       destination: @shipment.receiver_address.to_interstellar_shipping_address,
-      packages:
+      packages:,
+      pickup_at:
     )
 
     begin
@@ -185,6 +186,12 @@ class RatesService
     @packages ||= @shipment.items.map do |i|
       i.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes)
     end
+  end
+
+  def pickup_at
+    return @shipment.pickup_from unless @shipment.pickup_from.blank?
+
+    DateTime.current.in_time_zone(@shipment.shipper_address.time_zone) + 3.hours
   end
 
   def accessorials
