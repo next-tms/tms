@@ -617,6 +617,9 @@ class Shipment < ApplicationRecord
   def assumed_accessorials
     return @assumed_accessorials if @assumed_accessorials
 
+    @assumed_accessorials = BuildAssumedAccesorialsService.new(shipment: self).call
+=begin
+    # TODO: Remove after Regression Testing
     @assumed_accessorials = []
 
     # Airports
@@ -671,6 +674,7 @@ class Shipment < ApplicationRecord
     end
 
     @assumed_accessorials = @assumed_accessorials.uniq
+=end
   end
 
   def assumed_accessorial_codes

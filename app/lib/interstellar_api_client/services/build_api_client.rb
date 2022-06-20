@@ -22,37 +22,11 @@ module InterstellarApiClient
       end
 
       def self.build_credentials(broker_carrier:)
-        credentials = [
-          Interstellar::Credential.new(
-            type: :api,
-            account: broker_carrier.account,
-            api_key: broker_carrier.carrier.encrypted_api_key,
-            username: broker_carrier.username,
-            password: broker_carrier.password
-          ),
-          Interstellar::Credential.new(
-            type: :selenoid,
-            base_url: URI.parse(ENV.fetch('SELENOID_BASE_URL', nil)),
-            browser: :chrome
-          )
+        [
+          BuildInterstellarCredential.new(type: :api, broker_carrier: broker_carrier).call,
+          BuildInterstellarCredential.new(type: :selenoid).call,
+          BuildInterstellarCredential.new(type: :website, broker_carrier: broker_carrier).call
         ]
-
-        credentials << if broker_carrier.carrier.has_seperate_website_credentials?
-                         Interstellar::Credential.new(
-                           type: :website,
-                           username: broker_carrier.website_username,
-                           password: broker_carrier.website_password
-                         )
-                       else
-                         Interstellar::Credential.new(
-                           type: :website,
-                           account: broker_carrier.account,
-                           username: broker_carrier.username,
-                           password: broker_carrier.password
-                         )
-                       end
-
-        credentials
       end
     end
   end
