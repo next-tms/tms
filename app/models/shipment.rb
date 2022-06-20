@@ -917,10 +917,17 @@ class Shipment < ApplicationRecord
         carrier = tracking_carrier&.as_interstellar_carrier
 
         if carrier && carrier.valid_tracking_number?(tracking_carrier_pro) == false
-          errors.add(:base, "Carrier pro #{tracking_carrier_pro} is invalid for #{tracking_carrier.name}")
+          errors.add(:base, "Carrier #{tracking_carrier.name} pro #{tracking_carrier_pro} is invalid")
         end
       rescue error
       end
+    end
+
+    unless broker_carrier.blank? || tracking_carrier.blank? || tracking_carrier_pro.blank? || tracking_carrier_pro != pro
+      errors.add(
+        :base,
+        "Pro #{pro} cannot be used for both #{broker_carrier.carrier.name} and #{tracking_carrier.name}"
+      )
     end
 
     return if broker_carrier.blank? || pro.blank?
