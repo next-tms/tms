@@ -5,6 +5,26 @@ module Shipment::Interstellarable
 
   included do
     def fetch_carrier_bol
+      InterstellarDocumentService.carrier_bol(shipment: self)
+    end
+
+    def fetch_carrier_pod
+      InterstellarDocumentService.carrier_pod(shipment: self)
+    end
+
+    def fetch_pro
+      InterstellarProService.call(shipment: self)
+    end
+
+    def update_tracking_events
+      UpdateShipmentTrackingEventsService.new(shipment: self).call
+    end
+  end
+
+=begin
+  TODO: Remove after regression testing
+  included do
+    def fetch_carrier_bol
       return nil if pro.blank? || carrier_bol.attached?
 
       interstellar_document_response = InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: pro)
@@ -230,4 +250,5 @@ module Shipment::Interstellarable
       tracking_events
     end
   end
+=end
 end
