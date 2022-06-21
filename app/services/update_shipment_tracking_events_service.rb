@@ -79,9 +79,9 @@ class UpdateShipmentTrackingEventsService
       end
     end
 
-    if changed?
+    if shipment.changed?
       shipment.updated_by = nil # robot
-      save
+      shipment.save
     end
 
     tracking_events
