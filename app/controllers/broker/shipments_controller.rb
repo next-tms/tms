@@ -94,6 +94,9 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.load_id = current_user.broker.last_load_id + 1
 
     if shipment_params[:accessorials_has_been_suggested].blank?
+      @shipment.shipper_address.find_or_build_standardized_address
+      @shipment.receiver_address.find_or_build_standardized_address
+
       @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
       render :new and return if @accessorials_has_been_suggested
     end
