@@ -98,7 +98,6 @@ class Broker::ShipmentsController < Broker::BrokerController
       render :new and return if @accessorials_has_been_suggested
     end
 
-    binding.pry
     if @shipment.save
       if @shipment.quote_only?
         redirect_to quote_broker_shipment_path(@shipment)
