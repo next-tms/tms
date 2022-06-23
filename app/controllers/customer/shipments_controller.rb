@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Customer::ShipmentsController < Customer::CustomerController
+  include SuggestedShipmentAccessorials
+
   before_action :set_shipment_by_load_id, only: %i[book documents edit quote show unbook update]
   before_action :authenticate_user!
 
@@ -66,12 +68,18 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def create
-    @shipment = Shipment.new(shipment_params)
+    @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.created_by = current_user
     @shipment.updated_by = current_user
     @shipment.broker = current_user.broker
     @shipment.broker_customer = current_user.broker_customer
     @shipment.load_id = current_user.broker_customer.broker.last_load_id + 1
+
+    if shipment_params[:accessorials_has_been_suggested].blank?
+      @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
+      render :new and return if @accessorials_has_been_suggested
+    end
+
     if @shipment.save
       redirect_to quote_customer_shipment_path(@shipment) and return if current_user.broker_customer.can_quote?
 
@@ -240,6 +248,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   # Never trust parameters from the scary internet, only allow the white list through.
   def shipment_params
     params.require(:shipment).permit(:id,
+                                     :accessorials_has_been_suggested,
                                      :applied_rate_uid,
                                      :bol_notes,
                                      :bol,

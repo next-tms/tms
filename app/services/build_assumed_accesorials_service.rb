@@ -21,7 +21,7 @@ class BuildAssumedAccesorialsService
     accessorials = []
     [['D', receiver_name], ['P', shipper_name]].each do |prefix, name|
       if name.present? && %w[airport hangar].any? { |word| name.downcase.include?(word) }
-        accesorials << Accessorial.find_by_code(prefix + 'AIR') # Airports
+        accessorials << Accessorial.find_by_code(prefix + 'AIR') # Airports
       end
     end
 

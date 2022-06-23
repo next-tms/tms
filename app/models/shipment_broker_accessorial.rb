@@ -38,6 +38,8 @@ class ShipmentBrokerAccessorial < ApplicationRecord
 
   before_create :calculate_default_charge
 
+  attr_accessor :suggested
+
   private
 
   def calculate_default_charge

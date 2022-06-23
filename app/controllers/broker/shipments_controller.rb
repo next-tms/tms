@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Broker::ShipmentsController < Broker::BrokerController
+  include SuggestedShipmentAccessorials
+
   before_action :set_shipment_by_load_id,
                 only: %i[
                   accounting book book_modal rate_uid documents create_tracking_event destroy edit
@@ -72,6 +74,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.broker_customer = broker_customer
     @shipment.shipper_address = broker_customer&.primary_pickup_address&.dup || Address.new
     @shipment.receiver_address = Address.new
+
   end
 
   def new_quote_only
@@ -83,12 +86,19 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def create
     broker_customer = shipment_params[:broker_customer_id].blank? ? nil : BrokerCustomer.find(shipment_params[:broker_customer_id])
-    @shipment = Shipment.new(shipment_params)
+    @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.created_by = current_user
     @shipment.updated_by = current_user
     @shipment.broker = current_user.broker
     @shipment.broker_customer = broker_customer
     @shipment.load_id = current_user.broker.last_load_id + 1
+
+    if shipment_params[:accessorials_has_been_suggested].blank?
+      @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
+      render :new and return if @accessorials_has_been_suggested
+    end
+
+    binding.pry
     if @shipment.save
       if @shipment.quote_only?
         redirect_to quote_broker_shipment_path(@shipment)
@@ -558,6 +568,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   def shipment_params
     params.require(:shipment).permit(:id,
                                      :accessorial_codes,
+                                     :accessorials_has_been_suggested,
                                      :applied_rate_uid,
                                      :bol_notes,
                                      :bol,
