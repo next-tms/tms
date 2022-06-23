@@ -40,6 +40,10 @@ Rails.application.routes.draw do
 
   get 'gateway/accounts/intuit/authenticate', as: :authenticate_intuit_account, to: 'intuit_accounts#authenticate'
   get 'gateway/accounts/intuit/oauth-callback', as: :oauth_callback_intuit_account, to: 'intuit_accounts#oauth_callback'
+  get 'gateway/accounts/stripe/authenticate', as: :authenticate_stripe_account, to: 'stripe_accounts#authenticate'
+  get 'gateway/accounts/stripe/oauth-callback', as: :oauth_callback_stripe_account, to: 'stripe_accounts#oauth_callback'
+  get 'gateway/accounts/stripe/oauth-refresh', as: :oauth_callback_refresh_stripe_account,
+                                               to: 'stripe_accounts#oauth_callback_refresh'
 
   namespace :broker do
     get 'customers/profitability-report' => 'broker_customers#profitability_report'
@@ -77,6 +81,7 @@ Rails.application.routes.draw do
     get 'rates/:uid/breakdown-modal', as: 'rate_breakdown_modal', to: 'rates#breakdown_modal'
 
     get 'settings/intuit', to: 'intuit_account#show'
+    get 'settings/stripe', to: 'stripe_account#show'
 
     get 'ap/payments/overdue', to: 'payments#overdue'
     get 'ap/payments/paid', to: 'payments#paid'
