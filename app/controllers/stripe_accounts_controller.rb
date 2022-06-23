@@ -13,7 +13,7 @@ class StripeAccountsController < ApplicationController
       refresh_url: oauth_callback_refresh_stripe_account_url_with_host(state: @broker.uuid),
       return_url: oauth_callback_stripe_account_url_with_host(account:, state: @broker.uuid),
       type: 'account_onboarding'
-    )&.url
+    ).url
 
     redirect_to url, allow_other_host: true
   end
