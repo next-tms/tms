@@ -55,6 +55,7 @@ class Broker < ApplicationRecord
   accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
 
   has_one :intuit_account
+  has_one :stripe_account
 
   belongs_to :address
 

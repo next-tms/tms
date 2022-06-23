@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_19_003212) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_21_052950) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -739,6 +739,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_19_003212) do
     t.index ["region_id"], name: "index_standardized_addresses_on_region_id"
   end
 
+  create_table "stripe_accounts", force: :cascade do |t|
+    t.bigint "broker_id", null: false
+    t.string "encrypted_account_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["broker_id"], name: "index_stripe_accounts_on_broker_id"
+  end
+
   create_table "terminals", force: :cascade do |t|
     t.bigint "address_id", null: false
     t.bigint "carrier_id", null: false
@@ -960,6 +968,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_19_003212) do
   add_foreign_key "shipments", "users", column: "updated_by_id"
   add_foreign_key "standardized_addresses", "countries"
   add_foreign_key "standardized_addresses", "regions"
+  add_foreign_key "stripe_accounts", "brokers"
   add_foreign_key "terminals", "addresses"
   add_foreign_key "terminals", "carriers"
   add_foreign_key "tracking_events", "addresses"

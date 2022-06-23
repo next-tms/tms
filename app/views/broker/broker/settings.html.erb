@@ -28,6 +28,16 @@
             <% end %>
           </td>
         </tr>
+        <tr>
+          <td>
+            <%= link_to 'Stripe', broker_settings_stripe_path, target: '_blank' %>
+          </td>
+          <td>
+            <% if current_user.broker.stripe_account&.connected? %>
+              ✓
+            <% end %>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
