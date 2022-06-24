@@ -103,7 +103,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def update
-    @shipment.assign_attributes(shipment_params)
+    @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.updated_by = current_user
 
     unless shipment_params[:applied_rate_uid].blank?

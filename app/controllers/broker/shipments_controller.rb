@@ -117,7 +117,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   def update
     unauthorized and return unless @shipment.accessible_by?(current_user)
 
-    @shipment.assign_attributes(shipment_params)
+    @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.updated_by = current_user
 
     respond_to do |format|
