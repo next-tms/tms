@@ -45,4 +45,59 @@ export default class extends Controller {
             this.regionsTarget.add(option)
         }.bind(this))
     }
+
+    fillCityAndStateByZipCode(event) {
+        event.preventDefault();
+
+        console.log(event.target)
+        let zipCode = event.target.value;
+        let textField = event.target
+        let elementId = textField.id
+        let helpText = textField.parentElement.lastElementChild
+        let countrySelect = document.getElementById(elementId.replace('zip_code', "country_id"))
+        let selectedCountry = countrySelect.options[countrySelect.selectedIndex].innerHTML;
+        const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
+        var duration = 1000;
+
+        let data = { zip_code: zipCode, country: selectedCountry }
+
+
+        if (zipCode == null || zipCode == "") {
+            return
+        }
+
+        clearTimeout(textField._timer);
+        textField._timer = setTimeout(()=>{
+            helpText.innerHTML = "Searching for Location based on ZIP..."
+            fetch('/fetch_details_by_zip_code', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'text/javascript',
+                  'Content-Type': 'application/json',
+                  'X-CSRF-Token': authenticityToken
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(function(data) {
+                setTimeout(()=>{
+                    console.log(data)
+                    if (data.error == null) {
+                        document.getElementById(elementId.replace("zip_code", "city")).value = data.city;
+                        var stateSelect = document.getElementById(elementId.replace("zip_code", "region_id"))
+                        Array.from(stateSelect.options).forEach(function(option) {
+                            if (option.text ===  data.state) {
+                              option.selected = true
+                            }
+                        })
+
+                        helpText.innerHTML = "Location Found, City and State are Filled!"
+                    } else {
+                        helpText.innerHTML = "No Location Found based on ZIP"
+                    }
+                }, duration)
+
+            })
+        }, 500);
+    }
 }
