@@ -92,6 +92,34 @@
             <% end %>
           </ul>
         </td>
+        <td>
+          <h3>Terms</h3>
+          <p>Third Party Freight Charges Billed To:</p>
+          <address>
+            <% if !shipment.broker_carrier.blank? && shipment.broker_carrier.carrier.acts_as_broker? && !shipment.broker_carrier.carrier.broker_billing_address.blank? %>
+              <%= shipment.broker_carrier.carrier.name %>
+              <br>
+              <%= shipment.broker_carrier.carrier.broker_billing_address.pretty('<br>').gsub('Apt', 'Ste').html_safe %>
+            <% else %>
+              <%= shipment.broker.name %>
+              <br>
+              <%= shipment.broker.address.pretty('<br>').gsub('Apt', 'Ste').html_safe %>
+            <% end %>
+          </address>
+          <p>
+            <% unless shipment.broker_carrier.blank? %>
+              <% if !shipment.broker_carrier.account.blank? && !shipment.broker_carrier.carrier.acts_as_broker? %>
+                Account #: <%= shipment.broker_carrier.account %><br>
+              <% end %>
+            <% end %>
+            <% if !shipment.broker_carrier.blank? && !shipment.broker_carrier.carrier.acts_as_broker? %>
+              <% unless shipment.quote_id.blank? %>
+                Quote #: <%= shipment.quote_id %><br>
+              <% end %>
+            <% end %>
+            Terms: Third Party Prepaid
+          </p>
+        </td>
       </tr>
     </tbody>
   </table>
