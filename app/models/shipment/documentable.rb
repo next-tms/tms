@@ -22,6 +22,7 @@ module Shipment::Documentable
     has_one_attached :carrier_bol   # TODO: Rename to carrier_scanned_bol
     has_one_attached :carrier_label # TODO: Rename to carrier_bol
     has_one_attached :carrier_pod
+    has_one_attached :broker_carrier_quote
 
     def broker_bol_valid?
       return false if broker_carrier&.as_interstellar_carrier&.bol_requires_tracking_number? && pro.blank?

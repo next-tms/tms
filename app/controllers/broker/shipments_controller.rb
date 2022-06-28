@@ -563,6 +563,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :bol,
                                      :booked_at,
                                      :broker_carrier_id,
+                                     :broker_carrier_quote,
                                      :broker_customer_id,
                                      :broker_notes,
                                      :canceled_at,
