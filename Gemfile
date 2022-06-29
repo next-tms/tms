@@ -11,6 +11,10 @@ gem 'jbuilder', '~> 2.11'
 gem 'bootsnap', '>= 1.4.2', require: false
 
 group :development, :test do
+  gem 'pry'
+  gem 'rspec-rails', '~> 4.0'
+  gem 'factory_bot_rails'
+  gem 'shoulda-matchers', '4.0.1'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 
