@@ -1597,7 +1597,7 @@ GEM
       roxml (~> 4.2)
     raabro (1.4.0)
     racc (1.6.0)
-    rack (2.2.3.1)
+    rack (2.2.4)
     rack-proxy (0.7.2)
       rack
     rack-test (1.1.0)
@@ -1741,7 +1741,7 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
-    sidekiq-scheduler (4.0.1)
+    sidekiq-scheduler (4.0.2)
       redis (>= 4.2.0)
       rufus-scheduler (~> 3.2)
       sidekiq (>= 4)
@@ -1864,7 +1864,7 @@ DEPENDENCIES
   shakapacker (~> 6.4.1)
   shoulda-matchers (= 4.0.1)
   sidekiq (~> 6.5.1)
-  sidekiq-scheduler (~> 4.0.1)
+  sidekiq-scheduler (~> 4.0.2)
   simple_command
   spacetime!
   spring (~> 4.0.0)
