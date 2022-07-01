@@ -155,7 +155,7 @@ class Address < ApplicationRecord
     )
   end
 
-  def set_standardized_address
+  def find_or_build_standardized_address
     return unless full_address?
 
     key = region.country.format_address(proper(', '))
@@ -163,21 +163,24 @@ class Address < ApplicationRecord
 
     new_standardized_address = StandardizedAddress.where(country: region.country, key:)&.first
 
-    if new_standardized_address.blank?
-      new_standardized_address = StandardizedAddress.new(
-        street:,
-        street2:,
-        city:,
-        region_id:,
-        postal_code: zip_code,
-        country_id:,
-        key:
-      )
-
-      new_standardized_address.save
-    end
+    new_standardized_address ||= StandardizedAddress.new(
+      street:,
+      street2:,
+      city:,
+      region_id:,
+      postal_code: zip_code,
+      country_id:,
+      key:
+    )
 
     self.standardized_address = new_standardized_address
+  end
+
+  def set_standardized_address
+    return unless full_address?
+
+    find_or_build_standardized_address
+    self.standardized_address.save unless self.standardized_address.persisted?
 
     self.street = standardized_address.street || street
     self.street2 = standardized_address.street2 || street2

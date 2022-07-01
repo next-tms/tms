@@ -1,6 +1,11 @@
 <div class="shipment-broker-accessorial-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
   <div class="col-auto">
     <%= f.select :broker_accessorial_id, (@shipment.broker_customer.blank? ? current_user.broker.broker_accessorials.where(broker_customer: nil) : @shipment.broker_customer.eligible_broker_accessorials).collect { |c| [c.name, c.id] }, { label: 'Accessorial', hide_label: true, wrapper: false }, class: 'form-select' %>
+     <% if f.object.suggested %>
+      <small class="ms-1 text-secondary"> Suggested
+        <span class="text-success"><%= icon('solid', 'check', '') %> </span>
+      </small>
+    <% end %>
   </div>
 
   <% if action_name == 'pricing' %>
@@ -13,7 +18,7 @@
     </div>
   <% end %>
 
-  <div class="col-auto">
+  <div class="col-auto <%= 'mb-4' if f.object.suggested %>">
     <%= f.hidden_field :_destroy %>
     <%= link_to icon('solid', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
   </div>

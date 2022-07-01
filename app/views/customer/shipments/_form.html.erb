@@ -1,10 +1,12 @@
 <%= turbo_frame_tag :new_shipment do %>
   <%= bootstrap_form_with(model: [:customer, @shipment], local: true, layout: :horizontal, label_col: 'col-sm-3', control_col: 'col-sm-8', id: 'shipment-form', data: { turbo: false }) do |f| %>
-  
+
+    <%= f.hidden_field :accessorials_has_been_suggested, value: @accessorials_has_been_suggested %>
+
     <div class="row">
       <div class="col-sm-6 col-md-4">
-        <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
-        <%= f.text_field :shipper_name, label: 'Name', autofocus: 'autofocus' %>
+        <p class="col-title"><%= icon 'solid', 'industry', 'Shipper' %></p>
+        <%= f.text_field :shipper_name, label: 'Name', autofocus: @accessorials_has_been_suggested.blank? %>
         <%= f.text_field :pickup_on, label: 'Pickup', data: flatpickr_data %>
         <%= f.text_field :pickup_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
         <%= f.text_field :pickup_hours_end_at, label: '&nbsp;'.html_safe, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
@@ -26,7 +28,7 @@
       </div>
   
       <div class="col-sm-6 col-md-4">
-        <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
+        <p class="col-title"><%= icon 'solid', 'cart-arrow-down', 'Receiver' %></p>
         <%= f.text_field :receiver_name, label: 'Name' %>
         <%= f.text_field :delivery_appointment_on, label: 'Appointment', data: flatpickr_data %>
         <%= f.text_field :delivery_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
@@ -49,7 +51,7 @@
       </div>
   
       <div class="col-sm-6 col-md-4">
-        <p class="col-title"><%= icon 'fas', 'barcode', 'References' %></p>
+        <p class="col-title"><%= icon 'solid', 'barcode', 'References' %></p>
         <%= f.text_field :shipper_reference, label: 'Shipper', autocomplete: 'off' %>
         <%= f.text_field :customer_reference, label: 'PO', autocomplete: 'off' %>
         <%= f.text_field :bol, label: 'BOL', autocomplete: 'off' %>
@@ -76,7 +78,13 @@
   
       <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
     </div>
-  
+
+    <% if @accessorials_has_been_suggested %>
+      <div class="alert alert-info mt-4" role="alert">
+        Some Services has been added. Kindly check before proceeding to create the shipment
+      </div>
+    <% end %>
+
     <p class="col-title mt-4">Freight</p>
     <%= f.check_box :truckload, label: 'Ship as a truckload?', class: 'mb-4' %>
   
@@ -93,7 +101,7 @@
   
       <div data-nested-form-target="target"></div>
   
-      <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+      <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light', autofocus: @accessorials_has_been_suggested.present? %>
     </div>
   
     <p class="col-title mt-4">Special Instructions</p>
