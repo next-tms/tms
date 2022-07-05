@@ -120,6 +120,8 @@
 #   @return [String]
 # @!attribute shipper_unavailable_at
 #   @return [Time]
+# @!attribute status
+#   @return [String]
 # @!attribute total_charges_cents
 #   @return [Integer]
 # @!attribute total_charges_currency
@@ -152,6 +154,8 @@
 #   @return [Integer]
 # @!attribute created_by_id
 #   @return []
+# @!attribute dispatcher_id
+#   @return []
 # @!attribute load_id
 #   @return [Integer]
 # @!attribute quote_id
@@ -172,6 +176,7 @@
 #  index_shipments_on_broker_id_and_load_id  (broker_id,load_id) UNIQUE
 #  index_shipments_on_broker_notes           (broker_notes)
 #  index_shipments_on_created_by_id          (created_by_id)
+#  index_shipments_on_dispatcher_id          (dispatcher_id)
 #  index_shipments_on_receiver_address_id    (receiver_address_id)
 #  index_shipments_on_shipper_address_id     (shipper_address_id)
 #  index_shipments_on_tracking_carrier_id    (tracking_carrier_id)
@@ -182,6 +187,7 @@
 #  fk_rails_...  (applied_rate_id => rates.id)
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
 #  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (dispatcher_id => users.id)
 #  fk_rails_...  (receiver_address_id => addresses.id)
 #  fk_rails_...  (shipper_address_id => addresses.id)
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
@@ -293,6 +299,8 @@ class Shipment < ApplicationRecord
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
 
+  belongs_to :dispatcher, class_name: 'User', required: false
+
   has_many :commissions, dependent: :destroy
 
   has_many :tracking_events, dependent: :destroy
@@ -375,6 +383,9 @@ class Shipment < ApplicationRecord
   before_save :build_commissions, if: lambda {
     broker_carrier_id_changed? || broker_customer_id_changed? || total_charges_cents_changed? || total_cost_cents_changed?
   }
+
+  # Dispatcher
+  before_save :assign_dispatcher
 
   monetize :carrier_charge_cents, allow_nil: true
   monetize :carrier_cost_cents, allow_nil: true
@@ -1117,6 +1128,13 @@ class Shipment < ApplicationRecord
   # Notifications
   def notify_of_new_shipment
     UserMailer.new_shipment(self).deliver_now
+  end
+
+  # Dispatcher
+  def assign_dispatcher
+    return if dispatcher.present?
+
+    self.dispatcher = broker.users.dispatchers.order(Arel.sql('RANDOM()')).take
   end
 
   def send_notification

@@ -12,7 +12,7 @@
   <% end %>
 <% end %>
 
-<% if current_user.has_role?('accounts_payable') || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) %>
+<% if current_user.has_role?('accounts_payable') || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) || current_user == @shipment.dispatcher %>
   <p class="col-title">Receivables</p>
   <% unless @shipment.receivables.blank? %>
     <%= render 'broker/receivables/show_many', receivables: @shipment.receivables, q: @q %>
