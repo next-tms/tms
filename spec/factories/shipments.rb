@@ -77,7 +77,7 @@ FactoryBot.define do
     broker_dispatch_sheet_shipment_fingerprint { "MyString" }
     public_notes { "MyText" }
     created_by_id { }
-    status { "MyString" }
+    dispatcher { }
 
     before :build do |shipment|
       Shipment.skip_callback(:create, :after, :notify_of_new_shipment)

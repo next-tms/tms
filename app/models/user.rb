@@ -100,7 +100,7 @@ class User < ApplicationRecord
   scope :active, -> { where.not(deactivated: true) }
   scope :customers, -> { where.not(broker_customer: nil) }
   scope :brokers, -> { where.not(id: customers) }
-  scope :dispatchers, -> { where(id: Role.find_by(name: 'dispatch').users.collect(&:id)) }
+  scope :dispatchers, -> { where(id: Role.find_by(name: 'dispatch')&.users&.collect(&:id)) }
 
   devise :database_authenticatable, :invitable, :pwned_password, :recoverable, :rememberable, :timeoutable, :trackable,
          :validatable
@@ -167,7 +167,7 @@ class User < ApplicationRecord
 
     return true if shipment.dispatcher == self
 
-    has_role?('dispatcher')
+    has_role?('dispatch')
     # shipments_as_dispatcher.include?(shipment)
   end
 

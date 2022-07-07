@@ -21,6 +21,7 @@ RSpec.describe Shipment, type: :model do
     it { is_expected.to belong_to(:receiver_address) }
     it { is_expected.to belong_to(:shipper_address) }
     it { is_expected.to belong_to(:applied_rate).required(false) }
+    it { is_expected.to belong_to(:dispatcher).required(false) }
   end
 
   describe 'audits' do
@@ -45,6 +46,46 @@ RSpec.describe Shipment, type: :model do
         expected_audit_change = { 'receiver_name' => ['MyString', 'Test'] }
         expect(audit.action).to eq('update')
         expect(audit.audited_changes).to eq(expected_audit_change)
+      end
+    end
+  end
+
+  describe '#assign_dispatcher' do
+    let(:broker) { create(:broker) }
+    let(:user) { create(:user, broker: broker) }
+    let(:shipment) { build(:shipment, broker: broker) }
+    let(:role) { create(:role, name: 'dispatch') }
+
+    before { user.user_roles.create(role: role) }
+
+    it 'assigns a dispatcher' do
+      expect { shipment.save }.to change(shipment, :dispatcher).from(nil).to(user)
+    end
+
+    context 'when there is another dispatcher but from another broker' do
+      let(:other_broker) { create(:broker) }
+      let(:other_user) { create(:user, broker: other_broker) }
+
+      before { other_user.user_roles.create(role: role) }
+
+      it 'assigns a dispatcher only base from its broker' do
+        shipment.save
+
+        expect(shipment.dispatcher).not_to be_nil
+        expect(shipment.dispatcher).not_to eq(other_user)
+      end
+    end
+
+    context 'when broker has multiple dispatchers' do
+      let(:other_user) { create(:user, broker: broker) }
+
+      before { other_user.user_roles.create(role: role) }
+
+      it 'assigns a dispatcher randomly' do
+        shipment.save
+        users = [user, other_user]
+
+        expect(users.include?(shipment.reload.dispatcher)).to be_truthy
       end
     end
   end
