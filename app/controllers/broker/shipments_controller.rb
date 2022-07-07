@@ -71,11 +71,20 @@ class Broker::ShipmentsController < Broker::BrokerController
     broker_customer = nil
     broker_customer = BrokerCustomer.find_by_id(params[:broker_customer_id]) unless params[:broker_customer_id].blank?
 
+    # Only root can change the dispatcher on the form, so skip this unless current_user.has_role?('root')
+    if current_user.has_role?('root')
+      @shipment.broker = current_user.broker
+      @shipment.dispatcher = if current_user.has_role?('dispatch')
+                               current_user
+                             else
+                               @shipment.assign_dispatcher
+                             end
+    end
+
     @shipment.shipper_name = broker_customer&.customer&.name
     @shipment.broker_customer = broker_customer
     @shipment.shipper_address = broker_customer&.primary_pickup_address&.dup || Address.new
     @shipment.receiver_address = Address.new
-
   end
 
   def new_quote_only
@@ -88,11 +97,13 @@ class Broker::ShipmentsController < Broker::BrokerController
   def create
     broker_customer = shipment_params[:broker_customer_id].blank? ? nil : BrokerCustomer.find(shipment_params[:broker_customer_id])
     @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
-    @shipment.created_by = current_user
-    @shipment.updated_by = current_user
+
     @shipment.broker = current_user.broker
     @shipment.broker_customer = broker_customer
+    @shipment.created_by = current_user
+    @shipment.dispatcher = current_user if @shipment.dispatcher.blank? && current_user.dispatcher_for?(@shipment)
     @shipment.load_id = current_user.broker.last_load_id + 1
+    @shipment.updated_by = current_user
 
     if shipment_params[:accessorials_has_been_suggested].blank?
       @shipment.shipper_address.find_or_build_standardized_address
@@ -186,11 +197,11 @@ class Broker::ShipmentsController < Broker::BrokerController
     unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
       unauthorized
     end
-    if current_user.broker != @shipment.broker
-      flash[:danger] = '403 Unauthorized'
-    else
+    if current_user.broker == @shipment.broker
       @shipment.destroy
       flash[:notice] = 'Shipment deleted'
+    else
+      flash[:danger] = '403 Unauthorized'
     end
 
     redirect_to shipments_path
@@ -602,6 +613,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :dispatch_pickup,
                                      :dispatched_at,
                                      :dispatched,
+                                     :dispatcher_id,
                                      :lift_gate,
                                      :lost_on,
                                      :out_for_delivery_at,

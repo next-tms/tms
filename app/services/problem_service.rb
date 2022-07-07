@@ -46,7 +46,11 @@ class ProblemService
           next
         end
 
-        assigned_to = assign(resolvable.broker, problem_type)
+        assigned_to = if resolvable.is_a?(Shipment) && resolvable.dispatcher.present?
+                        shipment.dispatcher
+                      else
+                        assign(resolvable.broker, problem_type)
+                      end
 
         Problem.create(assigned_to:, problem_type:, resolvable:, title: problem_type.name.titleize)
       end

@@ -14,6 +14,11 @@
       <thead>
         <tr>
           <th>Customer</th>
+
+          <% unless @shipment.dispatcher.blank? %>
+            <th>Dispatcher</th>
+          <% end %>
+
           <th>Status</th>
 
           <% unless @shipment.broker_carrier.blank? %>
@@ -48,6 +53,10 @@
               <%= link_to @shipment.broker_customer.customer.name, broker_broker_customer_path(@shipment.broker_customer), target: '_blank' %>
             <% end %>
           </td>
+
+          <% unless @shipment.dispatcher.blank? %>
+            <td class="lead"><%= @shipment.dispatcher.full_name %></td>
+          <% end %>
 
           <td class="lead">
             <%= @shipment.status %>
