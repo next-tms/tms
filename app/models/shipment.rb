@@ -120,6 +120,8 @@
 #   @return [String]
 # @!attribute shipper_unavailable_at
 #   @return [Time]
+# @!attribute status
+#   @return [String]
 # @!attribute total_charges_cents
 #   @return [Integer]
 # @!attribute total_charges_currency
@@ -152,6 +154,8 @@
 #   @return [Integer]
 # @!attribute created_by_id
 #   @return []
+# @!attribute dispatcher_id
+#   @return []
 # @!attribute load_id
 #   @return [Integer]
 # @!attribute quote_id
@@ -172,6 +176,7 @@
 #  index_shipments_on_broker_id_and_load_id  (broker_id,load_id) UNIQUE
 #  index_shipments_on_broker_notes           (broker_notes)
 #  index_shipments_on_created_by_id          (created_by_id)
+#  index_shipments_on_dispatcher_id          (dispatcher_id)
 #  index_shipments_on_receiver_address_id    (receiver_address_id)
 #  index_shipments_on_shipper_address_id     (shipper_address_id)
 #  index_shipments_on_tracking_carrier_id    (tracking_carrier_id)
@@ -182,6 +187,7 @@
 #  fk_rails_...  (applied_rate_id => rates.id)
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
 #  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (dispatcher_id => users.id)
 #  fk_rails_...  (receiver_address_id => addresses.id)
 #  fk_rails_...  (shipper_address_id => addresses.id)
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
@@ -293,6 +299,8 @@ class Shipment < ApplicationRecord
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, required: false
 
+  belongs_to :dispatcher, class_name: 'User', required: false
+
   has_many :commissions, dependent: :destroy
 
   has_many :tracking_events, dependent: :destroy
@@ -375,6 +383,9 @@ class Shipment < ApplicationRecord
   before_save :build_commissions, if: lambda {
     broker_carrier_id_changed? || broker_customer_id_changed? || total_charges_cents_changed? || total_cost_cents_changed?
   }
+
+  # Dispatcher
+  before_save :assign_dispatcher
 
   monetize :carrier_charge_cents, allow_nil: true
   monetize :carrier_cost_cents, allow_nil: true
@@ -618,63 +629,61 @@ class Shipment < ApplicationRecord
     return @assumed_accessorials if @assumed_accessorials
 
     @assumed_accessorials = BuildAssumedAccesorialsService.new(shipment: self).call
-=begin
-    # TODO: Remove after Regression Testing
-    @assumed_accessorials = []
-
-    # Airports
-    if !receiver_name.blank? && %w[airport hangar].any? do |word|
-         receiver_name.downcase.include?(word)
-       end
-      @assumed_accessorials << Accessorial.find_by_code('DAIR')
-    end
-    if !shipper_name.blank? && %w[airport hangar].any? do |word|
-         shipper_name.downcase.include?(word)
-       end
-      @assumed_accessorials << Accessorial.find_by_code('PAIR')
-    end
-    if !receiver_address.types.blank? && (receiver_address.types.include? 'airport')
-      @assumed_accessorials << Accessorial.find_by_code('DAIR')
-    end
-    if !shipper_address.types.blank? && (shipper_address.types.include? 'airport')
-      @assumed_accessorials << Accessorial.find_by_code('PAIR')
-    end
-
-    # Military bases
-    if !receiver_address.types.blank? && (receiver_address.types.include? 'military')
-      @assumed_accessorials << Accessorial.find_by_code('DMIL')
-    end
-    if !shipper_address.types.blank? && (shipper_address.types.include? 'military')
-      @assumed_accessorials << Accessorial.find_by_code('PMIL')
-    end
-
-    # Residential
-    if receiver_address.residential? || accessorial_codes.include?('DRES')
-      @assumed_accessorials << Accessorial.find_by_code('DRES')
-      @assumed_accessorials << Accessorial.find_by_code('DAPP')
-      if items.order(Arel.sql('items.weight / items.quantity DESC')).limit(1).first.weight >= 200
-        @assumed_accessorials << Accessorial.find_by_code('DLIF')
-      end
-    end
-    if shipper_address.residential? || accessorial_codes.include?('PRES')
-      @assumed_accessorials << Accessorial.find_by_code('PRES')
-      @assumed_accessorials << Accessorial.find_by_code('PAPP')
-      if items.order(Arel.sql('items.weight / items.quantity DESC')).limit(1).first.weight >= 200
-        @assumed_accessorials << Accessorial.find_by_code('PLIF')
-      end
-    end
-
-    # Restaurant
-    @assumed_accessorials << Accessorial.find_by_code('PRST') if shipper_address.restaurant?
-    @assumed_accessorials << Accessorial.find_by_code('DRST') if receiver_address.restaurant?
-
-    # Appointment delivery
-    if !bol_notes.blank? && (bol_notes.downcase.include? 'must contact')
-      @assumed_accessorials << Accessorial.find_by_code('DAPP')
-    end
-
-    @assumed_accessorials = @assumed_accessorials.uniq
-=end
+    # # TODO: Remove after Regression Testing
+    # @assumed_accessorials = []
+    #
+    # # Airports
+    # if !receiver_name.blank? && %w[airport hangar].any? do |word|
+    #      receiver_name.downcase.include?(word)
+    #    end
+    #   @assumed_accessorials << Accessorial.find_by_code('DAIR')
+    # end
+    # if !shipper_name.blank? && %w[airport hangar].any? do |word|
+    #      shipper_name.downcase.include?(word)
+    #    end
+    #   @assumed_accessorials << Accessorial.find_by_code('PAIR')
+    # end
+    # if !receiver_address.types.blank? && (receiver_address.types.include? 'airport')
+    #   @assumed_accessorials << Accessorial.find_by_code('DAIR')
+    # end
+    # if !shipper_address.types.blank? && (shipper_address.types.include? 'airport')
+    #   @assumed_accessorials << Accessorial.find_by_code('PAIR')
+    # end
+    #
+    # # Military bases
+    # if !receiver_address.types.blank? && (receiver_address.types.include? 'military')
+    #   @assumed_accessorials << Accessorial.find_by_code('DMIL')
+    # end
+    # if !shipper_address.types.blank? && (shipper_address.types.include? 'military')
+    #   @assumed_accessorials << Accessorial.find_by_code('PMIL')
+    # end
+    #
+    # # Residential
+    # if receiver_address.residential? || accessorial_codes.include?('DRES')
+    #   @assumed_accessorials << Accessorial.find_by_code('DRES')
+    #   @assumed_accessorials << Accessorial.find_by_code('DAPP')
+    #   if items.order(Arel.sql('items.weight / items.quantity DESC')).limit(1).first.weight >= 200
+    #     @assumed_accessorials << Accessorial.find_by_code('DLIF')
+    #   end
+    # end
+    # if shipper_address.residential? || accessorial_codes.include?('PRES')
+    #   @assumed_accessorials << Accessorial.find_by_code('PRES')
+    #   @assumed_accessorials << Accessorial.find_by_code('PAPP')
+    #   if items.order(Arel.sql('items.weight / items.quantity DESC')).limit(1).first.weight >= 200
+    #     @assumed_accessorials << Accessorial.find_by_code('PLIF')
+    #   end
+    # end
+    #
+    # # Restaurant
+    # @assumed_accessorials << Accessorial.find_by_code('PRST') if shipper_address.restaurant?
+    # @assumed_accessorials << Accessorial.find_by_code('DRST') if receiver_address.restaurant?
+    #
+    # # Appointment delivery
+    # if !bol_notes.blank? && (bol_notes.downcase.include? 'must contact')
+    #   @assumed_accessorials << Accessorial.find_by_code('DAPP')
+    # end
+    #
+    # @assumed_accessorials = @assumed_accessorials.uniq
   end
 
   def assumed_accessorial_codes
@@ -874,6 +883,14 @@ class Shipment < ApplicationRecord
     end
 
     false
+  end
+
+  # Dispatcher
+  # @note Public method because `Broker::ShipmentsController#new` calls it
+  def assign_dispatcher
+    return if broker.blank? || dispatcher.present?
+
+    self.dispatcher = broker.users.dispatchers.order(Arel.sql('RANDOM()')).take
   end
 
   def to_param
