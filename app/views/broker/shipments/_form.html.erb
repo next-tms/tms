@@ -5,6 +5,10 @@
     <%= f.select :broker_customer_id, current_user.broker_customers.includes(:customer).order('customers.name').collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@shipment.broker_customer ? @shipment.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, data: { action: 'autofill-shipper#handle', 'autofill-shipper-target': 'brokerCustomer' }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
   <% end %>
 
+  <% if current_user.has_role?('root') %>
+    <%= f.select :dispatcher_id, current_user.broker.users.dispatchers.order(:first_name).collect { |user| [ user.full_name, user.id ] }, { label: 'Dispatcher', selected: @shipment.dispatcher_id }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
+  <% end %>
+
   <%= f.hidden_field :accessorials_has_been_suggested, value: @accessorials_has_been_suggested %>
 
   <div class="row">
