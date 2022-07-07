@@ -47,7 +47,7 @@ class ProblemService
         end
 
         assigned_to = if resolvable.is_a?(Shipment) && resolvable.dispatcher.present?
-                        shipment.dispatcher
+                        resolvable.dispatcher
                       else
                         assign(resolvable.broker, problem_type)
                       end
