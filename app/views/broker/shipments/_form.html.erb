@@ -6,7 +6,7 @@
   <% end %>
 
   <% if current_user.has_role?('root') %>
-    <%= f.select :dispatcher_id, current_user.broker.users.dispatchers.order(:first_name).collect { |user| [ user.full_name, user.id ] }, { label: 'Dispatcher', selected: @shipment.dispatcher_id }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
+    <%= f.select :dispatcher_id, current_user.broker.users.active.dispatchers.order(:first_name).collect { |user| [ user.full_name, user.id ] }, { label: 'Dispatcher', selected: @shipment.dispatcher_id }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
   <% end %>
 
   <%= f.hidden_field :accessorials_has_been_suggested, value: @accessorials_has_been_suggested %>
