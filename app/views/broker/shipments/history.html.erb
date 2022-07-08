@@ -1,0 +1,45 @@
+<% provide :title, "History — Load #{@shipment.load_id}" %>
+
+<%= render 'member_header' %>
+<h2>History</h2>
+
+<div class="table-responsive">
+  <table class="table table-borderless table-striped">
+    <thead>
+      <tr>
+        <th>When</th>
+        <th>Updated By</th>
+        <th>Changes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @audits.order(created_at: :desc).each_with_index do |audit, index| %>
+        <tr>
+          <td>
+            <span>
+              <%= long_date audit.created_at, current_user.time_zone %>
+            </span>
+          </td>
+          <td>
+           <%= audit.user&.full_name || 'Robot' %>
+          </td>
+          <td>
+            <% if audit.action == 'create' %>
+              Initial Version
+            <% else %>
+              <ul class="list-unstyled">
+                <% audit.audited_changes.each do |change| %>
+                  <% field, changes = change %>
+                  <li><%= field.split('_').map(&:capitalize).join(' ') %> changed from
+                    <strong>"<%= changes.first %>"</strong> to
+                    <strong>"<%= changes.last %>"</strong>
+                  </li>
+                <% end %>
+              </ul>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

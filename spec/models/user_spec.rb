@@ -21,4 +21,25 @@ RSpec.describe User, type: :model do
 
     it { expect(subject.full_name).to eq('John Doe') }
   end
+
+  describe '#dispatcher_for?' do
+    let(:user) { create(:user) }
+    let(:shipment) { create(:shipment) }
+
+    context 'when shipment argument is nil' do
+      it { expect(user.dispatcher_for?(nil)).to be_falsey }
+    end
+
+    context 'when user is the shipments dispatcher' do
+      before { shipment.update(dispatcher: user) }
+
+      it { expect(user.dispatcher_for?(shipment)).to be_truthy }
+    end
+
+    context 'when user is not shipments dispatcher but has a dispatch role' do
+      before { user.user_roles.create(role: create(:role, name: 'dispatch')) }
+
+      it { expect(user.dispatcher_for?(shipment)).to be_truthy }
+    end
+  end
 end

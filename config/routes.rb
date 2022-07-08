@@ -149,6 +149,7 @@ Rails.application.routes.draw do
       end
       member { get 'accounting', as: :accounting }
       member { get 'notes', as: :notes }
+      member { get 'history', as: :history }
       member { get 'pickup-modal', as: :pickup_modal }
       member { get 'pricing', as: :pricing }
       member { get 'quote', as: :quote }

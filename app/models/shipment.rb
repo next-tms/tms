@@ -203,6 +203,8 @@ class Shipment < ApplicationRecord
 
   include Resolvable
 
+  audited
+
   attr_accessor :dispatch_pickup
 
   ransacker :load_id do
@@ -1133,6 +1135,8 @@ class Shipment < ApplicationRecord
 
   # Notifications
   def notify_of_new_shipment
+    return if Rails.env.test?
+
     UserMailer.new_shipment(self).deliver_now
   end
 
