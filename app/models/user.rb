@@ -106,6 +106,7 @@ class User < ApplicationRecord
          :validatable
 
   after_save :reassign_problems
+  after_save :reassign_shipments
 
   before_validation :set_contact
   before_validation :set_time_zone_name
@@ -269,6 +270,16 @@ class User < ApplicationRecord
     return unless saved_change_to_deactivated && deactivated?
 
     problems.unresolved.find_each { |p| p.update(assigned_to: ProblemService.assign(broker, p.problem_type)) }
+  end
+
+  def reassign_shipments
+    return unless saved_change_to_deactivated && deactivated?
+
+    Shipment.active.where(delivered_at: [nil, ''], dispatcher: self).find_each do |shipment|
+      shipment.dispatcher = nil
+      shipment.assign_dispatcher
+      shipment.save
+    end
   end
 
   def set_contact
