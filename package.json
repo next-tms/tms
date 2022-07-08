@@ -53,6 +53,6 @@
     "not IE 11"
   ],
   "devDependencies": {
-    "webpack-dev-server": "^4.9.2"
+    "webpack-dev-server": "^4.9.3"
   }
 }
