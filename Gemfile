@@ -47,7 +47,7 @@ gem 'responders'
 source 'https://rails-assets.org' do
   gem 'rails-assets-tether', '>= 1.3.3'
 end
-gem 'bootstrap_form', '~> 5.0.0'
+gem 'bootstrap_form', '~> 5.1.0'
 
 gem 'aws-sdk', '~> 3.1.0', group: :production
 gem 'image_processing', '~> 1.12.2'
