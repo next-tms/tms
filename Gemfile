@@ -106,5 +106,5 @@ gem 'rqrcode'
 gem 'rss_creator'
 
 # Use Redis for Action Cable
-gem 'redis', '~> 4.6'
+gem 'redis', '~> 4.7'
 gem 'audited'
