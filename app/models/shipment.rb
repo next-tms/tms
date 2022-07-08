@@ -892,7 +892,7 @@ class Shipment < ApplicationRecord
   def assign_dispatcher
     return if broker.blank? || dispatcher.present?
 
-    self.dispatcher = broker.users.dispatchers.order(Arel.sql('RANDOM()')).take
+    self.dispatcher = broker.users.active.dispatchers.order(Arel.sql('RANDOM()')).take
   end
 
   def to_param
