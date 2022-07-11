@@ -1,9 +1,66 @@
 <%= turbo_frame_tag :shipments do %>
-  <%= render 'broker/shipments/search_form', q: q %>
-  
-  <% if defined?(table) && !table.blank? %>
-    <%= table %>
-    <%= render 'layouts/pagy', pagy: @pagy %>
+
+  <% unless defined?(hide_search_form) %>
+    <%= render 'broker/shipments/search_form', q: q %>
+  <% end %>
+
+  <% if defined?(td_names) && td_names.present? %>
+    <div class="table-responsive">
+      <table class="table table-condensed table-borderless table-striped table-hover">
+        <thead>
+          <tr>
+            <% td_names.each do |td_name| %>
+              <% table_data = ShipmentsHelper::TABLE_DATA[td_name.to_sym] %>
+
+              <% next if td_name == controller.controller_name.singularize %>
+
+              <% if @q.present? %>
+                <th class="text-nowrap"> <%= sort_link @q, table_data[:column_name], table_data[:display_name] %></th>
+              <% else %>
+                <th> <%= table_data[:display_name] %> </th>
+              <% end %>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% shipments.each do |shipment| %>
+            <tr class="<%= shipment_table_row_class(shipment) %>">
+              <% td_names.each do |td_name| %>
+                <% table_data = ShipmentsHelper::TABLE_DATA[td_name.to_sym] %>
+
+                <% next if td_name == controller.controller_name.singularize %>
+
+                <% if table_data[:partial] %>
+                  <%= render table_data[:partial], shipment: shipment %>
+                <% elsif table_data[:date_format] %>
+                  <%= render 'show_many_td_date', shipment: shipment, table_data: table_data %>
+                <% elsif table_data[:address] %>
+                  <%= render 'show_many_td_address', shipment: shipment, table_data: table_data %>
+                <% elsif table_data[:money] %>
+                  <td>
+                    <%= humanized_money_with_symbol shipment.send(table_data[:column_name]), no_cents_if_whole: false %>
+                  </td>
+                <% elsif table_data[:link] %>
+                  <td>
+                    <%= link_to shipment.send(table_data[:column_name]),
+                                send(table_data[:path], shipment) %>
+                  </td>
+                <% else %>
+                  <td class="text-nowrap">
+                    <%= shipment.send(table_data[:column_name]) %>
+                  </td>
+                <% end %>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% unless defined?(hide_pagy) %>
+      <%= render 'layouts/pagy', pagy: @pagy %>
+    <% end %>
+
   <% else %>
     <%= render 'layouts/no_content' %>
   <% end %>

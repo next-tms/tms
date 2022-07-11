@@ -1,1 +1,7 @@
-<%= render 'show_many', table: shipment_show_many_table(shipments: shipments, td_names: ['id', 'broker_customer', 'shipper', 'receiver', 'promised_delivery_by', 'size']), q: @q %>
+<%= render 'show_many',
+           shipments: shipments,
+           td_names: %w[
+             id broker_customer shipper receiver promised_delivery_by size
+           ],
+           q: @q %>
+

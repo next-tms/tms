@@ -1,0 +1,8 @@
+<td class="text-nowrap">
+  <% if shipment.send(table_data[:column_name]) || table_data[:fallback_column] %>
+    <% date_format = method(table_data[:date_format]) %>
+
+    <%= date_format.call shipment.send(table_data[:column_name]) || shipment.send(table_data[:fallback_column]),
+                        shipment.send(table_data[:timezone_column]).time_zone %>
+  <% end %>
+</td>

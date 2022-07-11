@@ -1,0 +1,10 @@
+<td>
+  <% address = shipment.send(table_data[:association_name]) %>
+  <% unless address.full_address? %>
+    <%= address.zip_code %>
+  <% else %>
+    <%= shipment.send(table_data[:column_name]) %>
+    <br>
+    <span class="text-nowrap"><%= address.city %>, <%= address.region.abbreviation %><span>
+  <% end %>
+</td>
