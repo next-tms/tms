@@ -1,9 +1,0 @@
-<td>
-  <% unless shipment.shipper_address.full_address? %>
-    <%= shipment.shipper_address.zip_code %>
-  <% else %>
-    <%= shipment.shipper_name %>
-    <br>
-    <span class="text-nowrap"><%= shipment.shipper_address.city %>, <%= shipment.shipper_address.region.abbreviation %><?span>
-  <% end %>
-</td>
