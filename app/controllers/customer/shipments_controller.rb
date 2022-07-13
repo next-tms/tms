@@ -37,7 +37,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def index
-    @pagy, @shipments = pagy(current_user.broker_customer.shipments.active.order(created_at: :desc))
+    @pagy, @shipments = pagy(current_user.broker_customer.shipments.active.includes(default_includes).order(created_at: :desc))
   end
 
   def new
@@ -93,7 +93,9 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def delivered
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.delivered.order(delivered_at: :desc))
+    @pagy, @shipments = pagy(
+      Shipment.where(broker_customer: current_user.broker_customer).active.delivered.includes(default_includes).order(delivered_at: :desc)
+    )
   end
 
   def edit; end
@@ -131,7 +133,9 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def pending_dispatch
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.pending_dispatch.order(:created_at))
+    @pagy, @shipments = pagy(
+      Shipment.where(broker_customer: current_user.broker_customer).active.pending_dispatch.includes(default_includes).order(:created_at)
+    )
   end
 
   def pending_pickup
@@ -213,6 +217,15 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   private
+
+  def default_includes
+    [
+      { shipper_address: :region },
+      { receiver_address: :region },
+      :shipment_items,
+      :items
+    ]
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_shipment

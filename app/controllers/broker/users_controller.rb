@@ -53,6 +53,6 @@ class Broker::UsersController < Broker::BrokerController
 
   # Query helpers
   def required_includes
-    %i[contact]
+    %i[user_roles roles broker_customer]
   end
 end
