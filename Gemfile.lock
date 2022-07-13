@@ -41,8 +41,8 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: ee5a645385f281886849c60660d25eac51ba8aaf
-  ref: ee5a645385f281886849c60660d25eac51ba8aaf
+  revision: 4cc2ef6da281b22f981d35e4639f72e89bdf1443
+  ref: 4cc2ef6da281b22f981d35e4639f72e89bdf1443
   specs:
     interstellar-next (0.1.pre24)
       interstellar (= 0.1.pre25)
@@ -1434,8 +1434,8 @@ GEM
     factory_bot_rails (6.2.0)
       factory_bot (~> 6.2.0)
       railties (>= 5.0.0)
-    faker (2.19.0)
-      i18n (>= 1.6, < 2)
+    faker (2.21.0)
+      i18n (>= 1.8.11, < 2)
     faraday (1.10.0)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
@@ -1688,10 +1688,10 @@ GEM
     rspec-mocks (3.11.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
-    rspec-rails (4.1.2)
-      actionpack (>= 4.2)
-      activesupport (>= 4.2)
-      railties (>= 4.2)
+    rspec-rails (5.1.2)
+      actionpack (>= 5.2)
+      activesupport (>= 5.2)
+      railties (>= 5.2)
       rspec-core (~> 3.10)
       rspec-expectations (~> 3.10)
       rspec-mocks (~> 3.10)
@@ -1809,7 +1809,7 @@ GEM
     wkhtmltopdf-binary-edge (0.12.6.0)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.5.4)
+    zeitwerk (2.6.0)
 
 PLATFORMS
   arm64-darwin-21
@@ -1834,7 +1834,7 @@ DEPENDENCIES
   devise-pwned_password (~> 0.1.9)
   devise_invitable (~> 2.0.5)
   factory_bot_rails
-  faker (~> 2.19.0)
+  faker (~> 2.21.0)
   geocoder (~> 1.8.0)
   google_places (~> 2.0.0)
   honeybadger (~> 4.12)
@@ -1864,7 +1864,7 @@ DEPENDENCIES
   redis (~> 4.7)
   responders
   rqrcode
-  rspec-rails (~> 4.0)
+  rspec-rails (~> 5.1)
   rss_creator
   selenium-webdriver
   shakapacker (~> 6.5.0)
