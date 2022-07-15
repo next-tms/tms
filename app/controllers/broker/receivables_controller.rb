@@ -29,7 +29,9 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def paid
-    @q = current_user.broker.receivables.paid.includes(required_includes).ransack(params[:q])
+    @q = current_user.broker.receivables.paid.includes(
+      [:shipment, { broker_customer: :customer }, :authorized_by]
+    ).ransack(params[:q])
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
@@ -98,6 +100,6 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def required_includes
-    [:shipment, { broker_customer: :customer }]
+    [{ shipment: { carrier_pod_attachment: :blob }}, { broker_customer: :customer }, :authorized_by]
   end
 end
