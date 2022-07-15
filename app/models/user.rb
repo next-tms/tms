@@ -125,7 +125,7 @@ class User < ApplicationRecord
   has_many :broker_customers, through: :broker_customer_sales_reps
 
   has_many :commissions
-  # has_many :shipments_as_dispatcher, class_name: 'Shipment', foreign_key: :dispatcher_id
+  has_many :shipments_as_dispatcher, class_name: 'Shipment', foreign_key: :dispatcher_id
 
   has_many :problems, foreign_key: 'assigned_to_id'
 
@@ -213,6 +213,10 @@ class User < ApplicationRecord
 
   def broker?
     @broker ||= !customer?
+  end
+
+  def dispatcher?
+    roles.where(name: 'dispatch').exists?
   end
 
   def coworkers

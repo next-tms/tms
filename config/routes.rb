@@ -134,6 +134,7 @@ Rails.application.routes.draw do
     get 'shipments/pending-pickup/today', to: 'shipments#pending_pickup_today'
     get 'shipments/pending-pickup/future', to: 'shipments#pending_pickup_future'
     get 'shipments/pending-quotation', to: 'shipments#pending_quotation'
+    get 'shipments/as_dispatcher', to: 'shipments#as_dispatcher'
 
     get 'shipments/quote-only' => 'shipments#new_quote_only', as: :quote_only
     resources :shipments, path: 'shipments', as: :shipments, param: :load_id do
