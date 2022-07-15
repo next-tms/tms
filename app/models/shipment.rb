@@ -431,6 +431,10 @@ class Shipment < ApplicationRecord
     end
   end
 
+  def dispatcher_full_name
+    dispatcher&.full_name
+  end
+
   def dispatch_incomplete?
     true_pickup_confirmation = tracking_carrier.blank? ? pickup_confirmation : tracking_carrier_pickup_confirmation
     if !broker_carrier.blank? && !dispatched_at.blank? && true_pickup_confirmation.blank? && (dispatched_at < DateTime.current - 15.minutes)

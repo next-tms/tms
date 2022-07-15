@@ -9,8 +9,10 @@
 
   <ul class="list-unstyled mt-4">
     <% if (%w[accounts_receivable dispatch root sales_rep] & current_user.roles.pluck(:name)).any? %>
+
+      <% path = current_user.dispatcher? ? broker_shipments_as_dispatcher_path : broker_shipments_path %>
       <li class="mb-2 p-2">
-        <%= link_to icon('solid', 'pallet', 'Shipments'), broker_shipments_path, class: 'shipments' %>
+        <%= link_to icon('solid', 'pallet', 'Shipments'), path, class: 'shipments' %>
       </li>
     <% end %>
 

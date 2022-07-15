@@ -6,4 +6,8 @@
   <%= link_to 'Missing Appointment', broker_shipments_missing_delivery_appointment_path, class: 'nav-link shipments-missing-delivery-appointment' %>
   <%= link_to 'Missing Pro', broker_shipments_missing_pro_path, class: 'nav-link shipments-missing-pro' %>
   <%= link_to 'Missing Pricing', broker_shipments_missing_pricing_path, class: 'nav-link shipments-missing-pricing' %>
+
+  <% if current_user.dispatcher? %>
+   <%= link_to 'Yours', broker_shipments_as_dispatcher_path, class: 'nav-link shipments-as-dispatcher' %>
+  <% end %>
 </nav>
