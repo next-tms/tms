@@ -7,7 +7,7 @@
   <%= link_to 'Missing Pro', broker_shipments_missing_pro_path, class: 'nav-link shipments-missing-pro' %>
   <%= link_to 'Missing Pricing', broker_shipments_missing_pricing_path, class: 'nav-link shipments-missing-pricing' %>
 
-  <% if current_user.dispatcher? %>
+  <% if current_user.dispatcher? || current_user.has_role?('root') %>
    <%= link_to 'Yours', broker_shipments_as_dispatcher_path, class: 'nav-link shipments-as-dispatcher' %>
   <% end %>
 </nav>
