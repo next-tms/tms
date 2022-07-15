@@ -25,9 +25,9 @@
                 <% if table_data[:partial] %>
                   <%= render table_data[:partial], shipment: shipment %>
                 <% elsif table_data[:date_format] %>
-                  <%= render 'show_many_td_date', shipment: shipment, table_data: table_data %>
+                  <%= render 'broker/shipments/show_many_td_date', shipment: shipment, table_data: table_data %>
                 <% elsif table_data[:address] %>
-                  <%= render 'show_many_td_address', shipment: shipment, table_data: table_data %>
+                  <%= render 'broker/shipments/show_many_td_address', shipment: shipment, table_data: table_data %>
                 <% elsif table_data[:money] %>
                   <td>
                     <%= humanized_money_with_symbol shipment.send(table_data[:column_name]), no_cents_if_whole: false %>
