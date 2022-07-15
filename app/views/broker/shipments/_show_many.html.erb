@@ -35,7 +35,8 @@
                 <% elsif table_data[:link] %>
                   <td>
                     <%= link_to shipment.send(table_data[:column_name]),
-                                send(table_data[:path], shipment) %>
+                                send(table_data[:path], shipment),
+                                target: '_top' %>
                   </td>
                 <% else %>
                   <td class="<%= table_data[:wrap] ? '' : 'text-nowrap' %>">
