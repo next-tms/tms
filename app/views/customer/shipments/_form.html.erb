@@ -1,8 +1,5 @@
 <%= turbo_frame_tag :new_shipment do %>
   <%= bootstrap_form_with(model: [:customer, @shipment], local: true, layout: :horizontal, label_col: 'col-sm-3', control_col: 'col-sm-8', id: 'shipment-form', data: { turbo: false }) do |f| %>
-
-    <%= f.hidden_field :accessorials_has_been_suggested, value: @accessorials_has_been_suggested %>
-
     <div class="row">
       <div class="col-sm-6 col-md-4">
         <p class="col-title"><%= icon 'solid', 'industry', 'Shipper' %></p>
@@ -15,18 +12,10 @@
         <%= f.email_field :shipper_contact_email, label: 'Email' %>
 
         <div data-controller="address">
-          <%= f.fields_for :shipper_address do |shipper_address_form| %>
-            <%= shipper_address_form.text_field :ref %>
-            <%= shipper_address_form.text_field :street %>
-            <%= shipper_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
-            <%= shipper_address_form.text_field :city %>
-            <%= shipper_address_form.select :region_id, (shipper_address_form.object.region_id.blank? ? [[current_user.broker_customer.primary_pickup_address.region.name, current_user.broker_customer.primary_pickup_address.region.id]] : [[shipper_address_form.object.region.name, shipper_address_form.object.region_id]]), { label: 'State' }, data: { 'address-target': 'regions' }, class: 'form-select' %>
-            <%= shipper_address_form.text_field :zip_code, label: 'ZIP', data: { action: "keyup->address#fillCityAndStateByZipCode" }, help: "City and State will be filled based from ZIP" %>
-            <%= shipper_address_form.select :country_id, Country.order(:name).collect { |c| [c.name, c.id] }, { selected: (shipper_address_form.object.country_id.blank? ? current_user.broker_customer.primary_pickup_address.country_id : shipper_address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
-          <% end %>
+          <%= render 'shipments/address_form', form: f, address_object: :shipper_address, fallback_address: current_user.broker_customer.primary_pickup_address %>
         </div>
       </div>
-  
+
       <div class="col-sm-6 col-md-4">
         <p class="col-title"><%= icon 'solid', 'cart-arrow-down', 'Receiver' %></p>
         <%= f.text_field :receiver_name, label: 'Name' %>
@@ -38,75 +27,36 @@
         <%= f.email_field :receiver_contact_email, label: 'Email' %>
 
         <div data-controller="address">
-          <%= f.fields_for :receiver_address do |receiver_address_form| %>
-            <%= receiver_address_form.text_field :ref %>
-            <%= receiver_address_form.text_field :street %>
-            <%= receiver_address_form.text_field :street2, label: '&nbsp;'.html_safe %>
-            <%= receiver_address_form.text_field :city %>
-            <%= receiver_address_form.select :region_id, (receiver_address_form.object.region_id.blank? ? [[current_user.broker_customer.primary_pickup_address.region.name, current_user.broker_customer.primary_pickup_address.region.id]] : [[receiver_address_form.object.region.name, receiver_address_form.object.region_id]]), { label: 'State' }, data: { 'address-target': 'regions' }, class: 'form-select' %>
-            <%= receiver_address_form.text_field :zip_code, label: 'ZIP', data: { action: "keyup->address#fillCityAndStateByZipCode" }, help: "City and State will be filled based from ZIP" %>
-            <%= receiver_address_form.select :country_id, Country.order(:name).collect { |c| [c.name, c.id] }, { selected: (receiver_address_form.object.country_id.blank? ? current_user.broker_customer.primary_pickup_address.country_id : receiver_address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
-          <% end %>
+          <%= render 'shipments/address_form', form: f, address_object: :receiver_address, fallback_address: current_user.broker_customer.primary_pickup_address %>
         </div>
       </div>
-  
+
       <div class="col-sm-6 col-md-4">
         <p class="col-title"><%= icon 'solid', 'barcode', 'References' %></p>
         <%= f.text_field :shipper_reference, label: 'Shipper', autocomplete: 'off' %>
         <%= f.text_field :customer_reference, label: 'PO', autocomplete: 'off' %>
         <%= f.text_field :bol, label: 'BOL', autocomplete: 'off' %>
         <%= f.text_field :pro, label: 'Pro', autocomplete: 'off' %>
-  
+
         <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Value' %></p>
         <%= f.text_field :value, label: 'Total', prepend: '$', data: money_controller_data, autocomplete: 'off' %>
       </div>
     </div>
-  
-    <p class="col-title mt-4">Services</p>
-    <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".shipment-broker-accessorial-form-wrapper">
-      <template data-nested-form-target="template">
-        <%= f.fields_for :shipment_broker_accessorials, ShipmentBrokerAccessorial.new, child_index: 'NEW_RECORD' do |shipment_broker_accessorial_form| %>
-          <%= render 'shipment_broker_accessorial_form', f: shipment_broker_accessorial_form %>
-        <% end %>
-      </template>
-  
-      <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorial_form| %>
-        <%= render 'shipment_broker_accessorial_form', f: shipment_broker_accessorial_form %>
-      <% end %>
-  
-      <div data-nested-form-target="target"></div>
-  
-      <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
-    </div>
 
-    <% if @accessorials_has_been_suggested %>
-      <div class="alert alert-info mt-4" role="alert">
-        Some Services has been added. Kindly check before proceeding to create the shipment
-      </div>
-    <% end %>
+    <p class="col-title mt-4">Services</p>
+
+    <%= render 'shipments/nested_broker_accessorials_form',
+               f: f,
+               accessorials_has_been_suggested: @accessorials_has_been_suggested %>
 
     <p class="col-title mt-4">Freight</p>
     <%= f.check_box :truckload, label: 'Ship as a truckload?', class: 'mb-4' %>
-  
-    <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".item-form-wrapper">
-      <template data-nested-form-target="template">
-        <%= f.fields_for :items, Item.new, child_index: 'NEW_RECORD' do |item_form| %>
-          <%= render 'item_form', f: item_form %>
-        <% end %>
-      </template>
-  
-      <%= f.fields_for :items do |item_form| %>
-        <%= render 'item_form', f: item_form %>
-      <% end %>
-  
-      <div data-nested-form-target="target"></div>
-  
-      <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light', autofocus: @accessorials_has_been_suggested.present? %>
-    </div>
-  
+
+    <%= render 'shipments/nested_items_form', f: f %>
+
     <p class="col-title mt-4">Special Instructions</p>
-    <%= f.text_area :bol_notes, hide_label: true, rows: 5 %>
-  
+    <%= f.text_area :bol_notes, hide_label: true, rows: 5, autofocus: @accessorials_has_been_suggested.present? %>
+
     <div class="form-group">
       <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
     </div>

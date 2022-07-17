@@ -1,8 +1,14 @@
-<div class="item-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-controller="dimensions" data-new-record="<%= f.object.new_record? %>">
+<div class="item-form-wrapper row gy-2 gx-3 align-items-center mb-4"
+     data-controller="dimensions"
+     data-new-record="<%= f.object.new_record? %>">
+
   <div class="col-sm-2">
     <div class="input-group">
       <%= f.number_field :quantity, hide_label: true, placeholder: '#', wrapper: true, min: 1, wrapper: false %>
-      <%= f.select :packaging_id, Packaging.order(:name).all.collect {|c| [ c.name, c.id ] }, { label: 'Packaging', hide_label: true, selected: ( f.object.packaging_id ? f.object.packaging_id : default_packaging_id ), wrapper: false }, class: 'form-select' %>
+      <%= f.select :packaging_id,
+                   Packaging.order(:name).all.collect {|c| [ c.name, c.id ] },
+                   { label: 'Packaging', hide_label: true, selected: ( f.object.packaging_id ? f.object.packaging_id : default_packaging_id ), wrapper: false },
+                   class: 'form-select' %>
     </div>
   </div>
 
@@ -21,7 +27,12 @@
 
   <div class="col-sm-2">
     <div class="input-group">
-      <%= f.select :forced_class, [['Auto', nil]] + valid_classes.collect { |c| [c, c] }, { label: 'Class', hide_label: true, selected: ( f.object.forced_freight_class ? f.object.forced_freight_class : f.object.calculated_freight_class ), wrapper: false }, data: { 'dimensions-target': 'forcedClass' }, class: 'form-select' %>
+      <%= f.select :forced_class,
+                   [['Auto', nil]] + valid_classes.collect { |c| [c, c] },
+                   { label: 'Class', hide_label: true, selected: ( f.object.forced_freight_class ? f.object.forced_freight_class : f.object.calculated_freight_class ), wrapper: false },
+                   data: { 'dimensions-target': 'forcedClass' },
+                   class: 'form-select' %>
+
       <%= f.text_field :nmfc, hide_label: true, placeholder: 'NMFC', data: { 'dimensions-target': 'nmfc' }, wrapper: false %>
     </div>
   </div>
