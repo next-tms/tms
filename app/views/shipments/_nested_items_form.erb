@@ -1,12 +1,12 @@
 <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".item-form-wrapper">
   <template data-nested-form-target="template">
     <%= f.fields_for :items, Item.new, child_index: 'NEW_RECORD' do |item_form| %>
-      <%= render 'shared/shipment/item_form', f: item_form %>
+      <%= render 'shipments/item_form', f: item_form %>
     <% end %>
   </template>
 
   <%= f.fields_for :items do |item_form| %>
-    <%= render 'shared/shipment/item_form', f: item_form %>
+    <%= render 'shipments/item_form', f: item_form %>
   <% end %>
 
   <div data-nested-form-target="target"></div>

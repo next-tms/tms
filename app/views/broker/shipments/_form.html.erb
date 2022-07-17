@@ -21,7 +21,7 @@
       <%= f.email_field :shipper_contact_email, label: 'Email' %>
 
       <div data-autofill-shipper-target="shipperAddress" data-controller="address">
-        <%= render 'shared/shipment/address_form', form: f, address_object: :shipper_address, fallback_address: current_user.broker.address %>
+        <%= render 'shipments/address_form', form: f, address_object: :shipper_address, fallback_address: current_user.broker.address %>
       </div>
     </div>
 
@@ -36,7 +36,7 @@
       <%= f.email_field :receiver_contact_email, label: 'Email' %>
 
       <div data-controller="address">
-        <%= render 'shared/shipment/address_form', form: f, address_object: :receiver_address, fallback_address: current_user.broker.address %>
+        <%= render 'shipments/address_form', form: f, address_object: :receiver_address, fallback_address: current_user.broker.address %>
       </div>
     </div>
 
@@ -54,14 +54,14 @@
 
   <p class="col-title mt-4">Services</p>
 
-  <%= render 'shared/shipment/nested_broker_accessorials_form',
+  <%= render 'shipments/nested_broker_accessorials_form',
              f: f,
              accessorials_has_been_suggested: @accessorials_has_been_suggested %>
 
   <p class="col-title mt-4">Freight</p>
   <%= f.check_box :truckload, label: 'Ship as a truckload?', class: 'mb-4' %>
 
-  <%= render 'shared/shipment/nested_items_form', f: f %>
+  <%= render 'shipments/nested_items_form', f: f %>
 
   <p class="col-title mt-4">Special Instructions</p>
   <%= f.text_area :bol_notes, hide_label: true, rows: 5, autofocus: @accessorials_has_been_suggested.present?  %>
