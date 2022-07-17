@@ -24,13 +24,13 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/interstellar
-  revision: 3a03ab27499d7d41444de669d23d39eb41a5cfa1
-  ref: 3a03ab27499d7d41444de669d23d39eb41a5cfa1
+  revision: ead8256c9ca0b47edf9cd9467b1fdca5e4f79161
+  ref: ead8256c9ca0b47edf9cd9467b1fdca5e4f79161
   specs:
     interstellar (0.1.pre25)
       active_utils (~> 3.3.1)
-      activemodel (>= 4.2, < 7.0.3)
-      activesupport (>= 4.2, < 7.0.3)
+      activemodel (>= 4.2, < 7.0.4)
+      activesupport (>= 4.2, < 7.0.4)
       httparty (~> 0.10)
       measured (>= 2.0, < 2.8.3)
       mimemagic (~> 0.4.3)
