@@ -214,8 +214,8 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              { broker_carrier: :carrier },
-             { shipper_address: [:region, :standardized_address] },
-             { receiver_address: [:region, :standardized_address] },
+             { shipper_address: %i[region standardized_address] },
+             { receiver_address: %i[region standardized_address] },
              :tracking_carrier,
              { broker_customer: :customer }
            ]
@@ -275,7 +275,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              { receiver_address: [:region] },
-             { shipper_address: [:region, :standardized_address] },
+             { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
              { broker_carrier: :carrier,
                broker_customer: :customer }
@@ -296,7 +296,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              { receiver_address: [:region] },
-             { shipper_address: [:region, :standardized_address] },
+             { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
              { broker_carrier: :carrier,
                broker_customer: :customer }
@@ -316,8 +316,8 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              { broker_carrier: :carrier },
-             { receiver_address: [:region, :standardized_address] },
-             { shipper_address: [:region, :standardized_address] },
+             { receiver_address: %i[region standardized_address] },
+             { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
              { broker_customer: :customer }
            ]
@@ -337,7 +337,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              { receiver_address: [:region] },
-             { shipper_address: [:region, :standardized_address] },
+             { shipper_address: %i[region standardized_address] },
              { broker_carrier: :carrier,
                broker_customer: :customer }
            ]
@@ -376,7 +376,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              { receiver_address: [:region] },
-             { shipper_address: [:region, :standardized_address] },
+             { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
              { broker_carrier: :carrier,
                broker_customer: :customer }
@@ -402,7 +402,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              { receiver_address: [:region] },
-             { shipper_address: [:region, :standardized_address] },
+             { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
              { broker_carrier: :carrier,
                broker_customer: :customer }
@@ -423,7 +423,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              { shipper_address: [:region] },
-             { receiver_address: [:region, :standardized_address] },
+             { receiver_address: %i[region standardized_address] },
              :tracking_carrier,
              { broker_carrier: :carrier,
                broker_customer: :customer }

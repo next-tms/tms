@@ -1,6 +1,6 @@
-require_relative "boot"
+require_relative 'boot'
 
-require "rails/all"
+require 'rails/all'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -15,9 +15,9 @@ module Liftoff
 
     # Postmark
     config.action_mailer.delivery_method = :postmark
-    
+
     config.action_mailer.postmark_settings = {
-      api_token: ENV['POSTMARK_API_TOKEN']
+      api_token: ENV.fetch('POSTMARK_API_TOKEN', nil)
     }
 
     # Sidekiq
@@ -34,5 +34,23 @@ module Liftoff
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.active_record.yaml_column_permitted_classes = [
+      ActiveSupport::TimeWithZone,
+      Array,
+      GooglePlaces::Spot,
+      Hash,
+      Interstellar::DocumentNotFoundError,
+      Interstellar::ExpiredCredentialsError,
+      Interstellar::HTTPError,
+      Interstellar::InvalidCredentialsError,
+      Interstellar::ResponseError,
+      Interstellar::ShipmentNotFoundError,
+      Interstellar::UnserviceableAccessorialsError,
+      Interstellar::UnserviceableError,
+      JSON::ParserError,
+      StandardError,
+      Timezone::Zone
+    ]
   end
 end
