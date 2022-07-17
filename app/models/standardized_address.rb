@@ -34,8 +34,6 @@
 #   @return [String]
 # @!attribute street2
 #   @return [String]
-# @!attribute time_zone
-#   @return [String]
 # @!attribute created_at
 #   @return [Time]
 # @!attribute updated_at
@@ -70,7 +68,6 @@ class StandardizedAddress < ApplicationRecord
   serialize :open_street_map_result_cached
   serialize :original_attributes
   serialize :smarty_streets_result_cached
-  serialize :time_zone # TODO: Remove column
 
   validate :region_matches_country
 
