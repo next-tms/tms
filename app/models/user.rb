@@ -131,9 +131,6 @@ class User < ApplicationRecord
 
   phony_normalize :phone, default_country_code: 'US'
 
-  # TODO: Remove
-  serialize :legacy_time_zone
-
   validates :time_zone_name, presence: true
 
   scope :broker, -> { where(broker_customer: nil) }

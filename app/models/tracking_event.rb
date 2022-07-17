@@ -77,9 +77,6 @@ class TrackingEvent < ApplicationRecord
   belongs_to :terminal, optional: true
   belongs_to :user, optional: true
 
-  # TODO: Remove
-  serialize :legacy_time_zone
-
   validates :time_zone_name, presence: true
 
   def pretty_location
