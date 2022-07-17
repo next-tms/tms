@@ -150,6 +150,8 @@
 #   @return [Integer]
 # @!attribute created_by_id
 #   @return []
+# @!attribute dispatcher_id
+#   @return []
 # @!attribute load_id
 #   @return [Integer]
 # @!attribute quote_id
@@ -170,6 +172,7 @@
 #  index_shipments_on_broker_id_and_load_id  (broker_id,load_id) UNIQUE
 #  index_shipments_on_broker_notes           (broker_notes)
 #  index_shipments_on_created_by_id          (created_by_id)
+#  index_shipments_on_dispatcher_id          (dispatcher_id)
 #  index_shipments_on_receiver_address_id    (receiver_address_id)
 #  index_shipments_on_shipper_address_id     (shipper_address_id)
 #  index_shipments_on_tracking_carrier_id    (tracking_carrier_id)
@@ -180,6 +183,7 @@
 #  fk_rails_...  (applied_rate_id => rates.id)
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
 #  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (dispatcher_id => users.id)
 #  fk_rails_...  (receiver_address_id => addresses.id)
 #  fk_rails_...  (shipper_address_id => addresses.id)
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
