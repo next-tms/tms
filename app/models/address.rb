@@ -72,9 +72,6 @@ class Address < ApplicationRecord
   belongs_to :region
   belongs_to :standardized_address, counter_cache: true, optional: true
 
-  # TODO: Remove
-  serialize :legacy_time_zone
-
   serialize :types
 
   validate :region_matches_country
@@ -131,7 +128,7 @@ class Address < ApplicationRecord
     @names ||= (
       Shipment.where(shipper_address: self).pluck(:shipper_name) +
       Shipment.where(receiver_address: self).pluck(:receiver_name)
-    ).uniq.reject { |name| name.blank? }
+    ).uniq.reject(&:blank?)
   end
 
   def time_zone
@@ -180,7 +177,7 @@ class Address < ApplicationRecord
     return unless full_address?
 
     find_or_build_standardized_address
-    self.standardized_address.save unless self.standardized_address.persisted?
+    standardized_address.save unless standardized_address.persisted?
 
     self.street = standardized_address.street || street
     self.street2 = standardized_address.street2 || street2
