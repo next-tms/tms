@@ -34,12 +34,12 @@
   <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".shipment-broker-accessorial-form-wrapper">
     <template data-nested-form-target="template">
       <%= f.fields_for :shipment_broker_accessorials, ShipmentBrokerAccessorial.new, child_index: 'NEW_RECORD' do |shipment_broker_accessorial_form| %>
-        <%= render 'shipment_broker_accessorial_form', f: shipment_broker_accessorial_form %>
+        <%= render 'shipments/broker_accessorial_form', f: shipment_broker_accessorial_form %>
       <% end %>
     </template>
 
     <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorial_form| %>
-      <%= render 'shipment_broker_accessorial_form', f: shipment_broker_accessorial_form %>
+      <%= render 'shipments/broker_accessorial_form', f: shipment_broker_accessorial_form %>
     <% end %>
 
     <div data-nested-form-target="target"></div>
@@ -52,12 +52,12 @@
   <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".item-form-wrapper">
     <template data-nested-form-target="template">
       <%= f.fields_for :items, Item.new, child_index: 'NEW_RECORD' do |item_form| %>
-        <%= render 'item_form', f: item_form %>
+        <%= render 'shipments/item_form', f: item_form %>
       <% end %>
     </template>
 
     <%= f.fields_for :items do |item_form| %>
-      <%= render 'item_form', f: item_form %>
+      <%= render 'shipments/item_form', f: item_form %>
     <% end %>
 
     <div data-nested-form-target="target"></div>
