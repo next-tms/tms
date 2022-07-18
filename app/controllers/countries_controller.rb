@@ -5,10 +5,10 @@ class CountriesController < ApplicationController
 
   def show
     regions = @country.regions.order(:abbreviation).map { |r| { id: r.id, abbreviation: r.abbreviation, name: r.name } }
-    country = { id: @country.id, alpha2_code: @country.alpha2_code, name: @country.name, regions: regions }
+    country = { id: @country.id, alpha2_code: @country.alpha2_code, name: @country.name, regions: }
 
     respond_to do |format|
-      format.json { render json: { country: country }.to_json }
+      format.json { render json: { country: }.to_json }
     end
   end
 

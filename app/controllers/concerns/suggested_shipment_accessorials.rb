@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SuggestedShipmentAccessorials
   extend ActiveSupport::Concern
 
@@ -14,7 +16,7 @@ module SuggestedShipmentAccessorials
     broker_accessorials.each do |broker_accessorial|
       next if existing_broker_accessorial_ids.include?(broker_accessorial.id)
 
-      shipment.shipment_broker_accessorials.new(broker_accessorial: broker_accessorial, suggested: true)
+      shipment.shipment_broker_accessorials.new(broker_accessorial:, suggested: true)
       suggested += 1
     end
 
