@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module QuickbooksOauth
   extend ActiveSupport::Concern
 
@@ -24,7 +26,7 @@ module QuickbooksOauth
     t = oauth_access_token
     refreshed = t.refresh!
 
-    oauth2_refresh_token_expires_at = if refreshed.params['x_refresh_token_expires_in'].to_i > 0
+    oauth2_refresh_token_expires_at = if refreshed.params['x_refresh_token_expires_in'].to_i.positive?
                                         Time.now + refreshed.params['x_refresh_token_expires_in'].to_i.seconds
                                       else
                                         100.days.from_now
@@ -57,7 +59,12 @@ module QuickbooksOauth
         authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
         token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
       }
-      OAuth2::Client.new(ENV['INTUIT_CLIENT_ID'], ENV['INTUIT_CLIENT_SECRET'], options)
+
+      OAuth2::Client.new(
+        Rails.application.credentials.intuit.client_id,
+        Rails.application.credentials.intuit.client_secret,
+        options
+      )
     end
   end
 end
