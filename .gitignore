@@ -38,5 +38,4 @@ config/initializers/01_development_env.rb
 
 *.dump
 
-/config/master.key
-/config/credentials/production.key
+/config/credentials/*.key
