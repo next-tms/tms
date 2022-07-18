@@ -38,6 +38,7 @@ module Liftoff
     config.active_record.yaml_column_permitted_classes = [
       ActiveSupport::TimeWithZone,
       Array,
+      GooglePlaces::Photo,
       GooglePlaces::Spot,
       Hash,
       Interstellar::DocumentNotFoundError,
