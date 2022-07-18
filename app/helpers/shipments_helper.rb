@@ -144,7 +144,7 @@ module ShipmentsHelper
       next if td_name == controller.controller_name.singularize
 
       ShipmentsHelper::TABLE_DATA[td_name.to_sym]
-    end
+    end.compact
 
     PREPENDED_TABLE_DATA + table_data + APPENDED_TABLE_DATA
   end
