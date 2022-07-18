@@ -14,8 +14,11 @@ module Api
       render json: {  error: 'Unauthorized' }, status: :unauthorized unless @current_user
     end
 
+    # rubocop:disable Naming/MemoizedInstanceVariableName
+    # TODO: Rename method name and memoized variable to current_website
     def set_website
       @website ||= Website.find_by_domain(request.host) || nil
     end
+    # rubocop:enable Naming/MemoizedInstanceVariableName
   end
 end
