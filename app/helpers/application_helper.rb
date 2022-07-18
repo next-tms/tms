@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ApplicationHelper
   include Pagy::Frontend
 
@@ -69,7 +71,7 @@ module ApplicationHelper
   end
 
   def maybe_badge(n, type: '')
-    "<span class=\"badge #{type}\">#{n}</span>".html_safe if n > 0
+    "<span class=\"badge #{type}\">#{n}</span>".html_safe if n.positive?
   end
 
   def pretty_date(date, time_zone)
@@ -149,7 +151,7 @@ module ApplicationHelper
         accessorial_names = Accessorial
                             .where(interstellar_code: error.accessorials)
                             .pluck(:name)
-                            .map { |accessorial_name| accessorial_name.downcase }
+                            .map(&:downcase)
 
         "Unable to service #{accessorial_names.join(', ')}"
       when 'UnserviceableError'
@@ -164,14 +166,14 @@ module ApplicationHelper
 
   def clean_sentence(str)
     str = str.split(':').last
-    str = str.split(' ').map do |word|
+    str = str.split.map do |word|
       word.upcase == word ? word.titleize : word.downcase
     end
     str = str.join(' ')
     str = str.squish
     str = str.strip
     str = str[0].upcase + str[1..]
-    str = str[0..-1] if str.last == '.'
+    str = str[0..] if str.last == '.'
     str = str.gsub('Delivery', 'delivery')
     str.gsub('zip code', 'ZIP code')
   end
@@ -252,18 +254,6 @@ module ApplicationHelper
     when 'TOQL'
       # No way to send tracking number along with GET
       'https://trax.tql.com/#/shipmenttracking'
-    end
-  end
-
-  def pod_uri(shipment)
-    return nil if shipment.broker_carrier.blank?
-    return nil if shipment.broker_carrier.carrier.scac.blank?
-
-    case shipment.broker_carrier.carrier.scac.upcase
-    when 'CNWY'
-      "https://ltl.xpo.com/webapp/imaging_app/imageretrieverequest.do?dest=fastdocview&PRO1=#{shipment.pro}&DocType1=DR"
-    when 'RDFS'
-      "https://tools.rrts.com/LTLTrack/Home/ShowImage?proNumber=#{shipment.pro}&imageType=POD"
     end
   end
 
@@ -363,18 +353,6 @@ module ApplicationHelper
       "https://ltl.xpo.com/webapp/imaging_app/imageretrieverequest.do?dest=fastdocview&PRO1=#{shipment.pro}&DocType1=DR"
     when 'RDFS'
       "https://tools.rrts.com/LTLTrack/Home/ShowImage?proNumber=#{shipment.pro}&imageType=POD"
-    end
-  end
-
-  def quote_uri(shipment)
-    return nil if shipment.broker_carrier.blank?
-    return nil if shipment.broker_carrier.carrier.scac.blank?
-
-    case shipment.broker_carrier.carrier.scac.upcase
-    when 'RDFS'
-      "https://freight.rrts.com/Tools/LTL-RateQuote/Pages/RateQuoteResult.aspx?QuoteNumber=#{shipment.quote_id}"
-    when 'CNWY'
-      "https://ltl.xpo.com/webapp/rating_app/RatingRS.jsp?custCode=#{shipment.broker_carrier.account}&quoteKey=#{shipment.quote_id}"
     end
   end
 end
