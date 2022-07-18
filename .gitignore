@@ -34,3 +34,6 @@ config/initializers/01_development_env.rb
 /storage
 
 *.dump
+
+/config/master.key
+/config/credentials/production.key
