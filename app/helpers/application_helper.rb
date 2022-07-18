@@ -295,7 +295,7 @@ module ApplicationHelper
     when 'CLNI'
       "https://ssworldtrak.com/WebtrakWTNew/ShipInquiry/ShipInfo.aspx?OrderNo=51868&Back=QuickTrack&TrackType=HousebillNo&TrackNo=#{real_pro(shipment)}"
     when 'CNWY'
-      "https://app.ltl.xpo.com/appjs/tracking/details/#{real_pro(shipment)}"
+      "https://ext-web.ltl-xpo.com/public-app/shipments?referenceNumber=#{real_pro(shipment)}"
     when 'CTBV'
       "https://www.customco.com/scripts/cgiip.exe/boldetail.htm?wbtn=PRO&wpro1=#{real_pro(shipment)}"
     when 'CTII'
