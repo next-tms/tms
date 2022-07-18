@@ -8,11 +8,11 @@ local:
 
 amazon:
   service: S3
-  access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
-  bucket: <%= ENV['AWS_BUCKET'] %>
-  endpoint: <%= ENV['AWS_ENDPOINT'] %>
+  access_key_id: <%= Rails.application.credentials.aws.access_key_id %>
+  bucket: <%= Rails.application.credentials.aws.bucket %>
+  endpoint: <%= Rails.application.credentials.aws.endpoint %>
   public: true
-  region: <%= ENV['AWS_REGION'] %>
-  secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  region: <%= Rails.application.credentials.aws.region %>
+  secret_access_key: <%= Rails.application.credentials.aws.secret_access_key %>
   upload:
     acl: public-read
