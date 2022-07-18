@@ -21,3 +21,6 @@ Style/Documentation:
 
 Style/ModuleFunction:
   EnforcedStyle: extend_self
+
+Style/ClassAndModuleChildren:
+  Enabled: false

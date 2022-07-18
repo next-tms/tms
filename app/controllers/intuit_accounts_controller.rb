@@ -18,8 +18,9 @@ class IntuitAccountsController < ApplicationController
     if params[:state].present?
       broker = Broker.find_by_uuid(params[:state])
       redirect_uri = oauth_callback_intuit_account_url_with_host
+      response = intuit_oauth2_client.auth_code.get_token(params[:code], redirect_uri:)
 
-      if response = intuit_oauth2_client.auth_code.get_token(params[:code], redirect_uri:)
+      if response
         intuit_account = broker.intuit_account || broker.build_intuit_account
 
         intuit_account.assign_attributes(
@@ -51,7 +52,7 @@ class IntuitAccountsController < ApplicationController
       token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
     }
 
-    intuit_oauth2_client = OAuth2::Client.new(
+    OAuth2::Client.new(
       Rails.application.credentials.intuit.client_id,
       Rails.application.credentials.intuit.client_secret,
       intuit_oauth_params
