@@ -33,7 +33,7 @@ module Shipment::HasReceivables
     }
 
     def self.receivable
-      broker_customer_ids = BrokerCustomer.where.not(receivables_schedule: :never)
+      broker_customer_ids = BrokerCustomer.where.not(receivables_schedule: :never).ids
       only_after = Date.parse('2021-12-01').to_date.in_time_zone('America/Los_Angeles').beginning_of_day
 
       shipment_ids = active.where(broker_customer_id: broker_customer_ids).where('picked_up_at > ?', only_after).ids
