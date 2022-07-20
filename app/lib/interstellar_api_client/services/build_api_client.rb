@@ -16,9 +16,16 @@ module InterstellarApiClient
 
         customer_location = broker_carrier.broker.as_interstellar_location
         credentials = build_credentials(broker_carrier:)
+
         tariff = broker_carrier.to_interstellar_tariff
 
-        carrier.new(credentials, customer_location:, tariff:)
+        begin
+          carrier.new(credentials, customer_location:, tariff:)
+        rescue ArgumentError => e
+          raise e unless e.message.include?("`Credential` of type(s) missing:")
+
+          # Return nil if no api or website credentials found
+        end
       end
 
       def self.build_credentials(broker_carrier:)
@@ -26,7 +33,7 @@ module InterstellarApiClient
           BuildInterstellarCredential.new(type: :api, broker_carrier: broker_carrier).call,
           BuildInterstellarCredential.new(type: :selenoid).call,
           BuildInterstellarCredential.new(type: :website, broker_carrier: broker_carrier).call
-        ]
+        ].compact
       end
     end
   end
