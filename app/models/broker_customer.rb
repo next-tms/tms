@@ -82,6 +82,8 @@ class BrokerCustomer < ApplicationRecord
   belongs_to :receivables_contact, class_name: 'Contact'
   accepts_nested_attributes_for :receivables_contact, allow_destroy: false
 
+  enum preferred_broker_carriers_kind: { blacklist: 'blacklist', whitelist: 'whitelist' }
+
   has_many :contacts
 
   has_many :broker_customer_sales_reps, dependent: :destroy
@@ -96,6 +98,9 @@ class BrokerCustomer < ApplicationRecord
 
   has_many :document_preferences
   accepts_nested_attributes_for :document_preferences, allow_destroy: true, reject_if: :all_blank
+
+  has_many :preferred_broker_carriers, class_name: 'PreferredBrokerCarrier', foreign_key: :broker_customer_id
+  accepts_nested_attributes_for :preferred_broker_carriers, allow_destroy: true, reject_if: :all_blank
 
   has_many :receivables
   has_many :shipments
@@ -129,13 +134,19 @@ class BrokerCustomer < ApplicationRecord
     @eligible_broker_accessorials = broker_customer_accessorials.or(broker_accessorials).order(:name)
   end
 
+  # @return [BrokerCarrier::ActiveRecord_Relation]
   def eligible_broker_carriers
     return @eligible_broker_carriers if @eligible_broker_carriers
 
-    broker_customer_carriers = broker_carriers
-    broker_carriers = broker.broker_carriers.where(broker_customer: nil).where.not(carrier_id: broker_customer_carriers.pluck(:carrier_id))
+    broker_carriers = case preferred_broker_carriers_kind
+                      when nil then broker.broker_carriers
+                      when 'whitelist'
+                        BrokerCarrier.where(id: preferred_broker_carriers.pluck(:broker_carrier_id))
+                      when 'blacklist'
+                        broker.broker_carriers.where.not(id: preferred_broker_carriers.pluck(:broker_carrier_id))
+                      end
 
-    @eligible_broker_carriers = broker_customer_carriers.or(broker_carriers)
+    @eligible_broker_carriers = broker_carriers.where(broker_customer: [nil, self])
   end
 
   def carrier_charge_calculator(carrier_cost:, shipment:)

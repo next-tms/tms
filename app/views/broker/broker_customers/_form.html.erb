@@ -90,6 +90,42 @@
   <%= f.text_area :internal_notes, label: 'Customer guide', help: 'Show internally on each shipment', rows: 7 %>
   <%= f.text_area :default_bol_notes, label: 'Default instructions on BOL', rows: 7 %>
 
+  <div class="form-group row">
+    <label class="col-form-label col-sm-2">Preferred Carriers</label>
+    <div class="col-sm-10">
+      <%= f.select :preferred_broker_carriers_kind,
+                   [
+                     ['Allow only selected carriers', :whitelist],
+                     ['Block selected carriers', :blacklist]
+                   ],
+                   {
+                     hide_label: true,
+                     include_blank: 'Allow all carriers',
+                     wrapper: false
+                   },
+                   class: 'form-select mb-4'
+      %>
+
+      <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".preferred-broker-carrier-form-wrapper">
+        <template data-nested-form-target="template">
+          <%= f.fields_for :preferred_broker_carriers, PreferredBrokerCarrier.new, child_index: 'NEW_RECORD' do |preferred_broker_carriers_form| %>
+            <%= render 'preferred_broker_carrier_form', f: preferred_broker_carriers_form %>
+          <% end %>
+        </template>
+
+        <% if @broker_customer.preferred_broker_carriers.any? %>
+          <%= f.fields_for :preferred_broker_carriers do |preferred_broker_carriers_form| %>
+            <%= render 'preferred_broker_carrier_form', f: preferred_broker_carriers_form %>
+          <% end %>
+        <% end %>
+
+        <div data-nested-form-target="target"></div>
+
+        <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+      </div>
+    </div>
+  </div>
+
   <%= f.form_group do %>
     <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>
   <% end %>

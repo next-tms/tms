@@ -75,6 +75,7 @@ class BrokerCarrier < ApplicationRecord
   has_many :contacts
   has_many :overlength_rules
   has_many :payment_transactions
+  has_many :preferred_by_broker_customers, class_name: 'PreferredBrokerCarrier', foreign_key: :broker_carrier_id
   has_many :pricing_rules
   has_many :rates
   has_many :shipments
