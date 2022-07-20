@@ -125,11 +125,10 @@ class StandardizedAddress < ApplicationRecord
     end
 
     logger.info 'Calling Google Places API'
-    self.google_places_spot_cached = GooglePlaces::Client.new(
-      ENV.fetch('GOOGLE_API_KEY', nil)
-    ).spots_by_query(
-      (names&.first.blank? ? key : "#{names&.first}, #{key}")
-    ).first
+    self.google_places_spot_cached = GooglePlaces::Client
+                                     .new(Rails.application.credentials.google.api_key)
+                                     .spots_by_query((names&.first.blank? ? key : "#{names&.first}, #{key}"))
+                                     .first
 
     self.google_places_spot_updated_at = DateTime.current
     @google_places_spot = google_places_spot_cached
