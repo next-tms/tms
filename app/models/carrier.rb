@@ -56,7 +56,7 @@ class Carrier < ApplicationRecord
   accepts_nested_attributes_for :check_mailing_address
 
   validates :name, uniqueness: true
-  validates :scac, uniqueness: true
+  validates :scac, uniqueness: { allow_nil: true }
 
   def as_interstellar_carrier
     carrier = Interstellar.const_get(scac)
