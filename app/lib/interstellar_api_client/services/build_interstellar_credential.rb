@@ -21,6 +21,8 @@ module InterstellarApiClient
       attr_reader :type, :broker_carrier
 
       def api_credentials
+        return nil if [broker_carrier.account, broker_carrier.username, broker_carrier.password].any?(&:blank?)
+
         Interstellar::Credential.new(
           type: :api,
           account: broker_carrier.account,
@@ -40,6 +42,8 @@ module InterstellarApiClient
 
       def website_credentials
         if broker_carrier.carrier.has_seperate_website_credentials?
+          return nil if [broker_carrier.website_username, broker_carrier.website_password].any?(&:blank?)
+
           Interstellar::Credential.new(
             type: :website,
             username: broker_carrier.website_username,
@@ -47,6 +51,8 @@ module InterstellarApiClient
           )
         else
           Interstellar::Credential.new(
+            return nil if [broker_carrier.account, broker_carrier.username, broker_carrier.password].any?(&:blank?)
+
             type: :website,
             account: broker_carrier.account,
             username: broker_carrier.username,
