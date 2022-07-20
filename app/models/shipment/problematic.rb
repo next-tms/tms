@@ -36,6 +36,8 @@ module Shipment::Problematic
 
     def self.problematic_picked_up_at_blank
       ids = pending_pickup.map do |shipment|
+        next if shipment.pickup_on.blank?
+
         shipment.id if shipment.pickup_on < DateTime.current.in_time_zone(shipment.shipper_address.time_zone).to_date
       end
 
@@ -44,6 +46,8 @@ module Shipment::Problematic
 
     def self.problematic_pickup_confirmation_blank
       ids = pending_pickup.where(pickup_confirmation: [nil, '']).map do |shipment|
+        next if shipment.pickup_on.blank?
+
         shipment.id if shipment.pickup_on <= DateTime.current.in_time_zone(shipment.shipper_address.time_zone).to_date
       end
 
