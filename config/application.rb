@@ -16,9 +16,7 @@ module Liftoff
     # Postmark
     config.action_mailer.delivery_method = :postmark
 
-    config.action_mailer.postmark_settings = {
-      api_token: ENV.fetch('POSTMARK_API_TOKEN', nil)
-    }
+    config.action_mailer.postmark_settings = { api_token: Rails.application.credentials.postmark&.api_token }
 
     # Sidekiq
     config.active_job.queue_adapter = :sidekiq
