@@ -187,10 +187,16 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             :default_bol_notes,
                                             :ignore_value_on_api_quotes,
                                             :internal_notes,
+                                            :preferred_broker_carriers_kind,
                                             :receivables_schedule,
                                             :requires_carrier_bol_on_receivables,
                                             :requires_carrier_pod_on_receivables,
                                             :requires_shipment_delivery_before_receivable,
+                                            preferred_broker_carriers_attributes: %i[
+                                              _destroy
+                                              id
+                                              broker_carrier_id
+                                            ],
                                             broker_customer_sales_reps_attributes: %i[
                                               _destroy
                                               id

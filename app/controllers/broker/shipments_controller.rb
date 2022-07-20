@@ -94,32 +94,35 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def create
-    broker_customer = shipment_params[:broker_customer_id].blank? ? nil : BrokerCustomer.find(shipment_params[:broker_customer_id])
-    @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
+    Shipment.transaction do
+      broker_customer = shipment_params[:broker_customer_id].blank? ? nil : BrokerCustomer.find(shipment_params[:broker_customer_id])
+      @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
+      @shipment.lock! # Avoid Race Condition
 
-    @shipment.broker = current_user.broker
-    @shipment.broker_customer = broker_customer
-    @shipment.created_by = current_user
-    @shipment.dispatcher = current_user if @shipment.dispatcher.blank? && current_user.dispatcher_for?(@shipment)
-    @shipment.load_id = current_user.broker.last_load_id + 1
-    @shipment.updated_by = current_user
+      @shipment.broker = current_user.broker
+      @shipment.broker_customer = broker_customer
+      @shipment.created_by = current_user
+      @shipment.dispatcher = current_user if @shipment.dispatcher.blank? && current_user.dispatcher_for?(@shipment)
+      @shipment.load_id = current_user.broker.last_load_id + 1
+      @shipment.updated_by = current_user
 
-    if shipment_params[:accessorials_has_been_suggested].blank?
-      @shipment.shipper_address.find_or_build_standardized_address
-      @shipment.receiver_address.find_or_build_standardized_address
+      if shipment_params[:accessorials_has_been_suggested].blank?
+        @shipment.shipper_address.find_or_build_standardized_address
+        @shipment.receiver_address.find_or_build_standardized_address
 
-      @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
-      render :new and return if @accessorials_has_been_suggested
-    end
-
-    if @shipment.save
-      if @shipment.quote_only?
-        redirect_to quote_broker_shipment_path(@shipment)
-      else
-        redirect_to [:broker, @shipment]
+        @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
+        render :new and return if @accessorials_has_been_suggested
       end
-    else
-      render :new
+
+      if @shipment.save
+        if @shipment.quote_only?
+          redirect_to quote_broker_shipment_path(@shipment)
+        else
+          redirect_to [:broker, @shipment]
+        end
+      else
+        render :new
+      end
     end
   end
 
@@ -152,7 +155,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def show
-    unauthorized and return unless @shipment.accessible_by?(current_user)
+    unauthorized and return unless @shipment && @shipment.accessible_by?(current_user)
 
     if @shipment.quote_only?
       redirect_to quote_broker_shipment_path(@shipment) and return
@@ -459,6 +462,9 @@ class Broker::ShipmentsController < Broker::BrokerController
     if !current_user.has_role?('accounts_payable') && !current_user.has_role?('accounts_receivable') && !current_user.sales_rep_for?(@shipment.broker_customer) && !current_user.dispatcher_for?(@shipment)
       unauthorized
     end
+
+    @payment_transactions_q = @shipment.payment_transactions.ransack(params[:q])
+    @receivables_q = @shipment.receivables.ransack(params[:q])
   end
 
   def notes; end
@@ -508,10 +514,18 @@ class Broker::ShipmentsController < Broker::BrokerController
   def quote
     unauthorized and return unless @shipment.accessible_by?(current_user)
 
+    # TODO: Probably move this logic elsewhere
     reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
               false
             elsif @shipment.calculated_freight_classes.uniq == [nil] && @shipment.forced_freight_classes.uniq.nil?
               false
+            elsif @shipment.broker_customer.preferred_broker_carriers_kind
+              case @shipment.broker_customer.preferred_broker_carriers_kind
+              when 'whitelist'
+                (@shipment.broker_customer.eligible_broker_carriers.ids - @shipment.rates.pluck(:broker_carrier_id)).any?
+              when 'blacklist'
+                (@shipment.rates.pluck(:broker_carrier_id) - @shipment.broker_customer.eligible_broker_carriers.ids).any?
+              end
             else
               true
             end
@@ -536,7 +550,10 @@ class Broker::ShipmentsController < Broker::BrokerController
                           else
                             @shipment.broker_customer.eligible_broker_carriers.api_configured.pluck(:id)
                           end
-    broker_carrier_ids += PricingRule.where(broker_carrier: @shipment.broker.broker_carriers).pluck(:broker_carrier_id)
+
+    broker_carrier_ids += PricingRule
+                          .where(broker_carrier: @shipment.broker_customer.eligible_broker_carriers)
+                          .pluck(:broker_carrier_id)
 
     @broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
 

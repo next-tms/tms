@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_17_225855) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_20_044248) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -215,6 +215,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_17_225855) do
     t.bigint "receivables_contact_id", null: false
     t.string "receivables_schedule", default: "immediately"
     t.boolean "requires_shipment_delivery_before_receivable", default: true
+    t.string "preferred_broker_carriers_kind"
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["office_address_id"], name: "index_broker_customers_on_office_address_id"
@@ -475,6 +476,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_17_225855) do
     t.index ["rate_id"], name: "index_pickups_on_rate_id"
     t.index ["shipment_id"], name: "index_pickups_on_shipment_id"
     t.index ["updated_by_id"], name: "index_pickups_on_updated_by_id"
+  end
+
+  create_table "preferred_broker_carriers", force: :cascade do |t|
+    t.bigint "broker_customer_id", null: false
+    t.bigint "broker_carrier_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["broker_carrier_id"], name: "index_preferred_broker_carriers_on_broker_carrier_id"
+    t.index ["broker_customer_id"], name: "index_preferred_broker_carriers_on_broker_customer_id"
   end
 
   create_table "pricing_rules", force: :cascade do |t|
@@ -956,6 +966,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_17_225855) do
   add_foreign_key "pickups", "shipments"
   add_foreign_key "pickups", "users", column: "dispatcher_id"
   add_foreign_key "pickups", "users", column: "updated_by_id"
+  add_foreign_key "preferred_broker_carriers", "broker_carriers"
+  add_foreign_key "preferred_broker_carriers", "broker_customers"
   add_foreign_key "pricing_rules", "broker_carriers"
   add_foreign_key "pricing_rules", "carrier_areas"
   add_foreign_key "problem_types", "roles"
