@@ -1,0 +1,15 @@
+<div class="preferred-broker-carrier-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+  <div class="col-auto">
+    <%= f.select :broker_carrier_id,
+                 current_user
+                 .broker.broker_carriers
+                 .where(broker_customer: [nil, @broker_customer])
+                 .includes(:carrier)
+                 .collect {
+                   |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ]
+                 }.sort,
+                 { label: 'Carrier', hide_label: true, include_blank: true, wrapper: false },
+                 class: 'form-select'
+    %>
+  </div>
+</div>

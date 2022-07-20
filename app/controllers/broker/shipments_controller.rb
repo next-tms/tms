@@ -514,10 +514,18 @@ class Broker::ShipmentsController < Broker::BrokerController
   def quote
     unauthorized and return unless @shipment.accessible_by?(current_user)
 
+    # TODO: Probably move this logic elsewhere
     reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
               false
             elsif @shipment.calculated_freight_classes.uniq == [nil] && @shipment.forced_freight_classes.uniq.nil?
               false
+            elsif @shipment.broker_customer.preferred_broker_carriers_kind
+              case @shipment.broker_customer.preferred_broker_carriers_kind
+              when 'whitelist'
+                (@shipment.broker_customer.eligible_broker_carriers.ids - @shipment.rates.pluck(:broker_carrier_id)).any?
+              when 'blacklist'
+                (@shipment.rates.pluck(:broker_carrier_id) - @shipment.broker_customer.eligible_broker_carriers.ids).any?
+              end
             else
               true
             end
@@ -542,7 +550,10 @@ class Broker::ShipmentsController < Broker::BrokerController
                           else
                             @shipment.broker_customer.eligible_broker_carriers.api_configured.pluck(:id)
                           end
-    broker_carrier_ids += PricingRule.where(broker_carrier: @shipment.broker.broker_carriers).pluck(:broker_carrier_id)
+
+    broker_carrier_ids += PricingRule
+                          .where(broker_carrier: @shipment.broker_customer.eligible_broker_carriers)
+                          .pluck(:broker_carrier_id)
 
     @broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
 
