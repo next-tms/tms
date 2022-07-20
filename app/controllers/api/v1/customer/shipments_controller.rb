@@ -4,18 +4,8 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
   before_action :set_shipment_by_load_id, only: %i[quote show update]
 
   def create
-    # Check permissions
-    if current_user.broker_customer.blank?
-      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a customer of \"#{@website.broker.name}\"" },
-             status: :unauthorized and return
-    elsif current_user.broker != @website.broker
-      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a user of \"#{@website.domain}\"" },
-             status: :unauthorized and return
-    end
-    unless current_user.broker_customer.can_quote?
-      render json: { error: "Unauthorized: API not enabled for user \"#{current_user.email}\" of \"#{current_user.broker.name}\"" },
-             status: :unauthorized and return
-    end
+    # Check permissions and authority to quote
+    render json: { error: unauthorized_error }, status: :unauthorized and return if unauthorized_error
 
     @shipment = Shipment.new(
       {
@@ -26,49 +16,31 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
       }.merge(shipment_params)
     )
 
-    if @shipment.save
-      @shipment.update_rates
-      render json: @shipment, status: :ok and return
-    else
+    unless @shipment.save
       render json: { error: 'Unknown error', error_messages: @shipment.errors.full_messages.to_json },
              status: :unprocessable_entity and return
     end
+
+    @shipment.update_rates
+    render json: @shipment, status: :ok and return
   end
 
   def quote
-    # Check permissions
-    if current_user.broker_customer.blank?
-      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a customer of \"#{@website.broker.name}\"" },
-             status: :unauthorized and return
-    elsif current_user.broker != @website.broker
-      render json: { error: "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a user of \"#{@website.domain}\"" },
-             status: :unauthorized and return
-    end
-
-    unless current_user.broker_customer.can_quote?
-      render json: { error: "Unauthorized: API not enabled for user \"#{current_user.email}\" of \"#{current_user.broker.name}\"" },
-             status: :unauthorized and return
-    end
-
-    unless current_user.broker_customer == @shipment.broker_customer
-      render json: { error: "Unauthorized: Shipment does not belong to \"#{current_user.email}\"" },
-             status: :unauthorized and return
-    end
+    # Check permissions and authority to quote
+    render json: { error: unauthorized_error }, status: :unauthorized and return if unauthorized_error
 
     @shipment.update_rates
 
-    if @shipment.rates.blank?
-      render json: {
-        error: 'No rates found',
-        shipment: {
-          id: @shipment.load_id,
-          accessorials: @shipment.accessorials,
-          rates: nil
-        }
-      }.to_json, status: :unprocessable_entity and return
-    else
-      render json: { shipment: @shipment }.to_json, status: :ok and return
-    end
+    render json: { shipment: @shipment }.to_json, status: :ok and return if @shipment.rates.present?
+
+    render json: {
+      error: 'No rates found',
+      shipment: {
+        id: @shipment.load_id,
+        accessorials: @shipment.accessorials,
+        rates: nil
+      }
+    }.to_json, status: :unprocessable_entity and return
   end
 
   def show
@@ -80,24 +52,50 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
     @shipment.save
 
     unless shipment_params[:applied_rate_uid].blank?
-      @shipment.carrier_charge = current_user.broker_customer.carrier_charge_calculator(carrier_cost: @shipment.carrier_cost)
+      @shipment.carrier_charge = current_user.broker_customer.carrier_charge_calculator(
+        carrier_cost: @shipment.carrier_cost
+      )
     end
 
-    if @shipment.update(shipment_params)
-      render json: @shipment, status: :ok and return
-    else
-      render json: { error: 'Unknown error', error_messages: @shipment.errors.full_messages.to_json },
-             status: :unprocessable_entity and return
-    end
+    render json: @shipment, status: :ok and return if @shipment.update(shipment_params)
+
+    render json: { error: 'Unknown error', error_messages: @shipment.errors.full_messages.to_json },
+           status: :unprocessable_entity and return
   end
 
   private
+
+  def unauthorized_error
+    error = permission_error || customer_not_permitted_to_quote_error
+
+    if current_user.broker_customer != @shipment.broker_customer && action_name == 'quote'
+      error ||= "Unauthorized: Shipment does not belong to \"#{current_user.email}\""
+    end
+
+    error
+  end
+
+  def permission_error
+    if current_user.broker_customer.blank?
+      "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a customer of \"#{@website.broker.name}\""
+    elsif current_user.broker != @website.broker
+      "Unauthorized: Wrong API endpoint: \"#{current_user.email}\" is not a user of \"#{@website.domain}\""
+    end
+  end
+
+  def customer_not_permitted_to_quote_error
+    return if current_user.broker_customer.can_quote?
+
+    "Unauthorized: API not enabled for user \"#{current_user.email}\" of \"#{current_user.broker.name}\""
+  end
 
   def set_shipment_by_load_id
     @shipment = Shipment.find_by_load_id(params[:load_id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
+  # TODO: Move to a helper class that can be reused
+  # rubocop:disable Metrics/MethodLength
   def shipment_params
     params.require(:shipment).permit(:id,
                                      :accessorial_codes,
@@ -155,4 +153,5 @@ class Api::V1::Customer::ShipmentsController < Api::ApplicationController
                                                                                  charge],
                                      accessorial_codes: [])
   end
+  # rubocop:enable Metrics/MethodLength
 end

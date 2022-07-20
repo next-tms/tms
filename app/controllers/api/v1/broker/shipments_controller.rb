@@ -12,10 +12,9 @@ class Api::V1::Broker::ShipmentsController < Api::ApplicationController
 
   def show
     shipment = Shipment.find_by_load_id(params[:load_id])
-    if shipment.broker != current_user.broker
-      render json: { error: 'Unauthorized' }, status: :unauthorized
-    else
-      render json: shipment, status: :ok
-    end
+
+    render json: shipment, status: :ok and return if shipment.broker == current_user.broker
+
+    render json: { error: 'Unauthorized' }, status: :unauthorized
   end
 end
