@@ -50,9 +50,9 @@ module InterstellarApiClient
             password: broker_carrier.website_password
           )
         else
-          Interstellar::Credential.new(
-            return nil if [broker_carrier.account, broker_carrier.username, broker_carrier.password].any?(&:blank?)
+          return nil if [broker_carrier.account, broker_carrier.username, broker_carrier.password].any?(&:blank?)
 
+          Interstellar::Credential.new(
             type: :website,
             account: broker_carrier.account,
             username: broker_carrier.username,
