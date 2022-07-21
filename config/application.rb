@@ -39,6 +39,7 @@ module Liftoff
       GooglePlaces::Photo,
       GooglePlaces::Spot,
       Hash,
+      HTTPI::Response,
       Interstellar::DocumentNotFoundError,
       Interstellar::ExpiredCredentialsError,
       Interstellar::HTTPError,
