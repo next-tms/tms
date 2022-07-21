@@ -6,6 +6,8 @@ module QuickbooksOauth
   def perform_authenticated_request
     attempts = 0
     begin
+      self.reload
+
       yield oauth_access_token
     rescue OAuth2::Error, Quickbooks::AuthorizationFailure => e
       Rails.logger.info("QuickbooksOauth.perform: #{e.message}")
@@ -15,6 +17,8 @@ module QuickbooksOauth
 
       raise 'QuickbooksOauth:ExceededAuthAttempts' if attempts >= 3
 
+      sleep(1) # Add delay before refresh_token and retrying again
+
       # check if its an invalid_grant first, but assume it is for now
       refresh_token!
 
@@ -23,6 +27,8 @@ module QuickbooksOauth
   end
 
   def refresh_token!
+    self.reload
+
     t = oauth_access_token
     refreshed = t.refresh!
 
