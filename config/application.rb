@@ -50,6 +50,7 @@ module Liftoff
       Interstellar::UnserviceableError,
       JSON::ParserError,
       StandardError,
+      Symbol,
       Timezone::Zone
     ]
   end
