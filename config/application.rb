@@ -9,6 +9,14 @@ Bundler.require(*Rails.groups)
 module Liftoff
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
+    if Rails.env.test?
+      # Use development credentials in test
+      # Set credentials content and key path for test env before `config.load_defaults` for it to take effect
+
+      config.credentials.content_path = Rails.root.join("config/credentials/development.yml.enc")
+      config.credentials.key_path = Rails.root.join("config/credentials/development.key")
+    end
+
     config.load_defaults 7.0
 
     config.i18n.fallbacks = true

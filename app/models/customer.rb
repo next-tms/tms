@@ -9,6 +9,10 @@
 # @!attribute name
 #   @return [String]
 #
+# Indexes
+#
+#  index_customers_on_name  (name)
+#
 class Customer < ApplicationRecord
   has_many :broker_customers
   has_many :brokers, through: :broker_customers
@@ -22,4 +26,6 @@ class Customer < ApplicationRecord
 
   has_many :broker_accessorials
   accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
+
+  validates_uniqueness_of :name
 end
