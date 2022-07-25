@@ -57,8 +57,4 @@ Rails.application.configure do
 
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
-
-  # Use development credentials in test
-  config.credentials.content_path = Rails.root.join("config/credentials/development.yml.enc")
-  config.credentials.key_path = Rails.root.join("config/credentials/development.key")
 end
