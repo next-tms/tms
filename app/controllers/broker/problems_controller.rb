@@ -5,7 +5,7 @@ class Broker::ProblemsController < Broker::BrokerController
   before_action :authenticate_user!
 
   def index
-    @q = current_user.problems.includes(required_includes).ransack(params[:q])
+    @q = current_user.eligible_problems.problems.includes(required_includes).ransack(params[:q])
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
