@@ -3,7 +3,7 @@
 class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
   before_action :set_broker_customer_sales_rep, only: %i[commissions destroy edit show update]
   before_action :authenticate_user!, except: %i[commissions]
-  before_action :require_admin, except: %i[commissions]
+  before_action :require_admin, except: %i[commissions show]
 
   def index
     @q = User
