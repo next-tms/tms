@@ -36,7 +36,7 @@
       </li>
     <% elsif current_user.has_role? 'sales_rep' %>
       <li class="mb-2 p-2">
-        <%= link_to icon('solid', 'dollar-sign', 'Commissions'), commissions_broker_broker_customer_sales_rep_path(current_user), class: 'broker-customer-sales-reps' %>
+        <%= link_to icon('solid', 'dollar-sign', 'Commissions'), broker_broker_customer_sales_rep_path(current_user), class: 'broker-customer-sales-reps' %>
       </li>
     <% end %>
 
