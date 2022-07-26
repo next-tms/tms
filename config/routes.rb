@@ -47,6 +47,8 @@ Rails.application.routes.draw do
   get 'gateway/accounts/stripe/oauth-refresh', as: :oauth_callback_refresh_stripe_account,
                                                to: 'stripe_accounts#oauth_callback_refresh'
 
+  resources :notifications, only: %i[show index]
+
   namespace :broker do
     get 'customers/profitability-report' => 'broker_customers#profitability_report'
     get 'customers/:id/receivables' => 'broker_customers#receivables', as: :broker_customer_receivables

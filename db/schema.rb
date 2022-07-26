@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_25_163227) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_25_171908) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -388,6 +388,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_25_163227) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["zip_code"], name: "index_locations_on_zip_code"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "recipient_type", null: false
+    t.bigint "recipient_id", null: false
+    t.string "type", null: false
+    t.jsonb "params"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["read_at"], name: "index_notifications_on_read_at"
+    t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
   end
 
   create_table "overlength_rules", force: :cascade do |t|
