@@ -6,7 +6,15 @@
   <% end %>
 
   <% if current_user.has_role?('root') %>
-    <%= f.select :dispatcher_id, current_user.broker.users.active.dispatchers.order(:first_name).collect { |user| [ user.full_name, user.id ] }, { label: 'Dispatcher', selected: @shipment.dispatcher_id }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
+    <% dispatcher_ids = current_user.broker.users.active.dispatchers.ids %>
+    <% dispatcher_ids << current_user.id if current_user.has_role?('root') %>
+    <% dispatcher_ids << @shipment.dispatcher_id unless dispatcher_ids.include?(@shipment.dispatcher_id) %>
+
+    <%= f.select :dispatcher_id,
+                 User.where(id: dispatcher_ids).order(:first_name).collect { |user| [ user.full_name, user.id ] },
+                 { label: 'Dispatcher' },
+                 class: 'form-select col-sm-6 col-md-4 mt-2 mb-4'
+    %>
   <% end %>
 
   <div class="row">
