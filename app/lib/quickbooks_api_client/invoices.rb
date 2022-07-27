@@ -16,6 +16,10 @@ module QuickbooksApiClient
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
           retry
+        rescue Quickbooks::IntuitRequestException => e
+          raise unless e.message.include?('Duplicate Document Number Error')
+
+          Honeybadger.notify(e)
         end
       end
     end
