@@ -19,7 +19,7 @@
 
 <div class="row">
   <div class="col-sm-3">
-    <p class="col-title"><%= icon 'fas', 'industry', 'Shipper' %></p>
+    <p class="col-title"><%= icon 'solid', 'industry', 'Shipper' %></p>
     <% unless @shipment.shipper_address.types.blank? %>
       <ul class="list-inline list-unstyled text-muted text-uppercase">
         <% @shipment.shipper_address.types.each do |type| %>
@@ -51,7 +51,7 @@
   </div>
 
   <div class="col-sm-3">
-    <p class="col-title"><%= icon 'fas', 'cart-arrow-down', 'Receiver' %></p>
+    <p class="col-title"><%= icon 'solid', 'cart-arrow-down', 'Receiver' %></p>
     <% unless @shipment.receiver_address.types.blank? %>
       <ul class="list-inline list-unstyled text-muted text-uppercase">
         <% @shipment.receiver_address.types.each do |type| %>
@@ -82,7 +82,7 @@
   </div>
 
   <div class="col-sm-3">
-    <p class="col-title"><%= icon 'fas', 'clock', 'Schedule' %></p>
+    <p class="col-title"><%= icon 'solid', 'clock', 'Schedule' %></p>
     <table class="table table-borderless table-condensed">
       <tbody>
         <tr>
@@ -117,7 +117,7 @@
   </div>
 
   <div class="col-sm-3">
-    <p class="col-title"><%= icon 'fas', 'sticky-note', 'Notes' %></p>
+    <p class="col-title"><%= icon 'solid', 'sticky-note', 'Notes' %></p>
     <div class="notes">
       <% unless @shipment.broker_notes.blank? %>
         <%= simple_format @shipment.broker_notes %>
@@ -130,7 +130,7 @@
       <% end %>
     </div>
 
-    <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Value' %></p>
+    <p class="col-title"><%= icon 'solid', 'dollar-sign', 'Value' %></p>
     <% if @shipment.value > 0 %>
       <ul class="list-unstyled">
         <li><%= humanized_money_with_symbol @shipment.value, no_cents_if_whole: false %></li>
@@ -150,7 +150,7 @@
   </div>
 
   <div class="col-sm-6">
-    <p class="col-title"><%= icon 'fas', 'calendar', 'Log' %></p>
+    <p class="col-title"><%= icon 'solid', 'calendar', 'Log' %></p>
     <div class="table-responsive">
       <table class="table table-condensed table-borderless table-striped table-hover h-100">
         <thead>
@@ -205,7 +205,7 @@
 
   <div class="col-sm-6">
     <% if current_user.has_role? 'accounting' or @shipment.broker_customer.sales_reps.include? current_user %>
-      <p class="col-title"><%= icon 'fas', 'dollar-sign', 'Pricing' %></p>
+      <p class="col-title"><%= icon 'solid', 'dollar-sign', 'Pricing' %></p>
       <div class="table-responsive">
         <table class="table table-condensed table-borderless table-striped table-hover h-100">
           <thead>
@@ -253,7 +253,7 @@
 
 </div>
 
-<p class="col-title"><%= icon 'fas', 'pallet', 'Freight' %></p>
+<p class="col-title"><%= icon 'solid', 'pallet', 'Freight' %></p>
 <% if not @shipment.items.count == 0 %>
   <div class="table-responsive">
     <table class="table table-borderless table-striped table-hover">
