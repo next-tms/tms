@@ -15,5 +15,20 @@ module QuickbooksApiClient
       @return_nil_on_404 = return_nil_on_404
       @service = nil
     end
+
+    def perform_api_request_with_retry
+      # TODO: Apply to all quickbooks api call after regression testing
+
+      tries = 0
+
+      begin
+        yield
+      rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        raise if tries > 10
+
+        sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+        retry
+      end
+    end
   end
 end

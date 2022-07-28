@@ -19,7 +19,13 @@ module QuickbooksApiClient
         rescue Quickbooks::IntuitRequestException => e
           raise unless e.message.include?('Duplicate Document Number Error')
 
-          Honeybadger.notify(e)
+          result = find_by_doc_number(invoice.load_id)
+          return result unless result.blank?
+
+          # Sample Error Msg: Duplicate Document Number Error : You must specify a different number. This number has already been used.
+          # DocNumber=123 is assigned to TxnType=Invoice with TxnId=123
+          txn_id = e.message.split('/TxnId/').last
+          find_by_txn_id(txn_id)
         end
       end
     end
@@ -71,6 +77,17 @@ module QuickbooksApiClient
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
           retry
+        end
+      end
+    end
+
+    def find_by_txn_id(txn_id)
+      broker.intuit_account.perform_authenticated_request do |access_token|
+        perform_api_request_with_retry do
+          service = build_service(access_token)
+          results = service.find_by(:id, txn_id)
+
+          results.count == 1 ? results.first : nil
         end
       end
     end
