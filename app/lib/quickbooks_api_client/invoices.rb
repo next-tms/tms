@@ -22,10 +22,7 @@ module QuickbooksApiClient
           result = find_by_doc_number(invoice.load_id)
           return result unless result.blank?
 
-          # Sample Error Msg: Duplicate Document Number Error : You must specify a different number. This number has already been used.
-          # DocNumber=123 is assigned to TxnType=Invoice with TxnId=123
-          txn_id = e.message.split('/TxnId/').last
-          find_by_txn_id(txn_id)
+          raise
         end
       end
     end
@@ -71,23 +68,14 @@ module QuickbooksApiClient
 
         begin
           results = service.find_by(:doc_number, doc_number)
-          results.count == 1 ? results.first : nil
+          results.count == 1 ? results.first : results.entries.find { |entry| entry.private_note.exclude?('Void') }
+          # An Invoice can be identified as voided base from the #private_note
+          # https://developer.intuit.com/app/developer/qbo/docs/api/accounting/most-commonly-used/invoice#void-an-invoice
         rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
           retry
-        end
-      end
-    end
-
-    def find_by_txn_id(txn_id)
-      broker.intuit_account.perform_authenticated_request do |access_token|
-        perform_api_request_with_retry do
-          service = build_service(access_token)
-          results = service.find_by(:id, txn_id)
-
-          results.count == 1 ? results.first : nil
         end
       end
     end
