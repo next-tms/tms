@@ -1,11 +1,16 @@
 <% provide :title, 'Documents' %>
 
+<%= turbo_stream_from @shipment, :documents %>
+
 <%= render 'member_header' %>
 
 <h2><%= yield :title %></h2>
 
 <div class="row">
   <div class="col col-md-8">
+
+    <div id="<%="#{dom_id(@shipment)}_document_notification"%>"></div>
+
     <div class="table-responsive">
       <table class="table table-borderless table-striped">
         <thead>
@@ -16,13 +21,11 @@
             <th></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="<%="#{dom_id(@shipment)}_documents_table_body"%>">
           <% if @shipment.broker_quote_valid? %>
             <tr>
               <td><%= @shipment.broker.name %></td>
               <td>Quote</td>
-              <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_quote, disposition: 'preview'), 'data-turquoteinks': 'false', target: '_blank' %></td>
-              <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_quote, disposition: 'attachment'), 'data-turquoteinks': 'false', download: "#{@shipment.load_id} Quote.pdf" %></td>
             </tr>
           <% end %>
 
@@ -39,8 +42,6 @@
             <tr>
               <td><%= @shipment.broker.name %></td>
               <td>Scanned Bill of Lading</td>
-              <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_bol, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
-              <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_bol, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL (Scanned).pdf" %></td>
             </tr>
 
             <% if @shipment.broker_label.attached? %>
