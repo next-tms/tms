@@ -68,15 +68,15 @@ module Shipment::Documentable
         self,
         :documents,
         target: "#{dom_id(self)}_document_notification",
-        html: link_to(Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host:)) do
-                <<~HTML
-                  <div class="alert alert-success">
-                    <div class="d-flex align-items-center">
-                      New documents are available, click here to view them.
-                    </div>
-                  </div>
-                HTML
-              end.html_safe
+        html: <<~HTML.html_safe
+          <div class="alert alert-success">
+            <div class="d-flex align-items-center">
+              New documents are available,
+              #{link_to Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host:)}
+              to view them.
+            </div>
+          </div>
+        HTML
       )
 
       broadcast_append_to(
