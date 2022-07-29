@@ -2,6 +2,8 @@
 
 module Shipment::Documentable
   extend ActiveSupport::Concern
+  include ActionView::RecordIdentifier
+  include ActionView::Helpers::UrlHelper # For link_to
 
   included do
     after_save do
@@ -41,6 +43,51 @@ module Shipment::Documentable
 
     def broker_quote_valid?
       @broker_quote_valid ||= broker_quote.attached? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
+    end
+
+    def broadcast_document_generation_started(document_type)
+      broadcast_update_to(
+        self,
+        :documents,
+        target: "#{dom_id(self)}_document_notification",
+        html: "
+          <div class='alert alert-info'>
+            <div class='d-flex align-items-center'>
+              <strong>New Document (#{document_type}) is being generated.</strong>
+              <div class='spinner-border ms-auto' role='status' aria-hidden='true'></div>
+            </div>
+          </div>
+        ".html_safe
+      )
+    end
+
+    def broadcast_new_document_generated(document_type)
+      host = Rails.env.development? ? 'localhost:3000' : broker.websites.last.domain
+      broadcast_update_to(
+        self,
+        :documents,
+        target: "#{dom_id(self)}_document_notification",
+        html: "
+          <div class='alert alert-success'>
+            <div class='d-flex align-items-center'>
+              <strong>Document (#{document_type}) was generated and is appended on the document list.
+              Click #{link_to 'here', Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host: host)} to reload page</strong>
+            </div>
+          </div>
+        ".html_safe
+      )
+
+      broadcast_append_to(
+        self,
+        :documents,
+        target: "#{dom_id(self)}_documents_table_body",
+        html: "
+          <tr>
+            <td>#{broker.name}</td>
+            <td>#{document_type}</td>
+          </tr>
+        ".html_safe
+      )
     end
   end
 end

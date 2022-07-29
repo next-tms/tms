@@ -1,5 +1,7 @@
 <% provide :title, "Documents — Load #{@shipment.load_id}" %>
 
+<%= turbo_stream_from @shipment, :documents %>
+
 <%= render 'member_header' %>
 <h2>Documents</h2>
 
@@ -24,6 +26,8 @@
   </div>
 <% end %>
 
+<div id="<%="#{dom_id(@shipment)}_document_notification"%>"></div>
+
 <div class="table-responsive">
   <table class="table table-borderless table-striped">
     <thead>
@@ -36,7 +40,7 @@
         <th></th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="<%="#{dom_id(@shipment)}_documents_table_body"%>">
       <% if @shipment.broker_quote_valid? %>
         <tr>
           <td><%= @shipment.broker.name %></td>
