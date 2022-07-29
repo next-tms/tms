@@ -591,27 +591,19 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def refresh_documents
-    unless @shipment.broker_quote_valid?
-      CreateShipmentBrokerQuoteJob.perform_later(
-        domain: @website.homepage_domain,
-        shipment: @shipment
-      )
-    end
+    domain = @website.homepage_domain
+
+    CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: @shipment) unless @shipment.broker_quote_valid?
 
     return if @shipment.incomplete?
 
     unless @shipment.broker_bol_valid?
-      CreateShipmentBrokerBolJob.perform_later(
-        domain: @website.homepage_domain,
-        shipment: @shipment
-      )
+      CreateShipmentBrokerBolJob.perform_later(domain:, shipment: @shipment)
+      CreateShipmentBrokerLabelJob.perform_later(shipment: @shipment)
     end
 
     unless @shipment.broker_dispatch_sheet_valid?
-      CreateShipmentBrokerDispatchSheetJob.perform_later(
-        domain: @website.homepage_domain,
-        shipment: @shipment
-      )
+      CreateShipmentBrokerDispatchSheetJob.perform_later(domain:, shipment: @shipment)
     end
   end
 

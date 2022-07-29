@@ -57,6 +57,17 @@
           <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'broker_bol'), data: { 'turbo-frame': 'modal' } %></td>
           <td></td>
         </tr>
+
+        <% if @shipment.broker_label.attached? %>
+          <tr>
+            <td><%= @shipment.broker.name %></td>
+            <td>Labels</td>
+            <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_label, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
+            <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_label, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL.pdf" %></td>
+            <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'broker_label'), data: { 'turbo-frame': 'modal' } %></td>
+            <td></td>
+          </tr>
+        <% end %>
       <% end %>
 
       <% if @shipment.broker_dispatch_sheet_valid? %>

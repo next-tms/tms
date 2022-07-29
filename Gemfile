@@ -91,6 +91,8 @@ gem 'phony_rails'
 gem 'htmlentities'
 
 gem 'combine_pdf', '~> 1.0.22'
+gem 'prawn', '~> 2.4.0'
+gem 'prawn-labels', '~> 1.2.6', require: 'prawn/labels'
 gem 'wicked_pdf', '~> 2.6.3'
 # gem 'wkhtmltopdf-heroku', '~> 2.12.6.0', groups: %i[production staging]
 gem 'wkhtmltopdf-binary', '~> 0.12.6.5', groups: %i[production staging]
