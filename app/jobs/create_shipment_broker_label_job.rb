@@ -43,7 +43,7 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
     end
 
     shipment.broker_label.attach(
-      io: file.read,
+      io: file,
       filename: "#{shipment.load_id} Labels.pdf",
       content_type: 'application/pdf'
     )
