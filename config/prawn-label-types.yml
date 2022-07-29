@@ -1,0 +1,10 @@
+Avery15264:
+  paper_size: LETTER
+  top_margin:  58.208
+  bottom_margin: 58.208
+  left_margin: 23.283
+  right_margin: 23.283
+  columns: 2
+  rows: 3
+  column_gutter: 15
+  row_gutter: 29.104
