@@ -5,6 +5,11 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
 
   def perform(shipment:)
     items_count = shipment.items.sum(:quantity)
+    packaging_label = if Packaging.where(id: shipment.items.pluck(:packaging_id)).pluck(:name).uniq.size == 1
+                        shipment.items.first.packaging.name.titleize
+                      else
+                        'Piece'
+                      end
     pro = shipment.tracking_carrier_pro.present? ? shipment.tracking_carrier_pro : shipment.pro
     pro = if pro.blank?
             "\n"
@@ -28,7 +33,7 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
 
           #{pro}
 
-          Piece #{i} of #{items_count}
+          #{packaging_label} #{i} of #{items_count}
         LABEL
 
         i += 1
