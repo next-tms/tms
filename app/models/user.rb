@@ -221,7 +221,9 @@ class User < ApplicationRecord
 
     return broker.users.broker if has_role?('root')
 
-    User.where(id: UserRole.where(role: roles).where(user: broker.users.broker).pluck(:user_id))
+    scope = roles - [Role.find_by_name('sales_rep')]
+
+    User.where(id: UserRole.where(role: scope).where(user: broker.users.broker).pluck(:user_id))
   end
 
   def eligible_problems

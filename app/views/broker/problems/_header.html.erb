@@ -23,9 +23,10 @@
           <td class="display-6">
             <%= link_to resolved_broker_problems_path, class: 'problems-resolved' do %>
               <%= number_to_percentage(
-                    (Problem.where(assigned_to: current_user.broker.users).resolved.size.to_f / Problem.where(assigned_to: current_user.broker.users).size) * 100,
+                    Problem.where(assigned_to: current_user.broker.users).resolved.size.to_f / Problem.where(assigned_to: current_user.broker.users).size * 100,
                     precision: 1
                   )
+                  
               %>
             <% end %>
           </td>
@@ -33,7 +34,7 @@
           <td class="display-6">
             <%= link_to resolved_broker_problems_path, class: 'problems-resolved' do %>
               <%= number_to_percentage(
-                    (current_user.eligible_problems.where(resolved_by: current_user).size.to_f / current_user.eligible_problems.size) * 100,
+                    current_user.eligible_problems.where(resolved_by: current_user).size.to_f / current_user.eligible_problems.size * 100,
                     precision: 1
                   )
               %>
@@ -43,7 +44,7 @@
           <td class="display-6">
             <%= link_to resolved_broker_problems_path, class: 'problems-resolved' do %>
               <%= number_to_percentage(
-                    (current_user.eligible_problems.resolved.size.to_f / current_user.eligible_problems.size) * 100,
+                    current_user.eligible_problems.resolved.size.to_f / current_user.eligible_problems.size * 100,
                     precision: 1
                   )
               %>
