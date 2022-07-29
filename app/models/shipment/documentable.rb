@@ -13,11 +13,16 @@ module Shipment::Documentable
     end
 
     after_save do
+      broker_label.purge unless broker_bol_valid?
+    end
+
+    after_save do
       broker_quote.purge unless broker_quote_valid?
     end
 
     has_one_attached :broker_bol
     has_one_attached :broker_dispatch_sheet
+    has_one_attached :broker_label
     has_one_attached :broker_quote
     has_one_attached :carrier_bol   # TODO: Rename to carrier_scanned_bol
     has_one_attached :carrier_label # TODO: Rename to carrier_bol
