@@ -16,6 +16,13 @@ module QuickbooksApiClient
 
           sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
           retry
+        rescue Quickbooks::IntuitRequestException => e
+          raise unless e.message.include?('Duplicate Document Number Error')
+
+          result = find_by_doc_number(invoice.load_id)
+          return result unless result.blank?
+
+          raise
         end
       end
     end
@@ -61,7 +68,9 @@ module QuickbooksApiClient
 
         begin
           results = service.find_by(:doc_number, doc_number)
-          results.count == 1 ? results.first : nil
+          results.count == 1 ? results.first : results.entries.find { |entry| entry.private_note.exclude?('Void') }
+          # An Invoice can be identified as voided base from the #private_note
+          # https://developer.intuit.com/app/developer/qbo/docs/api/accounting/most-commonly-used/invoice#void-an-invoice
         rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
