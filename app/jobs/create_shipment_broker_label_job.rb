@@ -30,6 +30,8 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
 
           Piece #{i} of #{items_count}
         LABEL
+
+        i += 1
       end
     end
 
