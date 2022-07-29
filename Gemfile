@@ -15,7 +15,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 5.1'
   gem 'factory_bot_rails'
   gem 'shoulda-matchers', '5.1.0'
-  gem 'faker', '~> 2.21.0'
+  gem 'faker', '~> 2.22.0'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 

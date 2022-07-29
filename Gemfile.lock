@@ -1475,7 +1475,7 @@ GEM
     factory_bot_rails (6.2.0)
       factory_bot (~> 6.2.0)
       railties (>= 5.0.0)
-    faker (2.21.0)
+    faker (2.22.0)
       i18n (>= 1.8.11, < 2)
     faraday (1.10.0)
       faraday-em_http (~> 1.0)
@@ -1877,7 +1877,7 @@ DEPENDENCIES
   devise-pwned_password (~> 0.1.9)
   devise_invitable (~> 2.0.5)
   factory_bot_rails
-  faker (~> 2.21.0)
+  faker (~> 2.22.0)
   geocoder (~> 1.8.0)
   google_places (~> 2.0.0)
   honeybadger (~> 4.12)
