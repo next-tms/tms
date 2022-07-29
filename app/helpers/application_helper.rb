@@ -74,6 +74,12 @@ module ApplicationHelper
     "<span class=\"badge #{type}\">#{n}</span>".html_safe if n.positive?
   end
 
+  def number_to_percentage(*args)
+    return '0%' if args == args.reject(&:blank?)
+
+    super
+  end
+
   def pretty_date(date, time_zone)
     return nil if date.blank? || time_zone.blank?
 
