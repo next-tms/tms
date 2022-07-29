@@ -50,43 +50,45 @@ module Shipment::Documentable
         self,
         :documents,
         target: "#{dom_id(self)}_document_notification",
-        html: "
-          <div class='alert alert-info'>
-            <div class='d-flex align-items-center'>
-              <strong>New Document (#{document_type}) is being generated.</strong>
-              <div class='spinner-border ms-auto' role='status' aria-hidden='true'></div>
+        html: <<~HTML.html_safe
+          <div class="alert alert-info">
+            <div class="d-flex align-items-center">
+              Some documents are being generated.
+              <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
             </div>
           </div>
-        ".html_safe
+        HTML
       )
     end
 
     def broadcast_new_document_generated(document_type)
       host = Rails.env.development? ? 'localhost:3000' : broker.websites.last.domain
+
       broadcast_update_to(
         self,
         :documents,
         target: "#{dom_id(self)}_document_notification",
-        html: "
-          <div class='alert alert-success'>
-            <div class='d-flex align-items-center'>
-              <strong>Document (#{document_type}) was generated and is appended on the document list.
-              Click #{link_to 'here', Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host: host)} to reload page</strong>
-            </div>
-          </div>
-        ".html_safe
+        html: link_to(Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host:)) do
+                <<~HTML
+                  <div class="alert alert-success">
+                    <div class="d-flex align-items-center">
+                      New documents are available, click here to view them.
+                    </div>
+                  </div>
+                HTML
+              end.html_safe
       )
 
       broadcast_append_to(
         self,
         :documents,
         target: "#{dom_id(self)}_documents_table_body",
-        html: "
+        html: <<~HTML.html_safe
           <tr>
             <td>#{broker.name}</td>
             <td>#{document_type}</td>
           </tr>
-        ".html_safe
+        HTML
       )
     end
   end
