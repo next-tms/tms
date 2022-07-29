@@ -1,10 +1,8 @@
 <aside class="col col-md-2 p-4">
   <ul class="list-unstyled mt-4">
-    <% if current_user.has_role?('root') || current_user.problems.any? %>
-      <li class="mb-2 p-2">
-        <%= link_to icon('solid', 'table-list', 'Tasks'), unresolved_broker_problems_path, class: 'problems' %>
-      </li>
-    <% end %>
+    <li class="mb-2 p-2">
+      <%= link_to icon('solid', 'table-list', 'Tasks'), unresolved_broker_problems_path, class: 'problems' %>
+    </li>
   </ul>
 
   <ul class="list-unstyled mt-4">
