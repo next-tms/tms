@@ -15,7 +15,7 @@
     "@popperjs/core": "^2.11.5",
     "@rails/actioncable": "latest",
     "@rails/activestorage": "latest",
-    "autoprefixer": "^10.4.5",
+    "autoprefixer": "^10.4.8",
     "babel-loader": "8",
     "babel-plugin-macros": "^3.1.0",
     "bootstrap": "^5.2.0",
