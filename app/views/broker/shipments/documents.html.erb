@@ -26,11 +26,12 @@
   </div>
 <% end %>
 
-<div id="<%="#{dom_id(@shipment)}_document_notification"%>"></div>
+<% this_dom_id = dom_id(@shipment) %>
+<div id="<%="#{this_dom_id}_document_notification"%>"></div>
 
 <div class="table-responsive">
-  <table class="table table-borderless table-striped">
-    <thead>
+  <table class="table table-borderless table-bordered">
+    <thead class="table-borderless">
       <tr>
         <th>Author</th>
         <th>Kind</th>
@@ -40,176 +41,15 @@
         <th></th>
       </tr>
     </thead>
-    <tbody id="<%="#{dom_id(@shipment)}_documents_table_body"%>">
-      <% if @shipment.broker_quote_valid? %>
-        <tr>
-          <td><%= @shipment.broker.name %></td>
-          <td>Quote</td>
-          <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_quote, disposition: 'preview'), 'data-turquoteinks': 'false', target: '_blank' %></td>
-          <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_quote, disposition: 'attachment'), 'data-turquoteinks': 'false', download: "#{@shipment.load_id} Quote.pdf" %></td>
-          <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'broker_quote'), data: { 'turbo-frame': 'modal' } %></td>
-          <td></td>
-        </tr>
-      <% end %>
-
-      <% if @shipment.broker_bol_valid? %>
-        <tr>
-          <td><%= @shipment.broker.name %></td>
-          <td>Bill of Lading</td>
-          <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_bol, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
-          <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_bol, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL.pdf" %></td>
-          <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'broker_bol'), data: { 'turbo-frame': 'modal' } %></td>
-          <td></td>
-        </tr>
-
-        <% if @shipment.broker_label.attached? %>
-          <tr>
-            <td><%= @shipment.broker.name %></td>
-            <td>Labels</td>
-            <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_label, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
-            <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_label, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL.pdf" %></td>
-            <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'broker_label'), data: { 'turbo-frame': 'modal' } %></td>
-            <td></td>
-          </tr>
-        <% end %>
-      <% end %>
-
-      <% if @shipment.broker_dispatch_sheet_valid? %>
-        <tr>
-          <td><%= @shipment.broker.name %></td>
-          <td>Dispatch Sheet</td>
-          <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_dispatch_sheet, disposition: 'preview'), 'data-turquoteinks': 'false', target: '_blank' %></td>
-          <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_dispatch_sheet, disposition: 'attachment'), 'data-turquoteinks': 'false', download: "#{@shipment.load_id} Dispatch Sheet.pdf" %></td>
-          <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'broker_dispatch_sheet'), data: { 'turbo-frame': 'modal' } %></td>
-          <td></td>
-        </tr>
-      <% end %>
-
-      <% unless @shipment.carrier_label.blank? %>
-        <tr>
-          <td><%= @shipment.broker_carrier.carrier.name %></td>
-          <td>Bill of Lading</td>
-          <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.carrier_label, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
-          <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_label, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL.pdf" %></td>
-          <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'carrier_label'), data: { 'turbo-frame': 'modal' } %></td>
-          <td></td>
-        </tr>
-      <% end %>
-
-      <% unless @shipment.broker_carrier.blank? %>
-        <tr>
-          <td><%= @shipment.broker_carrier.carrier.name %></td>
-          <td>Scanned Bill of Lading</td>
-
-          <% if @shipment.carrier_bol.blank? %>
-            <td colspan="4">
-              <%= bootstrap_form_with(model: [:broker, @shipment], class: 'row') do |f| %>
-                <div class="col-auto">
-                  <%= f.file_field :carrier_bol, accept: 'application/pdf', hide_label: true %>
-                </div>
-                <div class="col-auto">
-                  <%= f.submit 'Add', class: 'btn btn-secondary' %>
-                </div>
-              <% end %>
-            </td>
-          <% else %>
-            <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.carrier_bol, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
-            <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_bol, disposition: 'attachment'), 'data-turbo': 'false', download: "#{@shipment.load_id} BOL (Scanned).pdf" %></td>
-            <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'carrier_bol'), data: { 'turbo-frame': 'modal' } %></td>
-            <td>
-              <%= bootstrap_form_with(model: [:broker, @shipment], class: 'row') do |f| %>
-                <div class="col-auto">
-                  <%= f.file_field :carrier_bol, accept: 'application/pdf', hide_label: true %>
-                </div>
-                <div class="col-auto">
-                  <%= f.submit 'Replace', class: 'btn btn-secondary' %>
-                </div>
-              <% end %>
-            </td>
-          <% end %>
-        </tr>
-      <% end %>
-
-      <% unless @shipment.broker_carrier.blank? %>
-        <tr>
-          <td><%= @shipment.broker_carrier.carrier.name %></td>
-          <td>Proof of Delivery</td>
-
-          <% if @shipment.carrier_pod.blank? %>
-            <td colspan="4">
-              <%= bootstrap_form_with(model: [:broker, @shipment], class: 'row') do |f| %>
-                <div class="col-auto">
-                  <%= f.file_field :carrier_pod, accept: 'application/pdf', hide_label: true %>
-                </div>
-                <div class="col-auto">
-                  <%= f.submit 'Add', class: 'btn btn-secondary' %>
-                </div>
-              <% end %>
-            </td>
-          <% else %>
-            <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.carrier_pod, disposition: 'preview'), target: '_blank' %></td>
-            <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.carrier_pod, disposition: 'attachment'), download: "#{@shipment.load_id} POD.pdf" %></td>
-            <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'carrier_pod'), data: { 'turbo-frame': 'modal' } %></td>
-            <td>
-              <%= bootstrap_form_with(model: [:broker, @shipment], class: 'row') do |f| %>
-                <div class="col-auto">
-                  <%= f.file_field :carrier_pod, accept: 'application/pdf', hide_label: true %>
-                </div>
-                <div class="col-auto">
-                  <%= f.submit 'Replace', class: 'btn btn-secondary' %>
-                </div>
-              <% end %>
-            </td>
-          <% end %>
-        </tr>
-      <% end %>
-
-      <% unless @shipment.broker_carrier.blank? %>
-        <tr>
-          <td><%= @shipment.broker_carrier.carrier.name %></td>
-          <td>Carrier Quote</td>
-
-          <% if @shipment.broker_carrier_quote.blank? %>
-            <td colspan="4">
-              <%= bootstrap_form_with(model: [:broker, @shipment], class: 'row') do |f| %>
-                <div class="col-auto">
-                  <%= f.file_field :broker_carrier_quote, accept: 'application/pdf', hide_label: true %>
-                </div>
-                <div class="col-auto">
-                  <%= f.submit 'Add', class: 'btn btn-secondary' %>
-                </div>
-              <% end %>
-            </td>
-          <% else %>
-            <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(@shipment.broker_carrier_quote, disposition: 'preview'), target: '_blank' %></td>
-            <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(@shipment.broker_carrier_quote, disposition: 'attachment'), download: "#{@shipment.load_id} BROKER CARRIER QUOTE.pdf" %></td>
-            <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'broker_carrier_quote'), data: { 'turbo-frame': 'modal' } %></td>
-            <td>
-              <%= bootstrap_form_with(model: [:broker, @shipment], class: 'row') do |f| %>
-                <div class="col-auto">
-                  <%= f.file_field :broker_carrier_quote, accept: 'application/pdf', hide_label: true %>
-                </div>
-                <div class="col-auto">
-                  <%= f.submit 'Replace', class: 'btn btn-secondary' %>
-                </div>
-              <% end %>
-            </td>
-          <% end %>
-        </tr>
-      <% end %>
-
-      <% if @shipment.receivables.any? %>
-        <% @shipment.receivables.with_invoice.order(:created_at).each do |receivable| %>
-          <tr>
-            <td><%= receivable.shipment.broker.name %></td>
-            <td>Invoice</td>
-            <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(receivable.invoice, disposition: 'preview'), target: '_blank' %></td>
-            <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(receivable.invoice, disposition: 'attachment'), download: "#{receivable.shipment.load_id} Invoice.pdf" %></td>
-            <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(@shipment, shipment_method: 'carrier_pod'), data: { 'turbo-frame': 'modal' } %></td>
-            <td></td>
-          </tr>
-        <% end %>
-      <% end %>
     <tbody>
+      <%= render 'shipments/documents/broker_quote', this_dom_id:, shipment: @shipment %>
+      <%= render 'shipments/documents/broker_bol', this_dom_id:, shipment: @shipment %>
+      <%= render 'shipments/documents/broker_label', this_dom_id:, shipment: @shipment %>
+      <%= render 'broker/shipments/documents/broker_dispatch_sheet', this_dom_id:, shipment: @shipment %>
+      <%= render 'shipments/documents/carrier_label', this_dom_id:, shipment: @shipment %>
+      <%= render 'shipments/documents/carrier_bol', this_dom_id:, shipment: @shipment %>
+      <%= render 'shipments/documents/carrier_pod', this_dom_id:, shipment: @shipment %>
+      <%= render 'broker/shipments/documents/broker_carrier_quote', this_dom_id:, shipment: @shipment %>
+    </tbody>
   </table>
 </div>

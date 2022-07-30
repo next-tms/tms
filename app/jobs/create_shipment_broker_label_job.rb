@@ -4,7 +4,7 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
   queue_as :high_priority
 
   def perform(shipment:)
-    shipment.broadcast_document_generation_started('Broker Label')
+    shipment.broadcast_outdated_document(:broker_label)
 
     items_count = shipment.items.sum(:quantity)
     packaging_label = if Packaging.where(id: shipment.items.pluck(:packaging_id)).pluck(:name).uniq.size == 1
@@ -55,7 +55,7 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
       content_type: 'application/pdf'
     )
 
-    shipment.broadcast_new_document_generated('Broker Label')
+    shipment.broadcast_new_document_generated(:broker_label)
 
     file.unlink
   end

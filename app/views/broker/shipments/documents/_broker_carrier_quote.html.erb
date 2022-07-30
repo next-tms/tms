@@ -1,0 +1,33 @@
+<tr id="<%= this_dom_id %>_broker_carrier_quote">
+  <% if shipment.broker_carrier.present? %>
+    <td><%= shipment.broker_carrier.carrier.name %></td>
+    <td>Carrier Quote</td>
+  
+    <% if shipment.broker_carrier_quote.blank? %>
+      <td colspan="4">
+        <%= bootstrap_form_with(model: [:broker, shipment], class: 'row') do |f| %>
+          <div class="col-auto">
+            <%= f.file_field :broker_carrier_quote, accept: 'application/pdf', hide_label: true %>
+          </div>
+          <div class="col-auto">
+            <%= f.submit 'Add', class: 'btn btn-secondary' %>
+          </div>
+        <% end %>
+      </td>
+    <% else %>
+      <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(shipment.broker_carrier_quote, disposition: 'preview'), target: '_blank' %></td>
+      <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(shipment.broker_carrier_quote, disposition: 'attachment'), download: "#{shipment.load_id} BROKER CARRIER QUOTE.pdf" %></td>
+      <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(shipment, shipment_method: 'broker_carrier_quote'), data: { 'turbo-frame': 'modal' } %></td>
+      <td>
+        <%= bootstrap_form_with(model: [:broker, shipment], class: 'row') do |f| %>
+          <div class="col-auto">
+            <%= f.file_field :broker_carrier_quote, accept: 'application/pdf', hide_label: true %>
+          </div>
+          <div class="col-auto">
+            <%= f.submit 'Replace', class: 'btn btn-secondary' %>
+          </div>
+        <% end %>
+      </td>
+    <% end %>
+  <% end %>
+</tr>
