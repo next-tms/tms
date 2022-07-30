@@ -3,9 +3,10 @@
 module Shipment::Documentable
   extend ActiveSupport::Concern
   include ActionView::RecordIdentifier
-  include ActionView::Helpers::UrlHelper # For link_to
 
   included do
+    after_commit { refresh_documents }
+
     after_save do
       broker_bol.purge unless broker_bol_valid?
     end
@@ -45,50 +46,53 @@ module Shipment::Documentable
       @broker_quote_valid ||= broker_quote.attached? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
     end
 
-    def broadcast_document_generation_started(document_type)
-      broadcast_update_to(
-        self,
-        :documents,
-        target: "#{dom_id(self)}_document_notification",
-        html: <<~HTML.html_safe
-          <div class="alert alert-info">
-            <div class="d-flex align-items-center">
-              Some documents are being generated.
-              <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
-            </div>
-          </div>
-        HTML
-      )
-    end
-
     def broadcast_new_document_generated(document_type)
-      host = Rails.env.development? ? 'localhost:3000' : broker.websites.first.domain
-      message = 'New documents are available, click here to view them.'
+      partial = if %i[broker_dispatch_sheet broker_carrier_quote].include?(document_type)
+                  "broker/shipments/documents/#{document_type}"
+                else
+                  "shipments/documents/#{document_type}"
+                end
 
-      broadcast_update_to(
+      broadcast_replace_to(
         self,
         :documents,
-        target: "#{dom_id(self)}_document_notification",
-        html: <<~HTML.html_safe
-          <div class="alert alert-success">
-            <div class="d-flex align-items-center">
-              #{link_to message, Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host:), target: '_top'}
-            </div>
-          </div>
-        HTML
-      )
-
-      broadcast_append_to(
-        self,
-        :documents,
-        target: "#{dom_id(self)}_documents_table_body",
-        html: <<~HTML.html_safe
-          <tr>
-            <td>#{broker.name}</td>
-            <td>#{document_type}</td>
-          </tr>
-        HTML
+        target: "#{dom_id(self)}_#{document_type}",
+        html: ApplicationController.render(partial:, locals: { this_dom_id: dom_id(self), shipment: self }).html_safe
       )
     end
+
+    def broadcast_outdated_document(document_type)
+      partial = if %i[broker_dispatch_sheet broker_carrier_quote].include?(document_type)
+                  "broker/shipments/documents/#{document_type}"
+                else
+                  "shipments/documents/#{document_type}"
+                end
+
+      target = "#{dom_id(self)}_#{document_type}"
+
+      broadcast_replace_to(
+        self,
+        :documents,
+        target:,
+        html: "<tr id=\"#{target}\"></tr>".html_safe
+      )
+    end
+  end
+
+  private
+
+  def refresh_documents
+    domain = broker.websites.first.homepage_domain
+
+    CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: self) unless broker_quote_valid?
+
+    return if incomplete?
+
+    unless broker_bol_valid?
+      CreateShipmentBrokerBolJob.perform_later(domain:, shipment: self)
+      CreateShipmentBrokerLabelJob.perform_later(shipment: self)
+    end
+
+    CreateShipmentBrokerDispatchSheetJob.perform_later(domain:, shipment: self) unless broker_dispatch_sheet_valid?
   end
 end
