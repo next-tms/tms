@@ -1,0 +1,10 @@
+<tr id="<%= this_dom_id %>_broker_label">
+  <% if shipment.broker_bol_valid? && shipment.broker_label.attached? %>
+    <td><%= shipment.broker.name %></td>
+    <td>Labels</td>
+    <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(shipment.broker_label, disposition: 'preview'), 'data-turbo': 'false', target: '_blank' %></td>
+    <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(shipment.broker_label, disposition: 'attachment'), 'data-turbo': 'false', download: "#{shipment.load_id} Labels.pdf" %></td>
+    <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(shipment, shipment_method: 'broker_label'), data: { 'turbo-frame': 'modal' } %></td>
+    <td></td>
+  <% end %>
+</tr>
