@@ -72,8 +72,8 @@ module Shipment::Documentable
           <div class="alert alert-success">
             <div class="d-flex align-items-center">
               New documents are available,
-              #{link_to Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host:)}
-              to view them.
+              #{link_to 'click here to view them', Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host:)}
+              .
             </div>
           </div>
         HTML
