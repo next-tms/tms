@@ -157,16 +157,10 @@ class Broker::ShipmentsController < Broker::BrokerController
   def show
     unauthorized and return unless @shipment&.accessible_by?(current_user)
 
-    if @shipment.quote_only?
-      redirect_to quote_broker_shipment_path(@shipment) and return
-    else
-      refresh_documents
-    end
+    redirect_to quote_broker_shipment_path(@shipment) and return if @shipment.quote_only?
   end
 
-  def documents
-    refresh_documents
-  end
+  def documents; end
 
   def send_document
     contact_ids = @shipment.broker.users.broker.pluck(:contact_id)
@@ -588,23 +582,6 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def set_shipment_by_load_id
     @shipment = Shipment.find_by_load_id(params[:load_id])
-  end
-
-  def refresh_documents
-    domain = @website.homepage_domain
-
-    CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: @shipment) unless @shipment.broker_quote_valid?
-
-    return if @shipment.incomplete?
-
-    unless @shipment.broker_bol_valid?
-      CreateShipmentBrokerBolJob.perform_later(domain:, shipment: @shipment)
-      CreateShipmentBrokerLabelJob.perform_later(shipment: @shipment)
-    end
-
-    unless @shipment.broker_dispatch_sheet_valid?
-      CreateShipmentBrokerDispatchSheetJob.perform_later(domain:, shipment: @shipment)
-    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

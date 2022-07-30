@@ -32,9 +32,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     redirect_to [:customer, @shipment]
   end
 
-  def documents
-    refresh_documents
-  end
+  def documents; end
 
   def index
     @pagy, @shipments = pagy(current_user.broker_customer.shipments.active.includes(default_includes).order(created_at: :desc))
@@ -100,9 +98,7 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def edit; end
 
-  def show
-    refresh_documents
-  end
+  def show; end
 
   def update
     @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
@@ -242,23 +238,6 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def set_shipment_by_load_id
     @shipment = Shipment.find_by_load_id(params[:load_id])
-  end
-
-  def refresh_documents
-    domain = @website.homepage_domain
-
-    CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: @shipment) unless @shipment.broker_quote_valid?
-
-    return if @shipment.incomplete?
-
-    unless @shipment.broker_bol_valid?
-      CreateShipmentBrokerBolJob.perform_later(domain:, shipment: @shipment)
-      CreateShipmentBrokerLabelJob.perform_later(shipment: @shipment)
-    end
-
-    unless @shipment.broker_dispatch_sheet_valid?
-      CreateShipmentBrokerDispatchSheetJob.perform_later(domain:, shipment: @shipment)
-    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
