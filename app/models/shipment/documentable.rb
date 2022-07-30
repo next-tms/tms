@@ -63,6 +63,7 @@ module Shipment::Documentable
 
     def broadcast_new_document_generated(document_type)
       host = Rails.env.development? ? 'localhost:3000' : broker.websites.first.domain
+      message = 'New documents are available, click here to view them.'
 
       broadcast_update_to(
         self,
@@ -71,10 +72,7 @@ module Shipment::Documentable
         html: <<~HTML.html_safe
           <div class="alert alert-success">
             <div class="d-flex align-items-center">
-              New documents are available,
-              &nbsp;
-              #{link_to 'click here to view them', Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host:)}
-              .
+              #{link_to message, Rails.application.routes.url_helpers.documents_broker_shipment_url(load_id, host:), target: '_top'}
             </div>
           </div>
         HTML
