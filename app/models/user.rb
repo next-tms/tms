@@ -107,6 +107,7 @@ class User < ApplicationRecord
 
   after_save :reassign_problems
   after_save :reassign_shipments
+  after_save :send_invitation
 
   before_validation :set_contact
   before_validation :set_time_zone_name
@@ -283,6 +284,12 @@ class User < ApplicationRecord
       shipment.assign_dispatcher
       shipment.save
     end
+  end
+
+  def send_invitation
+    return if invitation_accepted? || !saved_change_to_email?
+
+    invite!(invited_by)
   end
 
   def set_contact
