@@ -80,10 +80,12 @@ class UserMailer < ApplicationMailer
   private
 
   def send_shipment_updated(shipment, method_name)
+    recipient = params[:recipient] ? "#{params[:recipient].full_name} <#{params[:recipient].email}>" : to(shipment, method_name)
+
     mail(
       from: from(shipment),
       reply_to: reply_to(shipment),
-      to: to(shipment, method_name),
+      to: recipient,
       subject: [who_performed(@shipment), @subject].join(' ')
     )
   end
