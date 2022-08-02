@@ -3,20 +3,12 @@
 # DocumentNotification.with(post: @post).deliver_later(current_user)
 # DocumentNotification.with(post: @post).deliver(current_user)
 
-class DocumentNotification < Noticed::Base
-  include ActionView::Helpers::UrlHelper # For link_to
-
-  deliver_by :database
-  deliver_by :email,
-              mailer: "ContactMailer",
-              method: :mailer_method,
-              format: :mailer_params,
-              delay: 1.minute,
-              if: :unread?
-              # Deliver Email Notification if after 10 minutes the user hasn't viewed
-              # the notification in the dashboard
-
+class DocumentNotification < NotificationBase
   param :shipment, :document_type, :contact
+
+  def mailer_class
+    ContactMailer
+  end
 
   def mailer_params
     {
@@ -36,7 +28,7 @@ class DocumentNotification < Noticed::Base
   end
 
   def humanized_document_type
-    case params[:document_type]
+    case params[:document_type].to_sym
     when :carrier_bol then 'Scanned Bill of Landing'
     when :carrier_pod then 'Proof of Delivery'
     when :broker_quote then 'Quote'
@@ -45,29 +37,7 @@ class DocumentNotification < Noticed::Base
     end
   end
 
-  def raw_content
-    shipment = params[:shipment]
-    host = shipment.broker_customer.broker.websites.first.domain
-    host = 'localhost:3000' if Rails.env.development?
-
-    "
-    <p>Your #{humanized_document_type} is attached for the following shipment (Load ##{shipment.load_id}):</p>
-
-    <p>From:</p>
-    <address>
-      #{shipment.shipper_name}
-      <br>
-      #{shipment.shipper_address.pretty('<br>').html_safe}
-    </address>
-
-    <p>To:</p>
-    <address>
-      #{shipment.receiver_name}
-      <br>
-      #{shipment.receiver_address.pretty('<br>').html_safe}
-    </address>
-
-    #{link_to "View shipment", broker_shipment_url(shipment, host: host)}
-    "
+  def notification_subject
+    "Your #{humanized_document_type} is attached for the following shipment (Load ##{shipment.load_id})"
   end
 end
