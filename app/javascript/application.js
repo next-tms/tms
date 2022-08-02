@@ -1,7 +1,7 @@
 require("@rails/activestorage").start()
 
 import mrujs from "mrujs"
-import * as Turbo from "@hotwired/turbo"
+import * as Turbo from "@hotwired/turbo-rails"
 
 window.Turbo = Turbo
 mrujs.start()
@@ -21,5 +21,6 @@ import { Tooltip, Toast, Popover } from "bootstrap"
 import "application.scss"
 
 import "./src/sortable"
+import "./page_navigation_loader"
 
 const images = require.context("./images", true)

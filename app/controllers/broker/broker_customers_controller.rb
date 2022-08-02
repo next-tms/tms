@@ -1,13 +1,21 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomersController < Broker::BrokerController
+  ALLOWED_ACCESS_FOR_DISPATCHER = %W[show shipments]
+
   before_action :set_broker_customer,
                 only: %i[contacts edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing
                          primary_pickup_address receivables sales_reps shipments show update]
   before_action :authenticate_user!
 
+  before_action :validate_user_role!, only: %i[update show contacts shipments]
+
   def index
-    @q = current_user.broker_customers.includes(:customer).ransack(params[:q])
+    if current_user.dispatcher_only?
+      @q = current_user.broker.broker_customers.includes(:customer).ransack(params[:q])
+    else
+      @q = current_user.broker_customers.includes(:customer).ransack(params[:q])
+    end
 
     @q.sorts = "#{Customer.table_name.singularize}_name" if @q.sorts.blank?
     @pagy, @broker_customers = pagy(@q.result)
@@ -93,10 +101,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def update
-    if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
-      unauthorized
-    end
-
     @broker_customer.assign_attributes(broker_customer_params)
     @broker_customer.sales_reps |= @broker_customer.sales_reps
 
@@ -110,9 +114,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def show
-    if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
-      unauthorized
-    end
     if @broker_customer.broker == current_user.broker
       @shipments = @broker_customer.shipments.order(load_id: :desc).limit(25)
       @customer_contacts = @broker_customer.customer.customer_contacts
@@ -129,10 +130,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def contacts
-    if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
-      unauthorized
-    end
-
     @q = @broker_customer.contacts.ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
@@ -150,10 +147,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def shipments
-    if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
-      unauthorized
-    end
-
     @q = @broker_customer
          .shipments
          .includes(
@@ -170,6 +163,14 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   private
+
+  def validate_user_role!
+    return if ALLOWED_ACCESS_FOR_DISPATCHER.include?(action_name) && current_user.dispatcher_only?
+
+    if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
+      unauthorized
+    end
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_broker_customer

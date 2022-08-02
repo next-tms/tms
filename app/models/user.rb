@@ -107,6 +107,7 @@ class User < ApplicationRecord
 
   after_save :reassign_problems
   after_save :reassign_shipments
+  after_save :send_invitation
 
   before_validation :set_contact
   before_validation :set_time_zone_name
@@ -162,6 +163,10 @@ class User < ApplicationRecord
     end
   end
 
+  def dispatcher_only?
+    roles.count == 1 && has_role?('dispatch')
+  end
+
   def dispatcher_for?(shipment)
     return false if shipment.blank?
 
@@ -189,6 +194,10 @@ class User < ApplicationRecord
     commissions.where(
       shipment: shipments.where(delivered_at: from..to)
     )
+  end
+
+  def has_any_roles?(role_arr)
+    role_arr.map(&method(:has_role?)).any?(true)
   end
 
   def has_role?(role_name)
@@ -223,7 +232,9 @@ class User < ApplicationRecord
 
     return broker.users.broker if has_role?('root')
 
-    User.where(id: UserRole.where(role: roles).where(user: broker.users.broker).pluck(:user_id))
+    scope = roles - [Role.find_by_name('sales_rep')]
+
+    User.where(id: UserRole.where(role: scope).where(user: broker.users.broker).pluck(:user_id))
   end
 
   def eligible_problems
@@ -283,6 +294,12 @@ class User < ApplicationRecord
       shipment.assign_dispatcher
       shipment.save
     end
+  end
+
+  def send_invitation
+    return if invitation_accepted? || !saved_change_to_email?
+
+    invite!(invited_by)
   end
 
   def set_contact

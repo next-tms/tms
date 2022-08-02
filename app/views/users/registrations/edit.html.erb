@@ -10,7 +10,7 @@
 
   <div class="row">
     <div class="col-sm-4">
-      <p class="col-title"><%= icon 'fas', 'user', 'Profile' %>
+      <p class="col-title"><%= icon 'solid', 'user', 'Profile' %>
       <%= f.email_field :email, placeholder: 'Your email address', class: 'form-control', autofocus: true %>
       <%= f.phone_field :phone, placeholder: 'Your phone', class: 'form-control' %>
 
@@ -18,7 +18,7 @@
         <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
       <% end %>
 
-      <p class="col-title"><%= icon 'fas', 'key', 'Change Password' %>
+      <p class="col-title"><%= icon 'solid', 'key', 'Change Password' %>
       <p class="text-info">Only complete to change password:</p>
       <%= f.password_field :password, placeholder: 'Password', class: 'form-control' %>
       <%= f.password_field :password_confirmation, placeholder: 'New password confirmation', class: 'form-control' %>

@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 ruby '3.1.2'
 
 gem 'rails', '~> 7.0.3.1'
-gem 'pg', '~> 1.4.1'
+gem 'pg', '~> 1.4.2'
 gem 'puma', '~> 5.6.4'
 gem 'shakapacker', '~> 6.5.0'
 gem 'jbuilder', '~> 2.11'
@@ -15,7 +15,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 5.1'
   gem 'factory_bot_rails'
   gem 'shoulda-matchers', '5.1.0'
-  gem 'faker', '~> 2.21.0'
+  gem 'faker', '~> 2.22.0'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 
@@ -61,7 +61,7 @@ gem 'devise-pwned_password', '~> 0.1.9'
 gem 'turbo-rails', '~> 1.1.1'
 
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'ead8256c9ca0b47edf9cd9467b1fdca5e4f79161'
-gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next', ref: '4cc2ef6da281b22f981d35e4639f72e89bdf1443'
+gem 'interstellar-next', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next', ref: '378f237a1ed116c9b78f55a9ead8a980690fca9f'
 gem 'spacetime', git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime', ref: 'b430558c2458c6d674ec1803246ff5fcccacff94'
 
 gem 'honeybadger', '~> 4.12'
@@ -92,6 +92,8 @@ gem 'phony_rails'
 gem 'htmlentities'
 
 gem 'combine_pdf', '~> 1.0.22'
+gem 'prawn', '~> 2.4.0'
+gem 'prawn-labels', '~> 1.2.6', require: 'prawn/labels'
 gem 'wicked_pdf', '~> 2.6.3'
 # gem 'wkhtmltopdf-heroku', '~> 2.12.6.0', groups: %i[production staging]
 gem 'wkhtmltopdf-binary', '~> 0.12.6.5', groups: %i[production staging]

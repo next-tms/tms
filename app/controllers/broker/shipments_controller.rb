@@ -155,28 +155,22 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def show
-    unauthorized and return unless @shipment && @shipment.accessible_by?(current_user)
+    unauthorized and return unless @shipment&.accessible_by?(current_user)
 
-    if @shipment.quote_only?
-      redirect_to quote_broker_shipment_path(@shipment) and return
-    else
-      refresh_documents
-    end
+    redirect_to quote_broker_shipment_path(@shipment) and return if @shipment.quote_only?
   end
 
-  def documents
-    refresh_documents
-  end
+  def documents; end
 
   def send_document
     contact_ids = @shipment.broker.users.broker.pluck(:contact_id)
 
     if @shipment&.broker_customer&.contacts
-      contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer).pluck(:id)
+      contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer).ids
     end
 
     if @shipment&.broker_carrier&.contacts
-      contact_ids += @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).pluck(:id)
+      contact_ids += @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).ids
     end
 
     @contacts = Contact.distinct.where(id: contact_ids).order(:first_name)
@@ -519,7 +513,7 @@ class Broker::ShipmentsController < Broker::BrokerController
               false
             elsif @shipment.calculated_freight_classes.uniq == [nil] && @shipment.forced_freight_classes.uniq.nil?
               false
-            elsif @shipment.broker_customer.preferred_broker_carriers_kind
+            elsif @shipment.broker_customer.present? && @shipment.broker_customer.preferred_broker_carriers_kind
               case @shipment.broker_customer.preferred_broker_carriers_kind
               when 'whitelist'
                 (@shipment.broker_customer.eligible_broker_carriers.ids - @shipment.rates.pluck(:broker_carrier_id)).any?
@@ -546,14 +540,20 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     broker_carrier_ids = []
     broker_carrier_ids += if @shipment.broker_customer.blank?
-                            @shipment.broker.broker_carriers.blanket.api_configured.pluck(:id)
+                            @shipment.broker.broker_carriers.blanket.api_configured.ids
                           else
-                            @shipment.broker_customer.eligible_broker_carriers.api_configured.pluck(:id)
+                            @shipment.broker_customer.eligible_broker_carriers.api_configured.ids
                           end
 
-    broker_carrier_ids += PricingRule
-                          .where(broker_carrier: @shipment.broker_customer.eligible_broker_carriers)
-                          .pluck(:broker_carrier_id)
+    broker_carrier_ids += if @shipment.broker_customer.blank?
+                            PricingRule
+                              .where(broker_carrier: @shipment.broker.broker_carriers.blanket.api_unconfigured.ids)
+                              .pluck(:broker_carrier_id)
+                          else
+                            PricingRule
+                              .where(broker_carrier: @shipment.broker_customer.eligible_broker_carriers)
+                              .pluck(:broker_carrier_id)
+                          end
 
     @broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
 
@@ -582,31 +582,6 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def set_shipment_by_load_id
     @shipment = Shipment.find_by_load_id(params[:load_id])
-  end
-
-  def refresh_documents
-    unless @shipment.broker_quote_valid?
-      CreateShipmentBrokerQuoteJob.perform_later(
-        domain: @website.homepage_domain,
-        shipment: @shipment
-      )
-    end
-
-    return if @shipment.incomplete?
-
-    unless @shipment.broker_bol_valid?
-      CreateShipmentBrokerBolJob.perform_later(
-        domain: @website.homepage_domain,
-        shipment: @shipment
-      )
-    end
-
-    unless @shipment.broker_dispatch_sheet_valid?
-      CreateShipmentBrokerDispatchSheetJob.perform_later(
-        domain: @website.homepage_domain,
-        shipment: @shipment
-      )
-    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

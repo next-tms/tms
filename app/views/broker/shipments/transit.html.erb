@@ -7,7 +7,7 @@
   <div class="row">
 
     <div class="col-sm-4">
-      <p class="col-title"><%= icon 'fas', 'truck', 'Carrier' %>
+      <p class="col-title"><%= icon 'solid', 'truck', 'Carrier' %>
       <div class="form-group row">
         <label class="col-form-label col-sm-4">Carrier</label>
         <div class="col-sm-8">
@@ -28,7 +28,7 @@
     </div>
 
     <div class="col-sm-4">
-      <p class="col-title"><%= icon 'fas', 'truck-loading', 'Pickup' %></p>
+      <p class="col-title"><%= icon 'solid', 'truck-loading', 'Pickup' %></p>
         <%= f.text_field :pickup_on, label: 'Pickup On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.pickup_on, time_zone: f.object.shipper_address.time_zone) %>
       <% unless @shipment.broker_carrier.blank? %>
         <%= f.text_field :dispatched_at, label: 'Dispatched', autocomplete: 'off', data: flatpickr_datetime_data(f.object.dispatched_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.dispatched_at, time_zone: f.object.shipper_address.time_zone) %>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="col-sm-4">
-      <p class="col-title"><%= icon 'fas', 'people-carry', 'Delivery' %></p>
+      <p class="col-title"><%= icon 'solid', 'people-carry', 'Delivery' %></p>
       <%= f.text_field :promised_delivery_by, label: 'Promised By', autocomplete: 'off', data: flatpickr_datetime_data(f.object.promised_delivery_by, f.object.receiver_address.time_zone), value: maybe_in_time_zone(datetime: f.object.promised_delivery_by, time_zone: f.object.receiver_address.time_zone) %>
       <% unless @shipment.broker_carrier.blank? %>
         <%= f.text_field :delivery_eta_on, label: 'ETA', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.delivery_eta_on, time_zone: f.object.receiver_address.time_zone) %>

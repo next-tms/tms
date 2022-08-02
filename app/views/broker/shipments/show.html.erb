@@ -6,6 +6,18 @@
 
 <%= render 'member_header' %>
 
+<% if (current_user.has_role?('dispatcher') || current_user.has_role?('root')) &&
+      @shipment.dispatcher != current_user && @shipment.picked_up_at.blank?
+%>
+  <div class="alert alert-warning">
+    <p class="lead">You’re not the dispatcher</p>
+
+    <div class="btn-toolbar">
+      <%= button_to 'Become Dispatcher', { shipment: { dispatcher_id: current_user.id } }, method: :patch, class: 'btn btn-warning' %>
+    </div>
+  </div>
+<% end %>
+
 <% problems = @shipment.problems.unresolved.or(@shipment.problems.resolved.where('resolved_at >= ?', 4.hours.ago)).order(:created_at, :resolved_at) %>
 <% if problems.any? %>
   <div class="alert">

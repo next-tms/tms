@@ -16,7 +16,19 @@
   </div>
 
   <div class="form-group row">
-    <%= f.select :broker_customer_id, Customer.where(id: current_user.broker.broker_customers.includes(:customer).pluck(:customer_id)).order(:name).all.collect {|c| [ c.name, c.id ] }, { label: 'Customer', help: 'Only if user is a customer', include_blank: 'None (Internal Staff)' }, class: 'form-select' %>
+    <%= f.select :broker_customer_id,
+                  current_user
+                  .broker_customers
+                  .includes(:customer)
+                  .order('customers.name')
+                  .collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] },
+                  {
+                    label: 'Customer',
+                    help: 'Only if user is a customer',
+                    include_blank: 'None (Internal Staff)'
+                  },
+                  class: 'form-select'
+    %>
   </div>
 
   <div class="form-group row">
