@@ -194,6 +194,10 @@ class User < ApplicationRecord
     )
   end
 
+  def has_any_roles?(role_arr)
+    role_arr.map(&method(:has_role?)).any?(true)
+  end
+
   def has_role?(role_name)
     @role_names ||= roles.pluck(:name)
     return true if @role_names.include?('root')

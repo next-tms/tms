@@ -20,7 +20,7 @@
       </li>
     <% end %>
 
-    <% if current_user.has_role?('root') || current_user.has_role?('sales_rep') || current_user.has_role?('dispatch') %>
+    <% if current_user.has_any_roles?(%w[root sales_rep dispatch]) %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'handshake', 'Customers'), broker_broker_customers_path, class: 'broker-customers' %>
       </li>
