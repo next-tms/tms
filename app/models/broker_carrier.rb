@@ -95,6 +95,10 @@ class BrokerCarrier < ApplicationRecord
     !((account.blank? && username.blank?) || password.blank?)
   end
 
+  def bol_requires_tracking_number?
+    !ignore_bol_requires_tracking_number && as_interstellar_carrier&.bol_requires_tracking_number?
+  end
+
   def broker_customer_specific_name
     if broker_customer.blank?
       carrier.name
