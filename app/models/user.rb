@@ -161,6 +161,10 @@ class User < ApplicationRecord
     end
   end
 
+  def dispatcher_only?
+    roles.count == 1 && has_role?('dispatch')
+  end
+
   def dispatcher_for?(shipment)
     return false if shipment.blank?
 
