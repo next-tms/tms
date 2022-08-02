@@ -1152,7 +1152,6 @@ class Shipment < ApplicationRecord
   end
 
   def send_notification
-    binding.pry
     changed_attributes.each_key do |key|
       return false if !UserMailer.respond_to?(key) || changes[key][1].blank?
 
