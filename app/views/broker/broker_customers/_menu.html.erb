@@ -1,4 +1,7 @@
 <nav class="nav border-top pt-4 mb-0">
   <%= link_to 'All', broker_broker_customers_path, class: 'nav-link broker-customers-index' %>
-  <%= link_to 'Profitability', broker_customers_profitability_report_path, class: 'nav-link broker-customers-profitability-report' %>
+
+  <% if current_user.has_any_roles?(['root', 'sales_rep']) %>
+    <%= link_to 'Profitability', broker_customers_profitability_report_path, class: 'nav-link broker-customers-profitability-report' %>
+  <% end %>
 </nav>
