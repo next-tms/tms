@@ -161,6 +161,10 @@ class User < ApplicationRecord
     end
   end
 
+  def dispatcher_only?
+    roles.count == 1 && has_role?('dispatch')
+  end
+
   def dispatcher_for?(shipment)
     return false if shipment.blank?
 
@@ -188,6 +192,10 @@ class User < ApplicationRecord
     commissions.where(
       shipment: shipments.where(delivered_at: from..to)
     )
+  end
+
+  def has_any_roles?(role_arr)
+    role_arr.map(&method(:has_role?)).any?(true)
   end
 
   def has_role?(role_name)
