@@ -42,6 +42,8 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def create
     @broker_carrier = BrokerCarrier.new(broker_carrier_params)
     @broker_carrier.broker = current_user.broker
+    @broker_carrier.ignore_bol_requires_tracking_number = current_user.broker.ignore_broker_carrier_bol_requires_tracking_number?
+
     if @broker_carrier.save
       redirect_to [:broker, @broker_carrier]
     else
@@ -88,10 +90,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @broker_carrier.assign_attributes(broker_carrier_params)
     update_documents = @broker_carrier.will_save_change_to_account? || @broker_carrier.will_save_change_to_username? || @broker_carrier.will_save_change_to_password?
 
-    if !@broker_carrier.save
-      flash[:error] = 'Unable to update carrier'
-      render :edit
-    else
+    if @broker_carrier.save
       if update_documents && @broker_carrier.api_configured?
         shipments = @broker_carrier.shipments.where('created_at > ?', 90.days.ago)
         unless shipments.blank?
@@ -107,8 +106,11 @@ class Broker::BrokerCarriersController < Broker::BrokerController
         end
       end
 
-      redirect_to [:broker, @broker_carrier]
+      redirect_to [:broker, @broker_carrier] and return
     end
+
+    flash[:error] = 'Unable to update carrier'
+    render :edit
   end
 
   def contacts
@@ -145,25 +147,47 @@ class Broker::BrokerCarriersController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def broker_carrier_params
-    params.require(:broker_carrier).permit(:id,
-                                           :account_desc,
-                                           :account,
-                                           :accounting_notes,
-                                           :broker_customer_id,
-                                           :broker_id,
-                                           :carrier_id,
-                                           :create_invoice_on_pickup,
-                                           :customer_id,
-                                           :days_to_pay_after_invoice_date,
-                                           :default_bol_notes,
-                                           :password,
-                                           :username,
-                                           :website_password,
-                                           :website_username,
-                                           check_mailing_address_attributes: %i[id ref country_id street street2 city region_id
-                                                                                zip_code],
-                                           overlength_rules_attributes: %i[_destroy id max_length min_length cost],
-                                           pricing_rules_attributes: %i[id carrier_area_id max_pallets min_pallets
-                                                                        cost_per_pallet])
+    params.require(:broker_carrier).permit(
+      :id,
+      :account_desc,
+      :account,
+      :accounting_notes,
+      :broker_customer_id,
+      :broker_id,
+      :carrier_id,
+      :create_invoice_on_pickup,
+      :customer_id,
+      :days_to_pay_after_invoice_date,
+      :default_bol_notes,
+      :ignore_bol_requires_tracking_number,
+      :password,
+      :username,
+      :website_password,
+      :website_username,
+      check_mailing_address_attributes: %i[
+        id
+        ref
+        country_id
+        street
+        street2
+        city
+        region_id
+        zip_code
+      ],
+      overlength_rules_attributes: %i[
+        _destroy
+        id
+        max_length
+        min_length
+        cost
+      ],
+      pricing_rules_attributes: %i[
+        id
+        carrier_area_id
+        cost_per_pallet
+        max_pallets
+        min_pallets
+      ]
+    )
   end
 end

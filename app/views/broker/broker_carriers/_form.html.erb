@@ -30,6 +30,8 @@
     </div>
   </div>
 
+  <%= f.text_area :default_bol_notes, label: 'Default BOL Notes', rows: 7 %>
+
   <% unless f.object.carrier&.as_interstellar_carrier&.blank? %>
     <h3>
       <% if f.object.carrier&.has_seperate_website_credentials? %>
@@ -47,9 +49,13 @@
       <%= f.text_field :website_username, placeholder: 'Username', autocomplete: 'off' %>
       <%= f.text_field :website_password, placeholder: 'Password', autocomplete: 'off' %>
     <% end %>
-  <% end %>
 
-  <%= f.text_area :default_bol_notes, label: 'Default BOL Notes', rows: 7 %>
+    <% if f.object.persisted? && f.object.as_interstellar_carrier.bol_requires_tracking_number? %>
+      <%= f.check_box :ignore_bol_requires_tracking_number,
+                      label: 'Generate BOL even if pro is missing?'
+        %>
+    <% end %>
+  <% end %>
 
   <%= f.form_group do %>
     <%= f.submit class: 'btn btn-primary', data: { turbo: false }, value: 'Save' %>
