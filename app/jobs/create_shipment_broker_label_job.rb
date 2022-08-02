@@ -4,6 +4,8 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
   queue_as :high_priority
 
   def perform(shipment:)
+    return unless create_broker_label?
+
     shipment.broadcast_outdated_document(:broker_label)
 
     items_count = shipment.items.sum(:quantity)
@@ -58,5 +60,14 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
     shipment.broadcast_new_document_generated(:broker_label)
 
     file.unlink
+  end
+
+  private
+
+  def create_broker_label?
+    return true unless shipment.broker_label.attached?
+    return true unless shipment.broker_bol.attached?
+
+    shipment.broker_label.created_at < shipment.broker_bol.created_at
   end
 end
