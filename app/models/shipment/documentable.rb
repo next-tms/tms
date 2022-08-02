@@ -33,7 +33,7 @@ module Shipment::Documentable
     has_one_attached :broker_carrier_quote
 
     def broker_bol_valid?
-      return false if broker_carrier&.as_interstellar_carrier&.bol_requires_tracking_number? && pro.blank?
+      return false if broker_carrier&.bol_requires_tracking_number? && pro.blank?
 
       @broker_bol_valid ||= broker_bol.attached? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
     end
