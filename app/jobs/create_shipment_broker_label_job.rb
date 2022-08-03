@@ -4,7 +4,7 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
   queue_as :high_priority
 
   def perform(shipment:)
-    return unless create_broker_label?
+    return unless create_broker_label?(shipment)
 
     shipment.broadcast_outdated_document(:broker_label)
 
@@ -64,7 +64,7 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
 
   private
 
-  def create_broker_label?
+  def create_broker_label?(shipment)
     return true unless shipment.broker_label.attached?
     return true unless shipment.broker_bol.attached?
 
