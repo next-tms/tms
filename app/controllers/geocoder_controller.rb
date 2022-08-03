@@ -15,4 +15,20 @@ class GeocoderController < ApplicationController
 
     render json: { city: address['city'] || address['town'], state: address['state'] }
   end
+
+  def fetch_address_by_broker_customer
+    broker_customer = BrokerCustomer.find(params[:broker_customer_id])
+    render json: { error: "No BrokerCustomer Found" } and return if broker_customer.blank?
+
+    address = broker_customer.primary_pickup_address
+    render json: { error: "No Address Found" } and return if address.blank?
+
+    render json: {
+      city: address.city,
+      state: address.region.name,
+      street: address.street,
+      street2: address.street2,
+      zip_code: address.zip_code
+    }
+  end
 end
