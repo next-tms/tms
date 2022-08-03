@@ -20,7 +20,7 @@ group :development, :test do
 end
 
 group :development do
-  gem 'annotate', git: 'https://github.com/dabit/annotate_models', branch: 'rails-7'
+  gem 'annotate', '~> 3.2.0'
   gem 'bullet', '~> 7.0.2'
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.8'
