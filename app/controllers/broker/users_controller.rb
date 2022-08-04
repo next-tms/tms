@@ -3,7 +3,7 @@
 class Broker::UsersController < Broker::BrokerController
   before_action :set_user, only: %i[destroy edit show update]
   before_action :authenticate_user!
-  before_action :restrict_to_root
+  before_action :restrict_to_root, except: %i[impersonate stop_impersonating]
 
   def index
     @q = current_user.broker.users.includes(required_includes).ransack(params[:q])
@@ -22,6 +22,19 @@ class Broker::UsersController < Broker::BrokerController
     else
       render :edit
     end
+  end
+
+  def impersonate
+    user = User.find(params[:id])
+    impersonate_user(user)
+    redirect_to root_path
+  end
+
+  def stop_impersonating
+    stop_impersonating_user
+
+    flash[:notice] = "You are now back in the Broker's Dashboard!"
+    redirect_to root_path
   end
 
   private

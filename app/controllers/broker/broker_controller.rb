@@ -31,7 +31,8 @@ class Broker::BrokerController < ApplicationController
   end
 
   def restrict_to_broker_users
-    unless current_user&.broker?
+    user = true_user || current_user
+    unless user&.broker?
       store_location_for(:user, request.fullpath) if request.get?
 
       flash[:error] = 'Not authorized'
