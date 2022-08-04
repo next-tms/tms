@@ -41,16 +41,6 @@
   </head>
 
   <body data-controller="active" data-active-controller-value="<%= controller.controller_name.gsub('_', '-') %>" data-active-action-value="<%= action_name.gsub('_', '-') %>">
-    <div class="loading" id="spinner">
-      <div class="preloader-wrapper active -custom-centered" id="spinnerCircle">
-        <div class="spinner-border text-primary" role="status" style="width: inherit; height: inherit;">
-          <span class="sr-only">Loading...</span>
-        </div>
-
-        <div class='preloader-text d-none' id='spinnerText'></div>
-      </div>
-    </div>
-
     <turbo-frame id="modal"></turbo-frame>
 
     <% flash.each do |type, message| %>
