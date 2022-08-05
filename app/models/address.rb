@@ -177,7 +177,9 @@ class Address < ApplicationRecord
     return unless full_address?
 
     find_or_build_standardized_address
-    standardized_address.save unless standardized_address.persisted?
+    standardized_address.save
+
+    return unless standardized_address.persisted?
 
     self.street = standardized_address.street || street
     self.street2 = standardized_address.street2 || street2
