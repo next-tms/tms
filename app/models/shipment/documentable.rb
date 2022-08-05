@@ -5,7 +5,7 @@ module Shipment::Documentable
   include ActionView::RecordIdentifier
 
   included do
-    after_save :refresh_documents
+    after_commit :refresh_documents
 
     has_one_attached :broker_bol
     has_one_attached :broker_dispatch_sheet
