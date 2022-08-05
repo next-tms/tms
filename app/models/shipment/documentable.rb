@@ -5,23 +5,7 @@ module Shipment::Documentable
   include ActionView::RecordIdentifier
 
   included do
-    after_commit { refresh_documents }
-
-    after_save do
-      broker_bol.purge unless broker_bol_valid?
-    end
-
-    after_save do
-      broker_dispatch_sheet.purge unless broker_dispatch_sheet_valid?
-    end
-
-    after_save do
-      broker_label.purge unless broker_bol_valid?
-    end
-
-    after_save do
-      broker_quote.purge unless broker_quote_valid?
-    end
+    after_save :refresh_documents
 
     has_one_attached :broker_bol
     has_one_attached :broker_dispatch_sheet
@@ -31,20 +15,6 @@ module Shipment::Documentable
     has_one_attached :carrier_label # TODO: Rename to carrier_bol
     has_one_attached :carrier_pod
     has_one_attached :broker_carrier_quote
-
-    def broker_bol_valid?
-      return false if broker_carrier&.as_interstellar_carrier&.bol_requires_tracking_number? && pro.blank?
-
-      @broker_bol_valid ||= broker_bol.attached? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
-    end
-
-    def broker_dispatch_sheet_valid?
-      @broker_dispatch_sheet_valid ||= broker_dispatch_sheet.attached? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
-    end
-
-    def broker_quote_valid?
-      @broker_quote_valid ||= broker_quote.attached? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
-    end
 
     def broadcast_new_document_generated(document_type)
       partial = if %i[broker_dispatch_sheet broker_carrier_quote].include?(document_type)
@@ -62,12 +32,6 @@ module Shipment::Documentable
     end
 
     def broadcast_outdated_document(document_type)
-      partial = if %i[broker_dispatch_sheet broker_carrier_quote].include?(document_type)
-                  "broker/shipments/documents/#{document_type}"
-                else
-                  "shipments/documents/#{document_type}"
-                end
-
       target = "#{dom_id(self)}_#{document_type}"
 
       broadcast_replace_to(
@@ -77,22 +41,67 @@ module Shipment::Documentable
         html: "<tr id=\"#{target}\"></tr>".html_safe
       )
     end
+
+    def broker_bol_valid?
+      broker_bol.attached? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
+    end
+
+    def broker_carrier_bol_requires_tracking_number?
+      !!broker_carrier&.bol_requires_tracking_number?
+    end
+
+    def broker_dispatch_sheet_valid?
+      broker_dispatch_sheet.attached? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
+    end
+
+    def broker_quote_valid?
+      broker_quote.attached? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
+    end
+
+    def can_create_broker_bol?
+      !incomplete? && !broker_bol_valid? && !(broker_carrier_bol_requires_tracking_number? && pro.blank?)
+    end
+
+    def can_create_broker_label?
+      return true unless broker_label.attached?
+    end
+
+    def can_create_broker_dispatch_sheet?
+      !incomplete? && !broker_dispatch_sheet_valid? && !(broker_carrier_bol_requires_tracking_number? && pro.blank?)
+    end
+
+    def can_create_broker_quote?
+      !broker_quote_valid?
+    end
   end
 
   private
 
   def refresh_documents
+    # DANGER: ActiveStorage touches the record, creating an endless loop without:
+    return if changes.empty? && saved_changes.keys == ['updated_at']
+
     domain = broker.websites.first.homepage_domain
 
-    CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: self) unless broker_quote_valid?
+    if can_create_broker_quote?
+      broker_quote.purge
+      CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: self)
+    end
 
-    return if incomplete?
-
-    unless broker_bol_valid?
+    if can_create_broker_bol?
+      broker_bol.purge
+      broker_label.purge # for can_create_broker_label? below
       CreateShipmentBrokerBolJob.perform_later(domain:, shipment: self)
+    end
+
+    if can_create_broker_label?
+      broker_label.purge
       CreateShipmentBrokerLabelJob.perform_later(shipment: self)
     end
 
-    CreateShipmentBrokerDispatchSheetJob.perform_later(domain:, shipment: self) unless broker_dispatch_sheet_valid?
+    return unless can_create_broker_dispatch_sheet?
+
+    broker_dispatch_sheet.purge
+    CreateShipmentBrokerDispatchSheetJob.perform_later(domain:, shipment: self)
   end
 end

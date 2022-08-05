@@ -21,6 +21,13 @@
   </div>
 
   <div class="form-row">
+    <%=
+      f.check_box :ignore_broker_carrier_bol_requires_tracking_number,
+                  label: 'Generate BOL even if pro is missing and the carrier requires it?'
+    %>
+  </div>
+
+  <div class="form-row">
     <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>
   </div>
 <% end %>

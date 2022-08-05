@@ -158,7 +158,7 @@
   </ul>
   <%= simple_format shipment.broker.default_bol_notes %>
   <%= simple_format shipment.broker_carrier.default_bol_notes unless shipment.broker_carrier.blank? %>
-  <%= simple_format shipment.broker_customer.default_bol_notes %>
+  <%= simple_format shipment.broker_customer.default_bol_notes unless shipment.broker_customer.blank? %>
   <%= simple_format shipment.bol_notes %>
 
   <table>

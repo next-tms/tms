@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_25_171908) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_02_192439) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -163,6 +163,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_25_171908) do
     t.string "website_username"
     t.string "website_password"
     t.integer "shipments_count"
+    t.boolean "ignore_bol_requires_tracking_number", default: false
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
@@ -237,6 +238,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_25_171908) do
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.boolean "automatically_authorize_receivables", default: false
     t.boolean "automatically_update_shipment_tracking_based_on_carrier_apis", default: true
+    t.boolean "ignore_broker_carrier_bol_requires_tracking_number", default: false
     t.index ["address_id"], name: "index_brokers_on_address_id"
   end
 
@@ -271,6 +273,34 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_25_171908) do
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
     t.index ["name"], name: "index_carriers_on_name", unique: true
     t.index ["scac"], name: "index_carriers_on_scac", unique: true
+  end
+
+  create_table "claim_items", force: :cascade do |t|
+    t.bigint "claim_id", null: false
+    t.string "payee_type", null: false
+    t.bigint "payee_id", null: false
+    t.integer "balance_cents", default: 0, null: false
+    t.string "balance_currency", default: "USD", null: false
+    t.integer "total_cents", default: 0, null: false
+    t.string "total_currency", default: "USD", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["claim_id"], name: "index_claim_items_on_claim_id"
+    t.index ["payee_type", "payee_id"], name: "index_claim_items_on_payee"
+  end
+
+  create_table "claims", force: :cascade do |t|
+    t.bigint "shipment_id", null: false
+    t.date "due_on"
+    t.integer "balance_cents", default: 0, null: false
+    t.string "balance_currency", default: "USD", null: false
+    t.integer "total_cents", default: 0, null: false
+    t.string "total_currency", default: "USD", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["due_on"], name: "index_claims_on_due_on"
+    t.index ["shipment_id"], name: "index_claims_on_shipment_id"
   end
 
   create_table "commissions", force: :cascade do |t|
@@ -950,6 +980,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_25_171908) do
   add_foreign_key "carrier_contacts", "contacts"
   add_foreign_key "carriers", "addresses", column: "broker_billing_address_id"
   add_foreign_key "carriers", "addresses", column: "check_mailing_address_id"
+  add_foreign_key "claim_items", "claims"
+  add_foreign_key "claims", "shipments"
   add_foreign_key "commissions", "shipments"
   add_foreign_key "commissions", "users"
   add_foreign_key "contacts", "broker_carriers"

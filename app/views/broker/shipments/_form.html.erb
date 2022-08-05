@@ -2,7 +2,13 @@
   <%= f.alert_message 'Unable to create shipment:' %>
 
   <% unless @shipment.quote_only? %>
-    <%= f.select :broker_customer_id, current_user.broker_customers.includes(:customer).order('customers.name').collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@shipment.broker_customer ? @shipment.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, data: { action: 'autofill-shipper#handle', 'autofill-shipper-target': 'brokerCustomer' }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
+    <div data-controller="address">
+      <%= f.select :broker_customer_id,
+                  current_user.broker_customers.includes(:customer).order('customers.name').collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] },
+                  { label: 'Customer', selected: (@shipment.broker_customer ? @shipment.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) },
+                  data: { action: 'change->address#fillCustomerAddressByBrokerCustomerId' },
+                  class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
+    </div>
   <% end %>
 
   <% if current_user.has_role?('root') %>

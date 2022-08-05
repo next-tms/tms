@@ -74,6 +74,8 @@ class Broker < ApplicationRecord
   has_many :payment_transactions
 
   after_create :copy_accessorials_to_broker_accessorials
+  after_commit :update_broker_carrier_ignore_bol_requires_tracking_number
+
   before_save :unique_countries
 
   serialize :time_zone
@@ -120,5 +122,11 @@ class Broker < ApplicationRecord
 
   def unique_countries
     self.countries = countries.distinct unless countries.blank?
+  end
+
+  def update_broker_carrier_ignore_bol_requires_tracking_number
+    return unless saved_change_to_ignore_broker_carrier_bol_requires_tracking_number
+
+    broker_carriers.update_all(ignore_bol_requires_tracking_number: ignore_broker_carrier_bol_requires_tracking_number)
   end
 end

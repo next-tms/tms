@@ -39,6 +39,7 @@ Rails.application.routes.draw do
   get 'tracking' => 'tracking#show'
 
   post 'fetch_details_by_zip_code', to: 'geocoder#fetch_details_by_zip_code'
+  post 'fetch_address_by_broker_customer', to: 'geocoder#fetch_address_by_broker_customer'
 
   get 'gateway/accounts/intuit/authenticate', as: :authenticate_intuit_account, to: 'intuit_accounts#authenticate'
   get 'gateway/accounts/intuit/oauth-callback', as: :oauth_callback_intuit_account, to: 'intuit_accounts#oauth_callback'

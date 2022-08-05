@@ -4,6 +4,8 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
   queue_as :high_priority
 
   def perform(shipment:)
+    return unless shipment.can_create_broker_label?
+
     shipment.broadcast_outdated_document(:broker_label)
 
     items_count = shipment.items.sum(:quantity)
