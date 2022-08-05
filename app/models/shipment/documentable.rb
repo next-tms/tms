@@ -16,26 +16,6 @@ module Shipment::Documentable
     has_one_attached :carrier_pod
     has_one_attached :broker_carrier_quote
 
-    def broker_bol_valid?
-      return true if saved_change_to_broker_bol_shipment_fingerprint?
-
-      return false if broker_carrier&.bol_requires_tracking_number? && pro.blank?
-
-      broker_bol.attached? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
-    end
-
-    def broker_dispatch_sheet_valid?
-      return true if saved_change_to_broker_dispatch_sheet_shipment_fingerprint?
-
-      broker_dispatch_sheet.attached? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
-    end
-
-    def broker_quote_valid?
-      return true if saved_change_to_broker_quote_shipment_fingerprint?
-
-      broker_quote.attached? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
-    end
-
     def broadcast_new_document_generated(document_type)
       partial = if %i[broker_dispatch_sheet broker_carrier_quote].include?(document_type)
                   "broker/shipments/documents/#{document_type}"
@@ -61,27 +41,67 @@ module Shipment::Documentable
         html: "<tr id=\"#{target}\"></tr>".html_safe
       )
     end
+
+    def broker_bol_valid?
+      broker_bol.attached? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
+    end
+
+    def broker_carrier_bol_requires_tracking_number?
+      !!broker_carrier&.bol_requires_tracking_number?
+    end
+
+    def broker_dispatch_sheet_valid?
+      broker_dispatch_sheet.attached? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
+    end
+
+    def broker_quote_valid?
+      broker_quote.attached? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
+    end
+
+    def can_create_broker_bol?
+      !incomplete? && !broker_bol_valid? && !(broker_carrier_bol_requires_tracking_number? && pro.blank?)
+    end
+
+    def can_create_broker_label?
+      return true unless broker_label.attached?
+    end
+
+    def can_create_broker_dispatch_sheet?
+      !incomplete? && !broker_dispatch_sheet_valid? && !(broker_carrier_bol_requires_tracking_number? && pro.blank?)
+    end
+
+    def can_create_broker_quote?
+      !broker_quote_valid?
+    end
   end
 
   private
 
   def refresh_documents
-    broker_bol.purge unless broker_bol_valid?
-    broker_dispatch_sheet.purge unless broker_dispatch_sheet_valid?
-    broker_label.purge unless broker_bol_valid?
-    broker_quote.purge unless broker_quote_valid?
+    # DANGER: ActiveStorage touches the record, creating an endless loop without:
+    return if changes.empty? && saved_changes.keys == ['updated_at']
 
     domain = broker.websites.first.homepage_domain
 
-    CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: self) unless broker_quote_valid?
+    if can_create_broker_quote?
+      broker_quote.purge
+      CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: self)
+    end
 
-    return if incomplete?
-
-    unless broker_bol_valid?
+    if can_create_broker_bol?
+      broker_bol.purge
+      broker_label.purge # for can_create_broker_label? below
       CreateShipmentBrokerBolJob.perform_later(domain:, shipment: self)
+    end
+
+    if can_create_broker_label?
+      broker_label.purge
       CreateShipmentBrokerLabelJob.perform_later(shipment: self)
     end
 
-    CreateShipmentBrokerDispatchSheetJob.perform_later(domain:, shipment: self) unless broker_dispatch_sheet_valid?
+    return unless can_create_broker_dispatch_sheet?
+
+    broker_dispatch_sheet.purge
+    CreateShipmentBrokerDispatchSheetJob.perform_later(domain:, shipment: self)
   end
 end
