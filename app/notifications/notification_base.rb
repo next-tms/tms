@@ -4,9 +4,9 @@ class NotificationBase < Noticed::Base
               mailer: :mailer_class,
               method: :mailer_method,
               format: :mailer_params,
-              delay: 1.minute,
+              delay: 2.minutes,
               if: :unread?
-              # Deliver Email Notification if after 10 minutes the user hasn't viewed
+              # Deliver Email Notification if after 2 minutes the user hasn't viewed
               # the notification in the dashboard
 
   include ActionView::Helpers::UrlHelper # For link_to
