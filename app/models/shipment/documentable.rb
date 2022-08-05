@@ -5,14 +5,7 @@ module Shipment::Documentable
   include ActionView::RecordIdentifier
 
   included do
-    after_save do
-      broker_bol.purge unless broker_bol_valid?
-      broker_dispatch_sheet.purge unless broker_dispatch_sheet_valid?
-      broker_label.purge unless broker_bol_valid?
-      broker_quote.purge unless broker_quote_valid?
-
-      refresh_documents
-    end
+    after_save :refresh_documents
 
     has_one_attached :broker_bol
     has_one_attached :broker_dispatch_sheet
@@ -24,16 +17,22 @@ module Shipment::Documentable
     has_one_attached :broker_carrier_quote
 
     def broker_bol_valid?
+      return true if saved_change_to_broker_bol_shipment_fingerprint?
+
       return false if broker_carrier&.bol_requires_tracking_number? && pro.blank?
 
       broker_bol.attached? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
     end
 
     def broker_dispatch_sheet_valid?
+      return true if saved_change_to_broker_dispatch_sheet_shipment_fingerprint?
+
       broker_dispatch_sheet.attached? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
     end
 
     def broker_quote_valid?
+      return true if saved_change_to_broker_quote_shipment_fingerprint?
+
       broker_quote.attached? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
     end
 
@@ -67,6 +66,11 @@ module Shipment::Documentable
   private
 
   def refresh_documents
+    broker_bol.purge unless broker_bol_valid?
+    broker_dispatch_sheet.purge unless broker_dispatch_sheet_valid?
+    broker_label.purge unless broker_bol_valid?
+    broker_quote.purge unless broker_quote_valid?
+
     domain = broker.websites.first.homepage_domain
 
     CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: self) unless broker_quote_valid?
