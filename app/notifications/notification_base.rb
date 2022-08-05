@@ -12,12 +12,12 @@ class NotificationBase < Noticed::Base
   include ActionView::Helpers::UrlHelper # For link_to
 
   def raw_content
-    shipment = params[:shipment]
+    shipment = params[:shipment] || mapped_shipment
     host = shipment.broker_customer.broker.websites.first.domain
     host = 'localhost:3000' if Rails.env.development?
 
     "
-    <p> #{notification_subject} </p>
+    <p><b> #{notification_subject} </b></p>
 
     <p>From:</p>
     <address>

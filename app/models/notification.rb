@@ -26,5 +26,18 @@
 #
 class Notification < ApplicationRecord
   include Noticed::Model
+  include ActionView::RecordIdentifier
+
   belongs_to :recipient, polymorphic: true
+
+  after_create :broadcast_unread_notifications_by_turbo
+
+  def broadcast_unread_notifications_by_turbo
+    broadcast_update_to(
+      self.recipient,
+      :notifications,
+      target: "#{dom_id(self.recipient)}_unread_notifications_count",
+      html: self.recipient.notifications.unread.count
+    )
+  end
 end

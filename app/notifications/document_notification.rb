@@ -38,6 +38,6 @@ class DocumentNotification < NotificationBase
   end
 
   def notification_subject
-    "Your #{humanized_document_type} is attached for the following shipment (Load ##{shipment.load_id})"
+    "Your #{humanized_document_type} is attached for the following shipment (Load ##{params[:shipment].load_id})"
   end
 end
