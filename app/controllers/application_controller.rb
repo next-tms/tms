@@ -2,6 +2,7 @@
 
 class ApplicationController < ActionController::Base
   include Pagy::Backend
+  impersonates :user
 
   before_action :add_floc_opt_out_header
   before_action :check_website, :check_if_website_belongs_to_broker, unless: :global_controller?

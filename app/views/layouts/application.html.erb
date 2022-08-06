@@ -43,17 +43,37 @@
   <body data-controller="active" data-active-controller-value="<%= controller.controller_name.gsub('_', '-') %>" data-active-action-value="<%= action_name.gsub('_', '-') %>">
     <turbo-frame id="modal"></turbo-frame>
 
+    <%= render 'layouts/nav' %>
+
     <% flash.each do |type, message| %>
       <% next if type.to_s == 'timedout' %>
 
       <div class="flash-alert alert alert-<%= flash_class type %> mb-0 border-0 rounded-0">
         <div class="container-fluid">
-          <p><%= message %></p>
+          <span><%= message %></span>
         </div>
       </div>
     <% end %>
 
-    <%= render 'layouts/nav' %>
+    <% if current_user != true_user %>
+      <div class="flash-alert alert alert-danger mb-0 border-0 rounded-0">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-auto">
+              You are impersonating <%= current_user.full_name %> from <%= current_user.broker_customer.customer.name %>.
+            </div>
+
+            <div class="col text-md-end">
+              <%= link_to 'Stop Impersonating',
+                          stop_impersonating_broker_users_path,
+                          class: 'btn btn-sm btn-danger text-light',
+                          data: { turbo_method: :delete, turbo_target: :_top }
+              %>
+            </div>
+         </div>
+        </div>
+      </div>
+    <% end %>
 
     <div class="container-fluid">
       <div class="row">
