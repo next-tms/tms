@@ -24,7 +24,15 @@ class SendReceivablesJob < ApplicationJob
           content_type = receivable.shipment.carrier_bol.content_type
 
           if content_type == 'application/pdf'
-            pdf << CombinePDF.parse(receivable.shipment.carrier_bol.download)
+            download = receivable.shipment.carrier_bol.download
+
+            begin
+              pdf << CombinePDF.parse(download)
+            rescue CombinePDF::ParsingError => e
+              message = "raising CombinePDF::ParsingError(#{e.message}), download was: #{download} (#{download.class})"
+              Honeybadger.notify(download)
+              raise
+            end
           else
             data = receivable.shipment.carrier_bol.download
 
