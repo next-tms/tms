@@ -26,6 +26,7 @@ group :development do
   gem 'listen', '>= 3.0.5', '< 3.8'
   gem 'spring', '~> 4.0.0'
   gem 'traceroute'
+  gem 'letter_opener'
 end
 
 group :test do
@@ -110,4 +111,5 @@ gem 'rss_creator'
 # Use Redis for Action Cable
 gem 'redis', '~> 4.7'
 gem 'audited'
+gem "noticed"
 gem 'pretender'

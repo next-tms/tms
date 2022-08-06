@@ -130,6 +130,8 @@ class User < ApplicationRecord
 
   has_many :problems, foreign_key: 'assigned_to_id'
 
+  has_many :notifications, as: :recipient
+
   phony_normalize :phone, default_country_code: 'US'
 
   validates :time_zone_name, presence: true

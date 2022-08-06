@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand">
+<nav class="navbar navbar-expand sticky-top">
   <div class="container-fluid">
     <% url = user_signed_in? ? root_path : @website.homepage %>
 
@@ -25,9 +25,22 @@
     </ul>
 
     <% if current_user && current_user.broker? %>
-      <%= bootstrap_form_tag(url: broker_search_path, layout: :inline, method: 'get') do |f| %>
-        <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search' %>
-      <% end %>
+      <div class='d-flex'>
+        <%= bootstrap_form_tag(url: broker_search_path, layout: :inline, method: 'get') do |f| %>
+          <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search' %>
+        <% end %>
+
+        <%= turbo_stream_from current_user, :notifications %>
+
+        <%= link_to notifications_path, class: "btn btn-primary position-relative ms-4" do %>
+          <%= icon('solid', 'bell') %>
+          <span id="<%= dom_id(current_user) %>_unread_notifications_count"
+                class="position-absolute start-100 translate-middle badge rounded-pill bg-danger"
+                style="top: 15%">
+            <%= current_user.notifications.unread.count %>
+          </span>
+        <% end %>
+      </div>
     <% elsif current_user && current_user.customer? %>
       <%= bootstrap_form_tag(url: customer_search_path, layout: :inline, method: 'get') do |f| %>
         <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search' %>

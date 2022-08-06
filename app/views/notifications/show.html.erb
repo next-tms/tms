@@ -1,0 +1,7 @@
+<%= link_to notifications_path do %>
+  <div class="page-header mb-4">
+    <%= icon 'solid', 'arrow-left' %> Back to Notifications
+  </div>
+<% end %>
+
+<%= @notification.to_notification.raw_content.html_safe %>

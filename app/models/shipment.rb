@@ -1141,15 +1141,25 @@ class Shipment < ApplicationRecord
   def notify_of_new_shipment
     return if Rails.env.test?
 
-    UserMailer.new_shipment(self).deliver_now
+    notification = ShipmentNotification.with(shipment: self, attribute_changed: :new_shipment)
+    notification.deliver_later(users_to_notify)
+  end
+
+  def users_to_notify
+    user_ids = (broker_customer&.sales_reps&.ids || []) +
+               (broker.users.with_role('dispatch')&.ids || []) -
+               [updated_by_id]
+
+    User.distinct.active.where(id: user_ids)
   end
 
   def send_notification
     changed_attributes.each_key do |key|
       return false if !UserMailer.respond_to?(key) || changes[key][1].blank?
 
-      mailer = UserMailer.send(key, self)
-      mailer.deliver_now
+      notification = ShipmentNotification.with(shipment: self, attribute_changed: key)
+
+      notification.deliver_later(users_to_notify)
     end
   end
 end

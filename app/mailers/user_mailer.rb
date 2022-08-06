@@ -2,6 +2,8 @@ class UserMailer < ApplicationMailer
   default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
   helper :application
 
+  before_action :set_shipment, except: %i[send_welcome pickup_service_dispatched]
+
   def send_welcome(user)
     @user = user
     @broker = @user.customer? ? @user.broker_customer.broker : @user.broker
@@ -13,119 +15,80 @@ class UserMailer < ApplicationMailer
     )
   end
 
-  def new_shipment(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Entered Load #{shipment.load_id}"
-    )
+  def new_shipment
+    @subject = "Entered Load #{@shipment.load_id}"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def booked_at(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} #{shipment.booked_at.blank? ? 'Unbooked' : 'Booked'}"
-    )
+  def booked_at
+    @subject = "Marked Load #{@shipment.load_id} #{@shipment.booked_at.blank? ? 'Unbooked' : 'Booked'}"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def canceled_at(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Canceled Load #{shipment.load_id}"
-    )
+  def canceled_at
+    @subject = "Canceled Load #{@shipment.load_id}"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def delivered_at(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} Delivered"
-    )
+  def delivered_at
+    @subject = "Marked Load #{@shipment.load_id} Delivered"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def delivery_appointment_at(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} Scheduled for Delivery"
-    )
+  def delivery_appointment_at
+    @subject = "Marked Load #{@shipment.load_id} Scheduled for Delivery"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def delivery_appointment_on(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} Scheduled for Delivery"
-    )
+  def delivery_appointment_on
+    @subject = "Marked Load #{@shipment.load_id} Scheduled for Delivery"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def delivery_eta_on(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Updated Load #{shipment.load_id} ETA"
-    )
+  def delivery_eta_on
+    @subject = "Updated Load #{@shipment.load_id} ETA"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def departed_origin_terminal_at(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} Departed from Origin Terminal"
-    )
+  def departed_origin_terminal_at
+    @subject = "Marked Load #{@shipment.load_id} Departed from Origin Terminal"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def out_for_delivery_at(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} Out for Delivery"
-    )
+  def out_for_delivery_at
+    @subject = "Marked Load #{@shipment.load_id} Out for Delivery"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def picked_up_at(shipment)
-    @shipment = shipment
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment, __method__),
-      to: to(shipment, __method__),
-      subject: "#{who_performed(shipment)} Marked Load #{shipment.load_id} Picked Up"
-    )
+  def picked_up_at
+    @subject = "Marked Load #{@shipment.load_id} Picked Up"
+    send_shipment_updated(@shipment, __method__)
   end
 
-  def pickup_service_dispatched(pickup)
-    @pickup = pickup
+  def pickup_service_dispatched
+    @pickup = params[:pickup]
     return if !@pickup.shipment.updated_by.blank? || @pickup.shipment.pickup_confirmation.blank?
 
-    mail(
-      from: from(@pickup.shipment),
-      reply_to: reply_to(@pickup.shipment, __method__),
-      to: to(pickup.shipment, __method__),
-      subject: "#{@pickup.dispatcher.first_name} #{@pickup.dispatcher.last_name} Dispatched Load #{@pickup.shipment.load_id}"
-    )
+    @subject = "#{@pickup.dispatcher.first_name} #{@pickup.dispatcher.last_name} Dispatched Load #{@pickup.shipment.load_id}"
+    send_shipment_updated(@pickup.shipment, __method__)
   end
 
   private
+
+  def send_shipment_updated(shipment, method_name)
+    recipient = params[:recipient] ? "#{params[:recipient].full_name} <#{params[:recipient].email}>" : to(shipment, method_name)
+
+    mail(
+      from: from(shipment),
+      reply_to: reply_to(shipment),
+      to: recipient,
+      subject: [who_performed(@shipment), @subject].join(' ')
+    )
+  end
+
+  def set_shipment
+    @shipment = params[:shipment]
+  end
 
   def from(shipment)
     "#{shipment.broker.name} <#{shipment.broker.robot_email}>"
@@ -133,7 +96,7 @@ class UserMailer < ApplicationMailer
 
   def to(shipment, method)
     user_ids = (shipment.broker_customer&.sales_reps&.ids || []) + shipment.broker.users.with_role('dispatch')&.ids || []
-    user_ids -= shipment.broker.users.with_role('notifications:-dispatch').ids unless [:new_shipment].include?(method)
+    user_ids -= shipment.broker.users.with_role('notifications:-dispatch').ids unless method == :new_shipment
 
     users = User.distinct.active.where(id: user_ids)
 
@@ -142,7 +105,7 @@ class UserMailer < ApplicationMailer
     end    [0..-3]
   end
 
-  def reply_to(shipment, __method__)
+  def reply_to(shipment)
     return "Robot <#{shipment.broker.robot_email}>" if shipment.updated_by.blank?
 
     "#{shipment.updated_by.first_name} #{shipment.updated_by.last_name} <#{shipment.updated_by.email}>"

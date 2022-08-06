@@ -48,7 +48,13 @@ class InterstellarDocumentService
       contacts = Contact.where(id: shipment.broker_customer.document_preferences.where(kind: type.to_s).pluck(:contact_id))
 
       contacts.find_each do |contact|
-        ContactMailer.send(type, from_user: nil, to_contact: contact, shipment: shipment).deliver_later
+        user = contact.user
+
+        if user
+          DocumentNotification.with(from_user: nil, to_contact: contact, shipment: shipment, document_type: type).deliver(user)
+        else
+          ContactMailer.send(type, from_user: nil, to_contact: contact, shipment: shipment).deliver_later
+        end
       end
     end
 

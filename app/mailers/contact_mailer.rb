@@ -63,6 +63,19 @@ class ContactMailer < ApplicationMailer
     )
   end
 
+  def from_notification
+    @shipment = params[:shipment]
+    @document_type = params[:record].to_notification.humanized_document_type
+
+    send_document(
+      document: params[:shipment].send(params[:document_type]),
+      document_name: @document_type,
+      shipment: params[:shipment],
+      from_user: params[:from_user],
+      to_contact: params[:to_contact]
+    )
+  end
+
   private
 
   def send_document(document:, document_name:, from_user:, to_contact:, shipment:)

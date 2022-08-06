@@ -1,0 +1,15 @@
+<h1>Notifications </h1>
+<p>
+  Total: <b> <%= @notifications.count %> </b> |
+  Unread: <b> <%= @notifications.unread.count %> </b>
+</p>
+
+<% @notifications.each do |notification| %>
+  <%= link_to notification_path(notification.id) do %>
+    <div class="card">
+      <div class="card-body <%= notification.read? ? 'fw-normal text-dark' : 'fw-bold' %>">
+        <%= notification.to_notification.message %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
