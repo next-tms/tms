@@ -1146,7 +1146,9 @@ class Shipment < ApplicationRecord
   end
 
   def users_to_notify
-    user_ids = (self.broker_customer&.sales_reps&.ids || []) + self.broker.users.with_role('dispatch')&.ids || []
+    user_ids = (broker_customer&.sales_reps&.ids || []) +
+               (broker.users.with_role('dispatch')&.ids || []) -
+               [updated_by_id]
 
     User.distinct.active.where(id: user_ids)
   end
