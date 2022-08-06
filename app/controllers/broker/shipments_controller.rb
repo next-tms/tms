@@ -67,8 +67,11 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment = Shipment.new
     @shipment.items << Item.new
 
-    broker_customer = nil
-    broker_customer = BrokerCustomer.find_by_id(params[:broker_customer_id]) unless params[:broker_customer_id].blank?
+    broker_customer = if params[:broker_customer_id].present?
+                        BrokerCustomer.find_by_id(params[:broker_customer_id])
+                      elsif current_user.broker_customers.size == 1
+                        current_user.broker_customers.first
+                      end
 
     # Only root can change the dispatcher on the form, so skip this unless current_user.has_role?('root')
     if current_user.has_role?('root')
