@@ -7,25 +7,12 @@
         <thead>
           <tr>
             <th><%= sort_link q, :customer_name, 'Name' %></th>
-            <th>Login as Customer</th>
           </tr>
         </thead>
         <tbody>
           <% broker_customers.each do |broker_customer| %>
             <tr>
               <td><%= link_to broker_customer.customer.name, broker_broker_customer_path(broker_customer), target: '_top' %></td>
-              <% user = User.where(broker_customer: broker_customer).first %>
-
-              <% if user %>
-                <td>
-                  <%= button_to "Sign in as #{broker_customer.customer.name}",
-                                broker_impersonate_path(id: user.id),
-                                class: "btn btn-sm ms-0 ps-0 text-primary",
-                                target: '_top',
-                                data: { turbo: false } %></td>
-              <% else %>
-                <td> No User Found for this Customer </td>
-              <% end %>
             </tr>
           <% end %>
         </tbody>

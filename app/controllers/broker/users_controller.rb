@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Broker::UsersController < Broker::BrokerController
-  before_action :set_user, only: %i[destroy edit show update]
+  before_action :set_user, only: %i[destroy edit impersonate show update]
   before_action :authenticate_user!
   before_action :restrict_to_root, except: %i[impersonate stop_impersonating]
 
@@ -25,16 +25,13 @@ class Broker::UsersController < Broker::BrokerController
   end
 
   def impersonate
-    user = User.find(params[:id])
-    impersonate_user(user)
-    redirect_to root_path
+    impersonate_user(@user)
+    redirect_to root_path, status: :see_other
   end
 
   def stop_impersonating
     stop_impersonating_user
-
-    flash[:notice] = "You are now back in the Broker's Dashboard!"
-    redirect_to root_path
+    redirect_to root_path, status: :see_other
   end
 
   private

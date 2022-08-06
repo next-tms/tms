@@ -66,12 +66,22 @@
     <% end %>
 
     <% if current_user != true_user %>
-      <div class="alert alert-dark d-flex justify-content-between" role="alert">
-        <span style="line-height: 2">
-          You <b>(<%= true_user.full_name %>)</b> are signed in as
-          <b><%= current_user.full_name %> (<%= current_user.broker_customer.customer.name %>)</b>
-        </span>
-        <%= button_to "Back to Broker's Dashboard", stop_impersonating_broker_users_path, method: :post, class: "btn btn-sm btn-dark" %>
+      <div class="flash-alert alert alert-danger mb-0 border-0 rounded-0">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-auto">
+              You are impersonating <%= current_user.full_name %> from <%= current_user.broker_customer.customer.name %>.
+            </div>
+
+            <div class="col text-md-end">
+              <%= link_to 'Stop Impersonating',
+                          stop_impersonating_broker_users_path,
+                          class: 'btn btn-sm btn-danger text-light',
+                          data: { turbo_method: :delete, turbo_target: :_top }
+              %>
+            </div>
+         </div>
+        </div>
       </div>
     <% end %>
 
