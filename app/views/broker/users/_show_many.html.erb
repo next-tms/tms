@@ -17,6 +17,9 @@
             <th><%= sort_link q, :email, 'Email' %></th>
             <th class="text-nowrap"><%= sort_link q, :invitation_accepted_at, 'Invitation Accepted' %></th>
             <th class="text-nowrap"><%= sort_link q, :last_sign_in_at, 'Last Sign In' %></th>
+            <% if current_user.has_role?('root') %>
+              <th></th>
+            <% end %>
           </tr>
         </thead>
         <tbody>
@@ -41,6 +44,16 @@
               <td class="text-nowrap">
                 <%= pretty_date(user.last_sign_in_at, current_user.time_zone) || 'Never' %>
               </td>
+              <% if current_user.has_role?('root') %>
+                <td>
+                  <% if user.customer? && !user.deactivated? %>
+                    <%= link_to 'Impersonate',
+                                impersonate_broker_user_path(user),
+                                data: { turbo_frame: :_top, turbo_method: :post }
+                    %>
+                  <% end %>
+                </td>
+              <% end %>
             </tr>
           <% end %>
         </tbody>

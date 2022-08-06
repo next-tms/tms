@@ -167,7 +167,10 @@ Rails.application.routes.draw do
 
     get 'search' => 'search#search'
 
-    resources :users
+    resources :users do
+      collection { delete 'stop-impersonating' }
+      member { post :impersonate }
+    end
   end
 
   namespace :customer do

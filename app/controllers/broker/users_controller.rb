@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class Broker::UsersController < Broker::BrokerController
-  before_action :set_user, only: %i[destroy edit show update]
+  before_action :set_user, only: %i[destroy edit impersonate show update]
   before_action :authenticate_user!
-  before_action :restrict_to_root
+  before_action :restrict_to_root, except: %i[impersonate stop_impersonating]
 
   def index
     @q = current_user.broker.users.includes(required_includes).ransack(params[:q])
@@ -22,6 +22,16 @@ class Broker::UsersController < Broker::BrokerController
     else
       render :edit
     end
+  end
+
+  def impersonate
+    impersonate_user(@user)
+    redirect_to root_path, status: :see_other
+  end
+
+  def stop_impersonating
+    stop_impersonating_user
+    redirect_to root_path, status: :see_other
   end
 
   private
