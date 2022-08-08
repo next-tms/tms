@@ -29,9 +29,13 @@ class SendReceivablesJob < ApplicationJob
             begin
               pdf << CombinePDF.parse(download)
             rescue CombinePDF::ParsingError => e
-              message = "raising CombinePDF::ParsingError(#{e.message}), download was: #{download} (#{download.class})"
-              Honeybadger.notify(download)
-              raise
+              # TODO: create reusable private method for reattaching corrupted documents after regression testing
+              raise unless e.message.include?("a stream object wasn't properly closed ")
+
+              InterstellarDocumentService.reattach_document(shipment: receivable.shipment, document_type: :bol)
+
+              receivable.shipment.reload
+              pdf << CombinePDF.parse(receivable.shipment.carrier_bol.reload.download)
             end
           else
             data = receivable.shipment.carrier_bol.download

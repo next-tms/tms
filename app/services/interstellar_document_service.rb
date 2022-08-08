@@ -32,6 +32,22 @@ class InterstellarDocumentService
       true
     end
 
+    def reattach_document(shipment:, document_type:)
+      return unless %i[bol pod].include?(document_type)
+
+      interstellar_method = "fetch_#{document_type}"
+      broker_carrier = shipment.broker_carrier
+      interstellar_document_response = InterstellarApiClient.send(interstellar_method, broker_carrier:, tracking_number: shipment.pro)
+
+      return nil unless interstellar_document_response&.data.present?
+
+      document = shipment.send("carrier_#{document_type}")
+      document.purge
+
+      shipment.reload
+      attach_document(type: :bol, document: interstellar_document_response, shipment: shipment)
+    end
+
     private
 
     def attach_document(type:, document:, shipment:)
