@@ -79,6 +79,10 @@ class ContactMailer < ApplicationMailer
   private
 
   def send_document(document:, document_name:, from_user:, to_contact:, shipment:)
+    return unless document.attached?
+    # Do not send email if document is not yet uploaded and prevent
+    # Postmark::InvalidEmailAddressError: Zero-sized attachments not allowed.
+
     attachments[document.filename.to_s] = {
       mime_type: document.content_type,
       content: document.download
