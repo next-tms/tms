@@ -931,6 +931,8 @@ class Shipment < ApplicationRecord
   end
 
   def future_pickup_by
+    return unless pickup_by
+
     errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < DateTime.current
   end
 
