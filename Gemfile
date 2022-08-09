@@ -113,3 +113,7 @@ gem 'redis', '~> 4.7'
 gem 'audited'
 gem "noticed"
 gem 'pretender'
+
+# CVE-2021-32740
+# TODO: Remove this once dependencies define version > 2.4.0
+gem 'addressable', '~> 2.8.0'
