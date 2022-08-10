@@ -25,7 +25,7 @@
       <%= link_to 'Pricing', pricing_broker_shipment_path(@shipment), class: 'nav-link shipments-pricing' %>
     <% end %>
 
-    <% if current_user.has_role? 'dispatch' %>
+    <% if current_user.has_role? 'dispatch' || current_user.sales_rep_for?(@shipment.broker_customer) %>
       <%= link_to 'Routing', transit_broker_shipment_path(@shipment), class: 'nav-link shipments-transit shipments-quote' %>
       <%= link_to 'Tracking', edit_tracking_events_broker_shipment_path(@shipment), class: 'nav-link shipments-edit-tracking-events' %>
     <% end %>

@@ -509,11 +509,15 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def transit
-    unauthorized and return unless current_user.has_role?('dispatch')
+    unless current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
+      unauthorized and return
+    end
   end
 
   def transit_edit
-    unauthorized and return unless current_user.has_role?('dispatch')
+    unless current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
+      unauthorized and return
+    end
   end
 
   def delivery; end
