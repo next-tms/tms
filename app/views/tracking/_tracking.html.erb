@@ -1,5 +1,8 @@
-<% unless @shipment.public_notes.blank? %>
+<% unless @shipment.broker_and_broker_customer_notes.blank? && @shipment.public_notes.blank? %>
   <div class="alert alert-info">
+    <% if (current_user&.broker? || current_user&.broker_customer == @shipment.broker_customer) %>
+      <%= simple_format @shipment.broker_and_broker_customer_notes %>
+    <% end %>
     <%= simple_format @shipment.public_notes %>
   </div>
 <% end %>

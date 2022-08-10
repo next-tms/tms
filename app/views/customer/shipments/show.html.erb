@@ -10,6 +10,7 @@
 
 <% unless @shipment.public_notes.blank? %>
   <div class="alert alert-info">
+    <%= simple_format @shipment.broker_and_broker_customer_notes %>
     <%= simple_format @shipment.public_notes %>
   </div>
 <% end %>

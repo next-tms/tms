@@ -169,7 +169,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     contact_ids = @shipment.broker.users.broker.pluck(:contact_id)
 
     if @shipment&.broker_customer&.contacts
-      contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer).ids
+      contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer)&.ids
     end
 
     if @shipment&.broker_carrier&.contacts
@@ -604,6 +604,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :bol_notes,
                                      :bol,
                                      :booked_at,
+                                     :broker_and_broker_customer_notes,
                                      :broker_carrier_id,
                                      :broker_carrier_quote,
                                      :broker_customer_id,
@@ -616,10 +617,10 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :carrier_pod,
                                      :customer_notes,
                                      :customer_reference,
-                                     :delivery_eta_on,
                                      :delivered_at,
                                      :delivery_appointment_at,
                                      :delivery_appointment_on,
+                                     :delivery_eta_on,
                                      :delivery_hours_end_at,
                                      :delivery_hours_start_at,
                                      :departed_origin_terminal_at,
@@ -630,17 +631,17 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :lift_gate,
                                      :lost_on,
                                      :out_for_delivery_at,
-                                     :pickup_driver_assigned_at,
+                                     :pending_appointment_since,
                                      :picked_up_at,
                                      :picked_up,
-                                     :pickup_eta_at,
-                                     :pickup_on,
                                      :pickup_confirmation,
+                                     :pickup_driver_assigned_at,
+                                     :pickup_eta_at,
                                      :pickup_hours_end_at,
                                      :pickup_hours_start_at,
+                                     :pickup_on,
                                      :priority,
                                      :pro,
-                                     :pending_appointment_since,
                                      :promised_delivery_by,
                                      :public_notes,
                                      :quote_id,

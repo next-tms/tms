@@ -35,14 +35,12 @@ class TrackingController < ApplicationController
   private
 
   def rss
+    desc = ["Tracking events for Load #{@shipment.load_id} (#{@website.broker.name})"]
+    desc << "\n\nNotes:\n#{@shipment.public_notes}" unless @shipment.public_notes.blank?
+
     rss = RSScreator.new
-
     rss.title = "Load #{@shipment.load_id}"
-
-    desc = "Tracking events for Load #{@shipment.load_id} (#{@website.broker.name})".dup
-    desc += "\n\nNotes:\n#{@shipment.public_notes.blank?}"
-
-    rss.desc = desc
+    rss.desc = desc.join
 
     @shipment.tracking_events.includes(:event).find_each do |tracking_event|
       rss.add(
