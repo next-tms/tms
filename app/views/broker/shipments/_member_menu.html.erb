@@ -5,13 +5,13 @@
     <a class="nav-link dropdown-toggle" href="#" id="shipment-mark-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       Update
     </a>
-    <ul class="dropdown-menu" aria-labelledby="shipment-mark-dropdown"> 
+    <ul class="dropdown-menu" aria-labelledby="shipment-mark-dropdown">
       <% if @shipment.booked_at.blank? %>
         <%= link_to 'Book', book_broker_shipment_path(@shipment), target: '_top', class: 'dropdown-item' %>
       <% else %>
         <%= link_to 'Unbook', unbook_broker_shipment_path(@shipment), target: '_top', class: 'dropdown-item' %>
       <% end %>
-  
+
       <% if @shipment.canceled_at.blank? %>
         <%= link_to 'Cancel', broker_shipment_path(@shipment, shipment: { canceled_at: DateTime.now }), data: { confirm: 'Are you sure you want to cancel this shipment?', method: :patch }, target: '_top', class: 'dropdown-item' %>
       <% else %>
@@ -32,6 +32,19 @@
 
     <% if current_user.has_role?('accounts_payable') || current_user.has_role?('accounts_receivable') || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) || current_user == @shipment.dispatcher %>
       <%= link_to 'Accounting', accounting_broker_shipment_path(@shipment), class: 'nav-link shipments-accounting' %>
+    <% end %>
+
+    <% if (@shipment.claims.any? || @shipment.broker_carrier.present?) &&
+          (
+            current_user.has_role?('claims') ||
+            current_user.has_role?('accounts_payable') ||
+            current_user.has_role?('accounts_receivable') ||
+            current_user.sales_rep_for?(@shipment.broker_customer) ||
+            current_user.dispatcher_for?(@shipment) ||
+            current_user == @shipment.dispatcher
+          )
+    %>
+      <%= link_to 'Claims', claims_broker_shipment_path(@shipment), class: 'nav-link shipments-claims' %>
     <% end %>
 
     <%= link_to 'Documents', documents_broker_shipment_path(@shipment), class: 'nav-link shipments-documents' %>

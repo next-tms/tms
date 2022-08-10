@@ -1,0 +1,54 @@
+<%= turbo_frame_tag :claims do %>
+  <%= render 'broker/claims/search_form', q: q %>
+
+  <% unless claims.blank? %>
+    <div class="table-responsive">
+      <table class="table table-condensed table-borderless table-striped table-hover h-100">
+        <thead>
+          <tr>
+            <th><%= sort_link q, :shipment_load_id, 'Load' %></th>
+            <th><%= sort_link q, :broker_carrier_carrier_name, 'Carrier' %></th>
+            <th><%= sort_link q, :broker_customer_customer_name, 'Customer' %></th>
+            <th><%= sort_link(q, :due_on, 'Due') %></th>
+            <th><%= sort_link q, :balance_cents, 'Balance' %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% claims.each do |claim| %>
+            <tr>
+              <td>
+                <%= link_to claim.shipment.load_id, broker_claim_path(claim), target: '_top' %>
+              </td>
+              <td>
+                <% unless claim.shipment.broker_carrier.blank? %>
+                  <%= link_to claim.shipment.broker_carrier.broker_customer_specific_name,
+                              broker_broker_carrier_path(claim.shipment.broker_carrier),
+                              target: '_blank'
+                  %>
+                <% end %>
+              </td>
+              <td>
+                <% unless claim.shipment.broker_customer.blank? %>
+                  <%= link_to claim.shipment.broker_customer.customer.name,
+                              broker_broker_customer_path(claim.shipment.broker_customer),
+                              target: '_blank'
+                  %>
+                <% end %>
+              </td>
+              <td>
+                <% unless claim.due_on.blank? %>
+                  <%= short_date claim.due_on, current_user.time_zone %>
+                <% end %>
+              </td>
+              <td><%= humanized_money_with_symbol claim.balance, no_cents_if_whole: false %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
+<% end %>

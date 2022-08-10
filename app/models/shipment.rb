@@ -303,6 +303,7 @@ class Shipment < ApplicationRecord
 
   belongs_to :dispatcher, class_name: 'User', required: false
 
+  has_many :claims
   has_many :commissions, dependent: :destroy
 
   has_many :tracking_events, dependent: :destroy

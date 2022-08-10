@@ -5,8 +5,8 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   before_action :set_shipment_by_load_id,
                 only: %i[
-                  accounting book book_modal rate_uid documents create_tracking_event destroy edit
-                  edit_tracking_events notes pickup pickup_modal pricing quote send_document
+                  accounting book book_modal claims documents create_tracking_event destroy edit
+                  edit_tracking_events notes pickup pickup_modal pricing quote rate_uid send_document
                   send_document_with_contact_mailer show tracking_events transit unbook update
                   history
                 ]
@@ -462,6 +462,16 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     @payment_transactions_q = @shipment.payment_transactions.ransack(params[:q])
     @receivables_q = @shipment.receivables.ransack(params[:q])
+  end
+
+  def claims
+    if !current_user.has_role?('claims') && !current_user.has_role?('accounts_payable') && !current_user.has_role?('accounts_receivable') && !current_user.sales_rep_for?(@shipment.broker_customer) && !current_user.dispatcher_for?(@shipment)
+      unauthorized
+    end
+
+    @q = @shipment.claims.ransack(params[:q])
+    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @pagy, @claims = pagy(@q.result)
   end
 
   def notes; end

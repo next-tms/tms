@@ -1,0 +1,37 @@
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6">Claim <%= @claim.id %></h1>
+
+  <table class="table table-borderless w-auto">
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Load</th>
+
+        <% unless @claim.new_record? %>
+          <th>Due</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="lead">
+          <%= link_to @claim.broker_customer.customer.name, broker_broker_customer_path(@claim.broker_customer), target: '_blank' %>
+        </td>
+
+        <td class="lead">
+          <%= link_to @claim.shipment.load_id, broker_shipment_path(@claim.shipment), target: '_blank' %>
+        </td>
+
+        <% unless @claim.new_record? %>
+          <td class="lead">
+            <%= short_date @claim.due_on, current_user.time_zone %>
+          </td>
+        <% end %>
+      </tr>
+    </tbody>
+  </table>
+
+  <% unless @claim.new_record? %>
+    <%= render 'member_menu' %>
+  <% end %>
+</div>

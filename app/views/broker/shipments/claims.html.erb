@@ -1,0 +1,14 @@
+<% provide :title, "Claims — Load #{@shipment.load_id}" %>
+
+<%= render 'member_header' %>
+<h2>Claims</h2>
+
+<div class="btn-toolbar mb-2">
+  <%= link_to icon('solid', 'plus', 'New'), new_broker_claim_path(shipment_id: @shipment.id), class: 'btn' %>
+</div>
+
+<% unless @shipment.claims.blank? %>
+  <%= render 'broker/claims/show_many', claims: @claims, q: @q %>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>

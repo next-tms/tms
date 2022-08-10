@@ -1,0 +1,36 @@
+<div class="claim-item-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+  <div class="col col-sm-6">
+    <%= f.hidden_field :payee_type, value: 'BrokerCarrier' %>
+    <%= f.hidden_field :id %>
+
+    <%= f.select :payee_id,
+                  current_user
+                  .broker.broker_carriers
+                  .includes(:carrier)
+                  .collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }
+                  .sort,
+                  {
+                    label: 'Carrier',
+                    hide_label: true,
+                    include_blank: true,
+                    wrapper: false
+                  },
+                  class: 'form-select'
+    %>
+  </div>
+
+  <div class="col col-sm-2">
+    <%= f.text_field :total, hide_label: true, placeholder: 'Total', prepend: '$', data: money_controller_data, wrapper: false %>
+  </div>
+
+  <% unless f.object.new_record? %>
+    <div class="col col-sm-2">
+      <%= f.text_field :balance, hide_label: true, placeholder: 'Balance', prepend: '$', data: money_controller_data, wrapper: false %>
+    </div>
+  <% end %>
+
+  <div class="col-auto">
+    <%= f.hidden_field :_destroy %>
+    <%= link_to icon('solid', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
+  </div>
+</div>

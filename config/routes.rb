@@ -77,6 +77,11 @@ Rails.application.routes.draw do
       member { get 'terminals/search' => 'broker_carriers#search_terminals', as: :search_terminals }
     end
 
+    resources :claims do
+      collection { get :paid }
+      collection { get :unpaid }
+    end
+
     resources :contacts
 
     resources :banks, except: %i[destroy], path: 'bank-accounts' do
@@ -152,6 +157,7 @@ Rails.application.routes.draw do
              as: :send_document_with_contact_mailer
       end
       member { get 'accounting', as: :accounting }
+      member { get 'claims', as: :claims }
       member { get 'notes', as: :notes }
       member { get 'history', as: :history }
       member { get 'pickup-modal', as: :pickup_modal }

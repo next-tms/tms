@@ -106,6 +106,7 @@ class BrokerCarrier < ApplicationRecord
       "#{carrier.name} - #{broker_customer.customer.name}"
     end
   end
+  alias name broker_customer_specific_name
 
   def as_interstellar_carrier
     @as_interstellar_carrier ||= InterstellarApiClient::Services::BuildApiClient.call(broker_carrier: self)
