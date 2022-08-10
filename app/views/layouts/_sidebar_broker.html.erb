@@ -49,7 +49,7 @@
     <% if current_user.has_role? 'accounts_payable' or current_user.has_role? 'accounts_receivable' or current_user.has_role? 'controller' %>
       <% if current_user.has_role? 'accounts_payable' %>
         <li class="mb-2 p-2">
-          <%= link_to icon('solid', 'file-invoice', 'Payables'), broker_payments_path, class: 'payments' %>
+          <%= link_to icon('solid', 'file-invoice', 'Payables'), due_broker_payments_path, class: 'payments' %>
         </li>
       <% end %>
 

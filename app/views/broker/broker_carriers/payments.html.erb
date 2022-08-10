@@ -1,0 +1,8 @@
+<% provide :title, 'Payables' %>
+
+<%= render 'member_header' %>
+<h2><%= yield :title %></h2>
+
+<%= turbo_frame_tag :shipments do %>
+  <%= render 'broker/payments/show_many', payments: @payments, q: @q %>
+<% end %>

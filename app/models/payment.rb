@@ -20,8 +20,6 @@
 #   @return [String]
 # @!attribute paid_on
 #   @return [Date]
-# @!attribute week
-#   @return [Integer]
 # @!attribute created_at
 #   @return [Time]
 # @!attribute updated_at
@@ -57,73 +55,52 @@
 #  fk_rails_...  (payment_method_id => payment_methods.id)
 #
 class Payment < ApplicationRecord
-  scope :unpaid, -> { where(paid_on: nil) }
-  scope :paid, -> { where.not(paid_on: nil) }
-
-  before_save :set_due_on
-  before_save :set_paid
-  before_save :set_week
-
   belongs_to :approved_by, class_name: 'User', optional: true
-  belongs_to :created_by, class_name: 'User', optional: true
-
   belongs_to :bank, optional: true
   belongs_to :broker
   belongs_to :broker_carrier
+  belongs_to :created_by, class_name: 'User', optional: true
   belongs_to :payment_method, optional: true
 
-  belongs_to :created_by, class_name: 'User'
-  validates_presence_of :created_by
-
-  has_many :payment_transactions, dependent: :destroy
+  has_many :payment_transactions, dependent: :nullify
   accepts_nested_attributes_for :payment_transactions, allow_destroy: true, reject_if: :all_blank
+
+  has_many :shipments, through: :payment_transactions
 
   monetize :paid_cents
 
-  def export_headers
-    ['Account', 'Date', 'Description', 'Amount']
-  end
+  scope :approved, -> { where(approved_by: nil) }
+  scope :due, -> { where(paid_on: nil) }
+  scope :paid, -> { where.not(paid_on: nil) }
+  scope :unapproved, -> { where.not(approved_by: nil) }
 
-  def to_csv(with_headers)
-    return '' if paid_cents.blank? || paid_cents == 0
-
-    columns = ['Account', 'Description', 'Amount']
-    CSV.generate do |csv|
-      csv << export_headers if with_headers
-
-      csv << [
-        "#{bank&.name} #{bank&.account_number}".upcase.squish,
-        paid_on&.strftime('%m-%d-%Y'),
-        "#{payment_method&.name} #{method_reference} TO #{broker_carrier&.carrier&.name}".upcase.squish,
-        "-#{paid_cents.to_f / 100}"
-      ]
-    end
-  end
+  validates :due_on, presence: true
 
   def balance
-    payment_transactions.map(&:balance).inject(Money.new(0)) { |sum, paid| sum += paid }
+    Money.new(payment_transactions.sum(:balance_cents))
   end
 
-  def has_invoice_numbers?
-    unless (payment_transactions.map(&:invoice).uniq == [nil]) || (payment_transactions.map(&:invoice).uniq == [''])
-      true
-    end
+  def due?
+    !paid?
   end
 
-  private
-
-  def set_due_on
-    return if payment_transactions.blank?
-    date = (payment_transactions.map(&:due_on).uniq - [nil]).sort.first
-    due_on = date
+  def overdue?
+    due? && due_on < DateTime.current.in_time_zone(broker.time_zone).to_date
   end
 
-  def set_paid
-    self.paid = payment_transactions.map(&:paid).inject(Money.new(0)) { |sum, paid| sum += paid }
+  def paid
+    payment_transactions.sum(&:paid)
   end
 
-  def set_week
-    return if payment_transactions.blank?
-    week = (payment_transactions.map(&:week).uniq - [nil]).sort.first
+  def paid?
+    paid_on.present?
+  end
+
+  def shipment_carrier_costs
+    Money.new(shipments.sum(:carrier_cost_cents))
+  end
+
+  def variance
+    balance - paid
   end
 end

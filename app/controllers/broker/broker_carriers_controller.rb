@@ -2,8 +2,18 @@
 
 class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :authenticate_user!
-  before_action :set_broker_carrier,
-                only: %i[contacts edit preferences search_terminals shipments show tariff terminals update]
+  before_action :set_broker_carrier, only: %i[
+    contacts
+    edit
+    payments
+    preferences
+    search_terminals
+    shipments
+    show
+    tariff
+    terminals
+    update
+  ]
 
   def edit
     @broker_carrier.check_mailing_address = Address.new if @broker_carrier.check_mailing_address.blank?
@@ -42,24 +52,34 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def create
     @broker_carrier = BrokerCarrier.new(broker_carrier_params)
     @broker_carrier.broker = current_user.broker
-    @broker_carrier.ignore_bol_requires_tracking_number = current_user.broker.ignore_broker_carrier_bol_requires_tracking_number?
+    @broker_carrier.ignore_bol_requires_tracking_number =
+      current_user.broker.ignore_broker_carrier_bol_requires_tracking_number?
 
-    if @broker_carrier.save
-      redirect_to [:broker, @broker_carrier]
-    else
-      render :new
-    end
+    redirect_to [:broker, @broker_carrier] and return if @broker_carrier.save
+
+    render :new
   end
 
   def preferences; end
 
   def tariff
-    if !@broker_carrier.carrier.carrier_areas.blank? && (!@broker_carrier.pricing_rules.size == @broker_carrier.carrier.carrier_areas.size)
-      @broker_carrier.carrier.carrier_areas.each do |carrier_area|
-        if @broker_carrier.pricing_rules.where(carrier_area:).blank?
-          @broker_carrier.pricing_rules << PricingRule.new(carrier_area:)
-        end
-      end
+    return if @broker_carrier.carrier.carrier_areas.empty? ||
+              @broker_carrier.pricing_rules.size == @broker_carrier.carrier.carrier_areas.size
+
+    carrier_areas = @broker_carrier
+                    .carrier
+                    .carrier_areas
+                    .where
+                    .not(
+                      id: @broker_carrier.pricing_rules.pluck(:carrier_area_id)
+                    )
+
+    return if carrier_areas.blank?
+
+    carrier_areas.each do |carrier_area|
+      next unless @broker_carrier.pricing_rules.where(carrier_area:).blank?
+
+      @broker_carrier.pricing_rules.build(carrier_area:)
     end
   end
 
@@ -88,29 +108,32 @@ class Broker::BrokerCarriersController < Broker::BrokerController
 
   def update
     @broker_carrier.assign_attributes(broker_carrier_params)
-    update_documents = @broker_carrier.will_save_change_to_account? || @broker_carrier.will_save_change_to_username? || @broker_carrier.will_save_change_to_password?
 
-    if @broker_carrier.save
-      if update_documents && @broker_carrier.api_configured?
-        shipments = @broker_carrier.shipments.where('created_at > ?', 90.days.ago)
-        unless shipments.blank?
-          TrackShipmentsJob.perform_later(shipments.pluck(:id))
-
-          pending_delivery_shipment_ids = shipments.pending_delivery.pluck(:id)
-          unless pending_delivery_shipment_ids.blank?
-            FetchShipmentCarrierBolsJob.perform_later(pending_delivery_shipment_ids)
-          end
-
-          delivered_shipment_ids = shipments.delivered.pluck(:id)
-          FetchShipmentCarrierPodsJob.perform_later(delivered_shipment_ids) unless delivered_shipment_ids.blank?
-        end
-      end
-
-      redirect_to [:broker, @broker_carrier] and return
+    unless @broker_carrier.save
+      flash[:error] = 'Unable to update carrier'
+      render :edit and return
     end
 
-    flash[:error] = 'Unable to update carrier'
-    render :edit
+    redirect_to [:broker, @broker_carrier] and return unless @broker_carrier.api_configured?
+
+    update_documents = @broker_carrier.saved_change_to_account? ||
+                       @broker_carrier.saved_change_to_username? ||
+                       @broker_carrier.saved_change_to_password?
+
+    redirect_to [:broker, @broker_carrier] and return unless update_documents
+
+    shipments = @broker_carrier.shipments.where('created_at > ?', 90.days.ago)
+    redirect_to [:broker, @broker_carrier] and return if shipments.blank?
+
+    TrackShipmentsJob.perform_later(shipments.pluck(:id))
+
+    pending_delivery_shipment_ids = shipments.pending_delivery.pluck(:id)
+    FetchShipmentCarrierBolsJob.perform_later(pending_delivery_shipment_ids) unless pending_delivery_shipment_ids.blank?
+
+    delivered_shipment_ids = shipments.delivered.pluck(:id)
+    FetchShipmentCarrierPodsJob.perform_later(delivered_shipment_ids) unless delivered_shipment_ids.blank?
+
+    redirect_to [:broker, @broker_carrier] and return
   end
 
   def contacts
@@ -119,6 +142,18 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @q = @broker_carrier.contacts.ransack(params[:q])
     @q.sorts = 'contacts.first_name desc' if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
+  end
+
+  def payments
+    require_role('accounts_payable')
+
+    @q = @broker_carrier
+         .payments
+         .includes(:payment_transactions)
+         .ransack(params[:q])
+
+    @q.sorts = 'due_on desc' if @q.sorts.blank?
+    @pagy, @payments = pagy(@q.result)
   end
 
   def shipments

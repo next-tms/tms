@@ -69,12 +69,15 @@ Rails.application.routes.draw do
       member { get 'commissions' => 'broker_customer_sales_reps#commissions', as: :commissions }
     end
 
-    get 'carriers/:id/shipments' => 'broker_carriers#shipments', as: :broker_carrier_shipments
     resources :broker_carriers, path: 'carriers' do
-      member { get 'contacts' => 'broker_carriers#contacts', as: :contacts }
-      member { get 'tariff' => 'broker_carriers#tariff', as: :tariff }
-      member { get 'terminals' => 'broker_carriers#terminals', as: :terminals }
-      member { get 'terminals/search' => 'broker_carriers#search_terminals', as: :search_terminals }
+      member do
+        get :contacts
+        get :payments
+        get :shipments
+        get :tariff
+        get :terminals
+        get 'terminals/search' => 'broker_carriers#search_terminals', as: :search_terminals
+      end
     end
 
     resources :claims do
@@ -93,17 +96,22 @@ Rails.application.routes.draw do
     get 'settings/intuit', to: 'intuit_account#show'
     get 'settings/stripe', to: 'stripe_account#show'
 
-    get 'ap/payments/overdue', to: 'payments#overdue'
-    get 'ap/payments/paid', to: 'payments#paid'
-
-    get 'ap/payments/import-legacy', to: 'payments#import_legacy'
-    post 'ap/payments/import-legacy', to: 'payments#create'
-
-    resources :payments, path: 'ap/payments' do
-      member { get 'pay', as: :pay }
+    resources :payment_transactions, only: %i[create new], path: 'statements' do
+      collection { get :import }
+      collection { get 'import-sample-csv' }
     end
 
-    resources :receivables, path: 'ap/receivables' do
+    resources :payments do
+      collection do
+        get :due
+        get :paid
+        get :overdue
+      end
+
+      member { get :pay }
+    end
+
+    resources :receivables, path: 'receivables' do
       collection { get :authorized }
       collection { get :invoiced }
       collection { get :paid }
@@ -115,7 +123,6 @@ Rails.application.routes.draw do
     match 'settings', to: 'broker#update', as: :update_settings, via: %i[patch put post]
     resources :broker_accessorials, path: 'settings/accessorials'
 
-    resources :payments
     resources :pickups, only: %i[create]
     get 'pickups', to: 'pickups#create' # used by Broker::ShipmentsControlller
 

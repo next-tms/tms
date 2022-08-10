@@ -1,10 +1,7 @@
-<% provide :title, 'Pay' %>
-<% provide :menu, render('menu') %>
+<% provide :title, "Payable #{@payment.id}" %>
 
-<div class="page-header">
-  <h1>Payment <% unless @payment.broker_carrier.blank? %><small><%= link_to @payment.broker_carrier.broker_customer_specific_name, broker_broker_carrier_path(@payment.broker_carrier) %></small><% end %></h1>
-  <p class="lead"><%= yield :title %></p>
-</div>
+<%= render 'member_header' %>
+<h2>Pay</h2>
 
 <div class="row">
   <div class="col">
@@ -12,8 +9,13 @@
       <%= f.alert_message 'Unable to update payment:' %>
       <%= f.select :bank_id, Bank.where(broker: current_user.broker).order(:name).collect { |bank| [bank.pretty_name, bank.id] }, { include_blank: false, label: 'Account' }, class: 'form-select' %>
       <%= f.select :payment_method_id, PaymentMethod.all.order(:name).collect { |payment_method| [payment_method.name, payment_method.id] }, { include_blank: false, label: 'Method' }, class: 'form-select' %>
-      <%= f.text_field :paid_on, label: 'Paid On', autocomplete: 'off', data: flatpickr_data %>
-      <%= f.text_field :method_reference, label: 'Method Reference' %>
+      <%= f.text_field :method_reference, label: 'Reference' %>
+      <%= f.text_field :paid_on,
+                       label: 'Paid On',
+                       autocomplete: 'off',
+                       data: flatpickr_data,
+                       value: DateTime.current.in_time_zone(current_user.broker.time_zone).to_date
+      %>
       <div class="form-group">
         <%= f.submit class: 'btn btn-primary mt-4', value: 'Pay' %>
       </div>

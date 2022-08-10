@@ -1,5 +1,7 @@
 <p class="col-title">From <%= f.object.carrier_area.from_area.name %> to <%= f.object.carrier_area.to_area.name %></p>
 <div class="pricing-rules-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+  <%= f.hidden_field :carrier_area_id %>
+
   <div class="col col-sm-4">
     <div class="input-group">
       <%= f.text_field :min_pallets, placeholder: 'Min', wrapper: false %>

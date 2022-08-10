@@ -1,16 +1,59 @@
-<% provide :title, 'Import Statement' %>
-<% provide :menu, render('broker/payments/menu') %>
+<% provide :title, 'Import' %>
 
-<div class="page-header">
-  <h1>Invoices</h1>
-  <p class="lead"><%= yield :title %></p>
+<%= render 'member_header' %>
+<h2><%= yield :title %></h2>
+
+<div class="alert alert-info">
+  <p class="lead">How to use this page</p>
+
+  <ol>
+    <li>Download the <%= link_to 'sample CSV file', import_sample_csv_broker_payment_transactions_path, data: { turbo: false } %> and note the the format of the balance and date columns.</li>
+    <li>
+      In the statement spreadsheet from the carrier, select all the cells with the values you’d like to copy. If the carrier is using a different format, be sure to format the cells before the next step. For specific instructions:
+      <ul>
+        <li>
+          <%= link_to 'Microsoft Excel',
+                      'https://support.microsoft.com/en-us/office/change-the-format-of-a-cell-0a45ff85-ee24-4276-94e8-aed6083e8050',
+                      target: '_blank'
+          %>
+        </li>
+        <li>
+          <%= link_to 'Apple Numbers',
+                      'https://support.apple.com/guide/numbers/format-dates-currency-and-more-tan23393f3a/mac',
+                      target: '_blank'
+          %>
+      </ul>
+    </li>
+    <li>Copy and paste the cells into the appropriate columns in the sample CSV file.</li>
+    <li>Save the CSV file, and upload it below.</li>
+  </ol>
+
+  <p>Note: If a carrier provides dates of invoices rather than due dates, simply change the “due” column header to “date.”</p>
 </div>
 
-<%= bootstrap_form_with(model: [:broker, @payment_transaction], local: true, layout: :horizontal, label_col: 'col-sm-3', control_col: 'col-sm-8') do |f| %>
-  <%= f.alert_message 'Unable to import statement:' %>
-  <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.sort_by { |broker_carrier| broker_carrier.carrier.name }.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }, { label: 'Carrier', selected: (@payment_transaction.broker_carrier ? @payment_transaction.broker_carrier.id : (params[:broker_carrier_id] ? params[:broker_carrier_id] : nil)) }, class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
-  <%= f.text_area :csv, label: 'CSV', placeholder: 'pro, balance, due', help: 'Note: Dates must be in format MM/DD/YY', value: (params[:csv].blank? ? '' : params[:csv]), rows: 5, class: 'col-sm-6' %>
+<%= bootstrap_form_with(
+      model: [:broker, @payment_transaction],
+      control_col: 'col-sm-8',
+      label_col: 'col-sm-3',
+      layout: :horizontal,
+      local: true
+    ) do |f|
+%>
+  <%= f.alert_message 'Unable to import:' %>
+
+  <%= f.select :broker_carrier_id,
+               current_user
+               .broker
+               .broker_carriers
+               .includes(:carrier)
+               .collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }
+               .sort,
+               { include_blank: true, label: 'Carrier' }
+  %>
+
+  <%= f.file_field :csv, accept: 'text/csv', label: 'CSV' %>
+
   <div class="form-group">
-    <%= f.submit class: 'btn btn-primary mt-4', value: 'Import' %>
+    <%= f.submit class: 'btn btn-primary mt-4', data: { turbo: false }, value: 'Import' %>
   </div>
 <% end %>

@@ -50,7 +50,7 @@
       <%= f.text_field :website_password, placeholder: 'Password', autocomplete: 'off' %>
     <% end %>
 
-    <% if f.object.persisted? && f.object.as_interstellar_carrier.bol_requires_tracking_number? %>
+    <% if f.object.persisted? && f.object.as_interstellar_carrier&.bol_requires_tracking_number? %>
       <%= f.check_box :ignore_bol_requires_tracking_number,
                       label: 'Generate BOL even if pro is missing?'
         %>

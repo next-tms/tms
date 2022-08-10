@@ -18,78 +18,115 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
     @payment_transaction = PaymentTransaction.new
   end
 
+  def import_sample_csv
+    due = 1.week.from_now.in_time_zone(current_user.broker.time_zone).to_date
+    csv = <<~CSV
+      pro,balance,due
+      123-456,128.14,#{due}
+    CSV
+
+    send_data csv, disposition: 'attachment', type: 'text/csv', filename: 'Sample Statement.csv'
+  end
+
   def new
     @payment_transaction = PaymentTransaction.new
   end
 
   def create
+    @payment_transaction = PaymentTransaction.new(payment_transaction_params.except(:csv))
+
     if payment_transaction_params[:csv].blank?
-      @payment_transaction = PaymentTransaction.new(payment_transaction_params)
       @payment_transaction.broker = current_user.broker
-      if @payment_transaction.save
-        redirect_to [:broker, @payment_transaction] and return
-      else
-        render :new and return
-      end
-    else
-      broker_id = current_user.broker.id
-      broker_carrier_id = payment_transaction_params[:broker_carrier_id]
-      created_by_id = current_user.id
 
-      csv = payment_transaction_params[:csv].gsub(', ', ',')
-      csv = CSV.parse(csv, headers: true)
-      csv.each do |row|
-        next if row.empty?
+      redirect_to [:broker, @payment_transaction] and return if @payment_transaction.save
 
-        balance_cents = row.dig('balance').to_f * 100
-        due_on = nil
-        invoice = nil
-
-        if !row.dig('due').blank?
-          due_on = Date.strptime(row.dig('due'), '%m/%d/%y')
-        elsif !row.dig('date').blank?
-          due_on = Date.strptime(row.dig('date'), '%m/%d/%y') + BrokerCarrier.find(broker_carrier_id).days_to_pay_after_invoice_date.days
-        end
-
-        invoice = row.dig('invoice') unless row.dig('invoice').blank?
-
-        pro = row.dig('pro')
-
-        next if balance_cents.blank? || due_on.blank? || pro.blank?
-        old_payment_transaction = PaymentTransaction.where(broker_id: broker_id).where(pro: pro).where(broker_carrier_id: broker_carrier_id)
-        if old_payment_transaction.blank?
-          PaymentTransaction.create(
-            broker_id: broker_id,
-            broker_carrier_id: broker_carrier_id,
-            balance_cents: balance_cents,
-            created_by_id: created_by_id,
-            due_on: due_on,
-            invoice: invoice,
-            pro: pro
-          )
-        else
-          old_payment_transaction = old_payment_transaction.first
-          if old_payment_transaction.payment.paid_on.blank?
-            old_payment_transaction.balance_cents = balance_cents
-            old_payment_transaction.due_on = due_on
-            old_payment_transaction.save
-          end
-        end
-      end
-
-      flash[:notice] = 'Updated database from report'
-      redirect_to broker_payments_path and return
+      render :new and return
     end
+
+    broker_id = current_user.broker.id
+    payment_transactions = []
+
+    csv = payment_transaction_params[:csv].read.gsub(', ', ',')
+    csv = CSV.parse(csv, headers: true)
+    csv.each do |row|
+      next if row.empty?
+
+      balance_cents = row['balance'].to_f * 100
+      due_on = nil
+      invoice = nil
+
+      if !row['due'].blank?
+        begin
+          due_on = Date.strptime(row['due'], '%Y-%m-%d')
+        rescue Date::Error
+          flash[:error] = 'Dates must be in the format YYYY-MM-DD'
+          render :import and return
+        end
+      elsif !row['date'].blank?
+        begin
+          due_on = Date.strptime(row['due'], '%Y-%m-%d')
+        rescue Date::Error
+          flash[:error] = 'Dates must be in the format YYYY-MM-DD'
+          render :import and return
+        end
+
+        due_on += @payment_transaction.broker_carrier.days_to_pay_after_invoice_date.days
+      end
+
+      invoice = row['invoice'] unless row['invoice'].blank?
+      pro = row['pro']
+
+      next if balance_cents.blank? || due_on.blank? || pro.blank?
+
+      payment_transaction = PaymentTransaction
+                            .where(broker_id:)
+                            .where(broker_carrier: @payment_transaction.broker_carrier)
+                            .where(pro:)
+                            &.first
+      payment_transaction = nil if payment_transaction&.payment&.paid?
+
+      if payment_transaction.blank?
+        payment_transaction = PaymentTransaction.new(
+          broker_carrier: @payment_transaction.broker_carrier,
+          created_by: current_user,
+          invoice:,
+          pro:
+        )
+      end
+
+      payment_transaction.assign_attributes(balance_cents:, due_on:)
+      payment_transactions << payment_transaction
+    end
+
+    saved_payment_transactions_count = payment_transactions.map(&:save).count(true)
+
+    if saved_payment_transactions_count.zero?
+      flash[:error] = 'No new invoices found in statement'
+      render :import and return
+    end
+
+    CreatePaymentsJob.perform_later(@payment_transaction.broker_carrier)
+
+    message_parts = ['Invoice'.pluralize(saved_payment_transactions_count)]
+    message_parts << "(#{saved_payment_transactions_count} found altogether)" if saved_payment_transactions_count > 1
+    message_parts += [
+      'will be assigned',
+      'payable'.pluralize(saved_payment_transactions_count),
+      'shortly'
+    ]
+
+    flash[:success] = message_parts.join(' ')
+    redirect_to due_broker_payments_path
   end
 
   def edit; end
 
   def update
-    if !@payment_transaction.update(payment_transaction_params)
+    if @payment_transaction.update(payment_transaction_params)
+      redirect_to broker_payment_transaction_path(@payment_transaction)
+    else
       flash[:error] = 'Unable to update invoice'
       render :edit
-    else
-      redirect_to broker_payment_transaction_path(@payment_transaction)
     end
   end
 
@@ -110,6 +147,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def payment_transaction_params
-    params.require(:payment_transaction).permit(:id, :approved_by_id, :additional_charge, :balance, :broker_carrier_id, :csv, :due_on, :notes, :paid, :pro, :shipment_load_id)
+    params.require(:payment_transaction).permit(:id, :approved_by_id, :additional_charge, :balance, :broker_carrier_id,
+                                                :csv, :due_on, :notes, :paid, :pro, :shipment_load_id)
   end
 end

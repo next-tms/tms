@@ -4,9 +4,9 @@
       <% if shipment.broker_carrier.carrier.acts_as_broker? and not shipment.tracking_carrier.blank? %>
         <span class="text-nowrap"><%= shipment.tracking_carrier.name %>
         <br>
-        via <%= link_to shipment.broker_carrier.carrier.name, broker_broker_carrier_shipments_path(shipment.broker_carrier), target: '_blank' %>
+        via <%= link_to shipment.broker_carrier.carrier.name, shipments_broker_broker_carrier_path(shipment.broker_carrier), target: '_blank' %>
       <% else %>
-        <%= link_to shipment.broker_carrier.carrier.name, broker_broker_carrier_shipments_path(shipment.broker_carrier), target: '_blank' %>
+        <%= link_to shipment.broker_carrier.carrier.name, shipments_broker_broker_carrier_path(shipment.broker_carrier), target: '_blank' %>
       <% end %>
     <% end %>
   </td>

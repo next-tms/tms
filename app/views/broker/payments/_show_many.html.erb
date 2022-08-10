@@ -6,9 +6,18 @@
       <table class="table table-condensed table-borderless table-striped table-hover h-100">
         <thead>
           <tr>
-            <th><%= sort_link q, :broker_carrier_carrier_name, 'Carrier' %></th>
+            <th><%= sort_link(q, :id, '#') %></th>
+
+            <% unless controller.controller_name == 'broker_carriers' %>
+              <th><%= sort_link q, :broker_carrier_carrier_name, 'Carrier' %></th>
+            <% end %>
+
             <th><%= sort_link(q, :due_on, 'Due') %></th>
-            <th><%= sort_link(q, :paid_on, 'Paid') %></th>
+
+            <% unless controller.controller_name == 'payments' && action_name == 'due' %>
+              <th><%= sort_link(q, :paid_on, 'Paid') %></th>
+            <% end %>
+
             <th><%= sort_link(q, :bank_name, 'Bank') %></th>
             <th><%= sort_link q, :balance_cents, 'Balance' %></th>
             <th><%= sort_link q, :paid_cents, 'Pay' %></th>
@@ -16,22 +25,33 @@
         </thead>
         <tbody>
           <% payments.each do |payment| %>
-            <tr>
-              <td>
-                <% unless payment.broker_carrier.blank? %>
-                  <%= payment.broker_carrier.broker_customer_specific_name %>
-                <% end %>
-              </td>
+            <tr class="<%= 'table-danger' if payment.overdue? %>">
+              <td><%= link_to payment.id, broker_payment_path(payment), target: '_top' %></td>
+              <% unless controller.controller_name == 'broker_carriers' %>
+                <td>
+                  <% unless payment.broker_carrier.blank? %>
+                    <%= link_to payment.broker_carrier.broker_customer_specific_name,
+                                payments_broker_broker_carrier_path(payment.broker_carrier),
+                                target: '_blank'
+                    %>
+                  <% end %>
+                </td>
+              <% end %>
+
               <td>
                 <% unless payment.due_on.blank? %>
-                  <%= link_to short_date(payment.due_on, current_user.time_zone), broker_payment_path(payment), target: '_top' %>
+                  <%= short_date(payment.due_on, current_user.time_zone) %>
                 <% end %>
               </td>
-              <td>
-                <% unless payment.paid_on.blank? %>
-                  <%= link_to short_date(payment.paid_on, current_user.time_zone), broker_payment_path(payment), target: '_top' %>
-                <% end %>
-              </td>
+
+              <% unless controller.controller_name == 'payments' && action_name == 'due' %>
+                <td>
+                  <% unless payment.paid_on.blank? %>
+                    <%= link_to short_date(payment.paid_on, current_user.time_zone), broker_payment_path(payment), target: '_top' %>
+                  <% end %>
+                </td>
+              <% end %>
+
               <td><%== payment.bank&.pretty_name %></td>
               <td><%= humanized_money_with_symbol payment.balance, no_cents_if_whole: false %></td>
               <td><%= humanized_money_with_symbol payment.paid, no_cents_if_whole: false %></td>

@@ -24,8 +24,6 @@
 #   @return [String]
 # @!attribute pro
 #   @return [String]
-# @!attribute week
-#   @return [Integer]
 # @!attribute created_at
 #   @return [Time]
 # @!attribute updated_at
@@ -61,9 +59,7 @@ class PaymentTransaction < ApplicationRecord
   scope :unpaid, -> { where(payment_id: nil) }
   scope :paid, -> { where.not(payment_id: nil) }
 
-  before_create :set_payment
-  before_create :set_week
-
+  before_validation :set_broker
   before_save :set_shipment
 
   belongs_to :created_by, class_name: 'User', optional: true
@@ -76,6 +72,12 @@ class PaymentTransaction < ApplicationRecord
 
   monetize :balance_cents
   monetize :paid_cents
+
+  def duplicates
+    return [] unless shipment.present?
+
+    broker_carrier.payment_transactions.where(shipment:) - [self]
+  end
 
   def shipment_load_id=(load_id)
     self.shipment = Shipment.find_by_load_id(load_id)
@@ -94,35 +96,20 @@ class PaymentTransaction < ApplicationRecord
 
   private
 
-  def set_payment
-    payment = Payment.unpaid.where(broker_carrier: broker_carrier).where(week: week)
-    if payment.blank?
-      payment = Payment.new
-      payment.broker = broker
-      payment.broker_carrier = broker_carrier
-      payment.created_by = created_by
-      payment.due_on = due_on
-      payment.week = week
-      payment.save
-    else
-      payment = payment.first
-    end
-    self.payment = payment
+  def set_broker
+    return if broker_carrier.blank? || broker.present?
+
+    self.broker = broker_carrier.broker
   end
 
   def set_shipment
-    shipment = Shipment.where(broker_carrier: broker_carrier).where(pro: pro)
-    if shipment.size == 1
-      shipment = shipment.first
-      self.shipment = shipment
-      self.broker_carrier = shipment.broker_carrier
-      self.paid = balance if shipment.carrier_cost >= balance
-    end
-  end
+    shipment = Shipment.where(broker_carrier:).where(pro:)
 
-  def set_week
-    return if due_on.blank?
+    return unless shipment.size == 1
 
-    self.week = due_on.strftime('%U').to_i + 1
+    shipment = shipment.first
+    self.shipment = shipment
+    self.broker_carrier = shipment.broker_carrier
+    self.paid = balance if shipment.carrier_cost >= balance
   end
 end
