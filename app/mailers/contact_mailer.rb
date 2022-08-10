@@ -63,6 +63,19 @@ class ContactMailer < ApplicationMailer
     )
   end
 
+
+  def broker_label(from_user:, to_contact:, shipment:)
+    @shipment = shipment
+
+    send_document(
+      document: shipment.broker_label,
+      document_name: 'Label',
+      shipment:,
+      from_user:,
+      to_contact:
+    )
+  end
+
   def from_notification
     @shipment = params[:shipment]
     @document_type = params[:record].to_notification.humanized_document_type
