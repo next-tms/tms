@@ -1150,7 +1150,8 @@ class Shipment < ApplicationRecord
 
   def users_to_notify
     user_ids = (broker_customer&.sales_reps&.ids || []) +
-               (broker.users.with_role('dispatch')&.ids || [])
+               (broker.users.with_role('dispatch')&.ids || []) +
+               (broker.users.with_role('root')&.ids || [])
 
     unless updated_by.blank?
       if updated_by.receive_notifications_from_self?
