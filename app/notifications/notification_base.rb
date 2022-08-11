@@ -1,15 +1,19 @@
+# frozen_string_literal: true
+
 class NotificationBase < Noticed::Base
   deliver_by :database
   deliver_by :email,
-              mailer: :mailer_class,
-              method: :mailer_method,
-              format: :mailer_params,
-              delay: 2.minutes,
-              if: :unread?
-              # Deliver Email Notification if after 2 minutes the user hasn't viewed
-              # the notification in the dashboard
+             mailer: :mailer_class,
+             method: :mailer_method,
+             format: :mailer_params,
+             delay: 2.minutes,
+             if: :should_receive_email_notification?
 
   include ActionView::Helpers::UrlHelper # For link_to
+
+  def should_receive_email_notification?
+    recipient.receive_email_notifications? && (recipient.receive_read_notifications_by_email? || unread?)
+  end
 
   def raw_content
     shipment = params[:shipment] || mapped_shipment
@@ -33,7 +37,7 @@ class NotificationBase < Noticed::Base
       #{shipment.receiver_address.pretty('<br>').html_safe}
     </address>
 
-    #{link_to "View shipment", broker_shipment_url(shipment, host: host)}
+    #{link_to 'View shipment', broker_shipment_url(shipment, host:)}
     "
   end
 end

@@ -9,25 +9,32 @@
   <%= devise_error_messages! %>
 
   <div class="row">
-    <div class="col-sm-4">
-      <p class="col-title"><%= icon 'solid', 'user', 'Profile' %>
-      <%= f.email_field :email, placeholder: 'Your email address', class: 'form-control', autofocus: true %>
-      <%= f.phone_field :phone, placeholder: 'Your phone', class: 'form-control' %>
+    <div class="col col-md-8">
+      <p class="col-title">Profile</p>
+      <%= f.email_field :email, placeholder: 'Your email address', autocomplete: 'email', autofocus: true %>
+      <%= f.phone_field :phone,
+                        placeholder: 'Your phone',
+                        value: f.object.phone.phony_formatted(format: :international),
+                        help: 'International (with leading +) or US format',
+                        autocomplete: 'tel'
+      %>
 
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-        <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+        <p>Currently awaiting confirmation for: <%= resource.unconfirmed_email %></p>
       <% end %>
+      
+      <%= f.check_box :receive_notifications_from_self, label: 'Receive notifications triggered by you?' %>
+      <%= f.check_box :receive_email_notifications, label: 'Receive notifications by email?' %>
+      <%= f.check_box :receive_read_notifications_by_email, label: 'Receive notifications that you’ve already seen by email?' %>
 
-      <p class="col-title"><%= icon 'solid', 'key', 'Change Password' %>
-      <p class="text-info">Only complete to change password:</p>
-      <%= f.password_field :password, placeholder: 'Password', class: 'form-control' %>
-      <%= f.password_field :password_confirmation, placeholder: 'New password confirmation', class: 'form-control' %>
+      <p class="col-title mt-4">Password</p>
+      <p>Only complete this section to change your password:</p>
+      <%= f.password_field :password, placeholder: 'New password', autocomplete: 'new-password' %>
+      <%= f.password_field :password_confirmation, placeholder: 'New password confirmation', autocomplete: 'new-password' %>
+
+      <p class="col-title">Save</p>
+      <%= f.password_field :current_password, help: 'Required to save', placeholder: 'Password', autocomplete: 'current-password' %>
+      <%= f.submit 'Save', class: 'btn btn-primary' %>
     </div>
-  </div>
-
-  <p class="text-danger">Password required to make changes</p>
-  <div class="form-inline form-row mb-2">
-    <%= f.password_field :current_password, placeholder: 'Current Password', hide_label: true, class: 'form-control' %>
-    <%= f.submit 'Save', class: 'btn btn-primary ml-2' %>
   </div>
 <% end %>

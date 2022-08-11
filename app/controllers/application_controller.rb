@@ -83,7 +83,18 @@ class ApplicationController < ActionController::Base
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(
       :account_update,
-      keys: %i[email first_name last_name password password_confirmation phone]
+      keys: %i[
+        email
+        first_name
+        last_name
+        password
+        password_confirmation
+        phone
+        receive_email_notifications
+        receive_notifications_from_self
+        receive_read_notifications_by_email
+        receive_sms_notifications
+      ]
     )
 
     devise_parameter_sanitizer.permit(
