@@ -63,7 +63,7 @@ gem 'turbo-rails', '~> 1.1.1'
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'ead8256c9ca0b47edf9cd9467b1fdca5e4f79161'
 gem 'interstellar-next',
     git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next',
-    ref: 'a4d46f747cf80fd47c51e651b93e05d5b97081e8'
+    ref: '6c58111784e38a63bb458736d1f3943766232ed6'
 gem 'spacetime',
     git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime',
     ref: 'b430558c2458c6d674ec1803246ff5fcccacff94'
