@@ -13,16 +13,16 @@ class FetchShipmentCarrierBolsJob < ApplicationJob
                       Shipment
                       .where(broker_carrier: BrokerCarrier.api_configured)
                       .where(
-                        id: Receivable.unpaid.map { |r| r.shipment_id if r.missing_carrier_bol? }.reject(&:nil?)
+                        id: Receivable.unpaid.map { |r| r.shipment_id if r.missing_carrier_bol? }.compact
                       )
                     )
                     .includes(:broker_carrier)
                 else
-                  Shipment.where(id: shipment_ids).includes(broker_carrier: :carrier)
+                  Shipment.where(id: shipment_ids).where.not(broker_carrier: nil).includes(:broker_carrier)
                 end
 
     shipments.find_each do |shipment|
-      next unless shipment.broker_carrier&.api_configured? && shipment.broker_carrier.carrier.as_interstellar_carrier
+      next unless shipment.broker_carrier&.api_configured? && shipment.broker_carrier&.as_interstellar_carrier
 
       FetchShipmentCarrierBolJob.perform_later(shipment)
     end
