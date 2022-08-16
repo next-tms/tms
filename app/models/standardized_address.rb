@@ -109,7 +109,7 @@ class StandardizedAddress < ApplicationRecord
     @names ||= (
       Shipment.where(shipper_address: self).pluck(:shipper_name) +
       Shipment.where(receiver_address: self).pluck(:receiver_name)
-    ).uniq.reject { |name| name.blank? }
+    ).uniq.reject(&:blank?)
   end
 
   def google_places_spot
@@ -125,12 +125,18 @@ class StandardizedAddress < ApplicationRecord
     end
 
     logger.info 'Calling Google Places API'
-    self.google_places_spot_cached = GooglePlaces::Client
-                                     .new(Rails.application.credentials.google.api_key)
-                                     .spots_by_query((names&.first.blank? ? key : "#{names&.first}, #{key}"))
-                                     .first
 
+    result = GooglePlaces::Client
+             .new(Rails.application.credentials.google.api_key)
+             .spots_by_query((names&.first.blank? ? key : "#{names&.first}, #{key}"))
+             &.first
+
+    accurate = result.is_a?(GooglePlaces::Spot) &&
+               street.scan(/\d+/).map { |d| result.formatted_address.include?(d) }.all?(true)
+
+    self.google_places_spot_cached = accurate ? result : nil
     self.google_places_spot_updated_at = DateTime.current
+
     @google_places_spot = google_places_spot_cached
   end
 
@@ -145,24 +151,30 @@ class StandardizedAddress < ApplicationRecord
       return @open_street_map_result_cached = open_street_map_result_cached
     end
 
-    # logger.info 'Calling OpenStreetMap API'
-    #
-    # client = OpenStreetMap::Client.new
-    #
-    # self.open_street_map_result_cached = client.search(
-    #   q: "#{key}, #{country.name}",
-    #   format: 'json',
-    #   addressdetails: '1',
-    #   accept_language: 'en'
-    # )&.first
+    logger.info 'Calling OpenStreetMap API'
 
-    # self.open_street_map_result_updated_at = DateTime.current
-    # @open_street_map_result = open_street_map_result_cached
-    @open_street_map_result = nil
+    client = OpenStreetMap::Client.new
+    result = client.search(
+      q: "#{key}, #{country.name}",
+      format: 'json',
+      addressdetails: '1',
+      accept_language: 'en'
+    )&.first
+
+    accurate = result.is_a?(Hash) &&
+               street.scan(/\d+/).map { |d| result['display_name'].include?(d) }.all?(true)
+
+    self.open_street_map_result_cached = accurate ? result : nil
+    self.open_street_map_result_updated_at = DateTime.current
+
+    @open_street_map_result = open_street_map_result_cached
   end
 
   def smarty_streets_result
     return @smarty_streets_result if @smarty_streets_result
+
+    google_places_spot
+    open_street_map_result
 
     if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_postal_code?
       self.smarty_streets_result_updated_at = nil
@@ -182,13 +194,13 @@ class StandardizedAddress < ApplicationRecord
   def standardize_address
     return if smarty_streets_result.blank?
 
-    if smarty_streets_result.dig('delivery_line_1')
-      self.street = smarty_streets_result.dig('delivery_line_1') || "#{street} #{street2}"
+    if smarty_streets_result['delivery_line_1'].present?
+      self.street = smarty_streets_result['delivery_line_1']
       self.street2 = nil
-    elsif smarty_streets_result.dig('formatted_address')
-      self.street = smarty_streets_result.dig('formatted_address').split(',').first
+    elsif smarty_streets_result['formatted_address'].present?
+      self.street = smarty_streets_result['formatted_address'].split(',').first
       self.street2 = nil
-    elsif smarty_streets_result.dig('display_name')
+    elsif smarty_streets_result['house_number'].present? && smarty_streets_result['street'].present?
       self.street = "#{smarty_streets_result['house_number']} #{smarty_streets_result['street']}"
       self.street2 = nil
     end
