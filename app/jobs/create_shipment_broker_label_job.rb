@@ -56,7 +56,7 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
       filename: "#{shipment.load_id} Labels.pdf",
       content_type: 'application/pdf'
     )
-    shipment.broker_label.blob.upload(file)
+    shipment.broker_label.reload.blob.upload(file)
 
     shipment.broadcast_new_document_generated(:broker_label)
 
