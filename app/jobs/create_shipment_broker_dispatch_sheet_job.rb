@@ -15,8 +15,6 @@ class CreateShipmentBrokerDispatchSheetJob < ApplicationJob
       filename: "#{shipment.load_id} Dispatch Sheet.pdf",
       io: StringIO.new(pdf.data)
     )
-    sleep(10)
-    shipment.reload.broker_dispatch_sheet.blob.upload(StringIO.new(pdf.data))
 
     shipment.update_columns(broker_dispatch_sheet_shipment_fingerprint: shipment.broker_documents_fingerprint)
 

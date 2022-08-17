@@ -15,8 +15,6 @@ class CreateShipmentBrokerBolJob < ApplicationJob
       filename: "#{shipment.load_id} BOL.pdf",
       io: StringIO.new(pdf.data)
     )
-    sleep(10)
-    shipment.reload.broker_bol.blob.upload(StringIO.new(pdf.data))
 
     shipment.update_columns(broker_bol_shipment_fingerprint: shipment.broker_documents_fingerprint)
 
