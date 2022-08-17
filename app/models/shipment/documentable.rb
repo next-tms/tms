@@ -43,9 +43,7 @@ module Shipment::Documentable
     end
 
     def broker_bol_valid?
-      broker_bol.download && broker_bol_shipment_fingerprint == broker_documents_fingerprint
-    rescue ActiveStorage::FileNotFoundError
-      false
+      broker_bol.attached? && broker_bol_shipment_fingerprint == broker_documents_fingerprint
     end
 
     def broker_carrier_bol_requires_tracking_number?
@@ -53,15 +51,11 @@ module Shipment::Documentable
     end
 
     def broker_dispatch_sheet_valid?
-      broker_dispatch_sheet.download && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
-    rescue ActiveStorage::FileNotFoundError
-      false
+      broker_dispatch_sheet.attached? && broker_dispatch_sheet_shipment_fingerprint == broker_documents_fingerprint
     end
 
     def broker_quote_valid?
-      broker_quote.download && broker_quote_shipment_fingerprint == broker_documents_fingerprint
-    rescue ActiveStorage::FileNotFoundError
-      false
+      broker_quote.attached? && broker_quote_shipment_fingerprint == broker_documents_fingerprint
     end
 
     def can_create_broker_bol?
@@ -69,9 +63,7 @@ module Shipment::Documentable
     end
 
     def can_create_broker_label?
-      !broker_label.download
-    rescue ActiveStorage::FileNotFoundError
-      true
+      return true unless broker_label.attached?
     end
 
     def can_create_broker_dispatch_sheet?
