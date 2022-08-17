@@ -52,7 +52,7 @@ end
 gem 'bootstrap_form', '~> 5.1.0'
 
 gem 'aws-sdk', '~> 3.1.0', group: :production
-gem 'image_processing', '~> 1.12.2'
+gem 'image_processing', '~> 1.2'
 
 gem 'devise', '~> 4.8.0'
 gem 'devise_invitable', '~> 2.0.5'

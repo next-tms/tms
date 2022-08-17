@@ -1909,7 +1909,7 @@ DEPENDENCIES
   honeybadger (~> 4.12)
   htmlentities
   httparty
-  image_processing (~> 1.12.2)
+  image_processing (~> 1.2)
   interstellar!
   interstellar-next!
   jbuilder (~> 2.11)
