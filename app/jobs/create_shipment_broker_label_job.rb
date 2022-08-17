@@ -51,14 +51,11 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
       pdf.text(label)
     end
 
-    result = shipment.broker_label.attach(
+    shipment.broker_label.attach(
       io: file,
       filename: "#{shipment.load_id} Labels.pdf",
       content_type: 'application/pdf'
     )
-
-    Honeybadger.notice("shipment.broker_label.attach didn't return true:\n#{shipment.broker_bol.errors}") unless result
-
     shipment.broker_label.reload.blob.upload(file)
 
     shipment.broadcast_new_document_generated(:broker_label)

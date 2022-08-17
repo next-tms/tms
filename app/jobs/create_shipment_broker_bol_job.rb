@@ -10,11 +10,14 @@ class CreateShipmentBrokerBolJob < ApplicationJob
 
     pdf = PdfRenderer.new(domain:, shipment:, view: 'shipments/documents_bol')
 
-    shipment.broker_bol.attach(
+    result = shipment.broker_bol.attach(
       content_type: 'application/pdf',
       filename: "#{shipment.load_id} BOL.pdf",
       io: StringIO.new(pdf.data)
     )
+
+    Honeybadger.notice("shipment.broker_bol.attach didn't return true:\n#{shipment.broker_bol.errors}") unless result
+
     shipment.reload.broker_bol.blob.upload(StringIO.new(pdf.data))
 
     shipment.update_columns(broker_bol_shipment_fingerprint: shipment.broker_documents_fingerprint)
