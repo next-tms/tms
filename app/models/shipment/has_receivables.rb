@@ -49,6 +49,8 @@ module Shipment::HasReceivables
     end
 
     def receivable?
+      self.reload
+
       return false unless receivables.blank?
       return false if broker_customer.blank? || picked_up_at.blank?
       return false if broker_customer.receivables_schedule == 'never'

@@ -2,7 +2,7 @@
 
 class CreateReceivableJob < ApplicationJob
   def perform(shipment)
-    return unless shipment.receivable?
+    return unless shipment.reload.receivable?
 
     receivable = Receivable.build_from_shipment(shipment)
     return if receivable.total.zero?
