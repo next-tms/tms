@@ -3,8 +3,8 @@
 class CreateShipmentBrokerQuoteJob < ApplicationJob
   queue_as :high_priority
 
-  def perform(domain:, shipment:)
-    return unless shipment.can_create_broker_quote?
+  def perform(broker_documents_fingerprint:, domain:, shipment:)
+    return unless shipment.can_create_broker_quote? && shipment.broker_documents_fingerprint == broker_documents_fingerprint
 
     shipment.broadcast_outdated_document(:broker_quote)
 

@@ -85,23 +85,23 @@ module Shipment::Documentable
 
     if can_create_broker_quote?
       broker_quote.purge
-      CreateShipmentBrokerQuoteJob.perform_later(domain:, shipment: self)
+      CreateShipmentBrokerQuoteJob.perform_later(broker_documents_fingerprint:, domain:, shipment: self)
     end
 
     if can_create_broker_bol?
       broker_bol.purge
       broker_label.purge # for can_create_broker_label? below
-      CreateShipmentBrokerBolJob.perform_later(domain:, shipment: self)
+      CreateShipmentBrokerBolJob.perform_later(broker_documents_fingerprint:, domain:, shipment: self)
     end
 
     if can_create_broker_label?
       broker_label.purge
-      CreateShipmentBrokerLabelJob.perform_later(shipment: self)
+      CreateShipmentBrokerLabelJob.perform_later(broker_documents_fingerprint:, shipment: self)
     end
 
     return unless can_create_broker_dispatch_sheet?
 
     broker_dispatch_sheet.purge
-    CreateShipmentBrokerDispatchSheetJob.perform_later(domain:, shipment: self)
+    CreateShipmentBrokerDispatchSheetJob.perform_later(broker_documents_fingerprint:, domain:, shipment: self)
   end
 end

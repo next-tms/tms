@@ -3,8 +3,8 @@
 class CreateShipmentBrokerLabelJob < ApplicationJob
   queue_as :high_priority
 
-  def perform(shipment:)
-    return unless shipment.can_create_broker_label?
+  def perform(broker_documents_fingerprint:, shipment:)
+    return unless shipment.can_create_broker_label? && shipment.broker_documents_fingerprint == broker_documents_fingerprint
 
     shipment.broadcast_outdated_document(:broker_label)
 
