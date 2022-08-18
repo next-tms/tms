@@ -75,14 +75,16 @@ class InterstellarDocumentService
         user = contact.user
 
         if user
-          return DocumentNotification
-                 .with(
-                   from_user: nil,
-                   to_contact: contact,
-                   shipment:,
-                   document_type: type
-                 )
-                 .deliver(user)
+          DocumentNotification
+            .with(
+              from_user: nil,
+              to_contact: contact,
+              shipment:,
+              document_type: type
+            )
+            .deliver(user)
+
+          next
         end
 
         ContactMailer.send(type, from_user: nil, to_contact: contact, shipment:).deliver_later
