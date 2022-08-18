@@ -5,8 +5,6 @@ module Shipment::Documentable
   include ActionView::RecordIdentifier
 
   included do
-    after_commit :refresh_documents
-
     has_one_attached :broker_bol
     has_one_attached :broker_dispatch_sheet
     has_one_attached :broker_label
@@ -75,11 +73,8 @@ module Shipment::Documentable
     end
   end
 
-  private
-
-  def refresh_documents
-    # DANGER: ActiveStorage touches the record, creating an endless loop without:
-    return if changes.empty? && saved_changes.keys == ['updated_at']
+  def refresh_documents!
+    return unless can_create_broker_bol? || can_create_broker_quote? || can_create_broker_label?
 
     domain = broker.websites.first.homepage_domain
 

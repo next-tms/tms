@@ -82,6 +82,8 @@ class Customer::ShipmentsController < Customer::CustomerController
     end
 
     if @shipment.save
+      @shipment.refresh_documents!
+
       redirect_to quote_customer_shipment_path(@shipment) and return if current_user.broker_customer.can_quote?
 
       redirect_to [:customer, @shipment] and return
@@ -112,6 +114,8 @@ class Customer::ShipmentsController < Customer::CustomerController
 
     respond_to do |format|
       if @shipment.save
+        @shipment.refresh_documents!
+
         format.html { redirect_to customer_shipment_path(@shipment) }
         format.json { render json: { location: customer_shipment_path(@shipment) } }
       else

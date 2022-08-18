@@ -203,9 +203,12 @@ class Shipment < ApplicationRecord
 
   include Resolvable
 
-  audited
-
   attr_accessor :dispatch_pickup
+  attr_reader :previous_changes
+
+  before_save :set_previous_changes
+
+  audited
 
   ransacker :load_id do
     Arel.sql("to_char(\"#{table_name}\".\"load_id\", '99999999')")
@@ -931,6 +934,10 @@ class Shipment < ApplicationRecord
     end
   end
 
+  def set_previous_changes
+    @previous_changes = changes
+  end
+
   def future_pickup_by
     return unless pickup_by
 
@@ -1038,9 +1045,9 @@ class Shipment < ApplicationRecord
       self.tracking_carrier_pickup_confirmation = tracking_carrier_pro
     end
 
-    if tracking_carrier_pro.blank? && !tracking_carrier_pickup_confirmation.blank?
-      self.tracking_carrier_pro = tracking_carrier_pickup_confirmation
-    end
+    return unless tracking_carrier_pro.blank? && !tracking_carrier_pickup_confirmation.blank?
+
+    self.tracking_carrier_pro = tracking_carrier_pickup_confirmation
   end
 
   # Remove tracking_carrier_* information when changed from broker to carrier
