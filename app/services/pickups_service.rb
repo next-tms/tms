@@ -14,7 +14,6 @@ class PickupsService
     end
 
     response = nil
-    error = nil
 
     interstellar_destination = @shipment.receiver_address.to_interstellar_shipping_address
     interstellar_destination.contact = Interstellar::Contact.new(
@@ -48,7 +47,7 @@ class PickupsService
       phone: @pickup.dispatcher.phone
     )
 
-    delivery_from = (@shipment.delivery_from || @shipment.pickup_by + 5.business_days)
+    delivery_from = (@shipment.delivery_from || (@shipment.pickup_by + 5.business_days))
 
     error = nil
 
@@ -98,16 +97,14 @@ class PickupsService
       updated_by: nil
     )
 
-    return if response&.labels.empty?
+    return if response&.labels&.empty?
 
     label_paths = []
 
     response.labels.each do |api_label|
       path = File.join(Dir.tmpdir, "#{DateTime.current.to_i}.pdf")
 
-      File.open(path, 'wb') do |f|
-        f.write(Base64.decode64(api_label.data))
-      end
+      File.binwrite(path, Base64.decode64(api_label.data))
 
       label_paths << path
     end
@@ -122,7 +119,13 @@ class PickupsService
     path = File.join(Dir.tmpdir, filename)
     pdf.save(path)
 
-    @shipment.carrier_label.attach(io: File.open(path), filename:)
+    blob = ActiveStorage::Blob.create_and_upload!(
+      content_type: 'application/pdf',
+      filename:,
+      io: File.open(path)
+    )
+
+    @shipment.carrier_label.attach(blob)
   end
 
   private

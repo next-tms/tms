@@ -4,17 +4,20 @@ class CreateShipmentBrokerQuoteJob < ApplicationJob
   queue_as :high_priority
 
   def perform(broker_documents_fingerprint:, domain:, shipment:)
-    return unless shipment.can_create_broker_quote? && shipment.broker_documents_fingerprint == broker_documents_fingerprint
+    unless shipment.can_create_broker_quote? && shipment.broker_documents_fingerprint == broker_documents_fingerprint
+      return
+    end
 
     shipment.broadcast_outdated_document(:broker_quote)
 
     pdf = PdfRenderer.new(domain:, shipment:, view: 'shipments/documents_quote')
 
-    shipment.broker_quote.attach(
+    blob = ActiveStorage::Blob.create_and_upload!(
       content_type: 'application/pdf',
       filename: "#{shipment.load_id} Quote.pdf",
       io: StringIO.new(pdf.data)
     )
+    shipment.broker_quote.attach(blob)
 
     shipment.update_columns(broker_quote_shipment_fingerprint: shipment.broker_documents_fingerprint)
 

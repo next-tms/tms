@@ -4,7 +4,9 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
   queue_as :high_priority
 
   def perform(broker_documents_fingerprint:, shipment:)
-    return unless shipment.can_create_broker_label? && shipment.broker_documents_fingerprint == broker_documents_fingerprint
+    unless shipment.can_create_broker_label? && shipment.broker_documents_fingerprint == broker_documents_fingerprint
+      return
+    end
 
     shipment.broadcast_outdated_document(:broker_label)
 
@@ -51,11 +53,12 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
       pdf.text(label)
     end
 
-    shipment.broker_label.attach(
+    blob = ActiveStorage::Blob.create_and_upload!(
       io: file,
       filename: "#{shipment.load_id} Labels.pdf",
       content_type: 'application/pdf'
     )
+    shipment.broker_label.attach(blob)
 
     shipment.broadcast_new_document_generated(:broker_label)
 

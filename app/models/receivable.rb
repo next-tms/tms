@@ -239,13 +239,13 @@ class Receivable < ApplicationRecord
 
     result = QuickbooksApiClient::Invoices.new(broker:).find(quickbooks_invoice_id) unless quickbooks_invoice_id.blank?
     unless result.blank?
-      persisted? ? update_columns(quickbooks_invoice_id: result.id) : quickbooks_invoice_id = result.id
+      persisted? ? update_columns(quickbooks_invoice_id: result.id) : self.quickbooks_invoice_id = result.id
       return @quickbooks_invoice = result
     end
 
     result = QuickbooksApiClient::Invoices.new(broker:).find_by_doc_number(shipment.load_id)
     unless result.blank?
-      persisted? ? update_columns(quickbooks_invoice_id: result.id) : quickbooks_invoice_id = result.id
+      persisted? ? update_columns(quickbooks_invoice_id: result.id) : self.quickbooks_invoice_id = result.id
       return @quickbooks_invoice = result
     end
 
@@ -261,11 +261,10 @@ class Receivable < ApplicationRecord
     filename = "#{shipment.load_id} Invoice.pdf"
     path = File.join(Dir.tmpdir, filename)
 
-    File.open(path, 'wb') do |file|
-      file.write(data)
-    end
+    File.binwrite(path, data)
 
-    invoice.attach(io: File.open(path), filename:, content_type: 'application/pdf')
+    blob = ActiveStorage::Blob.create_and_upload!(io: File.open(path), filename:, content_type: 'application/pdf')
+    invoice.attach(blob)
   end
 
   def update_from_quickbooks_invoice
@@ -321,9 +320,9 @@ class Receivable < ApplicationRecord
   def set_authorized_at
     return unless authorized_at.blank?
 
-    if broker_customer.broker.intuit_account&.connected? && !quickbooks_invoice.blank?
-      self.authorized_at = quickbooks_invoice.meta_data.create_time
-    end
+    return unless broker_customer.broker.intuit_account&.connected? && !quickbooks_invoice.blank?
+
+    self.authorized_at = quickbooks_invoice.meta_data.create_time
   end
 
   def set_balance_and_total

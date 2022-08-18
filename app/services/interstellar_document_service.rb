@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Fetch Documents (Either BOL (Bill of Landing) or POD (Proof of Delivery)) from
 # Interstellar API
 class InterstellarDocumentService
@@ -10,9 +12,9 @@ class InterstellarDocumentService
 
       return nil unless interstellar_document_response&.data.present?
 
-      attach_document(type: :bol, document: interstellar_document_response, shipment: shipment)
-      deliver_mail_to_contacts(shipment: shipment, type: :carrier_bol)
-      resolve_problems(type: :missing_carrier_bol, shipment: shipment)
+      attach_document(type: :bol, document: interstellar_document_response, shipment:)
+      deliver_mail_to_contacts(shipment:, type: :carrier_bol)
+      resolve_problems(type: :missing_carrier_bol, shipment:)
 
       true
     end
@@ -25,9 +27,9 @@ class InterstellarDocumentService
 
       return nil unless interstellar_document_response&.data.present?
 
-      attach_document(type: :pod, document: interstellar_document_response, shipment: shipment)
-      deliver_mail_to_contacts(shipment: shipment, type: :carrier_pod)
-      resolve_problems(type: :missing_carrier_pod, shipment: shipment)
+      attach_document(type: :pod, document: interstellar_document_response, shipment:)
+      deliver_mail_to_contacts(shipment:, type: :carrier_pod)
+      resolve_problems(type: :missing_carrier_pod, shipment:)
 
       true
     end
@@ -37,7 +39,12 @@ class InterstellarDocumentService
 
       interstellar_method = "fetch_#{document_type}"
       broker_carrier = shipment.broker_carrier
-      interstellar_document_response = InterstellarApiClient.send(interstellar_method, broker_carrier:, tracking_number: shipment.pro)
+      interstellar_document_response = InterstellarApiClient
+                                       .send(
+                                         interstellar_method,
+                                         broker_carrier:,
+                                         tracking_number: shipment.pro
+                                       )
 
       return nil unless interstellar_document_response&.data.present?
 
@@ -45,7 +52,7 @@ class InterstellarDocumentService
       document.purge
 
       shipment.reload
-      attach_document(type: :bol, document: interstellar_document_response, shipment: shipment)
+      attach_document(type: :bol, document: interstellar_document_response, shipment:)
     end
 
     private
@@ -53,11 +60,12 @@ class InterstellarDocumentService
     def attach_document(type:, document:, shipment:)
       attachment = shipment.send("carrier_#{type}")
 
-      attachment.attach(
+      blob = ActiveStorage::Blob.create_and_upload!(
         io: StringIO.new(document.data),
         filename: "#{shipment.load_id} #{type.upcase} (Carrier).#{Rack::Mime::MIME_TYPES.invert[document.content_type]}",
         content_type: document.content_type
       )
+      attachment.attach(blob)
     end
 
     def deliver_mail_to_contacts(shipment:, type:)
@@ -67,10 +75,17 @@ class InterstellarDocumentService
         user = contact.user
 
         if user
-          DocumentNotification.with(from_user: nil, to_contact: contact, shipment: shipment, document_type: type).deliver(user)
-        else
-          ContactMailer.send(type, from_user: nil, to_contact: contact, shipment: shipment).deliver_later
+          return DocumentNotification
+                 .with(
+                   from_user: nil,
+                   to_contact: contact,
+                   shipment:,
+                   document_type: type
+                 )
+                 .deliver(user)
         end
+
+        ContactMailer.send(type, from_user: nil, to_contact: contact, shipment:).deliver_later
       end
     end
 
