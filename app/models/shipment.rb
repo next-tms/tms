@@ -206,6 +206,7 @@ class Shipment < ApplicationRecord
   attr_accessor :dispatch_pickup
   attr_reader :previous_changes
 
+  before_save :sanitize_addresses_street
   before_save :set_previous_changes
 
   audited
@@ -931,6 +932,22 @@ class Shipment < ApplicationRecord
         user_id: broker_customer_sales_rep.user_id,
         amount:
       )
+    end
+  end
+
+  def sanitize_addresses_street
+    [[:receiver_name, receiver_address], [:shipper_name, shipper_address]].each do |set|
+      attribute = set[0]
+      address = set[1]
+
+      next if address.street.blank? || !address.street.strip.upcase.start_with?('C/O')
+
+      new_value = send(attribute) || ''
+      new_value = "#{new_value} #{address.street}".strip
+      send("#{attribute}=", new_value)
+
+      address.street = address.street2
+      address.street2 = nil
     end
   end
 
