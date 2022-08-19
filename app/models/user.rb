@@ -156,7 +156,7 @@ class User < ApplicationRecord
   end
 
   def broker_customers
-    if has_role?('sales_rep_for_all_broker_customers')
+    if has_any_roles?(%w[dispatch sales_rep_for_all_broker_customers])
       broker.broker_customers
     else
       super
