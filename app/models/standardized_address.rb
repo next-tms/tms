@@ -62,7 +62,7 @@ class StandardizedAddress < ApplicationRecord
   belongs_to :country
   belongs_to :region
 
-  has_many :addresses
+  has_many :addresses, dependent: :nullify
 
   serialize :google_places_spot_cached
   serialize :open_street_map_result_cached
