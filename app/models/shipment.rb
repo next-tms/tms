@@ -1177,6 +1177,8 @@ class Shipment < ApplicationRecord
                (broker.users.broker.with_role('dispatch')&.ids || []) +
                (broker.users.broker.with_role('root')&.ids || [])
 
+    user_ids -= broker.users.broker.with_role('notifications:-dispatch')&.ids || []
+
     unless updated_by.blank?
       if updated_by.receive_notifications_from_self?
         user_ids << updated_by.id
