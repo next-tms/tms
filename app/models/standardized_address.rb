@@ -126,10 +126,19 @@ class StandardizedAddress < ApplicationRecord
 
     logger.info 'Calling Google Places API'
 
-    result = GooglePlaces::Client
-             .new(Rails.application.credentials.google.api_key)
-             .spots_by_query((names&.first.blank? ? key : "#{names&.first}, #{key}"))
-             &.first
+    begin
+      retries ||= 0
+      result = GooglePlaces::Client
+              .new(Rails.application.credentials.google.api_key)
+              .spots_by_query((names&.first.blank? ? key : "#{names&.first}, #{key}"))
+              &.first
+    rescue GooglePlaces::APIConnectionError
+      retries += 1
+      sleep(1)
+      retry if retries < 3
+
+      raise
+    end
 
     accurate = result.is_a?(GooglePlaces::Spot) &&
                street.scan(/\d+/).map { |d| result.formatted_address.include?(d) }.all?(true)
