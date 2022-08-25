@@ -194,10 +194,20 @@ class StandardizedAddress < ApplicationRecord
     end
 
     logger.info 'Calling SmartyStreet API'
-    self.smarty_streets_result_cached = MainStreet::AddressVerifier.new(key).result&.data&.to_hash
+    address_data = MainStreet::AddressVerifier.new(key).result&.data
 
-    self.smarty_streets_result_updated_at = DateTime.current
-    @smarty_streets_result = smarty_streets_result_cached
+    # Error Response is an Arary e.g ['errors', { id: 123, message: 'ERR'} ]
+    if address_data.is_a?(Array)
+      error_key, error_data = address_data
+      return unless error_key == 'errors'
+
+      HoneyBadger.notify(error_message: error_data.first['message'])
+    else
+      self.smarty_streets_result_cached = address_data&.to_hash
+
+      self.smarty_streets_result_updated_at = DateTime.current
+      @smarty_streets_result = smarty_streets_result_cached
+    end
   end
 
   def standardize_address
