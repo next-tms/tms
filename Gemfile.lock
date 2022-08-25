@@ -1801,7 +1801,7 @@ GEM
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
     semantic_range (3.0.0)
-    shakapacker (6.5.0)
+    shakapacker (6.5.1)
       activesupport (>= 5.2)
       rack-proxy (>= 0.6.1)
       railties (>= 5.2)
@@ -1941,7 +1941,7 @@ DEPENDENCIES
   rspec-rails (~> 5.1)
   rss_creator
   selenium-webdriver
-  shakapacker (~> 6.5.0)
+  shakapacker (~> 6.5.1)
   shoulda-matchers (= 5.1.0)
   sidekiq (~> 6.5.3)
   sidekiq-scheduler (~> 4.0.2)
