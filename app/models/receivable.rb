@@ -286,6 +286,8 @@ class Receivable < ApplicationRecord
 
   def update_quickbooks_invoice
     return nil unless broker.intuit_account&.connected?
+    return nil if quickbooks_invoice_id.blank? && quickbooks_invoice.blank?
+    # Return if quickbooks_invoice doesn't exist
 
     # Find existing record if it doesn't exist yet
     if quickbooks_invoice_id.blank? && !quickbooks_invoice.blank?
