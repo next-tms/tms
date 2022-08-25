@@ -29,71 +29,39 @@ module QuickbooksApiClient
 
     def find_all
       broker.intuit_account.perform_authenticated_request do |access_token|
-        service = build_service(access_token)
-        tries = 0
-
-        begin
+        execute_service_call do
+          service = build_service(access_token)
           service.query
-        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
-          raise if tries > 10
-
-          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
-          retry
         end
       end
     end
 
     def find(id)
       broker.intuit_account.perform_authenticated_request do |access_token|
-        service = build_service(access_token)
-        tries = 0
-
-        begin
+        execute_service_call do
+          service = build_service(access_token)
           service.fetch_by_id(id)
-        rescue Quickbooks::IntuitRequestException
-          nil
-        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
-          raise if tries > 10
-
-          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
-          retry
         end
       end
     end
 
     def find_by_doc_number(doc_number)
       broker.intuit_account.perform_authenticated_request do |access_token|
-        service = build_service(access_token)
-        tries = 0
-
-        begin
+        execute_service_call do
+          service = build_service(access_token)
           results = service.find_by(:doc_number, doc_number)
           results.count == 1 ? results.first : results.entries.find { |entry| entry.private_note.exclude?('Void') }
           # An Invoice can be identified as voided base from the #private_note
           # https://developer.intuit.com/app/developer/qbo/docs/api/accounting/most-commonly-used/invoice#void-an-invoice
-        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
-          raise if tries > 10
-
-          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
-          retry
         end
       end
     end
 
     def pdf(invoice)
       broker.intuit_account.perform_authenticated_request do |access_token|
-        service = build_service(access_token)
-        tries = 0
-
-        begin
+        execute_service_call(return_nil_on_404: true) do
+          service = build_service(access_token)
           service.pdf(invoice)
-        rescue Quickbooks::IntuitRequestException
-          nil
-        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
-          raise if tries > 10
-
-          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
-          retry
         end
       end
     end
@@ -106,16 +74,9 @@ module QuickbooksApiClient
       invoice = build_invoice(receivable, invoice)
 
       broker.intuit_account.perform_authenticated_request do |access_token|
-        service = build_service(access_token)
-        tries = 0
-
-        begin
+        execute_service_call do
+          service = build_service(access_token)
           service.update(invoice, sparse: true)
-        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
-          raise if tries > 10
-
-          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
-          retry
         end
       end
     end

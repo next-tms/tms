@@ -15,5 +15,24 @@ module QuickbooksApiClient
       @return_nil_on_404 = return_nil_on_404
       @service = nil
     end
+
+    def execute_service_call(return_nil_on_404: false)
+      tries = 0
+
+      begin
+        yield
+      rescue Quickbooks::IntuitRequestException => e
+        return nil if e.message == 'InternalServerError' # HTTP 500
+        return nil if return_nil_on_404
+
+        raise
+      rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        raise if tries > 10
+
+        sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+        tries += 1
+        retry
+      end
+    end
   end
 end
