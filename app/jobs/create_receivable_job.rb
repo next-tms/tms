@@ -1,18 +1,24 @@
 # frozen_string_literal: true
 
 class CreateReceivableJob < ApplicationJob
+  discard_on ActiveRecord::RecordNotUnique
+
   def perform(shipment)
-    return unless shipment.reload.receivable?
+    Shipment.transaction do
+      shipment.lock!
 
-    receivable = Receivable.build_from_shipment(shipment)
-    return if receivable.total.zero?
+      return unless shipment.reload.receivable?
 
-    receivable.save
+      receivable = Receivable.build_from_shipment(shipment)
+      return if receivable.total.zero?
 
-    return unless receivable.broker.automatically_authorize_receivables?
+      receivable.save
 
-    receivable.update(authorized_at: DateTime.current)
+      return unless receivable.broker.automatically_authorize_receivables?
 
-    PushReceivableToQuickbooksJob.perform_later(receivable:) if shipment.broker.intuit_account&.connected?
+      receivable.update(authorized_at: DateTime.current)
+
+      PushReceivableToQuickbooksJob.perform_later(receivable:) if shipment.broker.intuit_account&.connected?
+    end
   end
 end
