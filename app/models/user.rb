@@ -164,6 +164,8 @@ class User < ApplicationRecord
   end
 
   def dispatcher_only?
+    return false if has_role?('root')
+
     roles.count == 1 && has_role?('dispatch')
   end
 

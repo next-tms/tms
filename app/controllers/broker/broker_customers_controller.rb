@@ -71,6 +71,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def create
     @broker_customer = BrokerCustomer.new(broker_customer_params)
     @broker_customer.broker = current_user.broker
+    @broker_customer.receivables_contact.broker = current_user.broker if @broker_customer.receivables_contact
     # @broker_customer.sales_reps = [current_user]
     if @broker_customer.save
       flash[:success] = "#{@broker_customer.customer.name} saved. You may now edit pricing if you’d like."
