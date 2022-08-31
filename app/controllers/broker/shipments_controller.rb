@@ -633,6 +633,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      :carrier_cost,
                                      :carrier_id,
                                      :carrier_pod,
+                                     :charges_confirmed,
                                      :customer_notes,
                                      :customer_reference,
                                      :delivered_at,

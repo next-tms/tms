@@ -14,6 +14,7 @@ class SendReceivablesJob < ApplicationJob
 
       receivables.each do |receivable|
         next unless receivable.sendable?
+        next if receivable.shipment.requires_charges_confirmed_on_receivables? && !receivable.shipment.charges_confirmed
 
         load_ids << receivable.shipment.load_id
         sendable_receivable_ids << receivable.id

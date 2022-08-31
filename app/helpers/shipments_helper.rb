@@ -148,4 +148,18 @@ module ShipmentsHelper
 
     PREPENDED_TABLE_DATA + table_data + APPENDED_TABLE_DATA
   end
+
+  def charges_confirmed_note(shipment)
+    audit = shipment.audits.where("audited_changes @> ?", {"charges_confirmed" => [false, true]}.to_json ).first
+    changed_by = audit.user
+
+    "Shipment Charges Confirmed by #{changed_by.full_name} at #{(pretty_date audit.created_at, current_user.time_zone)}".html_safe
+  end
+
+  def requires_charges_confirmed_note(shipment)
+    requires_by = shipment.broker.name if shipment.broker.requires_charges_confirmed_on_receivables
+    requires_by = shipment.broker_customer.customer.name if shipment.broker_customer.requires_charges_confirmed_on_receivables
+
+    "Charges are required to be confirmed by #{requires_by} before sending Receivables to the Customer"
+  end
 end

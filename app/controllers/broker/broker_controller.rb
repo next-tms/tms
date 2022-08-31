@@ -22,6 +22,8 @@ class Broker::BrokerController < ApplicationController
       :id,
       :automatically_authorize_receivables,
       :automatically_update_shipment_tracking_based_on_carrier_apis,
+      :ignore_broker_carrier_bol_requires_tracking_number,
+      :requires_charges_confirmed_on_receivables,
       broker_countries_attributes: %i[
         _destroy
         country_id

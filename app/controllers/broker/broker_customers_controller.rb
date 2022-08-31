@@ -193,6 +193,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             :requires_carrier_bol_on_receivables,
                                             :requires_carrier_pod_on_receivables,
                                             :requires_shipment_delivery_before_receivable,
+                                            :requires_charges_confirmed_on_receivables,
                                             preferred_broker_carriers_attributes: %i[
                                               _destroy
                                               id

@@ -908,6 +908,10 @@ class Shipment < ApplicationRecord
     load_id.to_s
   end
 
+  def requires_charges_confirmed_on_receivables?
+    broker_customer.requires_charges_confirmed_on_receivables || broker.requires_charges_confirmed_on_receivables
+  end
+
   private
 
   def build_commissions

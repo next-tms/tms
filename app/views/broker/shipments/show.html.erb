@@ -59,6 +59,19 @@
   </div>
 <% end %>
 
+<% if @shipment.charges_confirmed %>
+  <div class="alert alert-info">
+    <%= charges_confirmed_note(@shipment) %>
+  </div>
+<% end %>
+
+<% if !@shipment.charges_confirmed &&
+      (@shipment.broker.requires_charges_confirmed_on_receivables || @shipment.broker_customer.requires_charges_confirmed_on_receivables) %>
+  <div class="alert alert-warning">
+    <%= requires_charges_confirmed_note(@shipment) %>
+  </div>
+<% end %>
+
 <% if @shipment.dispatched_at.blank? and not @shipment.suggested_broker_accessorials.blank?  %>
   <div class="alert alert-warning">
     <p class="lead"><%= icon 'solid', 'dollar-sign', 'Missing Services' %></p>

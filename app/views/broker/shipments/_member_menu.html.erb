@@ -17,6 +17,10 @@
       <% else %>
         <%= link_to 'Reinstate', broker_shipment_path(@shipment, shipment: { canceled_at: nil }), data: { method: :patch }, target: '_top', class: 'dropdown-item' %>
       <% end %>
+
+      <% unless @shipment.charges_confirmed %>
+        <%= link_to 'Confirm Charges', broker_shipment_path(@shipment, shipment: { charges_confirmed: true }), data: { confirm: 'Are you sure you want to confirm shipment charges?', method: :patch }, target: '_top', class: 'dropdown-item' %>
+      <% end %>
     </ul>
 
     <%= link_to 'Plan', edit_broker_shipment_path(@shipment), class: 'nav-link shipments-edit' %>

@@ -217,6 +217,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_25_175051) do
     t.string "receivables_schedule", default: "immediately"
     t.boolean "requires_shipment_delivery_before_receivable", default: true
     t.string "preferred_broker_carriers_kind"
+    t.boolean "requires_charges_confirmed_on_receivables", default: false
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["office_address_id"], name: "index_broker_customers_on_office_address_id"
@@ -239,6 +240,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_25_175051) do
     t.boolean "automatically_authorize_receivables", default: false
     t.boolean "automatically_update_shipment_tracking_based_on_carrier_apis", default: true
     t.boolean "ignore_broker_carrier_bol_requires_tracking_number", default: false
+    t.boolean "requires_charges_confirmed_on_receivables", default: false
     t.index ["address_id"], name: "index_brokers_on_address_id"
   end
 
@@ -786,6 +788,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_25_175051) do
     t.bigint "created_by_id"
     t.bigint "dispatcher_id"
     t.text "broker_and_broker_customer_notes"
+    t.boolean "charges_confirmed", default: false
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
     t.index ["broker_customer_id"], name: "index_shipments_on_broker_customer_id"
     t.index ["broker_id", "load_id"], name: "index_shipments_on_broker_id_and_load_id", unique: true

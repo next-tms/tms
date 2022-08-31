@@ -28,6 +28,11 @@
   </div>
 
   <div class="form-row">
+    <%= f.check_box :requires_charges_confirmed_on_receivables,
+                     label: 'Require Shipment Charges to be Confirmed before sending Receivables?' %>
+  </div>
+
+  <div class="form-row my-4">
     <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>
   </div>
 <% end %>
