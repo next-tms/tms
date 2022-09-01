@@ -1522,7 +1522,7 @@ GEM
     gyoku (1.4.0)
       builder (>= 2.1.2)
       rexml (~> 3.0)
-    honeybadger (4.12.1)
+    honeybadger (4.12.2)
     htmlentities (4.3.4)
     http (5.1.0)
       addressable (~> 2.8)
