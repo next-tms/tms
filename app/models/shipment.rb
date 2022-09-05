@@ -909,7 +909,7 @@ class Shipment < ApplicationRecord
   end
 
   def requires_charges_confirmed_on_receivables?
-    broker_customer.requires_charges_confirmed_on_receivables || broker.requires_charges_confirmed_on_receivables
+    broker_customer&.requires_charges_confirmed_on_receivables || broker.requires_charges_confirmed_on_receivables
   end
 
   private

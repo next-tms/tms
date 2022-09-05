@@ -158,7 +158,7 @@ module ShipmentsHelper
 
   def requires_charges_confirmed_note(shipment)
     requires_by = shipment.broker.name if shipment.broker.requires_charges_confirmed_on_receivables
-    requires_by = shipment.broker_customer.customer.name if shipment.broker_customer.requires_charges_confirmed_on_receivables
+    requires_by = shipment.broker_customer.customer.name if shipment.broker_customer&.requires_charges_confirmed_on_receivables
 
     "Charges are required to be confirmed by #{requires_by} before sending Receivables to the Customer"
   end

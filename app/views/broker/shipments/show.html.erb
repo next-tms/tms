@@ -66,7 +66,7 @@
 <% end %>
 
 <% if !@shipment.charges_confirmed &&
-      (@shipment.broker.requires_charges_confirmed_on_receivables || @shipment.broker_customer.requires_charges_confirmed_on_receivables) %>
+      (@shipment.broker.requires_charges_confirmed_on_receivables || @shipment.broker_customer&.requires_charges_confirmed_on_receivables) %>
   <div class="alert alert-warning">
     <%= requires_charges_confirmed_note(@shipment) %>
   </div>
