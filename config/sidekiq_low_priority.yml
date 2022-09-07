@@ -24,7 +24,7 @@
   fetch_website_manifests:
     cron: '10 */4 * * *'
     class: FetchWebsiteManifestsJob
-  push_receivables_to_quickbooks::
+  push_receivables_to_quickbooks:
     cron: '*/90 * * * *'
     class: PushReceivablesToQuickbooksJob
   resolve_problems:
