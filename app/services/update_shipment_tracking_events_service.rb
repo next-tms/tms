@@ -162,6 +162,14 @@ class UpdateShipmentTrackingEventsService
   end
 
   def log_invalid_data_to_honeybadger(shipment_event:, attr_name:)
+    cache_key = "#{id}_shipment_event_invalid_#{attr_name}"
+    notified_today = Rails.cache.read(cache_key)
+
+    return if notified_today
+
+    Rails.cache.write(cache_key, "notified", expires_in: 1.day)
+
+    # Notify only once per day to prevent spam notice in Honeybadger every 30 minutes
     Honeybadger.notify(
       "Shipment id=#{id} #interstellar_tracking returned ShipmentEvent from #{broker_carrier.carrier.name} with "\
       "invalid ##{attr_name}: #{shipment_event.attributes}"
