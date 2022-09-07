@@ -165,7 +165,7 @@ class UpdateShipmentTrackingEventsService
     cache_key = "#{id}_shipment_event_invalid_#{attr_name}"
     notified_today = Rails.cache.read(cache_key)
 
-    return if notified_today
+    return true if notified_today
 
     Rails.cache.write(cache_key, "notified", expires_in: 1.day)
 
