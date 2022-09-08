@@ -38,6 +38,13 @@
   </div>
 <% end %>
 
+<% if @receivable.shipment.picked_up_at.blank? %>
+  <div class="alert alert-danger">
+    <p class="lead">Shipment wasn’t picked up.</p>
+    <p>This receivable won’t be sent until the shipment has picked up.</p>
+  </div>
+<% end %>
+
 <div class="row">
   <div class="col col-md-4">
     <p class="col-title">Shipper</p>
