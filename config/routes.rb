@@ -152,9 +152,14 @@ Rails.application.routes.draw do
     get 'shipments/as_dispatcher', to: 'shipments#as_dispatcher'
 
     get 'shipments/quote-only' => 'shipments#new_quote_only', as: :quote_only
+
+
     resources :shipments, path: 'shipments', as: :shipments, param: :load_id do
       # Stupid, but required for some AJAX without PATCH
       get 'update' => 'shipments#update', as: :update
+
+      member { patch 'upload_document', to: 'shipments#upload_document', as: :upload_document }
+
       member { get 'book' => 'shipments#book', as: :book }
       member { get 'book-modal' => 'shipments#book_modal', as: :book_modal }
       member { get 'documents' => 'shipments#documents', as: :documents }

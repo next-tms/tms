@@ -8,7 +8,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                   accounting book book_modal claims documents create_tracking_event destroy edit
                   edit_tracking_events notes pickup pickup_modal pricing quote rate_uid send_document
                   send_document_with_contact_mailer show tracking_events transit unbook update
-                  history
+                  history upload_document
                 ]
   before_action :authenticate_user!
 
@@ -160,6 +160,25 @@ class Broker::ShipmentsController < Broker::BrokerController
       end
     end
   end
+
+  def upload_document
+    unauthorized and return unless @shipment.accessible_by?(current_user)
+
+    document_params = params.require(:shipment).permit(:document, :document_type)
+    document = document_params[:document]
+
+    blob = ActiveStorage::Blob.create_and_upload!(
+      content_type: document.content_type,
+      filename: document.original_filename,
+      io: File.open(document)
+    )
+
+    @shipment.send(document_params[:document_type].to_sym).attach(blob)
+
+    flash[:success] = "Successfully uploaded document for Shipment ##{@shipment.load_id}"
+    redirect_to documents_broker_shipment_path(@shipment)
+  end
+
 
   def show
     unauthorized and return unless @shipment&.accessible_by?(current_user)

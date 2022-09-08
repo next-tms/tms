@@ -5,28 +5,14 @@
 
     <% if shipment.carrier_pod.blank? %>
       <td colspan="4">
-        <%= bootstrap_form_with(model: [:broker, shipment], class: 'row') do |f| %>
-          <div class="col-auto">
-            <%= f.file_field :carrier_pod, accept: 'application/pdf', hide_label: true %>
-          </div>
-          <div class="col-auto">
-            <%= f.submit 'Add', class: 'btn btn-secondary' %>
-          </div>
-        <% end %>
+        <%= render 'shipments/documents/document_upload', document_type: :carrier_pod, replace: false %>
       </td>
     <% elsif current_user.broker? %>
       <td><%= link_to icon('solid', 'eye', 'View'), rails_blob_path(shipment.carrier_pod, disposition: 'preview'), target: '_blank' %></td>
       <td><%= link_to icon('solid', 'file-download', 'Download'), rails_blob_path(shipment.carrier_pod, disposition: 'attachment'), download: "#{shipment.load_id} POD.pdf" %></td>
       <td><%= link_to icon('solid', 'paper-plane', 'Send'), send_document_broker_shipment_path(shipment, shipment_method: 'carrier_pod'), data: { 'turbo-frame': 'modal' } %></td>
       <td>
-        <%= bootstrap_form_with(model: [:broker, shipment], class: 'row') do |f| %>
-          <div class="col-auto">
-            <%= f.file_field :carrier_pod, accept: 'application/pdf', hide_label: true %>
-          </div>
-          <div class="col-auto">
-            <%= f.submit 'Replace', class: 'btn btn-secondary' %>
-          </div>
-        <% end %>
+        <%= render 'shipments/documents/document_upload', document_type: :carrier_pod, replace: true %>
       </td>
     <% end %>
   <% end %>
