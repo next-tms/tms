@@ -166,6 +166,7 @@ class UpdateShipmentTrackingEventsService
     notified_today = Rails.cache.read(cache_key)
 
     return true if notified_today
+    # Needs to return true for the "&& next" in line 27 to execute
 
     Rails.cache.write(cache_key, "notified", expires_in: 1.day)
 
