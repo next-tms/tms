@@ -216,19 +216,19 @@ class Receivable < ApplicationRecord
   end
 
   def create_quickbooks_invoice
-    return nil unless broker.intuit_account&.connected?
-    return @quickbooks_invoice unless @quickbooks_invoice.blank?
+    return false unless broker.intuit_account&.connected?
 
-    result = quickbooks_invoice
-    return result unless result.blank?
+    return update_quickbooks_invoice if quickbooks_invoice.present?
 
-    broker_customer.create_quickbooks_customer if broker_customer.quickbooks_customer.blank?
+    broker_customer.create_quickbooks_customer unless broker_customer.quickbooks_customer.present?
 
     result = QuickbooksApiClient::Invoices.new(broker:).create(self)
-    return nil if result.blank?
+    return false if result.blank?
 
-    update_columns(quickbooks_invoice_id: result.id)
+    update!(invoiced: true, quickbooks_invoice_id: result.id)
     @quickbooks_invoice = result
+
+    true
   end
 
   def quickbooks_invoice
@@ -285,25 +285,24 @@ class Receivable < ApplicationRecord
   end
 
   def update_quickbooks_invoice
-    return nil unless broker.intuit_account&.connected?
-    return nil if quickbooks_invoice_id.blank? && quickbooks_invoice.blank?
-    # Return if quickbooks_invoice doesn't exist
+    return false unless broker.intuit_account&.connected?
 
-    # Find existing record if it doesn't exist yet
-    if quickbooks_invoice_id.blank? && !quickbooks_invoice.blank?
-      update_columns(quickbooks_invoice_id: quickbooks_invoice.id)
-      return update_quickbooks_invoice
+    if quickbooks_invoice_id.blank? && quickbooks_invoice.present?
+      update!(invoiced: true,
+              quickbooks_invoice_id: quickbooks_invoice.id)
     end
 
-    if shipment.broker_customer.quickbooks_customer.blank?
-      raise "BrokerCustomer id=#{shipment.broker_customer.id} must exist in QuickBooks"
-    end
+    return create_quickbooks_invoice if quickbooks_invoice.blank?
+
+    shipment.broker_customer.create_quickbooks_customer unless shipment.broker_customer.quickbooks_customer.present?
 
     result = QuickbooksApiClient::Invoices.new(broker:).update(self)
-    return nil if result.blank?
+    return false if result.blank?
 
-    update_columns(quickbooks_invoice_id: result.id, invoiced: true)
+    update!(invoiced: true, quickbooks_invoice_id: result.id)
     @quickbooks_invoice = result
+
+    true
   end
 
   private

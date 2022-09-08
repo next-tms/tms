@@ -254,25 +254,34 @@ class BrokerCustomer < ApplicationRecord
   end
 
   def create_quickbooks_customer
-    return nil unless broker.intuit_account&.connected?
+    return false unless broker.intuit_account&.connected?
 
-    result = quickbooks_customer
-    return result unless result.blank?
+    return update_quickbooks_customer if quickbooks_customer.present?
 
     result = QuickbooksApiClient::Customers.new(broker:).create(self)
-    return nil if result.blank?
+    return false if result.blank?
 
-    update_columns(quickbooks_customer_id: result.id)
+    update!(quickbooks_customer_id: result.id)
     @quickbooks_customer = result
+
+    true
   end
 
   def update_quickbooks_customer
-    return nil unless broker.intuit_account&.connected?
+    return false unless broker.intuit_account&.connected?
+
+    if quickbooks_customer_id.blank? && quickbooks_customer.present?
+      update!(quickbooks_customer_id: quickbooks_customer.id)
+    end
+
+    return create_quickbooks_customer unless quickbooks_customer.present?
 
     result = QuickbooksApiClient::Customers.new(broker:).update(self)
-    return nil if result.blank?
+    return false if result.blank?
 
     @quickbooks_customer = result
+
+    true
   end
 
   def quickbooks_customer
