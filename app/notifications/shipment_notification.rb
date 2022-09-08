@@ -18,6 +18,10 @@ class ShipmentNotification < NotificationBase
     params[:attribute_changed]
   end
 
+  def notification_type
+    "shipment:#{params[:attribute_changed]}"
+  end
+
   def message
     shipment = params[:shipment].reload
     attribute_changed = params[:attribute_changed].to_sym

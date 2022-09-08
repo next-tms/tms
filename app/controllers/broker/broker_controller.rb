@@ -4,9 +4,16 @@ class Broker::BrokerController < ApplicationController
   before_action :restrict_to_broker_users
   before_action :set_broker
 
-  def settings; end
+  def settings
+    @notification_types = Notification.notification_types
+    @splitted_notification_types = @notification_types.each_slice(@notification_types.size / 2).to_a
+    @blacklist = current_user.email_notifications_blacklist || []
+  end
 
   def update
+    blacklist = Notification.notification_types - params[:email_notifications_blacklist]
+    current_user.update(email_notifications_blacklist: blacklist.join(','))
+
     if !@broker.update(broker_params)
       flash[:error] = "Unable to update #{@broker.name}: #{@broker.errors.full_messages.join(', ')}"
       redirect_back fallback_location: broker_settings_path

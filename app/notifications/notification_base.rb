@@ -12,7 +12,11 @@ class NotificationBase < Noticed::Base
   include ActionView::Helpers::UrlHelper # For link_to
 
   def should_receive_email_notification?
-    recipient.receive_email_notifications? && (recipient.receive_read_notifications_by_email? || unread?)
+    blacklist = recipient.email_notifications_blacklist || []
+
+    recipient.receive_email_notifications? &&
+    (recipient.receive_read_notifications_by_email? || unread?) &&
+    blacklist.exclude?(notification_type)
   end
 
   def raw_content

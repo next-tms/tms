@@ -1,0 +1,22 @@
+
+<div class="page-header">
+  <h1>Notification Preferences</h1>
+</div>
+
+<%= bootstrap_form_with(model: [:broker, current_user], url: broker_notification_preference_path(current_user), method: :put) do |f| %>
+  <label class="col-form-label fw-bold">List of Events to be notified on via email when you're not logged in</label>
+  <table class="table table-borderless w-auto">
+    <tbody>
+      <% @notification_types.each do |notification_type| %>
+        <tr>
+          <td><%= humanized_notification_type(notification_type) %></td>
+          <td> <%= check_box_tag "email_notifications_blacklist[]", notification_type, @blacklist.exclude?(notification_type) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="form-row my-4">
+    <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>
+  </div>
+<% end %>

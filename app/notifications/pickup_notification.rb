@@ -22,6 +22,10 @@ class PickupNotification < NotificationBase
     params[:pickup].shipment
   end
 
+  def notification_type
+    "pickup:#{params[:pickup_action_type]}"
+  end
+
   def message
     pickup = params[:pickup]
 

@@ -19,6 +19,10 @@ class DocumentNotification < NotificationBase
     }
   end
 
+  def notification_type
+    "document:#{params[:document_type]}"
+  end
+
   def mailer_method
     :from_notification
   end

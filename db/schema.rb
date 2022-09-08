@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_25_175051) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_05_161743) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -933,6 +933,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_25_175051) do
     t.boolean "deactivated", default: false
     t.string "time_zone_name", null: false
     t.boolean "receive_read_notifications_by_email", default: false
+    t.text "email_notifications_blacklist"
     t.index ["broker_customer_id"], name: "index_users_on_broker_customer_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"

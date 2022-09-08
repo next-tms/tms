@@ -40,4 +40,27 @@ class Notification < ApplicationRecord
       html: self.recipient.notifications.unread.count
     )
   end
+
+  def self.notification_types
+    %w[
+      shipment:new_shipment
+      shipment:booked_at
+      shipment:delivered_at
+      shipment:delivery_eta_on
+      shipment:delivery_appointment_at
+      shipment:delivery_appointment_on
+      shipment:departed_origin_terminal_at
+      shipment:out_for_delivery_at
+      shipment:picked_up_at
+      shipment:canceled_at
+
+      document:carrier_bol
+      document:carrier_pod
+      document:broker_quote
+      document:broker_dispatch_sheet
+      document:broker_bol
+
+      pickup:pickup_service_dispatched
+    ]
+  end
 end
