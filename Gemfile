@@ -6,7 +6,7 @@ ruby '3.1.2'
 
 gem 'jbuilder', '~> 2.11'
 gem 'pg', '~> 1.4.2'
-gem 'puma', '~> 5.6.4'
+gem 'puma', '~> 5.6.5'
 gem 'rails', '~> 7.0.3.1'
 gem 'shakapacker', '~> 6.5.1'
 gem 'sprockets-rails', '~> 3.4.2'
