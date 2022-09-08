@@ -258,6 +258,15 @@ class Receivable < ApplicationRecord
     data = QuickbooksApiClient::Invoices.new(broker:).pdf(quickbooks_invoice)
     return nil if data.blank?
 
+    if data.include?('errorCode=')
+      # Sample Error Response when fetching Invoice PDF Content
+      # <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<IntuitResponse time=\"2022-09-08T01:21:01.679-07:00\"
+      # xmlns=\"http://schema.intuit.com/finance/v3\">\n <Fault type=\"SERVICE\">\n <Error code=\"3001\">\n <Message>message=ThrottleExceeded;
+      # errorCode=003001; statusCode=429</Message>\n  </Error>\n  </Fault>\n</ IntuitResponse>\n"
+      sleep(10)
+      data = QuickbooksApiClient::Invoices.new(broker:).pdf(quickbooks_invoice)
+    end
+
     filename = "#{shipment.load_id} Invoice.pdf"
     path = File.join(Dir.tmpdir, filename)
 

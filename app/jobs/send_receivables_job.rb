@@ -112,12 +112,24 @@ class SendReceivablesJob < ApplicationJob
         if receivable.invoice.content_type == 'application/pdf'
           pdf << CombinePDF.parse(receivable.invoice.download)
         else
-          receivable.invoice.open do |f|
-            new_pdf = ImageProcessing::MiniMagick
-                      .source(f)
-                      .convert('pdf')
-                      .call
-            pdf << CombinePDF.parse(new_pdf)
+          retries = 0
+
+          begin
+            receivable.invoice.open do |f|
+              new_pdf = ImageProcessing::MiniMagick
+                        .source(f)
+                        .convert('pdf')
+                        .call
+              pdf << CombinePDF.parse(new_pdf)
+            end
+          rescue MiniMagick::Error
+            raise unless receivable.invoice.download.include?('errorCode=')
+            raise unless retries.zero?
+
+            retries += 1
+            receivable.quickbooks_invoice_pdf # Reattach PDF from Quickbooks
+
+            retry
           end
         end
 
