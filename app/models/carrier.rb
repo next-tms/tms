@@ -57,6 +57,10 @@ class Carrier < ApplicationRecord
 
   validates :name, uniqueness: true
   validates :scac, uniqueness: { allow_nil: true }
+  validates :mc_number,
+            length: { is: 6 },
+            numericality: { only_integer: true },
+            uniqueness: { allow_nil: true }
 
   def as_interstellar_carrier
     carrier = Interstellar.const_get(scac)

@@ -50,5 +50,9 @@ RSpec.describe Carrier, type: :model do
   describe 'validations' do
     it { is_expected.to validate_uniqueness_of(:name) }
     it { is_expected.to validate_uniqueness_of(:scac).allow_nil }
+
+    it { is_expected.to validate_uniqueness_of(:mc_number).allow_nil }
+    it { is_expected.to validate_length_of(:mc_number).is_equal_to(6) }
+    it { is_expected.to validate_numericality_of(:mc_number).only_integer }
   end
 end
