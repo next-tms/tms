@@ -11,6 +11,10 @@ class NotificationBase < Noticed::Base
 
   include ActionView::Helpers::UrlHelper # For link_to
 
+  def failed_email_delivery?
+    params[:email_delivery_error].present?
+  end
+
   def should_receive_email_notification?
     blacklist = recipient.email_notifications_blacklist || []
 
