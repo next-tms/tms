@@ -1194,15 +1194,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
   integrity sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==
 
-"@rails/actioncable@^7.0":
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/@rails/actioncable/-/actioncable-7.0.2.tgz#69a6d999f4087e0537dd38fe0963db1f4305d650"
-  integrity sha512-G26maXW1Kx0LxQdmNNuNjQlRO/QlXNr3QfuwKiOKb5FZQGYe2OwtHTGXBAjSoiu4dW36XYMT/+L1Wo1Yov4ZXA==
-
-"@rails/actioncable@latest":
-  version "7.0.3-1"
-  resolved "https://registry.yarnpkg.com/@rails/actioncable/-/actioncable-7.0.3-1.tgz#041a5c81cdf0c68b70a783fdc3ffad0835c3da02"
-  integrity sha512-c2TEL1hLjgSZLqTD6US25nYWv3zKaY2VVzJSqiDIlV6EkEEBirf1REOz6gPbC9Eb+5e0wI/Fp0IbAHL+86eKxg==
+"@rails/actioncable@^7.0", "@rails/actioncable@latest":
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/@rails/actioncable/-/actioncable-7.0.4.tgz#70a3ca56809f7aaabb80af2f9c01ae51e1a8ed41"
+  integrity sha512-tz4oM+Zn9CYsvtyicsa/AwzKZKL+ITHWkhiu7x+xF77clh2b4Rm+s6xnOgY/sGDWoFWZmtKsE95hxBPkgQQNnQ==
 
 "@rails/activestorage@latest":
   version "7.0.3-1"
