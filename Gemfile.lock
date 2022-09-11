@@ -1916,7 +1916,7 @@ DEPENDENCIES
   honeybadger (~> 4.12)
   htmlentities
   httparty
-  image_processing (~> 1.2)
+  image_processing (~> 1.12.2)
   interstellar!
   interstellar-next!
   jbuilder (~> 2.11)
@@ -1947,7 +1947,6 @@ DEPENDENCIES
   rqrcode
   rspec-rails (~> 5.1)
   rss_creator
-  ruby-vips
   selenium-webdriver
   shakapacker (~> 6.5.1)
   shoulda-matchers (= 5.1.0)
