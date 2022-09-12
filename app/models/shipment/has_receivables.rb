@@ -48,6 +48,10 @@ module Shipment::HasReceivables
       CreateReceivableJob.perform_later(self)
     end
 
+    def requires_customer_reference_number_on_receivables?
+      broker_customer.requires_customer_reference_number_on_receivables
+    end
+
     def receivable?
       self.reload
 
@@ -56,7 +60,35 @@ module Shipment::HasReceivables
       return false if broker_customer.receivables_schedule == 'never'
       return false if broker_customer.requires_shipment_delivery_before_receivable? && delivered_at.blank?
 
+      if requires_customer_reference_number_on_receivables? && customer_reference.blank?
+        create_missing_customer_reference_problem and return false
+      end
+
       true
+    end
+
+    def create_missing_customer_reference_problem
+      title = "Load #{load_id} missing customer reference no"
+      body = "Load #{load_id} is required to have customer reference no before creating a receivable"
+
+      Problem.create(
+        assigned_to: self.dispatcher,
+        body:,
+        problem_type: missing_customer_preference_number_problem_type,
+        resolvable: self,
+        title:
+      )
+    end
+
+    def missing_customer_preference_number_problem_type
+      ProblemType.find_or_create(
+        code: 'missing_customer_reference_number',
+        name: 'missing customer reference number',
+        resolvable_class_attribute: 'customer_reference',
+        resolvable_class_name: 'Shipment',
+        resolvable_class_since_attribute_name: 'dispatched_at',
+        resolves_when_class_attribute_is: 'blank_false',
+      )
     end
   end
 end
