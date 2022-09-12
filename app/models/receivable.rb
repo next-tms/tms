@@ -188,7 +188,11 @@ class Receivable < ApplicationRecord
     end
 
     if broker_customer.requires_carrier_bol_on_receivables? && broker_customer.requires_carrier_pod_on_receivables?
-      return shipment.carrier_bol.attached? && shipment.carrier_pod.attached?
+      documents_attached = [shipment.carrier_bol.attached?, shipment.carrier_pod.attached?]
+
+      return documents_attached.any?(true) if shipment.broker_carrier&.carrier&.consider_bol_and_pod_documents_same?
+
+      return documents_attached.all?(true)
     end
 
     return shipment.carrier_bol.attached? if broker_customer.requires_carrier_bol_on_receivables?
