@@ -40,6 +40,10 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def new
     @shipment = Shipment.new
+
+    # Needed for @shipment.broker_customer.eligible_broker_accessorials
+    @shipment.broker_customer = current_user.broker_customer
+
     @shipment.items << Item.new
     @shipment.shipper_address = current_user.broker_customer&.primary_pickup_address&.dup || Address.new
     @shipment.receiver_address = Address.new
@@ -54,6 +58,10 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def new_quote_only
     @shipment = Shipment.new
+
+    # Needed for @shipment.broker_customer.eligible_broker_accessorials
+    @shipment.broker_customer = current_user.broker_customer
+
     @shipment.items << Item.new
     @shipment.shipper_address = Address.new
     @shipment.receiver_address = Address.new

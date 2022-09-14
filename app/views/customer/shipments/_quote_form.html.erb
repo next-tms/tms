@@ -31,21 +31,9 @@
   </div>
 
   <p class="col-title mt-4">Services</p>
-  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".shipment-broker-accessorial-form-wrapper">
-    <template data-nested-form-target="template">
-      <%= f.fields_for :shipment_broker_accessorials, ShipmentBrokerAccessorial.new, child_index: 'NEW_RECORD' do |shipment_broker_accessorial_form| %>
-        <%= render 'shipments/broker_accessorial_form', f: shipment_broker_accessorial_form %>
-      <% end %>
-    </template>
-
-    <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorial_form| %>
-      <%= render 'shipments/broker_accessorial_form', f: shipment_broker_accessorial_form %>
-    <% end %>
-
-    <div data-nested-form-target="target"></div>
-
-    <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
-  </div>
+  <%= render 'shipments/nested_broker_accessorials_form',
+             f: f,
+             accessorials_has_been_suggested: @accessorials_has_been_suggested %>
 
   <p class="col-title mt-4">Freight</p>
   <%= f.check_box :truckload, label: 'Ship as a truckload?', class: 'mb-4' %>
