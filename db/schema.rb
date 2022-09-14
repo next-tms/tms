@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_09_165730) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_14_162912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -178,6 +178,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_09_165730) do
     t.datetime "updated_at", null: false
     t.index ["broker_id"], name: "index_broker_countries_on_broker_id"
     t.index ["country_id"], name: "index_broker_countries_on_country_id"
+  end
+
+  create_table "broker_customer_dispatchers", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "broker_customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["broker_customer_id"], name: "index_broker_customer_dispatchers_on_broker_customer_id"
+    t.index ["user_id"], name: "index_broker_customer_dispatchers_on_user_id"
   end
 
   create_table "broker_customer_sales_reps", force: :cascade do |t|
@@ -980,6 +989,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_09_165730) do
   add_foreign_key "broker_carriers", "brokers"
   add_foreign_key "broker_carriers", "carriers"
   add_foreign_key "broker_countries", "countries"
+  add_foreign_key "broker_customer_dispatchers", "broker_customers"
+  add_foreign_key "broker_customer_dispatchers", "users"
   add_foreign_key "broker_customer_sales_reps", "broker_customers"
   add_foreign_key "broker_customer_sales_reps", "users"
   add_foreign_key "broker_customers", "addresses", column: "office_address_id"

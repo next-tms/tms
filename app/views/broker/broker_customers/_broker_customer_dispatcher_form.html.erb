@@ -1,0 +1,13 @@
+<div class="broker-customer-dispatchers-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+  <div class="col-auto">
+    <%= f.select :user_id,
+                 User.dispatchers.collect { |user| [user.full_name, user.id ] },
+                 { label: 'Dispatcher', hide_label: true, wrapper: false },
+                 class: 'form-select' %>
+  </div>
+
+  <div class="col-auto">
+    <%= f.hidden_field :_destroy %>
+    <%= link_to icon('solid', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
+  </div>
+</div>

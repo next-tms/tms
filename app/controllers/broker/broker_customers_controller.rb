@@ -208,6 +208,11 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                               commission_percent
                                               user_id
                                             ],
+                                            broker_customer_dispatchers_attributes: %i[
+                                              _destroy
+                                              id
+                                              user_id
+                                            ],
                                             broker_accessorials_attributes: %i[
                                               _destroy
                                               id

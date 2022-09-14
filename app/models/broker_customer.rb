@@ -90,6 +90,10 @@ class BrokerCustomer < ApplicationRecord
   has_many :sales_reps, through: :broker_customer_sales_reps, source: 'user'
   accepts_nested_attributes_for :broker_customer_sales_reps, allow_destroy: true, reject_if: :all_blank
 
+  has_many :broker_customer_dispatchers, dependent: :destroy
+  has_many :dispatchers, through: :broker_customer_dispatchers, source: 'user'
+  accepts_nested_attributes_for :broker_customer_dispatchers, allow_destroy: true, reject_if: :all_blank
+
   has_many :broker_accessorials
   accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
 
