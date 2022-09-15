@@ -188,7 +188,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.assign_attributes(broker_customer_params)
     @broker_customer.sales_reps |= @broker_customer.sales_reps
 
-    redirect_to [:broker, @broker_customer, @customer_contact] if @broker_customer.save
+    redirect_to [:broker, @broker_customer, @customer_contact] and return if @broker_customer.save
 
     flash[:danger] = 'Unable to update customer'
     render :edit
