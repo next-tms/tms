@@ -3,6 +3,9 @@
   cancel_shipments:
     cron: '30 * * * *'
     class: CancelShipmentsJob
+  create_payments:
+    cron: '15 */2 * * *'
+    class: CreatePaymentsJob
   create_problems:
     cron: '*/15 * * * *'
     class: CreateProblemsJob
