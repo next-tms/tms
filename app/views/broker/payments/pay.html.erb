@@ -3,12 +3,20 @@
 <%= render 'member_header' %>
 <h2>Pay</h2>
 
-<div class="row">
+<div class="row" data-controller="payments">
+  <span id="bankData" data-bank-payment-method-ids="<%= @bank_payment_method_ids %>">
   <div class="col">
     <%= bootstrap_form_with(model: [:broker, @payment], local: true, layout: :horizontal, label_col: 'col-sm-2', control_col: 'col-sm-10') do |f| %>
       <%= f.alert_message 'Unable to update payment:' %>
-      <%= f.select :bank_id, Bank.where(broker: current_user.broker).order(:name).collect { |bank| [bank.pretty_name, bank.id] }, { include_blank: false, label: 'Account' }, class: 'form-select' %>
-      <%= f.select :payment_method_id, PaymentMethod.all.order(:name).collect { |payment_method| [payment_method.name, payment_method.id] }, { include_blank: false, label: 'Method' }, class: 'form-select' %>
+      <%= f.select :bank_id,
+                   @banks.collect { |bank| [bank.pretty_name, bank.id] },
+                   { include_blank: false, label: 'Account', data: { action: "change->payments#updatePaymentMethod" } },
+                   data: { action: "change->payments#updatePaymentMethod" },
+                   class: 'form-select' %>
+      <%= f.select :payment_method_id,
+                   PaymentMethod.all.order(:name).collect { |payment_method| [payment_method.name, payment_method.id] },
+                   { include_blank: false, label: 'Method', selected: @selected_payment_method.id },
+                   class: 'form-select' %>
       <%= f.text_field :method_reference, label: 'Reference' %>
       <%= f.text_field :paid_on,
                        label: 'Paid On',

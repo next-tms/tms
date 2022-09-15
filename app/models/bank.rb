@@ -39,4 +39,8 @@ class Bank < ApplicationRecord
   def pretty_name
     @pretty_name ||= "#{name} — #{kind.titleize} #{account_number}"
   end
+
+  def applicable_payment_method
+    PaymentMethod.all.find { |p| p.enumerable_value == kind }
+  end
 end

@@ -26,7 +26,14 @@ class Broker::PaymentsController < Broker::BrokerController
     render :edit
   end
 
-  def pay; end
+  def pay
+    @banks = Bank.where(broker: current_user.broker).order(:name)
+    @payment_methods = PaymentMethod.all.order(:name)
+    selected_bank = @payment.bank || @banks.first
+
+    @selected_payment_method = selected_bank.applicable_payment_method
+    @bank_payment_method_ids = @banks.map { |bank| bank.applicable_payment_method.id }.join
+  end
 
   def show
     @q = @payment.payment_transactions.includes(:shipment).ransack(params[:q])
