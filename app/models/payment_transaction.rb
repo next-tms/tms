@@ -71,7 +71,7 @@ class PaymentTransaction < ApplicationRecord
   monetize :balance_cents
   monetize :paid_cents
 
-  scope :due, -> { includes(:payment).where.not(paid_cents: 0).where.not(payment: { paid_on: nil }) }
+  scope :due, -> { includes(:payment).where(payment: { paid_on: nil }).or(includes(:payment).where(payment: nil)) }
   scope :paid, -> { includes(:payment).where.not(payment: { paid_on: nil }) }
 
   validates :broker, presence: true
