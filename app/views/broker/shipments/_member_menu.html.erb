@@ -13,7 +13,7 @@
       <% end %>
 
       <% if @shipment.canceled_at.blank? %>
-        <%= link_to 'Cancel', broker_shipment_path(@shipment, shipment: { canceled_at: DateTime.now }), data: { confirm: 'Are you sure you want to cancel this shipment?', method: :patch }, target: '_top', class: 'dropdown-item' %>
+        <%= link_to 'Cancel', broker_shipment_path(@shipment, shipment: { canceled_at: 'now' }), data: { confirm: 'Are you sure you want to cancel this shipment?', method: :patch }, target: '_top', class: 'dropdown-item' %>
       <% else %>
         <%= link_to 'Reinstate', broker_shipment_path(@shipment, shipment: { canceled_at: nil }), data: { method: :patch }, target: '_top', class: 'dropdown-item' %>
       <% end %>

@@ -425,6 +425,18 @@ class Shipment < ApplicationRecord
     self.applied_rate = rate
   end
 
+  def booked_at=(val)
+    return self.booked_at = DateTime.current if val == 'now' # for UI
+
+    super
+  end
+
+  def canceled_at=(val)
+    return self.canceled_at = DateTime.current if val == 'now' # for UI
+
+    super
+  end
+
   # Returns the actual carrier rather than any broker associated
   def carrier
     return nil if broker_carrier.blank?
