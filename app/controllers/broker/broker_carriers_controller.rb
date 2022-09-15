@@ -5,6 +5,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :set_broker_carrier, only: %i[
     contacts
     edit
+    payment_transactions
     payments
     preferences
     search_terminals
@@ -23,12 +24,8 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @q = current_user
          .broker
          .broker_carriers
-         .includes(
-           [
-             :broker_customer, { broker_customer: :customer },
-             :carrier
-           ]
-         ).ransack(params[:q])
+         .includes(required_includes)
+         .ransack(params[:q])
 
     @q.sorts = "#{Carrier.table_name.singularize}_name" if @q.sorts.blank?
     @pagy, @broker_carriers = pagy(@q.result)
@@ -61,6 +58,38 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def preferences; end
+
+  def quickbooks
+    unauthorized and return unless current_user.broker? &&
+                                   current_user.broker.intuit_account.present? &&
+                                   (current_user.has_role?('root') || current_user.has_role?('accounts_payable'))
+
+    @broker_carriers = current_user
+                       .broker
+                       .broker_carriers
+                       .includes(required_includes)
+                       .order('carriers.name')
+
+    @vendors = QuickbooksApiClient::Vendors.new(broker: current_user.broker)
+                                           .find_all
+                                           .sort_by(&:display_name)
+  end
+
+  def update_quickbooks
+    unauthorized and return unless current_user.broker? &&
+                                   current_user.broker.intuit_account.present? &&
+                                   (current_user.has_role?('root') || current_user.has_role?('accounts_payable'))
+
+    broker = current_user.broker
+    broker.assign_attributes(broker_params)
+
+    if broker.save
+      flash[:success] = 'QuickBooks vendors updated'
+      redirect_to quickbooks_broker_broker_carriers_path and return
+    end
+
+    render :quickbooks
+  end
 
   def tariff
     return if @broker_carrier.carrier.carrier_areas.empty? ||
@@ -144,6 +173,17 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @pagy, @contacts = pagy(@q.result)
   end
 
+  def payment_transactions
+    require_role('accounts_payable')
+
+    @q = @broker_carrier
+         .payment_transactions
+         .ransack(params[:q])
+
+    @q.sorts = 'due_on desc' if @q.sorts.blank?
+    @pagy, @payment_transactions = pagy(@q.result)
+  end
+
   def payments
     require_role('accounts_payable')
 
@@ -177,10 +217,17 @@ class Broker::BrokerCarriersController < Broker::BrokerController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_broker_carrier
-    @broker_carrier = BrokerCarrier.find params[:id]
+    @broker_carrier = BrokerCarrier.find(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
+  def broker_params
+    params.require(:broker).permit(
+      :id,
+      broker_carriers_attributes: %i[id quickbooks_vendor_id]
+    )
+  end
+
   def broker_carrier_params
     params.require(:broker_carrier).permit(
       :id,
@@ -224,5 +271,12 @@ class Broker::BrokerCarriersController < Broker::BrokerController
         min_pallets
       ]
     )
+  end
+
+  def required_includes
+    [
+      :carrier,
+      :broker_customer, { broker_customer: :customer }
+    ]
   end
 end

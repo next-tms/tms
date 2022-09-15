@@ -6,7 +6,7 @@ class Broker::PaymentsController < Broker::BrokerController
   before_action :require_accounts_payable
 
   def due
-    @q = Payment.due.includes(required_includes).ransack(params[:q])
+    @q = Payment.due.includes(required_includes + %i[broker]).ransack(params[:q])
     @q.sorts = 'due_on desc' if @q.sorts.blank?
     @pagy, @payments = pagy(@q.result(distinct: true))
   end
@@ -29,7 +29,7 @@ class Broker::PaymentsController < Broker::BrokerController
   def pay; end
 
   def show
-    @q = @payment.payment_transactions.includes(required_includes).ransack(params[:q])
+    @q = @payment.payment_transactions.includes(:shipment).ransack(params[:q])
     @q.sorts = 'due_on desc' if @q.sorts.blank?
 
     @pagy, @payment_transactions = pagy(@q.result)
@@ -74,9 +74,8 @@ class Broker::PaymentsController < Broker::BrokerController
   def required_includes
     [
       :broker_carrier,
-      { bank: :type },
-      { broker_carrier: %i[broker_customer carrier] },
-      { payment_transactions: :shipment }
+      :payment_transactions,
+      { broker_carrier: %i[broker_customer carrier] }
     ]
   end
 end

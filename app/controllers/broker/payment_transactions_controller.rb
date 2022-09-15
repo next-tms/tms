@@ -5,14 +5,18 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
   before_action :authenticate_user!
   before_action :require_accounts_payable
 
+  def due
+    @q = current_user.broker.payment_transactions.due.includes(required_includes).ransack(params[:q])
+    @q.sorts = 'due_on desc' if @q.sorts.blank?
+    @pagy, @payment_transactions = pagy(@q.result(distinct: true))
+  end
+
   def destroy
     @payment_transaction.destroy
     redirect_to broker_payments_path
   end
 
-  def index
-    @payment_transactions = current_user.broker.payment_transactions.unpaid.order(:due_on)
-  end
+  def edit; end
 
   def import
     @payment_transaction = PaymentTransaction.new
@@ -28,22 +32,24 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
     send_data csv, disposition: 'attachment', type: 'text/csv', filename: 'Sample Statement.csv'
   end
 
+  def index
+    @payment_transactions = current_user.broker.payment_transactions.unpaid.order(:due_on)
+  end
+
   def new
     @payment_transaction = PaymentTransaction.new
   end
 
   def create
     @payment_transaction = PaymentTransaction.new(payment_transaction_params.except(:csv))
+    @payment_transaction.broker = current_user.broker
 
     if payment_transaction_params[:csv].blank?
-      @payment_transaction.broker = current_user.broker
-
       redirect_to [:broker, @payment_transaction] and return if @payment_transaction.save
 
       render :new and return
     end
 
-    broker_id = current_user.broker.id
     payment_transactions = []
 
     csv = payment_transaction_params[:csv].read.gsub(', ', ',')
@@ -79,7 +85,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
       next if balance_cents.blank? || due_on.blank? || pro.blank?
 
       payment_transaction = PaymentTransaction
-                            .where(broker_id:)
+                            .where(broker: current_user.broker)
                             .where(broker_carrier: @payment_transaction.broker_carrier)
                             .where(pro:)
                             &.first
@@ -116,10 +122,21 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
     ]
 
     flash[:success] = message_parts.join(' ')
-    redirect_to due_broker_payments_path
+    redirect_to due_broker_payment_transactions_path
   end
 
-  def edit; end
+  def paid
+    @q = current_user.broker.payment_transactions.paid.includes(required_includes).ransack(params[:q])
+    @q.sorts = 'paid_on desc' if @q.sorts.blank?
+    @pagy, @payment_transactions = pagy(@q.result(distinct: true))
+  end
+
+  def pay; end
+
+  def show
+    # TODO: Remove this requirement from view
+    @q = PaymentTransaction.where(id: @payment_transaction.id).includes(:shipment).ransack({})
+  end
 
   def update
     if @payment_transaction.update(payment_transaction_params)
@@ -130,14 +147,18 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
     end
   end
 
-  def pay; end
-
-  def show; end
-
   private
 
   def require_accounts_payable
     require_role 'accounts_payable'
+  end
+
+  def required_includes
+    [
+      :broker_carrier,
+      :shipment,
+      { broker_carrier: %i[broker_customer carrier] }
+    ]
   end
 
   # Use callbacks to share common setup or constraints between actions.

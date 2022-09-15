@@ -9,18 +9,18 @@ class Broker::BanksController < Broker::BrokerController
     @display_paid = ['0', nil].include?(params.dig(:q, :paid_on_null))
 
     @q = @bank
-        .payments
-        .paid
-        .includes(
-          :payment_transactions,
-          {
-            broker_carrier: [
-              :carrier,
-              { broker_customer: :customer}
-            ]
-          }
-        )
-        .ransack(params[:q])
+         .payments
+         .paid
+         .includes(
+           :payment_transactions,
+           {
+             broker_carrier: [
+               :carrier,
+               { broker_customer: :customer }
+             ]
+           }
+         )
+         .ransack(params[:q])
     @q.sorts = 'paid_on DESC' if @q.sorts.blank?
     @pagy, @payments = pagy(paid_or_pending_filter(@q))
 
@@ -35,17 +35,6 @@ class Broker::BanksController < Broker::BrokerController
     end
   end
 
-  def index
-    @q = current_user.broker.banks.includes(:type).ransack(params[:q])
-    @q.sorts = 'name asc' if @q.sorts.blank?
-
-    @pagy, @banks = pagy(@q.result)
-  end
-
-  def new
-    @bank = Bank.new
-  end
-
   def create
     @bank = Bank.new(bank_params)
     @bank.broker = current_user.broker
@@ -58,17 +47,63 @@ class Broker::BanksController < Broker::BrokerController
 
   def edit; end
 
-  def update
-    if !@bank.update(bank_params)
-      flash[:danger] = 'Unable to update contact'
-      render :edit
-    else
-      redirect_to broker_banks_path
-    end
+  def index
+    @q = current_user.broker.banks.ransack(params[:q])
+    @q.sorts = 'name asc' if @q.sorts.blank?
+
+    @pagy, @banks = pagy(@q.result)
+  end
+
+  def new
+    @bank = Bank.new
   end
 
   def show
     render file: 'public/401', layout: false, status: :unauthorized unless @bank.broker == current_user.broker
+  end
+
+  def update
+    @bank.assign_attributes(bank_params)
+
+    redirect_to broker_banks_path and return if @bank.save
+
+    flash[:danger] = 'Unable to update bank'
+    render :edit
+  end
+
+  def quickbooks
+    unauthorized and return unless current_user.broker? &&
+                                   current_user.broker.intuit_account.present? &&
+                                   current_user.has_role?('root')
+
+    @banks = current_user
+             .broker
+             .banks
+             .order(:name, :account_number)
+
+    @accounts = QuickbooksApiClient::Accounts.new(broker: current_user.broker)
+                                             .find_all
+                                             .sort_by(&:name)
+  end
+
+  def update_quickbooks
+    unauthorized and return unless current_user.broker? &&
+                                   current_user.broker.intuit_account.present? &&
+                                   current_user.has_role?('root')
+
+    broker = current_user.broker
+    broker.assign_attributes(broker_params)
+
+    if broker.save
+      flash[:success] = 'QuickBooks accounts updated'
+      redirect_to quickbooks_broker_banks_path and return
+    end
+
+    @accounts = QuickbooksApiClient::Accounts.new(broker: current_user.broker)
+                                             .find_all
+                                             .sort_by(&:name)
+
+    render :quickbooks
   end
 
   private
@@ -93,7 +128,14 @@ class Broker::BanksController < Broker::BrokerController
       :id,
       :account_number,
       :name,
-      :type_id
+      :quickbooks_account_id
+    )
+  end
+
+  def broker_params
+    params.require(:broker).permit(
+      :id,
+      banks_attributes: %i[id kind quickbooks_account_id]
     )
   end
 end

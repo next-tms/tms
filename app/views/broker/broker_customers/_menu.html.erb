@@ -4,4 +4,10 @@
   <% if current_user.has_any_roles?(['root', 'sales_rep']) %>
     <%= link_to 'Profitability', broker_customers_profitability_report_path, class: 'nav-link broker-customers-profitability-report' %>
   <% end %>
+
+  <% if current_user.broker.intuit_account.present? &&
+        (current_user.has_role?('root') || current_user.has_role?('accounts_payable'))
+  %>
+    <%= link_to 'QuickBooks', quickbooks_broker_broker_customers_path, class: 'nav-link broker-customers-quickbooks' %>
+  <% end %>
 </nav>

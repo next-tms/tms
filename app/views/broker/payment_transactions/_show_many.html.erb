@@ -1,4 +1,4 @@
-<%= turbo_frame_tag :banks do %>
+<%= turbo_frame_tag :payment_transactions do %>
   <%= render 'broker/payment_transactions/search_form', q: q %>
 
   <% unless payment_transactions.blank? %>
@@ -6,30 +6,55 @@
       <table class="table table-condensed table-borderless table-striped table-hover h-100">
         <thead>
           <tr>
-            <% if defined? link_to_payment and link_to_payment %>
-              <th>Payment</th>
+            <th><%= sort_link(q, :id, '#') %></th>
+
+            <% unless action_name == 'show' %>
+              <th><%= sort_link(q, :broker_carrier_carrier_name, 'Debtor') %></th>
             <% end %>
-            <th>Due</th>
-            <th>Load</th>
-            <th>Pro</th>
-            <% if payment_transactions.first.payment.has_invoice_numbers? %><th>Invoice</th><% end %>
-            <th>Balance</th>
-            <th>Shipment Cost</th>
+
+            <th class="text-nowrap"><%= sort_link(q, :invoice, 'Debtor Ref') %></th>
+            <th><%= sort_link(q, :due_on, 'Due') %></th>
+            <th><%= sort_link(q, :shipment_load_id, 'Load') %></th>
+            <th><%= sort_link(q, :balance_cents, 'Balance') %></th>
+            <th class="text-nowrap"><%= sort_link(q, :shipment_total_cost_cents, 'Predicted Balance') %></th>
             <th>Variance</th>
-            <th>Pay</th>
-            <th>Remarks</th>
+            <th><%= sort_link(q, :pay_cents, 'Pay') %></th>
+
+            <% if action_name == 'show' %>
+              <th><%= sort_link(q, :notes, 'Notes') %></th>
+            <% end %>
           </tr>
         </thead>
         <tbody>
           <% payment_transactions.each do |payment_transaction| %>
-            <tr class="<%= 'bg-warning' if payment_transaction.variance and payment_transaction.variance > 0 %>">
-              <% if defined? link_to_payment and link_to_payment %>
+            <tr class="<%= 'table-danger' if payment_transaction.variance and payment_transaction.variance > 0 %>">
+              <td>
+                <%= link_to (payment_transaction.shipment&.load_id || payment_transaction.legacy_load_id),
+                            broker_payment_transaction_path(payment_transaction),
+                            target: '_top'
+                %>
+              </td>
+
+              <% unless action_name == 'show' %>
                 <td>
-                  <% unless payment_transaction.payment.blank? %>
-                    <%= link_to payment_transaction.payment.week, broker_payment_path(payment_transaction.payment), target: '_top' %>
-                  <% end %>
+                  <%= link_to payment_transaction.broker_carrier.carrier.name,
+                              payment_transactions_broker_broker_carrier_path(payment_transaction.broker_carrier),
+                              target: '_blank'
+                  %>
                 </td>
               <% end %>
+
+              <td>
+                <% if !payment_transaction.legacy_load_id.blank? %>
+                  <%= payment_transaction.legacy_load_id %>
+                <% else %>
+                  <%= link_to (payment_transaction.invoice.blank? ? payment_transaction.shipment.pro : payment_transaction.invoice),
+                              broker_shipments_path(q: { pro_cont: payment_transaction.shipment.pro }),
+                              target: '_blank'
+                  %>
+                <% end %>
+              </td>
+
               <td><%= short_date payment_transaction.due_on, current_user.time_zone %></td>
               <td>
                 <% if not payment_transaction.shipment.blank? %>
@@ -38,23 +63,6 @@
                   <%= payment_transaction.legacy_load_id %> <small class="text-uppercase text-primary">legacy</small>
                 <% end %>
               </td>
-              <td>
-                <%= payment_transaction.pro %>
-                <% if not payment_transaction.shipment.blank? %>
-                  <% duplicate_shipments = payment_transaction.broker_carrier.payment_transactions.where(shipment: payment_transaction.shipment) - [ payment_transaction ] %>
-                  <% unless duplicate_shipments.blank? %>
-                    <br>
-                    <strong><%= link_to "#{duplicate_shipments.size} #{'duplicate'.pluralize(duplicate_shipments.size)}", broker_search_path(q: payment_transaction.shipment.load_id), target: '_top' %></strong>
-                  <% end %>
-                <% elsif not payment_transaction.legacy_load_id.blank? %>
-                  <% duplicate_payment_transactions = payment_transaction.broker_carrier.payment_transactions.where(legacy_load_id: payment_transaction.legacy_load_id) - [ payment_transaction ] %>
-                  <% unless duplicate_payment_transactions.blank? %>
-                    <br>
-                    <strong><%= link_to "#{duplicate_payment_transactions.size} #{'duplicate'.pluralize(duplicate_payment_transactions.size)}", broker_search_path(q: payment_transaction.legacy_load_id), target: '_top' %></strong>
-                  <% end %>
-                <% end%>
-              </td>
-              <% if payment_transactions.first.payment.has_invoice_numbers? %><td><%= payment_transaction.invoice %></td><% end %>
               <td><%= humanized_money_with_symbol payment_transaction.balance, no_cents_if_whole: false %></td>
               <td>
                 <% if not payment_transaction.shipment.blank? and not payment_transaction.additional_charge? %>
@@ -67,29 +75,13 @@
                 <% end %>
               </td>
               <td><%= humanized_money_with_symbol payment_transaction.paid, no_cents_if_whole: false %></td>
-              <td>
-                <% if not payment_transaction.shipment.blank? and not payment_transaction.shipment.canceled_at.blank? %>
-                  <strong>Warning: Shipment marked canceled and currently not included in profitability report</strong>
-                  <% unless payment_transaction.notes.blank? %><br><% end %>
-                <% end %>
-                <%= payment_transaction.notes %>
-              </td>
+
+              <% if action_name == 'show' %>
+                <td><%= payment_transaction.notes %></th>
+              <% end %>
             </tr>
           <% end %>
         </tbody>
-        <tfoot>
-          <tr>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            <% if payment_transactions.first.payment.has_invoice_numbers? %><th>&nbsp;</th><% end %>
-            <th><%= humanized_money_with_symbol payment_transactions.map(&:balance).inject(Money.new(0)) { |sum, balance| (sum = sum + balance) unless balance.blank? }, no_cents_if_whole: false %></th>
-            <th>&nbsp;</th>
-            <th><%= humanized_money_with_symbol payment_transactions.map(&:variance).inject(Money.new(0)) { |sum, variance| (sum = sum + variance) unless variance.blank? }, no_cents_if_whole: false %></th>
-            <th><%= humanized_money_with_symbol payment_transactions.map(&:paid).inject(Money.new(0)) { |sum, paid| (sum = sum + paid) unless paid.blank? }, no_cents_if_whole: false %></th>
-            <th>&nbsp;</th>
-          </tr>
-        </tfoot>
       </table>
     </div>
   <% else %>

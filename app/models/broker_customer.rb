@@ -68,6 +68,8 @@
 #  fk_rails_...  (receivables_contact_id => contacts.id)
 #
 class BrokerCustomer < ApplicationRecord
+  include BrokerCustomer::QuickbooksSyncable
+
   belongs_to :broker
 
   belongs_to :office_address, class_name: 'Address', dependent: :delete
@@ -189,20 +191,16 @@ class BrokerCustomer < ApplicationRecord
     end
 
     # Apply default default pricing
-    unless matched
-      if default_upcharge.positive? || default_upcharge_percentage.positive?
-        carrier_charges = carrier_cost
+    return nil unless (matched && default_upcharge.positive?) || default_upcharge_percentage.positive?
 
-        carrier_charges += default_upcharge if default_upcharge.positive?
-        return carrier_charges unless default_upcharge_percentage.positive?
+    carrier_charges = carrier_cost
 
-        carrier_charges += carrier_cost * (default_upcharge_percentage.to_f / 100)
+    carrier_charges += default_upcharge if default_upcharge.positive?
+    return carrier_charges unless default_upcharge_percentage.positive?
 
-        return carrier_charges
-      else
-        return nil
-      end
-    end
+    carrier_charges += carrier_cost * (default_upcharge_percentage.to_f / 100)
+
+    return carrier_charges
 
     carrier_charge = carrier_cost
 

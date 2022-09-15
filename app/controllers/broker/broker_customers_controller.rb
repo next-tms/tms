@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomersController < Broker::BrokerController
-  ALLOWED_ACCESS_FOR_DISPATCHER = %W[show shipments]
+  ALLOWED_ACCESS_FOR_DISPATCHER = %w[show shipments].freeze
 
   before_action :set_broker_customer,
                 only: %i[contacts edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing
@@ -9,30 +9,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   before_action :authenticate_user!
 
   before_action :validate_user_role!, only: %i[update show contacts shipments]
-
-  def index
-    if current_user.dispatcher_only?
-      @q = current_user.broker.broker_customers.includes(:customer).ransack(params[:q])
-    else
-      @q = current_user.broker_customers.includes(:customer).ransack(params[:q])
-    end
-
-    @q.sorts = "#{Customer.table_name.singularize}_name" if @q.sorts.blank?
-    @pagy, @broker_customers = pagy(@q.result)
-  end
-
-  def profitability_report
-    unauthorized unless current_user.has_role? 'accounting'
-    @broker_customers = current_user.broker.broker_customers
-    @from_date = Date.current.at_beginning_of_month
-    @to_date = Date.current
-    unless params[:from_date].blank?
-      @from_date = Date.parse(params[:from_date])
-      @to_date = params[:to_date].blank? ? Date.current : Date.parse(params[:to_date])
-    end
-  end
-
-  def edit_broker_carriers; end
 
   def broker_carriers
     @q = @broker_customer
@@ -44,28 +20,14 @@ class Broker::BrokerCustomersController < Broker::BrokerController
            ]
          ).ransack(params[:q])
 
-    @q.sorts = "#{Carrier.table_name + '.name'} desc" if @q.sorts.blank?
+    @q.sorts = "#{"#{Carrier.table_name}.name"} desc" if @q.sorts.blank?
     @pagy, @broker_carriers = pagy(@q.result)
   end
 
-  def customer_contacts; end
-
-  def edit_pricing; end
-
-  def preferences; end
-
-  def pricing; end
-
-  def sales_reps; end
-
-  def new
-    @broker_customer = BrokerCustomer.new
-    @broker_customer.broker = current_user.broker
-    @broker_customer.customer = Customer.new
-    @broker_customer.office_address = Address.new
-    @broker_customer.primary_pickup_address = Address.new
-    @broker_customer.sales_reps = [current_user]
-    @broker_customer.receivables_contact = Contact.new
+  def contacts
+    @q = @broker_customer.contacts.ransack(params[:q])
+    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @pagy, @contacts = pagy(@q.result)
   end
 
   def create
@@ -81,12 +43,43 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     end
   end
 
+  def customer_contacts; end
+
   def edit
     if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
       unauthorized
     end
     @broker_customer.primary_pickup_address = Address.new if @broker_customer.primary_pickup_address.blank?
   end
+
+  def edit_broker_carriers; end
+
+  def edit_pricing; end
+
+  def index
+    @q = if current_user.has_any_roles?(%w[accounts_recevable dispatch root])
+           current_user.broker_customers.includes(required_includes).ransack(params[:q])
+         else
+           current_user.broker.broker_customers.includes(required_includes).ransack(params[:q])
+         end
+
+    @q.sorts = 'customer_name asc' if @q.sorts.blank?
+    @pagy, @broker_customers = pagy(@q.result)
+  end
+
+  def new
+    @broker_customer = BrokerCustomer.new
+    @broker_customer.broker = current_user.broker
+    @broker_customer.customer = Customer.new
+    @broker_customer.office_address = Address.new
+    @broker_customer.primary_pickup_address = Address.new
+    @broker_customer.sales_reps = [current_user]
+    @broker_customer.receivables_contact = Contact.new
+  end
+
+  def preferences; end
+
+  def pricing; end
 
   # Used by Stimulus autofill_shipper
   def primary_pickup_address
@@ -101,17 +94,62 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     end
   end
 
-  def update
-    @broker_customer.assign_attributes(broker_customer_params)
-    @broker_customer.sales_reps |= @broker_customer.sales_reps
+  def profitability_report
+    unauthorized unless current_user.has_role? 'accounting'
+    @broker_customers = current_user.broker.broker_customers
+    @from_date = Date.current.at_beginning_of_month
+    @to_date = Date.current
 
-    if @broker_customer.save
-      redirect_to [:broker, @broker_customer, @customer_contact]
-    else
-      Rails.logger.debug(@broker_customer.errors)
-      flash[:danger] = 'Unable to update customer'
-      render :edit
-    end
+    return if params[:from_date].blank?
+
+    @from_date = Date.parse(params[:from_date])
+    @to_date = params[:to_date].blank? ? Date.current : Date.parse(params[:to_date])
+  end
+
+  def quickbooks
+    unauthorized and return unless current_user.broker? &&
+                                   current_user.broker.intuit_account.present? &&
+                                   (current_user.has_role?('root') || current_user.has_role?('accounts_receivable'))
+
+    @broker_customers = current_user
+                        .broker
+                        .broker_customers
+                        .includes(required_includes)
+                        .order('customers.name')
+
+    @customers = QuickbooksApiClient::Customers
+                 .new(broker: current_user.broker)
+                 .find_all
+                 .sort_by(&:display_name)
+  end
+
+  def receivables
+    unauthorized unless current_user.has_role?('accounts_receivable')
+
+    @q = @broker_customer
+         .receivables
+         .ransack(params[:q])
+
+    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @pagy, @receivables = pagy(@q.result)
+  end
+
+  def sales_reps; end
+
+  def shipments
+    @q = @broker_customer
+         .shipments
+         .includes(
+           :applied_rate,
+           :broker_carrier, { broker_carrier: :carrier },
+           :items,
+           :receiver_address,
+           :shipper_address,
+           :tracking_carrier
+         ).ransack(params[:q])
+
+    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @pagy, @shipments = pagy(@q.result)
   end
 
   def show
@@ -130,37 +168,30 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     end
   end
 
-  def contacts
-    @q = @broker_customer.contacts.ransack(params[:q])
-    @q.sorts = 'created_at desc' if @q.sorts.blank?
-    @pagy, @contacts = pagy(@q.result)
+  def update_quickbooks
+    unauthorized and return unless current_user.broker? &&
+                                   current_user.broker.intuit_account.present? &&
+                                   (current_user.has_role?('root') || current_user.has_role?('accounts_receivable'))
+
+    broker = current_user.broker
+    broker.assign_attributes(broker_params)
+
+    if broker.save
+      flash[:success] = 'QuickBooks customers updated'
+      redirect_to quickbooks_broker_broker_customers_path and return
+    end
+
+    render :quickbooks
   end
 
-  def receivables
-    unauthorized unless current_user.has_role?('accounts_receivable')
+  def update
+    @broker_customer.assign_attributes(broker_customer_params)
+    @broker_customer.sales_reps |= @broker_customer.sales_reps
 
-    @q = @broker_customer
-         .receivables
-         .ransack(params[:q])
+    redirect_to [:broker, @broker_customer, @customer_contact] if @broker_customer.save
 
-    @q.sorts = 'created_at desc' if @q.sorts.blank?
-    @pagy, @receivables = pagy(@q.result)
-  end
-
-  def shipments
-    @q = @broker_customer
-         .shipments
-         .includes(
-           :applied_rate,
-           :broker_carrier, { broker_carrier: :carrier },
-           :items,
-           :receiver_address,
-           :shipper_address,
-           :tracking_carrier
-         ).ransack(params[:q])
-
-    @q.sorts = 'created_at desc' if @q.sorts.blank?
-    @pagy, @shipments = pagy(@q.result)
+    flash[:danger] = 'Unable to update customer'
+    render :edit
   end
 
   private
@@ -179,6 +210,13 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
+  def broker_params
+    params.require(:broker).permit(
+      :id,
+      broker_customers_attributes: %i[id quickbooks_customer_id]
+    )
+  end
+
   def broker_customer_params
     params.require(:broker_customer).permit(:id,
                                             :always_show_quotes_based_on_calculated_classes,
@@ -257,5 +295,9 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                               packaging_id upcharge
                                               upcharge_percentage
                                             ])
+  end
+
+  def required_includes
+    %i[customer]
   end
 end

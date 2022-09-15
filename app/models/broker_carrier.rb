@@ -61,6 +61,8 @@
 #  fk_rails_...  (check_mailing_address_id => addresses.id)
 #
 class BrokerCarrier < ApplicationRecord
+  include BrokerCarrier::QuickbooksSyncable
+
   scope :api_configured, -> { where.not(password: [nil, '']) }
   scope :api_unconfigured, -> { where.not(id: api_configured) }
   scope :blanket, -> { where(broker_customer: nil) }

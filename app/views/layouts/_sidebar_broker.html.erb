@@ -16,13 +16,13 @@
       </li>
     <% end %>
 
-    <% if current_user.has_role? 'carrier_relations' %>
+    <% if current_user.has_any_roles?(['accounts_payable', 'carrier_relations', 'dispatch', 'root']) %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'truck-moving', 'Carriers'), broker_broker_carriers_path, class: 'broker-carriers' %>
       </li>
     <% end %>
 
-    <% if current_user.has_role?('root') || current_user.has_role?('sales_rep') || current_user.has_role?('dispatch') %>
+    <% if current_user.has_any_roles?(['accounts_receivable', 'dispatch', 'root', 'sales_rep']) %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'handshake', 'Customers'), broker_broker_customers_path, class: 'broker-customers' %>
       </li>
@@ -30,26 +30,32 @@
   </ul>
 
   <ul class="list-unstyled mt-4">
-    <% if current_user.has_role?('admin') %>
-      <li class="mb-2 p-2">
-        <%= link_to icon('solid', 'dollar-sign', 'Commissions'), broker_broker_customer_sales_reps_path, class: 'broker-customer-sales-reps' %>
-      </li>
-    <% elsif current_user.has_role? 'sales_rep' %>
-      <li class="mb-2 p-2">
-        <%= link_to icon('solid', 'dollar-sign', 'Commissions'), broker_broker_customer_sales_rep_path(current_user), class: 'broker-customer-sales-reps' %>
-      </li>
-    <% end %>
-
     <% if current_user.has_role?('claims') || current_user.has_role?('accounts_payable') || current_user.has_role?('accounts_receivable') || current_user.has_role?('root') %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'circle-exclamation', 'Claims'), unpaid_broker_claims_path, class: 'claims-unpaid' %>
+      </li>
+    <% end %>
+  </ul>
+
+  <ul class="list-unstyled mt-4">
+    <% if current_user.has_role?('admin') %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('solid', 'sack-dollar', 'Commissions'), broker_broker_customer_sales_reps_path, class: 'broker-customer-sales-reps' %>
+      </li>
+    <% elsif current_user.has_role? 'sales_rep' %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('solid', 'sack-dollar', 'Commissions'), broker_broker_customer_sales_rep_path(current_user), class: 'broker-customer-sales-reps' %>
       </li>
     <% end %>
 
     <% if current_user.has_role? 'accounts_payable' or current_user.has_role? 'accounts_receivable' or current_user.has_role? 'controller' %>
       <% if current_user.has_role? 'accounts_payable' %>
         <li class="mb-2 p-2">
-          <%= link_to icon('solid', 'file-invoice', 'Payables'), due_broker_payments_path, class: 'payments' %>
+          <%= link_to icon('solid', 'money-bills', 'Bills'), due_broker_payment_transactions_path, class: 'payment-transactions' %>
+        </li>
+
+        <li class="mb-2 p-2">
+          <%= link_to icon('solid', 'file-invoice', 'Payments'), due_broker_payments_path, class: 'payments' %>
         </li>
       <% end %>
 

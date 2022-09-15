@@ -1,7 +1,9 @@
 <nav class="nav border-top pt-4 mb-0">
   <%= link_to 'Overview', broker_payment_path(@payment), class: 'nav-link payments-show' %>
 
-  <%= link_to 'Edit', edit_broker_payment_path(@payment), class: 'nav-link payments-edit' %>
+  <% unless @payment.paid? %>
+    <%= link_to 'Edit', edit_broker_payment_path(@payment), class: 'nav-link payments-edit' %>
+  <% end %>
 
   <% if current_user.has_role?('accounts_payable') %>
     <% unless @payment.approved_at.blank? %>

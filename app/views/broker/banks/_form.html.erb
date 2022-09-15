@@ -4,7 +4,11 @@
       <%= f.alert_message 'Unable to save account:' %>
 
       <%= f.text_field :name, autofocus: 'autofocus' %>
-      <%= f.select :type_id, BankType.all.order(:name).collect { |type| [type.name, type.id] }, { include_blank: false, label: 'Type' }, class: 'form-select' %>
+      <%= f.select :kind,
+                   Bank.kinds.collect { |kind| [kind.first.titleize, kind.second] },
+                   { include_blank: false, label: 'Type' },
+                   class: 'form-select'
+      %>
       <%= f.text_field :account_number, label: 'Account' %>
 
       <div class="form-group">

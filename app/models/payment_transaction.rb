@@ -56,11 +56,9 @@
 #  fk_rails_...  (shipment_id => shipments.id)
 #
 class PaymentTransaction < ApplicationRecord
-  scope :unpaid, -> { where(payment_id: nil) }
-  scope :paid, -> { where.not(payment_id: nil) }
+  include PaymentTransaction::QuickbooksSyncable
 
-  before_validation :set_broker
-  before_save :set_shipment
+  before_validation :set_attributes_from_shipment
 
   belongs_to :created_by, class_name: 'User', optional: true
 
@@ -72,6 +70,13 @@ class PaymentTransaction < ApplicationRecord
 
   monetize :balance_cents
   monetize :paid_cents
+
+  scope :due, -> { includes(:payment).where.not(paid_cents: 0).where.not(payment: { paid_on: nil }) }
+  scope :paid, -> { includes(:payment).where.not(payment: { paid_on: nil }) }
+
+  validates :broker, presence: true
+  validates :invoice, presence: true
+  validates :shipment, presence: true
 
   def duplicates
     return [] unless shipment.present?
@@ -102,14 +107,27 @@ class PaymentTransaction < ApplicationRecord
     self.broker = broker_carrier.broker
   end
 
-  def set_shipment
-    shipment = Shipment.where(broker_carrier:).where(pro:)
+  def set_invoice
+    return unless invoice.blank?
 
-    return unless shipment.size == 1
+    self.invoice = shipment&.pro || legacy_load_id
+  end
 
-    shipment = shipment.first
-    self.shipment = shipment
-    self.broker_carrier = shipment.broker_carrier
-    self.paid = balance if shipment.carrier_cost >= balance
+  def set_attributes_from_shipment
+    new_shipment = nil
+
+    if shipment.blank? || will_save_change_to_pro?
+      new_shipment = Shipment.where(broker_carrier:).where(pro:)
+
+      self.shipment = new_shipment.first if new_shipment.size == 1
+    end
+
+    new_shipment = shipment
+    return if new_shipment.blank?
+
+    self.broker = new_shipment.broker_carrier.broker
+    self.broker_carrier = new_shipment.broker_carrier
+    self.invoice = (new_shipment.pro.blank? ? new_shipment.load_id : new_shipment.pro) if invoice.blank?
+    self.paid = balance if new_shipment.carrier_cost >= balance && !will_save_change_to_paid_cents?
   end
 end

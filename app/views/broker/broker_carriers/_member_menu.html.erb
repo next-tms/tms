@@ -2,7 +2,8 @@
   <%= link_to 'Overview', broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-show' %>
   <%= link_to 'Shipments', shipments_broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-shipments' %>
   <% if current_user.has_role?('accounts_payable') %>
-    <%= link_to 'Payables', payments_broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-payments' %>
+    <%= link_to 'Bills', payment_transactions_broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-payment-transactions' %>
+    <%= link_to 'Payments', payments_broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-payments' %>
   <% end %>
   <%= link_to 'Contacts', contacts_broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-contacts' %>
   <%= link_to 'Terminals', terminals_broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-terminals' %>

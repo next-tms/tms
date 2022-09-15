@@ -108,19 +108,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_14_162912) do
     t.index ["user_id", "user_type"], name: "user_index"
   end
 
-  create_table "bank_types", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "banks", force: :cascade do |t|
     t.bigint "broker_id", null: false
-    t.bigint "type_id", null: false
     t.string "account_number"
     t.string "name"
+    t.integer "quickbooks_account_id"
+    t.string "kind", null: false
     t.index ["broker_id"], name: "index_banks_on_broker_id"
-    t.index ["type_id"], name: "index_banks_on_type_id"
   end
 
   create_table "broker_accessorials", force: :cascade do |t|
@@ -164,6 +158,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_14_162912) do
     t.string "website_password"
     t.integer "shipments_count"
     t.boolean "ignore_bol_requires_tracking_number", default: false
+    t.integer "quickbooks_vendor_id"
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
@@ -281,8 +276,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_14_162912) do
     t.bigint "broker_billing_address_id"
     t.boolean "has_seperate_website_credentials", default: false
     t.string "encrypted_api_key"
-    t.boolean "consider_bol_and_pod_documents_same", default: false
     t.string "mc_number"
+    t.boolean "consider_bol_and_pod_documents_same", default: false
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
     t.index ["name"], name: "index_carriers_on_name", unique: true
@@ -485,6 +480,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_14_162912) do
     t.bigint "created_by_id"
     t.string "invoice"
     t.string "legacy_load_id"
+    t.integer "quickbooks_bill_id"
     t.index ["broker_carrier_id"], name: "index_payment_transactions_on_broker_carrier_id"
     t.index ["payment_id"], name: "index_payment_transactions_on_payment_id"
     t.index ["shipment_id"], name: "index_payment_transactions_on_shipment_id"
@@ -506,6 +502,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_14_162912) do
     t.string "paid_currency", default: "USD", null: false
     t.bigint "bank_id"
     t.bigint "payment_method_id"
+    t.integer "quickbooks_bill_payment_id"
     t.index ["approved_by_id"], name: "index_payments_on_approved_by_id"
     t.index ["bank_id"], name: "index_payments_on_bank_id"
     t.index ["broker_carrier_id"], name: "index_payments_on_broker_carrier_id"
@@ -979,7 +976,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_14_162912) do
   add_foreign_key "addresses", "countries"
   add_foreign_key "addresses", "regions"
   add_foreign_key "addresses", "standardized_addresses"
-  add_foreign_key "banks", "bank_types", column: "type_id"
   add_foreign_key "banks", "brokers"
   add_foreign_key "broker_accessorials", "accessorials"
   add_foreign_key "broker_accessorials", "broker_customers"

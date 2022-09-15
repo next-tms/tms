@@ -30,7 +30,11 @@ class IntuitAccountsController < ApplicationController
         )
 
         intuit_account.save
-        FetchQuickbooksCustomerIdsJob.perform_later(broker:)
+
+        FetchBrokerCustomerQuickbooksCustomerIdsJob.perform_later(broker:)
+        FetchBrokerCarrierQuickbooksVendorIdsJob.perform_later(broker:)
+
+        flash[:success] = 'QuickBooks has been connected; data is being synced behind the scene'
       end
     end
 

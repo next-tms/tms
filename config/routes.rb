@@ -56,6 +56,12 @@ Rails.application.routes.draw do
     get 'customers/:id/shipments' => 'broker_customers#shipments', as: :broker_customer_shipments
 
     resources :broker_customers, path: 'customers' do
+      collection do
+        get :quickbooks
+        patch :quickbooks, to: 'broker_customers#update_quickbooks'
+      end
+
+      # TODO: Tidy this up
       member { get 'carriers' => 'broker_customers#broker_carriers', as: :broker_carriers }
       member { get 'carriers/edit' => 'broker_customers#edit_broker_carriers', as: :edit_broker_carriers }
       member { get 'contacts' => 'broker_customers#contacts', as: :contacts }
@@ -70,8 +76,14 @@ Rails.application.routes.draw do
     end
 
     resources :broker_carriers, path: 'carriers' do
+      collection do
+        get :quickbooks
+        patch :quickbooks, to: 'broker_carriers#update_quickbooks'
+      end
+
       member do
         get :contacts
+        get :payment_transactions, path: 'bills'
         get :payments
         get :shipments
         get :tariff
@@ -88,6 +100,11 @@ Rails.application.routes.draw do
     resources :contacts
 
     resources :banks, except: %i[destroy], path: 'bank-accounts' do
+      collection do
+        get :quickbooks
+        patch :quickbooks, to: 'banks#update_quickbooks'
+      end
+
       member { get 'activity', to: 'banks#activity' }
     end
 
@@ -96,9 +113,14 @@ Rails.application.routes.draw do
     get 'settings/intuit', to: 'intuit_account#show'
     get 'settings/stripe', to: 'stripe_account#show'
 
-    resources :payment_transactions, only: %i[create new], path: 'statements' do
-      collection { get :import }
-      collection { get 'import-sample-csv' }
+    resources :payment_transactions, path: 'bills' do
+      collection do
+        get :due
+        get :import
+        get :overdue
+        get :paid
+        get 'import-sample-csv'
+      end
     end
 
     resources :payments do

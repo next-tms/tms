@@ -1,0 +1,48 @@
+<% provide :title, 'QuickBooks' %>
+
+<%= render 'header' %>
+<h2><%= yield :title %></h2>
+
+<p class="col-title">Vendor Mapping</p>
+
+<div class="row">
+  <div class="col-auto">
+    <%= bootstrap_form_with model: current_user.broker,
+                            url: quickbooks_broker_broker_carriers_path,
+                            method: :patch do |f| %>
+      <%= f.alert_message "Unable to update mappings:" %>
+
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <th>Carrier</th>
+            <th>QuickBooks Vendor</th>
+          </thead>
+
+          <tbody>
+            <%= f.fields_for :broker_carriers, @broker_carriers do |broker_carrier_form| %>
+              <tr>
+                <td><%= broker_carrier_form.object.carrier.name %></td>
+
+                <td>
+                  <%= broker_carrier_form.hidden_field :id %>
+                  <%= broker_carrier_form.select :quickbooks_vendor_id,
+                                                 @vendors.collect { |vendor| [ vendor.display_name, vendor.id ] },
+                                                 {
+                                                   hide_label: true,
+                                                   include_blank: 'None — Automatically Create When Needed',
+                                                   class: 'form-select'
+                                                 } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= f.form_group do %>
+        <%= f.submit class: 'btn btn-primary', data: { turbo: false }, value: 'Save' %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -1,3 +1,66 @@
 <div class="page-header bg-light p-4 mb-4">
-  <h1 class="mb-6">Payable</h1>
+  <h1 class="mb-6">Bill <%= @payment_transaction.shipment&.load_id || @payment_transaction.legacy_load_id %></h1>
+
+  <% if @payment_transaction.persisted? %>
+    <table class="table table-borderless w-auto">
+      <thead>
+        <tr>
+          <th>Debtor</th>
+          <th class="text-nowrap">Debtor Ref</th>
+          <th>Payment</th>
+          <th>Load</th>
+          <% if @payment_transaction.payment.paid? %>
+            <th>Paid</th>
+          <% else %>
+            <th>Due</th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="lead">
+            <%= link_to @payment_transaction.broker_carrier.carrier.name,
+                        payment_transactions_broker_broker_carrier_path(@payment_transaction.broker_carrier),
+                        target: '_blank'
+            %>
+          </td>
+
+          <td class="lead">
+            <% if @payment_transaction.legacy_load_id.blank? %>
+              <%= link_to @payment_transaction.invoice,
+                          broker_shipments_path(q: { pro_cont: @payment_transaction.shipment.pro }),
+                          target: '_blank'
+              %>
+            <% end %>
+          </td>
+
+          <td class="lead">
+            <% unless @payment_transaction.payment.blank? %>
+              <%= link_to @payment_transaction.payment.id, broker_payment_path(@payment_transaction.payment), target: '_blank' %>
+            <% end %>
+          </td>
+
+          <td class="lead">
+            <% if !@payment_transaction.legacy_load_id.blank? %>
+              <%= @payment_transaction.legacy_load_id %>
+            <% else %>
+              <%= link_to @payment_transaction.shipment.load_id, broker_shipment_path(@payment_transaction.shipment), target: '_blank' %>
+            <% end %>
+          </td>
+
+          <td class="lead">
+            <% if @payment_transaction.payment.paid? %>
+              <%= short_date @payment_transaction.payment.paid_on, current_user.time_zone %>
+            <% else %>
+              <%= short_date @payment_transaction.due_on, current_user.time_zone %>
+            <% end %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% unless @payment_transaction.new_record? %>
+    <%= render 'member_menu' %>
+  <% end %>
 </div>

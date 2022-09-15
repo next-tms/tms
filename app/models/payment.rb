@@ -55,6 +55,8 @@
 #  fk_rails_...  (payment_method_id => payment_methods.id)
 #
 class Payment < ApplicationRecord
+  include Payment::QuickbooksSyncable
+
   belongs_to :approved_by, class_name: 'User', optional: true
   belongs_to :bank, optional: true
   belongs_to :broker

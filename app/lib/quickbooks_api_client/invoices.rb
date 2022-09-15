@@ -31,7 +31,7 @@ module QuickbooksApiClient
       broker.intuit_account.perform_authenticated_request do |access_token|
         execute_service_call do
           service = build_service(access_token)
-          service.query
+          service.all
         end
       end
     end
@@ -105,7 +105,11 @@ module QuickbooksApiClient
       carrier = if receivable.shipment.broker_carrier.blank?
                   nil
                 elsif receivable.shipment.broker_carrier.carrier.acts_as_broker
-                  receivable.shipment.tracking_carrier.blank? ? receivable.shipment.broker_carrier.carrier : receivable.shipment.tracking_carrier
+                  if receivable.shipment.tracking_carrier.blank?
+                    receivable.shipment.broker_carrier.carrier
+                  else
+                    receivable.shipment.tracking_carrier
+                  end
                 else
                   receivable.shipment.broker_carrier.carrier
                 end
@@ -137,8 +141,15 @@ module QuickbooksApiClient
       end
 
       unless receivable.broker_customer.office_address.proper(', ') == receivable.shipment.shipper_address.proper(', ')
+        description = <<~DESC.strip
+          Pickup from:
+
+          #{receivable.shipment.shipper_name}
+          #{receivable.shipment.shipper_address.proper("\n")}
+        DESC
+
         line_item = Quickbooks::Model::InvoiceLineItem.new(
-          description: "Pickup from:\n\n#{receivable.shipment.shipper_name}\n#{receivable.shipment.shipper_address.proper("\n")}",
+          description:,
           detail_type: 'DescriptionOnly'
         )
 
