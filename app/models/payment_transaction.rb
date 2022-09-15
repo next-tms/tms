@@ -84,6 +84,10 @@ class PaymentTransaction < ApplicationRecord
     broker_carrier.payment_transactions.where(shipment:) - [self]
   end
 
+  def paid?
+    !!payment&.paid?
+  end
+
   def shipment_load_id=(load_id)
     self.shipment = Shipment.find_by_load_id(load_id)
   end

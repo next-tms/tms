@@ -9,7 +9,7 @@
           <th class="text-nowrap">Debtor Ref</th>
           <th>Payment</th>
           <th>Load</th>
-          <% if @payment_transaction.payment.paid? %>
+          <% if @payment_transaction.paid? %>
             <th>Paid</th>
           <% else %>
             <th>Due</th>
@@ -49,7 +49,7 @@
           </td>
 
           <td class="lead">
-            <% if @payment_transaction.payment.paid? %>
+            <% if @payment_transaction.paid? %>
               <%= short_date @payment_transaction.payment.paid_on, current_user.time_zone %>
             <% else %>
               <%= short_date @payment_transaction.due_on, current_user.time_zone %>

@@ -1,7 +1,7 @@
 <nav class="nav border-top pt-4 mb-0">
   <%= link_to 'Overview', broker_payment_transaction_path(@payment_transaction), class: 'nav-link payment-transactions-show' %>
   
-  <% unless @payment_transaction.payment.paid? %>
+  <% unless @payment_transaction.paid? %>
     <%= link_to 'Edit', edit_broker_payment_transaction_path(@payment_transaction), class: 'nav-link payment-transactions-edit' %>
   <% end %>
 </nav>
