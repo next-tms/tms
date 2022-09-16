@@ -21,7 +21,7 @@ module InterstellarApiClient
       attr_reader :type, :broker_carrier
 
       def api_credentials
-        return nil if [broker_carrier.account, broker_carrier.username, broker_carrier.password].any?(&:blank?)
+        # Okay to pass blank attributes since some API's are okay with that
 
         Interstellar::Credential.new(
           type: :api,
