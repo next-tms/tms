@@ -22,6 +22,10 @@ class PickupNotification < NotificationBase
     params[:pickup].shipment
   end
 
+  def url
+    transit_broker_shipment_path(params[:pickup].shipment, attr: :dispatched_at)
+  end
+
   def notification_type
     "pickup:#{params[:pickup_action_type]}"
   end

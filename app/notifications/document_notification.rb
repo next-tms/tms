@@ -27,6 +27,10 @@ class DocumentNotification < NotificationBase
     :from_notification
   end
 
+  def url
+    documents_broker_shipment_path(params[:shipment], attr: params[:document_type])
+  end
+
   def message
     "#{humanized_document_type} for Load ##{params[:shipment].load_id} is available"
   end

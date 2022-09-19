@@ -22,6 +22,12 @@ class ShipmentNotification < NotificationBase
     "shipment:#{params[:attribute_changed]}"
   end
 
+  def url
+    return broker_shipment_path(params[:shipment]) if %i[canceled_at new_shipment].include?(params[:attribute_changed].to_sym)
+
+    transit_broker_shipment_path(params[:shipment], attr: params[:attribute_changed])
+  end
+
   def message
     shipment = params[:shipment].reload
     attribute_changed = params[:attribute_changed].to_sym

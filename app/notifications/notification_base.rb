@@ -45,7 +45,7 @@ class NotificationBase < Noticed::Base
       #{shipment.receiver_address.pretty('<br>').html_safe}
     </address>
 
-    #{link_to 'View shipment', broker_shipment_url(shipment, host:)}
+    #{link_to 'View shipment', url}
     "
   end
 end

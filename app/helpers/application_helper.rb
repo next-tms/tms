@@ -361,4 +361,11 @@ module ApplicationHelper
       "https://tools.rrts.com/LTLTrack/Home/ShowImage?proNumber=#{shipment.pro}&imageType=POD"
     end
   end
+
+  def highlightable_element(id, table_element: false)
+    element = table_element ? :tbody : :div
+    content_tag element, id: id.to_sym, tabindex: "-1" do
+      yield
+    end
+  end
 end
