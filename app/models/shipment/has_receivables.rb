@@ -84,7 +84,7 @@ module Shipment::HasReceivables
       ProblemType.find_or_create_by(
         code: 'missing_customer_reference_number',
         name: 'missing customer reference number',
-        resolvable_class_attribute: 'customer_reference',
+        resolvable_class_attribute_name: 'customer_reference',
         resolvable_class_name: 'Shipment',
         resolvable_class_since_attribute_name: 'dispatched_at',
         resolves_when_class_attribute_is: 'blank_false',
