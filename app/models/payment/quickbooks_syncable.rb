@@ -7,7 +7,7 @@ module Payment::QuickbooksSyncable
     after_commit :push_to_integrations
 
     def create_quickbooks_bill_payment
-      return nil unless broker.intuit_account&.connected?
+      return nil unless broker.intuit_account&.connected? && paid?
 
       return update_quickbooks_bill_payment unless quickbooks_bill_payment.blank?
 
@@ -102,7 +102,7 @@ module Payment::QuickbooksSyncable
     end
 
     def update_quickbooks_bill_payment
-      return destroy_quickbooks_bill_payment if paid_on.blank?
+      return destroy_quickbooks_bill_payment unless paid?
 
       return nil unless broker.intuit_account&.connected?
 
