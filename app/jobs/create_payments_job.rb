@@ -9,7 +9,7 @@ class CreatePaymentsJob < ApplicationJob
                       .pluck(:time_zone_name)
                       .select do |tz|
                         tz_now = now.in_time_zone(tz)
-                        tz_now.wday == 7 && tz_now.hour >= 21 # Sunday 9 PM - 12 AM
+                        tz_now.wday.zero? && tz_now.hour >= 21 # Sunday 9 PM - 12 AM
                       end
 
     return false unless time_zone_names.any?
