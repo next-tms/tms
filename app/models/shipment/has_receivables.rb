@@ -82,6 +82,7 @@ module Shipment::HasReceivables
 
     def missing_customer_preference_number_problem_type
       ProblemType.find_or_create_by(
+        role: Role.find_by(name: 'dispatch'),
         code: 'missing_customer_reference_number',
         name: 'missing customer reference number',
         resolvable_class_attribute_name: 'customer_reference',
