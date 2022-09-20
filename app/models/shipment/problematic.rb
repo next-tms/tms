@@ -69,5 +69,9 @@ module Shipment::Problematic
     def self.problematic_total_charges_cents_zero
       active.missing_charge
     end
+
+    def self.problematic_customer_reference_blank
+      active.where(customer_reference: [nil, ''])
+    end
   end
 end
