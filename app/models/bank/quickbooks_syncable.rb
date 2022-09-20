@@ -9,7 +9,7 @@ module Bank::QuickbooksSyncable
     def create_quickbooks_account
       return nil unless broker.intuit_account&.connected?
 
-      return update_quickbooks_qccount unless quickbooks_account.blank?
+      return update_quickbooks_account unless quickbooks_account.blank?
 
       result = QuickbooksApiClient::Accounts.new(broker:).create(self)
       return @quickbooks_account = nil if result.blank?
