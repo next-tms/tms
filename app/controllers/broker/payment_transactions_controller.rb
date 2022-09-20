@@ -23,10 +23,12 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
   end
 
   def import_sample_csv
-    due = 1.week.from_now.in_time_zone(current_user.broker.time_zone).to_date
+    now = DateTime.current.in_time_zone(current_user.broker.time_zone).to_date
+    due = now + 2.weeks
+
     csv = <<~CSV
-      pro,balance,due
-      123-456,128.14,#{due}
+      pro,balance,date,due
+      123-456,128.14,#{now},#{due}
     CSV
 
     send_data csv, disposition: 'attachment', type: 'text/csv', filename: 'Sample Statement.csv'
