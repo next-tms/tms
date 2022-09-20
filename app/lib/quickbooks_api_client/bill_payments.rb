@@ -82,7 +82,7 @@ module QuickbooksApiClient
       if payment.bank.credit_card?
         bill_payment.credit_card_payment = build_bill_payment_credit_card(payment)
         bill_payment.pay_type = 'CreditCard'
-      elsif payment.bank.check?
+      elsif payment.bank.checking?
         bill_payment.check_payment = build_bill_payment_check(payment)
         bill_payment.pay_type = 'Check'
       else
