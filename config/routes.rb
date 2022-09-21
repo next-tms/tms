@@ -216,7 +216,7 @@ Rails.application.routes.draw do
   namespace :customer do
     root 'shipments#index'
 
-    resources :receivables, path: 'invoices' do
+    resources :receivables, only: %i[index show], path: 'invoices' do
       collection { get :invoiced }
       collection { get :paid }
     end
