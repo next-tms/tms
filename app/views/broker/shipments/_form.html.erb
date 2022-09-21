@@ -1,12 +1,13 @@
 <%= bootstrap_form_with(model: [:broker, @shipment], local: true, layout: :horizontal, label_col: 'col-sm-3', control_col: 'col-sm-8', id: 'shipment-form', data: { controller: 'autofill-shipper', 'autofill-shipper-target': 'form', turbo: false }) do |f| %>
   <%= f.alert_message 'Unable to create shipment:' %>
+  <span id="customerDispatcherIds" data-customer-dispatcher-ids="<%= @customer_dispatcher_ids %>">
 
   <% unless @shipment.quote_only? %>
-    <div data-controller="address">
+    <div data-controller="shipments">
       <%= f.select :broker_customer_id,
-                  current_user.broker_customers.includes(:customer).order('customers.name').collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] },
+                  @broker_customers.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] },
                   { label: 'Customer', selected: (@shipment.broker_customer ? @shipment.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) },
-                  data: { action: 'change->address#fillCustomerAddressByBrokerCustomerId' },
+                  data: { action: 'change->shipments#fillCustomerAddressByBrokerCustomerId' },
                   class: 'form-select col-sm-6 col-md-4 mt-2 mb-4' %>
     </div>
   <% end %>
@@ -64,6 +65,10 @@
       <p class="col-title"><%= icon 'solid', 'dollar-sign', 'Value' %></p>
       <%= f.text_field :value, label: 'Total', prepend: '$', data: money_controller_data, autocomplete: 'off' %>
     </div>
+  </div>
+
+  <div data-controller="shipments">
+    <button class="btn btn-primary" data-action="click->shipments#switchAddresses"> <%= icon('solid', 'repeat', 'Switch Shipper and Receiver Addresses')%> </button>
   </div>
 
   <p class="col-title mt-4">Services</p>

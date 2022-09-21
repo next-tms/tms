@@ -104,42 +104,4 @@ export default class extends Controller {
             })
         }, 500);
     }
-
-    fillCustomerAddressByBrokerCustomerId(event) {
-        event.preventDefault();
-
-        console.log(event.target)
-
-        let brokerCustomerId = event.target.value;
-        const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
-        let data = { broker_customer_id: brokerCustomerId }
-
-        fetch('/fetch_address_by_broker_customer', {
-            method: 'POST',
-            headers: {
-              'Accept': 'text/javascript',
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': authenticityToken
-            },
-            body: JSON.stringify(data),
-        })
-        .then(response => response.json())
-        .then(function(data) {
-            console.log(data)
-            if (data.error == null) {
-
-                document.getElementById('shipment_shipper_address_attributes_street').value = data.street
-                document.getElementById('shipment_shipper_address_attributes_street2').value = data.street2
-                document.getElementById('shipment_shipper_address_attributes_city').value = data.city
-                document.getElementById('shipment_shipper_address_attributes_zip_code').value = data.zip_code
-                var stateSelect = document.getElementById('shipment_shipper_address_attributes_region_id')
-                Array.from(stateSelect.options).forEach(function(option) {
-                    if (option.text ===  data.state) {
-                        option.selected = true
-                    }
-                })
-            }
-
-        })
-    }
 }

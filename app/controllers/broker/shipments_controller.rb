@@ -94,6 +94,8 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment = Shipment.new
     @shipment.items << Item.new
 
+    @broker_customers = current_user.broker_customers.includes(:customer).order('customers.name')
+
     broker_customer = if params[:broker_customer_id].present?
                         BrokerCustomer.find_by_id(params[:broker_customer_id])
                       elsif current_user.broker_customers.size == 1
@@ -112,8 +114,12 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     @shipment.shipper_name = broker_customer&.customer&.name
     @shipment.broker_customer = broker_customer
+    @shipment.dispatcher = @shipment.assign_dispatcher if broker_customer
+    @shipment.dispatcher = current_user if current_user.has_any_roles?(%w[dispatch root])
     @shipment.shipper_address = broker_customer&.primary_pickup_address&.dup || Address.new
     @shipment.receiver_address = Address.new
+
+    @customer_dispatcher_ids = @broker_customers.map { |customer| customer.dispatchers.take&.id || 'n' }.join(',')
   end
 
   def new_quote_only
