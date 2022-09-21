@@ -164,7 +164,9 @@ class Broker::ShipmentsController < Broker::BrokerController
     end
   end
 
-  def edit; end
+  def edit
+    @broker_customers = current_user.broker_customers.includes(:customer).order('customers.name')
+  end
 
   def update
     unauthorized and return unless @shipment.accessible_by?(current_user)
