@@ -76,6 +76,11 @@ class Payment < ApplicationRecord
   scope :paid, -> { where.not(paid_on: nil) }
   scope :unapproved, -> { where.not(approved_by: nil) }
 
+  # https://github.com/activerecord-hackery/ransack/issues/224#issuecomment-22818039
+  ransacker :id do
+    Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")
+  end
+
   validates :due_on, presence: true
 
   def balance

@@ -78,6 +78,11 @@ class PaymentTransaction < ApplicationRecord
   validates :invoice, presence: true
   validates :shipment, presence: true
 
+  # https://github.com/activerecord-hackery/ransack/issues/224#issuecomment-22818039
+  ransacker :id do
+    Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")
+  end
+
   def duplicates
     return [] unless shipment.present?
 
