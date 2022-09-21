@@ -203,6 +203,7 @@ Rails.application.routes.draw do
       member { get 'tracking/update', as: :update_tracking_events, to: 'shipments#update_tracking_events' }
       member { post 'tracking/create', as: :create_tracking_event, to: 'shipments#create_tracking_event' }
       member { get 'unbook' => 'shipments#unbook', as: :unbook }
+      member { post 'duplicate', as: :duplicate }
     end
 
     get 'search' => 'search#search'

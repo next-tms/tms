@@ -58,4 +58,8 @@
     <%= link_to icon('solid', 'pencil-alt', 'Edit'), edit_broker_shipment_path(@shipment), class: 'nav-link shipments-edit' %>
     <%= link_to icon('solid', 'bell', 'Book'), book_modal_broker_shipment_path(@shipment), data: { 'turbo-frame': 'modal' }, class: 'nav-link' %>
   <% end %>
+
+  <%= button_to duplicate_broker_shipment_path(@shipment), class: 'btn nav-link text-primary shipments-duplicate' do %>
+    <%= icon('solid', 'copy', 'Duplicate') %>
+  <% end %>
 </nav>
