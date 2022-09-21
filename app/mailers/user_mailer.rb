@@ -73,6 +73,11 @@ class UserMailer < ApplicationMailer
     send_shipment_updated(@pickup.shipment, __method__)
   end
 
+  def dispatcher_id
+    @subject = "Assigned #{@shipment.load_id} to you"
+    send_shipment_updated(@shipment, __method__)
+  end
+
   private
 
   def send_shipment_updated(shipment, method_name)

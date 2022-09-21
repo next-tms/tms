@@ -24,6 +24,7 @@ class ShipmentNotification < NotificationBase
 
   def url
     return broker_shipment_path(params[:shipment]) if %i[canceled_at new_shipment].include?(params[:attribute_changed].to_sym)
+    return broker_shipment_path(params[:shipment], attr: params[:attribute_changed]) if %i[dispatcher_id].include?(params[:attribute_changed].to_sym)
 
     transit_broker_shipment_path(params[:shipment], attr: params[:attribute_changed])
   end
@@ -36,6 +37,7 @@ class ShipmentNotification < NotificationBase
     return "#{updated_by} Cancelled Load ##{shipment.load_id}" if attribute_changed == :canceled_at
     return "#{updated_by} Entered Load ##{shipment.load_id}" if attribute_changed == :new_shipment
     return "#{updated_by} Updated Load ##{shipment.load_id} ETA" if attribute_changed == :delivery_eta_on
+    return "#{updated_by} assigned ##{shipment.load_id} to you" if attribute_changed == :dispatcher_id
 
     "#{updated_by} Marked Load ##{shipment.load_id} #{humanized_attribute_changed}"
   end

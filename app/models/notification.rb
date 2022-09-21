@@ -53,6 +53,7 @@ class Notification < ApplicationRecord
       shipment:out_for_delivery_at
       shipment:picked_up_at
       shipment:canceled_at
+      shipment:dispatcher_id
 
       document:carrier_bol
       document:carrier_pod

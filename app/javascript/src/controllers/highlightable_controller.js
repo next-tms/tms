@@ -20,9 +20,11 @@ export default class extends Controller {
                 links.forEach(function(link) { link.classList.add('text-light') })
                 inputs.forEach(function(input) { input.classList.add('text-primary') })
 
-                setTimeout(() => {
-                    element.scrollIntoView();
-                }, 1000)
+                if (element.offsetTop > window.innerHeight) {
+                    setTimeout(() => {
+                        element.scrollIntoView();
+                    }, 1000)
+                }
             }
         }
     }

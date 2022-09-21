@@ -1213,6 +1213,7 @@ class Shipment < ApplicationRecord
       return false if !UserMailer.respond_to?(key) || changes[key][1].blank?
 
       notification = ShipmentNotification.with(shipment: self, attribute_changed: key)
+      return notification.deliver_later(dispatcher) if key == 'dispatcher_id'
 
       notification.deliver_later(users_to_notify)
     end

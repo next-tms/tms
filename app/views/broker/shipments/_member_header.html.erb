@@ -1,4 +1,6 @@
-<div class="page-header bg-light p-4 mb-4">
+<div class="page-header bg-light p-4 mb-4" data-controller="highlightable">
+  <span data-highlightable-target="attr" data-attr-name="<%= params[:attr] %>">
+
   <h1 class="mb-6">
     <% if @shipment.new_record? %>
       <%= action_name == 'quote_only' ? 'Shipment' : 'Quote' %>
@@ -55,7 +57,11 @@
           </td>
 
           <% unless @shipment.dispatcher.blank? %>
-            <td class="lead"><%= @shipment.dispatcher.full_name %></td>
+            <td class="lead">
+              <%= highlightable_element :dispatcher_id do %>
+                <%= @shipment.dispatcher.full_name %>
+              <% end %>
+            </td>
           <% end %>
 
           <td class="lead">
