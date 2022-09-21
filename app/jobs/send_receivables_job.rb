@@ -24,6 +24,15 @@ class SendReceivablesJob < ApplicationJob
         if broker_customer.requires_carrier_bol_on_receivables?
           content_type = receivable.shipment.carrier_bol.content_type
 
+          if content_type.blank?
+            Honeybadger.notify <<~ERROR.squish
+              #{self.class}: #{receivable.shipment.carrier_bol.class} id=#{receivable.shipment.carrier_bol.id}:
+              content_type is blank! Unable to send Receivable id=#{receivable.id}
+            ERROR
+
+            next
+          end
+
           if content_type == 'application/pdf'
             download = receivable.shipment.carrier_bol.download
 
@@ -63,6 +72,15 @@ class SendReceivablesJob < ApplicationJob
         next unless broker_customer.requires_carrier_pod_on_receivables?
 
         content_type = receivable.shipment.carrier_pod.content_type
+
+        if content_type.blank?
+          Honeybadger.notify <<~ERROR.squish
+            #{self.class}: #{receivable.shipment.carrier_pod.class} id=#{receivable.shipment.carrier_pod.id}:
+            content_type is blank! Unable to send Receivable id=#{receivable.id}
+          ERROR
+
+          next
+        end
 
         if content_type == 'application/pdf'
           pdf << CombinePDF.parse(receivable.shipment.carrier_pod.download)
