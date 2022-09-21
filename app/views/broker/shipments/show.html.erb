@@ -8,7 +8,7 @@
 
 <% if (current_user.has_role?('dispatcher') ||
        current_user.has_role?('root') ||
-       current_user.sales_rep_for?(shipment.broker_customer)
+       current_user.sales_rep_for?(@shipment.broker_customer)
       ) &&
       @shipment.dispatcher != current_user && @shipment.picked_up_at.blank?
 %>
