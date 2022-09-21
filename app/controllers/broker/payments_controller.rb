@@ -7,7 +7,7 @@ class Broker::PaymentsController < Broker::BrokerController
 
   def due
     @q = Payment.due.includes(required_includes + %i[broker]).ransack(params[:q])
-    @q.sorts = 'due_on desc' if @q.sorts.blank?
+    @q.sorts = 'due_on asc' if @q.sorts.blank?
     @pagy, @payments = pagy(@q.result(distinct: true))
   end
 
