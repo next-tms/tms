@@ -55,11 +55,26 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
     payment_transactions = []
 
     csv = payment_transaction_params[:csv].read.gsub(', ', ',')
-    csv = CSV.parse(csv, headers: true)
+    csv = CSV.parse(csv, headers: true, skip_blanks: true, skip_lines: /^(?:,\s*)+$/)
     csv.each do |row|
-      next if row.empty?
+      balance_cents = begin
+        case row['balance'][-3]
+        when '.'
+          (Float(row['balance'].gsub(',', '')) * 100).to_i
+        when ','
+          (Float(row['balance'].gsub('.', '')) * 100).to_i
+        else
+          (Float(row['balance']) * 100).to_i
+        end
+      rescue ArgumentError
+        nil
+      end
 
-      balance_cents = row['balance'].to_f * 100
+      if balance_cents.blank?
+        flash[:error] = "Unable to extract balance amount (\"balance\") from row: #{row}"
+        render :import and return
+      end
+
       due_on = nil
       invoice = nil
 
@@ -67,14 +82,16 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
         begin
           due_on = Date.strptime(row['due'], '%Y-%m-%d')
         rescue Date::Error
-          flash[:error] = 'Dates must be in the format YYYY-MM-DD'
+          flash[:error] =
+            "Unable to extract due date (\"due\") from row, dates must be in the format YYYY-MM-DD: #{row}"
           render :import and return
         end
       elsif !row['date'].blank?
         begin
-          due_on = Date.strptime(row['due'], '%Y-%m-%d')
+          due_on = Date.strptime(row['date'], '%Y-%m-%d')
         rescue Date::Error
-          flash[:error] = 'Dates must be in the format YYYY-MM-DD'
+          flash[:error] =
+            "Unable to extract invoice date (\"date\") from row: #{row}, dates must be in the format YYYY-MM-DD"
           render :import and return
         end
 
