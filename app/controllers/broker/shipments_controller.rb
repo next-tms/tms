@@ -82,7 +82,7 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     # You want a duplicated shipment to have a shipment status of 'New'
     attrs = attributes_to_nullable.map { |attr_name| { attr_name => nil } }
-    @shipment.assign_attributes(attrs.reduce Hash.new, :merge)
+    @shipment.assign_attributes(attrs.reduce({}, :merge))
 
     @shipment.save!
 
@@ -130,6 +130,8 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def create
+    @broker_customers = current_user.broker_customers.includes(:customer).order('customers.name')
+
     Shipment.transaction do
       broker_customer = shipment_params[:broker_customer_id].blank? ? nil : BrokerCustomer.find(shipment_params[:broker_customer_id])
       @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
@@ -213,7 +215,6 @@ class Broker::ShipmentsController < Broker::BrokerController
     flash[:success] = "Successfully uploaded document for Shipment ##{@shipment.load_id}"
     redirect_to documents_broker_shipment_path(@shipment)
   end
-
 
   def show
     unauthorized and return unless @shipment&.accessible_by?(current_user)
