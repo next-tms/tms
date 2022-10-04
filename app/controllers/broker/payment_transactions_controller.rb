@@ -27,8 +27,8 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
     due = now + 2.weeks
 
     csv = <<~CSV
-      pro,balance,date,due
-      123-456,128.14,#{now},#{due}
+      pro,load,balance,date,due
+      123-456,12345,128.14,#{now},#{due}
     CSV
 
     send_data csv, disposition: 'attachment', type: 'text/csv', filename: 'Sample Statement.csv'
@@ -50,96 +50,15 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
       redirect_to [:broker, @payment_transaction] and return if @payment_transaction.save
 
       render :new and return
+    else
+      csv = payment_transaction_params[:csv].read.gsub(', ', ',')
+      service = ProcessPaymentTransactionCsvService.new(csv:, broker_carrier: @payment_transaction.broker_carrier, current_user:).call
+
+      flash[service.status] = service.message
+      render :import and return if service.status == :error
+
+      redirect_to due_broker_payment_transactions_path
     end
-
-    payment_transactions = []
-
-    csv = payment_transaction_params[:csv].read.gsub(', ', ',')
-    csv = CSV.parse(csv, headers: true, skip_blanks: true, skip_lines: /^(?:,\s*)+$/)
-    csv.each do |row|
-      balance_cents = begin
-        case row['balance'][-3]
-        when '.'
-          (Float(row['balance'].gsub(',', '')) * 100).to_i
-        when ','
-          (Float(row['balance'].gsub('.', '')) * 100).to_i
-        else
-          (Float(row['balance']) * 100).to_i
-        end
-      rescue ArgumentError
-        nil
-      end
-
-      if balance_cents.blank?
-        flash[:error] = "Unable to extract balance amount (\"balance\") from row: #{row}"
-        render :import and return
-      end
-
-      due_on = nil
-      invoice = nil
-
-      if !row['due'].blank?
-        begin
-          due_on = Date.strptime(row['due'], '%Y-%m-%d')
-        rescue Date::Error
-          flash[:error] =
-            "Unable to extract due date (\"due\") from row, dates must be in the format YYYY-MM-DD: #{row}"
-          render :import and return
-        end
-      elsif !row['date'].blank?
-        begin
-          due_on = Date.strptime(row['date'], '%Y-%m-%d')
-        rescue Date::Error
-          flash[:error] =
-            "Unable to extract invoice date (\"date\") from row: #{row}, dates must be in the format YYYY-MM-DD"
-          render :import and return
-        end
-
-        due_on += @payment_transaction.broker_carrier.days_to_pay_after_invoice_date.days
-      end
-
-      invoice = row['invoice'] unless row['invoice'].blank?
-      pro = row['pro']
-
-      next if balance_cents.blank? || due_on.blank? || pro.blank?
-
-      payment_transaction = PaymentTransaction
-                            .where(broker: current_user.broker)
-                            .where(broker_carrier: @payment_transaction.broker_carrier)
-                            .where(pro:)
-                            &.first
-      payment_transaction = nil if payment_transaction&.payment&.paid?
-
-      if payment_transaction.blank?
-        payment_transaction = PaymentTransaction.new(
-          broker_carrier: @payment_transaction.broker_carrier,
-          created_by: current_user,
-          invoice:,
-          pro:
-        )
-      end
-
-      payment_transaction.assign_attributes(balance_cents:, due_on:)
-      payment_transactions << payment_transaction
-    end
-
-    saved_payment_transactions_count = payment_transactions.map(&:save).count(true)
-
-    if saved_payment_transactions_count.zero?
-      flash[:error] = 'No new invoices found in statement'
-      render :import and return
-    end
-
-    message_parts = ['Invoice'.pluralize(saved_payment_transactions_count)]
-    message_parts << "(#{saved_payment_transactions_count} found altogether)" if saved_payment_transactions_count > 1
-    message_parts += [
-      'will be assigned',
-      'payable'.pluralize(saved_payment_transactions_count),
-      'shortly'
-    ]
-
-    flash[:success] = message_parts.join(' ')
-    redirect_to due_broker_payment_transactions_path
   end
 
   def paid
