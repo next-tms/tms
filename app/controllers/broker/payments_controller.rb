@@ -42,6 +42,46 @@ class Broker::PaymentsController < Broker::BrokerController
     @pagy, @payment_transactions = pagy(@q.result)
   end
 
+  def new
+    @payment = Payment.new
+  end
+
+  def create
+    broker_carrier = BrokerCarrier.find(params[:broker_carrier_id])
+    cutoff_date = params[:cutoff_date]
+
+    payment_transactions = broker_carrier.payment_transactions.where(payment: nil)
+                                                              .where("due_on <= ?", cutoff_date.to_date )
+
+    @payment = Payment.new(
+      broker_carrier: broker_carrier,
+      payment_transactions: payment_transactions,
+      due_on: cutoff_date,
+      broker: current_user.broker
+    )
+
+    if @payment.save
+      flash[:success] = "Successfully Created new Payment for #{broker_carrier.broker_customer_specific_name}"
+      redirect_to broker_payment_path(@payment)
+    else
+      render :new
+    end
+  end
+
+  def due_payment_transactions
+    broker_carrier = BrokerCarrier.find(params[:broker_carrier_id])
+    cutoff_date = params[:cutoff_date]
+
+    payment_transactions = broker_carrier.payment_transactions.where(payment: nil)
+                                                              .where("due_on <= ?", cutoff_date.to_date )
+
+    render json: {
+      payment_transactions_count: payment_transactions.count,
+      broker_carrier_name: broker_carrier.broker_customer_specific_name,
+      date: cutoff_date.to_date.strftime("%b %e %Y")
+     }
+  end
+
   private
 
   def require_accounts_payable

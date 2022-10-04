@@ -1,0 +1,36 @@
+<% provide :title, 'New Payment' %>
+
+<div class="page-header">
+  <h1>Payments</h1>
+  <p class="lead"><%= yield :title %></p>
+</div>
+
+<div class="row" data-controller="payments">
+  <div class="col col-md-8">
+    <%= bootstrap_form_with(url: broker_payments_path, local: true, layout: :horizontal) do |f| %>
+      <%= f.select :broker_carrier_id,
+              current_user
+              .broker
+              .broker_carriers
+              .includes(:carrier)
+              .collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }
+              .sort,
+              { include_blank: true, label: 'Carrier' },
+              required: true,
+              data: { action: "change->payments#showDuePaymentTransactions" }
+      %>
+
+      <%= f.text_field :cutoff_date,
+                       label: 'Cut Off Date',
+                       help: 'Payment will be created base from unpaid bills that are on or before the cut off date',
+                       data: flatpickr_data.merge(action: "change->payments#showDuePaymentTransactions") %>
+
+      <div class="alert alert-info d-none" id="paymentTransactionMessage">
+      </div>
+
+      <div class="form-group d-none" id="formSubmit">
+        <%= f.submit class: 'btn btn-primary mt-4', data: { turbo: false }, value: 'Save' %>
+      </div>
+    <% end %>
+  </div>
+</div>

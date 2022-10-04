@@ -132,6 +132,7 @@ Rails.application.routes.draw do
 
       member { get :pay }
     end
+    post 'payment/due_payment_transactions', to: 'payments#due_payment_transactions'
 
     resources :receivables, path: 'receivables' do
       collection { get :authorized }
