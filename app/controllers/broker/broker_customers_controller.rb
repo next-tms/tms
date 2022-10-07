@@ -2,6 +2,7 @@
 
 class Broker::BrokerCustomersController < Broker::BrokerController
   ALLOWED_ACCESS_FOR_DISPATCHER = %w[show shipments].freeze
+  ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE = %w[show shipments update]
 
   before_action :set_broker_customer,
                 only: %i[contacts edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing
@@ -9,6 +10,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   before_action :authenticate_user!
 
   before_action :validate_user_role!, only: %i[update show contacts shipments]
+  before_action :allow_sales_rep_or_accounts_receivable!, only: %i[edit edit_pricing]
 
   def broker_carriers
     @q = @broker_customer
@@ -46,9 +48,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def customer_contacts; end
 
   def edit
-    if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
-      unauthorized
-    end
     @broker_customer.primary_pickup_address = Address.new if @broker_customer.primary_pickup_address.blank?
   end
 
@@ -196,12 +195,19 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
   private
 
+  def allow_sales_rep_or_accounts_receivable!
+    unauthorized if not_sales_rep_for_all_and_broker_customer? && !current_user.has_role?('accounts_receivable')
+  end
+
+  def not_sales_rep_for_all_and_broker_customer?
+    !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
+  end
+
   def validate_user_role!
     return if ALLOWED_ACCESS_FOR_DISPATCHER.include?(action_name) && current_user.dispatcher_only?
+    return if ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE.include?(action_name) && current_user.has_role?('accounts_receivable')
 
-    if !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
-      unauthorized
-    end
+    unauthorized if not_sales_rep_for_all_and_broker_customer?
   end
 
   # Use callbacks to share common setup or constraints between actions.
