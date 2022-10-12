@@ -240,6 +240,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                             :requires_shipment_delivery_before_receivable,
                                             :requires_charges_confirmed_on_receivables,
                                             :requires_customer_reference_number_on_receivables,
+                                            :requires_shipment_shipper_reference_on_receivables,
                                             preferred_broker_carriers_attributes: %i[
                                               _destroy
                                               id

@@ -52,6 +52,10 @@ module Shipment::HasReceivables
       broker_customer.requires_customer_reference_number_on_receivables
     end
 
+    def requires_shipper_reference_number_on_receivables?
+      broker_customer.requires_shipment_shipper_reference_on_receivables
+    end
+
     def receivable?
       self.reload
 
@@ -61,31 +65,35 @@ module Shipment::HasReceivables
       return false if broker_customer.requires_shipment_delivery_before_receivable? && delivered_at.blank?
 
       if requires_customer_reference_number_on_receivables? && customer_reference.blank?
-        create_missing_customer_reference_problem and return false
+        create_missing_reference_problem(kind: 'customer_reference') and return false
+      end
+
+      if requires_shipper_reference_number_on_receivables? && shipper_reference.blank?
+        create_missing_reference_problem(kind: 'shipper_reference') and return false
       end
 
       true
     end
 
-    def create_missing_customer_reference_problem
-      title = "Load #{load_id} missing customer reference no"
-      body = "Load #{load_id} is required to have customer reference no before creating a receivable"
+    def create_missing_reference_problem(kind:)
+      title = "Load #{load_id} missing #{kind.humanize} no"
+      body = "Load #{load_id} is required to have #{kind.humanize} no before creating a receivable"
 
       Problem.create(
         assigned_to: self.dispatcher,
         body:,
-        problem_type: missing_customer_preference_number_problem_type,
+        problem_type: missing_reference_number_problem_type(kind: kind),
         resolvable: self,
         title:
       )
     end
 
-    def missing_customer_preference_number_problem_type
+    def missing_reference_number_problem_type(kind:)
       ProblemType.find_or_create_by(
         role: Role.find_by(name: 'dispatch'),
-        code: 'missing_customer_reference_number',
-        name: 'missing customer reference number',
-        resolvable_class_attribute_name: 'customer_reference',
+        code: "missing_#{kind}_number",
+        name: "missing #{kind.humanize.downcase} number",
+        resolvable_class_attribute_name: kind,
         resolvable_class_name: 'Shipment',
         resolvable_class_since_attribute_name: 'dispatched_at',
         resolves_when_class_attribute_is: 'blank_false',
