@@ -27,7 +27,7 @@ group :development do
   gem 'bullet', '~> 7.0.3'
   gem 'letter_opener'
   gem 'listen', '>= 3.0.5', '< 3.8'
-  gem 'spring', '~> 4.0.0'
+  gem 'spring', '~> 4.1.0'
   gem 'traceroute'
   gem 'web-console', '>= 3.3.0'
 end
