@@ -19,7 +19,7 @@ group :development, :test do
   gem 'faker', '~> 2.23.0'
   gem 'pry'
   gem 'rspec-rails', '~> 5.1'
-  gem 'shoulda-matchers', '5.1.0'
+  gem 'shoulda-matchers', '5.2.0'
 end
 
 group :development do
