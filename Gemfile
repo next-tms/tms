@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 ruby '3.1.2'
 
 gem 'jbuilder', '~> 2.11'
-gem 'pg', '~> 1.4.2'
+gem 'pg', '~> 1.4.4'
 gem 'puma', '~> 5.6.5'
 gem 'rails', '~> 7.0.4'
 gem 'shakapacker', '~> 6.5.2'

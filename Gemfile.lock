@@ -1652,7 +1652,7 @@ GEM
     pagy (5.10.1)
       activesupport
     pdf-core (0.9.0)
-    pg (1.4.3)
+    pg (1.4.4)
     phony (2.20.0)
     phony_rails (0.15.0)
       activesupport (>= 3.0)
@@ -1940,7 +1940,7 @@ DEPENDENCIES
   noticed
   open_street_map (~> 1.2.1)
   pagy
-  pg (~> 1.4.2)
+  pg (~> 1.4.4)
   phony_rails
   postmark-rails
   prawn (~> 2.4.0)
