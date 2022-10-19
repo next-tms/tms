@@ -35,7 +35,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def create
     @broker_customer = BrokerCustomer.new(broker_customer_params)
     @broker_customer.broker = current_user.broker
-    @broker_customer.receivables_contact.broker = current_user.broker if @broker_customer.receivables_contact
+    @broker_customer.primary_receivables_contact.broker = current_user.broker if @broker_customer.primary_receivables_contact
     # @broker_customer.sales_reps = [current_user]
     if @broker_customer.save
       flash[:success] = "#{@broker_customer.customer.name} saved. You may now edit pricing if you’d like."
@@ -73,7 +73,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.office_address = Address.new
     @broker_customer.primary_pickup_address = Address.new
     @broker_customer.sales_reps = [current_user]
-    @broker_customer.receivables_contact = Contact.new
+    @broker_customer.primary_receivables_contact = Contact.new
   end
 
   def preferences; end
@@ -288,11 +288,18 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                               zip_code
                                               country_id
                                             ],
-                                            receivables_contact_attributes: %i[
+                                            primary_receivables_contact_attributes: %i[
                                               id
                                               email
                                               first_name
                                               last_name
+                                            ],
+                                            receivables_contacts_attributes: %i[
+                                              id
+                                              email
+                                              first_name
+                                              last_name
+                                              _destroy
                                             ],
                                             upcharge_rules_attributes: %i[
                                               _destroy

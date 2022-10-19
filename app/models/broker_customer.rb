@@ -81,8 +81,11 @@ class BrokerCustomer < ApplicationRecord
   belongs_to :customer
   accepts_nested_attributes_for :customer
 
-  belongs_to :receivables_contact, class_name: 'Contact'
-  accepts_nested_attributes_for :receivables_contact, allow_destroy: false
+  belongs_to :primary_receivables_contact, class_name: 'Contact', foreign_key: 'receivables_contact_id'
+  accepts_nested_attributes_for :primary_receivables_contact, allow_destroy: false
+
+  has_many :receivables_contacts, class_name: 'Contact'
+  accepts_nested_attributes_for :receivables_contacts, allow_destroy: false
 
   enum preferred_broker_carriers_kind: { blacklist: 'blacklist', whitelist: 'whitelist' }
 

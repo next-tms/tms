@@ -1,13 +1,24 @@
-<div class="row gy-2 gx-3 align-items-center mb-4">
+<div class="receivables-contact-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
   <div class="col col-md-2">
-    <%= f.text_field :first_name, wrapper: false %>
+    <%= f.text_field :first_name, placeholder: "First Name", wrapper: false %>
   </div>
 
   <div class="col col-md-2">
-    <%= f.text_field :last_name, wrapper: false %>
+    <%= f.text_field :last_name, placeholder: "Last Name", wrapper: false %>
   </div>
 
   <div class="col col-md-2">
-    <%= f.email_field :email, wrapper: false %>
+    <%= f.email_field :email, placeholder: "Email", wrapper: false %>
   </div>
+
+  <% if f.object_name.include?('primary') %>
+    <div class="col col-md-2">
+      <span class="text-success"> <%= icon('solid', 'check', "Primary")%> </span>
+    </div>
+  <% else %>
+    <div class="col col-md-2">
+      <%= f.hidden_field :_destroy %>
+      <%= link_to icon('solid', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
+    </div>
+  <% end %>
 </div>

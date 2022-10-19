@@ -16,10 +16,17 @@ class ReceivablesMailer < ApplicationMailer
       bcc << user.email if user.has_role?('accounts_receivable')
     end
 
+    cc = broker_customer.receivables_contacts.map do |contact|
+      next if contact == broker_customer.primary_receivables_contact
+
+      pretty_email(contact)
+    end.compact
+
     mail(
       from: "#{broker_customer.broker.name} <#{broker_customer.broker.robot_email}>",
       reply_to: broker_customer.broker.customer_service_email,
-      to: pretty_email(broker_customer.receivables_contact),
+      to: pretty_email(broker_customer.primary_receivables_contact),
+      cc: cc,
       bcc:,
       subject: load_ids.size > 1 ? 'Batch Invoices' : "Invoice #{load_ids[0]}"
     )

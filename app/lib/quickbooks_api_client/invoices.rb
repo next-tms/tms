@@ -87,7 +87,7 @@ module QuickbooksApiClient
       invoice = Quickbooks::Model::Invoice.new if invoice.blank?
       invoice.line_items = [] # for update
 
-      invoice.billing_email_address = receivable.broker_customer.receivables_contact.email
+      invoice.billing_email_address = receivable.broker_customer.primary_receivables_contact.email
       invoice.customer_id = receivable.broker_customer.quickbooks_customer_id
       invoice.doc_number = receivable.shipment.load_id.to_s
       invoice.txn_date = DateTime.current.in_time_zone(receivable.broker_customer.broker.time_zone)
