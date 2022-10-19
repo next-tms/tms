@@ -1521,7 +1521,7 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
-    fugit (1.6.0)
+    fugit (1.7.1)
       et-orbi (~> 1, >= 1.2.7)
       raabro (~> 1.4)
     geocoder (1.8.1)
@@ -1823,10 +1823,10 @@ GEM
       connection_pool (>= 2.2.5)
       rack (~> 2.0)
       redis (>= 4.5.0, < 5)
-    sidekiq-scheduler (4.0.2)
+    sidekiq-scheduler (4.0.3)
       redis (>= 4.2.0)
       rufus-scheduler (~> 3.2)
-      sidekiq (>= 4)
+      sidekiq (>= 4, < 7)
       tilt (>= 1.4.0)
     simple_command (1.0.1)
     socksify (1.7.1)
@@ -1955,7 +1955,7 @@ DEPENDENCIES
   shakapacker (~> 6.5.2)
   shoulda-matchers (= 5.2.0)
   sidekiq (~> 6.5.7)
-  sidekiq-scheduler (~> 4.0.2)
+  sidekiq-scheduler (~> 4.0.3)
   simple_command
   spacetime!
   spring (~> 4.1.0)
