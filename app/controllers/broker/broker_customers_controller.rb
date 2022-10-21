@@ -48,6 +48,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def customer_contacts; end
 
   def edit
+    @broker_customer.primary_receivables_contact = Contact.new unless @broker_customer.primary_receivables_contact
     @broker_customer.primary_pickup_address = Address.new if @broker_customer.primary_pickup_address.blank?
   end
 

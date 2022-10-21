@@ -84,8 +84,11 @@ class BrokerCustomer < ApplicationRecord
   belongs_to :primary_receivables_contact, class_name: 'Contact', foreign_key: 'receivables_contact_id'
   accepts_nested_attributes_for :primary_receivables_contact, allow_destroy: false
 
-  has_many :receivables_contacts, class_name: 'Contact'
-  accepts_nested_attributes_for :receivables_contacts, allow_destroy: false
+  # Temporary Fix, Add primary table column on contacts
+  has_many :receivables_contacts,
+           -> { where.not(id: BrokerCustomer.all.pluck(:receivables_contact_id).compact) },
+           class_name: 'Contact'
+  accepts_nested_attributes_for :receivables_contacts, allow_destroy: true, reject_if: :all_blank
 
   enum preferred_broker_carriers_kind: { blacklist: 'blacklist', whitelist: 'whitelist' }
 
