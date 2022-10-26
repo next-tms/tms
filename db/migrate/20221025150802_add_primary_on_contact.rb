@@ -11,12 +11,6 @@ class AddPrimaryOnContact < ActiveRecord::Migration[7.0]
   end
 
   def down
-    BrokerCustomer.all.find_each do |broker_customer|
-      next unless broker_customer.primary_receivables_contact.present?
-
-      broker_customer.update_columns(receivables_contact_id: broker_customer.primary_receivables_contact.id)
-    end
-
     remove_column :contacts, :primary
   end
 end
