@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_10_193023) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_25_150802) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -337,6 +337,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_10_193023) do
     t.text "comments"
     t.bigint "broker_customer_id"
     t.bigint "broker_carrier_id"
+    t.boolean "primary", default: false
     t.index ["broker_carrier_id"], name: "index_contacts_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_contacts_on_broker_customer_id"
     t.index ["broker_id"], name: "index_contacts_on_broker_id"

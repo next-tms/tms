@@ -11,14 +11,15 @@
     <%= f.email_field :email, placeholder: "Email", wrapper: false %>
   </div>
 
-  <% if f.object_name.include?('primary') %>
-    <div class="col col-md-2">
-      <span class="text-success"> <%= icon('solid', 'check', "Primary")%> </span>
+  <div class="col-auto">
+    <label>&nbsp;</label>
+    <div class="form-check form-switch mb-4" style="padding-left: 14px">
+      <%= f.check_box :primary, label: 'Primary?', data: { action: 'contacts#uncheckOtherPrimary' }, class: "form-check-input" %>
     </div>
-  <% else %>
-    <div class="col col-md-2">
-      <%= f.hidden_field :_destroy %>
-      <%= link_to icon('solid', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
-    </div>
-  <% end %>
+  </div>
+
+  <div class="col-auto">
+    <%= f.hidden_field :_destroy %>
+    <%= link_to icon('solid', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light' %>
+  </div>
 </div>

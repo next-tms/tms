@@ -48,7 +48,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def customer_contacts; end
 
   def edit
-    @broker_customer.primary_receivables_contact = Contact.new unless @broker_customer.primary_receivables_contact
     @broker_customer.primary_pickup_address = Address.new if @broker_customer.primary_pickup_address.blank?
   end
 
@@ -74,7 +73,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.office_address = Address.new
     @broker_customer.primary_pickup_address = Address.new
     @broker_customer.sales_reps = [current_user]
-    @broker_customer.primary_receivables_contact = Contact.new
+    @broker_customer.receivables_contacts.new(primary: true)
   end
 
   def preferences; end
@@ -289,17 +288,12 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                               zip_code
                                               country_id
                                             ],
-                                            primary_receivables_contact_attributes: %i[
-                                              id
-                                              email
-                                              first_name
-                                              last_name
-                                            ],
                                             receivables_contacts_attributes: %i[
                                               id
                                               email
                                               first_name
                                               last_name
+                                              primary
                                               _destroy
                                             ],
                                             upcharge_rules_attributes: %i[
