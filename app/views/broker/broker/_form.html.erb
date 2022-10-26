@@ -1,8 +1,25 @@
 <%= bootstrap_form_with(model: [:broker, @broker], url: broker_update_settings_path, layout: :horizontal) do |f| %>
   <%= f.alert_message "Unable to save customer:" %>
 
+  <div class="form-group form-row">
+    <label class="col-form-label col-sm-2">Address</label>
 
-  <div class="form-row">
+    <div class="col-sm-10" data-controller="address">
+      <%= f.fields_for :address do |address_form| %>
+        <%= address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
+        <%= address_form.text_field :street2, hide_label: true %>
+        <%= address_form.text_field :city, hide_label: true, placeholder: 'City' %>
+        <%= address_form.select :region_id, [[address_form.object.region.name, address_form.object.region_id]], { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
+        <%= address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
+        <%= address_form.select :country_id, current_user.broker.countries.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, selected: (address_form.object.country_id.blank? ? current_user.broker.address.country_id : address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= f.email_field :customer_service_email, autocomplete: 'off', label: 'Customer service email' %>
+  <%= f.telephone_field :phone, autocomplete: 'off', label: 'Customer service phone', value: f.object.phone.phony_formatted %>
+
+  <div class="form-group form-row">
     <label class="col-form-label col-sm-2">Service Countries</label>
     <div class="col-sm-10">
       <%= f.fields_for :broker_countries do |broker_countries_form| %>

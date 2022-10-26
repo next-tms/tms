@@ -63,6 +63,7 @@ class Broker < ApplicationRecord
   has_one :stripe_account
 
   belongs_to :address
+  accepts_nested_attributes_for :address
 
   validates :customer_service_email, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :customer_service_email, presence: true

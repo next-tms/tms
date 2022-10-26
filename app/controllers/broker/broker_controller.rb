@@ -14,12 +14,10 @@ class Broker::BrokerController < ApplicationController
     blacklist = Notification.notification_types - params[:email_notifications_blacklist]
     current_user.update(email_notifications_blacklist: blacklist.join(','))
 
-    if !@broker.update(broker_params)
-      flash[:error] = "Unable to update #{@broker.name}: #{@broker.errors.full_messages.join(', ')}"
-      redirect_back fallback_location: broker_settings_path
-    else
-      redirect_to broker_settings_path
-    end
+    redirect_to broker_settings_path and return if @broker.update(broker_params)
+
+    flash[:error] = "Unable to update #{@broker.name}: #{@broker.errors.full_messages.join(', ')}"
+    redirect_back fallback_location: broker_settings_path
   end
 
   private
@@ -29,8 +27,19 @@ class Broker::BrokerController < ApplicationController
       :id,
       :automatically_authorize_receivables,
       :automatically_update_shipment_tracking_based_on_carrier_apis,
+      :customer_service_email,
       :ignore_broker_carrier_bol_requires_tracking_number,
+      :phone,
       :requires_charges_confirmed_on_receivables,
+      address_attributes: %i[
+        id
+        street
+        street2
+        city
+        region_id
+        zip_code
+        country_id
+      ],
       broker_countries_attributes: %i[
         _destroy
         country_id
@@ -41,12 +50,12 @@ class Broker::BrokerController < ApplicationController
 
   def restrict_to_broker_users
     user = true_user || current_user
-    unless user&.broker?
-      store_location_for(:user, request.fullpath) if request.get?
+    return if user&.broker?
 
-      flash[:error] = 'Not authorized'
-      redirect_to root_path and return
-    end
+    store_location_for(:user, request.fullpath) if request.get?
+
+    flash[:error] = 'Not authorized'
+    redirect_to root_path and return
   end
 
   def set_broker
