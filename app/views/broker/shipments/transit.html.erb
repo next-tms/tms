@@ -3,32 +3,39 @@
 <%= render 'member_header' %>
 <h2>Routing</h2>
 
-<%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment), layout: :horizontal, label_col: 'col-sm-4', control_col: 'col-sm-8', data: { controller: 'highlightable' }) do |f| %>
+<%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment), layout: :horizontal, label_col: 'col-sm-6 col-md-4', control_col: 'col-sm-8', data: { controller: 'highlightable' }) do |f| %>
   <span data-highlightable-target="attr" data-attr-name="<%= params[:attr] %>">
   <div class="row">
 
-    <div class="col-sm-4">
+    <div class="col-sm-6 col-md-4">
       <p class="col-title"><%= icon 'solid', 'truck', 'Carrier' %>
       <div class="form-group row">
-        <label class="col-form-label col-sm-4">Carrier</label>
+        <label class="col-form-label col-sm-6 col-md-4">Carrier</label>
         <div class="col-sm-8">
           <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.includes(:carrier).collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, include_blank: true, help: 'For manual quotes', selected: (@shipment.broker_carrier ? @shipment.broker_carrier.id : nil), wrapper: false }, class: 'form-select' %>
-          <% if not @shipment.broker_carrier.blank? and @shipment.broker_carrier.carrier.acts_as_broker? %>
-            <%= f.select :tracking_carrier_id, Carrier.all.collect { |carrier| [ carrier.name, carrier.id ] }.sort, { label: 'Carrier', hide_label: true, help: 'For tracking', selected: (@shipment.tracking_carrier ? @shipment.tracking_carrier.id : nil), wrapper: false }, class: 'form-select' %>
+          <% if @shipment.broker_carrier&.carrier&.acts_as_broker? %>
+            <%= f.select :tracking_carrier_id,
+                         Carrier.order(:name).collect { |carrier| [ carrier.name, carrier.id ] },
+                         {
+                           help: 'For tracking',
+                           hide_label: true,
+                           include_blank: true,
+                           label: 'Carrier',
+                           wrapper: false
+                         },
+                         class: 'form-select'
+            %>
           <% end %>
           <%= link_to 'Find Rates', quote_broker_shipment_path(@shipment), class: 'btn btn-outline-primary mt-2' %>
         </div>
       </div>
       <%= f.text_field :quoted_delivery_by, label: 'Quoted ETA', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.quoted_delivery_by, time_zone: f.object.receiver_address.time_zone) %>
-      <%= f.text_field :quote_id, label: 'Quote Ref', autocomplete: 'off' %>
-      <%= f.text_field :pro, label: 'Pro', autocomplete: 'off' %>
-      <% if not @shipment.broker_carrier.blank? and @shipment.broker_carrier.carrier.acts_as_broker? %>
-        <%= f.text_field :tracking_carrier_pro, label: 'Carrier Pro', autocomplete: 'off' %>
-      <% end %>
+      <%= f.text_field :quote_id, label: 'Quote #', autocomplete: 'off' %>
+      <%= render 'pro_fields', f: f %>
       <%= f.text_field :carrier_cost, prepend: '$', label: 'Cost', data: money_controller_data, autocomplete: 'off' %>
     </div>
 
-    <div class="col-sm-4">
+    <div class="col-sm-6 col-md-4">
       <p class="col-title"><%= icon 'solid', 'truck-loading', 'Pickup' %></p>
         <%= f.text_field :pickup_on, label: 'Pickup On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.pickup_on, time_zone: f.object.shipper_address.time_zone) %>
       <% unless @shipment.broker_carrier.blank? %>
@@ -36,15 +43,13 @@
           <%= f.text_field :dispatched_at, label: 'Dispatched', autocomplete: 'off', data: flatpickr_datetime_data(f.object.dispatched_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.dispatched_at, time_zone: f.object.shipper_address.time_zone) %>
         <% end %>
 
-        <%= f.text_field :pickup_confirmation, label: (@shipment.broker_carrier.carrier.acts_as_broker? ? 'Pickup Ref' : 'Broker Pickup Ref'), autocomplete: 'off' %>
-        <% if not @shipment.broker_carrier.blank? and @shipment.broker_carrier.carrier.acts_as_broker? %>
-          <%= f.text_field :tracking_carrier_pickup_confirmation, label: 'Carrier Pickup Ref', autocomplete: 'off' %>
-        <% end %>
+        <%= render 'pickup_confirmation_fields', f: f %>
+
         <%= f.text_field :pickup_driver_assigned_at, label: 'Assigned', autocomplete: 'off', data: flatpickr_datetime_data(f.object.pickup_driver_assigned_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.pickup_driver_assigned_at, time_zone: f.object.shipper_address.time_zone) %>
         <%= f.text_field :pickup_eta_at, label: 'ETA', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }), value: maybe_in_time_zone(datetime: f.object.pickup_eta_at, time_zone: f.object.shipper_address.time_zone) %>
 
         <%= highlightable_element :picked_up_at do %>
-          <%= f.text_field :picked_up_at, label: 'Pickup', autocomplete: 'off', data: flatpickr_datetime_data(f.object.picked_up_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.picked_up_at, time_zone: f.object.shipper_address.time_zone) %>
+          <%= f.text_field :picked_up_at, label: 'Picked Up', autocomplete: 'off', data: flatpickr_datetime_data(f.object.picked_up_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.picked_up_at, time_zone: f.object.shipper_address.time_zone) %>
         <% end %>
 
         <%= highlightable_element :departed_origin_terminal_at do %>
@@ -57,7 +62,7 @@
       <% end %>
     </div>
 
-    <div class="col-sm-4">
+    <div class="col-sm-6 col-md-4">
       <p class="col-title"><%= icon 'solid', 'people-carry', 'Delivery' %></p>
       <%= f.text_field :promised_delivery_by, label: 'Promised By', autocomplete: 'off', data: flatpickr_datetime_data(f.object.promised_delivery_by, f.object.receiver_address.time_zone), value: maybe_in_time_zone(datetime: f.object.promised_delivery_by, time_zone: f.object.receiver_address.time_zone) %>
       <% unless @shipment.broker_carrier.blank? %>

@@ -33,10 +33,10 @@
 
       <div class="col-sm-6 col-md-4">
         <p class="col-title"><%= icon 'solid', 'barcode', 'References' %></p>
-        <%= f.text_field :shipper_reference, label: 'SO', autocomplete: 'off' %>
-        <%= f.text_field :customer_reference, label: 'PO', autocomplete: 'off' %>
-        <%= f.text_field :bol, label: 'BOL', autocomplete: 'off' %>
-        <%= f.text_field :pro, label: 'Pro', autocomplete: 'off' %>
+        <%= f.text_field :shipper_reference, label: 'SO #', autocomplete: 'off' %>
+        <%= f.text_field :customer_reference, label: 'PO #', autocomplete: 'off' %>
+        <%= f.text_field :bol, label: 'BOL #', autocomplete: 'off' %>
+        <%= f.text_field :pro, label: 'Pro #', autocomplete: 'off' %>
 
         <p class="col-title"><%= icon 'solid', 'dollar-sign', 'Value' %></p>
         <%= f.text_field :value, label: 'Total', prepend: '$', data: money_controller_data, autocomplete: 'off' %>

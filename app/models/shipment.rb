@@ -995,10 +995,20 @@ class Shipment < ApplicationRecord
       end
     end
 
+    unless broker_carrier.blank? ||
+           tracking_carrier.blank? ||
+           tracking_carrier_pickup_confirmation.blank? ||
+           tracking_carrier_pickup_confirmation != pickup_confirmation
+      errors.add(
+        :tracking_carrier_pickup_confirmation,
+        "cannot match pickup ref #{pickup_confirmation} from #{broker_carrier.carrier.name}"
+      )
+    end
+
     unless broker_carrier.blank? || tracking_carrier.blank? || tracking_carrier_pro.blank? || tracking_carrier_pro != pro
       errors.add(
-        :base,
-        "Pro #{pro} cannot be used for both #{broker_carrier.carrier.name} and #{tracking_carrier.name}"
+        :tracking_carrier_pro,
+        "cannot match pro #{pro} from #{broker_carrier.carrier.name}"
       )
     end
 
