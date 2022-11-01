@@ -1533,7 +1533,7 @@ GEM
     gyoku (1.4.0)
       builder (>= 2.1.2)
       rexml (~> 3.0)
-    honeybadger (4.12.2)
+    honeybadger (5.0.1)
     htmlentities (4.3.4)
     http (5.1.0)
       addressable (~> 2.8)
@@ -1917,7 +1917,7 @@ DEPENDENCIES
   faker (~> 2.23.0)
   geocoder (~> 1.8.1)
   google_places (~> 2.0.0)
-  honeybadger (~> 4.12)
+  honeybadger (~> 5.0)
   htmlentities
   httparty
   image_processing (~> 1.12.2)

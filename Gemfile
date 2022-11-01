@@ -68,7 +68,7 @@ gem 'spacetime',
     git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime',
     ref: 'b430558c2458c6d674ec1803246ff5fcccacff94'
 
-gem 'honeybadger', '~> 4.12'
+gem 'honeybadger', '~> 5.0'
 
 gem 'sidekiq', '~> 6.5.7'
 gem 'sidekiq-scheduler', '~> 4.0.3'
