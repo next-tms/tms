@@ -73,5 +73,9 @@ module Shipment::Problematic
     def self.problematic_customer_reference_blank
       active.where(customer_reference: [nil, ''])
     end
+
+    def self.problematic_shipper_reference_blank
+      active.where(shipper_reference: [nil, ''])
+    end
   end
 end

@@ -82,7 +82,13 @@ class BrokerCustomer < ApplicationRecord
   accepts_nested_attributes_for :customer
 
   has_many :broker_customer_receivable_contacts, class_name: "BrokerCustomerReceivableContact", dependent: :destroy
-  has_many :receivable_contacts, through: :broker_customer_receivable_contacts
+  has_many :receivable_contacts, through: :broker_customer_receivable_contacts, source: 'contact'
+
+  has_one :broker_customer_primary_receivable_contact,
+          -> { where(primary: true) },
+          class_name: "BrokerCustomerReceivableContact"
+
+  has_one :primary_receivables_contact, through: :broker_customer_primary_receivable_contact, source: 'contact'
 
   accepts_nested_attributes_for :broker_customer_receivable_contacts, allow_destroy: true, reject_if: :all_blank
 
