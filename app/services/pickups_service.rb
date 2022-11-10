@@ -38,7 +38,8 @@ class PickupsService
       order_number: @shipment.shipper_reference,
       origin: interstellar_origin,
       packages:,
-      po_number: @shipment.customer_reference
+      po_number: @shipment.customer_reference,
+      pro: @shipment.pro
     )
 
     interstellar_dispatcher = Interstellar::Contact.new(
