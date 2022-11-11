@@ -1,15 +1,13 @@
 <% if @shipment.broker_carrier.blank? || !@shipment.broker_carrier.carrier.acts_as_broker? %>
   <%= f.text_field :pro, label: 'Pro #', autocomplete: 'off' %>
-<% else %>
+<% elsif @shipment.tracking_carrier.present? %>
   <%= f.text_field :pro, label: 'Broker Pro #', help: @shipment.broker_carrier.carrier.name, autocomplete: 'off' %>
 
-  <% if @shipment.tracking_carrier.present? %>
-    <%= f.text_field :tracking_carrier_pro,
-                     label: 'Pro',
-                     help: @shipment.tracking_carrier.name,
-                     autocomplete: 'off'
-    %>
-  <% else %>
-    <%= f.text_field :tracking_carrier_pro, label: 'Pro #', autocomplete: 'off' %>
-  <% end %>
+  <%= f.text_field :tracking_carrier_pro,
+                   label: 'Pro #',
+                   help: @shipment.tracking_carrier.name,
+                   autocomplete: 'off'
+  %>
+<% else %>
+  <%= f.text_field :pro, label: 'Pro #', autocomplete: 'off' %>
 <% end %>
