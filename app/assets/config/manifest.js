@@ -1,2 +1,4 @@
-//= link_directory ../stylesheets application.scss
-//= link_directory ../stylesheets application.js
+//= link_tree ../images
+//= link_directory ../stylesheets .css
+//= link_tree ../../javascript .js
+//= link_tree ../../../vendor/javascript .js

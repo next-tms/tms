@@ -1,1 +1,20 @@
-@import 'rails_bootstrap_forms';
+@import "rails_bootstrap_forms";
+
+@import "bootstrap_custom";
+@import "bootstrap";
+@import "bootstrap_overrides";
+@import "bootstrap4_form_inline";
+
+@import "flatpickr_overrides";
+
+@import "font-awesome";
+
+@import "sortable";
+@import "page_loader";
+
+@font-face {
+    font-family: "Nimbus Sans L";
+    src: url("NimbusSanL-Bol-webfont.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+}

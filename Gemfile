@@ -4,12 +4,19 @@ source 'https://rubygems.org'
 
 ruby '3.1.2'
 
-gem 'jbuilder', '~> 2.11'
+gem 'rails', '~> 7.0.4'
+gem 'sprockets-rails', '~> 3.4.2'
+
 gem 'pg', '~> 1.4.4'
 gem 'puma', '~> 6.0.0'
-gem 'rails', '~> 7.0.4'
-gem 'shakapacker', '~> 6.5.2'
-gem 'sprockets-rails', '~> 3.4.2'
+
+gem 'importmap-rails', '~> 1.1.5'
+gem 'stimulus-rails', '~> 1.1.1'
+gem 'turbo-rails', '~> 1.1.1'
+
+gem 'jbuilder', '~> 2.11'
+
+gem 'redis', '~> 4.7'
 
 gem 'bootsnap', '>= 1.4.2', require: false
 
@@ -27,6 +34,7 @@ group :development do
   gem 'bullet', '~> 7.0.3'
   gem 'letter_opener'
   gem 'listen', '>= 3.0.5', '< 3.8'
+  gem 'rails_real_favicon'
   gem 'spring', '~> 4.1.0'
   gem 'traceroute'
   gem 'web-console', '>= 3.3.0'
@@ -38,18 +46,17 @@ group :test do
   gem 'webdrivers'
 end
 
-gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
-
-group :development do
-  gem 'rails_real_favicon'
-end
-
 gem 'responders'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-tether', '>= 1.3.3'
 end
+
+gem 'bootstrap', '~> 5.2.2'
 gem 'bootstrap_form', '~> 5.1.0'
+gem 'sassc-rails', '~> 2.1.2'
+
+gem "font-awesome-sass", "~> 6.2.0"
 
 gem 'aws-sdk', '~> 3.1.0', group: :production
 gem 'image_processing', '~> 1.12.2'
@@ -57,8 +64,6 @@ gem 'image_processing', '~> 1.12.2'
 gem 'devise', '~> 4.8.0'
 gem 'devise_invitable', '~> 2.0.5'
 gem 'devise-pwned_password', '~> 0.1.9'
-
-gem 'turbo-rails', '~> 1.1.1'
 
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'fcf235020f3a41fb15827051c5b65309b622cf60'
 gem 'interstellar-next',
@@ -108,8 +113,6 @@ gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0', groups: %i[development]
 
 gem 'pagy'
 gem 'ransack', '~> 3.2.1'
-
-gem 'redis', '~> 4.7' # for Action Cable
 
 gem 'audited'
 gem 'noticed'
