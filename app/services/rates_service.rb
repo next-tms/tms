@@ -1,40 +1,47 @@
 # frozen_string_literal: true
 
 class RatesService
+  attr_reader :rates
+
   def initialize(broker_carrier:, shipment:, use_forced_freight_classes:)
     @broker_carrier = broker_carrier
+    @rates = []
     @shipment = shipment
     @use_forced_freight_classes = use_forced_freight_classes
   end
 
-  def to_rates
+  def call
     calculated_freight_classes = items.map(&:calculated_freight_class)
     forced_freight_classes = items.map(&:forced_freight_class)
 
-    return [] if calculated_freight_classes.blank? && forced_freight_classes.blank?
+    return if calculated_freight_classes.blank? && forced_freight_classes.blank?
 
-    unless @broker_carrier.pricing_rules.blank?
-      @broker_carrier
-        .pricing_rules
-        .where('min_pallets <= ?', @shipment.flattened_items.size)
-        .where('max_pallets >= ?', @shipment.flattened_items.size)
-        .find_each do |pricing_rule|
-        unless pricing_rule.carrier_area.from_area.zip_codes.include?(@shipment.shipper_address.zip_code) &&
-               pricing_rule.carrier_area.to_area.zip_codes.include?(@shipment.receiver_address.zip_code)
-          next
-        end
+    fetch_pricing_rule_rates
+    # fetch_api_rates
 
-        cost = Money.new(pricing_rule.cost_per_pallet * @shipment.flattened_items.size)
-        cost += @broker_carrier.quote_padding unless @broker_carrier.quote_padding.blank?
+    nil
+  end
 
-        rate = new_rate
-        rate.assign_attributes(cost:)
+  # @deprecated Use call, then rates
+  # @todo Remove
+  def to_rates
+    call
+    rates
+  end
 
-        return [rate]
-      end
-    end
+  private
 
-    return [] if @broker_carrier.as_interstellar_carrier.blank?
+  def combined_accessorials
+    @combined_accessorials ||= Accessorial
+                               .distinct
+                               .where(
+                                 id: @shipment.accessorials.pluck(:id) +
+                                     @shipment.assumed_accessorials.pluck(:id)
+                               )
+  end
+
+  def fetch_api_rates
+    return if @broker_carrier.as_interstellar_carrier.blank?
 
     response = nil
 
@@ -49,10 +56,11 @@ class RatesService
        !@broker_carrier.as_interstellar_carrier.find_rates_with_declared_value?
       error = StandardError.new('Carrier doesn’t support quoting shipments with declared value')
 
-      rate = new_rate
+      rate = build_rate(:api)
       rate.assign_attributes(error_object: error)
+      @rates << rate
 
-      return [rate]
+      return
     end
 
     api_shipment = Interstellar::Shipment.new(
@@ -80,29 +88,29 @@ class RatesService
         Honeybadger.notify(e, attributes)
       end
 
-      rate = new_rate
+      rate = build_rate(:api)
       rate.error_object = e
+      @rates << rate
 
-      return [rate]
+      return
     end
 
     interstellar_rates = response&.rates
 
     if interstellar_rates.blank?
-      rate = new_rate
+      rate = build_rate(:api)
       rate.assign_attributes(
         api_request: response&.request,
         api_response: response&.response,
         error_object: response&.error || StandardError.new('No rates returned from API')
       )
+      @rates << rate
 
-      return [rate]
+      return
     end
 
-    rates = []
-
     interstellar_rates.each do |interstellar_rate|
-      rate = new_rate
+      rate = build_rate(:api)
       rate.assign_attributes(
         api_request: response.request,
         api_response: response.response,
@@ -114,7 +122,7 @@ class RatesService
       unless cost.positive?
         rate.assign_attributes(error_object: StandardError.new('Cost was empty'))
 
-        rates << rate
+        @rates << rate
         next
       end
 
@@ -133,7 +141,7 @@ class RatesService
             )
           )
 
-          rates << rate
+          @rates << rate
           next
         end
 
@@ -154,30 +162,76 @@ class RatesService
         transit_days: interstellar_rate.transit_days
       )
 
-      rates << rate
+      @rates << rate
     end
 
-    rates
+    nil
   end
 
-  private
+  def fetch_pricing_rule_rates
+    return unless @broker_carrier.pricing_rules.any?
 
-  def combined_accessorials
-    @combined_accessorials ||= Accessorial
-                               .distinct
-                               .where(
-                                 id: @shipment.accessorials.pluck(:id) +
-                                     @shipment.assumed_accessorials.pluck(:id)
-                               )
+    from_locations = Location
+                     .where(zip_code: @shipment.shipper_address.zip_code)
+                     .or(
+                       Location.where(region: @shipment.shipper_address.region, zip_code: nil)
+                     )
+    to_locations = Location
+                   .where(zip_code: @shipment.receiver_address.zip_code)
+                   .or(
+                     Location.where(region: @shipment.receiver_address.region, zip_code: nil)
+                   )
+
+    return unless from_locations.present? && to_locations.present?
+
+    from_areas = Area.where(id: from_locations.map(&:areas).flatten.map(&:id))
+    to_areas = Area.where(id: to_locations.map(&:areas).flatten.map(&:id))
+
+    carrier_areas = @broker_carrier.carrier.carrier_areas.where(from_area: from_areas, to_area: to_areas)
+
+    return if carrier_areas.blank?
+
+    pallet_count = items.map(&:pallet_or_crate?).count(true)
+
+    carrier_areas.find_each do |carrier_area|
+      pricing_rule = @broker_carrier
+                     .pricing_rules
+                     .where(carrier_area:)
+                     .where('min_pallets <= ?', pallet_count)
+                     .where('max_pallets >= ?', pallet_count)
+                     .first
+
+      if pricing_rule.blank?
+        pricing_rule = @broker_carrier
+                       .pricing_rules
+                       .where(carrier_area:)
+                       .where('min_pallets <= ?', pallet_count)
+                       .where(max_pallets: nil)
+                       .first
+      end
+
+      next if pricing_rule.blank?
+
+      cost = (Money.new(pricing_rule.cost_per_pallet * pallet_count) if pricing_rule.cost_per_pallet.present?)
+
+      cost += @broker_carrier.quote_padding if cost.present? && @broker_carrier.quote_padding.present?
+
+      rate = build_rate(:pricing_rule)
+      rate.assign_attributes(cost:)
+      @rates << rate
+    end
+
+    nil
   end
 
-  def new_rate
+  def build_rate(source)
     Rate.new(
       accessorials: combined_accessorials,
       broker_carrier: @broker_carrier,
       broker_customer: @shipment.broker_customer,
       shipment_fingerprint: @shipment.fingerprint,
       shipment: @shipment,
+      source:,
       with_calculated_freight_classes: !@use_forced_freight_classes
     )
   end

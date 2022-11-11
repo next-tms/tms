@@ -85,6 +85,17 @@
             <%= link_to 'Details', broker_rate_breakdown_modal_path(rate), data: { 'turbo-frame': 'modal' }, class: 'btn btn-sm btn-outline-secondary' %>
           <% end %>
         </td>
+
+        <% if current_user.broker? %>
+          <td>
+            <% if rate.pricing_rule? %>
+              <%= icon 'solid', 'triangle-exclamation' %>
+            <% end %>
+
+            <%= enum_l(rate, :source) %>
+          </td>
+        <% end %>
+
         <td><%= rate.pretty_service_type %></td>
         <td>
           <% unless rate.transit_days.blank? %>

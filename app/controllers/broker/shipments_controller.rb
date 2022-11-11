@@ -568,15 +568,15 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def transit
-    unless current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
-      unauthorized and return
-    end
+    return if current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
+
+    unauthorized and return
   end
 
   def transit_edit
-    unless current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
-      unauthorized and return
-    end
+    return if current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
+
+    unauthorized and return
   end
 
   def delivery; end
@@ -623,7 +623,7 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     broker_carrier_ids += if @shipment.broker_customer.blank?
                             PricingRule
-                              .where(broker_carrier: @shipment.broker.broker_carriers.blanket.api_unconfigured.ids)
+                              .where(broker_carrier: @shipment.broker.broker_carriers.blanket.ids)
                               .pluck(:broker_carrier_id)
                           else
                             PricingRule

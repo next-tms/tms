@@ -63,6 +63,8 @@
 class Rate < ApplicationRecord
   include Apiable
 
+  enum source: { api: 'api', pricing_rule: 'pricing_rule' }
+
   scope :with_calculated_freight_classes, -> { where(with_calculated_freight_classes: true) }
   scope :with_forced_freight_classes, -> { where(with_calculated_freight_classes: false) }
   scope :with_error, -> { where.not(error: nil).where.not(error: '') }

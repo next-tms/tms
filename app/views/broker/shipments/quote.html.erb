@@ -18,10 +18,11 @@
     <table class="table table-borderless table-striped table-hover sortable">
       <thead>
         <tr>
-          <th>&nbsp;</th>
+          <th></th>
           <th>Carrier</th>
           <th>Quote</th>
           <th>Rate</th>
+          <th>Source</th>
           <th>Service</th>
           <th>Transit</th>
           <% if !@shipment.quote_only? && !@shipment.total_charges_cents == 0 %>
@@ -53,12 +54,13 @@
           <table class="table table-borderless table-striped table-hover sortable">
             <thead>
               <tr>
-                <% if !@shipment.quote_only? %>
-                  <th>&nbsp;</th>
+                <% unless @shipment.quote_only? %>
+                  <th></th>
                 <% end %>
                 <th>Carrier</th>
                 <th>Quote</th>
                 <th>Rate</th>
+                <th>Source</th>
                 <th>Service</th>
                 <th>Transit</th>
                 <% if !@shipment.quote_only? && !@shipment.total_charges_cents == 0 %>

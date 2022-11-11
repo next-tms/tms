@@ -1,2 +1,8 @@
 en:
   app_name: "Liftoff"
+  activerecord:
+    enums:
+      rate:
+        sources:
+          api: API
+          pricing_rule: Tariff

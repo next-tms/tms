@@ -28,10 +28,22 @@
 #  fk_rails_...  (country_id => countries.id)
 #
 class Region < ApplicationRecord
+  after_save :create_area
+
   belongs_to :country
 
   has_many :addresses
+  has_many :areas
+  has_many :locations
 
   validates :abbreviation, presence: true
   validates :name, presence: true
+
+  private
+
+  def create_area
+    area = Area.new(name: "#{name}, #{country.alpha2_code}")
+    area.locations.build(region: self)
+    area.save!
+  end
 end

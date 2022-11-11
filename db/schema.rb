@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_27_161357) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -347,6 +347,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_161357) do
     t.text "comments"
     t.bigint "broker_customer_id"
     t.bigint "broker_carrier_id"
+    t.boolean "primary", default: false
     t.index ["broker_carrier_id"], name: "index_contacts_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_contacts_on_broker_customer_id"
     t.index ["broker_id"], name: "index_contacts_on_broker_id"
@@ -437,6 +438,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_161357) do
     t.string "zip_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "region_id", null: false
+    t.index ["region_id"], name: "index_locations_on_region_id"
     t.index ["zip_code"], name: "index_locations_on_zip_code"
   end
 
@@ -629,6 +632,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_161357) do
     t.string "interstellar_service_type"
     t.string "error_object"
     t.json "breakdown"
+    t.string "source"
     t.index ["broker_carrier_id"], name: "index_rates_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_rates_on_broker_customer_id"
     t.index ["interstellar_service_type"], name: "index_rates_on_interstellar_service_type"
@@ -1031,6 +1035,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_161357) do
   add_foreign_key "document_preferences", "contacts"
   add_foreign_key "location_areas", "areas"
   add_foreign_key "location_areas", "locations"
+  add_foreign_key "locations", "regions"
   add_foreign_key "overlength_rules", "broker_carriers"
   add_foreign_key "payment_transactions", "broker_carriers"
   add_foreign_key "payment_transactions", "brokers"
