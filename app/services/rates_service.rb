@@ -17,7 +17,7 @@ class RatesService
     return if calculated_freight_classes.blank? && forced_freight_classes.blank?
 
     fetch_pricing_rule_rates
-    # fetch_api_rates
+    fetch_api_rates
 
     nil
   end
