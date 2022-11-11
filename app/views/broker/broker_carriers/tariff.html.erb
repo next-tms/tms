@@ -10,7 +10,7 @@
     <div class="form-group row">
       <label class="col-form-label col-sm-2">Overlength Rules</label>
         <div class="col-sm-10">
-        <p>Minimum length and max length are inclusive, leave max length blank to mean “anything longer than minimum length”</p>
+        <p>Minimum length and maximum length are inclusive. Leave maximum length blank to mean “anything longer than minimum length”</p>
 
         <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".overlength-rules-form-wrapper">
           <template data-nested-form-target="template">
@@ -41,7 +41,7 @@
     <div class="form-group row">
       <label class="col-form-label col-sm-2">Pallet Pricing Rules</label>
         <div class="col-sm-10">
-        <p>Minimum and max pallets are inclusive and required</p>
+        <p>Minimum pallet count and maximum pallet count are inclusive. Leave maximum pallet count blank to mean “anything more than minimum pallet count”</p>
         <%= f.fields_for :pricing_rules do |pricing_rules_form| %>
           <%= render 'pricing_rule_form', f: pricing_rules_form %>
         <% end %>

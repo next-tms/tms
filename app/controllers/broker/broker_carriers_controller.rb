@@ -108,7 +108,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     carrier_areas.each do |carrier_area|
       next unless @broker_carrier.pricing_rules.where(carrier_area:).blank?
 
-      @broker_carrier.pricing_rules.build(carrier_area:)
+      @broker_carrier.pricing_rules.build(carrier_area:, min_pallets: 1)
     end
   end
 
