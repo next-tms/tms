@@ -414,8 +414,9 @@ class Shipment < ApplicationRecord
 
   validates :load_id, uniqueness: { scope: :broker }
 
-  validate :future_pickup_by, if: -> { dispatch_pickup }
-  validate :pro_and_tracking_carrier_pro
+  validate :validate_future_pickup_by, if: -> { dispatch_pickup }
+  validate :validate_past_or_present_attributes
+  validate :validate_pro_and_tracking_carrier_pro
 
   def applied_rate_uid=(rate_uid)
     rate = Rate.find_by_uid(rate_uid)
@@ -973,13 +974,24 @@ class Shipment < ApplicationRecord
     @previous_changes = changes
   end
 
-  def future_pickup_by
+  def validate_future_pickup_by
     return unless pickup_by
 
     errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < DateTime.current
   end
 
-  def pro_and_tracking_carrier_pro
+  def validate_past_or_present_attributes
+    now = Time.current
+
+    %i[delivered_at out_for_delivery_at picked_up_at pickup_driver_assigned_at].each do |attribute|
+      val = public_send(attribute)
+      next unless val.present? && val > Time.current
+
+      errors.add(attribute, 'cannot be in the future')
+    end
+  end
+
+  def validate_pro_and_tracking_carrier_pro
     return unless pro_changed? || tracking_carrier_pro_changed?
 
     error = NotImplementedError
