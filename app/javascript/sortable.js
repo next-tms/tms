@@ -41,6 +41,17 @@
 
 // Retrieved 2022-11-10 https://github.com/tofsjonas/sortable
 
+// NOTE: Custom Handler for sorting table on turbo frame tag load
+document.addEventListener('turbo:before-fetch-response', function() {
+  console.log('before-fetch-response')
+
+  const el = document.getElementById('sortOnTurboFrameLoad')
+  if (el) {
+    el.click()
+    if (el.classList.value.includes('dir-d')) { el.click() } // Maintain one sorting order
+  }
+})
+
 document.addEventListener('click', function (e) {
   try {
     // allows for elements inside TH
@@ -65,6 +76,7 @@ document.addEventListener('click', function (e) {
     function getValue(element) {
       // If you aren't using data-sort and want to make it just the tiniest bit smaller/faster
       // comment this line and uncomment the next one
+      console.log(element);
       return (
         (alt_sort && element.getAttribute('data-sort-alt')) || element.getAttribute('data-sort') || element.innerText
       )
@@ -109,6 +121,8 @@ document.addEventListener('click', function (e) {
       rows.sort(function (a, b) {
         var x = getValue((reverse ? a : b).cells[column_index])
         var y = getValue((reverse ? b : a).cells[column_index])
+
+        console.log(x)
         return isNaN(x - y) ? x.localeCompare(y) : x - y
       })
 

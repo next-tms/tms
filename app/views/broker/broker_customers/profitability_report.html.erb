@@ -47,9 +47,15 @@
               <% end %>
             </td>
             <td><%= profitability_report[:total_shipments] %></td>
-            <td><%= humanized_money_with_symbol profitability_report[:total_cost], no_cents_if_whole: false %></td>
-            <td><%= humanized_money_with_symbol profitability_report[:total_charges], no_cents_if_whole: false %></td>
-            <td><%= humanized_money_with_symbol profitability_report[:total_profit], no_cents_if_whole: false %></td>
+            <td data-sort=<%= profitability_report[:total_cost] %>>
+              <%= humanized_money_with_symbol profitability_report[:total_cost], no_cents_if_whole: false %>
+            </td>
+            <td data-sort=<%= profitability_report[:total_charges]%>>
+              <%= humanized_money_with_symbol profitability_report[:total_charges], no_cents_if_whole: false %>
+            </td>
+            <td data-sort=<%= profitability_report[:total_profit]%>>
+              <%= humanized_money_with_symbol profitability_report[:total_profit], no_cents_if_whole: false %>
+            </td>
             <td>
               <% unless profitability_report[:total_margin].infinite? %>
                 <%= profitability_report[:total_margin]  %>%
