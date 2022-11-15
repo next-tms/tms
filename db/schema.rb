@@ -347,6 +347,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
     t.text "comments"
     t.bigint "broker_customer_id"
     t.bigint "broker_carrier_id"
+    t.boolean "primary", default: false
     t.index ["broker_carrier_id"], name: "index_contacts_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_contacts_on_broker_customer_id"
     t.index ["broker_id"], name: "index_contacts_on_broker_id"
@@ -684,7 +685,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
     t.string "abbreviation", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "iso31662", null: false
     t.index ["abbreviation"], name: "index_regions_on_abbreviation"
     t.index ["country_id"], name: "index_regions_on_country_id"
     t.index ["name"], name: "index_regions_on_name"
