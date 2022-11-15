@@ -91,6 +91,10 @@ gem 'timezone', '~> 1.3'
 gem 'quickbooks-ruby', '~> 1.0.21'
 gem 'stripe', '~> 6.5.0'
 
+gem 'bcrypt', '~> 3.1' # explicitly for GraphQL
+gem 'graphql', '~> 2.0'
+gem 'graphiql-rails', groups: %i[development]
+
 gem 'geocoder', '~> 1.8.1'
 gem 'google_places', '~> 2.0.0'
 gem 'mainstreet', git: 'https://github.com/brodyhoskins/mainstreet', ref: 'b8a57d132c89f872235183fdb6f16350fc2e308d'
