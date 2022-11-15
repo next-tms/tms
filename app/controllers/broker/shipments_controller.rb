@@ -227,12 +227,12 @@ class Broker::ShipmentsController < Broker::BrokerController
   def send_document
     contact_ids = @shipment.broker.users.broker.pluck(:contact_id)
 
-    if @shipment&.broker_customer&.contacts
-      contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer)&.ids
+    if @shipment&.broker_carrier&.contacts && params[:shipment_method] != 'broker_quote'
+      contact_ids += @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).ids
     end
 
-    if @shipment&.broker_carrier&.contacts
-      contact_ids += @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).ids
+    if @shipment&.broker_customer&.contacts && %w[carrier_quote dispatch_sheet].none?(params[:shipment_method])
+      contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer)&.ids
     end
 
     @contacts = Contact.distinct.where(id: contact_ids).order(:first_name)
