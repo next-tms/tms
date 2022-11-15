@@ -8,7 +8,7 @@
   <% if q %>
     <div class="col-auto float-right">
       <%= search_form_for(q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
-        <%= f.hidden_field :sorts, value: q.sorts %>
+        <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
 
         <% role_ids = if current_user.has_role?('root')
                         (Role.all.ids & ProblemType.where(id: Problem.where(assigned_to: current_user.broker.users.broker).pluck(:problem_type_id)).pluck(:role_id))
