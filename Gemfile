@@ -88,7 +88,7 @@ gem 'postmark-rails'
 gem 'simple_command'
 gem 'timezone', '~> 1.3'
 
-gem 'quickbooks-ruby', '~> 1.0.21'
+gem 'quickbooks-ruby', '~> 2.0'
 gem 'stripe', '~> 6.5.0'
 
 gem 'geocoder', '~> 1.8.1'
