@@ -23,7 +23,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'factory_bot_rails'
-  gem 'faker', '~> 2.23.0'
+  gem 'faker', '~> 3.0.0'
   gem 'pry'
   gem 'rspec-rails', '~> 6.0'
   gem 'shoulda-matchers', '5.2.0'
