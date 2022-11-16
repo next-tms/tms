@@ -347,7 +347,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
     t.text "comments"
     t.bigint "broker_customer_id"
     t.bigint "broker_carrier_id"
-    t.boolean "primary", default: false
     t.index ["broker_carrier_id"], name: "index_contacts_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_contacts_on_broker_customer_id"
     t.index ["broker_id"], name: "index_contacts_on_broker_id"
@@ -568,24 +567,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
     t.index ["min_pallets"], name: "index_pricing_rules_on_min_pallets"
   end
 
-  create_table "problem_types", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "code", null: false
-    t.bigint "role_id", null: false
-    t.string "resolvable_class_name"
-    t.string "resolvable_class_attribute_name"
-    t.string "resolves_when_class_attribute_is"
-    t.string "resolvable_class_since_attribute_name"
-    t.index ["name"], name: "index_problem_types_on_name"
-    t.index ["role_id"], name: "index_problem_types_on_role_id"
-  end
-
   create_table "problems", force: :cascade do |t|
     t.datetime "resolved_at"
     t.bigint "assigned_to_id", null: false
-    t.bigint "problem_type_id", null: false
     t.bigint "resolved_by_id"
     t.string "title"
     t.text "body"
@@ -593,9 +577,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
     t.datetime "updated_at", null: false
     t.string "resolvable_type"
     t.bigint "resolvable_id"
+    t.string "problematic_rule_code", null: false
     t.index ["assigned_to_id"], name: "index_problems_on_assigned_to_id"
     t.index ["body"], name: "index_problems_on_body"
-    t.index ["problem_type_id"], name: "index_problems_on_problem_type_id"
     t.index ["resolvable_type", "resolvable_id"], name: "index_problems_on_resolvable"
     t.index ["resolved_at"], name: "index_problems_on_resolved_at"
     t.index ["resolved_by_id"], name: "index_problems_on_resolved_by_id"
@@ -1056,8 +1040,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
   add_foreign_key "preferred_broker_carriers", "broker_customers"
   add_foreign_key "pricing_rules", "broker_carriers"
   add_foreign_key "pricing_rules", "carrier_areas"
-  add_foreign_key "problem_types", "roles"
-  add_foreign_key "problems", "problem_types"
   add_foreign_key "problems", "users", column: "assigned_to_id"
   add_foreign_key "problems", "users", column: "resolved_by_id"
   add_foreign_key "rate_accessorials", "accessorials"

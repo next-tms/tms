@@ -20,11 +20,7 @@
               <th><%= sort_link q, :resolved_at, 'Closed' %>
             <% end %>
 
-            <% if current_user.has_role?('root') %>
-              <th><%= sort_link q, :problem_type_role_name, 'Team' %>
-            <% end %>
-
-            <th><%= sort_link q, :problem_type_id, 'Issue' %></th>
+            <th><%= sort_link q, :problematic_rule_code, 'Issue' %></th>
             <th>
               <span class="text-nowrap"><%= sort_link q, :assigned_to_first_name, 'Assigned To' %></span>
             </th>
@@ -54,7 +50,7 @@
 
               <% if controller.controller_name == 'problems' %>
                 <td>
-                  <%= link_to "#{problem.resolvable.model_name.human} #{problem.resolvable.to_param}",
+                  <%= link_to problem.resolvable.to_param,
                               [:broker, problem.resolvable],
                               target: '_blank'
                   %>
@@ -67,11 +63,7 @@
                 <td class="text-nowrap"><%= pretty_date(problem.resolved_at, current_user.time_zone) %></td>
               <% end %>
 
-              <% if current_user.has_role?('root') %>
-                <td><%= problem.problem_type.role.name.humanize.downcase %></td>
-              <% end %>
-
-              <td><%= problem.problem_type.name %></td>
+              <td><%= problem.problematic_rule_code.humanize.downcase %></td>
 
               <td class="text-nowrap"><%= icon 'solid', 'user-circle', problem.assigned_to.full_name %></td>
 

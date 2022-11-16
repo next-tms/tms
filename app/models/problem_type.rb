@@ -1,51 +1,5 @@
 # frozen_string_literal: true
 
-# == Schema Information
-#
-# Table name: problem_types
-#
-# @!attribute id
-#   @return []
-# @!attribute code
-#   @return [String]
-# @!attribute name
-#   @return [String]
-# @!attribute created_at
-#   @return [Time]
-# @!attribute updated_at
-#   @return [Time]
-# @!attribute role_id
-#   @return []
-#
-# Indexes
-#
-#  index_problem_types_on_name     (name)
-#  index_problem_types_on_role_id  (role_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (role_id => roles.id)
-#
+# @deprecated Removed, only exists for historical reasons
 class ProblemType < ApplicationRecord
-  belongs_to :role
-
-  # Cannot use "not" as prefix
-  enum resolves_when_class_attribute_is: {
-    attached: 'attached',
-    blank: 'blank',
-    blank_false: 'blank_false',
-    zero_false: 'zero_false'
-  }
-
-  has_many :problems
-
-  validates :name, uniqueness: true
-
-  def role_name
-    role.name
-  end
-
-  def role_name=(name)
-    self.role = Role.find_by_name(name)
-  end
 end

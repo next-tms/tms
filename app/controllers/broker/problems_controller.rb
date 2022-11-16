@@ -2,10 +2,11 @@
 
 class Broker::ProblemsController < Broker::BrokerController
   before_action :set_problem, only: %i[edit show update]
+  before_action :set_scoped_problems, only: %i[index resolved unresolved]
   before_action :authenticate_user!
 
   def index
-    @q = current_user.eligible_problems.problems.includes(required_includes).ransack(params[:q])
+    @q = @scoped_problems.includes(required_includes).ransack(params[:q])
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
@@ -43,7 +44,7 @@ class Broker::ProblemsController < Broker::BrokerController
   end
 
   def resolved
-    @q = current_user.eligible_problems.resolved.includes(required_includes + %i[resolved_by]).ransack(params[:q])
+    @q = @scoped_problems.resolved.includes(required_includes + %i[resolved_by]).ransack(params[:q])
     @q.sorts = 'resolved_at desc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
@@ -52,7 +53,7 @@ class Broker::ProblemsController < Broker::BrokerController
   def show; end
 
   def unresolved
-    @q = current_user.eligible_problems.unresolved.includes(required_includes).ransack(params[:q])
+    @q = @scoped_problems.unresolved.includes(required_includes).ransack(params[:q])
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
@@ -78,10 +79,10 @@ class Broker::ProblemsController < Broker::BrokerController
   end
 
   def required_includes
-    [
-      :resolvable,
-      :assigned_to,
-      problem_type: [:role]
-    ]
+    %i[assigned_to resolvable]
+  end
+
+  def set_scoped_problems
+    @scoped_problems = current_user.has_role?('root') ? Problem : current_user.problems
   end
 end

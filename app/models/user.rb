@@ -239,14 +239,6 @@ class User < ApplicationRecord
     User.where(id: UserRole.where(role: scope).where(user: broker.users.broker).pluck(:user_id))
   end
 
-  def eligible_problems
-    return nil unless broker?
-
-    return Problem.where(assigned_to: broker.users.broker) if has_role?('root')
-
-    Problem.where(assigned_to: coworkers)
-  end
-
   def shipments
     return broker_customer.shipments if customer?
 

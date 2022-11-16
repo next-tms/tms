@@ -60,7 +60,7 @@
 class Receivable < ApplicationRecord
   include Receivable::QuickbooksSyncable
 
-  after_save :resolve_problems
+  include Problematic
 
   before_save :set_authorized_at
   before_save :set_invoiced
@@ -222,17 +222,6 @@ class Receivable < ApplicationRecord
   end
 
   private
-
-  def resolve_problems
-    return unless sent?
-
-    problem_types = ProblemType.where(code: %i[missing_carrier_bol missing_carrier_pod])
-    problems = Problem.unresolved.where(problem_type: problem_types, resolvable: shipment)
-
-    return true unless problems.any?
-
-    problems.update_all(resolved_at: DateTime.current, resolved_by_id: nil)
-  end
 
   def set_authorized_at
     unless authorized_at.blank? && broker_customer.broker.intuit_account&.connected? && !quickbooks_invoice.blank?

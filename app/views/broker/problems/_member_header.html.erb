@@ -17,7 +17,7 @@
       <tbody>
         <tr>
           <td class="lead">
-            <%= @problem.problem_type.role.name.humanize %>
+            <%= @problem.problematic_rule_code.humanize.capitalize %>
           </td>
 
           <td class="lead">
@@ -33,8 +33,7 @@
           </td>
 
           <td class="lead">
-            <%= @problem.problem_type.resolvable_class_name %>
-            <%= @problem.problem_type.name %>
+            <%= @problem.problematic_rule_code.humanize %>
           </td>
         </tr>
       </tbody>

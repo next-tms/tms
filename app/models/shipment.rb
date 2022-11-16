@@ -199,9 +199,8 @@ class Shipment < ApplicationRecord
   include Shipment::HasPaymentTransactions
   include Shipment::HasReceivables
   include Shipment::Interstellarable
-  include Shipment::Problematic
 
-  include Resolvable
+  include Problematic
 
   attr_accessor :dispatch_pickup
   attr_reader :previous_changes

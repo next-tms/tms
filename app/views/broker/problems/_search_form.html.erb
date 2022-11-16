@@ -10,23 +10,14 @@
       <%= search_form_for(q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
 
-        <% role_ids = if current_user.has_role?('root')
-                        (Role.all.ids & ProblemType.where(id: Problem.where(assigned_to: current_user.broker.users.broker).pluck(:problem_type_id)).pluck(:role_id))
-                      else
-                        (current_user.roles.ids & ProblemType.where(id: Problem.where(assigned_to: current_user.broker.users.broker).pluck(:problem_type_id)).pluck(:role_id))
-                      end
+        <% problematic_rule_codes = if current_user.has_role?('root')
+                                      Problem.distinct.pluck(:problematic_rule_code)
+                                    else
+                                      current_user.problems.distinct.pluck(:problematic_rule_code)
+                                    end
         %>
-
-        <% if role_ids.size > 1 %>
-          <%= f.select :problem_type_role_id_eq,
-                       Role.where(id: role_ids).order(:name).collect { |t| [t.name.humanize.downcase, t.id] },
-                       { include_blank: 'Team' },
-                       class: 'form-control form-select mr-2'
-          %>
-        <% end %>
-
-        <%= f.select :problem_type_id_eq,
-                     ProblemType.where(role_id: role_ids).order(:name).collect { |t| [t.name, t.id] },
+        <%= f.select :problematic_rule_code_eq,
+                     problematic_rule_codes.sort.collect { |c| [c.humanize.downcase, c] },
                      { include_blank: 'Issue' },
                      class: 'form-control form-select mr-2'
         %>
