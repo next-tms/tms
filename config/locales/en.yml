@@ -3,6 +3,8 @@ en:
   activerecord:
     attributes:
       shipment:
+        carrier_bol: Scanned Bill of Lading
+        carrier_pod: Proof of Delivery
         total_charges: Charge
         total_cost: Cost
     enums:

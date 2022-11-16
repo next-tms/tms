@@ -70,6 +70,8 @@ module Shipment::HasReceivables
       return false unless problems.any? && broker_customer.present?
 
       requirements = {
+        missing_carrier_bol: broker_customer.requires_carrier_bol_on_receivables?,
+        missing_carrier_pod: broker_customer.requires_carrier_pod_on_receivables?,
         missing_charges_confirmed: broker_customer.requires_charges_confirmed_on_receivables?,
         missing_customer_reference_number: broker_customer.requires_customer_reference_number_on_receivables?,
         missing_shipper_reference: broker_customer.requires_shipment_shipper_reference_on_receivables?
@@ -80,7 +82,7 @@ module Shipment::HasReceivables
       return false unless requirements.values.any?(true)
 
       requirements.keys.select { |key| requirements[key] == true }.each do |problematic_rule_code|
-        return true if problematic_rule_codes.include?(problematic_rule_code)
+        return true if problematic_rule_codes.include?(problematic_rule_code.to_s)
       end
 
       false
