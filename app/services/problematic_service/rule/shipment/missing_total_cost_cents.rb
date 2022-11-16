@@ -5,7 +5,7 @@ module ProblematicService
     ROLES = %i[dispatch root].freeze
 
     def humanized(*)
-      'missing cost'
+      "Missing #{Shipment.human_attribute_name(:total_cost).downcase}"
     end
 
     def problematic?

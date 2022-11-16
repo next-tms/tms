@@ -1,6 +1,10 @@
 en:
   app_name: "Liftoff"
   activerecord:
+    attributes:
+      shipment:
+        total_charges: Charge
+        total_cost: Cost
     enums:
       rate:
         sources:
