@@ -14,7 +14,7 @@ class InterstellarDocumentService
 
       attach_document(type: :bol, document: interstellar_document_response, shipment:)
       deliver_mail_to_contacts(shipment:, type: :carrier_bol)
-      resolve_problems(type: :missing_carrier_bol, shipment:)
+      shipment.problematic!
 
       true
     end
@@ -29,7 +29,7 @@ class InterstellarDocumentService
 
       attach_document(type: :pod, document: interstellar_document_response, shipment:)
       deliver_mail_to_contacts(shipment:, type: :carrier_pod)
-      resolve_problems(type: :missing_carrier_pod, shipment:)
+      shipment.problematic!
 
       true
     end
@@ -62,7 +62,7 @@ class InterstellarDocumentService
 
       blob = ActiveStorage::Blob.create_and_upload!(
         io: StringIO.new(document.data),
-        filename: "#{shipment.load_id} #{type.upcase} (Carrier).#{Rack::Mime::MIME_TYPES.invert[document.content_type]}",
+        filename: "#{shipment.load_id} #{type.upcase} (Carrier)#{Rack::Mime::MIME_TYPES.invert[document.content_type]}",
         content_type: document.content_type
       )
       attachment.attach(blob)
@@ -89,15 +89,6 @@ class InterstellarDocumentService
 
         ContactMailer.send(type, from_user: nil, to_contact: contact, shipment:).deliver_later
       end
-    end
-
-    def resolve_problems(type:, shipment:)
-      problem_type = ProblemType.find_by_code(type.to_s)
-      problems = Problem.where(problem_type:, resolvable: shipment)
-
-      return if problems.blank?
-
-      problems.update_all(resolved_at: DateTime.current, resolved_by_id: nil)
     end
   end
 end
