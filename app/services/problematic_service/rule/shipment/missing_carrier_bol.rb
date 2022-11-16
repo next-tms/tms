@@ -17,7 +17,8 @@ module ProblematicService
         record.broker_customer.blank? ||
         !record.broker_customer.requires_carrier_bol_on_receivables? ||
         record.canceled_at.present? ||
-        record.picked_up_at.blank?
+        record.picked_up_at.blank? ||
+        (record.broker_carrier&.carrier&.consider_bol_and_pod_documents_same? && record.carrier_pod.attached?)
     end
 
     def roles
