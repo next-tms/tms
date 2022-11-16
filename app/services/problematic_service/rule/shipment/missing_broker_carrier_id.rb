@@ -9,11 +9,11 @@ module ProblematicService
     end
 
     def problematic?
-      !resolvable?
+      record.broker_carrier_id.blank? && !resolvable?
     end
 
     def resolvable?
-      record.broker_carrier.present?
+      record.broker_carrier_id.present? || record.booked_at.blank? || record.canceled_at.present?
     end
 
     def roles
