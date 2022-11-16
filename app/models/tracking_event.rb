@@ -62,8 +62,6 @@ class TrackingEvent < ApplicationRecord
 
   attr_writer :at_without_time_zone_string
 
-  after_create :maybe_create_problem
-
   before_create :set_public
 
   belongs_to :event
@@ -94,34 +92,6 @@ class TrackingEvent < ApplicationRecord
   end
 
   private
-
-  def maybe_create_problem
-    return if problem_type.blank?
-
-    # TODO: Use shipment.dispatcher when implemented
-    assigned_to = Role
-                  .find_by_name('dispatch')
-                  .users
-                  .broker
-                  .where(broker: shipment.broker)
-                  .order(Arel.sql('RANDOM()'))
-                  &.last
-
-    if assigned_to.blank?
-      assigned_to = Role
-                    .find_by_name('root')
-                    .users
-                    .broker
-                    .where(broker: shipment.broker)
-                    .order(Arel.sql('RANDOM()'))
-                    &.last
-    end
-
-    title = "Load #{shipment.load_id} #{event.name}"
-    body = "Load #{shipment.load_id} is #{event.name} per #{shipment.broker_carrier.carrier.name} API"
-
-    Problem.create(assigned_to:, body:, problem_type:, resolvable: shipment, title:)
-  end
 
   def set_public
     return if event.blank?
