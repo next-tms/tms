@@ -517,39 +517,41 @@ class Shipment < ApplicationRecord
   end
 
   def delivery_from
-    from = promised_delivery_by || delivery_appointment_at || delivery_appointment_on || delivery_eta_on
+    tz = receiver_address&.time_zone
+    return nil if tz.blank?
 
-    if from.blank? && !pickup_by.blank?
-      from = pickup_by.in_time_zone(receiver_address.time_zone.name) + 7.days
-      from = from.beginning_of_day + 9.hours
+    from = promised_delivery_by.presence || delivery_appointment_at.presence || delivery_appointment_on.presence || delivery_eta_on.presence
+    return from if from.present? && !from.is_a?(Date)
+
+    if from.is_a?(Date)
+      return from.in_time_zone(tz).beginning_of_day + 9.hours unless delivery_hours_start_at.present?
+
+      formatted_offset = Time.current.in_time_zone(tz).formatted_offset
+      return DateTime.parse("#{from} #{delivery_hours_start_at} #{formatted_offset}")
     end
 
-    return nil if from.blank?
-    return nil if from.is_a?(Date) && delivery_hours_start_at.blank?
-    return nil if receiver_address&.time_zone.blank?
+    return 5.business_days.after(pickup_from.in_time_zone(tz)).beginning_of_day + 9.hours if pickup_from.present?
 
-    formatted_offset = DateTime.now.in_time_zone(receiver_address.time_zone.name).formatted_offset
-    return DateTime.parse("#{from} #{delivery_hours_start_at} #{formatted_offset}") if from.is_a?(Date)
-
-    from
+    nil
   end
 
   def delivery_by
-    by = promised_delivery_by || delivery_appointment_at || delivery_appointment_on || delivery_eta_on
+    tz = receiver_address&.time_zone
+    return nil if tz.blank?
 
-    if by.blank? && !pickup_by.blank?
-      by = pickup_by.in_time_zone(receiver_address.time_zone.name) + 7.days
-      by = by.beginning_of_day + 17.hours
+    by = promised_delivery_by.presence || delivery_appointment_at.presence || delivery_appointment_on.presence || delivery_eta_on.presence
+    return by if by.present? && !by.is_a?(Date)
+
+    if by.is_a?(Date)
+      return by.in_time_zone(tz).beginning_of_day + 17.hours unless delivery_hours_end_at.present?
+
+      formatted_offset = Time.current.in_time_zone(tz).formatted_offset
+      return DateTime.parse("#{by} #{delivery_hours_end_at} #{formatted_offset}")
     end
 
-    return nil if by.blank?
-    return nil if by.is_a?(Date) && delivery_hours_end_at.blank?
-    return nil if receiver_address&.time_zone.blank?
+    return 5.business_days.after(pickup_by.in_time_zone(tz)).beginning_of_day + 17.hours if pickup_by.present?
 
-    formatted_offset = DateTime.now.in_time_zone(receiver_address.time_zone.name).formatted_offset
-    return DateTime.parse("#{by} #{delivery_hours_end_at} #{formatted_offset}") if by.is_a?(Date)
-
-    by
+    nil
   end
 
   def pickup_from

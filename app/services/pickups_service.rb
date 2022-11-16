@@ -48,15 +48,13 @@ class PickupsService
       phone: @pickup.dispatcher.phone
     )
 
-    delivery_from = (@shipment.delivery_from || (@shipment.pickup_by + 5.business_days))
-
     error = nil
 
     begin
       response = InterstellarApiClient.create_pickup(
         broker_carrier: @broker_carrier,
-        delivery_from: delivery_from.in_time_zone(@shipment.receiver_address.time_zone),
-        delivery_to: @shipment.delivery_by.in_time_zone(@shipment.receiver_address.time_zone),
+        delivery_from: @shipment.delivery_from,
+        delivery_to: @shipment.delivery_by,
         dispatcher: interstellar_dispatcher,
         pickup_from: @shipment.pickup_from.in_time_zone(@shipment.shipper_address.time_zone),
         pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
