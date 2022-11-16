@@ -6,9 +6,6 @@
   create_payments:
     cron: '15 */2 * * *'
     class: CreatePaymentsJob
-  create_problems:
-    cron: '*/15 * * * *'
-    class: CreateProblemsJob
   create_receivables:
     cron: '10 */2 * * *'
     class: CreateReceivablesJob
@@ -30,9 +27,6 @@
   push_receivables_to_quickbooks:
     cron: '*/90 * * * *'
     class: PushReceivablesToQuickbooksJob
-  resolve_problems:
-    cron: '*/15 * * * *'
-    class: ResolveProblemsJob
   track_shipments_pending_delivery:
     cron: '*/30 * * * *'
     class: TrackShipmentsPendingDeliveryJob
