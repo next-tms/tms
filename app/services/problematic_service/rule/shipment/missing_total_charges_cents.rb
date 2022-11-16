@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ProblematicService
-  class Rule::Shipment::MissingTotalChargeCents < Rule::Shipment
+  class Rule::Shipment::MissingTotalChargesCents < Rule::Shipment
     ROLES = %i[dispatch root].freeze
 
     def humanized(*)
