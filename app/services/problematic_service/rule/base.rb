@@ -14,10 +14,7 @@ module ProblematicService
       problems = record.problems.where(problematic_rule_code: code)
 
       if resolvable?
-        problems.unresolved.update_all(
-          resolved_at: Time.current,
-          resolved_by_id: record.updated_by.id
-        )
+        problems.unresolved.update_all(resolved_at: Time.current, resolved_by_id: record.updated_by&.id)
 
         return record.problems unless problematic?
       end
@@ -78,7 +75,7 @@ module ProblematicService
       return assigned_to unless assigned_to.blank?
 
       Rails.logger.warn <<~WARN.squish
-        Unable to find User with broker=(name: \"#{record.broker.name}\"),
+        Unable to find User with broker=(name: "#{record.broker.name}"),
                                  role=(name: [#{roles.pluck(:name).join(', ')}])
       WARN
 
