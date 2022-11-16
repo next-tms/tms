@@ -13,9 +13,12 @@ module ProblematicService
     end
 
     def resolvable?
-      record.delivered_at.blank? ||
-      record.picked_up_at.blank? ||
-      (record.broker_customer.blank? || (record.broker_customer.requires_charges_confirmed_on_receivables? && record.charges_confirmed?))
+      record.broker_customer.blank? ||
+        !record.broker_customer.requires_charges_confirmed_on_receivables? ||
+        record.canceled_at.present? ||
+        record.charges_confirmed? ||
+        record.picked_up_at.blank? ||
+        record.receivables.any?
     end
 
     def roles

@@ -5,15 +5,15 @@ module ProblematicService
     ROLES = %i[dispatch root].freeze
 
     def humanized(*)
-      'missing cost'
+      'missing charge'
     end
 
     def problematic?
-      record.picked_up? && !resolvable?
+      record.total_charge_cents.blank? && !resolvable?
     end
 
     def resolvable?
-      !record.picked_up? || record.total_charge_cents.present? || record.canceled_at.present?
+      (record.total_charge_cents.present? && record.picked_up_at.blank?) || record.canceled_at.present?
     end
 
     def roles

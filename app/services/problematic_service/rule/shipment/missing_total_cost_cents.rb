@@ -9,11 +9,11 @@ module ProblematicService
     end
 
     def problematic?
-      record.picked_up? && !resolvable?
+      record.total_cost_cents.blank? && !resolvable?
     end
 
     def resolvable?
-      !record.picked_up? || record.total_cost_cents.present? || record.canceled_at.present?
+      record.total_cost_cents.present? || record.picked_up_at.blank? || record.canceled_at.present?
     end
 
     def roles
