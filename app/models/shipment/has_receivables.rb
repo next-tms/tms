@@ -57,47 +57,33 @@ module Shipment::HasReceivables
     end
 
     def receivable?
-      self.reload
+      reload
 
-      return false unless receivables.blank?
-      return false if broker_customer.blank? || picked_up_at.blank?
-      return false if broker_customer.receivables_schedule == 'never'
-      return false if broker_customer.requires_shipment_delivery_before_receivable? && delivered_at.blank?
-
-      if requires_customer_reference_number_on_receivables? && customer_reference.blank?
-        create_missing_reference_problem(kind: 'customer_reference') and return false
-      end
-
-      if requires_shipper_reference_number_on_receivables? && shipper_reference.blank?
-        create_missing_reference_problem(kind: 'shipper_reference') and return false
-      end
+      return false if receivables.any? || broker_customer.blank? || picked_up_at.blank? || broker_customer.receivables_schedule == 'never' ||
+                      (broker_customer.requires_shipment_delivery_before_receivable? && delivered_at.blank?) ||
+                      problems_preventing_receivable?
 
       true
     end
 
-    def create_missing_reference_problem(kind:)
-      title = "Load #{load_id} missing #{kind.humanize} no"
-      body = "Load #{load_id} is required to have #{kind.humanize} no before creating a receivable"
+    def problems_preventing_receivable?
+      return false unless problems.any? && broker_customer.present?
 
-      Problem.create(
-        assigned_to: self.dispatcher,
-        body:,
-        problem_type: missing_reference_number_problem_type(kind: kind),
-        resolvable: self,
-        title:
-      )
-    end
+      requirements = {
+        missing_charges_confirmed: broker_customer.requires_charges_confirmed_on_receivables?,
+        missing_customer_reference_number: broker_customer.requires_customer_reference_number_on_receivables?,
+        missing_shipper_reference: broker_customer.requires_shipment_shipper_reference_on_receivables?
+      }
 
-    def missing_reference_number_problem_type(kind:)
-      ProblemType.find_or_create_by(
-        role: Role.find_by(name: 'dispatch'),
-        code: "missing_#{kind}_number",
-        name: "missing #{kind.humanize.downcase} number",
-        resolvable_class_attribute_name: kind,
-        resolvable_class_name: 'Shipment',
-        resolvable_class_since_attribute_name: 'dispatched_at',
-        resolves_when_class_attribute_is: 'blank_false',
-      )
+      problematic_rule_codes = problems.pluck(:problematic_rule_code)
+
+      return false unless requirements.values.any?(true)
+
+      requirements.keys.select { |key| requirements[key] == true }.each do |problematic_rule_code|
+        return true if problematic_rule_codes.include?(problematic_rule_code)
+      end
+
+      false
     end
   end
 end

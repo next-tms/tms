@@ -13,10 +13,7 @@ module ProblematicService
     end
 
     def resolvable?
-      record.broker_carrier.blank? ||
-        record.pro.present? ||
-        record.canceled_at.present? ||
-        record.delivered_at.present?
+      record.picked_up_at.blank? || record.delivered_at.present? || record.broker_carrier.blank? || record.pro.present? || record.canceled_at.present?
     end
 
     def roles

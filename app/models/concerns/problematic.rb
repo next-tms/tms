@@ -6,6 +6,8 @@ module Problematic
   included do
     after_commit :problematic!
 
+    has_many :problems, as: :resolvable
+
     class << self
       def problematic_processor
         "ProblematicService::Processor::#{name}".constantize
