@@ -5,7 +5,7 @@ module ProblematicService
     ROLES = %i[dispatch].freeze
 
     def humanized(*)
-      "missing #{record.tracking_carrier.carrier.name} tracking number"
+      "missing #{record.tracking_carrier.name} tracking number"
     end
 
     def problematic?
