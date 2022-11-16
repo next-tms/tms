@@ -5,7 +5,7 @@ module ProblematicService
     ROLES = %i[dispatch root].freeze
 
     def humanized(*)
-      'missing pickup confirmation number'
+      "Missing #{Shipment.human_attribute_name(:pickup_confirmation).downcase}"
     end
 
     def problematic?
@@ -14,6 +14,7 @@ module ProblematicService
 
     def resolvable?
       record.pickup_confirmation.present? ||
+        record.booked_at.blank? ||
         record.dispatched_at.blank? ||
         record.picked_up_at.present? ||
         record.delivered_at.present? ||

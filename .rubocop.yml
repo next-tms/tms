@@ -4,6 +4,9 @@ AllCops:
 Layout/LineLength:
   Max: 120
 
+Layout/MultilineOperationIndentation:
+  Enabled: false
+
 Lint/UnusedMethodArgument:
   Enabled: false
 

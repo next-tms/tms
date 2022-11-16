@@ -3,8 +3,13 @@ en:
   activerecord:
     attributes:
       shipment:
+        broker_carrier: Carrier
         carrier_bol: Scanned Bill of Lading
         carrier_pod: Proof of Delivery
+        customer_reference: "PO #"
+        pickup_confirmation: "PU #"
+        pro: "Pro #"
+        shipper_reference: "SO #"
         total_charges: Charge
         total_cost: Cost
     enums:

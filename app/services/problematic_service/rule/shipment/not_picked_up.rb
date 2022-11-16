@@ -15,9 +15,7 @@ module ProblematicService
     end
 
     def resolvable?
-      return true if record.pickup_by.blank?
-
-      record.picked_up_at.present?
+      record.picked_up_at.present? || record.booked_at.blank? || record.delivered_at.present?
     end
 
     def roles

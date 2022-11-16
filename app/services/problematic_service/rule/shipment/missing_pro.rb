@@ -5,15 +5,22 @@ module ProblematicService
     ROLES = %i[dispatch].freeze
 
     def humanized(*)
-      'missing tracking number'
+      return "Missing #{Shipment.human_attribute_name(:pro).downcase}" if record.broker_carrier.blank?
+
+      "Missing #{record.broker_carrier.carrier.name} #{Shipment.human_attribute_name(:pro).downcase}"
     end
 
     def problematic?
-      record.broker_carrier.present? && record.pro.blank? && !resolvable?
+      record.pro.blank? && !resolvable?
     end
 
     def resolvable?
-      record.picked_up_at.blank? || record.delivered_at.present? || record.broker_carrier.blank? || record.pro.present? || record.canceled_at.present?
+      record.pro.present? ||
+      record.booked_at.blank? ||
+      record.broker_carrier.blank? ||
+      record.canceled_at.present? ||
+      record.delivered_at.present? ||
+      record.picked_up_at.blank?
     end
 
     def roles
