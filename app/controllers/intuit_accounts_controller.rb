@@ -15,28 +15,29 @@ class IntuitAccountsController < ApplicationController
   end
 
   def oauth_callback
-    if params[:state].present?
-      broker = Broker.find_by_uuid(params[:state])
-      redirect_uri = oauth_callback_intuit_account_url_with_host
-      response = intuit_oauth2_client.auth_code.get_token(params[:code], redirect_uri:)
-
-      if response
-        intuit_account = broker.intuit_account || broker.build_intuit_account
-
-        intuit_account.assign_attributes(
-          encrypted_oauth2_access_token: response.token,
-          encrypted_oauth2_refresh_token: response.refresh_token,
-          realm_id: params[:realmId]
-        )
-
-        intuit_account.save
-
-        FetchBrokerCustomerQuickbooksCustomerIdsJob.perform_later(broker:)
-        FetchBrokerCarrierQuickbooksVendorIdsJob.perform_later(broker:)
-
-        flash[:success] = 'QuickBooks has been connected; data is being synced behind the scene'
-      end
+    %i[code state realmId].each do |key|
+      raise ActionController::RoutingError, 'Missing required parameter(s)' unless params[key].present?
     end
+
+    broker = Broker.find_by_uuid(params[:state])
+    redirect_uri = oauth_callback_intuit_account_url_with_host
+    response = intuit_oauth2_client.auth_code.get_token(params[:code], redirect_uri:)
+
+    raise ActionController::RoutingError, 'Invalid response' unless response
+
+    intuit_account = broker.intuit_account || broker.build_intuit_account
+
+    intuit_account.assign_attributes(
+      encrypted_oauth2_access_token: response.token,
+      encrypted_oauth2_refresh_token: response.refresh_token,
+      realm_id: params[:realmId]
+    )
+    intuit_account.save!
+
+    FetchBrokerCustomerQuickbooksCustomerIdsJob.perform_later(broker:)
+    FetchBrokerCarrierQuickbooksVendorIdsJob.perform_later(broker:)
+
+    flash[:success] = 'QuickBooks has been connected; data is being synced behind the scenes'
 
     redirect_to 'http://localhost:3000/' and return if Rails.env.development?
 
