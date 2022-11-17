@@ -27,7 +27,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <link rel="preload" href="https://ga.jspm.io/npm:flatpickr@4.6.9/dist/flatpickr.min.css" as="style">
+    <link rel="stylesheet" href="https://ga.jspm.io/npm:flatpickr@4.6.13/dist/flatpickr.min.css">
 
     <% if yield(:prefetch_urls_csv) %>
       <% yield(:prefetech_urls_csv).split(', ').each do |url| %>
