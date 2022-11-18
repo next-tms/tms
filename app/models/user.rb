@@ -206,7 +206,9 @@ class User < ApplicationRecord
     @role_names ||= roles.pluck(:name)
     return true if @role_names.include?('root')
 
-    return true if customer? && role_name == 'accounts_payable' && broker_customer.primary_receivables_contact == contact
+    if customer? && role_name == 'accounts_payable' && broker_customer.primary_receivables_contact == contact
+      return true
+    end
 
     @role_names << 'broker' if broker?
     @role_names << 'customer' if customer?
@@ -314,5 +316,17 @@ class User < ApplicationRecord
     return if broker.blank?
 
     self.time_zone_name = broker.time_zone_name
+  end
+
+  protected
+
+  # @note For Devise trackable
+  def extract_ip_from(request)
+    header = request.headers['Fly-Client-IP'].presence || request.headers['X-Forwarded-For']
+
+    return request.remote_ip unless header.present?
+
+    header = header.split(',')[0].strip if header.include?(',')
+    header
   end
 end
