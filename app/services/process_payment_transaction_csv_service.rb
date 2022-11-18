@@ -39,14 +39,14 @@ class ProcessPaymentTransactionCsvService
 
       payment_transaction = PaymentTransaction
                             .where(broker: current_user.broker)
-                            .where(broker_carrier: broker_carrier)
+                            .where(broker_carrier:)
                             .where(pro:)
                             &.first
       payment_transaction = nil if payment_transaction&.payment&.paid?
 
       if payment_transaction.blank?
         payment_transaction = PaymentTransaction.new(
-          broker_carrier: broker_carrier,
+          broker_carrier:,
           created_by: current_user,
           invoice:,
           pro:
@@ -64,7 +64,7 @@ class ProcessPaymentTransactionCsvService
       return self
     end
 
-    message =  build_success_message(saved_payment_transactions_count)
+    @message = build_success_message(saved_payment_transactions_count)
     @status = :success
 
     self
@@ -73,29 +73,26 @@ class ProcessPaymentTransactionCsvService
   private
 
   def parse_balance(balance)
-    begin
-      case balance[-3]
-      when '.'
-        (Float(balance.gsub(',', '')) * 100).to_i
-      when ','
-        (Float(balance.gsub('.', '')) * 100).to_i
-      else
-        (Float(balance) * 100).to_i
-      end
-    rescue ArgumentError
-      nil
+    case balance[-3]
+    when '.'
+      (Float(balance.gsub(',', '')) * 100).to_i
+    when ','
+      (Float(balance.gsub('.', '')) * 100).to_i
+    else
+      (Float(balance) * 100).to_i
     end
+  rescue ArgumentError
+    nil
   end
 
   def parse_date(date_str, date_type)
-    begin
-      date = Date.strptime(date_str, '%Y-%m-%d')
-      return date if date_type = :due
+    date = Date.strptime(date_str, '%Y-%m-%d')
+    return date if date_type == :due
 
-      date += broker_carrier.days_to_pay_after_invoice_date.days
-    rescue Date::Error
-      nil
-    end
+    date += broker_carrier.days_to_pay_after_invoice_date.days
+    date
+  rescue Date::Error
+    nil
   end
 
   def build_success_message(saved_payment_transactions_count)
