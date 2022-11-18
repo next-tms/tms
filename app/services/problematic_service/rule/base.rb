@@ -11,19 +11,19 @@ module ProblematicService
     def call(record)
       @record = record
 
-      problems = record.problems.where(problematic_rule_code: code)
+      problems = record.problems.where(problematic_rule_code: code, resolvable: record)
 
       if resolvable?
         problems.unresolved.update_all(resolved_at: Time.current, resolved_by_id: record.updated_by&.id)
 
-        return record.problems unless problematic?
+        return record.problems
       end
 
       roles.find_each do |role|
-        problems = problems.where(assigned_to: role.users.where(broker: record.broker).broker)
+        role_problems = problems.where(assigned_to: role.users.where(broker: record.broker).broker)
 
-        if problems.any?
-          problems.update_all(resolved_at: nil, resolved_by_id: nil)
+        if role_problems.any?
+          role_problems.update_all(resolved_at: nil, resolved_by_id: nil)
           next
         end
 
@@ -57,11 +57,11 @@ module ProblematicService
     private
 
     def assign(role)
-      users = role.users.where(broker: record.broker).broker
-
       return record.dispatcher if role.name == 'dispatch' &&
                                   record.is_a?(Shipment) &&
                                   record.dispatcher.present?
+
+      users = role.users.where(broker: record.broker).broker
 
       # User with least amount of problems
       assigned_to = users
