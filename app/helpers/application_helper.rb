@@ -312,7 +312,7 @@ module ApplicationHelper
       "https://www.fedex.com/fedextrack/?tracknumbers=#{real_pro(shipment)}"
     when 'HSXF'
       "http://apps.hawaiianexpress.com/track_freight.php?prono=#{real_pro(shipment)}"
-    when 'NUMK'
+    when 'NUMT'
       "http://tracking.numarktransportation.net/cgibin/wbprotrk?wbfb=#{real_pro(shipment)}&wbscac=&idbutton=Trace"
     when 'OTCL'
       "https://www.ontrac.com/trackingresults.asp?tracking_number=#{real_pro(shipment)}"
@@ -362,10 +362,8 @@ module ApplicationHelper
     end
   end
 
-  def highlightable_element(id, table_element: false)
+  def highlightable_element(id, table_element: false, &block)
     element = table_element ? :tbody : :div
-    content_tag element, id: id.to_sym, tabindex: "-1" do
-      yield
-    end
+    content_tag element, id: id.to_sym, tabindex: '-1', &block
   end
 end
