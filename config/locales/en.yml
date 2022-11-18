@@ -3,13 +3,15 @@ en:
   activerecord:
     attributes:
       shipment:
+        bol: Bill of Lading Number
         broker_carrier: Carrier
         carrier_bol: Scanned Bill of Lading
         carrier_pod: Proof of Delivery
-        customer_reference: "PO #"
-        pickup_confirmation: "PU #"
-        pro: "Pro #"
-        shipper_reference: "SO #"
+        customer_reference: Customer Reference
+        pickup_confirmation: Pickup Confirmation Number
+        pro: Pro Number
+        quote_id: Quote Number
+        shipper_reference: Shipper Reference
         total_charges: Charge
         total_cost: Cost
     enums:
@@ -17,3 +19,12 @@ en:
         sources:
           api: API
           pricing_rule: Tariff
+  bootstrap_form:
+    labels:
+      shipment:
+        bol: "BOL #"
+        customer_reference: "PO #"
+        pickup_confirmation: "Pickup #"
+        pro: "Pro #"
+        quote_id: "Quote #"
+        shipper_reference: "SO #"

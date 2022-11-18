@@ -14,3 +14,10 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
 # end
+
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.acronym 'BOL'
+  inflect.acronym 'POD'
+  inflect.acronym 'SO'
+  inflect.acronym 'PO'
+end
