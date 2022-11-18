@@ -1,8 +1,12 @@
 <%= provide :title, 'Rate' %>
 
-<% if @rate.breakdown.blank? %>
+<% if @rate.blank? %>
   <div class="alert alert-info">
-    <p>No breakdown provided</p>
+    <p>The <%= Rate.model_name.human.downcase %> was deleted so a breakdown of it can’t be provided.</p>
+  </div>
+<% elsif @rate.breakdown.blank? %>
+  <div class="alert alert-info">
+    <p>No breakdown was provided for this <%= Rate.model_name.human.downcase %>.</p>
   </div>
 <% else %>
   <div class="table-responsive">
@@ -27,9 +31,9 @@
     </table>
 
     <p class="col-title">Request</p>
-  <textarea class="form-control mb-3" data-action="click->clipboard#copy" data-controller="clipboard" rows="5" readonly><%= @rate.api_request %></textarea>
+    <textarea class="form-control mb-3" data-action="click->clipboard#copy" data-controller="clipboard" rows="5" readonly><%= @rate.api_request %></textarea>
 
     <p class="col-title">Response</p>
-  <textarea class="form-control" data-action="click->clipboard#copy" data-controller="clipboard" rows="5" readonly><%= @rate.api_response %></textarea>
+    <textarea class="form-control" data-action="click->clipboard#copy" data-controller="clipboard" rows="5" readonly><%= @rate.api_response %></textarea>
   </div>
 <% end %>
