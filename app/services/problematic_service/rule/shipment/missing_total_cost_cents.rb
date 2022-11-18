@@ -13,7 +13,10 @@ module ProblematicService
     end
 
     def resolvable?
-      record.total_cost_cents.present? || record.picked_up_at.blank? || record.receivables.any? || record.canceled_at.present?
+      record.total_cost_cents.present? ||
+      record.canceled_at.present? ||
+      record.picked_up_at.blank? ||
+      record.receivables.any?
     end
 
     def roles
