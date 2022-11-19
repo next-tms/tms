@@ -201,7 +201,7 @@ class StandardizedAddress < ApplicationRecord
       error_key, error_data = address_data
       return unless error_key == 'errors'
 
-      Honeybader.notify(error_message: error_data.first['message'])
+      Honeybadger.notify(error_message: error_data.first['message'])
     else
       self.smarty_streets_result_cached = address_data&.to_hash
 
