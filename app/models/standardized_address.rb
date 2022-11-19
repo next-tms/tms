@@ -129,8 +129,8 @@ class StandardizedAddress < ApplicationRecord
     begin
       retries ||= 0
       result = GooglePlaces::Client
-              .new(Rails.application.credentials.google.api_key)
-              .spots_by_query((names&.first.blank? ? key : "#{names&.first}, #{key}"))
+               .new(Rails.application.credentials.google.api_key)
+               .spots_by_query((names&.first.blank? ? key : "#{names&.first}, #{key}"))
               &.first
     rescue GooglePlaces::APIConnectionError
       retries += 1
@@ -201,7 +201,7 @@ class StandardizedAddress < ApplicationRecord
       error_key, error_data = address_data
       return unless error_key == 'errors'
 
-      HoneyBadger.notify(error_message: error_data.first['message'])
+      Honeybader.notify(error_message: error_data.first['message'])
     else
       self.smarty_streets_result_cached = address_data&.to_hash
 
