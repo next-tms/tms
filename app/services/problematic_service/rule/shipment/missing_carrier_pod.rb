@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ProblematicService
-  class Rule::Shipment::MissingCarrierPod < Rule::Shipment
+  class Rule::Shipment::MissingCarrierPOD < Rule::Shipment
     ROLES = %i[accounts_receivable dispatch root].freeze
 
     def humanized(*)

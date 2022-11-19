@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module InterstellarApiClient
-  module_function
+  extend self
 
   def build_client(broker_carrier:)
     Services::BuildApiClient.call(broker_carrier:)
@@ -33,13 +33,13 @@ module InterstellarApiClient
   end
 
   def fetch_bol(broker_carrier:, tracking_number:)
-    Services::FetchBol.new(broker_carrier:).find(tracking_number)
+    Services::FetchBOL.new(broker_carrier:).find(tracking_number)
   rescue NotImplementedError
     nil
   end
 
   def fetch_pod(broker_carrier:, tracking_number:)
-    Services::FetchPod.new(broker_carrier:).find(tracking_number)
+    Services::FetchPOD.new(broker_carrier:).find(tracking_number)
   rescue NotImplementedError
     nil
   end

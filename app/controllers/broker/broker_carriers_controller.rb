@@ -157,10 +157,10 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     TrackShipmentsJob.perform_later(shipments.pluck(:id))
 
     pending_delivery_shipment_ids = shipments.pending_delivery.pluck(:id)
-    FetchShipmentCarrierBolsJob.perform_later(pending_delivery_shipment_ids) unless pending_delivery_shipment_ids.blank?
+    FetchShipmentCarrierBOLsJob.perform_later(pending_delivery_shipment_ids) unless pending_delivery_shipment_ids.blank?
 
     delivered_shipment_ids = shipments.delivered.pluck(:id)
-    FetchShipmentCarrierPodsJob.perform_later(delivered_shipment_ids) unless delivered_shipment_ids.blank?
+    FetchShipmentCarrierPODsJob.perform_later(delivered_shipment_ids) unless delivered_shipment_ids.blank?
 
     redirect_to [:broker, @broker_carrier] and return
   end

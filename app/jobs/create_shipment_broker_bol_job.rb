@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateShipmentBrokerBolJob < ApplicationJob
+class CreateShipmentBrokerBOLJob < ApplicationJob
   queue_as :high_priority
 
   def perform(broker_documents_fingerprint:, domain:, shipment:)

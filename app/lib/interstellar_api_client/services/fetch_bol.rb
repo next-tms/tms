@@ -2,7 +2,7 @@
 
 module InterstellarApiClient
   module Services
-    class FetchBol < Base
+    class FetchBOL < Base
       def find(tracking_number)
         interstellar_api_call_block do
           carrier_client&.scanned_bol(tracking_number)

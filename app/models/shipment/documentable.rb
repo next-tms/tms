@@ -86,7 +86,7 @@ module Shipment::Documentable
     if can_create_broker_bol?
       broker_bol.purge
       broker_label.purge # for can_create_broker_label? below
-      CreateShipmentBrokerBolJob.perform_later(broker_documents_fingerprint:, domain:, shipment: self)
+      CreateShipmentBrokerBOLJob.perform_later(broker_documents_fingerprint:, domain:, shipment: self)
     end
 
     if can_create_broker_label?

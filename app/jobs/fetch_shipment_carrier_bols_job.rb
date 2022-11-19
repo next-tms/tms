@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FetchShipmentCarrierBolsJob < ApplicationJob
+class FetchShipmentCarrierBOLsJob < ApplicationJob
   def perform(shipment_ids = nil)
     shipments = if shipment_ids.blank?
                   Shipment
@@ -24,7 +24,7 @@ class FetchShipmentCarrierBolsJob < ApplicationJob
     shipments.find_each do |shipment|
       next unless shipment.broker_carrier&.api_configured? && shipment.broker_carrier&.as_interstellar_carrier
 
-      FetchShipmentCarrierBolJob.perform_later(shipment)
+      FetchShipmentCarrierBOLJob.perform_later(shipment)
     end
   end
 end
