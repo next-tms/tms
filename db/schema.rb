@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_18_050455) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -578,6 +578,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
     t.string "resolvable_type"
     t.bigint "resolvable_id"
     t.string "problematic_rule_code", null: false
+    t.integer "suppressions_count"
     t.index ["assigned_to_id"], name: "index_problems_on_assigned_to_id"
     t.index ["body"], name: "index_problems_on_body"
     t.index ["resolvable_type", "resolvable_id"], name: "index_problems_on_resolvable"
@@ -842,6 +843,40 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
     t.index ["broker_id"], name: "index_stripe_accounts_on_broker_id"
   end
 
+  create_table "suppressions", force: :cascade do |t|
+    t.datetime "ignored_at"
+    t.bigint "ignored_by_id"
+    t.string "instigator_type", null: false
+    t.bigint "instigator_id", null: false
+    t.bigint "problem_id", null: false
+    t.string "problematic_type", null: false
+    t.bigint "problematic_id", null: false
+    t.bigint "suppressor_id", null: false
+    t.string "suppressible_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ignored_by_id"], name: "index_suppressions_on_ignored_by_id"
+    t.index ["instigator_type", "instigator_id"], name: "index_suppressions_on_instigator"
+    t.index ["problem_id"], name: "index_suppressions_on_problem_id"
+    t.index ["problematic_type", "problematic_id"], name: "index_suppressions_on_problematic"
+    t.index ["suppressible_type"], name: "index_suppressions_on_suppressible_type"
+    t.index ["suppressor_id"], name: "index_suppressions_on_suppressor_id"
+  end
+
+  create_table "suppressors", force: :cascade do |t|
+    t.string "instigator_type", null: false
+    t.bigint "instigator_id", null: false
+    t.string "problematic_rule_code", null: false
+    t.string "problematic_type", null: false
+    t.string "suppressible_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["instigator_type", "instigator_id"], name: "index_suppressors_on_instigator"
+    t.index ["problematic_rule_code"], name: "index_suppressors_on_problematic_rule_code"
+    t.index ["problematic_type"], name: "index_suppressors_on_problematic_type"
+    t.index ["suppressible_type"], name: "index_suppressors_on_suppressible_type"
+  end
+
   create_table "terminals", force: :cascade do |t|
     t.bigint "address_id", null: false
     t.bigint "carrier_id", null: false
@@ -1072,6 +1107,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_11_060541) do
   add_foreign_key "standardized_addresses", "countries"
   add_foreign_key "standardized_addresses", "regions"
   add_foreign_key "stripe_accounts", "brokers"
+  add_foreign_key "suppressions", "problems"
+  add_foreign_key "suppressions", "suppressors"
+  add_foreign_key "suppressions", "users", column: "ignored_by_id"
   add_foreign_key "terminals", "addresses"
   add_foreign_key "terminals", "carriers"
   add_foreign_key "tracking_events", "addresses"

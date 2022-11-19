@@ -68,6 +68,8 @@
 #  fk_rails_...  (receivables_contact_id => contacts.id)
 #
 class BrokerCustomer < ApplicationRecord
+  include ::Instigatable
+  include BrokerCustomer::Instigatable
   include BrokerCustomer::QuickbooksSyncable
 
   belongs_to :broker
@@ -81,12 +83,12 @@ class BrokerCustomer < ApplicationRecord
   belongs_to :customer
   accepts_nested_attributes_for :customer
 
-  has_many :broker_customer_receivable_contacts, class_name: "BrokerCustomerReceivableContact", dependent: :destroy
+  has_many :broker_customer_receivable_contacts, class_name: 'BrokerCustomerReceivableContact', dependent: :destroy
   has_many :receivable_contacts, through: :broker_customer_receivable_contacts, source: 'contact'
 
   has_one :broker_customer_primary_receivable_contact,
           -> { where(primary: true) },
-          class_name: "BrokerCustomerReceivableContact"
+          class_name: 'BrokerCustomerReceivableContact'
 
   has_one :primary_receivables_contact, through: :broker_customer_primary_receivable_contact, source: 'contact'
 
@@ -143,7 +145,11 @@ class BrokerCustomer < ApplicationRecord
     return @eligible_broker_accessorials if @eligible_broker_accessorials
 
     broker_customer_accessorials = broker_accessorials
-    broker_accessorials = broker.broker_accessorials.where(broker_customer: nil).where.not(code: [broker_customer_accessorials.map(&:code)])
+    broker_accessorials = broker
+                          .broker_accessorials
+                          .where(broker_customer: nil)
+                          .where
+                          .not(code: [broker_customer_accessorials.map(&:code)])
 
     @eligible_broker_accessorials = broker_customer_accessorials.or(broker_accessorials).order(:name)
   end
@@ -247,20 +253,20 @@ class BrokerCustomer < ApplicationRecord
       shipments = self.shipments
     end
 
-    unless shipments.blank?
-      total_cost = shipments.active.map(&:total_cost).inject(Money.new(0)) { |sum, x| sum + x }
-      total_charges = shipments.active.map(&:total_charges).inject(Money.new(0)) { |sum, x| sum + x }
-      total_profit = total_charges - total_cost
-      total_margin = ((1 - (total_cost / total_charges)) * 100).round(1)
+    return if shipments.blank?
 
-      {
-        total_shipments: shipments.size,
-        total_cost:,
-        total_charges:,
-        total_profit:,
-        total_margin:
-      }
-    end
+    total_cost = shipments.active.map(&:total_cost).inject(Money.new(0)) { |sum, x| sum + x }
+    total_charges = shipments.active.map(&:total_charges).inject(Money.new(0)) { |sum, x| sum + x }
+    total_profit = total_charges - total_cost
+    total_margin = ((1 - (total_cost / total_charges)) * 100).round(1)
+
+    {
+      total_shipments: shipments.size,
+      total_cost:,
+      total_charges:,
+      total_profit:,
+      total_margin:
+    }
   end
 
   def create_quickbooks_customer
@@ -326,7 +332,9 @@ class BrokerCustomer < ApplicationRecord
   def check_pricing_rules
     return unless can_quote?
 
-    if (default_upcharge_cents.blank? || default_upcharge_cents.zero?) && (default_upcharge_percentage.blank? || default_upcharge_percentage.zero?) && upcharge_rules.blank?
+    if (default_upcharge_cents.blank? || default_upcharge_cents.zero?) &&
+       (default_upcharge_percentage.blank? || default_upcharge_percentage.zero?) &&
+       upcharge_rules.blank?
       errors.add(:base, 'Fallback pricing rules must exist to enable customer quoting.')
     end
   end

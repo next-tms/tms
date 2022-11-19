@@ -14,16 +14,24 @@ module ProblematicService
 
     def resolvable?
       record.carrier_pod.attached? ||
-        record.broker_customer.blank? ||
-        !record.broker_customer.requires_carrier_pod_on_receivables? ||
-        record.canceled_at.present? ||
-        record.picked_up_at.blank? ||
-        record.delivered_at.blank? ||
-        (record.broker_carrier&.carrier&.consider_bol_and_pod_documents_same? && record.carrier_bol.attached?)
+      record.broker_customer.blank? ||
+      !record.broker_customer.requires_carrier_pod_on_receivables? ||
+      record.canceled_at.present? ||
+      record.picked_up_at.blank? ||
+      record.delivered_at.blank? ||
+      (record.broker_carrier&.carrier&.consider_bol_and_pod_documents_same? && record.carrier_bol.attached?)
     end
 
     def roles
       @roles ||= Role.where(name: ROLES.map(&:to_s))
+    end
+
+    def suppressor_instigators
+      [record.broker, record.broker_customer].compact
+    end
+
+    def suppressor_suppressible_types
+      ['Receivable']
     end
   end
 end

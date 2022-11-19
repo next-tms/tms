@@ -59,6 +59,7 @@
 #
 class Receivable < ApplicationRecord
   include Receivable::QuickbooksSyncable
+  include Suppressible
 
   before_save :set_authorized_at
   before_save :set_invoiced
@@ -147,6 +148,11 @@ class Receivable < ApplicationRecord
 
   def fetch_invoice
     quickbooks_invoice_pdf if broker.intuit_account&.connected?
+  end
+
+  # @note For Suppressible
+  def suppressed_by_problematic
+    shipment
   end
 
   def update_from_api

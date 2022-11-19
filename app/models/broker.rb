@@ -30,6 +30,9 @@
 #  fk_rails_...  (address_id => addresses.id)
 #
 class Broker < ApplicationRecord
+  include ::Instigatable
+  include Broker::Instigatable
+
   has_many :banks
   accepts_nested_attributes_for :banks
 

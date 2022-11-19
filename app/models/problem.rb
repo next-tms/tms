@@ -42,17 +42,21 @@
 #  fk_rails_...  (resolved_by_id => users.id)
 #
 class Problem < ApplicationRecord
+  include HasProblematicRule
+
+  after_save :update_suppressions
+
+  alias_attribute :problematic, :resolvable
+
   belongs_to :assigned_to, class_name: 'User'
   # belongs_to :problem_type
-  belongs_to :resolvable, polymorphic: true
+  belongs_to :resolvable, polymorphic: true # TODO: Rename to problematic
   belongs_to :resolved_by, class_name: 'User', optional: true
+
+  has_many :suppressions, dependent: :destroy
 
   has_one :broker, through: :assigned_to
   has_one :role, through: :problem_type
-
-  validates :problematic_rule_code, presence: true
-
-  validate :validate_problematic_rule_code
 
   ransacker :id do
     Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")
@@ -60,21 +64,45 @@ class Problem < ApplicationRecord
 
   scope :unresolved, -> { where(resolved_at: nil) }
   scope :resolved, -> { where.not(id: unresolved) }
+  scope :suppressive, -> { unresolved.where.not(suppresions: []) }
+
+  # @note For HasProblematicRule
+  def problematic_type
+    resolvable.class.name
+  end
 
   def resolved?
-    !resolved_at.blank?
+    resolved_at.present?
+  end
+
+  def suppressive?
+    return true unless resolved? || suppressions.empty?
+  end
+
+  def unresolved?
+    !resolved?
   end
 
   private
 
-  def validate_problematic_rule_code
-    return unless new_record? &&
-                  problematic_rule_code.present? &&
-                  !resolvable.class.problematic_rule_codes.include?(problematic_rule_code.to_sym)
+  def update_suppressions
+    suppressions.destroy_all and return if resolved?
 
-    errors.add(
-      :problematic_rule_code,
-      "must be one of #{resolvable.class.problematic_rule_codes.join(', ')}, got #{problematic_rule_code}"
-    )
+    return unless problematic_rule.present?
+
+    suppressors = problematic_rule.with(problematic).suppressors
+    return unless suppressors.any?
+
+    suppressions.where.not(suppressor: suppressors).destroy_all
+
+    suppressors.find_each do |suppressor|
+      suppressions.find_or_create_by!(
+        instigator: suppressor.instigator,
+        problem: self,
+        problematic: resolvable,
+        suppressible_type: suppressor.suppressible_type,
+        suppressor:
+      )
+    end
   end
 end

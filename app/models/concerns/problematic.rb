@@ -7,6 +7,7 @@ module Problematic
     after_commit :problematic!
 
     has_many :problems, as: :resolvable
+    has_many :suppressions, as: :problematic
 
     class << self
       def problematic_processor

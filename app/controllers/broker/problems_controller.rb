@@ -2,7 +2,7 @@
 
 class Broker::ProblemsController < Broker::BrokerController
   before_action :set_problem, only: %i[edit show update]
-  before_action :set_scoped_problems, only: %i[index resolved unresolved]
+  before_action :set_scoped_problems, only: %i[index resolved suppressive unresolved]
   before_action :authenticate_user!
 
   def index
@@ -29,6 +29,13 @@ class Broker::ProblemsController < Broker::BrokerController
   end
 
   def edit; end
+
+  def suppressive
+    @q = @scoped_problems.suppressive.includes(required_includes).ransack(params[:q])
+    @q.sorts = 'created_at asc' if @q.sorts.blank?
+
+    @pagy, @problems = pagy(@q.result)
+  end
 
   def update
     @problem.assign_attributes(problem_params)

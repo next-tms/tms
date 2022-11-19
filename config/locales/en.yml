@@ -14,6 +14,16 @@ en:
         shipper_reference: Shipper Reference
         total_charges: Charge
         total_cost: Cost
+    models:
+      broker_customer:
+        one: Customer
+        other: Customers
+      receivable:
+        one: Receivable
+        other: Receivables
+      shipment:
+        one: Load
+        other: Loads
     enums:
       rate:
         sources:

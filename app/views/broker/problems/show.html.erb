@@ -2,6 +2,8 @@
 
 <%= render 'member_header' %>
 
+<h2>Overview</h2>
+
 <% if @problem.resolved? %>
   <div class="alert alert-success">
     <p class="lead"><%= icon 'solid', 'clipboard-check', 'Closed' %></p>
@@ -12,8 +14,28 @@
     </p>
   </div>
 <% else %>
-  <div class="alert alert-warning">
-    <p class="lead"><%= icon 'solid', 'hourglass', 'Open' %></p>
-    <p>Pending resolution.</p>
+  <div class="table-responsive">
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <th>Issue</th>
+          <td><%= @problem.problematic_rule.humanized %></td>
+        </tr>
+        <tr class="<%= @problem.suppressive? ? 'table-danger' : nil %>">
+          <th>Suppressions</th>
+          <td>
+            <% if @problem.suppressive? %>
+              <ul class="list-unstyled">
+                <% @problem.suppressions.each do |suppression| %>
+                  <li><%= suppression.describe %></li>
+                <% end %>
+              </ul>
+            <% else %>
+              None
+            <% end %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 <% end %>

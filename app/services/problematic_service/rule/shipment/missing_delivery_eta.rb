@@ -9,7 +9,7 @@ module ProblematicService
     end
 
     def problematic?
-      record.picked_up? && record.picked_up_at <= 15.hours.ago && !!resolvable?
+      record.picked_up? && record.picked_up_at <= 15.hours.ago && !resolvable?
     end
 
     def resolvable?

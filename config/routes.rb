@@ -150,8 +150,11 @@ Rails.application.routes.draw do
     get 'pickups', to: 'pickups#create' # used by Broker::ShipmentsControlller
 
     resources :problems, except: %i[destroy], path: 'tasks' do
-      collection { get :resolved }
-      collection { get :unresolved }
+      collection do
+        get :resolved
+        get :suppressive
+        get :unresolved
+      end
     end
 
     get 'shipments/booked', to: 'shipments#booked'
@@ -175,7 +178,6 @@ Rails.application.routes.draw do
     get 'shipments/as_dispatcher', to: 'shipments#as_dispatcher'
 
     get 'shipments/quote-only' => 'shipments#new_quote_only', as: :quote_only
-
 
     resources :shipments, path: 'shipments', as: :shipments, param: :load_id do
       # Stupid, but required for some AJAX without PATCH

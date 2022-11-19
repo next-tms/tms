@@ -9,7 +9,7 @@ module ProblematicService
     end
 
     def call(record)
-      @record = record
+      with(record)
 
       problems = record.problems.where(problematic_rule_code: code, resolvable: record)
 
@@ -52,6 +52,30 @@ module ProblematicService
 
     def roles
       raise NotImplementedError
+    end
+
+    def suppressor_instigators
+      []
+    end
+
+    def suppressor_suppressible_types
+      []
+    end
+
+    def suppressors
+      return Suppressor.none if suppressor_instigators.empty? || suppressor_suppressible_types.empty?
+
+      Suppressor.where(
+        instigator: suppressor_instigators,
+        problematic_rule_code: code,
+        suppressible_type: suppressor_suppressible_types
+      )
+    end
+
+    def with(record)
+      @record = record
+
+      self
     end
 
     private

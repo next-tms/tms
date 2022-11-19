@@ -5,12 +5,17 @@
     <thead>
       <tr>
         <th>Open</th>
+        <th>Suppressive</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td class="display-6">
           <%= link_to @scoped_problems.unresolved.size, unresolved_broker_problems_path, class: 'problems-unresolved' %>
+        </td>
+
+        <td class="display-6">
+          <%= link_to @scoped_problems.suppressive.size, suppressive_broker_problems_path, class: 'problems-suppressive' %>
         </td>
       </tr>
     </tbody>

@@ -7,7 +7,6 @@
     <table class="table table-borderless w-auto">
       <thead>
         <tr>
-          <th>Team</th>
           <th>Assigned To</th>
           <th><%= @problem.resolvable.model_name.human %></th>
           <th>Status</th>
@@ -16,10 +15,6 @@
       </thead>
       <tbody>
         <tr>
-          <td class="lead">
-            <%= @problem.problematic_rule_code.humanize.capitalize %>
-          </td>
-
           <td class="lead">
             <%= @problem.assigned_to.full_name %>
           </td>
@@ -33,7 +28,7 @@
           </td>
 
           <td class="lead">
-            <%= @problem.problematic_rule_code.humanize %>
+            <%= @problem.problematic_rule.humanized %>
           </td>
         </tr>
       </tbody>
