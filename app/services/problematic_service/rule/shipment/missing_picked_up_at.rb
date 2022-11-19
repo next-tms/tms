@@ -1,21 +1,23 @@
 # frozen_string_literal: true
 
 module ProblematicService
-  class Rule::Shipment::NotPickedUp < Rule::Shipment
+  class Rule::Shipment::MissingPickedUpAt < Rule::Shipment
     ROLES = %i[dispatch root].freeze
 
     def humanized(*)
-      'picked missed'
+      'not picked up'
     end
 
     def problematic?
-      return false unless record.pickup_by.present?
-
       record.picked_up_at.blank? && !resolvable?
     end
 
     def resolvable?
-      record.picked_up_at.present? || record.booked_at.blank? || record.delivered_at.present?
+      record.picked_up_at.present? ||
+      record.booked_at.blank? ||
+      record.canceled_at.present? ||
+      record.delivered_at.present? ||
+      (record.pickup_by.present? && record.pickup_by > Time.current + 8.hours)
     end
 
     def roles
