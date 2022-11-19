@@ -28,7 +28,7 @@
           </td>
 
           <td class="lead">
-            <%= @problem.problematic_rule.humanized %>
+            <%= @problem.problematic_rule.with(@problem.resolvable).humanized %>
           </td>
         </tr>
       </tbody>
