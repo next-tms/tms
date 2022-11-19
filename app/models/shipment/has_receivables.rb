@@ -67,7 +67,7 @@ module Shipment::HasReceivables
     end
 
     def problems_preventing_receivable?
-      suppressions.where(suppresible_type: 'Receivable').any?
+      suppressions.where(suppressible_type: 'Receivable').any?
     end
   end
 end
