@@ -19,7 +19,8 @@ module ProblematicService
       record.canceled_at.present? ||
       record.picked_up_at.blank? ||
       record.delivered_at.blank? ||
-      (record.broker_carrier&.carrier&.consider_bol_and_pod_documents_same? && record.carrier_bol.attached?)
+      (record.broker_carrier&.carrier&.consider_bol_and_pod_documents_same? && record.carrier_bol.attached?) ||
+      (record.receivables.any? && record.receivables.sum(:balance_cents).zero?)
     end
 
     def roles
