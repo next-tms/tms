@@ -11,10 +11,10 @@
     class: CreateReceivablesJob
   fetch_carrier_bols:
     cron: '0 */4 * * *'
-    class: FetchShipmentCarrierBolsJob
+    class: FetchShipmentCarrierBOLsJob
   fetch_carrier_pods:
     cron: '30 */4 * * *'
-    class: FetchShipmentCarrierPodsJob
+    class: FetchShipmentCarrierPODsJob
   fetch_receivable_invoices:
     cron: '50 * * * *'
     class: FetchReceivableInvoicesJob
