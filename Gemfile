@@ -7,7 +7,7 @@ ruby '3.1.2'
 gem 'rails', '~> 7.0.4'
 gem 'sprockets-rails', '~> 3.4.2'
 
-gem 'pg', '~> 1.4.4'
+gem 'pg', '~> 1.4.5'
 gem 'puma', '~> 6.0.0'
 
 gem 'importmap-rails', '~> 1.1.5'
