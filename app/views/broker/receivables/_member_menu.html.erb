@@ -36,7 +36,7 @@
         <% end %>
       <% else %>
         <%= link_to icon('solid', 'thumbs-up', 'Invoiced'),
-                    broker_receivable_path(@receivable, receivable: { invoiced: true })
+                    broker_receivable_path(@receivable, receivable: { invoiced: true }),
                     data: { turbo_method: :patch },
                     class: 'nav-link'
         %>
