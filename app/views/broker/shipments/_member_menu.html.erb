@@ -6,20 +6,41 @@
       Update
     </a>
     <ul class="dropdown-menu" aria-labelledby="shipment-mark-dropdown">
-      <% if @shipment.booked_at.blank? %>
-        <%= link_to 'Book', book_broker_shipment_path(@shipment), target: '_top', class: 'dropdown-item' %>
+      <% if @shipment.canceled_at.present? %>
+        <%= link_to 'Reinstate',
+                    broker_shipment_path(@shipment, shipment: { canceled_at: nil }),
+                    data: { turbo_method: :patch },
+                    class: 'dropdown-item'
+        %>
       <% else %>
-        <%= link_to 'Unbook', unbook_broker_shipment_path(@shipment), target: '_top', class: 'dropdown-item' %>
-      <% end %>
+        <% if @shipment.booked_at.present? %>
+          <% unless @shipment.charges_confirmed? %>
+            <%= link_to 'Confirm Charges',
+                        broker_shipment_path(@shipment, shipment: { charges_confirmed: true }),
+                        data: { turbo_confirm: 'Are you sure you want to confirm charges?', turbo_method: :patch },
+                        class: 'dropdown-item' %>
+          <% end %>
 
-      <% if @shipment.canceled_at.blank? %>
-        <%= link_to 'Cancel', broker_shipment_path(@shipment, shipment: { canceled_at: 'now' }), data: { confirm: 'Are you sure you want to cancel this shipment?', method: :patch }, target: '_top', class: 'dropdown-item' %>
-      <% else %>
-        <%= link_to 'Reinstate', broker_shipment_path(@shipment, shipment: { canceled_at: nil }), data: { method: :patch }, target: '_top', class: 'dropdown-item' %>
-      <% end %>
+          <%= link_to 'Unbook',
+                      broker_shipment_path(@shipment, shipment: { booked_at: nil }),
+                      data: { turbo_method: :patch },
+                      class: 'dropdown-item'
+          %>
+        <% else %>
+          <%= link_to 'Book',
+                      broker_shipment_path(@shipment, shipment: { booked_at: 'now' }),
+                      data: { turbo_method: :patch },
+                      class: 'dropdown-item'
+          %>
+        <% end %>
 
-      <% unless @shipment.charges_confirmed %>
-        <%= link_to 'Confirm Charges', broker_shipment_path(@shipment, shipment: { charges_confirmed: true }), data: { confirm: 'Are you sure you want to confirm shipment charges?', method: :patch }, target: '_top', class: 'dropdown-item' %>
+        <div class="dropdown-divider"></div>
+
+        <%= link_to 'Cancel',
+                    broker_shipment_path(@shipment, shipment: { canceled_at: 'now' }),
+                    data: { turbo_confirm: 'Are you sure you want to cancel?', turbo_method: :patch },
+                    class: 'dropdown-item'
+        %>
       <% end %>
     </ul>
 

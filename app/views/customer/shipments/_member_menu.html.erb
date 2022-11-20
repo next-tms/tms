@@ -15,8 +15,7 @@
       <% if @shipment.booked_at.blank? %>
         <%= link_to 'Request Pickup',
                     customer_shipment_path(@shipment, shipment: { booked_at: 'now', canceled_at: nil }),
-                    data: { method: :patch },
-                    target: '_top',
+                    data: { turbo_method: :patch },
                     class: 'dropdown-item'
         %>
       <% else %>
@@ -26,15 +25,13 @@
       <% if @shipment.canceled_at.present? %>
         <%= link_to 'Reinstate',
                     customer_shipment_path(@shipment, shipment: { booked_at: nil, canceled_at: nil }),
-                    data: { method: :patch },
-                    target: '_top',
+                    data: { turbo_method: :patch },
                     class: 'dropdown-item'
         %>
       <% elsif @shipment.picked_up_at.blank? %>
         <%= link_to 'Cancel',
                     customer_shipment_path(@shipment, shipment: { booked_at: nil, canceled_at: 'now' }),
-                    data: { confirm: 'Are you sure you want to cancel this shipment?', method: :patch },
-                    target: '_top',
+                    data: { turbo_confirm: 'Are you sure you want to cancel this shipment?', turbo_method: :patch },
                     class: 'dropdown-item'
         %>
       <% end %>

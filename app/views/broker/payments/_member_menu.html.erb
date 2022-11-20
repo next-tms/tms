@@ -7,14 +7,17 @@
 
   <% if current_user.has_role?('accounts_payable') %>
     <% unless @payment.approved_at.blank? %>
-      <%= link_to icon('solid', 'thumbs-up', 'Approve'), broker_payment_path(@payment, payment: { approved_by_id: current_user.id }), method: :patch, class: 'nav-link' %>
+      <%= link_to icon('solid', 'thumbs-up', 'Approve'),
+                  broker_payment_path(@payment, payment: { approved_by_id: current_user.id }),
+                  data: { turbo_method: :patch },
+                  class: 'nav-link'
+      %>
     <% end %>
 
     <% if @payment.paid? %>
       <%= link_to icon('solid', 'undo-alt', 'Undo Payment'),
                   broker_payment_path(@payment, payment: { paid_on: nil }),
-                  method: :patch,
-                  data: { confirm: 'Are you sure you want to undo this payment?' },
+                  data: { 'turbo-confirm: 'Are you sure you want to undo this payment?', turbo_method: :patch },
                   class: 'nav-link'
       %>
     <% else %>

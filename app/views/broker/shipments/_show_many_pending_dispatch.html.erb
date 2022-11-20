@@ -1,7 +1,13 @@
 <%= render 'show_many',
            shipments: shipments,
            td_names: %w[
-             broker_customer shipper broker_carrier receiver promised_delivery_by
-             total_cost total_charges size
+             status
+             broker_customer
+             shipper
+             broker_carrier
+             receiver
+             promised_delivery_by
+             total_cost
+             total_charges size
            ],
            q: @q %>

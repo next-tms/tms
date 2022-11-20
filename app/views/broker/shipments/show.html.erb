@@ -16,7 +16,11 @@
     <p class="lead">You’re not the dispatcher</p>
 
     <div class="btn-toolbar">
-      <%= button_to 'Become Dispatcher', { shipment: { dispatcher_id: current_user.id } }, method: :patch, class: 'btn btn-warning' %>
+      <%= button_to 'Become Dispatcher',
+          { shipment: { dispatcher_id: current_user.id } },
+          data: { turbo_method: :patch },
+          class: 'btn btn-warning'
+      %>
     </div>
   </div>
 <% end %>
@@ -82,7 +86,12 @@
     <ul class="list-unstyled list-inline">
       <% @shipment.suggested_broker_accessorials.each do |broker_accessorial| %>
         <li class="list-inline-item">
-          <%= link_to "Add #{broker_accessorial.name}", broker_shipment_path(@shipment, shipment: { accessorial_codes: ( (@shipment.broker_accessorials.blank? ? [] : @shipment.broker_accessorials.map(&:code)) + [ broker_accessorial.code ] ).join(', ') }), method: :patch, class: 'btn btn-light' %>
+          <% accessorial_codes = [@shipment.broker_accessorials.pluck(:code), broker_accessorial.code].flatten.join(', ') %>
+          <%= link_to "Add #{broker_accessorial.name}",
+                      { shipment: { accessorial_codes: } },
+                      data: { turbo_method: :patch },
+                      class: 'btn btn-light'
+          %>
         </li>
       <% end %>
     </ul>

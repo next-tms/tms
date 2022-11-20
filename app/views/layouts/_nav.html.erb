@@ -26,7 +26,7 @@
 
     <% if current_user && current_user.broker? %>
       <div class='d-flex'>
-        <%= bootstrap_form_tag(url: broker_search_path, layout: :inline, method: 'get') do |f| %>
+        <%= bootstrap_form_tag(url: broker_search_path, layout: :inline, method: :get) do |f| %>
           <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search' %>
         <% end %>
 
@@ -42,7 +42,7 @@
         <% end %>
       </div>
     <% elsif current_user && current_user.customer? %>
-      <%= bootstrap_form_tag(url: customer_search_path, layout: :inline, method: 'get') do |f| %>
+      <%= bootstrap_form_tag(url: customer_search_path, layout: :inline, method: :get) do |f| %>
         <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search' %>
       <% end %>
     <% end %>

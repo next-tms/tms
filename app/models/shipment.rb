@@ -578,16 +578,18 @@ class Shipment < ApplicationRecord
 
     @status = ''.dup
     @status = 'New'
-    @status = 'Quoted' unless broker_carrier.blank?
+    @status = 'Booked' if booked_at.present?
+    @status = 'Quoted' if total_charges.present?
+    @status = 'Booked, Quoted' if booked_at.present? && total_charges.present?
     @status = 'Dispatched' unless dispatched_at.blank?
-    @status = 'Pickup Scheduled' unless pickup_confirmation.blank?
+    @status = 'Pickup Scheduled' if pickup_confirmation.present? && pickup_by.present?
     @status = 'In Transit' unless picked_up_at.blank?
     @status = 'Pending Delivery Appointment' unless pending_appointment_since.blank?
     @status = 'Delivery Scheduled' if !delivery_appointment_at.blank? || !delivery_appointment_on.blank?
     @status = 'Out for Delivery' unless out_for_delivery_at.blank?
     @status = 'Delivered' unless delivered_at.blank?
     @status = 'Canceled' unless canceled_at.blank?
-    @status = "Late — #{@status}" if late?
+    @status = "Late, #{@status}" if late?
     @status
   end
 
