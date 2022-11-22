@@ -57,6 +57,8 @@
 class Payment < ApplicationRecord
   include Payment::QuickbooksSyncable
 
+  audited
+
   belongs_to :approved_by, class_name: 'User', optional: true
   belongs_to :bank, optional: true
   belongs_to :broker

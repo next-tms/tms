@@ -33,6 +33,8 @@ class Broker < ApplicationRecord
   include ::Instigatable
   include Broker::Instigatable
 
+  audited
+
   has_many :banks
   accepts_nested_attributes_for :banks
 

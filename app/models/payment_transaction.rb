@@ -58,6 +58,8 @@
 class PaymentTransaction < ApplicationRecord
   include PaymentTransaction::QuickbooksSyncable
 
+  audited
+
   before_validation :set_attributes_from_shipment
 
   belongs_to :created_by, class_name: 'User', optional: true

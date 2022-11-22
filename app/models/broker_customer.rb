@@ -72,6 +72,8 @@ class BrokerCustomer < ApplicationRecord
   include BrokerCustomer::Instigatable
   include BrokerCustomer::QuickbooksSyncable
 
+  audited
+
   belongs_to :broker
 
   belongs_to :office_address, class_name: 'Address', dependent: :delete

@@ -36,8 +36,10 @@
 #  fk_rails_...  (packaging_id => packagings.id)
 #
 class UpchargeRule < ApplicationRecord
+  audited
+
   scope :packaging, lambda { |packaging|
-    where(packaging: packaging)
+    where(packaging:)
   }
 
   belongs_to :broker_customer

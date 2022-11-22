@@ -61,6 +61,8 @@ class Receivable < ApplicationRecord
   include Receivable::QuickbooksSyncable
   include Suppressible
 
+  audited
+
   before_save :set_authorized_at
   before_save :set_invoiced
   before_save :set_sent_at

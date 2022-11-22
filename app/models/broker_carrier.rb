@@ -63,6 +63,8 @@
 class BrokerCarrier < ApplicationRecord
   include BrokerCarrier::QuickbooksSyncable
 
+  audited
+
   scope :api_configured, -> { where.not(password: [nil, '']) }
   scope :api_unconfigured, -> { where.not(id: api_configured) }
   scope :blanket, -> { where(broker_customer: nil) }
