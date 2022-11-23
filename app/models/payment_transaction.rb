@@ -125,20 +125,16 @@ class PaymentTransaction < ApplicationRecord
   end
 
   def set_attributes_from_shipment
-    new_shipment = nil
+    return unless broker_carrier.present? && (shipment.blank? || will_save_change_to_pro?)
 
-    if shipment.blank? || will_save_change_to_pro?
-      new_shipment = Shipment.where(broker_carrier:).where(pro:)
+    new_shipment = Shipment.where(broker_carrier:).where(pro:)
+    self.shipment = new_shipment.first if new_shipment.size == 1
 
-      self.shipment = new_shipment.first if new_shipment.size == 1
-    end
+    return unless shipment.present?
 
-    new_shipment = shipment
-    return if new_shipment.blank?
-
-    self.broker = new_shipment.broker_carrier.broker
-    self.broker_carrier = new_shipment.broker_carrier
-    self.invoice = (new_shipment.pro.blank? ? new_shipment.load_id : new_shipment.pro) if invoice.blank?
-    self.paid = balance if new_shipment.carrier_cost >= balance && !will_save_change_to_paid_cents?
+    self.broker ||= shipment.broker
+    self.broker_carrier = shipment.broker_carrier
+    self.invoice = shipment.pro.presence || shipment.load_id if invoice.blank?
+    self.paid = balance if shipment.carrier_cost >= balance && !will_save_change_to_paid_cents?
   end
 end
