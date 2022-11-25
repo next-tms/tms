@@ -107,9 +107,7 @@ gem 'combine_pdf', '~> 1.0.22'
 gem 'prawn', '~> 2.4.0'
 gem 'prawn-labels', '~> 1.2.6', require: 'prawn/labels'
 gem 'rqrcode'
-gem 'wicked_pdf', '~> 2.6.3'
-gem 'wkhtmltopdf-binary', '~> 0.12.6.5', groups: %i[production staging]
-gem 'wkhtmltopdf-binary-edge', '~> 0.12.6.0', groups: %i[development]
+gem 'gotenberg-ruby', '~> 1.0.9'
 
 gem 'pagy'
 gem 'ransack', '~> 3.2.1'

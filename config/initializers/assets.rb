@@ -13,6 +13,3 @@ Rails.application.config.assets.version = "1.0"
 
 # bootstrap gem
 Rails.application.config.assets.precompile += %w( bootstrap.min.js popper.js )
-
-# wicked_pdf gem
-Rails.application.config.assets.precompile += %w( pdf.css )
