@@ -8,7 +8,14 @@ class GeocoderController < ApplicationController
     selected_country = params[:country]
     selected_country = 'United States' if selected_country == 'United States of America'
 
-    matched_location = locations.find { |loc| loc.data.dig('address', 'country') == selected_country }
+    begin
+      matched_location = locations.find { |loc| loc.data.dig('address', 'country') == selected_country }
+    rescue TypeError => e
+      # TODO: Watch for Honeybadger errors. Cannot replicate issue on development.
+      Honeybadger.notify(e, locations: locations)
+      render json: { error: 'No Location Found' } and return
+    end
+
     render json: { error: 'No Location Found' } and return unless matched_location
 
     address = matched_location.data['address']
