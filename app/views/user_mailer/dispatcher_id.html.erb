@@ -1,6 +1,11 @@
 <% provide :signature, @shipment.broker.name %>
 
-<p><%= @shipment.broker_customer&.customer.blank? ? 'Load' : "#{@shipment.broker_customer.customer.name} load" %> <%= @shipment.load_id %> has been assigned to you by <%= @shipment.updated_by.full_name %>.</p>
+<p>
+  <%= @shipment.broker_customer&.customer.blank? ? 'Load' : "#{@shipment.broker_customer.customer.name} load" %> <%= @shipment.load_id %> 
+  <% if @shipment.updated_by %>
+    has been assigned to you by <%= @shipment.updated_by.full_name %>
+  <% end %>
+</p>
 
 <p>From:</p>
 <address>

@@ -11,7 +11,7 @@ class Broker::BrokerController < ApplicationController
   end
 
   def update
-    blacklist = Notification.notification_types - params[:email_notifications_blacklist]
+    blacklist = Notification.notification_types - (params[:email_notifications_blacklist] || [])
     current_user.update(email_notifications_blacklist: blacklist.join(','))
 
     redirect_to broker_settings_path and return if @broker.update(broker_params)
