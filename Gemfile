@@ -52,7 +52,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-tether', '>= 1.3.3'
 end
 
-gem 'bootstrap', '~> 5.2.2'
+gem 'bootstrap', '~> 5.2.3'
 gem 'bootstrap_form', '~> 5.1.0'
 gem 'sassc-rails', '~> 2.1.2'
 

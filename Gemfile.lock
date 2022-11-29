@@ -1423,7 +1423,7 @@ GEM
     bindex (0.8.1)
     bootsnap (1.14.0)
       msgpack (~> 1.2)
-    bootstrap (5.2.2)
+    bootstrap (5.2.3)
       autoprefixer-rails (>= 9.1.0)
       popper_js (>= 2.11.6, < 3)
       sassc-rails (>= 2.0.0)
@@ -1916,7 +1916,7 @@ DEPENDENCIES
   aws-sdk (~> 3.1.0)
   barby
   bootsnap (>= 1.4.2)
-  bootstrap (~> 5.2.2)
+  bootstrap (~> 5.2.3)
   bootstrap_form (~> 5.1.0)
   bullet (~> 7.0.3)
   business_time
