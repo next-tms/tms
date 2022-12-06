@@ -995,7 +995,7 @@ class Shipment < ApplicationRecord
   end
 
   def validate_pro_and_tracking_carrier_pro
-    return unless pro_changed? || tracking_carrier_pro_changed? || broker_carrier.blank? || pro.blank?
+    return unless (pro_changed? || tracking_carrier_pro_changed?) && (broker_carrier.present? && pro.present?)
 
     error = NotImplementedError
 
