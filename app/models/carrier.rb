@@ -90,6 +90,8 @@ class Carrier < ApplicationRecord
   end
 
   def interstellar_class
+    return nil if scac.blank?
+
     @interstellar_class ||= ::Interstellar.const_get(scac)
   rescue NameError
     nil
