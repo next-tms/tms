@@ -31,7 +31,7 @@ end
 
 group :development do
   gem 'annotate', '~> 3.2.0'
-  gem 'bullet', '~> 7.0.3'
+  gem 'bullet', '~> 7.0.4'
   gem 'letter_opener'
   gem 'listen', '>= 3.0.5', '< 3.8'
   gem 'rails_real_favicon'
