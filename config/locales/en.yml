@@ -2,6 +2,8 @@ en:
   app_name: "Liftoff"
   activerecord:
     attributes:
+      broker_customer:
+        can_quote: Customer can quote and book shipments
       shipment:
         bol: Bill of Lading Number
         broker_carrier: Carrier

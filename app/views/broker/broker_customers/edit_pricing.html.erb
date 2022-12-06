@@ -3,10 +3,16 @@
 <%= render 'member_header' %>
 <h2><%= yield :title %></h2>
 
-<%= bootstrap_form_with(model: [:broker, @broker_customer], path: [:broker, @broker_customer], layout: :horizontal) do |f| %>
+<%= bootstrap_form_with(
+      model: [:broker, @broker_customer],
+      url: update_pricing_broker_broker_customer_path(@broker_customer),
+      data: { turbo: false },
+      layout: :horizontal,
+      method: :patch
+    ) do |f| %>
   <%= f.alert_message 'Unable to save customer:' %>
 
-  <%= f.check_box :can_quote, label: 'Company has access to online quoting' %>
+  <%= f.check_box :can_quote %>
   <%= f.check_box :always_show_quotes_based_on_calculated_classes, label: 'Always show rates based on calculated class rather than declared class' %>
   <%= f.check_box :ignore_value_on_api_quotes, label: 'Ignore declared value when retrieving API quotes' %>
 
@@ -62,7 +68,7 @@
   </div>
 
   <div class="col-2">
-    <%= f.text_field :default_upcharge_percentage, hide_label: true, default: 0, append: '%', autocomplete: 'off' %>
+    <%= f.text_field :default_upcharge_percentage, hide_label: true, default: 0, append: '%', data: money_controller_data, autocomplete: 'off' %>
   </div>
 
   <p class="col-title">Services</p>

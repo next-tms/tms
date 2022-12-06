@@ -337,7 +337,7 @@ class BrokerCustomer < ApplicationRecord
     if (default_upcharge_cents.blank? || default_upcharge_cents.zero?) &&
        (default_upcharge_percentage.blank? || default_upcharge_percentage.zero?) &&
        upcharge_rules.blank?
-      errors.add(:base, 'Fallback pricing rules must exist to enable customer quoting.')
+      errors.add(:can_quote, 'cannot be enabled without fallback pricing rule')
     end
   end
 end

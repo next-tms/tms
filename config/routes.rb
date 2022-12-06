@@ -66,6 +66,7 @@ Rails.application.routes.draw do
       member { get 'carriers/edit' => 'broker_customers#edit_broker_carriers', as: :edit_broker_carriers }
       member { get 'contacts' => 'broker_customers#contacts', as: :contacts }
       member { get 'pricing' => 'broker_customers#pricing', as: :pricing }
+      member { patch 'pricing/update' => 'broker_customers#update_pricing', as: :update_pricing }
       member { get 'pricing/edit' => 'broker_customers#edit_pricing', as: :edit_pricing }
       member { get 'primary-pickup-address' => 'broker_customers#primary_pickup_address', as: :primary_pickup_address }
       member { get 'sales-reps' => 'broker_customers#sales_reps', as: :sales_reps }

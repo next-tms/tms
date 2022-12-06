@@ -2,11 +2,25 @@
 
 class Broker::BrokerCustomersController < Broker::BrokerController
   ALLOWED_ACCESS_FOR_DISPATCHER = %w[show shipments].freeze
-  ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE = %w[show shipments update]
+  ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE = %w[show shipments update].freeze
 
-  before_action :set_broker_customer,
-                only: %i[contacts edit edit_broker_carriers edit_pricing broker_carriers customer_contacts preferences pricing
-                         primary_pickup_address receivables sales_reps shipments show update]
+  before_action :set_broker_customer, only: %i[
+    broker_carriers
+    contacts
+    customer_contacts
+    edit
+    edit_broker_carriers
+    edit_pricing
+    preferences
+    pricing
+    primary_pickup_address
+    receivables
+    sales_reps
+    shipments
+    show
+    update
+    update_pricing
+  ]
   before_action :authenticate_user!
 
   before_action :validate_user_role!, only: %i[update show contacts shipments]
@@ -35,7 +49,9 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def create
     @broker_customer = BrokerCustomer.new(broker_customer_params)
     @broker_customer.broker = current_user.broker
-    @broker_customer.primary_receivables_contact.broker = current_user.broker if @broker_customer.primary_receivables_contact
+    if @broker_customer.primary_receivables_contact
+      @broker_customer.primary_receivables_contact.broker = current_user.broker
+    end
     # @broker_customer.sales_reps = [current_user]
     if @broker_customer.save
       flash[:success] = "#{@broker_customer.customer.name} saved. You may now edit pricing if you’d like."
@@ -188,8 +204,16 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
     redirect_to [:broker, @broker_customer, @customer_contact] and return if @broker_customer.save
 
-    flash[:danger] = 'Unable to update customer'
+    flash[:error] = 'Unable to update customer'
     render :edit
+  end
+
+  def update_pricing
+    if @broker_customer.update(broker_customer_params)
+      redirect_to edit_pricing_broker_broker_customer_path(@broker_customer) and return
+    end
+
+    render :edit_pricing
   end
 
   private
@@ -204,7 +228,9 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
   def validate_user_role!
     return if ALLOWED_ACCESS_FOR_DISPATCHER.include?(action_name) && current_user.dispatcher_only?
-    return if ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE.include?(action_name) && current_user.has_role?('accounts_receivable')
+    if ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE.include?(action_name) && current_user.has_role?('accounts_receivable')
+      return
+    end
 
     unauthorized if not_sales_rep_for_all_and_broker_customer?
   end
@@ -291,12 +317,12 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                               :id,
                                               :primary,
                                               :_destroy,
-                                              contact_attributes: %i[
+                                              { contact_attributes: %i[
                                                 id
                                                 first_name
                                                 last_name
                                                 email
-                                              ]
+                                              ] }
                                             ],
                                             upcharge_rules_attributes: %i[
                                               _destroy
