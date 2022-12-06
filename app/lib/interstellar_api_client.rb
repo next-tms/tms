@@ -45,19 +45,19 @@ module InterstellarAPIClient
   end
 
   def fetch_pro(broker_carrier:, pickup_number:, date:)
-    return nil unless broker_carrier.to_interstellar_carrier&.find_tracking_number_from_pickup_number_implemented?
+    return nil unless broker_carrier.carrier.interstellar_class&.find_tracking_number_from_pickup_number_implemented?
 
     Services::FetchPro.new(broker_carrier:).find(pickup_number, date)
   end
 
   def fetch_rates(broker_carrier:, shipment:)
-    return nil unless broker_carrier.to_interstellar_carrier&.find_rates_implemented?
+    return nil unless broker_carrier.carrier.interstellar_class&.find_rates_implemented?
 
     Services::FetchRates.new(broker_carrier:).find(shipment:)
   end
 
   def fetch_tracking(broker_carrier:, tracking_number:)
-    return nil unless broker_carrier.to_interstellar_carrier&.find_tracking_info_implemented?
+    return nil unless broker_carrier.carrier.interstellar_class&.find_tracking_info_implemented?
 
     Services::FetchTracking.new(broker_carrier:).find(tracking_number)
   rescue NotImplementedError
