@@ -131,7 +131,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                         .includes(required_includes)
                         .order('customers.name')
 
-    @customers = QuickbooksApiClient::Customers
+    @customers = QuickbooksAPIClient::Customers
                  .new(broker: current_user.broker)
                  .find_all
                  .sort_by(&:display_name)

@@ -8,7 +8,7 @@ class InterstellarDocumentService
       return nil if shipment.pro.blank? || shipment.carrier_bol.attached?
 
       broker_carrier = shipment.broker_carrier
-      interstellar_document_response = InterstellarApiClient.fetch_bol(broker_carrier:, tracking_number: shipment.pro)
+      interstellar_document_response = InterstellarAPIClient.fetch_bol(broker_carrier:, tracking_number: shipment.pro)
 
       return nil unless interstellar_document_response&.data.present?
 
@@ -23,7 +23,7 @@ class InterstellarDocumentService
       return nil if shipment.pro.blank? || shipment.carrier_pod.attached?
 
       broker_carrier = shipment.broker_carrier
-      interstellar_document_response = InterstellarApiClient.fetch_pod(broker_carrier:, tracking_number: shipment.pro)
+      interstellar_document_response = InterstellarAPIClient.fetch_pod(broker_carrier:, tracking_number: shipment.pro)
 
       return nil unless interstellar_document_response&.data.present?
 
@@ -39,7 +39,7 @@ class InterstellarDocumentService
 
       interstellar_method = "fetch_#{document_type}"
       broker_carrier = shipment.broker_carrier
-      interstellar_document_response = InterstellarApiClient
+      interstellar_document_response = InterstellarAPIClient
                                        .send(
                                          interstellar_method,
                                          broker_carrier:,

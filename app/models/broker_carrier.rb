@@ -65,6 +65,9 @@ class BrokerCarrier < ApplicationRecord
 
   audited
 
+  # API key belonging to customer
+  encrypts :encrypted_api_key
+
   scope :api_configured, -> { where.not(password: [nil, '']) }
   scope :api_unconfigured, -> { where.not(id: api_configured) }
   scope :blanket, -> { where(broker_customer: nil) }
@@ -97,47 +100,41 @@ class BrokerCarrier < ApplicationRecord
   monetize :quote_padding_cents
 
   def api_configured?
-    !((account.blank? && username.blank?) || password.blank?)
+    return false unless carrier.broker_carrier_credential_columns.any?
+
+    carrier.broker_carrier_credential_columns.map { |column| public_send(column) }.all?(&:present?)
   end
 
   def bol_requires_tracking_number?
-    !ignore_bol_requires_tracking_number && as_interstellar_carrier&.bol_requires_tracking_number?
+    !ignore_bol_requires_tracking_number && carrier.bol_requires_tracking_number?
   end
 
   def broker_customer_specific_name
-    if broker_customer.blank?
-      carrier.name
-    else
-      "#{carrier.name} - #{broker_customer.customer.name}"
-    end
+    return carrier.name unless broker_customer.present?
+
+    "#{carrier.name} - #{broker_customer.customer.name}"
   end
   alias name broker_customer_specific_name
 
-  def as_interstellar_carrier
-    @as_interstellar_carrier ||= InterstellarApiClient::Services::BuildApiClient.call(broker_carrier: self)
+  def to_interstellar_carrier
+    @to_interstellar_carrier ||= InterstellarAPIClient::Services::BuildAPIClient.call(broker_carrier: self)
   end
 
   def to_interstellar_tariff
     return nil if overlength_rules.blank?
 
-    interstellar_overlength_rules = []
+    interstellar_overlength_rules = overlength_rules.map do |overlength_rule|
+      fee_cents = overlength_rule.cost_cents
+      max_length = Measured::Length.new(overlength_rule.max_length, :inches) if overlength_rule.max_length.present?
+      min_length = Measured::Length.new(overlength_rule.min_length, :inches)
 
-    overlength_rules.each do |overlength_rule|
-      interstellar_overlength_rules << {
-        fee_cents: overlength_rule.cost_cents,
-        max_length: overlength_rule.max_length.blank? ? nil : Measured::Length.new(overlength_rule.max_length, :inches),
-        min_length: Measured::Length.new(overlength_rule.min_length, :inches)
-      }
+      { fee_cents:, max_length:, min_length: }
     end
 
-    Interstellar::Tariff.new(
-      overlength_rules: interstellar_overlength_rules
-    )
+    Interstellar::Tariff.new(overlength_rules: interstellar_overlength_rules)
   end
 
   def pickup_number_is_tracking_number?
-    return false if as_interstellar_carrier.blank?
-
-    as_interstellar_carrier.pickup_number_is_tracking_number?
+    carrier.pickup_number_is_tracking_number?
   end
 end

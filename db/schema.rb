@@ -159,6 +159,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_06_052233) do
     t.integer "shipments_count"
     t.boolean "ignore_bol_requires_tracking_number", default: false
     t.integer "quickbooks_vendor_id"
+    t.string "encrypted_api_key"
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
@@ -285,10 +286,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_06_052233) do
     t.bigint "check_mailing_address_id"
     t.boolean "has_traceable_pickup_confirmation", default: false
     t.bigint "broker_billing_address_id"
-    t.boolean "has_seperate_website_credentials", default: false
-    t.string "encrypted_api_key"
     t.string "mc_number"
     t.boolean "consider_bol_and_pod_documents_same", default: false
+    t.string "encrypted_api_key"
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
     t.index ["name"], name: "index_carriers_on_name", unique: true

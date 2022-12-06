@@ -13,7 +13,7 @@ module Payment::QuickbooksSyncable
 
       broker_carrier.create_quickbooks_vendor if broker_carrier.quickbooks_vendor.blank?
 
-      result = QuickbooksApiClient::BillPayments.new(broker:).create(self)
+      result = QuickbooksAPIClient::BillPayments.new(broker:).create(self)
       return @quickbooks_bill_payment = nil if result.blank?
 
       update_columns(quickbooks_bill_payment_id: result.id)
@@ -25,7 +25,7 @@ module Payment::QuickbooksSyncable
 
       return false if quickbooks_bill_payment.blank?
 
-      destroyed = QuickbooksApiClient::BillPayments.new(broker:).destroy(self)
+      destroyed = QuickbooksAPIClient::BillPayments.new(broker:).destroy(self)
       return false unless destroyed
 
       update_columns(quickbooks_bill_payment_id: nil)
@@ -39,7 +39,7 @@ module Payment::QuickbooksSyncable
       result = nil
 
       unless quickbooks_bill_payment_id.blank?
-        result = QuickbooksApiClient::BillPayments.new(broker:).find(quickbooks_bill_payment_id)
+        result = QuickbooksAPIClient::BillPayments.new(broker:).find(quickbooks_bill_payment_id)
       end
       unless result.blank?
         persisted? ? update_columns(quickbooks_bill_payment_id: result.id) : self.quickbooks_bill_payment_id = result.id
@@ -108,7 +108,7 @@ module Payment::QuickbooksSyncable
 
       return create_quickbooks_bill_payment if quickbooks_bill_payment.blank?
 
-      result = QuickbooksApiClient::BillPayments.new(broker:).update(self)
+      result = QuickbooksAPIClient::BillPayments.new(broker:).update(self)
       return @quickbooks_bill_payment = nil if result.blank?
 
       update_columns(quickbooks_bill_payment_id: result.id)

@@ -1,4 +1,4 @@
 # frozen_string_literal: true
 
-module QuickbooksApiClient
+module QuickbooksAPIClient
 end

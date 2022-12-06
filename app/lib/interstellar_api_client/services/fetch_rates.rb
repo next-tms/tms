@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module InterstellarApiClient
+module InterstellarAPIClient
   module Services
     class FetchRates < Base
       def find(shipment:)

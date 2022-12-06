@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::V1::Broker::ShipmentsController < Api::ApplicationController
+class API::V1::Broker::ShipmentsController < API::ApplicationController
   before_action do
     self.namespace_for_serializer = 'Broker'
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::V1::Customer::ShipmentsController < Api::ApplicationController
+class API::V1::Customer::ShipmentsController < API::ApplicationController
   before_action :set_shipment_by_load_id, only: %i[quote show update]
 
   def create

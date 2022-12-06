@@ -61,8 +61,6 @@
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
 #
 class Rate < ApplicationRecord
-  include Apiable
-
   enum source: { api: 'api', pricing_rule: 'pricing_rule' }
 
   scope :with_calculated_freight_classes, -> { where(with_calculated_freight_classes: true) }

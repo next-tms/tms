@@ -34,6 +34,13 @@
 #  fk_rails_...  (check_mailing_address_id => addresses.id)
 #
 class Carrier < ApplicationRecord
+  INTERSTELLAR_CREDENTIAL_TYPE_BROKER_CARRIER_COLUMNS = {
+    api: %i[username password],
+    api_key: %i[encrypted_api_key],
+    website: %i[website_username website_password]
+  }.freeze
+
+  # API key belonging to Next TMS
   encrypts :encrypted_api_key
 
   has_many :broker_carriers
@@ -62,24 +69,39 @@ class Carrier < ApplicationRecord
             numericality: { only_integer: true },
             uniqueness: { allow_nil: true }
 
-  def as_interstellar_carrier
-    carrier = Interstellar.const_get(scac)
-    carrier.new(
-      account: nil,
-      customer_address: nil,
-      customer_email: nil,
-      customer_name: nil,
-      debug: !Rails.env.production?,
-      username: nil,
-      password: nil
-    )
-  rescue StandardError
+  def bol_requires_tracking_number?
+    !!interstellar_class&.bol_requires_tracking_number?
+  end
+
+  # Which `BrokerCarrier` columns are required for Interstellar to communicate with the carrier's API.
+  # @return <Boolean>
+  def broker_carrier_credential_columns
+    return [] unless required_interstellar_credentials.present?
+
+    columns = required_interstellar_credentials.map do |interstellar_credential_type|
+      INTERSTELLAR_CREDENTIAL_TYPE_BROKER_CARRIER_COLUMNS[interstellar_credential_type]
+    end
+
+    columns.flatten.compact
+  end
+
+  def create_pickup_implemented?
+    !!interstellar_class&.create_pickup_implemented?
+  end
+
+  def interstellar_class
+    @interstellar_class ||= ::Interstellar.const_get(scac)
+  rescue NameError
     nil
   end
 
+  # Whether the carrier considers `Shipment#pickup_confirmation`, `Shipment#pro` to be the same.
+  # @return <Boolean>
   def pickup_number_is_tracking_number?
-    return false if as_interstellar_carrier.blank?
+    !!interstellar_class&.pickup_number_is_tracking_number?
+  end
 
-    as_interstellar_carrier.pickup_number_is_tracking_number?
+  def required_interstellar_credentials
+    interstellar_class&.required_credential_types || []
   end
 end

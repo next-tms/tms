@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module InterstellarApiClient
+module InterstellarAPIClient
   module Services
     class FetchPro < Base
       def find(pickup_number, date)

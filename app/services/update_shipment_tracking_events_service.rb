@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 class UpdateShipmentTrackingEventsService
-  delegate *%i[
-    pro
-    broker_carrier
-    pickup_confirmation
-    receiver_address
-    shipper_address
-    id
-    tracking_events
-  ], to: :shipment
+  delegate(*%i[
+             pro
+             broker_carrier
+             pickup_confirmation
+             receiver_address
+             shipper_address
+             id
+             tracking_events
+           ], to: :shipment)
 
   def initialize(shipment:)
     @shipment = shipment
@@ -24,7 +24,10 @@ class UpdateShipmentTrackingEventsService
       interstellar_location = build_interstellar_location(shipment_event)
 
       next if missing_location_data(interstellar_location)
-      log_invalid_data_to_honeybadger(shipment_event:, attr_name: 'date_time') && next if shipment_event.date_time.blank?
+      if shipment_event.date_time.blank?
+        log_invalid_data_to_honeybadger(shipment_event:,
+                                        attr_name: 'date_time') && next
+      end
 
       at = TimeZoneService.from_interstellar_date_time(shipment_event.date_time)
 
@@ -48,7 +51,8 @@ class UpdateShipmentTrackingEventsService
       event = Event.find_by_active_shipping_code(shipment_event.type_code.to_s)
       next if event.blank?
 
-      tracking_event.assign_attributes(tracking_event_attributes(interstellar_location:, fingerprint:, time_zone_name:, event:))
+      tracking_event.assign_attributes(tracking_event_attributes(interstellar_location:, fingerprint:, time_zone_name:,
+                                                                 event:))
       # Keep original time since sometimes we "hack" it above
       tracking_event.at = at if tracking_event.at.blank?
 
@@ -103,7 +107,7 @@ class UpdateShipmentTrackingEventsService
                         end
       return if tracking_number.blank?
 
-      tracking = InterstellarApiClient.fetch_tracking(broker_carrier:, tracking_number:)
+      tracking = InterstellarAPIClient.fetch_tracking(broker_carrier:, tracking_number:)
       return unless tracking&.shipment_events.present?
 
       tracking
@@ -166,13 +170,14 @@ class UpdateShipmentTrackingEventsService
     notified_today = Rails.cache.read(cache_key)
 
     return true if notified_today
+
     # Needs to return true for the "&& next" in line 27 to execute
 
-    Rails.cache.write(cache_key, "notified", expires_in: 1.day)
+    Rails.cache.write(cache_key, 'notified', expires_in: 1.day)
 
     # Notify only once per day to prevent spam notice in Honeybadger every 30 minutes
     Honeybadger.notify(
-      "Shipment id=#{id} #interstellar_tracking returned ShipmentEvent from #{broker_carrier.carrier.name} with "\
+      "Shipment id=#{id} #interstellar_tracking returned ShipmentEvent from #{broker_carrier.carrier.name} with " \
       "invalid ##{attr_name}: #{shipment_event.attributes}"
     )
   end

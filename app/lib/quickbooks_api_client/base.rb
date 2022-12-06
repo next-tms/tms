@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module QuickbooksApiClient
+module QuickbooksAPIClient
   class Base
     BACKOFF_EXCEPTIONS = [Quickbooks::TooManyRequests, Quickbooks::ServiceUnavailable].freeze
     HTTP_TIMEOUT_CODES = [429, 504].freeze
@@ -26,10 +26,10 @@ module QuickbooksApiClient
         return nil if return_nil_on_404
 
         raise
-      rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+      rescue *QuickbooksAPIClient::Base::BACKOFF_EXCEPTIONS
         raise if tries > 10
 
-        sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+        sleep(QuickbooksAPIClient::Base::RETRY_MAX_WAIT_SECONDS)
         tries += 1
         retry
       end

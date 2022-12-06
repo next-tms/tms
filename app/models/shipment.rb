@@ -988,55 +988,52 @@ class Shipment < ApplicationRecord
 
     %i[delivered_at out_for_delivery_at picked_up_at pickup_driver_assigned_at].each do |attribute|
       val = public_send(attribute)
-      next unless val.present? && val > Time.current
+      next unless val.present? && val > now
 
       errors.add(attribute, 'cannot be in the future')
     end
   end
 
   def validate_pro_and_tracking_carrier_pro
-    return unless pro_changed? || tracking_carrier_pro_changed?
+    return unless pro_changed? || tracking_carrier_pro_changed? || broker_carrier.blank? || pro.blank?
 
     error = NotImplementedError
 
-    unless tracking_carrier&.as_interstellar_carrier.blank? || tracking_carrier_pro.blank?
-      begin
-        carrier = tracking_carrier&.as_interstellar_carrier
+    # TODO: Call this on the Interstellar::Carrier class directly (see ITR-18)
+    begin
+      interstellar_carrier = broker_carrier.to_interstellar_carrier
 
-        if carrier && carrier.valid_tracking_number?(tracking_carrier_pro) == false
-          errors.add(:base, "Carrier #{tracking_carrier.name} pro #{tracking_carrier_pro} is invalid")
-        end
-      rescue error
+      if interstellar_carrier.present? && !interstellar_carrier.valid_tracking_number?(pro)
+        errors.add(:base, "Pro #{pro} is invalid for #{broker_carrier.carrier.name}")
       end
+    rescue error
     end
 
-    unless broker_carrier.blank? ||
-           tracking_carrier.blank? ||
-           tracking_carrier_pickup_confirmation.blank? ||
-           tracking_carrier_pickup_confirmation != pickup_confirmation
+    return if tracking_carrier.blank?
+
+    # TODO: Call this on the Interstellar::Carrier class directly (see ITR-18)
+    # if tracking_carrier.interstellar_class.present? && tracking_carrier_pro.present?
+    #   begin
+    #     interstellar_class = tracking_carrier.interstellar_class
+    #
+    #     if interstellar_class.present? && !interstellar_class.valid_tracking_number?(tracking_carrier_pro)
+    #       errors.add(:base, "Carrier #{tracking_carrier.name} pro #{tracking_carrier_pro} is invalid")
+    #     end
+    #   rescue error
+    #   end
+    # end
+
+    if tracking_carrier_pickup_confirmation.present? && pickup_confirmation.present? &&
+       tracking_carrier_pickup_confirmation == pickup_confirmation
       errors.add(
         :tracking_carrier_pickup_confirmation,
         "cannot match pickup ref #{pickup_confirmation} from #{broker_carrier.carrier.name}"
       )
     end
 
-    unless broker_carrier.blank? || tracking_carrier.blank? || tracking_carrier_pro.blank? || tracking_carrier_pro != pro
-      errors.add(
-        :tracking_carrier_pro,
-        "cannot match pro #{pro} from #{broker_carrier.carrier.name}"
-      )
-    end
+    return unless tracking_carrier_pro.present? && pro.present? && tracking_carrier_pro == pro
 
-    return if broker_carrier.blank? || pro.blank?
-
-    begin
-      carrier = broker_carrier.carrier&.as_interstellar_carrier
-
-      if carrier && carrier.valid_tracking_number?(pro) == false
-        errors.add(:base, "Pro #{pro} is invalid for #{broker_carrier.carrier.name}")
-      end
-    rescue error
-    end
+    errors.add(:tracking_carrier_pro, "cannot match pro #{pro} from #{broker_carrier.carrier.name}")
   end
 
   def remove_tracking_events

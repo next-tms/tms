@@ -32,28 +32,37 @@
 
   <%= f.text_area :default_bol_notes, label: 'Default BOL Notes', rows: 7 %>
 
-  <% unless f.object.carrier&.as_interstellar_carrier&.blank? %>
-    <h3>
-      <% if f.object.carrier&.has_seperate_website_credentials? %>
-        API & Website Credentials
-      <% else %>
-        API Credentials
-      <% end %>
-    </h3>
-  
-    <%= f.text_field :username, placeholder: 'Username', autocomplete: 'off' %>
-    <%= f.text_field :password, placeholder: 'Password', autocomplete: 'off' %>
-  
-    <% if f.object.carrier&.has_seperate_website_credentials? %>
+  <% if f.object.carrier&.interstellar_class.present? %>
+    <% if (f.object.carrier.broker_carrier_credential_columns & %i[website_username website_password]).any? %>
       <h3>Website Credentials</h3>
-      <%= f.text_field :website_username, placeholder: 'Username', autocomplete: 'off' %>
-      <%= f.text_field :website_password, placeholder: 'Password', autocomplete: 'off' %>
+      <% if f.object.carrier.broker_carrier_credential_columns.include?(:website_username) %>
+        <%= f.text_field :website_username, label: 'Username', autocomplete: 'off' %>
+      <% end %>
+
+      <% if f.object.carrier.broker_carrier_credential_columns.include?(:website_password) %>
+        <%= f.text_field :website_password, label: 'Password', autocomplete: 'off' %>
+      <% end %>
     <% end %>
 
-    <% if f.object.persisted? && f.object.as_interstellar_carrier&.bol_requires_tracking_number? %>
-      <%= f.check_box :ignore_bol_requires_tracking_number,
-                      label: 'Generate BOL even if pro is missing?'
-        %>
+    <% if (f.object.carrier.broker_carrier_credential_columns & %i[api_key username password]).any? %>
+      <h3>API Credentials</h3>
+      <% if f.object.carrier.broker_carrier_credential_columns.include?(:encrypted_api_key) &&
+            f.object.carrier.encrypted_api_key.blank?
+      %>
+        <%= f.text_field :encrypted_api_key, placeholder: 'API key', autocomplete: 'off' %>
+      <% end %>
+
+      <% if f.object.carrier.broker_carrier_credential_columns.include?(:username) %>
+        <%= f.text_field :username, autocomplete: 'off' %>
+      <% end %>
+
+      <% if f.object.carrier.broker_carrier_credential_columns.include?(:password) %>
+        <%= f.text_field :password, autocomplete: 'off' %>
+      <% end %>
+    <% end %>
+
+    <% if f.object.persisted? && f.object.carrier.bol_requires_tracking_number? %>
+      <%= f.check_box :ignore_bol_requires_tracking_number, label: 'Generate BOL even if pro is missing?' %>
     <% end %>
   <% end %>
 

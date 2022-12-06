@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module QuickbooksApiClient
+module QuickbooksAPIClient
   class Vendors < Base
     def create(broker_carrier)
       vendor = broker_carrier.to_quickbooks_vendor
@@ -11,10 +11,10 @@ module QuickbooksApiClient
 
         begin
           service.create(vendor)
-        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksAPIClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
-          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+          sleep(QuickbooksAPIClient::Base::RETRY_MAX_WAIT_SECONDS)
           retry
         end
       end

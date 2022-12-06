@@ -3,8 +3,8 @@
 <%= render 'member_header' %>
 <h2><%= yield :title %></h2>
 
-<% if !@broker_carrier.as_interstellar_carrier.blank? && !@broker_carrier.as_interstellar_carrier.rates_with_excessive_length_fees %>
-  <%= bootstrap_form_with(model: [:broker, @broker_carrier], path: [:broker, @broker_carrier]) do |f| %>
+<% if @broker_carrier.to_interstellar_carrier.present? && !@broker_carrier.to_interstellar_carrier.rates_with_excessive_length_fees %>
+  <%= bootstrap_form_with(model: [:broker, @broker_carrier]) do |f| %>
     <%= f.alert_message 'Unable to update account:' %>
 
     <div class="form-group row">
@@ -34,7 +34,7 @@
       <%= f.submit class: 'btn btn-primary', value: 'Save' %>
     <% end %>
   <% end %>
-<% elsif !@broker_carrier.carrier.carrier_areas.blank? %>
+<% elsif @broker_carrier.carrier.carrier_areas.any? %>
   <%= bootstrap_form_with(model: [:broker, @broker_carrier], path: [:broker, @broker_carrier]) do |f| %>
     <%= f.alert_message 'Unable to update account:' %>
 
@@ -53,5 +53,9 @@
     <% end %>
   <% end %>
 <% else %>
-  <%= render 'layouts/message', title: 'Nothing to configure', message: !@broker_carrier.as_interstellar_carrier.blank? ? 'This carrier’s API handles tariff-specific pricing on its own.' : nil %>
+  <% message = @broker_carrier.to_interstellar_carrier.present? ? 'This carrier’s API handles tariff-specific pricing on its own.' : nil %>
+  <%= render 'layouts/message',
+             title: 'Nothing to configure',
+             message:
+  %>
 <% end %>

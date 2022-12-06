@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module QuickbooksApiClient
+module QuickbooksAPIClient
   class Customers < Base
     def create(broker_customer)
       customer = broker_customer.to_quickbooks_customer
@@ -11,10 +11,10 @@ module QuickbooksApiClient
 
         begin
           service.create(customer)
-        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksAPIClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
-          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+          sleep(QuickbooksAPIClient::Base::RETRY_MAX_WAIT_SECONDS)
           retry
         end
       end

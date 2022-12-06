@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::V1::AuthenticationController < Api::ApplicationController
+class API::V1::AuthenticationController < API::ApplicationController
   skip_before_action :authenticate_request
 
   def authenticate

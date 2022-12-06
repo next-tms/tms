@@ -4,6 +4,11 @@ en:
     attributes:
       broker_customer:
         can_quote: Customer can quote and book shipments
+        encrypted_api_key: API Key
+        password: Password
+        username: Username
+        website_password: Password
+        website_username: Username
       shipment:
         bol: Bill of Lading Number
         broker_carrier: Carrier

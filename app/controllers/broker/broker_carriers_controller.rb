@@ -70,9 +70,10 @@ class Broker::BrokerCarriersController < Broker::BrokerController
                        .includes(required_includes)
                        .order('carriers.name')
 
-    @vendors = QuickbooksApiClient::Vendors.new(broker: current_user.broker)
-                                           .find_all
-                                           .sort_by(&:display_name)
+    @vendors = QuickbooksAPIClient::Vendors
+               .new(broker: current_user.broker)
+               .find_all
+               .sort_by(&:display_name)
   end
 
   def update_quickbooks
@@ -241,6 +242,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
       :customer_id,
       :days_to_pay_after_invoice_date,
       :default_bol_notes,
+      :encrypted_api_key,
       :ignore_bol_requires_tracking_number,
       :password,
       :username,

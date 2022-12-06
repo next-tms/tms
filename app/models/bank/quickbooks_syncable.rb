@@ -11,7 +11,7 @@ module Bank::QuickbooksSyncable
 
       return update_quickbooks_account unless quickbooks_account.blank?
 
-      result = QuickbooksApiClient::Accounts.new(broker:).create(self)
+      result = QuickbooksAPIClient::Accounts.new(broker:).create(self)
       return @quickbooks_account = nil if result.blank?
 
       update_columns(quickbooks_account_id: result.id)
@@ -23,7 +23,7 @@ module Bank::QuickbooksSyncable
 
       return create_quickbooks_account if quickbooks_account.blank?
 
-      result = QuickbooksApiClient::Accounts.new(broker:).update(self)
+      result = QuickbooksAPIClient::Accounts.new(broker:).update(self)
       return @quickbooks_account = nil if result.blank?
 
       @quickbooks_account = result
@@ -36,11 +36,11 @@ module Bank::QuickbooksSyncable
       result = nil
 
       unless quickbooks_account_id.blank?
-        result = QuickbooksApiClient::Accounts.new(broker:).find(quickbooks_account_id)
+        result = QuickbooksAPIClient::Accounts.new(broker:).find(quickbooks_account_id)
       end
       return @quickbooks_account = result unless result.blank?
 
-      result = QuickbooksApiClient::Accounts.new(broker:).find_by_name(quickbooks_account_name)
+      result = QuickbooksAPIClient::Accounts.new(broker:).find_by_name(quickbooks_account_name)
       return nil if result.blank?
 
       update_columns(quickbooks_account_id: result.id)

@@ -9,7 +9,7 @@ module BrokerCustomer::QuickbooksSyncable
 
       return update_quickbooks_customer unless quickbooks_customer.blank?
 
-      result = QuickbooksApiClient::Customers.new(broker:).create(self)
+      result = QuickbooksAPIClient::Customers.new(broker:).create(self)
       return @quickbooks_customer = nil if result.blank?
 
       update_columns(quickbooks_customer_id: result.id)
@@ -21,7 +21,7 @@ module BrokerCustomer::QuickbooksSyncable
 
       return create_quickbooks_customer if quickbooks_customer.blank?
 
-      result = QuickbooksApiClient::Customers.new(broker:).update(self)
+      result = QuickbooksAPIClient::Customers.new(broker:).update(self)
       return @quickbooks_customer = nil if result.blank?
 
       @quickbooks_customer = result
@@ -34,11 +34,11 @@ module BrokerCustomer::QuickbooksSyncable
       result = nil
 
       unless quickbooks_customer_id.blank?
-        result = QuickbooksApiClient::Customers.new(broker:).find(quickbooks_customer_id)
+        result = QuickbooksAPIClient::Customers.new(broker:).find(quickbooks_customer_id)
       end
       return @quickbooks_customer = result unless result.blank?
 
-      result = QuickbooksApiClient::Customers.new(broker:).find_by_name(customer.name)
+      result = QuickbooksAPIClient::Customers.new(broker:).find_by_name(customer.name)
       return nil if result.blank?
 
       update_columns(quickbooks_customer_id: result.id)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module InterstellarApiClient
+module InterstellarAPIClient
   module Services
     class BuildInterstellarCredential
       def initialize(type:, broker_carrier: nil)
@@ -20,13 +20,14 @@ module InterstellarApiClient
 
       attr_reader :type, :broker_carrier
 
+      # @note Okay to pass blank `Interstellar::Credential` attributes
       def api_credentials
-        # Okay to pass blank attributes since some API's are okay with that
+        return nil unless broker_carrier.carrier.required_interstellar_credentials.any?(:api)
 
         Interstellar::Credential.new(
           type: :api,
           account: broker_carrier.account,
-          api_key: broker_carrier.carrier.encrypted_api_key,
+          api_key: (broker_carrier.encrypted_api_key.presence || broker_carrier.carrier.encrypted_api_key),
           username: broker_carrier.username,
           password: broker_carrier.password
         )
@@ -41,24 +42,14 @@ module InterstellarApiClient
       end
 
       def website_credentials
-        if broker_carrier.carrier.has_seperate_website_credentials?
-          return nil if [broker_carrier.website_username, broker_carrier.website_password].any?(&:blank?)
+        return nil if broker_carrier.carrier.required_interstellar_credentials.none?(:website) ||
+                      [broker_carrier.website_username, broker_carrier.website_password].any?(&:blank?)
 
-          Interstellar::Credential.new(
-            type: :website,
-            username: broker_carrier.website_username,
-            password: broker_carrier.website_password
-          )
-        else
-          return nil if [broker_carrier.account, broker_carrier.username, broker_carrier.password].any?(&:blank?)
-
-          Interstellar::Credential.new(
-            type: :website,
-            account: broker_carrier.account,
-            username: broker_carrier.username,
-            password: broker_carrier.password
-          )
-        end
+        Interstellar::Credential.new(
+          type: :website,
+          username: broker_carrier.website_username,
+          password: broker_carrier.website_password
+        )
       end
     end
   end

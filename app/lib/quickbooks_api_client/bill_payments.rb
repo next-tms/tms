@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module QuickbooksApiClient
+module QuickbooksAPIClient
   class BillPayments < Base
     def create(payment)
       bill_payment = build_bill_payment(payment)
@@ -11,10 +11,10 @@ module QuickbooksApiClient
 
         begin
           service.create(bill_payment)
-        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksAPIClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
-          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+          sleep(QuickbooksAPIClient::Base::RETRY_MAX_WAIT_SECONDS)
           retry
         rescue Quickbooks::IntuitRequestException => e
           raise unless e.message.include?('Duplicate Document Number Error')

@@ -65,10 +65,10 @@ gem 'devise', '~> 4.8.0'
 gem 'devise_invitable', '~> 2.0.5'
 gem 'devise-pwned_password', '~> 0.1.9'
 
-gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'e181fb2197c00d7a9d2ade7341d8cba5016204d7'
+gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'eb834da8196f28db0ed0bc62d1439a103d973c62'
 gem 'interstellar-next',
     git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next',
-    ref: 'af56e2622d2e191d5fe5b81d94ac56890d6e6bd9'
+    ref: 'db1912abcc25885170de420bce5700901d412e50'
 gem 'spacetime',
     git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime',
     ref: 'b430558c2458c6d674ec1803246ff5fcccacff94'

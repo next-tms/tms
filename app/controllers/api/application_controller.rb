@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Api
+module API
   class ApplicationController < ActionController::API
     before_action :authenticate_request
 
@@ -10,7 +10,7 @@ module Api
     private
 
     def authenticate_request
-      @current_user = AuthorizeApiRequest.call(request.headers).result
+      @current_user = AuthorizeAPIRequest.call(request.headers).result
       render json: {  error: 'Unauthorized' }, status: :unauthorized unless @current_user
     end
 

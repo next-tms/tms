@@ -1,40 +1,38 @@
 # frozen_string_literal: true
 
-module InterstellarApiClient
+module InterstellarAPIClient
   module Services
     class Base
       WATIR_EXCEPTIONS = [
         Watir::Exception::UnknownObjectException,
         Watir::Exception::NoValueFoundException,
         Watir::Wait::TimeoutError
-      ]
+      ].freeze
 
       def initialize(broker_carrier:)
-        @carrier_client = InterstellarApiClient.build_client(broker_carrier:)
+        @carrier_client = InterstellarAPIClient.build_client(broker_carrier:)
         @broker_carrier = broker_carrier
       end
 
       def interstellar_api_call_block
-        begin
-          yield
-        rescue *WATIR_EXCEPTIONS => error
-          handle_timeout_error(error)
-        rescue Net::ReadTimeout => error
-          handle_timeout_error(error)
-        end
+        yield
+      rescue *WATIR_EXCEPTIONS => e
+        handle_timeout_error(e)
+      rescue Net::ReadTimeout => e
+        handle_timeout_error(e)
       end
 
       def handle_timeout_error(error)
-        cache_key = "#{broker_carrier.id}_#{error.class.to_s}"
+        cache_key = "#{broker_carrier.id}_#{error.class}"
         notified_within_an_hour = Rails.cache.read(cache_key)
         return nil if notified_within_an_hour
 
-        Rails.cache.write(cache_key, "notified", expires_in: 1.hour)
+        Rails.cache.write(cache_key, 'notified', expires_in: 1.hour)
 
         # Notify only once per hour to prevent spam notice in Honeybadger
         # Watir Errors usually occurs due to BrokerCarrier's Web Page's Downtime
         Honeybadger.notify(
-          "#{error.message} -> BrokerCarrier ID=#{broker_carrier.id} | "\
+          "#{error.message} -> BrokerCarrier ID=#{broker_carrier.id} | " \
           "Name=#{broker_carrier.carrier&.name} (#{broker_carrier.carrier&.scac})"
         )
 

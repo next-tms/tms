@@ -9,7 +9,7 @@ module BrokerCarrier::QuickbooksSyncable
 
       return update_quickbooks_vendor unless quickbooks_vendor.blank?
 
-      result = QuickbooksApiClient::Vendors.new(broker:).create(self)
+      result = QuickbooksAPIClient::Vendors.new(broker:).create(self)
       return @quickbooks_vendor = nil if result.blank?
 
       update_columns(quickbooks_vendor_id: result.id)
@@ -21,7 +21,7 @@ module BrokerCarrier::QuickbooksSyncable
 
       return create_quickbooks_vendor if quickbooks_vendor.blank?
 
-      result = QuickbooksApiClient::Vendors.new(broker:).update(self)
+      result = QuickbooksAPIClient::Vendors.new(broker:).update(self)
       return @quickbooks_vendor = nil if result.blank?
 
       @quickbooks_vendor = result
@@ -33,10 +33,10 @@ module BrokerCarrier::QuickbooksSyncable
 
       result = nil
 
-      result = QuickbooksApiClient::Vendors.new(broker:).find(quickbooks_vendor_id) unless quickbooks_vendor_id.blank?
+      result = QuickbooksAPIClient::Vendors.new(broker:).find(quickbooks_vendor_id) unless quickbooks_vendor_id.blank?
       return @quickbooks_vendor = result unless result.blank?
 
-      result = QuickbooksApiClient::Vendors.new(broker:).find_by_name(carrier.name)
+      result = QuickbooksAPIClient::Vendors.new(broker:).find_by_name(carrier.name)
       return nil if result.blank?
 
       update_columns(quickbooks_vendor_id: result.id)

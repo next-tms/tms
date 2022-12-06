@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module QuickbooksApiClient
+module QuickbooksAPIClient
   class Accounts < Base
     def create(bank)
       account = build_account(bank)
@@ -11,10 +11,10 @@ module QuickbooksApiClient
 
         begin
           service.create(account)
-        rescue *QuickbooksApiClient::Base::BACKOFF_EXCEPTIONS
+        rescue *QuickbooksAPIClient::Base::BACKOFF_EXCEPTIONS
           raise if tries > 10
 
-          sleep(QuickbooksApiClient::Base::RETRY_MAX_WAIT_SECONDS)
+          sleep(QuickbooksAPIClient::Base::RETRY_MAX_WAIT_SECONDS)
           retry
         end
       end

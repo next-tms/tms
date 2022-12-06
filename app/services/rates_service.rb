@@ -41,7 +41,7 @@ class RatesService
   end
 
   def fetch_api_rates
-    return if @broker_carrier.as_interstellar_carrier.blank?
+    return if @broker_carrier.to_interstellar_carrier.blank?
 
     response = nil
 
@@ -53,7 +53,7 @@ class RatesService
 
     if !ignore_value &&
        !@shipment.value.zero? &&
-       !@broker_carrier.as_interstellar_carrier.find_rates_with_declared_value?
+       !@broker_carrier.to_interstellar_carrier.find_rates_with_declared_value?
       error = StandardError.new('Carrier doesn’t support quoting shipments with declared value')
 
       rate = build_rate(:api)
@@ -73,7 +73,7 @@ class RatesService
     )
 
     begin
-      response = InterstellarApiClient.fetch_rates(
+      response = InterstellarAPIClient.fetch_rates(
         broker_carrier: @broker_carrier,
         shipment: api_shipment
       )

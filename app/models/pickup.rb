@@ -44,8 +44,6 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Pickup < ApplicationRecord
-  include Apiable
-
   after_commit :update_shipment
 
   belongs_to :dispatcher, class_name: 'User', required: true

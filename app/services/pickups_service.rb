@@ -51,7 +51,7 @@ class PickupsService
     error = nil
 
     begin
-      response = InterstellarApiClient.create_pickup(
+      response = InterstellarAPIClient.create_pickup(
         broker_carrier: @broker_carrier,
         delivery_from: @shipment.delivery_from,
         delivery_to: @shipment.delivery_by,

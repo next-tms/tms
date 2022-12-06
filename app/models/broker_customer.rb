@@ -276,7 +276,7 @@ class BrokerCustomer < ApplicationRecord
 
     return update_quickbooks_customer if quickbooks_customer.present?
 
-    result = QuickbooksApiClient::Customers.new(broker:).create(self)
+    result = QuickbooksAPIClient::Customers.new(broker:).create(self)
     return false if result.blank?
 
     update!(quickbooks_customer_id: result.id)
@@ -294,7 +294,7 @@ class BrokerCustomer < ApplicationRecord
 
     return create_quickbooks_customer unless quickbooks_customer.present?
 
-    result = QuickbooksApiClient::Customers.new(broker:).update(self)
+    result = QuickbooksAPIClient::Customers.new(broker:).update(self)
     return false if result.blank?
 
     @quickbooks_customer = result
@@ -309,11 +309,11 @@ class BrokerCustomer < ApplicationRecord
     result = nil
 
     unless quickbooks_customer_id.blank?
-      result = QuickbooksApiClient::Customers.new(broker:).find(quickbooks_customer_id)
+      result = QuickbooksAPIClient::Customers.new(broker:).find(quickbooks_customer_id)
     end
     return @quickbooks_customer = result unless result.blank?
 
-    result = QuickbooksApiClient::Customers.new(broker:).find_by_name(customer.name)
+    result = QuickbooksAPIClient::Customers.new(broker:).find_by_name(customer.name)
     return nil if result.blank?
 
     update_columns(quickbooks_customer_id: result.id)

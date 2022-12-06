@@ -18,10 +18,11 @@
 # end
 
 ActiveSupport::Inflector.inflections do |inflect|
+  inflect.acronym 'API'
   inflect.acronym 'BOL'
   inflect.acronym 'BOLs'
+  inflect.acronym 'PO'
   inflect.acronym 'POD'
   inflect.acronym 'PODs'
   inflect.acronym 'SO'
-  inflect.acronym 'PO'
 end

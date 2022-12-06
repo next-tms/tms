@@ -11,7 +11,7 @@ module Receivable::QuickbooksSyncable
 
       broker_customer.create_quickbooks_customer if broker_customer.quickbooks_customer.blank?
 
-      result = QuickbooksApiClient::Invoices.new(broker:).create(self)
+      result = QuickbooksAPIClient::Invoices.new(broker:).create(self)
       return @quickbooks_invoice = nil if result.blank?
 
       update!(invoiced: true, quickbooks_invoice_id: result.id)
@@ -25,14 +25,14 @@ module Receivable::QuickbooksSyncable
       result = nil
 
       unless quickbooks_invoice_id.blank?
-        result = QuickbooksApiClient::Invoices.new(broker:).find(quickbooks_invoice_id)
+        result = QuickbooksAPIClient::Invoices.new(broker:).find(quickbooks_invoice_id)
       end
       unless result.blank?
         persisted? ? update_columns(quickbooks_invoice_id: result.id) : self.quickbooks_invoice_id = result.id
         return @quickbooks_invoice = result
       end
 
-      result = QuickbooksApiClient::Invoices.new(broker:).find_by_doc_number(shipment.load_id)
+      result = QuickbooksAPIClient::Invoices.new(broker:).find_by_doc_number(shipment.load_id)
       unless result.blank?
         persisted? ? update_columns(quickbooks_invoice_id: result.id) : self.quickbooks_invoice_id = result.id
         return @quickbooks_invoice = result
@@ -44,7 +44,7 @@ module Receivable::QuickbooksSyncable
     def quickbooks_invoice_pdf
       return nil if !broker.intuit_account&.connected? || quickbooks_invoice.blank?
 
-      data = QuickbooksApiClient::Invoices.new(broker:).pdf(quickbooks_invoice)
+      data = QuickbooksAPIClient::Invoices.new(broker:).pdf(quickbooks_invoice)
       return nil if data.blank?
 
       if data.include?('errorCode=')
@@ -53,7 +53,7 @@ module Receivable::QuickbooksSyncable
         # xmlns=\"http://schema.intuit.com/finance/v3\">\n <Fault type=\"SERVICE\">\n <Error code=\"3001\">\n <Message>message=ThrottleExceeded;
         # errorCode=003001; statusCode=429</Message>\n  </Error>\n  </Fault>\n</ IntuitResponse>\n"
         sleep(10)
-        data = QuickbooksApiClient::Invoices.new(broker:).pdf(quickbooks_invoice)
+        data = QuickbooksAPIClient::Invoices.new(broker:).pdf(quickbooks_invoice)
       end
 
       filename = "#{shipment.load_id} Invoice.pdf"
@@ -89,7 +89,7 @@ module Receivable::QuickbooksSyncable
 
       shipment.broker_customer.create_quickbooks_customer unless shipment.broker_customer.quickbooks_customer.present?
 
-      result = QuickbooksApiClient::Invoices.new(broker:).update(self)
+      result = QuickbooksAPIClient::Invoices.new(broker:).update(self)
       return @quickbooks_invoice = nil if result.blank?
 
       update!(invoiced: true, quickbooks_invoice_id: result.id)

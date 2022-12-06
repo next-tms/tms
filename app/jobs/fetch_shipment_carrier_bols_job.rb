@@ -22,7 +22,7 @@ class FetchShipmentCarrierBOLsJob < ApplicationJob
                 end
 
     shipments.find_each do |shipment|
-      next unless shipment.broker_carrier&.api_configured? && shipment.broker_carrier&.as_interstellar_carrier
+      next unless shipment.broker_carrier&.api_configured? && shipment.broker_carrier&.to_interstellar_carrier
 
       FetchShipmentCarrierBOLJob.perform_later(shipment)
     end

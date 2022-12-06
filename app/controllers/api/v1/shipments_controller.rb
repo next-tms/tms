@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::V1::ShipmentsController < Api::ApplicationController
+class API::V1::ShipmentsController < API::ApplicationController
   skip_before_action :authenticate_request
 
   def tracking_events

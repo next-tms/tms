@@ -81,9 +81,10 @@ class Broker::BanksController < Broker::BrokerController
              .banks
              .order(:name, :account_number)
 
-    @accounts = QuickbooksApiClient::Accounts.new(broker: current_user.broker)
-                                             .find_all
-                                             .sort_by(&:name)
+    @accounts = QuickbooksAPIClient::Accounts
+                .new(broker: current_user.broker)
+                .find_all
+                .sort_by(&:name)
   end
 
   def update_quickbooks
@@ -99,9 +100,10 @@ class Broker::BanksController < Broker::BrokerController
       redirect_to quickbooks_broker_banks_path and return
     end
 
-    @accounts = QuickbooksApiClient::Accounts.new(broker: current_user.broker)
-                                             .find_all
-                                             .sort_by(&:name)
+    @accounts = QuickbooksAPIClient::Accounts
+                .new(broker: current_user.broker)
+                .find_all
+                .sort_by(&:name)
 
     render :quickbooks
   end
