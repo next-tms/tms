@@ -42,6 +42,7 @@ class Carrier < ApplicationRecord
 
   # API key belonging to Next TMS
   encrypts :encrypted_api_key
+  encrypts :encrypted_proxy_url
 
   has_many :broker_carriers
   has_many :brokers, through: :broker_customers

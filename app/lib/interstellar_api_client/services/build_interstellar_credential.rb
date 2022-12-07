@@ -9,12 +9,9 @@ module InterstellarAPIClient
       end
 
       def call
-        case type
-        when :api then api_credentials
-        when :api_key then api_key_credentials
-        when :selenoid then selenoid_credentials
-        when :website then website_credentials
-        end
+        return nil if %i[api api_key api_proxy selenoid website].exclude?(type)
+
+        send("#{type}_credentials")
       end
 
       private
@@ -23,25 +20,30 @@ module InterstellarAPIClient
 
       # @note Okay to pass blank `Interstellar::Credential` attributes
       def api_credentials
-        return nil unless broker_carrier.carrier.required_interstellar_credentials.any?(:api)
-
         Interstellar::Credential.new(
           type: :api,
           account: broker_carrier.account,
-          api_key: (broker_carrier.encrypted_api_key.presence || broker_carrier.carrier.encrypted_api_key),
+          api_key:,
           username: broker_carrier.username,
           password: broker_carrier.password
         )
       end
 
+      # `Interstellar::Credential` with only `#api_key`, `#proxy_url` attributes
+      def api_proxy_credentials
+        Interstellar::Credential.new(
+          type: :api_proxy,
+          proxy_url: broker_carrier.carrier.encrypted_proxy_url,
+          api_key:,
+        )
+      end
+
       # `Interstellar::Credential` with only `#api_key`, `#account` attributes
       def api_key_credentials
-        return nil unless broker_carrier.carrier.required_interstellar_credentials.any?(:api_key)
-
         Interstellar::Credential.new(
           type: :api_key,
           account: broker_carrier.account,
-          api_key: (broker_carrier.carrier.encrypted_api_key.presence || broker_carrier.encrypted_api_key)
+          api_key:,
         )
       end
 
@@ -54,14 +56,17 @@ module InterstellarAPIClient
       end
 
       def website_credentials
-        return nil if broker_carrier.carrier.required_interstellar_credentials.none?(:website) ||
-                      [broker_carrier.website_username, broker_carrier.website_password].any?(&:blank?)
+        return nil if [broker_carrier.website_username, broker_carrier.website_password].any?(&:blank?)
 
         Interstellar::Credential.new(
           type: :website,
           username: broker_carrier.website_username,
           password: broker_carrier.website_password
         )
+      end
+
+      def api_key
+        broker_carrier.carrier.encrypted_api_key.presence || broker_carrier.encrypted_api_key
       end
     end
   end
