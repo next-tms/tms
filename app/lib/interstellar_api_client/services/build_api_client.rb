@@ -25,6 +25,7 @@ module InterstellarAPIClient
       def self.build_credentials(broker_carrier:)
         [
           BuildInterstellarCredential.new(type: :api, broker_carrier:).call,
+          BuildInterstellarCredential.new(type: :api_key, broker_carrier:).call,
           BuildInterstellarCredential.new(type: :selenoid).call,
           BuildInterstellarCredential.new(type: :website, broker_carrier:).call
         ].compact

@@ -11,6 +11,7 @@ module InterstellarAPIClient
       def call
         case type
         when :api then api_credentials
+        when :api_key then api_key_credentials
         when :selenoid then selenoid_credentials
         when :website then website_credentials
         end
@@ -30,6 +31,17 @@ module InterstellarAPIClient
           api_key: (broker_carrier.encrypted_api_key.presence || broker_carrier.carrier.encrypted_api_key),
           username: broker_carrier.username,
           password: broker_carrier.password
+        )
+      end
+
+      # `Interstellar::Credential` with only `#api_key`, `#account` attributes
+      def api_key_credentials
+        return nil unless broker_carrier.carrier.required_interstellar_credentials.any?(:api_key)
+
+        Interstellar::Credential.new(
+          type: :api_key,
+          account: broker_carrier.account,
+          api_key: (broker_carrier.carrier.encrypted_api_key.presence || broker_carrier.encrypted_api_key)
         )
       end
 
