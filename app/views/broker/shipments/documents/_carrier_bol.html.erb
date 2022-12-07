@@ -1,0 +1,10 @@
+<tr id="<%= this_dom_id %>_carrier_bol">
+  <% if shipment.broker_carrier.present? && shipment.carrier_bol.attached? %>
+    <td><%= shipment.broker_carrier.carrier.name %></td>
+    <td>Scanned Bill of Lading</td>
+    <%= render 'broker/shipments/documents/actions', shipment:, document_type: :carrier_bol %>
+    <td>
+      <%= render 'broker/shipments/documents/document_upload', document_type: :carrier_bol, replace: true %>
+    </td>
+  <% end %>
+</tr>

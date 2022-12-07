@@ -128,6 +128,8 @@ class BrokerCustomer < ApplicationRecord
   has_many :upcharge_rules
   accepts_nested_attributes_for :upcharge_rules, allow_destroy: true, reject_if: :all_blank
 
+  has_many :users
+
   enum receivables_schedule: {
     daily: 'daily',
     immediately: 'immediately',

@@ -1,9 +1,10 @@
 <%= bootstrap_form_with(model: [:broker, @shipment], url: upload_document_broker_shipment_path, class: 'row') do |f| %>
   <div class="col-auto">
-    <%= f.file_field :document, accept: 'application/pdf', hide_label: true %>
+    <%= f.file_field :document, hide_label: true %>
     <%= f.hidden_field :document_type, value: document_type %>
   </div>
+
   <div class="col-auto">
-    <%= f.submit replace ? 'Replace' : 'Add', class: 'btn btn-secondary' %>
+    <%= f.submit (replace ? 'Replace' : 'Add'), class: 'btn btn-secondary' %>
   </div>
 <% end %>

@@ -1,0 +1,15 @@
+<tr id="<%= this_dom_id %>_carrier_pod">
+  <% if shipment.broker_carrier.present? && shipment.carrier_pod.attached? %>
+    <td><%= shipment.broker_carrier.carrier.name %></td>
+    <td>Proof of Delivery</td>
+    <td>
+      <%= link_to icon('solid', 'eye', 'View'), rails_blob_path(shipment.carrier_pod, disposition: 'preview'), target: '_blank' %>
+    </td>
+    <td>
+      <%= link_to icon('solid', 'file-download', 'Download'),
+                  rails_blob_path(shipment.carrier_pod, disposition: 'attachment'),
+                  data: { turbo: false }
+      %>
+    </td>
+  <% end %>
+</tr>

@@ -15,29 +15,37 @@ module Shipment::Documentable
     has_one_attached :broker_carrier_quote
 
     def broadcast_new_document_generated(document_type)
-      partial = if %i[broker_dispatch_sheet broker_carrier_quote].include?(document_type)
-                  "broker/shipments/documents/#{document_type}"
-                else
-                  "shipments/documents/#{document_type}"
-                end
+      broadcast_namespaces(document_type).each do |namespace|
+        partial = "#{namespace}/shipments/documents/#{document_type}"
 
-      broadcast_replace_to(
-        self,
-        :documents,
-        target: "#{dom_id(self)}_#{document_type}",
-        html: ApplicationController.render(partial:, locals: { this_dom_id: dom_id(self), shipment: self }).html_safe
-      )
+        broadcast_replace_to(
+          self,
+          :documents,
+          target: broadcast_target(document_type, namespace),
+          html: ApplicationController.render(partial:, locals: { shipment: self, this_dom_id: dom_id(self) }).html_safe
+        )
+      end
     end
 
     def broadcast_outdated_document(document_type)
-      target = "#{dom_id(self)}_#{document_type}"
+      broadcast_namespaces(document_type).each do |namespace|
+        broadcast_replace_to(
+          self,
+          :documents,
+          target: broadcast_target(document_type, namespace),
+          html: "<tr id=\"#{target}\"></tr>".html_safe
+        )
+      end
+    end
 
-      broadcast_replace_to(
-        self,
-        :documents,
-        target:,
-        html: "<tr id=\"#{target}\"></tr>".html_safe
-      )
+    def broadcast_namespaces(document_type)
+      return %i[broker customer] unless %i[broker_dispatch_sheet broker_carrier_quote].include?(document_type)
+
+      %i[broker]
+    end
+
+    def broadcast_target(document_type, namespace)
+      "#{namespace}_#{dom_id(self)}_#{document_type}"
     end
 
     def broker_bol_valid?

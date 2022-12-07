@@ -1,0 +1,15 @@
+<tr id="<%= this_dom_id %>_broker_bol">
+  <% if shipment.broker_bol_valid? && shipment.broker_bol.attached? %>
+    <td><%= shipment.broker.name %></td>
+    <td>Bill of Lading</td>
+    <td>
+      <%= link_to icon('solid', 'eye', 'View'), rails_blob_path(shipment.broker_bol, disposition: 'preview'), target: '_blank' %>
+    </td>
+    <td>
+      <%= link_to icon('solid', 'file-download', 'Download'),
+                  rails_blob_path(shipment.broker_bol, disposition: 'attachment'),
+                  data: { turbo: false }
+      %>
+    </td>
+  <% end %>
+</tr>

@@ -8,12 +8,12 @@
 
 <div class="row">
   <div class="col col-md-8">
-    <% this_dom_id = dom_id(@shipment) %>
+    <% this_dom_id = "customer_#{dom_id(@shipment)}" %>
     <div id="<%="#{this_dom_id}_document_notification"%>"></div>
 
     <div class="table-responsive">
-      <table class="table table-borderless table-striped">
-        <thead>
+      <table class="table table-borderless table-bordered">
+        <thead class="table-borderless">
           <tr>
             <th>Author</th>
             <th>Kind</th>
@@ -21,27 +21,18 @@
             <th></th>
           </tr>
         </thead>
-        <table class="table table-borderless table-bordered">
-          <thead class="table-borderless">
-            <tr>
-              <th>Author</th>
-              <th>Kind</th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <%= render 'shipments/documents/broker_quote', this_dom_id:, shipment: @shipment %>
-            <%= render 'shipments/documents/broker_bol', this_dom_id:, shipment: @shipment %>
-            <%= render 'shipments/documents/broker_label', this_dom_id:, shipment: @shipment %>
-            <%= render 'shipments/documents/carrier_label', this_dom_id:, shipment: @shipment %>
-            <% unless @shipment.broker_carrier&.carrier&.consider_bol_and_pod_documents_same? %>
-              <%= render 'shipments/documents/carrier_bol', this_dom_id:, shipment: @shipment %>
-            <% end %>
-            <%= render 'shipments/documents/carrier_pod', this_dom_id:, shipment: @shipment %>
-          </tbody>
+        <tbody>
+          <%= render 'customer/shipments/documents/broker_quote', this_dom_id:, shipment: @shipment %>
+          <%= render 'customer/shipments/documents/broker_bol', this_dom_id:, shipment: @shipment %>
+          <%= render 'customer/shipments/documents/broker_label', this_dom_id:, shipment: @shipment %>
+          <%= render 'customer/shipments/documents/carrier_label', this_dom_id:, shipment: @shipment %>
+
+          <% unless @shipment.broker_carrier&.carrier&.consider_bol_and_pod_documents_same? %>
+            <%= render 'customer/shipments/documents/carrier_bol', this_dom_id:, shipment: @shipment %>
+          <% end %>
+
+          <%= render 'customer/shipments/documents/carrier_pod', this_dom_id:, shipment: @shipment %>
+        </tbody>
       </table>
     </div>
   </div>

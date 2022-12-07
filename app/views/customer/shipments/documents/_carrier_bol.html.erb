@@ -1,0 +1,18 @@
+<tr id="<%= this_dom_id %>_carrier_bol">
+  <% if shipment.broker_carrier.present? && shipment.carrier_bol.attached? %>
+    <td><%= shipment.broker_carrier.carrier.name %></td>
+    <td>Scanned Bill of Lading</td>
+    <td>
+      <%= link_to icon('solid', 'eye', 'View'),
+                  rails_blob_path(shipment.carrier_bol, disposition: 'preview'),
+                  target: '_blank'
+      %>
+    </td>
+    <td>
+      <%= link_to icon('solid', 'file-download', 'Download'),
+                  rails_blob_path(shipment.carrier_bol, disposition: 'attachment'),
+                  data: { turbo: false }
+      %>
+    </td>
+  <% end %>
+</tr>
