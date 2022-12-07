@@ -56,7 +56,7 @@ gem 'bootstrap', '~> 5.2.3'
 gem 'bootstrap_form', '~> 5.1.0'
 gem 'sassc-rails', '~> 2.1.2'
 
-gem "font-awesome-sass", "~> 6.2.1"
+gem 'font-awesome-sass', '~> 6.2.1'
 
 gem 'aws-sdk', '~> 3.1.0', group: :production
 gem 'image_processing', '~> 1.12.2'
@@ -68,7 +68,7 @@ gem 'devise-pwned_password', '~> 0.1.9'
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: '2d290385c79b560d84466bc07dc7150ca014bd74'
 gem 'interstellar-next',
     git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next',
-    ref: 'd59f527698eb71d956b9b3fa955ad53dd8d32074'
+    ref: '23b7b24b1e6ed32c371238f799f905a844568e90'
 gem 'spacetime',
     git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime',
     ref: 'b430558c2458c6d674ec1803246ff5fcccacff94'
@@ -104,10 +104,10 @@ gem 'htmlentities'
 gem 'phony_rails'
 
 gem 'combine_pdf', '~> 1.0.22'
+gem 'gotenberg-ruby', '~> 1.0.9'
 gem 'prawn', '~> 2.4.0'
 gem 'prawn-labels', '~> 1.2.6', require: 'prawn/labels'
 gem 'rqrcode'
-gem 'gotenberg-ruby', '~> 1.0.9'
 
 gem 'pagy'
 gem 'ransack', '~> 3.2.1'
