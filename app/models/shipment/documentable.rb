@@ -29,10 +29,12 @@ module Shipment::Documentable
 
     def broadcast_outdated_document(document_type)
       broadcast_namespaces(document_type).each do |namespace|
+        target = broadcast_target(document_type, namespace)
+
         broadcast_replace_to(
           self,
           :documents,
-          target: broadcast_target(document_type, namespace),
+          target: ,
           html: "<tr id=\"#{target}\"></tr>".html_safe
         )
       end
