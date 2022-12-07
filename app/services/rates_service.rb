@@ -72,26 +72,28 @@ class RatesService
       pickup_at:
     )
 
-    response = InterstellarAPIClient.fetch_rates(
-      broker_carrier: @broker_carrier,
-      shipment: api_shipment
-    )
-    #    rescue StandardError => e
-    #      if !Rails.env.development? && !e.is_a?(Interstellar::Error)
-    #        attributes = {
-    #          broker_carrier_id: @broker_carrier&.id,
-    #          shipment_id: @shipment&.id,
-    #          use_forced_freight_classes: @use_forced_freight_classes
-    #        }
-    #
-    #        Honeybadger.notify(e, attributes)
-    #      end
-    #
-    #      rate = build_rate(:api)
-    #      rate.error_object = e
-    #      @rates << rate
-    #
-    #      return
+    begin
+      response = InterstellarAPIClient.fetch_rates(
+        broker_carrier: @broker_carrier,
+        shipment: api_shipment
+      )
+    rescue StandardError => e
+      if !Rails.env.development? && !e.is_a?(Interstellar::Error)
+        attributes = {
+          broker_carrier_id: @broker_carrier&.id,
+          shipment_id: @shipment&.id,
+          use_forced_freight_classes: @use_forced_freight_classes
+        }
+
+        Honeybadger.notify(e, attributes)
+      end
+
+      rate = build_rate(:api)
+      rate.error_object = e
+      @rates << rate
+
+      return
+    end
 
     interstellar_rates = response&.rates
 
