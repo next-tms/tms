@@ -32,11 +32,11 @@ GIT
 
 GIT
   remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: 23b7b24b1e6ed32c371238f799f905a844568e90
-  ref: 23b7b24b1e6ed32c371238f799f905a844568e90
+  revision: 736dcee1247c9b04dae418c0525c306e701b668a
+  ref: 736dcee1247c9b04dae418c0525c306e701b668a
   specs:
     interstellar-next (0.1.pre27)
-      interstellar (>= 0.1.pre27, <= 0.1.pre28)
+      interstellar (= 0.1.pre28)
       rmagick (~> 4.2.5)
 
 GIT
