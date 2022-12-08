@@ -68,9 +68,11 @@ class BrokerCarrier < ApplicationRecord
   # API key belonging to customer
   encrypts :encrypted_api_key
 
-  scope :api_configured, -> { where.not(password: [nil, '']) }
-  scope :api_unconfigured, -> { where.not(id: api_configured) }
+  scope :api_configured, -> { where(api_configured: true) }
+  scope :api_unconfigured, -> { where(api_configured: false) }
   scope :blanket, -> { where(broker_customer: nil) }
+
+  before_save :set_api_configured
 
   belongs_to :carrier
   belongs_to :broker
@@ -136,5 +138,17 @@ class BrokerCarrier < ApplicationRecord
 
   def pickup_number_is_tracking_number?
     carrier.pickup_number_is_tracking_number?
+  end
+
+  private
+
+  def set_api_configured
+    return self.api_configured = false if carrier.blank? || carrier.broker_carrier_credential_columns.empty?
+
+    carrier.broker_carrier_credential_columns.each do |column|
+      return self.api_configured = false if public_send(column).blank?
+    end
+
+    self.api_configured = true
   end
 end
