@@ -3,12 +3,35 @@
 <%= render 'member_header' %>
 <h2>Pricing</h2>
 
-<% unless @shipment.receivables.blank? %>
-  <div class="alert alert-danger">
+<% if @shipment.receivables.any? %>
+  <div class="alert alert-danger mt-2">
     <p class="lead">Already invoiced</p>
     <p>
-      This shipment has already been invoiced. Modifying the values here will not update any invoices associated and will require further review. Only users with accounting priveledges may make further changes.</p>
+      Updating pricing below will not update any existing associated invoices.
+      Only users with accounting privileges may make further changes.
+    </p>
   </div>
+<% end %>
+
+<% whodunnit = @shipment.whodunnit('total_charges_cents') %>
+<% if @shipment.applied_rate.present? && whodunnit&.customer? %>
+  <%= render 'layouts/message',
+      classes: 'alert-danger',
+      title: "#{@shipment.broker_customer.customer.name} set these charges",
+      message: <<~MESSAGE
+        #{humanized_money_with_symbol(@shipment.total_charges, no_cents_if_whole: false)}
+        was selected from a quote they found online.
+      MESSAGE
+  %>
+<% elsif whodunnit&.broker? %>
+  <%= render 'layouts/message',
+      classes: 'alert-info',
+      title: "#{current_user.broker.name} set these charges",
+      message: <<~MESSAGE
+        #{whodunnit.full_name} last updated the total charges to
+        #{humanized_money_with_symbol(@shipment.total_charges, no_cents_if_whole: false)}.
+      MESSAGE
+  %>
 <% end %>
 
 <% if @shipment.receivables.blank? || current_user.has_role?('accounts_receivable') %>
@@ -18,12 +41,12 @@
       <div class="col-auto">
         <%= f.text_field :carrier_cost, prepend: '$', label: 'Cost', data: money_controller_data, autocomplete: 'off' %>
       </div>
-  
+
       <div class="col-auto">
         <%= f.text_field :carrier_charge, prepend: '$', label: 'Charge', data: money_controller_data, autocomplete: 'off' %>
       </div>
     </div>
-  
+
     <p class="col-title">Services</p>
     <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".tracking-event-form-wrapper">
       <template data-nested-form-target="template">
@@ -31,16 +54,16 @@
           <%= render 'shipments/broker_accessorial_form', f: shipment_broker_accessorials_form %>
         <% end %>
       </template>
-  
+
       <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorials_form| %>
         <%= render 'shipments/broker_accessorial_form', f: shipment_broker_accessorials_form %>
       <% end %>
-  
+
       <div data-nested-form-target="target"></div>
-  
+
       <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
     </div>
-  
+
     <%= f.form_group do %>
       <%= f.submit class: 'btn btn-primary', value: 'Save' %>
     <% end %>

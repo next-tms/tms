@@ -763,6 +763,14 @@ class Shipment < ApplicationRecord
     !shipper_address.full_address? || !receiver_address.full_address? || shipper_name.blank? || receiver_name.blank? ? true : false
   end
 
+  def whodunnit(column)
+    raise ArgumentError, "Column \"#{column}\" doesn't exist" if self.class.column_names.exclude?(column)
+
+    audits.includes(:user).select do |audit|
+      audit.audited_changes.keys.include?('total_cost_cents')
+    end.last&.user || User.none
+  end
+
   def total_weight
     unless @total_weight
       @total_weight = 0

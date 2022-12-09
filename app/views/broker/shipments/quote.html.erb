@@ -25,7 +25,7 @@
           <th>Source</th>
           <th>Service</th>
           <th>Transit</th>
-          <% if !@shipment.quote_only? && !@shipment.total_charges_cents == 0 %>
+          <% if !@shipment.quote_only? && !@shipment.total_charges_cents.zero? %>
             <th>Profit</th>
           <% end %>
         </tr>
