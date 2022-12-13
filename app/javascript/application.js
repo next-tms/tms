@@ -5,6 +5,7 @@ import "@hotwired/turbo-rails"
 import "controllers"
 
 import "sortable"
+import "./turbo_progress_bar"
 
 /*
 import mrujs from "mrujs"
