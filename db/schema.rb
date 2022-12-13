@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_08_194353) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_13_161034) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -797,7 +797,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_08_194353) do
     t.string "broker_dispatch_sheet_shipment_fingerprint"
     t.text "public_notes"
     t.bigint "created_by_id"
-    t.bigint "dispatcher_id"
+    t.bigint "dispatcher_id", null: false
     t.text "broker_and_broker_customer_notes"
     t.boolean "charges_confirmed", default: false
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
