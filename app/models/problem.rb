@@ -64,7 +64,7 @@ class Problem < ApplicationRecord
 
   scope :unresolved, -> { where(resolved_at: nil) }
   scope :resolved, -> { where.not(id: unresolved) }
-  scope :suppressive, -> { unresolved.where.not(suppresions: []) }
+  scope :suppressive, -> { unresolved.where(suppressions_count: (1..)) }
 
   # @note For HasProblematicRule
   def problematic_type

@@ -9,11 +9,7 @@
         <thead>
           <tr>
             <th><%= sort_link q, :id, '#' %></th>
-
-            <% if problems.any?(&:suppressive?) %>
-              <th><%= sort_link q, :suppresses_count, 'Suppresses' %></th>
-            <% end %>
-
+            <th>Suppresses</th>
             <th><%= sort_link q, :created_at, 'Opened' %></th>
 
             <% if action_name == 'resolved' %>
@@ -55,19 +51,17 @@
                 %>
               </td>
 
-              <% if problems.any?(&:suppressive?) %>
-                <td>
-                  <%= problem
-                      .suppressions
-                      .distinct
-                      .pluck(:suppressible_type)
-                      .map { |suppressible_type| suppressible_type.constantize.model_name.human }
-                      .sort
-                      .join(', ')
-                      .downcase
-                  %>
-                </td>
-              <% end %>
+              <td>
+                <%= problem
+                    .suppressions
+                    .distinct
+                    .pluck(:suppressible_type)
+                    .map { |suppressible_type| suppressible_type.constantize.model_name.human }
+                    .sort
+                    .join(', ')
+                    .downcase
+                %>
+              </td>
 
               <td class="text-nowrap"><%= pretty_date(problem.created_at, current_user.time_zone) %></td>
 
