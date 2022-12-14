@@ -72,6 +72,8 @@ class BrokerCustomer < ApplicationRecord
   include BrokerCustomer::Instigatable
   include BrokerCustomer::QuickbooksSyncable
 
+  after_commit :problematic_shipments_later
+
   audited
 
   belongs_to :broker
@@ -341,5 +343,10 @@ class BrokerCustomer < ApplicationRecord
        upcharge_rules.blank?
       errors.add(:can_quote, 'cannot be enabled without fallback pricing rule')
     end
+  end
+
+  def problematic_shipments_later
+    ids = Problem.unresolved.where(resolvable: shipments).pluck(&:resolvable_id)
+    ProblematicJob.perform_later(ids, type: 'Shipment')
   end
 end

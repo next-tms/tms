@@ -63,6 +63,8 @@ class Receivable < ApplicationRecord
 
   audited
 
+  after_commit :problematic_shipment_later
+
   before_save :set_authorized_at
   before_save :set_invoiced
   before_save :set_sent_at
@@ -228,6 +230,10 @@ class Receivable < ApplicationRecord
   end
 
   private
+
+  def problematic_shipment_later
+    ProblematicJob.perform_later([shipment.id], type: 'Shipment')
+  end
 
   def set_authorized_at
     unless authorized_at.blank? && broker_customer.broker.intuit_account&.connected? && !quickbooks_invoice.blank?
