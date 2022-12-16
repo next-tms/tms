@@ -5,7 +5,7 @@ module ProblematicService
     ROLES = %i[dispatch].freeze
 
     def humanized(*)
-      "missing #{record.tracking_carrier.name} tracking number"
+      "missing #{record.tracking_carrier&.name} tracking number".squish
     end
 
     def problematic?
@@ -14,10 +14,10 @@ module ProblematicService
 
     def resolvable?
       record.tracking_carrier.blank? ||
-      record.tracking_carrier_pro.present? ||
-      record.booked_at.blank? ||
-      record.canceled_at.present? ||
-      record.delivered_at.present?
+        record.tracking_carrier_pro.present? ||
+        record.booked_at.blank? ||
+        record.canceled_at.present? ||
+        record.delivered_at.present?
     end
 
     def roles
