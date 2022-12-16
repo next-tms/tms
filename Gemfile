@@ -62,7 +62,7 @@ gem 'sassc-rails', '~> 2.1.2'
 
 gem 'font-awesome-sass', '~> 6.2.1'
 
-gem 'aws-sdk', '~> 3.1.0', group: :production
+gem 'aws-sdk-s3', '~> 1.114.0', group: :production
 gem 'image_processing', '~> 1.12.2'
 
 gem 'devise', '~> 4.8.0'
@@ -97,8 +97,8 @@ gem 'stripe', '~> 6.5.0'
 
 gem 'bcrypt', '~> 3.1' # explicitly for GraphQL
 gem 'graphql', '~> 2.0'
-gem "graphiql-rails", git: "https://github.com/rmosolgo/graphiql-rails.git", branch: "master", groups: %i[development]
-gem "action_policy-graphql"
+gem 'graphiql-rails', git: 'https://github.com/rmosolgo/graphiql-rails.git', branch: 'master', groups: %i[development]
+gem 'action_policy-graphql'
 
 gem 'geocoder', '~> 1.8.1'
 gem 'google_places', '~> 2.0.0'
