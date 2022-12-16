@@ -934,6 +934,27 @@ class Shipment < ApplicationRecord
     load_id.to_s
   end
 
+  def valid_broker_carriers_for_quotation
+    broker_carrier_ids = []
+    broker_carrier_ids += if broker_customer.blank?
+                            broker.broker_carriers.blanket.api_configured.ids
+                          else
+                            broker_customer.eligible_broker_carriers.api_configured.ids
+                          end
+
+    broker_carrier_ids += if broker_customer.blank?
+                            PricingRule
+                              .where(broker_carrier: broker.broker_carriers.blanket.api_unconfigured.ids)
+                              .pluck(:broker_carrier_id)
+                          else
+                            PricingRule
+                              .where(broker_carrier: broker_customer.eligible_broker_carriers)
+                              .pluck(:broker_carrier_id)
+                          end
+
+    BrokerCarrier.where(id: broker_carrier_ids)
+  end
+
   def requires_charges_confirmed_on_receivables?
     broker_customer&.requires_charges_confirmed_on_receivables || broker.requires_charges_confirmed_on_receivables
   end

@@ -36,7 +36,10 @@ class Region < ApplicationRecord
   has_many :areas
   has_many :locations
 
+  validate :iso31662_belongs_to_country
+
   validates :abbreviation, presence: true
+  validates :iso31662, presence: true
   validates :name, presence: true
 
   private
@@ -45,5 +48,11 @@ class Region < ApplicationRecord
     area = Area.new(name: "#{name}, #{country.alpha2_code}")
     area.locations.build(region: self)
     area.save!
+  end
+
+  def iso31662_belongs_to_country
+    return unless country.present? && !iso31662.start_with?("#{country.alpha2_code}_")
+
+    errors.add(:iso31662, "doesn't belong to #{country.name}")
   end
 end

@@ -2,6 +2,8 @@ en:
   app_name: "Liftoff"
   activerecord:
     attributes:
+      region:
+        iso_3166_2: ISO 3166-2
       broker_carrier:
         encrypted_api_key: API Key
         password: Password

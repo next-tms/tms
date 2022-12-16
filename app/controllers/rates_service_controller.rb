@@ -6,24 +6,18 @@ class RatesServiceController < ApplicationController
   before_action :set_use_forced_freight_classes
 
   def fetch
-    @rates = Rate
-             .where(
-               broker_carrier: @broker_carrier,
-               shipment_fingerprint: @shipment.fingerprint,
-               shipment: @shipment,
-               with_calculated_freight_classes: !@use_forced_freight_classes
-             )
+    @rates = Rate.by_shipment_and_broker_carrier(@shipment, @broker_carrier, @use_forced_freight_classes)
 
     if @rates.blank?
       fetch = RatesService
               .new(
                 broker_carrier: @broker_carrier,
                 shipment: @shipment,
-                use_forced_freight_classes: @use_forced_freight_classes
+                use_forced_freight_classes: @use_forced_freight_classes,
+                save_new_rates: true
               )
 
       @rates = fetch.to_rates
-      @rates&.each { |rate| rate.save }
     end
 
     respond_to do |format|

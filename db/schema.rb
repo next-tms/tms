@@ -672,6 +672,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_13_161034) do
     t.string "abbreviation", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "iso31662", null: false
     t.index ["abbreviation"], name: "index_regions_on_abbreviation"
     t.index ["country_id"], name: "index_regions_on_country_id"
     t.index ["name"], name: "index_regions_on_name"

@@ -614,24 +614,7 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     @shipment.rates.where.not(error_object: nil).destroy_all
 
-    broker_carrier_ids = []
-    broker_carrier_ids += if @shipment.broker_customer.blank?
-                            @shipment.broker.broker_carriers.blanket.api_configured.ids
-                          else
-                            @shipment.broker_customer.eligible_broker_carriers.api_configured.ids
-                          end
-
-    broker_carrier_ids += if @shipment.broker_customer.blank?
-                            PricingRule
-                              .where(broker_carrier: @shipment.broker.broker_carriers.blanket.ids)
-                              .pluck(:broker_carrier_id)
-                          else
-                            PricingRule
-                              .where(broker_carrier: @shipment.broker_customer.eligible_broker_carriers)
-                              .pluck(:broker_carrier_id)
-                          end
-
-    @broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
+    @broker_carriers = @shipment.valid_broker_carriers_for_quotation
 
     calculated_freight_classes = @shipment.forced_freight_classes
     forced_freight_classes = @shipment.calculated_freight_classes

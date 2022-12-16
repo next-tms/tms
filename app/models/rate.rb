@@ -88,6 +88,15 @@ class Rate < ApplicationRecord
   has_many :rate_accessorials, dependent: :destroy
   has_many :accessorials, through: :rate_accessorials
 
+  scope :by_shipment_and_broker_carrier, ->(shipment, broker_carrier, use_forced_freight_classes) {
+    where(
+      broker_carrier: broker_carrier,
+      shipment_fingerprint: shipment.fingerprint,
+      shipment: shipment,
+      with_calculated_freight_classes: !use_forced_freight_classes
+    )
+  }
+
   serialize :error_object
 
   # Returns the actual carrier rather than any broker associated

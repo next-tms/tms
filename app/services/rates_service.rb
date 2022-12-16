@@ -3,11 +3,12 @@
 class RatesService
   attr_reader :rates
 
-  def initialize(broker_carrier:, shipment:, use_forced_freight_classes:)
+  def initialize(broker_carrier:, shipment:, use_forced_freight_classes:, save_new_rates: false)
     @broker_carrier = broker_carrier
     @rates = []
     @shipment = shipment
     @use_forced_freight_classes = use_forced_freight_classes
+    @save_new_rates = save_new_rates
   end
 
   def call
@@ -59,6 +60,7 @@ class RatesService
       rate = build_rate(:api)
       rate.assign_attributes(error_object: error)
       @rates << rate
+      rate.save! if @save_new_rates
 
       return
     end
@@ -91,6 +93,7 @@ class RatesService
       rate = build_rate(:api)
       rate.error_object = e
       @rates << rate
+      rate.save! if @save_new_rates
 
       return
     end
@@ -105,6 +108,7 @@ class RatesService
         error_object: response&.error || StandardError.new('No rates returned from API')
       )
       @rates << rate
+      rate.save! if @save_new_rates
 
       return
     end
@@ -123,6 +127,8 @@ class RatesService
         rate.assign_attributes(error_object: StandardError.new('Cost was empty'))
 
         @rates << rate
+        rate.save! if @save_new_rates
+
         next
       end
 
@@ -142,6 +148,8 @@ class RatesService
           )
 
           @rates << rate
+          rate.save! if @save_new_rates
+
           next
         end
 
@@ -163,6 +171,7 @@ class RatesService
       )
 
       @rates << rate
+      rate.save! if @save_new_rates
     end
 
     nil
@@ -219,6 +228,7 @@ class RatesService
       rate = build_rate(:pricing_rule)
       rate.assign_attributes(cost:)
       @rates << rate
+      rate.save! if @save_new_rates
     end
 
     nil
