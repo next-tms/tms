@@ -1,17 +1,46 @@
-AllCops:
-  NewCops: enable
+require:
+  - rubocop-rails
+  - rubocop-rake
+  - rubocop-rspec
 
-Layout/LineLength:
-  Max: 120
+inherit_gem:
+  rubocop-shopify: rubocop.yml
+
+AllCops:
+  NewCops: disable
+
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_first_argument
+
+Layout/ArrayAlignment:
+  EnforcedStyle: with_first_element
+
+Layout/EndAlignment:
+  EnforcedStyleAlignWith: keyword
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: align_brackets
+
+Layout/LineEndStringConcatenationIndentation:
+  Enabled: true
+  EnforcedStyle: aligned
 
 Layout/MultilineOperationIndentation:
-  Enabled: false
+  EnforcedStyle: aligned
+  IndentationWidth:
 
-Lint/UnusedMethodArgument:
-  Enabled: false
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented_relative_to_receiver
+  IndentationWidth: 0
+
+Lint/LambdaWithoutLiteralBlock:
+  Enabled: true
 
 Metrics/AbcSize:
   Max: 35
+
+Metrics/ClassLength:
+  Max: 150
 
 Metrics/MethodLength:
   Max: 30
@@ -19,10 +48,10 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Max: 150
 
-Metrics/ClassLength:
-  Max: 150
-
 Style/Documentation:
+  Enabled: false
+
+Style/GuardClause:
   Enabled: false
 
 Style/ModuleFunction:
@@ -30,3 +59,16 @@ Style/ModuleFunction:
 
 Style/ClassAndModuleChildren:
   Enabled: false
+
+Style/StringConcatenation:
+  Enabled: true
+  Mode: aggressive
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+Style/SymbolArray:
+  EnforcedStyle: percent
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: no_comma

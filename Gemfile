@@ -27,6 +27,10 @@ group :development, :test do
   gem 'pry'
   gem 'rspec-rails', '~> 6.0'
   gem 'shoulda-matchers', '5.2.0'
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rake', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-shopify', '~> 2.10.1', require: false
 end
 
 group :development do
