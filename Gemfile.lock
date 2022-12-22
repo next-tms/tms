@@ -615,7 +615,7 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    shoulda-matchers (5.2.0)
+    shoulda-matchers (5.3.0)
       activesupport (>= 5.2.0)
     sidekiq (6.5.7)
       connection_pool (>= 2.2.5)
@@ -767,7 +767,7 @@ DEPENDENCIES
   rubocop-shopify (~> 2.10.1)
   sassc-rails (~> 2.1.2)
   selenium-webdriver
-  shoulda-matchers (= 5.2.0)
+  shoulda-matchers (= 5.3.0)
   sidekiq (~> 6.5.7)
   sidekiq-scheduler (~> 4.0.3)
   simple_command
