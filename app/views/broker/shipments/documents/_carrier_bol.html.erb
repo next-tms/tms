@@ -1,9 +1,13 @@
 <tr id="<%= this_dom_id %>_carrier_bol">
-  <% if shipment.broker_carrier.present? && shipment.carrier_bol.attached? %>
+  <% if shipment.broker_carrier.present? %>
     <td><%= shipment.broker_carrier.carrier.name %></td>
-    <td>Scanned Bill of Lading</td>
-    <%= render 'broker/shipments/documents/actions', shipment:, document_type: :carrier_bol %>
-    <td>
+    <td>Bill of Lading</td>
+
+    <% if shipment.carrier_bol.attached? %>
+      <%= render 'broker/shipments/documents/actions', shipment:, document_type: :carrier_bol %>
+    <% end %>
+
+    <td colspan="<%= shipment.carrier_bol.attached? ? 1 : 4 %>">
       <%= render 'broker/shipments/documents/document_upload', document_type: :carrier_bol, replace: true %>
     </td>
   <% end %>

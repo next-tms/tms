@@ -1,9 +1,13 @@
 <tr id="<%= this_dom_id %>_carrier_pod">
-  <% if shipment.broker_carrier.present? && shipment.carrier_pod.attached? %>
+  <% if shipment.broker_carrier.present? %>
     <td><%= shipment.broker_carrier.carrier.name %></td>
     <td>Proof of Delivery</td>
-    <%= render 'broker/shipments/documents/actions', shipment:, document_type: :carrier_pod %>
-    <td>
+
+    <% if shipment.carrier_pod.attached? %>
+      <%= render 'broker/shipments/documents/actions', shipment:, document_type: :carrier_pod %>
+    <% end %>
+
+    <td colspan="<%= shipment.carrier_pod.attached? ? 1 : 4 %>">
       <%= render 'broker/shipments/documents/document_upload', document_type: :carrier_pod, replace: true %>
     </td>
   <% end %>

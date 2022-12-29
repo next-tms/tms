@@ -56,7 +56,9 @@
       <%= highlightable_element :broker_dispatch_sheet, table_element: true do %>
         <%= render 'broker/shipments/documents/broker_dispatch_sheet', this_dom_id:, shipment: @shipment %>
       <% end %>
+
       <%= render 'broker/shipments/documents/carrier_label', this_dom_id:, shipment: @shipment %>
+
       <% unless @shipment.broker_carrier&.carrier&.consider_bol_and_pod_documents_same? %>
         <%= highlightable_element :carrier_bol, table_element: true do %>
           <%= render 'broker/shipments/documents/carrier_bol', this_dom_id:, shipment: @shipment %>
