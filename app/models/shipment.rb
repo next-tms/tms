@@ -227,44 +227,44 @@ class Shipment < ApplicationRecord
 
   scope :pending_quotation, lambda {
     where(broker_carrier: nil, canceled_at: nil)
-      .or(
+    .or(
         where(broker_carrier: nil)
-        .where(id: canceled_recently)
+        .where(id: canceled_recently),
       )
   }
 
   scope :pending_delivery, lambda {
     active
-      .where.not(picked_up_at: nil)
-      .where(delivered_at: nil)
+    .where.not(picked_up_at: nil)
+    .where(delivered_at: nil)
   }
 
   scope :pending_departure, lambda {
     active
-      .where.not(picked_up_at: nil)
-      .where(departed_origin_terminal_at: nil)
-      .where(delivered_at: nil)
+    .where.not(picked_up_at: nil)
+    .where(departed_origin_terminal_at: nil)
+    .where(delivered_at: nil)
   }
 
   scope :missing_delivery_appointment, lambda {
     joins(:broker_accessorials)
-      .where(
+    .where(
         'broker_accessorials.id IN (?)',
         BrokerAccessorial.where(
           accessorial_id:
           [
             Accessorial.find_by_interstellar_code('appointment_delivery').id,
-            Accessorial.find_by_interstellar_code('residential_delivery').id
-          ]
-        ).pluck(:id)
+            Accessorial.find_by_interstellar_code('residential_delivery').id,
+          ],
+        ).pluck(:id),
       )
-      .or(
+    .or(
         Shipment
-        .where.not(pending_appointment_since: nil)
+        .where.not(pending_appointment_since: nil),
       )
-      .pending_delivery
-      .where(delivery_appointment_on: nil)
-      .where(delivery_appointment_at: nil)
+    .pending_delivery
+    .where(delivery_appointment_on: nil)
+    .where(delivery_appointment_at: nil)
   }
 
   scope :missing_pro, -> { active.pending_delivery.where(pro: ['', nil]) }
@@ -302,9 +302,9 @@ class Shipment < ApplicationRecord
   scope :not_late, -> { where.not(id: late) }
 
   belongs_to :broker
-  belongs_to :broker_carrier, counter_cache: true, required: false
+  belongs_to :broker_carrier, counter_cache: true, optional: true
 
-  belongs_to :dispatcher, class_name: 'User', required: false
+  belongs_to :dispatcher, class_name: 'User', optional: true
 
   has_many :claims
   has_many :commissions, dependent: :destroy
@@ -317,8 +317,8 @@ class Shipment < ApplicationRecord
 
   has_many :problems, as: :resolvable
 
-  belongs_to :created_by, class_name: 'User', required: false
-  belongs_to :updated_by, class_name: 'User', required: false
+  belongs_to :created_by, class_name: 'User', optional: true
+  belongs_to :updated_by, class_name: 'User', optional: true
 
   has_many :shipment_items, dependent: :destroy
   has_many :items, through: :shipment_items
@@ -328,7 +328,7 @@ class Shipment < ApplicationRecord
   accepts_nested_attributes_for :shipment_accessorials, allow_destroy: true, reject_if: :all_blank
   has_many :accessorials, through: :shipment_accessorials
 
-  belongs_to :applied_rate, class_name: 'Rate', required: false
+  belongs_to :applied_rate, class_name: 'Rate', optional: true
   has_many :rates, dependent: :destroy
 
   has_many :shipment_broker_accessorials, dependent: :destroy
@@ -337,12 +337,12 @@ class Shipment < ApplicationRecord
 
   has_many :pickups
 
-  belongs_to :receiver_address, class_name: 'Address', required: true
-  belongs_to :shipper_address, class_name: 'Address', required: true
+  belongs_to :receiver_address, class_name: 'Address', optional: false
+  belongs_to :shipper_address, class_name: 'Address', optional: false
 
-  belongs_to :tracking_carrier, class_name: 'Carrier', required: false
+  belongs_to :tracking_carrier, class_name: 'Carrier', optional: true
 
-  belongs_to :broker_customer, required: false
+  belongs_to :broker_customer, optional: true
 
   accepts_nested_attributes_for :receiver_address
   validates_associated :receiver_address, presence: true
@@ -454,7 +454,7 @@ class Shipment < ApplicationRecord
 
   def dispatch_incomplete?
     true_pickup_confirmation = tracking_carrier.blank? ? pickup_confirmation : tracking_carrier_pickup_confirmation
-    if !broker_carrier.blank? && !dispatched_at.blank? && true_pickup_confirmation.blank? && (dispatched_at < DateTime.current - 15.minutes)
+    if broker_carrier.present? && dispatched_at.present? && true_pickup_confirmation.blank? && (dispatched_at < DateTime.current - 15.minutes)
       return true
     end
 
@@ -486,20 +486,20 @@ class Shipment < ApplicationRecord
   end
 
   def delivered?
-    !delivered_at.blank?
+    delivered_at.present?
   end
 
   def delivered_in_days
     return 'unknown' if picked_up_at.blank? || delivered_at.blank?
     return 'unknown' if delivered_at < picked_up_at
 
-    picked_up_at.to_date.business_days_until delivered_at.to_date
+    picked_up_at.to_date.business_days_until(delivered_at.to_date)
   end
 
   def palletized_items
     return @palletized_items if @palletized_items
 
-    unpalletized_packagings = Packaging.where(name: %w[carton pieces truckload])
+    unpalletized_packagings = Packaging.where(name: ['carton', 'pieces', 'truckload'])
     @palletized_items = items.where.not(packaging: unpalletized_packagings)
   end
 
@@ -581,20 +581,20 @@ class Shipment < ApplicationRecord
     @status = 'Booked' if booked_at.present?
     @status = 'Quoted' if total_charges.present?
     @status = 'Booked, Quoted' if booked_at.present? && total_charges.present?
-    @status = 'Dispatched' unless dispatched_at.blank?
+    @status = 'Dispatched' if dispatched_at.present?
     @status = 'Pickup Scheduled' if pickup_confirmation.present? && pickup_by.present?
-    @status = 'In Transit' unless picked_up_at.blank?
-    @status = 'Pending Delivery Appointment' unless pending_appointment_since.blank?
-    @status = 'Delivery Scheduled' if !delivery_appointment_at.blank? || !delivery_appointment_on.blank?
-    @status = 'Out for Delivery' unless out_for_delivery_at.blank?
-    @status = 'Delivered' unless delivered_at.blank?
-    @status = 'Canceled' unless canceled_at.blank?
+    @status = 'In Transit' if picked_up_at.present?
+    @status = 'Pending Delivery Appointment' if pending_appointment_since.present?
+    @status = 'Delivery Scheduled' if delivery_appointment_at.present? || delivery_appointment_on.present?
+    @status = 'Out for Delivery' if out_for_delivery_at.present?
+    @status = 'Delivered' if delivered_at.present?
+    @status = 'Canceled' if canceled_at.present?
     @status = "Late, #{@status}" if late?
     @status
   end
 
   def pending_departure?
-    return false if picked_up_at.blank? || !delivered_at.blank?
+    return false if picked_up_at.blank? || delivered_at.present?
 
     if picked_up_at < 52.hours.ago
       departed_origin_terminal_at.blank?
@@ -605,18 +605,18 @@ class Shipment < ApplicationRecord
 
   def late?
     return @late if @late
-    return @late = false unless delivered_at.blank?
+    return @late = false if delivered_at.present?
 
-    if !picked_up_at.blank?
-      if !delivery_appointment_at.blank?
+    if picked_up_at.present?
+      if delivery_appointment_at.present?
         return @late = true if DateTime.current > delivery_appointment_at
-      elsif delivery_appointment_at.blank? && !delivery_appointment_on.blank?
+      elsif delivery_appointment_at.blank? && delivery_appointment_on.present?
         return @late = true if Date.current > delivery_appointment_on
-      elsif !delivery_eta_on.blank? && (Date.current > delivery_eta_on)
+      elsif delivery_eta_on.present? && (Date.current > delivery_eta_on)
         return @late = true
       end
-      @late = true if !promised_delivery_by.blank? && (Date.current > promised_delivery_by)
-    elsif !pickup_by.blank?
+      @late = true if promised_delivery_by.present? && (Date.current > promised_delivery_by)
+    elsif pickup_by.present?
       @late = pickup_by < DateTime.current
     end
   end
@@ -636,7 +636,7 @@ class Shipment < ApplicationRecord
       broker_accessorial = broker_customer.broker_accessorials.where(code:)
       if broker_accessorial.blank?
         broker_accessorial = broker_customer.broker.broker_accessorials.where(code:)
-        broker_accessorials << broker_accessorial.first unless broker_accessorial.blank?
+        broker_accessorials << broker_accessorial.first if broker_accessorial.present?
       else
         broker_accessorials << broker_accessorial.first
       end
@@ -724,7 +724,7 @@ class Shipment < ApplicationRecord
   def suggested_accessorials
     return [] if assumed_accessorials.blank?
 
-    @suggested_accessorials = assumed_accessorials - (accessorials.blank? ? [] : accessorials)
+    @suggested_accessorials = assumed_accessorials - (accessorials.presence || [])
   end
 
   def suggested_accessorial_codes
@@ -739,7 +739,7 @@ class Shipment < ApplicationRecord
       broker_accessorial = broker_customer.broker_accessorials.where(code: suggested_accessorial.code)
       if broker_accessorial.blank?
         broker_accessorial = broker_customer.broker.broker_accessorials.where(code: suggested_accessorial.code)
-        @suggested_broker_accessorials << broker_accessorial.first unless broker_accessorial.blank?
+        @suggested_broker_accessorials << broker_accessorial.first if broker_accessorial.present?
       else
         @suggested_broker_accessorials << broker_accessorial.first
       end
@@ -766,9 +766,7 @@ class Shipment < ApplicationRecord
   def whodunnit(column)
     raise ArgumentError, "Column \"#{column}\" doesn't exist" if self.class.column_names.exclude?(column)
 
-    audits.includes(:user).select do |audit|
-      audit.audited_changes.keys.include?('total_cost_cents')
-    end.last&.user || User.none
+    audits.includes(:user).select { |audit| audit.audited_changes.keys.include?('total_cost_cents') }.last&.user || nil
   end
 
   def total_weight
@@ -944,12 +942,12 @@ class Shipment < ApplicationRecord
 
     broker_carrier_ids += if broker_customer.blank?
                             PricingRule
-                              .where(broker_carrier: broker.broker_carriers.blanket.api_unconfigured.ids)
-                              .pluck(:broker_carrier_id)
+                            .where(broker_carrier: broker.broker_carriers.blanket.api_unconfigured.ids)
+                            .pluck(:broker_carrier_id)
                           else
                             PricingRule
-                              .where(broker_carrier: broker_customer.eligible_broker_carriers)
-                              .pluck(:broker_carrier_id)
+                            .where(broker_carrier: broker_customer.eligible_broker_carriers)
+                            .pluck(:broker_carrier_id)
                           end
 
     BrokerCarrier.where(id: broker_carrier_ids)
@@ -964,7 +962,7 @@ class Shipment < ApplicationRecord
   def build_commissions
     return if broker_customer.blank? || total_cost == Money.new(0) || total_charges == Money.new(0)
 
-    unless commissions.blank?
+    if commissions.present?
       if commissions.pluck(:paid).include?(true)
         errors.add(:base, 'Pricing cannot be updated because commission(s) have already been paid')
       else
@@ -981,7 +979,7 @@ class Shipment < ApplicationRecord
 
       commissions.build(
         user_id: broker_customer_sales_rep.user_id,
-        amount:
+        amount:,
       )
     end
   end
@@ -1056,7 +1054,7 @@ class Shipment < ApplicationRecord
        tracking_carrier_pickup_confirmation == pickup_confirmation
       errors.add(
         :tracking_carrier_pickup_confirmation,
-        "cannot match pickup ref #{pickup_confirmation} from #{broker_carrier.carrier.name}"
+        "cannot match pickup ref #{pickup_confirmation} from #{broker_carrier.carrier.name}",
       )
     end
 
@@ -1080,7 +1078,7 @@ class Shipment < ApplicationRecord
     self.carrier_cost = applied_rate.cost
     self.carrier_charge = broker_customer.carrier_charge_calculator(
       carrier_cost: applied_rate.cost,
-      shipment: self
+      shipment: self,
     ) || 0
 
     self.broker_carrier = applied_rate.broker_carrier
@@ -1093,10 +1091,10 @@ class Shipment < ApplicationRecord
 
     total_charges = broker_customer.carrier_charge_calculator(
       carrier_cost: applied_rate.cost,
-      shipment: self
+      shipment: self,
     )
 
-    total_charges += broker_accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents) unless total_charges.blank?
+    total_charges += broker_accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents) if total_charges.present?
 
     self.total_charges = total_charges || 0
   end
@@ -1119,19 +1117,19 @@ class Shipment < ApplicationRecord
     return if broker_carrier.blank?
     return unless broker_carrier.pickup_number_is_tracking_number?
 
-    self.pickup_confirmation = pro if pickup_confirmation.blank? && !pro.blank?
-    self.pro = pickup_confirmation if pro.blank? && !pickup_confirmation.blank?
+    self.pickup_confirmation = pro if pickup_confirmation.blank? && pro.present?
+    self.pro = pickup_confirmation if pro.blank? && pickup_confirmation.present?
   end
 
   def maybe_sync_tracking_carrier_pickup_confirmation_and_tracking_carrier_pro
     return if tracking_carrier.blank?
     return unless tracking_carrier.pickup_number_is_tracking_number?
 
-    if tracking_carrier_pickup_confirmation.blank? && !tracking_carrier_pro.blank?
+    if tracking_carrier_pickup_confirmation.blank? && tracking_carrier_pro.present?
       self.tracking_carrier_pickup_confirmation = tracking_carrier_pro
     end
 
-    return unless tracking_carrier_pro.blank? && !tracking_carrier_pickup_confirmation.blank?
+    return unless tracking_carrier_pro.blank? && tracking_carrier_pickup_confirmation.present?
 
     self.tracking_carrier_pro = tracking_carrier_pickup_confirmation
   end
@@ -1165,13 +1163,13 @@ class Shipment < ApplicationRecord
   end
 
   def set_delivery_appointment_on
-    return unless delivery_appointment_on.blank? && !delivery_appointment_at.blank?
+    return unless delivery_appointment_on.blank? && delivery_appointment_at.present?
 
     self.delivery_appointment_on = delivery_appointment_at.in_time_zone(shipper_address.time_zone).to_date
   end
 
   def set_delivery_eta_on
-    return unless delivery_eta_on.blank? && !delivery_appointment_on.blank?
+    return unless delivery_eta_on.blank? && delivery_appointment_on.present?
 
     self.delivery_eta_on = delivery_appointment_on
   end
@@ -1189,7 +1187,7 @@ class Shipment < ApplicationRecord
   end
 
   def update_delivery_eta_on_to_out_for_delivery_at
-    self.delivery_eta_on = out_for_delivery_at.to_date if delivery_eta_on.blank? && !out_for_delivery_at.blank?
+    self.delivery_eta_on = out_for_delivery_at.to_date if delivery_eta_on.blank? && out_for_delivery_at.present?
   end
 
   # Prettify
@@ -1248,7 +1246,7 @@ class Shipment < ApplicationRecord
 
     user_ids -= broker.users.broker.with_role('notifications:-dispatch')&.ids || []
 
-    unless updated_by.blank?
+    if updated_by.present?
       if updated_by.receive_notifications_from_self?
         user_ids << updated_by.id
       else

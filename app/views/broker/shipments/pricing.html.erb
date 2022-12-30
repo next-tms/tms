@@ -14,24 +14,26 @@
 <% end %>
 
 <% whodunnit = @shipment.whodunnit('total_charges_cents') %>
-<% if @shipment.applied_rate.present? && whodunnit&.customer? %>
-  <%= render 'layouts/message',
-      classes: 'alert-danger',
-      title: "#{@shipment.broker_customer.customer.name} set these charges",
-      message: <<~MESSAGE
-        #{humanized_money_with_symbol(@shipment.total_charges, no_cents_if_whole: false)}
-        was selected from a quote they found online.
-      MESSAGE
-  %>
-<% elsif whodunnit&.broker? %>
-  <%= render 'layouts/message',
-      classes: 'alert-info',
-      title: "#{current_user.broker.name} set these charges",
-      message: <<~MESSAGE
-        #{whodunnit.full_name} last updated the total charges to
-        #{humanized_money_with_symbol(@shipment.total_charges, no_cents_if_whole: false)}.
-      MESSAGE
-  %>
+<% if @shipment.applied_rate.present? && whodunnit.present? %>
+  <% if whodunnit&.customer? %>
+    <%= render 'layouts/message',
+        classes: 'alert-danger',
+        title: "#{@shipment.broker_customer.customer.name} set these charges",
+        message: <<~MESSAGE
+          #{humanized_money_with_symbol(@shipment.total_charges, no_cents_if_whole: false)}
+          was selected from a quote they found online.
+        MESSAGE
+    %>
+  <% else %>
+    <%= render 'layouts/message',
+        classes: 'alert-info',
+        title: "#{current_user.broker.name} set these charges",
+        message: <<~MESSAGE
+          #{whodunnit.full_name} last updated the total charges to
+          #{humanized_money_with_symbol(@shipment.total_charges, no_cents_if_whole: false)}.
+        MESSAGE
+    %>
+  <% end %>
 <% end %>
 
 <% if @shipment.receivables.blank? || current_user.has_role?('accounts_receivable') %>
