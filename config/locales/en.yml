@@ -2,6 +2,9 @@ en:
   app_name: "Liftoff"
   activerecord:
     attributes:
+      broker_customer_sales_rep:
+        commission_flat: flat commission
+        commission_percent: percentage-based commission
       region:
         iso_3166_2: ISO 3166-2
       broker_carrier:
@@ -28,6 +31,9 @@ en:
       broker_customer:
         one: Customer
         other: Customers
+      broker_customer_sales_rep:
+        one: Sales Rep
+        many: Sales Reps
       receivable:
         one: Receivable
         other: Receivables

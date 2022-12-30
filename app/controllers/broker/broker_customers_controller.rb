@@ -1,26 +1,26 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomersController < Broker::BrokerController
-  ALLOWED_ACCESS_FOR_DISPATCHER = %w[show shipments].freeze
-  ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE = %w[show shipments update].freeze
+  ALLOWED_ACCESS_FOR_DISPATCHER = ['show', 'shipments'].freeze
+  ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE = ['show', 'shipments', 'update'].freeze
 
   before_action :set_broker_customer, only: %i[
-    broker_carriers
-    contacts
-    customer_contacts
-    edit
-    edit_broker_carriers
-    edit_pricing
-    preferences
-    pricing
-    primary_pickup_address
-    receivables
-    sales_reps
-    shipments
-    show
-    update
-    update_pricing
-  ]
+                                              broker_carriers
+                                              contacts
+                                              customer_contacts
+                                              edit
+                                              edit_broker_carriers
+                                              edit_pricing
+                                              preferences
+                                              pricing
+                                              primary_pickup_address
+                                              receivables
+                                              sales_reps
+                                              shipments
+                                              show
+                                              update
+                                              update_pricing
+                                            ]
   before_action :authenticate_user!
 
   before_action :validate_user_role!, only: %i[update show contacts shipments]
@@ -32,8 +32,8 @@ class Broker::BrokerCustomersController < Broker::BrokerController
          .includes(
            [
              :broker_customer, { broker_customer: :customer },
-             :carrier
-           ]
+             :carrier,
+           ],
          ).ransack(params[:q])
 
     @q.sorts = "#{"#{Carrier.table_name}.name"} desc" if @q.sorts.blank?
@@ -55,9 +55,9 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     # @broker_customer.sales_reps = [current_user]
     if @broker_customer.save
       flash[:success] = "#{@broker_customer.customer.name} saved. You may now edit pricing if you’d like."
-      redirect_to edit_pricing_broker_broker_customer_path(@broker_customer)
+      redirect_to(edit_pricing_broker_broker_customer_path(@broker_customer))
     else
-      render :new
+      render(:new)
     end
   end
 
@@ -72,7 +72,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def edit_pricing; end
 
   def index
-    @q = if current_user.has_any_roles?(%w[accounts_recevable dispatch root])
+    @q = if current_user.has_any_roles?(['accounts_recevable', 'dispatch', 'root'])
            current_user.broker_customers.includes(required_includes).ransack(params[:q])
          else
            current_user.broker.broker_customers.includes(required_includes).ransack(params[:q])
@@ -100,16 +100,16 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     respond_to do |format|
       format.json do
         if @broker_customer.broker == current_user.broker
-          render json: { primary_pickup_address: @broker_customer.primary_pickup_address }
+          render(json: { primary_pickup_address: @broker_customer.primary_pickup_address })
         else
-          head :unauthorized
+          head(:unauthorized)
         end
       end
     end
   end
 
   def profitability_report
-    unauthorized unless current_user.has_role? 'accounting'
+    unauthorized unless current_user.has_role?('accounting')
     @broker_customers = current_user.broker.broker_customers
     @from_date = Date.current.at_beginning_of_month
     @to_date = Date.current
@@ -121,9 +121,9 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def quickbooks
-    unauthorized and return unless current_user.broker? &&
-                                   current_user.broker.intuit_account.present? &&
-                                   (current_user.has_role?('root') || current_user.has_role?('accounts_receivable'))
+    unauthorized && return unless current_user.broker? &&
+                                  current_user.broker.intuit_account.present? &&
+                                  (current_user.has_role?('root') || current_user.has_role?('accounts_receivable'))
 
     @broker_customers = current_user
                         .broker
@@ -174,46 +174,44 @@ class Broker::BrokerCustomersController < Broker::BrokerController
       respond_to do |format|
         format.html
         format.json do
-          render json: { primary_pickup_address: @broker_customer.primary_pickup_address }
+          render(json: { primary_pickup_address: @broker_customer.primary_pickup_address })
         end
       end
     else
-      render file: 'public/401', layout: false, status: :unauthorized
+      render(file: 'public/401', layout: false, status: :unauthorized)
     end
   end
 
   def update_quickbooks
-    unauthorized and return unless current_user.broker? &&
-                                   current_user.broker.intuit_account.present? &&
-                                   (current_user.has_role?('root') || current_user.has_role?('accounts_receivable'))
+    unauthorized && return unless current_user.broker? &&
+                                  current_user.broker.intuit_account.present? &&
+                                  (current_user.has_role?('root') || current_user.has_role?('accounts_receivable'))
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
 
     if broker.save
       flash[:success] = 'QuickBooks customers updated'
-      redirect_to quickbooks_broker_broker_customers_path and return
+      redirect_to(quickbooks_broker_broker_customers_path) && return
     end
 
-    render :quickbooks
+    render(:quickbooks)
   end
 
   def update
     @broker_customer.assign_attributes(broker_customer_params)
-    @broker_customer.sales_reps |= @broker_customer.sales_reps
 
-    redirect_to [:broker, @broker_customer, @customer_contact] and return if @broker_customer.save
+    render(:edit) && return unless @broker_customer.save
 
-    flash[:error] = 'Unable to update customer'
-    render :edit
+    redirect_to([:broker, @broker_customer, @customer_contact])
   end
 
   def update_pricing
     if @broker_customer.update(broker_customer_params)
-      redirect_to edit_pricing_broker_broker_customer_path(@broker_customer) and return
+      redirect_to(edit_pricing_broker_broker_customer_path(@broker_customer)) && return
     end
 
-    render :edit_pricing
+    render(:edit_pricing)
   end
 
   private
@@ -223,7 +221,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def not_sales_rep_for_all_and_broker_customer?
-    !current_user.sales_rep_for?(@broker_customer) && (!current_user.has_role? 'sales_rep_for_all_broker_customers')
+    !current_user.sales_rep_for?(@broker_customer) && !current_user.has_role?('sales_rep_for_all_broker_customers')
   end
 
   def validate_user_role!
@@ -235,103 +233,52 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     unauthorized if not_sales_rep_for_all_and_broker_customer?
   end
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_broker_customer
     @broker_customer = BrokerCustomer.find(params[:id])
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
   def broker_params
     params.require(:broker).permit(
       :id,
-      broker_customers_attributes: %i[id quickbooks_customer_id]
+      broker_customers_attributes: %i[id quickbooks_customer_id],
     )
   end
 
   def broker_customer_params
-    params.require(:broker_customer).permit(:id,
-                                            :always_show_quotes_based_on_calculated_classes,
-                                            :customer_id,
-                                            :can_quote,
-                                            :default_upcharge,
-                                            :default_upcharge_percentage,
-                                            :default_bol_notes,
-                                            :ignore_value_on_api_quotes,
-                                            :internal_notes,
-                                            :preferred_broker_carriers_kind,
-                                            :receivables_schedule,
-                                            :requires_carrier_bol_on_receivables,
-                                            :requires_carrier_pod_on_receivables,
-                                            :requires_shipment_delivery_before_receivable,
-                                            :requires_charges_confirmed_on_receivables,
-                                            :requires_customer_reference_number_on_receivables,
-                                            :requires_shipment_shipper_reference_on_receivables,
-                                            preferred_broker_carriers_attributes: %i[
-                                              _destroy
-                                              id
-                                              broker_carrier_id
-                                            ],
-                                            broker_customer_sales_reps_attributes: %i[
-                                              _destroy
-                                              id
-                                              commission_flat
-                                              commission_percent
-                                              user_id
-                                            ],
-                                            broker_customer_dispatchers_attributes: %i[
-                                              _destroy
-                                              id
-                                              user_id
-                                            ],
-                                            broker_accessorials_attributes: %i[
-                                              _destroy
-                                              id
-                                              accessorial_id
-                                              code
-                                              flat_charge
-                                              name
-                                              upcharge
-                                              upcharge_percent
-                                            ],
-                                            customer_attributes: %i[_destroy id name],
-                                            document_preferences_attributes: %i[_destroy id contact_id kind],
-                                            office_address_attributes: %i[
-                                              id
-                                              street
-                                              street2
-                                              city
-                                              region_id
-                                              zip_code
-                                              country_id
-                                            ],
-                                            primary_pickup_address_attributes: %i[
-                                              id
-                                              street
-                                              street2
-                                              city
-                                              region_id
-                                              zip_code
-                                              country_id
-                                            ],
-                                            broker_customer_receivable_contacts_attributes: [
-                                              :id,
-                                              :primary,
-                                              :_destroy,
-                                              { contact_attributes: %i[
-                                                id
-                                                first_name
-                                                last_name
-                                                email
-                                              ] }
-                                            ],
-                                            upcharge_rules_attributes: %i[
-                                              _destroy
-                                              id
-                                              max
-                                              min
-                                              packaging_id upcharge
-                                              upcharge_percentage
-                                            ])
+    params.require(:broker_customer).permit(
+      :id,
+      :always_show_quotes_based_on_calculated_classes,
+      :customer_id,
+      :can_quote,
+      :default_upcharge,
+      :default_upcharge_percentage,
+      :default_bol_notes,
+      :ignore_value_on_api_quotes,
+      :internal_notes,
+      :preferred_broker_carriers_kind,
+      :receivables_schedule,
+      :requires_carrier_bol_on_receivables,
+      :requires_carrier_pod_on_receivables,
+      :requires_shipment_delivery_before_receivable,
+      :requires_charges_confirmed_on_receivables,
+      :requires_customer_reference_number_on_receivables,
+      :requires_shipment_shipper_reference_on_receivables,
+      preferred_broker_carriers_attributes: %i[_destroy id broker_carrier_id],
+      broker_customer_sales_reps_attributes: %i[_destroy id commission_flat commission_percent user_id],
+      broker_customer_dispatchers_attributes: %i[_destroy id user_id],
+      broker_accessorials_attributes: %i[_destroy id accessorial_id code flat_charge name upcharge upcharge_percent],
+      customer_attributes: %i[_destroy id name],
+      document_preferences_attributes: %i[_destroy id contact_id kind],
+      office_address_attributes: %i[id street street2 city region_id zip_code country_id],
+      primary_pickup_address_attributes: %i[id street street2 city region_id zip_code country_id],
+      broker_customer_receivable_contacts_attributes: [
+                                                        :id,
+                                                        :primary,
+                                                        :_destroy,
+                                                        { contact_attributes: %i[id first_name last_name email] },
+                                                      ],
+      upcharge_rules_attributes: %i[_destroy id max min packaging_id upcharge upcharge_percentage],
+    )
   end
 
   def required_includes

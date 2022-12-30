@@ -44,6 +44,8 @@ class BrokerCustomerSalesRep < ApplicationRecord
   private
 
   def commission_flat_cents_or_commission_percent
-    errors.add :base, 'Comission required' if [commission_flat_cents, commission_percent].compact.count == 0
+    return unless [commission_flat_cents, commission_percent].all?(&:zero?)
+
+    errors.add(:commission_percent, "or #{self.class.human_attribute_name(:commission_flat).downcase} must be non-zero")
   end
 end
