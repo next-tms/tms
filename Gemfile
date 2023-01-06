@@ -8,7 +8,7 @@ gem 'rails', '~> 7.0.4'
 gem 'sprockets-rails', '~> 3.4.2'
 
 gem 'pg', '~> 1.4.5'
-gem 'puma', '~> 6.0.1'
+gem 'puma', '~> 6.0.2'
 
 gem 'importmap-rails', '~> 1.1.5'
 gem 'stimulus-rails', '~> 1.1.1'
