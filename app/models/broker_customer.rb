@@ -74,33 +74,29 @@ class BrokerCustomer < ApplicationRecord
 
   after_commit :problematic_shipments_later
 
+  after_save :update_receivables_contact_broker_customer, if: -> { saved_change_to_receivables_contact_id? }
+
   audited
 
   belongs_to :broker
 
-  belongs_to :office_address, class_name: 'Address', dependent: :delete
+  belongs_to :office_address, class_name: 'Address', dependent: :destroy
   accepts_nested_attributes_for :office_address, allow_destroy: true
 
-  belongs_to :primary_pickup_address, class_name: 'Address', dependent: :delete
+  belongs_to :primary_pickup_address, class_name: 'Address', dependent: :destroy
   accepts_nested_attributes_for :primary_pickup_address, allow_destroy: true
 
   belongs_to :customer
   accepts_nested_attributes_for :customer
 
-  has_many :broker_customer_receivable_contacts, class_name: 'BrokerCustomerReceivableContact', dependent: :destroy
-  has_many :receivable_contacts, through: :broker_customer_receivable_contacts, source: 'contact'
+  delegate :name, to: :customer
 
-  has_one :broker_customer_primary_receivable_contact,
-          -> { where(primary: true) },
-          class_name: 'BrokerCustomerReceivableContact'
-
-  has_one :primary_receivables_contact, through: :broker_customer_primary_receivable_contact, source: 'contact'
-
-  accepts_nested_attributes_for :broker_customer_receivable_contacts, allow_destroy: true, reject_if: :all_blank
+  belongs_to :receivables_contact, class_name: 'Contact', dependent: :destroy
+  accepts_nested_attributes_for :receivables_contact, allow_destroy: false
 
   enum preferred_broker_carriers_kind: { blacklist: 'blacklist', whitelist: 'whitelist' }
 
-  has_many :contacts
+  has_many :contacts, dependent: :destroy
 
   has_many :broker_customer_sales_reps, dependent: :destroy
   has_many :sales_reps, through: :broker_customer_sales_reps, source: 'user'
@@ -110,20 +106,20 @@ class BrokerCustomer < ApplicationRecord
   has_many :dispatchers, through: :broker_customer_dispatchers, source: 'user'
   accepts_nested_attributes_for :broker_customer_dispatchers, allow_destroy: true, reject_if: :all_blank
 
-  has_many :broker_accessorials
+  has_many :broker_accessorials, dependent: :destroy
   accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
 
-  has_many :broker_carriers
+  has_many :broker_carriers, dependent: :destroy
   accepts_nested_attributes_for :broker_carriers, allow_destroy: true, reject_if: :all_blank
 
-  has_many :document_preferences
+  has_many :document_preferences, dependent: :destroy
   accepts_nested_attributes_for :document_preferences, allow_destroy: true, reject_if: :all_blank
 
-  has_many :preferred_broker_carriers, class_name: 'PreferredBrokerCarrier', foreign_key: :broker_customer_id
+  has_many :preferred_broker_carriers, class_name: 'PreferredBrokerCarrier'
   accepts_nested_attributes_for :preferred_broker_carriers, allow_destroy: true, reject_if: :all_blank
 
-  has_many :receivables
-  has_many :shipments
+  has_many :receivables, dependent: :nullify
+  has_many :shipments, dependent: :nullify
 
   has_many :receivables, through: :shipments
 
@@ -180,7 +176,7 @@ class BrokerCustomer < ApplicationRecord
 
     return nil if default_upcharge.blank? && upcharge_rules.blank?
 
-    if upcharge_rules.blank? && !default_upcharge.blank? && default_upcharge.positive?
+    if upcharge_rules.blank? && default_upcharge.present? && default_upcharge.positive?
       return (carrier_cost + default_upcharge)
     end
 
@@ -199,7 +195,7 @@ class BrokerCustomer < ApplicationRecord
                              upcharge_rules
                              .where(packaging: packaging_id)
                              .where('min <= ?', quantity)
-                             .where(max: nil)
+                             .where(max: nil),
                            )
       if try_upcharge_rules.blank?
         matched = false
@@ -235,7 +231,7 @@ class BrokerCustomer < ApplicationRecord
                              upcharge_rules
                              .where(packaging: item.packaging)
                              .where('min <= ?', item.quantity)
-                             .where(max: nil)
+                             .where(max: nil),
                            )
 
       max = try_upcharge_rules.pluck(:upcharge_cents).max
@@ -252,7 +248,7 @@ class BrokerCustomer < ApplicationRecord
         return nil unless to_date
 
         shipments = self.shipments.active.where(broker_customer: self).where(
-          picked_up_at: (from_date.beginning_of_day..to_date.end_of_day)
+          picked_up_at: (from_date.beginning_of_day..to_date.end_of_day),
         )
       end
     else
@@ -296,7 +292,7 @@ class BrokerCustomer < ApplicationRecord
       update!(quickbooks_customer_id: quickbooks_customer.id)
     end
 
-    return create_quickbooks_customer unless quickbooks_customer.present?
+    return create_quickbooks_customer if quickbooks_customer.blank?
 
     result = QuickbooksAPIClient::Customers.new(broker:).update(self)
     return false if result.blank?
@@ -308,16 +304,16 @@ class BrokerCustomer < ApplicationRecord
 
   def quickbooks_customer
     return nil unless broker.intuit_account&.connected?
-    return @quickbooks_customer unless @quickbooks_customer.blank?
+    return @quickbooks_customer if @quickbooks_customer.present?
 
     result = nil
 
-    unless quickbooks_customer_id.blank?
+    if quickbooks_customer_id.present?
       result = QuickbooksAPIClient::Customers.new(broker:).find(quickbooks_customer_id)
     end
-    return @quickbooks_customer = result unless result.blank?
+    return @quickbooks_customer = result if result.present?
 
-    result = QuickbooksAPIClient::Customers.new(broker:).find_by_name(customer.name)
+    result = QuickbooksAPIClient::Customers.new(broker:).find_by(name: customer.name)
     return nil if result.blank?
 
     update_columns(quickbooks_customer_id: result.id)
@@ -329,7 +325,7 @@ class BrokerCustomer < ApplicationRecord
       billing_address: office_address.to_quickbooks_physical_address,
       company_name: customer.name,
       display_name: customer.name,
-      shipping_address: primary_pickup_address&.to_quickbooks_physical_address
+      shipping_address: primary_pickup_address&.to_quickbooks_physical_address,
     )
   end
 
@@ -348,5 +344,9 @@ class BrokerCustomer < ApplicationRecord
   def problematic_shipments_later
     ids = Problem.unresolved.where(resolvable: shipments).pluck(&:resolvable_id)
     ProblematicJob.perform_later(ids, type: 'Shipment')
+  end
+
+  def update_receivables_contact_broker_customer
+    receivables_contact.update!(broker_customer: self)
   end
 end

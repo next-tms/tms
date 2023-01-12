@@ -49,16 +49,13 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def create
     @broker_customer = BrokerCustomer.new(broker_customer_params)
     @broker_customer.broker = current_user.broker
-    if @broker_customer.primary_receivables_contact
-      @broker_customer.primary_receivables_contact.broker = current_user.broker
-    end
+
     # @broker_customer.sales_reps = [current_user]
-    if @broker_customer.save
-      flash[:success] = "#{@broker_customer.customer.name} saved. You may now edit pricing if you’d like."
-      redirect_to(edit_pricing_broker_broker_customer_path(@broker_customer))
-    else
-      render(:new)
-    end
+
+    render(:new) && return unless @broker_customer.save
+
+    flash[:success] = "#{@broker_customer.customer.name} saved. You may now edit pricing if you’d like."
+    redirect_to(edit_pricing_broker_broker_customer_path(@broker_customer))
   end
 
   def customer_contacts; end
@@ -89,7 +86,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.office_address = Address.new
     @broker_customer.primary_pickup_address = Address.new
     @broker_customer.sales_reps = [current_user]
-    @broker_customer.broker_customer_receivable_contacts.build(primary: true)
+    @broker_customer.build_receivables_contact
   end
 
   def preferences; end
@@ -272,12 +269,15 @@ class Broker::BrokerCustomersController < Broker::BrokerController
       document_preferences_attributes: %i[_destroy id contact_id kind],
       office_address_attributes: %i[id street street2 city region_id zip_code country_id],
       primary_pickup_address_attributes: %i[id street street2 city region_id zip_code country_id],
-      broker_customer_receivable_contacts_attributes: [
-                                                        :id,
-                                                        :primary,
-                                                        :_destroy,
-                                                        { contact_attributes: %i[id first_name last_name email] },
-                                                      ],
+      receivables_contact_attributes: [
+                                        :id,
+                                        :first_name,
+                                        :last_name,
+                                        :label,
+                                        :email,
+                                        :_destroy,
+                                        { contact_attributes: %i[id first_name last_name email] },
+                                      ],
       upcharge_rules_attributes: %i[_destroy id max min packaging_id upcharge upcharge_percentage],
     )
   end

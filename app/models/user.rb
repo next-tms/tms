@@ -97,6 +97,12 @@
 #  fk_rails_...  (invited_by_id => users.id)
 #
 class User < ApplicationRecord
+  class << self
+    def with_role(role_name)
+      joins(:user_roles).where(user_roles: { role: Role.find_by(name: role_name) })
+    end
+  end
+
   scope :active, -> { where.not(deactivated: true) }
   scope :customers, -> { where.not(broker_customer: nil) }
   scope :brokers, -> { where.not(id: customers) }
@@ -112,10 +118,10 @@ class User < ApplicationRecord
   before_validation :set_contact
   before_validation :set_time_zone_name
 
-  belongs_to :broker, required: true
+  belongs_to :broker, optional: false
   belongs_to :contact
-  belongs_to :customer, required: false
-  belongs_to :broker_customer, required: false
+  belongs_to :customer, optional: true
+  belongs_to :broker_customer, optional: true
 
   has_many :user_roles
   accepts_nested_attributes_for :user_roles, allow_destroy: true, reject_if: :all_blank
@@ -156,7 +162,7 @@ class User < ApplicationRecord
   end
 
   def broker_customers
-    if has_any_roles?(%w[dispatch sales_rep_for_all_broker_customers])
+    if has_any_roles?(['dispatch', 'sales_rep_for_all_broker_customers'])
       broker.broker_customers
     else
       super
@@ -187,15 +193,13 @@ class User < ApplicationRecord
   def sales_rep_for_broker_customers
     BrokerCustomer.where(
       id: BrokerCustomerSalesRep.where(
-        user: self
-      ).pluck(:broker_customer_id)
+        user: self,
+      ).pluck(:broker_customer_id),
     )
   end
 
   def commissions_between(from, to)
-    commissions.where(
-      shipment: shipments.where(delivered_at: from..to)
-    )
+    commissions.where(shipment: shipments.where(delivered_at: from..to))
   end
 
   def has_any_roles?(role_arr)
@@ -206,17 +210,11 @@ class User < ApplicationRecord
     @role_names ||= roles.pluck(:name)
     return true if @role_names.include?('root')
 
-    if customer? && role_name == 'accounts_payable' && broker_customer.primary_receivables_contact == contact
-      return true
-    end
+    return true if customer? && role_name == 'accounts_payable' && broker_customer.receivables_contact == contact
 
     @role_names << 'broker' if broker?
     @role_names << 'customer' if customer?
-    @role_names.include? role_name
-  end
-
-  def self.with_role(role_name)
-    joins(:user_roles).where(user_roles: { role: Role.find_by_name(role_name) })
+    @role_names.include?(role_name)
   end
 
   def customer?
@@ -236,7 +234,7 @@ class User < ApplicationRecord
 
     return broker.users.broker if has_role?('root')
 
-    scope = roles - [Role.find_by_name('sales_rep')]
+    scope = roles - [Role.find_by(name: 'sales_rep')]
 
     User.where(id: UserRole.where(role: scope).where(user: broker.users.broker).pluck(:user_id))
   end
@@ -244,14 +242,15 @@ class User < ApplicationRecord
   def shipments
     return broker_customer.shipments if customer?
 
-    all_shipments = (roles.pluck(:name) & %w[accounts_receivable dispatch root sales_rep_for_all_broker_customers]).any?
+    all_shipments = (roles.pluck(:name) & ['accounts_receivable', 'dispatch', 'root',
+                                           'sales_rep_for_all_broker_customers',]).any?
     return broker.shipments if !sales_rep_only? && all_shipments
 
     broker_customer_ids = sales_rep_for_broker_customers&.ids
 
     return Shipment.none if broker_customer_ids.blank?
 
-    Shipment.where(broker_customer_id: broker_customer_ids) unless broker_customer_ids.blank?
+    Shipment.where(broker_customer_id: broker_customer_ids) if broker_customer_ids.present?
   end
 
   def sales_rep_only?
@@ -266,7 +265,7 @@ class User < ApplicationRecord
     client.api.account.messages.create(
       from: '+14243616317',
       to: phone,
-      url: 'https://tms.next-tms.com/Next%%20TMS.vcf'
+      url: 'https://tms.next-tms.com/Next%%20TMS.vcf',
     )
   end
 
@@ -302,13 +301,13 @@ class User < ApplicationRecord
     return if email.blank?
 
     self.contact = broker.contacts.where(email: email.downcase)&.first
-    return unless contact.blank?
+    return if contact.present?
 
     self.contact = Contact.new(
       broker_id:,
       email:,
       first_name:,
-      last_name:
+      last_name:,
     )
   end
 
@@ -324,7 +323,7 @@ class User < ApplicationRecord
   def extract_ip_from(request)
     header = request.headers['Fly-Client-IP'].presence || request.headers['X-Forwarded-For']
 
-    return request.remote_ip unless header.present?
+    return request.remote_ip if header.blank?
 
     header = header.split(',')[0].strip if header.include?(',')
     header

@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# @deprecated Moved to BrokerCustomer#receivables_contact
 # == Schema Information
 #
 # Table name: broker_customer_receivable_contacts
@@ -37,9 +40,9 @@ class BrokerCustomerReceivableContact < ApplicationRecord
 
   def ensure_one_primary_contact
     return if primary
-    return if self.broker_customer.broker_customer_receivable_contacts.where(primary: true).present?
+    return if broker_customer.broker_customer_receivable_contacts.where(primary: true).present?
 
-    errors.add(:base, "Requires atleast 1 primary receivable contact")
+    errors.add(:base, 'Requires atleast 1 primary receivable contact')
   end
 
   def check_if_contact_exists

@@ -17,7 +17,7 @@ class ReceivablesMailer < ApplicationMailer
     end
 
     # cc = broker_customer.receivables_contacts.map do |contact|
-    #   next if contact == broker_customer.primary_receivables_contact
+    #   next if contact == broker_customer.receivables_contact
 
     #   pretty_email(contact)
     # end.compact
@@ -25,21 +25,20 @@ class ReceivablesMailer < ApplicationMailer
     mail(
       from: "#{broker_customer.broker.name} <#{broker_customer.broker.robot_email}>",
       reply_to: broker_customer.broker.customer_service_email,
-      to: pretty_email(broker_customer.primary_receivables_contact),
+      to: pretty_email(broker_customer.receivables_contact),
       bcc:,
-      subject: load_ids.size > 1 ? 'Batch Invoices' : "Invoice #{load_ids[0]}"
+      subject: load_ids.size > 1 ? 'Batch Invoices' : "Invoice #{load_ids[0]}",
     )
   end
 
   private
 
   def pretty_email(model)
-    if model.label.blank?
-      model.email
-    else
-      # Postmark doesn't like this format:
-      # "#{model.label} <#{model.email}>"
-      model.email
-    end
+    # return model.email if model.label.blank?
+    #
+    # Postmark doesn't like this format:
+    # "#{model.label} <#{model.email}>"
+
+    model.email
   end
 end

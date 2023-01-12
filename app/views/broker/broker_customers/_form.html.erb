@@ -35,46 +35,45 @@
     </div>
   </div>
 
-  <div class="form-group row">
-    <label class="col-form-label col-sm-2">Documentation Preferences</label>
-    <div class="col-sm-10">
-      <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".broker-customer-document-preference-form-wrapper">
-        <template data-nested-form-target="template">
-          <%= f.fields_for :document_preferences, DocumentPreference.new, child_index: 'NEW_RECORD' do |document_preferences_form| %>
+  <% unless f.object.new_record? %>
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2">Documentation Preferences</label>
+      <div class="col-sm-10">
+        <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".broker-customer-document-preference-form-wrapper">
+          <template data-nested-form-target="template">
+            <%= f.fields_for :document_preferences, DocumentPreference.new, child_index: 'NEW_RECORD' do |document_preferences_form| %>
+              <%= render 'document_preference_form', f: document_preferences_form %>
+            <% end %>
+          </template>
+
+          <%= f.fields_for :document_preferences do |document_preferences_form| %>
             <%= render 'document_preference_form', f: document_preferences_form %>
           <% end %>
-        </template>
 
-        <%= f.fields_for :document_preferences do |document_preferences_form| %>
-          <%= render 'document_preference_form', f: document_preferences_form %>
-        <% end %>
+          <div data-nested-form-target="target"></div>
 
-        <div data-nested-form-target="target"></div>
-
-        <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+          <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+        </div>
       </div>
     </div>
-  </div>
+  <% end %>
 
-  <div class="form-group row" id="receivable-contacts-form">
+  <div class="form-group row">
     <label class="col-form-label col-sm-2">Receivables Contact</label>
 
-    <div class="col-sm-10">
-      <div data-controller="contacts nested-form" data-nested-form-wrapper-selector-value=".receivables-contact-form-wrapper">
-        <template data-nested-form-target="template">
-          <%= f.fields_for :broker_customer_receivable_contacts, BrokerCustomerReceivableContact.new, child_index: 'NEW_RECORD' do |receivables_contact_form| %>
-            <%= render 'receivables_contact_form', f: receivables_contact_form %>
+    <div class="col-sm-10"">
+      <div class="row gy-2 gx-3 align-items-center mb-4">
+        <% if f.object.new_record? %>
+          <%= f.fields_for :receivables_contact do |receivables_contact_form| %>
+            <%= render 'receivables_contact_fields', f: receivables_contact_form %>
           <% end %>
-        </template>
-
-        <%= f.fields_for :broker_customer_receivable_contacts do |receivables_contact_form| %>
-          <%= render 'receivables_contact_form', f: receivables_contact_form %>
-        <% end %>
-
-        <div data-nested-form-target="target"></div>
-
-        <% if f.object.contacts.count > f.object.broker_customer_receivable_contacts.count %>
-          <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+        <% else %>
+          <div class="col-auto">
+            <%= f.select :receivables_contact_id,
+                         f.object.contacts.order(:first_name).all.collect { |contact| [ "#{contact.first_name} #{contact.last_name}", contact.id ] },
+                         { label: 'Contact', hide_label: true, wrapper: false },
+                         class: 'form-select' %>
+          </div>
         <% end %>
       </div>
     </div>

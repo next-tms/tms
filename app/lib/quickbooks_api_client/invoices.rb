@@ -20,7 +20,7 @@ module QuickbooksAPIClient
           raise unless e.message.include?('Duplicate Document Number Error')
 
           result = find_by_doc_number(invoice.load_id)
-          return result unless result.blank?
+          return result if result.present?
 
           raise
         end
@@ -87,10 +87,10 @@ module QuickbooksAPIClient
       invoice = Quickbooks::Model::Invoice.new if invoice.blank?
       invoice.line_items = [] # for update
 
-      invoice.billing_email_address = receivable.broker_customer.primary_receivables_contact.email
+      invoice.billing_email_address = receivable.broker_customer.receivables_contact.email
       invoice.customer_id = receivable.broker_customer.quickbooks_customer_id
       invoice.doc_number = receivable.shipment.load_id.to_s
-      invoice.txn_date = DateTime.current.in_time_zone(receivable.broker_customer.broker.time_zone)
+      invoice.txn_date = Time.current.in_time_zone(receivable.broker_customer.broker.time_zone)
 
       billing_address = receivable.broker_customer.office_address.to_quickbooks_physical_address
       billing_address.line2 = billing_address.line1
@@ -105,16 +105,12 @@ module QuickbooksAPIClient
       carrier = if receivable.shipment.broker_carrier.blank?
                   nil
                 elsif receivable.shipment.broker_carrier.carrier.acts_as_broker
-                  if receivable.shipment.tracking_carrier.blank?
-                    receivable.shipment.broker_carrier.carrier
-                  else
-                    receivable.shipment.tracking_carrier
-                  end
+                  receivable.shipment.tracking_carrier.presence || receivable.shipment.broker_carrier.carrier
                 else
                   receivable.shipment.broker_carrier.carrier
                 end
 
-      unless carrier.blank?
+      if carrier.present?
         ship_method_ref = Quickbooks::Model::BaseReference.new(carrier.name[..30], value: carrier.name[..30])
 
         invoice.ship_method_ref = ship_method_ref
@@ -123,18 +119,18 @@ module QuickbooksAPIClient
       invoice.tracking_num = receivable.shipment.load_id
 
       references = []
-      unless receivable.shipment.shipper_reference.blank?
+      if receivable.shipment.shipper_reference.present?
         references << "Shipper Ref: #{receivable.shipment.shipper_reference}"
       end
-      unless receivable.shipment.customer_reference.blank?
+      if receivable.shipment.customer_reference.present?
         references << "PO Ref: #{receivable.shipment.customer_reference}"
       end
       references = references.reject(&:blank?)
 
-      unless references.blank?
+      if references.present?
         line_item = Quickbooks::Model::InvoiceLineItem.new(
           description: references.join("\n"),
-          detail_type: 'DescriptionOnly'
+          detail_type: 'DescriptionOnly',
         )
 
         invoice.line_items << line_item
@@ -150,7 +146,7 @@ module QuickbooksAPIClient
 
         line_item = Quickbooks::Model::InvoiceLineItem.new(
           description:,
-          detail_type: 'DescriptionOnly'
+          detail_type: 'DescriptionOnly',
         )
 
         invoice.line_items << line_item

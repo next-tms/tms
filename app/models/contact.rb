@@ -46,32 +46,45 @@ class Contact < ApplicationRecord
   belongs_to :broker_carrier, optional: true
   belongs_to :broker_customer, optional: true
 
-  has_many :document_preferences
+  has_many :document_preferences, dependent: :destroy
 
-  has_one :user
+  has_one :user, dependent: :nullify
 
   phony_normalize :mobile_phone, default_country_code: 'US'
   phony_normalize :work_phone, default_country_code: 'US'
 
-  validates :email, uniqueness: { scope: :broker_customer }
+  validates :email, uniqueness: { scope: :broker_customer_id }
 
+  validate :validate_email
+  validate :validate_first_name_and_last_name
+
+  # @return [String, nil]
   def full_name
-    if first_name.blank? && last_name.blank?
-      return read_attribute(:label) if first_name.blank? && last_name.blank? && job_title.blank?
-
-      return job_title
-    end
+    return nil if [first_name, last_name].all?(&:blank?)
 
     "#{first_name} #{last_name}"
   end
 
+  # @return [String]
   def label
-    full_name
+    [full_name, super, job_title].compact_blank&.first || ''
   end
 
   private
 
   def normalize_phone(phone_number:, country_code:)
-    phone_number ? phone_number.phony_formatted(normalize: country_code) : nil
+    phone_number&.phony_formatted(normalize: country_code)
+  end
+
+  def validate_email
+    return if email.present? || broker_customer&.receivables_contact != self
+
+    errors.add(:email, 'cannot be blank')
+  end
+
+  def validate_first_name_and_last_name
+    return if [first_name, last_name].all?(&:present?) || label.present?
+
+    errors.add(:label, 'required when name is blank')
   end
 end
