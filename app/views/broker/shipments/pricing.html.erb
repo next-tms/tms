@@ -13,9 +13,8 @@
   </div>
 <% end %>
 
-<% whodunnit = @shipment.whodunnit('total_charges_cents') %>
-<% if @shipment.applied_rate.present? && whodunnit.present? %>
-  <% if whodunnit&.customer? %>
+<% if @shipment.applied_rate.present? && @total_charges_updated_by.present? %>
+  <% if @total_charges_updated_by&.customer? %>
     <%= render 'layouts/message',
         classes: 'alert-danger',
         title: "#{@shipment.broker_customer.customer.name} set these charges",
@@ -29,7 +28,7 @@
         classes: 'alert-info',
         title: "#{current_user.broker.name} set these charges",
         message: <<~MESSAGE
-          #{whodunnit.full_name} last updated the total charges to
+          #{@total_charges_updated_by.full_name} last updated the total charges to
           #{humanized_money_with_symbol(@shipment.total_charges, no_cents_if_whole: false)}.
         MESSAGE
     %>
@@ -67,7 +66,11 @@
     </div>
 
     <%= f.form_group do %>
-      <%= f.submit class: 'btn btn-primary', value: 'Save' %>
+      <% if @total_charges_updated_by.customer? %>
+        <%= f.submit 'Save', data: { turbo_confirm: "Are you sure to update pricing set by the customer?" }, class: "btn btn-primary"  %>
+      <% else %>
+        <%= f.submit class: 'btn btn-primary', value: 'Save' %>
+      <% end %>
     <% end %>
   <% end %>
 <% end %>

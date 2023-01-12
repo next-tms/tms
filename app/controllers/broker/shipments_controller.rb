@@ -547,6 +547,8 @@ class Broker::ShipmentsController < Broker::BrokerController
     if !current_user.has_role?('accounting') && !current_user.has_role?('dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
       unauthorized
     end
+
+    @total_charges_updated_by = @shipment.whodunnit('total_charges_cents')
   end
 
   def create_tracking_event
