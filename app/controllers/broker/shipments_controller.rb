@@ -231,7 +231,7 @@ class Broker::ShipmentsController < Broker::BrokerController
       contact_ids += @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).ids
     end
 
-    if @shipment&.broker_customer&.contacts && %w[carrier_quote dispatch_sheet].none?(params[:shipment_method])
+    if @shipment&.broker_customer&.contacts && ['carrier_quote', 'broker_dispatch_sheet'].none?(params[:shipment_method])
       contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer)&.ids
     end
 

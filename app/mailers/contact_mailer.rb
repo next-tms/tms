@@ -16,6 +16,9 @@ class ContactMailer < ApplicationMailer
   end
 
   def broker_dispatch_sheet(from_user:, to_contact:, shipment:)
+    # Prevent sending dispatch sheet to customers
+    return if to_contact.broker_customer.present?
+
     @shipment = shipment
 
     send_document(
