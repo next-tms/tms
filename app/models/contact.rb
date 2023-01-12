@@ -48,6 +48,9 @@ class Contact < ApplicationRecord
 
   has_many :document_preferences, dependent: :destroy
 
+  has_one :broker_customer, dependent: :restrict_with_error,
+                            foreign_key: :receivables_contact,
+                            inverse_of: :receivables_contact
   has_one :user, dependent: :nullify
 
   phony_normalize :mobile_phone, default_country_code: 'US'
