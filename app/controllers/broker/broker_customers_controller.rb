@@ -254,6 +254,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
       :ignore_value_on_api_quotes,
       :internal_notes,
       :preferred_broker_carriers_kind,
+      :receivables_contact_id,
       :receivables_schedule,
       :requires_carrier_bol_on_receivables,
       :requires_carrier_pod_on_receivables,
