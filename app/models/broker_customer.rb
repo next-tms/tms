@@ -74,7 +74,7 @@ class BrokerCustomer < ApplicationRecord
 
   after_commit :problematic_shipments_later
 
-  after_save :update_receivables_contact_broker_customer, if: -> { saved_change_to_receivables_contact_id? }
+  before_validation :assign_receivables_contact_broker_customer, if: -> { receivables_contact.new_record? }
 
   audited
 
@@ -346,7 +346,7 @@ class BrokerCustomer < ApplicationRecord
     ProblematicJob.perform_later(ids, type: 'Shipment')
   end
 
-  def update_receivables_contact_broker_customer
-    receivables_contact.update!(broker_customer: self)
+  def assign_receivables_contact_broker_customer
+    receivables_contact.assign_attributes(broker_customer: self)
   end
 end

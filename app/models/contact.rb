@@ -48,15 +48,17 @@ class Contact < ApplicationRecord
 
   has_many :document_preferences, dependent: :destroy
 
-  has_one :broker_customer, dependent: :restrict_with_error,
-                            foreign_key: :receivables_contact,
-                            inverse_of: :receivables_contact
+  has_one :broker_customer_as_receivables_contact, class_name: 'BrokerCustomer',
+                                                   dependent: :restrict_with_error,
+                                                   foreign_key: :receivables_contact_id,
+                                                   inverse_of: :receivables_contact
+
   has_one :user, dependent: :nullify
 
   phony_normalize :mobile_phone, default_country_code: 'US'
   phony_normalize :work_phone, default_country_code: 'US'
 
-  validates :email, uniqueness: { scope: :broker_customer_id }
+  validates :email, presence: true, uniqueness: { scope: :broker_customer_id }, if: -> { email.present? }
 
   validate :validate_email
   validate :validate_first_name_and_last_name
@@ -80,7 +82,7 @@ class Contact < ApplicationRecord
   end
 
   def validate_email
-    return if email.present? || broker_customer&.receivables_contact != self
+    return if email.present? || broker_customer.blank? || broker_customer.receivables_contact != self
 
     errors.add(:email, 'cannot be blank')
   end

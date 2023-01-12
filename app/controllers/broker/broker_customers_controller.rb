@@ -86,7 +86,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.office_address = Address.new
     @broker_customer.primary_pickup_address = Address.new
     @broker_customer.sales_reps = [current_user]
-    @broker_customer.build_receivables_contact
+    @broker_customer.build_receivables_contact(broker_customer: @broker_customer)
   end
 
   def preferences; end
