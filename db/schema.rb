@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_12_041741) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_12_184636) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -219,7 +219,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_041741) do
     t.boolean "ignore_value_on_api_quotes", default: false
     t.bigint "office_address_id", null: false
     t.string "quickbooks_customer_id"
-    t.bigint "receivables_contact_id", null: false
+    t.bigint "receivables_contact_id"
     t.string "receivables_schedule", default: "immediately"
     t.boolean "requires_shipment_delivery_before_receivable", default: true
     t.string "preferred_broker_carriers_kind"
