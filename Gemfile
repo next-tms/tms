@@ -39,7 +39,7 @@ group :development do
   gem 'letter_opener'
   gem 'listen', '>= 3.0.5', '< 3.9'
   gem 'rails_real_favicon'
-  gem 'spring', '~> 4.1.0'
+  gem 'spring', '~> 4.1.1'
   gem 'traceroute'
   gem 'web-console', '>= 3.3.0'
 end
