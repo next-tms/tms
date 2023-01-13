@@ -30,7 +30,7 @@ group :development, :test do
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', require: false
-  gem 'rubocop-shopify', '~> 2.10.1', require: false
+  gem 'rubocop-shopify', '~> 2.11.1', require: false
 end
 
 group :development do
