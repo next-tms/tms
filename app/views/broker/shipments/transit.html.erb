@@ -94,7 +94,7 @@
   </div>
 
   <div class="form-group">
-    <% if @shipment.whodunnit('total_charges_cents').customer? %>
+    <% if @shipment.whodunnit('total_charges_cents')&.customer? %>
       <%= f.submit 'Save', data: { turbo_confirm: "Are you sure to update pricing set by the customer?" }, class: "btn btn-primary mt-2"  %>
     <% else %>
       <%= f.submit class: 'btn btn-primary mt-2', value: 'Save' %>
