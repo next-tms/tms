@@ -10,7 +10,7 @@ class Broker::ContactsController < Broker::BrokerController
 
   def index
     @q = @broker.contacts.includes(:contact).ransack(params[:q])
-    @q.sorts = "#{Contact.table_name + '.first_name'} desc" if @q.sorts.blank?
+    @q.sorts = "#{"#{Contact.table_name}.first_name"} desc" if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
   end
 
@@ -29,21 +29,18 @@ class Broker::ContactsController < Broker::BrokerController
 
   def create
     @contact = Contact.new(contact_params)
-    @contact.broker = current_user.broker
 
-    if @contact.save
-      redirect_to [:broker, @contact]
-    else
-      render :new
-    end
+    render(:new) && return unless @contact.save
+
+    redirect_to([:broker, @contact])
   end
 
   def update
     if !@contact.update(contact_params)
       flash[:error] = 'Unable to update contact'
-      render :edit
+      render(:edit)
     else
-      redirect_to [:broker, @contact]
+      redirect_to([:broker, @contact])
     end
   end
 
@@ -59,7 +56,7 @@ class Broker::ContactsController < Broker::BrokerController
   end
 
   def set_contact
-    @contact = Contact.find params[:id]
+    @contact = Contact.find(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
@@ -73,7 +70,7 @@ class Broker::ContactsController < Broker::BrokerController
       :job_title,
       :last_name,
       :mobile_phone,
-      :work_phone
-   )
+      :work_phone,
+    )
   end
 end

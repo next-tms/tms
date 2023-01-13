@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_12_184636) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_12_210725) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -328,7 +328,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_184636) do
   end
 
   create_table "contacts", force: :cascade do |t|
-    t.bigint "broker_id"
     t.string "first_name"
     t.string "last_name"
     t.string "job_title"
@@ -341,7 +340,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_184636) do
     t.bigint "broker_carrier_id"
     t.index ["broker_carrier_id"], name: "index_contacts_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_contacts_on_broker_customer_id"
-    t.index ["broker_id"], name: "index_contacts_on_broker_id"
   end
 
   create_table "countries", force: :cascade do |t|
@@ -1036,7 +1034,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_184636) do
   add_foreign_key "commissions", "users"
   add_foreign_key "contacts", "broker_carriers"
   add_foreign_key "contacts", "broker_customers"
-  add_foreign_key "contacts", "brokers"
   add_foreign_key "customer_contacts", "brokers"
   add_foreign_key "customer_contacts", "contacts"
   add_foreign_key "customer_contacts", "customers"

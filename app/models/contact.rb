@@ -26,23 +26,18 @@
 #   @return []
 # @!attribute broker_customer_id
 #   @return []
-# @!attribute broker_id
-#   @return []
 #
 # Indexes
 #
 #  index_contacts_on_broker_carrier_id   (broker_carrier_id)
 #  index_contacts_on_broker_customer_id  (broker_customer_id)
-#  index_contacts_on_broker_id           (broker_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (broker_carrier_id => broker_carriers.id)
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
-#  fk_rails_...  (broker_id => brokers.id)
 #
 class Contact < ApplicationRecord
-  belongs_to :broker, optional: true
   belongs_to :broker_carrier, optional: true
   belongs_to :broker_customer, optional: true
 
@@ -58,10 +53,18 @@ class Contact < ApplicationRecord
   phony_normalize :mobile_phone, default_country_code: 'US'
   phony_normalize :work_phone, default_country_code: 'US'
 
+  scope :broker, -> { where(broker_carrier: nil, broker_customer: nil) }
+  scope :carrier, -> { where.not(broker_carrier: nil) }
+  scope :customer, -> { where.not(broker_customer: nil) }
+
   validates :email, presence: true, uniqueness: { scope: :broker_customer_id }, if: -> { email.present? }
 
   validate :validate_email
   validate :validate_first_name_and_last_name
+
+  def broker
+    (broker_carrier || broker_customer).broker
+  end
 
   # @return [String, nil]
   def full_name

@@ -223,10 +223,9 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def validate_user_role!
-    return if ALLOWED_ACCESS_FOR_DISPATCHER.include?(action_name) && current_user.dispatcher_only?
-    if ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE.include?(action_name) && current_user.has_role?('accounts_receivable')
-      return
-    end
+    return if current_user.has_role?('root') ||
+              (ALLOWED_ACCESS_FOR_DISPATCHER.include?(action_name) && current_user.dispatcher_only?) ||
+              (ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE.include?(action_name) && current_user.has_role?('accounts_receivable'))
 
     unauthorized if not_sales_rep_for_all_and_broker_customer?
   end
