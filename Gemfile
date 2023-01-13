@@ -66,7 +66,7 @@ gem 'aws-sdk-s3', '~> 1.117.2', group: :production
 gem 'image_processing', '~> 1.12.2'
 
 gem 'devise', '~> 4.8.0'
-gem 'devise_invitable', '~> 2.0.5'
+gem 'devise_invitable', '~> 2.0.7'
 gem 'devise-pwned_password', '~> 0.1.9'
 
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'a11f245c79f7bb826b0d68aea186a809ca336531'
