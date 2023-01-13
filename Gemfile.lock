@@ -338,7 +338,7 @@ GEM
       launchy (>= 2.2, < 3)
     line-tree (0.9.3)
       rexle (~> 1.5, >= 1.5.11)
-    listen (3.7.1)
+    listen (3.8.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     llhttp-ffi (0.4.0)
@@ -736,7 +736,7 @@ DEPENDENCIES
   jbuilder (~> 2.11)
   jwt
   letter_opener
-  listen (>= 3.0.5, < 3.8)
+  listen (>= 3.0.5, < 3.9)
   mainstreet!
   money-rails (~> 1.15.0)
   noticed

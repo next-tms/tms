@@ -37,7 +37,7 @@ group :development do
   gem 'annotate', '~> 3.2.0'
   gem 'bullet', '~> 7.0.7'
   gem 'letter_opener'
-  gem 'listen', '>= 3.0.5', '< 3.8'
+  gem 'listen', '>= 3.0.5', '< 3.9'
   gem 'rails_real_favicon'
   gem 'spring', '~> 4.1.0'
   gem 'traceroute'
