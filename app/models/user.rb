@@ -304,7 +304,6 @@ class User < ApplicationRecord
     return if contact.present?
 
     self.contact = Contact.new(
-      broker_id:,
       email:,
       first_name:,
       last_name:,

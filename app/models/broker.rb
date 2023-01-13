@@ -38,8 +38,6 @@ class Broker < ApplicationRecord
   has_many :banks
   accepts_nested_attributes_for :banks
 
-  has_many :contacts
-
   has_many :shipments
   has_many :rates, through: :shipments
   has_many :receivables, through: :shipments
