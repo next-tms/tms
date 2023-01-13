@@ -61,13 +61,20 @@
           <% notif_group.each do |notification_type| %>
             <tr>
               <td><%= humanized_notification_type(notification_type) %></td>
-              <td> <%= check_box_tag "email_notifications_blacklist[]", notification_type, @blacklist.exclude?(notification_type) %></td>
+              <td> <%= check_box_tag "email_notifications_blacklist[]", notification_type, @blacklist.exclude?(notification_type), class: "form-check-input" %></td>
             </tr>
           <% end %>
         </tbody>
       </table>
     <% end %>
   </div>
+
+  <label class="col-form-label fw-bold">Customize UI Theme</label>
+
+    <%= f.color_field :theme_primary_color, label: "Primary Colour" %>
+    <%= f.color_field :theme_sidebar_background_color, label: "Side Navigation Background Colour" %>
+    <%= f.color_field :theme_sidebar_text_color, label: "Side Navigation Text Colour" %>
+
 
   <div class="form-row my-4">
     <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>

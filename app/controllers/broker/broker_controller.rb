@@ -31,6 +31,9 @@ class Broker::BrokerController < ApplicationController
       :ignore_broker_carrier_bol_requires_tracking_number,
       :phone,
       :requires_charges_confirmed_on_receivables,
+      :theme_primary_color,
+      :theme_sidebar_background_color,
+      :theme_sidebar_text_color,
       address_attributes: %i[
         id
         street

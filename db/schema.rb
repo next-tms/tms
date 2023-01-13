@@ -249,6 +249,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_210725) do
     t.boolean "automatically_update_shipment_tracking_based_on_carrier_apis", default: true
     t.boolean "ignore_broker_carrier_bol_requires_tracking_number", default: false
     t.boolean "requires_charges_confirmed_on_receivables", default: false
+    t.string "theme_primary_color", default: "#0d6efd"
+    t.string "theme_sidebar_background_color", default: "#E2F8FF"
+    t.string "theme_sidebar_text_color", default: "rgba(0, 0, 0, 0.95)"
     t.index ["address_id"], name: "index_brokers_on_address_id"
   end
 

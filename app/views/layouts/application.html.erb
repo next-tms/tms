@@ -39,6 +39,51 @@
     <%= javascript_importmap_tags %>
   </head>
 
+ 
+  <% if current_user %>
+    <style>
+      <% broker = current_user.broker %>
+
+      /* Primary Colors */
+      :root {
+        --bs-primary: <%= broker.theme_primary_color %>;
+        --bs-link-color: <%= broker.theme_primary_color %>;
+        --bs-link-hover-color: <%= broker.theme_primary_color %>;
+      }
+
+      .form-control:focus {
+        border-color: <%= broker.theme_primary_color %>;
+      }
+
+      .form-check-input:checked {
+        border-color: <%= broker.theme_primary_color %>;
+        background-color: <%= broker.theme_primary_color %>;
+      }
+
+      .pagination {
+        --bs-pagination-active-bg: <%= broker.theme_primary_color %>;
+        --bs-pagination-active-border-color: <%= broker.theme_primary_color %>;
+      }
+
+      .btn-primary {
+        --bs-btn-bg: <%= broker.theme_primary_color %>;
+        --bs-btn-border-color: <%= broker.theme_primary_color %>;
+        --bs-btn-hover-bg: <%= broker.theme_primary_color %>;
+        --bs-btn-hover-border-color: <%= broker.theme_primary_color %>;
+      }
+
+      /* Sidebar Colors  */
+
+      aside {
+        background: <%= broker.theme_sidebar_background_color %>;
+      }
+
+      aside, aside a, aside a:active, aside a:hover, aside a:visited {
+        color: <%= broker.theme_sidebar_text_color %>;
+      }
+    </style> 
+  <% end %>
+
   <body data-controller="active" data-active-controller-value="<%= controller.controller_name.gsub('_', '-') %>" data-active-action-value="<%= action_name.gsub('_', '-') %>">
     <!--
       Circumvent Facebook/Instagram in-app <script> injection, see
