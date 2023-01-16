@@ -108,7 +108,13 @@ class User < ApplicationRecord
   scope :brokers, -> { where.not(id: customers) }
   scope :dispatchers, -> { where(id: Role.find_by(name: 'dispatch')&.users&.collect(&:id)) }
 
-  devise :database_authenticatable, :invitable, :pwned_password, :recoverable, :rememberable, :timeoutable, :trackable,
+  devise :database_authenticatable,
+         :invitable,
+         :pwned_password,
+         :recoverable,
+         :rememberable,
+         :timeoutable,
+         :trackable,
          :validatable
 
   after_save :reassign_problems
@@ -242,8 +248,12 @@ class User < ApplicationRecord
   def shipments
     return broker_customer.shipments if customer?
 
-    all_shipments = (roles.pluck(:name) & ['accounts_receivable', 'dispatch', 'root',
-                                           'sales_rep_for_all_broker_customers',]).any?
+    all_shipments = (roles.pluck(:name) & [
+                                            'accounts_receivable',
+                                            'dispatch',
+                                            'root',
+                                            'sales_rep_for_all_broker_customers',
+                                          ]).any?
     return broker.shipments if !sales_rep_only? && all_shipments
 
     broker_customer_ids = sales_rep_for_broker_customers&.ids
@@ -300,14 +310,10 @@ class User < ApplicationRecord
   def set_contact
     return if email.blank?
 
-    self.contact = broker.contacts.where(email: email.downcase)&.first
-    return if contact.present?
+    self.contact = Contact.find_or_initialize_by(email: email.downcase)
+    return unless contact.new_record?
 
-    self.contact = Contact.new(
-      email:,
-      first_name:,
-      last_name:,
-    )
+    contact.assign_attributes(first_name:, last_name:)
   end
 
   def set_time_zone_name
