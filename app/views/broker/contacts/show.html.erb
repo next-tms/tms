@@ -10,9 +10,21 @@
   <div class="col col-md-6">
     <div class="btn-toolbar mb-3">
       <div class="btn-group">
-        <% if @contact.user.blank? && @contact.broker_customer_id.present? %>
-          <%= link_to icon('solid', 'plus', 'Invite Customer'), new_user_invitation_path(broker_customer_id: @contact.broker_customer_id, contact_id: @contact.id), class: 'btn btn-sm btn-primary' %>
+        <% if @contact.broker_customer.present? %>
+          <% if @contact.user.blank? %>
+            <%= link_to icon('solid', 'plus', 'Invite Customer'),
+                        new_user_invitation_path(broker_customer_id: @contact.broker_customer_id, contact_id: @contact.id),
+                        class: 'btn btn-sm btn-primary'
+            %>
+          <% elsif @contact.user.invitation_sent_at? %>
+            <% if @contact.user.invitation_accepted? %>
+              <%= link_to icon('solid', 'plus', 'Invitation Accepted'), '#', class: 'btn btn-sm btn-primary disabled' %>
+            <% else %>
+              <%= link_to icon('solid', 'plus', 'Invitation Sent'), '#', class: 'btn btn-sm btn-primary disabled' %>
+            <% end %>
+          <% end %>
         <% end %>
+
         <%= link_to icon('solid', 'pencil-alt', 'Edit'), edit_broker_contact_path(@contact), class: 'btn btn-sm btn-light' %>
       </div>
     </div>
