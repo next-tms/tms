@@ -30,8 +30,9 @@
 FactoryBot.define do
   factory :region do
     country { create(:country) }
-    name { 'MyString' }
-    abbreviation { 'MyString' }
-    updated_at { '2022-06-30 00:16:21' }
+    name { Faker::Address.state }
+    abbreviation { Faker::Address.state_abbr }
+
+    after(:build) { |record| record.iso31662 = "#{record.country.alpha2_code}_#{record.abbreviation}" }
   end
 end

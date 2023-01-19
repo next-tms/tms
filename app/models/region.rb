@@ -51,7 +51,7 @@ class Region < ApplicationRecord
   end
 
   def iso31662_belongs_to_country
-    return unless country.present? && !iso31662.start_with?("#{country.alpha2_code}_")
+    return unless country.present? && !iso31662&.start_with?("#{country.alpha2_code}_")
 
     errors.add(:iso31662, "doesn't belong to #{country.name}")
   end

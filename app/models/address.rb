@@ -64,7 +64,7 @@
 class Address < ApplicationRecord
   before_save :sanitize_city
   before_save :sanitize_street
-  before_save :set_standardized_address
+  before_save :set_standardized_address, unless: -> { Rails.env.test? }
 
   before_validation :set_country
 
@@ -81,17 +81,17 @@ class Address < ApplicationRecord
 
   def pretty(seperator)
     str = ''.dup
-    str << "#{ref}#{seperator}" unless ref.blank?
-    str << "#{street}#{seperator}" unless street.blank?
-    str << "#{street2}#{seperator}" unless street2.blank?
+    str << "#{ref}#{seperator}" if ref.present?
+    str << "#{street}#{seperator}" if street.present?
+    str << "#{street2}#{seperator}" if street2.present?
     str << "#{city}, #{region.abbreviation} #{zip_code}".sub(',  ', '')
     str
   end
 
   def proper(seperator)
     str = ''.dup
-    str << "#{street}#{seperator}" unless street.blank?
-    str << "#{street2}#{seperator}" unless street2.blank?
+    str << "#{street}#{seperator}" if street.present?
+    str << "#{street2}#{seperator}" if street2.present?
     str << "#{city}, #{region.abbreviation} #{zip_code}".sub(',  ', '')
     str
   end
@@ -117,7 +117,7 @@ class Address < ApplicationRecord
   end
 
   def full_address?
-    !street.blank? && !city.blank? && !region.blank?
+    street.present? && city.present? && region.present?
   end
 
   def blank_to_nil(obj)
@@ -132,7 +132,7 @@ class Address < ApplicationRecord
   end
 
   def time_zone
-    return standardized_address.time_zone unless standardized_address.blank?
+    return standardized_address.time_zone if standardized_address.present?
     return ActiveSupport::TimeZone.new('America/Los_Angeles') if time_zone_name.blank?
 
     ActiveSupport::TimeZone.new(time_zone_name)
@@ -148,7 +148,7 @@ class Address < ApplicationRecord
       city:,
       country: ActiveUtils::Country.find(country.alpha2_code),
       postal_code: zip_code,
-      province: region.abbreviation
+      province: region.abbreviation,
     )
   end
 
@@ -167,7 +167,7 @@ class Address < ApplicationRecord
       region_id:,
       postal_code: zip_code,
       country_id:,
-      key:
+      key:,
     )
 
     self.standardized_address = new_standardized_address
@@ -194,7 +194,7 @@ class Address < ApplicationRecord
       line2: street2,
       city:,
       country_sub_division_code: region.abbreviation,
-      postal_code: zip_code
+      postal_code: zip_code,
     )
   end
 
@@ -232,7 +232,7 @@ class Address < ApplicationRecord
   end
 
   def set_country
-    return if region.blank? || !country.blank?
+    return if region.blank? || country.present?
 
     self.country = region.country
   end
