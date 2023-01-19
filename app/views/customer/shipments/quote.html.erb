@@ -19,66 +19,32 @@
       message: "#{action}, please contact #{who}."
   %>
 <% else %>
-  <% if @use_forced_freight_classes == [false] %>
-    <div class="table-responsive">
-      <table class="table table-borderless table-striped table-hover sortable">
-        <thead>
-          <tr>
-            <th>&nbsp;</th>
-            <th>Carrier</th>
-            <th>Rate</th>
-            <th>Service</th>
-            <th>Transit</th>
-            <% if !@shipment.quote_only? && !@shipment.total_charges_cents == 0 %>
-              <th>Profit</th>
-            <% end %>
-          </tr>
-        </thead>
-        <tbody id="rates_false">
-        </tbody>
-      </table>
-    </div>
-
-    <% @broker_carriers.each do |broker_carrier| %>
-      <%= turbo_frame_tag "#{@shipment.id}_#{broker_carrier.id}_forced_freight_classes_false", src: rates_fetch_path(broker_carrier_id: broker_carrier.id, shipment_id: @shipment.id, use_forced_freight_classes: false, format: 'turbo_stream') do %>
-      <% end %>
-    <% end %>
-  <% else %>
-    <div class="row">
-      <% @use_forced_freight_classes.each do |use_forced_freight_classes| %>
-        <div class="col col-md-6">
-          <p class="col-title">
-            <% classes = @shipment.freight_classes(use_forced_freight_class: use_forced_freight_classes) %>
-            Based on <%= use_forced_freight_classes ? 'Declared' : 'Calculated' %>
-            <%= 'class'.pluralize(classes.size).titleize %>
-            <%= classes.join(', ') %>
-          </p>
-
-          <div class="table-responsive">
-            <table class="table table-borderless table-striped table-hover sortable">
-              <thead>
-                <tr>
-                  <% if !@shipment.quote_only? %>
-                    <th>&nbsp;</th>
-                  <% end %>
-                  <th>Carrier</th>
-                  <th>Quote</th>
-                  <th>Rate</th>
-                  <th>Service</th>
-                  <th>Transit</th>
-                </tr>
-              </thead>
-              <tbody id="rates_<%= use_forced_freight_classes %>">
-              </tbody>
-            </table>
-          </div>
-
-          <% @broker_carriers.each do |broker_carrier| %>
-            <%= turbo_frame_tag "#{@shipment.id}_#{broker_carrier.id}_forced_freight_classes_#{use_forced_freight_classes}", src: rates_fetch_path(broker_carrier_id: broker_carrier.id, shipment_id: @shipment.id, use_forced_freight_classes: use_forced_freight_classes, format: 'turbo_stream') do %>
-            <% end %>
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped table-hover sortable">
+      <thead>
+        <tr>
+          <% unless @shipment.quote_only? %>
+            <th></th>
           <% end %>
-        </div>
-      <% end %>
-    </div>
+          <th>Carrier</th>
+          <th>Rate</th>
+          <th>Service</th>
+          <th>Transit</th>
+        </tr>
+      </thead>
+      <tbody id="rates_<%= @use_forced_freight_classes %>">
+      </tbody>
+    </table>
+  </div>
+
+  <% @broker_carriers.each do |broker_carrier| %>
+    <% src = rates_fetch_path(
+               broker_carrier_id: broker_carrier.id,
+               shipment_id: @shipment.id,
+               use_forced_freight_classes: @use_forced_freight_classes,
+               format: 'turbo_stream'
+             )
+    %>
+    <%= turbo_frame_tag("#{@shipment.id}_#{broker_carrier.id}_forced_freight_classes_#{@use_forced_freight_classes}", src:) %>
   <% end %>
 <% end %>
