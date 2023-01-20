@@ -5,34 +5,54 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   before_action :set_shipment_by_load_id,
                 only: %i[
-                  accounting book book_modal claims documents create_tracking_event destroy edit
-                  edit_tracking_events notes pickup pickup_modal pricing quote rate_uid send_document
-                  send_document_with_contact_mailer show tracking_events transit unbook update
-                  history upload_document
-                ]
+                        accounting
+                        book
+                        book_modal
+                        claims
+                        documents
+                        create_tracking_event
+                        destroy
+                        edit
+                        edit_tracking_events
+                        notes
+                        pickup
+                        pickup_modal
+                        pricing
+                        quote
+                        rate_uid
+                        send_document
+                        send_document_with_contact_mailer
+                        show
+                        tracking_events
+                        transit
+                        unbook
+                        update
+                        history
+                        upload_document
+                      ]
   before_action :authenticate_user!
 
   def book
     redirect_to_edit = @shipment.quote_only?
 
     @shipment.update_columns(
-      booked_at: DateTime.current,
+      booked_at: Time.current,
       quote_only: false,
-      updated_by_id: current_user.id
+      updated_by_id: current_user.id,
     )
 
     if redirect_to_edit
-      redirect_to edit_broker_shipment_path(@shipment) and return
+      redirect_to(edit_broker_shipment_path(@shipment)) && return
     else
-      redirect_to [:broker, @shipment]
+      redirect_to([:broker, @shipment])
     end
   end
 
   def book_modal
-    @applied_rate_uid = shipment_params[:applied_rate_uid] unless params[:shipment].blank?
+    @applied_rate_uid = shipment_params[:applied_rate_uid] if params[:shipment].present?
     @broker_customers = current_user.broker_customers.includes(:customer).order('customers.name ASC')
 
-    render layout: 'modal'
+    render(layout: 'modal')
   end
 
   def unbook
@@ -42,7 +62,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.booked_at = nil
     @shipment.save
 
-    redirect_to [:broker, @shipment]
+    redirect_to([:broker, @shipment])
   end
 
   def index
@@ -54,8 +74,8 @@ class Broker::ShipmentsController < Broker::BrokerController
              { shipper_address: :standardized_address },
              :tracking_carrier,
              { broker_carrier: :carrier },
-             { broker_customer: :customer }
-           ]
+             { broker_customer: :customer },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -64,7 +84,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def duplicate
-    original_shipment = Shipment.find_by_load_id(params[:load_id])
+    original_shipment = Shipment.find_by(load_id: params[:load_id])
 
     @shipment = original_shipment.dup
     @shipment.receiver_address = original_shipment.receiver_address.dup
@@ -74,11 +94,27 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.load_id = current_user.broker.last_load_id + 1
 
     attributes_to_nullable = %i[
-      pickup_on dispatched_at pickup_confirmation tracking_carrier_pickup_confirmation
-      pickup_driver_assigned_at pickup_eta_at picked_up_at departed_origin_terminal_at
-      delivery_eta_on out_for_delivery_at lost_on pending_appointment_since delivery_appointment_on
-      delivery_appointment_at delivered_at canceled_at dispatched_at quoted_delivery_by quote_id pro
-    ]
+                               pickup_on
+                               dispatched_at
+                               pickup_confirmation
+                               tracking_carrier_pickup_confirmation
+                               pickup_driver_assigned_at
+                               pickup_eta_at
+                               picked_up_at
+                               departed_origin_terminal_at
+                               delivery_eta_on
+                               out_for_delivery_at
+                               lost_on
+                               pending_appointment_since
+                               delivery_appointment_on
+                               delivery_appointment_at
+                               delivered_at
+                               canceled_at
+                               dispatched_at
+                               quoted_delivery_by
+                               quote_id
+                               pro
+                             ]
 
     # You want a duplicated shipment to have a shipment status of 'New'
     attrs = attributes_to_nullable.map { |attr_name| { attr_name => nil } }
@@ -87,7 +123,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.save!
 
     flash[:success] = "Duplicated from load ##{original_shipment.load_id}"
-    redirect_to edit_broker_shipment_path(@shipment)
+    redirect_to(edit_broker_shipment_path(@shipment))
   end
 
   def new
@@ -97,7 +133,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @broker_customers = current_user.broker_customers.includes(:customer).order('customers.name')
 
     broker_customer = if params[:broker_customer_id].present?
-                        BrokerCustomer.find_by_id(params[:broker_customer_id])
+                        BrokerCustomer.find_by(id: params[:broker_customer_id])
                       elsif current_user.broker_customers.size == 1
                         current_user.broker_customers.first
                       end
@@ -115,7 +151,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.shipper_name = broker_customer&.customer&.name
     @shipment.broker_customer = broker_customer
     @shipment.dispatcher = @shipment.assign_dispatcher if broker_customer
-    @shipment.dispatcher = current_user if current_user.has_any_roles?(%w[dispatch root])
+    @shipment.dispatcher = current_user if current_user.has_any_roles?(['dispatch', 'root'])
     @shipment.shipper_address = broker_customer&.primary_pickup_address&.dup || Address.new
     @shipment.receiver_address = Address.new
 
@@ -149,19 +185,19 @@ class Broker::ShipmentsController < Broker::BrokerController
         @shipment.receiver_address.find_or_build_standardized_address
 
         @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
-        render :new and return if @accessorials_has_been_suggested
+        render(:new) && return if @accessorials_has_been_suggested
       end
 
       if @shipment.save
         @shipment.refresh_documents!
 
         if @shipment.quote_only?
-          redirect_to quote_broker_shipment_path(@shipment)
+          redirect_to(quote_broker_shipment_path(@shipment))
         else
-          redirect_to [:broker, @shipment]
+          redirect_to([:broker, @shipment])
         end
       else
-        render :new
+        render(:new)
       end
     end
   end
@@ -171,7 +207,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def update
-    unauthorized and return unless @shipment.accessible_by?(current_user)
+    unauthorized && return unless @shipment.accessible_by?(current_user)
 
     @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.updated_by = current_user
@@ -182,24 +218,24 @@ class Broker::ShipmentsController < Broker::BrokerController
 
         format.html do
           if @shipment.dispatch_pickup
-            redirect_to broker_pickups_path(pickup: { rate_uid: @shipment.applied_rate.uid }) and return
+            redirect_to(broker_pickups_path(pickup: { rate_uid: @shipment.applied_rate.uid })) && return
           else
-            redirect_to broker_shipment_path(@shipment) and return
+            redirect_to(broker_shipment_path(@shipment)) && return
           end
         end
-        format.json { render json: { location: broker_shipment_path(@shipment) } }
+        format.json { render(json: { location: broker_shipment_path(@shipment) }) }
       else
         format.html do
-          flash[:error] = "Unable to update shipment: #{@shipment.errors.full_messages.join(', ')}"
-          redirect_back fallback_location: edit_broker_shipment_path(@shipment)
+          flash[:error] = "Unable to update shipment: #{@shipment.errors.full_messages.join(", ")}"
+          redirect_back(fallback_location: edit_broker_shipment_path(@shipment))
         end
-        format.json { render json: @shipment.errors, status: :unprocessable_entity }
+        format.json { render(json: @shipment.errors, status: :unprocessable_entity) }
       end
     end
   end
 
   def upload_document
-    unauthorized and return unless @shipment.accessible_by?(current_user)
+    unauthorized && return unless @shipment.accessible_by?(current_user)
 
     document_params = params.require(:shipment).permit(:document, :document_type)
     document = document_params[:document]
@@ -207,19 +243,19 @@ class Broker::ShipmentsController < Broker::BrokerController
     blob = ActiveStorage::Blob.create_and_upload!(
       content_type: document.content_type,
       filename: document.original_filename,
-      io: File.open(document)
+      io: File.open(document),
     )
 
     @shipment.send(document_params[:document_type].to_sym).attach(blob)
 
     flash[:success] = "Successfully uploaded document for Shipment ##{@shipment.load_id}"
-    redirect_to documents_broker_shipment_path(@shipment)
+    redirect_to(documents_broker_shipment_path(@shipment))
   end
 
   def show
-    unauthorized and return unless @shipment&.accessible_by?(current_user)
+    unauthorized && return unless @shipment&.accessible_by?(current_user)
 
-    redirect_to quote_broker_shipment_path(@shipment) and return if @shipment.quote_only?
+    redirect_to(quote_broker_shipment_path(@shipment)) && return if @shipment.quote_only?
   end
 
   def documents; end
@@ -231,13 +267,16 @@ class Broker::ShipmentsController < Broker::BrokerController
       contact_ids += @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).ids
     end
 
-    if @shipment&.broker_customer&.contacts && ['carrier_quote', 'broker_dispatch_sheet'].none?(params[:shipment_method])
+    if @shipment&.broker_customer&.contacts && [
+                                                 'carrier_quote',
+                                                 'broker_dispatch_sheet',
+                                               ].none?(params[:shipment_method])
       contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer)&.ids
     end
 
     @contacts = Contact.distinct.where(id: contact_ids).order(:first_name)
 
-    render layout: 'modal'
+    render(layout: 'modal')
   end
 
   def send_document_with_contact_mailer
@@ -245,10 +284,10 @@ class Broker::ShipmentsController < Broker::BrokerController
       params[:shipment_method].to_sym,
       from_user: current_user,
       to_contact: Contact.find(params[:contact_id]),
-      shipment: @shipment
+      shipment: @shipment,
     ).deliver_later
 
-    render layout: 'modal'
+    render(layout: 'modal')
   end
 
   def destroy
@@ -262,7 +301,7 @@ class Broker::ShipmentsController < Broker::BrokerController
       flash[:danger] = '403 Unauthorized'
     end
 
-    redirect_to shipments_path
+    redirect_to(shipments_path)
   end
 
   def missing_delivery_appointment
@@ -276,8 +315,8 @@ class Broker::ShipmentsController < Broker::BrokerController
              { shipper_address: %i[region standardized_address] },
              { receiver_address: %i[region standardized_address] },
              :tracking_carrier,
-             { broker_customer: :customer }
-           ]
+             { broker_customer: :customer },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
@@ -296,8 +335,8 @@ class Broker::ShipmentsController < Broker::BrokerController
              :receiver_address,
              :shipper_address,
              :tracking_carrier,
-             { broker_customer: :customer }
-           ]
+             { broker_customer: :customer },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
@@ -316,8 +355,8 @@ class Broker::ShipmentsController < Broker::BrokerController
              :receiver_address,
              :shipper_address,
              :tracking_carrier,
-             { broker_customer: :customer }
-           ]
+             { broker_customer: :customer },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
@@ -336,9 +375,11 @@ class Broker::ShipmentsController < Broker::BrokerController
              { receiver_address: [:region] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
-             { broker_carrier: :carrier,
-               broker_customer: :customer }
-           ]
+             {
+               broker_carrier: :carrier,
+               broker_customer: :customer
+             },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'booked_at desc' if @q.sorts.blank?
@@ -357,9 +398,11 @@ class Broker::ShipmentsController < Broker::BrokerController
              { receiver_address: [:region] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
-             { broker_carrier: :carrier,
-               broker_customer: :customer }
-           ]
+             {
+               broker_carrier: :carrier,
+               broker_customer: :customer
+             },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -378,8 +421,8 @@ class Broker::ShipmentsController < Broker::BrokerController
              { receiver_address: %i[region standardized_address] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
-             { broker_customer: :customer }
-           ]
+             { broker_customer: :customer },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'picked_up_at desc, promised_delivery_by desc' if @q.sorts.blank?
@@ -397,9 +440,11 @@ class Broker::ShipmentsController < Broker::BrokerController
              :items,
              { receiver_address: [:region] },
              { shipper_address: %i[region standardized_address] },
-             { broker_carrier: :carrier,
-               broker_customer: :customer }
-           ]
+             {
+               broker_carrier: :carrier,
+               broker_customer: :customer
+             },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
@@ -417,8 +462,8 @@ class Broker::ShipmentsController < Broker::BrokerController
              :receiver_address,
              :shipper_address,
              :tracking_carrier,
-             { broker_customer: :customer }
-           ]
+             { broker_customer: :customer },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'created_at asc' if @q.sorts.blank?
@@ -437,9 +482,11 @@ class Broker::ShipmentsController < Broker::BrokerController
              { receiver_address: [:region] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
-             { broker_carrier: :carrier,
-               broker_customer: :customer }
-           ]
+             {
+               broker_carrier: :carrier,
+               broker_customer: :customer
+             },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'pickup_on' if @q.sorts.blank?
@@ -455,7 +502,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .or(
            current_user
            .shipments
-           .canceled_recently
+           .canceled_recently,
          )
          .includes(
            [
@@ -463,9 +510,11 @@ class Broker::ShipmentsController < Broker::BrokerController
              { receiver_address: [:region] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
-             { broker_carrier: :carrier,
-               broker_customer: :customer }
-           ]
+             {
+               broker_carrier: :carrier,
+               broker_customer: :customer
+             },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -484,9 +533,11 @@ class Broker::ShipmentsController < Broker::BrokerController
              { shipper_address: [:region] },
              { receiver_address: %i[region standardized_address] },
              :tracking_carrier,
-             { broker_carrier: :carrier,
-               broker_customer: :customer }
-           ]
+             {
+               broker_carrier: :carrier,
+               broker_customer: :customer
+             },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'delivered_at desc' if @q.sorts.blank?
@@ -505,8 +556,8 @@ class Broker::ShipmentsController < Broker::BrokerController
              :shipper_address,
              :tracking_carrier,
              { broker_carrier: :carrier },
-             { broker_customer: :customer }
-           ]
+             { broker_customer: :customer },
+           ],
          )
          .ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -540,7 +591,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   def pickup_modal
     @applied_rate_uid = shipment_params[:applied_rate_uid]
 
-    render layout: 'modal'
+    render(layout: 'modal')
   end
 
   def pricing
@@ -555,36 +606,36 @@ class Broker::ShipmentsController < Broker::BrokerController
     @tracking_event = TrackingEvent.new(tracking_event_params)
     @tracking_event.shipment = @shipment
     if @tracking_event.save
-      redirect_to tracking_events_broker_shipment_path(@shipment)
+      redirect_to(tracking_events_broker_shipment_path(@shipment))
     else
-      render :edit_tracking_events
+      render(:edit_tracking_events)
     end
   end
 
   def edit_tracking_events
-    unauthorized and return unless @shipment.accessible_by?(current_user)
+    unauthorized && return unless @shipment.accessible_by?(current_user)
   end
 
   def tracking_events
-    unauthorized and return unless @shipment.accessible_by?(current_user)
+    unauthorized && return unless @shipment.accessible_by?(current_user)
   end
 
   def transit
     return if current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
 
-    unauthorized and return
+    unauthorized && return
   end
 
   def transit_edit
     return if current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
 
-    unauthorized and return
+    unauthorized && return
   end
 
   def delivery; end
 
   def quote
-    unauthorized and return unless @shipment.accessible_by?(current_user)
+    unauthorized && return unless @shipment.accessible_by?(current_user)
 
     # TODO: Probably move this logic elsewhere
     reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
@@ -602,21 +653,22 @@ class Broker::ShipmentsController < Broker::BrokerController
               true
             end
 
-    reset = true if !reset && !params[:force].blank?
+    reset = true if !reset && params[:force].present?
 
     if reset
       if @shipment.applied_rate.blank?
         @shipment.rates.destroy_all
       else
         @shipment.rates.where.not(
-          id: [@shipment.applied_rate.id] + @shipment.pickups.pluck(:rate_id)
+          id: [@shipment.applied_rate.id] + @shipment.pickups.pluck(:rate_id),
         ).destroy_all
       end
     end
 
     @shipment.rates.where.not(error_object: nil).destroy_all
 
-    @broker_carriers = @shipment.valid_broker_carriers_for_quotation
+    # Allow brokers to see all rates
+    @broker_carriers = @shipment.valid_broker_carriers_for_quotation(user_type: :broker)
 
     calculated_freight_classes = @shipment.forced_freight_classes
     forced_freight_classes = @shipment.calculated_freight_classes
@@ -642,107 +694,145 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def set_shipment_by_load_id
-    @shipment = Shipment.find_by_load_id(params[:load_id])
+    @shipment = Shipment.find_by(load_id: params[:load_id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def tracking_event_params
-    params.require(:tracking_event).permit(:id,
-                                           :at,
-                                           :event_id,
-                                           :time_zone,
-                                           address_attributes: %i[id city region_id zip_code])
+    params.require(:tracking_event).permit(
+      :id,
+      :at,
+      :event_id,
+      :time_zone,
+      address_attributes: %i[id city region_id zip_code],
+    )
   end
 
   def shipment_params
-    params.require(:shipment).permit(:id,
-                                     :accessorial_codes,
-                                     :accessorials_has_been_suggested,
-                                     :applied_rate_uid,
-                                     :bol_notes,
-                                     :bol,
-                                     :booked_at,
-                                     :broker_and_broker_customer_notes,
-                                     :broker_carrier_id,
-                                     :broker_carrier_quote,
-                                     :broker_customer_id,
-                                     :broker_notes,
-                                     :canceled_at,
-                                     :carrier_bol,
-                                     :carrier_charge,
-                                     :carrier_cost,
-                                     :carrier_id,
-                                     :carrier_pod,
-                                     :charges_confirmed,
-                                     :customer_notes,
-                                     :customer_reference,
-                                     :delivered_at,
-                                     :delivery_appointment_at,
-                                     :delivery_appointment_on,
-                                     :delivery_eta_on,
-                                     :delivery_hours_end_at,
-                                     :delivery_hours_start_at,
-                                     :departed_origin_terminal_at,
-                                     :dispatch_pickup,
-                                     :dispatched_at,
-                                     :dispatched,
-                                     :dispatcher_id,
-                                     :lift_gate,
-                                     :lost_on,
-                                     :out_for_delivery_at,
-                                     :pending_appointment_since,
-                                     :picked_up_at,
-                                     :picked_up,
-                                     :pickup_confirmation,
-                                     :pickup_driver_assigned_at,
-                                     :pickup_eta_at,
-                                     :pickup_hours_end_at,
-                                     :pickup_hours_start_at,
-                                     :pickup_on,
-                                     :priority,
-                                     :pro,
-                                     :promised_delivery_by,
-                                     :public_notes,
-                                     :quote_id,
-                                     :quote_only,
-                                     :quoted_delivery_by,
-                                     :receiver_available_at,
-                                     :receiver_contact_email,
-                                     :receiver_contact_name,
-                                     :receiver_contact_phone,
-                                     :receiver_name,
-                                     :receiver_unavailable_at,
-                                     :shipper_available_at,
-                                     :shipper_contact_email,
-                                     :shipper_contact_name,
-                                     :shipper_contact_phone,
-                                     :shipper_name,
-                                     :shipper_reference,
-                                     :shipper_unavailable_at,
-                                     :tracking_carrier_id,
-                                     :tracking_carrier_pickup_confirmation,
-                                     :tracking_carrier_pro,
-                                     :truckload,
-                                     :value,
-                                     items_attributes: %i[_destroy id packaging_id l w h nmfc forced_class hazmat
-                                                          refrigerated desc weight quantity],
-                                     receiver_address_attributes: %i[id ref street street2 city region_id zip_code
-                                                                     country_id],
-                                     shipper_address_attributes: %i[id ref street street2 city region_id zip_code
-                                                                    country_id],
-                                     shipment_accessorials_attributes: %i[_destroy accessorial_id],
-                                     shipment_broker_accessorials_attributes: %i[_destroy id broker_accessorial_id
-                                                                                 cost charge],
-                                     tracking_events_attributes: [
-                                       :_destroy,
-                                       :id,
-                                       :at,
-                                       :city,
-                                       :country_id,
-                                       :event_id,
-                                       :public,
-                                       :region_id,
-                                       { address_attributes: %i[id street street2 city region_id zip_code] }
-                                     ])
+    params.require(:shipment).permit(
+      :id,
+      :accessorial_codes,
+      :accessorials_has_been_suggested,
+      :applied_rate_uid,
+      :bol_notes,
+      :bol,
+      :booked_at,
+      :broker_and_broker_customer_notes,
+      :broker_carrier_id,
+      :broker_carrier_quote,
+      :broker_customer_id,
+      :broker_notes,
+      :canceled_at,
+      :carrier_bol,
+      :carrier_charge,
+      :carrier_cost,
+      :carrier_id,
+      :carrier_pod,
+      :charges_confirmed,
+      :customer_notes,
+      :customer_reference,
+      :delivered_at,
+      :delivery_appointment_at,
+      :delivery_appointment_on,
+      :delivery_eta_on,
+      :delivery_hours_end_at,
+      :delivery_hours_start_at,
+      :departed_origin_terminal_at,
+      :dispatch_pickup,
+      :dispatched_at,
+      :dispatched,
+      :dispatcher_id,
+      :lift_gate,
+      :lost_on,
+      :out_for_delivery_at,
+      :pending_appointment_since,
+      :picked_up_at,
+      :picked_up,
+      :pickup_confirmation,
+      :pickup_driver_assigned_at,
+      :pickup_eta_at,
+      :pickup_hours_end_at,
+      :pickup_hours_start_at,
+      :pickup_on,
+      :priority,
+      :pro,
+      :promised_delivery_by,
+      :public_notes,
+      :quote_id,
+      :quote_only,
+      :quoted_delivery_by,
+      :receiver_available_at,
+      :receiver_contact_email,
+      :receiver_contact_name,
+      :receiver_contact_phone,
+      :receiver_name,
+      :receiver_unavailable_at,
+      :shipper_available_at,
+      :shipper_contact_email,
+      :shipper_contact_name,
+      :shipper_contact_phone,
+      :shipper_name,
+      :shipper_reference,
+      :shipper_unavailable_at,
+      :tracking_carrier_id,
+      :tracking_carrier_pickup_confirmation,
+      :tracking_carrier_pro,
+      :truckload,
+      :value,
+      items_attributes: %i[
+                          _destroy
+                          id
+                          packaging_id
+                          l
+                          w
+                          h
+                          nmfc
+                          forced_class
+                          hazmat
+                          refrigerated
+                          desc
+                          weight
+                          quantity
+                        ],
+      receiver_address_attributes: %i[
+                                     id
+                                     ref
+                                     street
+                                     street2
+                                     city
+                                     region_id
+                                     zip_code
+                                     country_id
+                                   ],
+      shipper_address_attributes: %i[
+                                    id
+                                    ref
+                                    street
+                                    street2
+                                    city
+                                    region_id
+                                    zip_code
+                                    country_id
+                                  ],
+      shipment_accessorials_attributes: %i[_destroy accessorial_id],
+      shipment_broker_accessorials_attributes: %i[
+                                                 _destroy
+                                                 id
+                                                 broker_accessorial_id
+                                                 cost
+                                                 charge
+                                               ],
+      tracking_events_attributes: [
+                                    :_destroy,
+                                    :id,
+                                    :at,
+                                    :city,
+                                    :country_id,
+                                    :event_id,
+                                    :public,
+                                    :region_id,
+                                    { address_attributes: %i[id street street2 city region_id zip_code] },
+                                  ],
+    )
   end
 end

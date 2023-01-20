@@ -76,7 +76,7 @@ class Rate < ApplicationRecord
   has_one :pickup, required: false
 
   belongs_to :broker_carrier
-  validates_presence_of :broker_carrier
+  validates :broker_carrier, presence: true
 
   belongs_to :broker_customer, optional: true
 
@@ -93,11 +93,15 @@ class Rate < ApplicationRecord
       broker_carrier: broker_carrier,
       shipment_fingerprint: shipment.fingerprint,
       shipment: shipment,
-      with_calculated_freight_classes: !use_forced_freight_classes
+      with_calculated_freight_classes: !use_forced_freight_classes,
     )
   }
 
   serialize :error_object
+
+  def applied?
+    shipment.applied_rate == self
+  end
 
   # Returns the actual carrier rather than any broker associated
   def carrier
@@ -113,7 +117,11 @@ class Rate < ApplicationRecord
   def pretty_service_type
     return '' if interstellar_service_type.blank?
 
-    "#{interstellar_service_type.sub('_', ' ').titleize.sub('Am', 'AM').sub('Pm', 'PM')} LTL"
+    "#{interstellar_service_type.sub("_", " ").titleize.sub("Am", "AM").sub("Pm", "PM")} LTL"
+  end
+
+  def preferred?
+    shipment.broker_customer.eligible_broker_carriers(user_type: :customer).include?(broker_carrier)
   end
 
   def to_param

@@ -228,9 +228,9 @@ class Shipment < ApplicationRecord
   scope :pending_quotation, lambda {
     where(broker_carrier: nil, canceled_at: nil)
     .or(
-        where(broker_carrier: nil)
-        .where(id: canceled_recently),
-      )
+      where(broker_carrier: nil)
+      .where(id: canceled_recently),
+    )
   }
 
   scope :pending_delivery, lambda {
@@ -249,19 +249,19 @@ class Shipment < ApplicationRecord
   scope :missing_delivery_appointment, lambda {
     joins(:broker_accessorials)
     .where(
-        'broker_accessorials.id IN (?)',
-        BrokerAccessorial.where(
-          accessorial_id:
-          [
-            Accessorial.find_by_interstellar_code('appointment_delivery').id,
-            Accessorial.find_by_interstellar_code('residential_delivery').id,
-          ],
-        ).pluck(:id),
-      )
+      'broker_accessorials.id IN (?)',
+      BrokerAccessorial.where(
+        accessorial_id:
+        [
+          Accessorial.find_by(interstellar_code: 'appointment_delivery').id,
+          Accessorial.find_by(interstellar_code: 'residential_delivery').id,
+        ],
+      ).pluck(:id),
+    )
     .or(
-        Shipment
-        .where.not(pending_appointment_since: nil),
-      )
+      Shipment
+      .where.not(pending_appointment_since: nil),
+    )
     .pending_delivery
     .where(delivery_appointment_on: nil)
     .where(delivery_appointment_at: nil)
@@ -418,7 +418,7 @@ class Shipment < ApplicationRecord
   validate :validate_pro_and_tracking_carrier_pro
 
   def applied_rate_uid=(rate_uid)
-    rate = Rate.find_by_uid(rate_uid)
+    rate = Rate.find_by(uid: rate_uid)
     return if rate.blank?
 
     self.carrier_cost = rate.cost
@@ -426,13 +426,13 @@ class Shipment < ApplicationRecord
   end
 
   def booked_at=(val)
-    return self.booked_at = DateTime.current if val == 'now' # for UI
+    return self.booked_at = Time.current if val == 'now' # for UI
 
     super
   end
 
   def canceled_at=(val)
-    return self.canceled_at = DateTime.current if val == 'now' # for UI
+    return self.canceled_at = Time.current if val == 'now' # for UI
 
     super
   end
@@ -454,7 +454,7 @@ class Shipment < ApplicationRecord
 
   def dispatch_incomplete?
     true_pickup_confirmation = tracking_carrier.blank? ? pickup_confirmation : tracking_carrier_pickup_confirmation
-    if broker_carrier.present? && dispatched_at.present? && true_pickup_confirmation.blank? && (dispatched_at < DateTime.current - 15.minutes)
+    if broker_carrier.present? && dispatched_at.present? && true_pickup_confirmation.blank? && (dispatched_at < Time.current - 15.minutes)
       return true
     end
 
@@ -523,10 +523,10 @@ class Shipment < ApplicationRecord
     return from if from.present? && !from.is_a?(Date)
 
     if from.is_a?(Date)
-      return from.in_time_zone(tz).beginning_of_day + 9.hours unless delivery_hours_start_at.present?
+      return from.in_time_zone(tz).beginning_of_day + 9.hours if delivery_hours_start_at.blank?
 
       formatted_offset = Time.current.in_time_zone(tz).formatted_offset
-      return DateTime.parse("#{from} #{delivery_hours_start_at} #{formatted_offset}")
+      return Time.zone.parse("#{from} #{delivery_hours_start_at} #{formatted_offset}")
     end
 
     return 5.business_days.after(pickup_from.in_time_zone(tz)).beginning_of_day + 9.hours if pickup_from.present?
@@ -542,10 +542,10 @@ class Shipment < ApplicationRecord
     return by if by.present? && !by.is_a?(Date)
 
     if by.is_a?(Date)
-      return by.in_time_zone(tz).beginning_of_day + 17.hours unless delivery_hours_end_at.present?
+      return by.in_time_zone(tz).beginning_of_day + 17.hours if delivery_hours_end_at.blank?
 
       formatted_offset = Time.current.in_time_zone(tz).formatted_offset
-      return DateTime.parse("#{by} #{delivery_hours_end_at} #{formatted_offset}")
+      return Time.zone.parse("#{by} #{delivery_hours_end_at} #{formatted_offset}")
     end
 
     return 5.business_days.after(pickup_by.in_time_zone(tz)).beginning_of_day + 17.hours if pickup_by.present?
@@ -558,9 +558,9 @@ class Shipment < ApplicationRecord
     return nil if pickup_hours_start_at.blank?
     return nil if shipper_address&.time_zone.blank?
 
-    formatted_offset = DateTime.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
+    formatted_offset = Time.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
 
-    DateTime.parse("#{pickup_on} #{pickup_hours_start_at} #{formatted_offset}").in_time_zone(shipper_address.time_zone)
+    Time.parse("#{pickup_on} #{pickup_hours_start_at} #{formatted_offset}").in_time_zone(shipper_address.time_zone)
   end
 
   def pickup_by
@@ -568,9 +568,9 @@ class Shipment < ApplicationRecord
     return nil if pickup_hours_end_at.blank?
     return nil if shipper_address&.time_zone.blank?
 
-    formatted_offset = DateTime.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
+    formatted_offset = Time.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
 
-    DateTime.parse("#{pickup_on} #{pickup_hours_end_at} #{formatted_offset}")
+    Time.zone.parse("#{pickup_on} #{pickup_hours_end_at} #{formatted_offset}")
   end
 
   def status
@@ -609,7 +609,7 @@ class Shipment < ApplicationRecord
 
     if picked_up_at.present?
       if delivery_appointment_at.present?
-        return @late = true if DateTime.current > delivery_appointment_at
+        return @late = true if Time.current > delivery_appointment_at
       elsif delivery_appointment_at.blank? && delivery_appointment_on.present?
         return @late = true if Date.current > delivery_appointment_on
       elsif delivery_eta_on.present? && (Date.current > delivery_eta_on)
@@ -617,7 +617,7 @@ class Shipment < ApplicationRecord
       end
       @late = true if promised_delivery_by.present? && (Date.current > promised_delivery_by)
     elsif pickup_by.present?
-      @late = pickup_by < DateTime.current
+      @late = pickup_by < Time.current
     end
   end
 
@@ -815,7 +815,7 @@ class Shipment < ApplicationRecord
 
     longest_l = items.max_by(&:l).l
     longest_w = items.max_by(&:w).w
-    @longest_dimension = longest_l > longest_w ? longest_l : longest_w
+    @longest_dimension = [longest_l, longest_w].max
   end
 
   # Return Item for each physical item with `quantity = 1`
@@ -932,12 +932,12 @@ class Shipment < ApplicationRecord
     load_id.to_s
   end
 
-  def valid_broker_carriers_for_quotation
+  def valid_broker_carriers_for_quotation(user_type: :customer)
     broker_carrier_ids = []
     broker_carrier_ids += if broker_customer.blank?
                             broker.broker_carriers.blanket.api_configured.ids
                           else
-                            broker_customer.eligible_broker_carriers.api_configured.ids
+                            broker_customer.eligible_broker_carriers(user_type: user_type).api_configured.ids
                           end
 
     broker_carrier_ids += if broker_customer.blank?
@@ -946,7 +946,7 @@ class Shipment < ApplicationRecord
                             .pluck(:broker_carrier_id)
                           else
                             PricingRule
-                            .where(broker_carrier: broker_customer.eligible_broker_carriers)
+                            .where(broker_carrier: broker_customer.eligible_broker_carriers(user_type: user_type))
                             .pluck(:broker_carrier_id)
                           end
 
@@ -1007,7 +1007,7 @@ class Shipment < ApplicationRecord
   def validate_future_pickup_by
     return unless pickup_by
 
-    errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < DateTime.current
+    errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < Time.current
   end
 
   def validate_past_or_present_attributes
@@ -1085,7 +1085,7 @@ class Shipment < ApplicationRecord
     self.tracking_carrier = applied_rate.tracking_carrier
 
     self.quote_id = applied_rate.reference
-    self.quoted_delivery_by = applied_rate.transit_days.to_i.business_days.after(pickup_on || DateTime.current)
+    self.quoted_delivery_by = applied_rate.transit_days.to_i.business_days.after(pickup_on || Time.current)
 
     return if updated_by&.broker_customer.blank?
 
@@ -1108,7 +1108,7 @@ class Shipment < ApplicationRecord
   def recalculate_broker_accessorials
     new_broker_accessorials = []
     broker_accessorials.each do |broker_accessorials|
-      new_broker_accessorials << broker_customer.eligible_broker_accessorials.find_by_code(broker_accessorials.code)
+      new_broker_accessorials << broker_customer.eligible_broker_accessorials.find_by(code: broker_accessorials.code)
     end
     self.broker_accessorials = new_broker_accessorials
   end
@@ -1159,7 +1159,7 @@ class Shipment < ApplicationRecord
   end
 
   def maybe_update_dispatched_at_to_now
-    self.dispatched_at = DateTime.current if dispatched_at.blank?
+    self.dispatched_at = Time.current if dispatched_at.blank?
   end
 
   def set_delivery_appointment_on

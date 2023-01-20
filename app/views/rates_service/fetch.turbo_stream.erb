@@ -1,7 +1,7 @@
 <% unless @rates.blank? %>
   <%= turbo_stream.append "rates_#{!@rates.first.with_calculated_freight_classes?}" do %>
     <% @rates.each do |rate| %>
-      <% unless rate.error_object.blank? %>
+      <% if rate.error_object.present? %>
         <% next if current_user.customer? %>
         <tr data-rate-id="<%= rate.id %>" class="table-warning">
           <td></td>
@@ -21,21 +21,27 @@
             </div>
           </td>
           <td></td>
-          <td data-sort="ZZZZ" colspan="<%= current_user.customer? ? 5 : 4 %>">
+          <td data-sort="ZZZZ" colspan="5">
             <%= pretty_api_error(rate.error_object) %>
           </td>
         </tr>
         <% next %>
       <% end %>
 
-      <% next if !current_user.broker? && !rate.cost.positive? %>
+      <% next if !current_user.broker? && (!rate.preferred? || !rate.cost.positive?) %>
 
       <% if current_user.customer? %>
         <% upcharged_rate = current_user.broker_customer.carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment) %>
         <% next if upcharged_rate.blank? || !upcharged_rate.positive? || upcharged_rate <= rate.cost %>
       <% end %>
 
-      <tr data-rate-id="<%= rate.id %>" class="<%= (!@shipment.applied_rate.blank? && rate.id == @shipment.applied_rate.id) ? 'table-info' : nil %>">
+      <% css_class = if !rate.preferred?
+                       'table-danger'
+                     elsif rate.applied?
+                       'table-warning'
+                     end
+      %>
+      <tr data-rate-id="<%= rate.id %>" class="<%= css_class %>">
         <td class="text-nowrap">
           <div class="btn-toolbar">
             <div class="btn-group">
@@ -66,6 +72,10 @@
               <%= rate.tracking_carrier.name %>
               <br>
               <span class="text-muted"> via <%= rate.broker_carrier.carrier.name %></span>
+              <% unless rate.preferred? %>
+                <br>
+                <%= icon 'solid', 'triangle-exclamation', 'Unpreferred' %>
+              <% end %>
             <% else %>
               <%= rate.broker_carrier.carrier.name %>
             <% end %>

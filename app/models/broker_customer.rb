@@ -157,18 +157,23 @@ class BrokerCustomer < ApplicationRecord
   end
 
   # @return [BrokerCarrier::ActiveRecord_Relation]
-  def eligible_broker_carriers
-    return @eligible_broker_carriers if @eligible_broker_carriers
+  def eligible_broker_carriers(user_type: :customer)
+    @eligible_broker_carriers ||= {}
+    return @eligible_broker_carriers[user_type] if @eligible_broker_carriers[user_type].present?
 
-    broker_carriers = case preferred_broker_carriers_kind
-                      when nil then broker.broker_carriers
-                      when 'whitelist'
-                        BrokerCarrier.where(id: preferred_broker_carriers.pluck(:broker_carrier_id))
-                      when 'blacklist'
-                        broker.broker_carriers.where.not(id: preferred_broker_carriers.pluck(:broker_carrier_id))
-                      end
+    scope = if user_type == :broker
+              broker.broker_carriers
+            else
+              case preferred_broker_carriers_kind
+              when nil then broker.broker_carriers
+              when 'whitelist'
+                BrokerCarrier.where(id: preferred_broker_carriers.pluck(:broker_carrier_id))
+              when 'blacklist'
+                broker.broker_carriers.where.not(id: preferred_broker_carriers.pluck(:broker_carrier_id))
+              end
+            end
 
-    @eligible_broker_carriers = broker_carriers.where(broker_customer: [nil, self])
+    @eligible_broker_carriers[user_type] = scope.where(broker_customer: [nil, self])
   end
 
   def carrier_charge_calculator(carrier_cost:, shipment:)
