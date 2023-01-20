@@ -31,7 +31,8 @@ class Broker::BrokerCustomersController < Broker::BrokerController
          .broker_carriers
          .includes(
            [
-             :broker_customer, { broker_customer: :customer },
+             :broker_customer,
+             { broker_customer: :customer },
              :carrier,
            ],
          ).ransack(params[:q])
@@ -66,7 +67,10 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
   def edit_broker_carriers; end
 
-  def edit_pricing; end
+  def edit_pricing
+    unauthorized unless current_user.has_any_roles?(['accounts_recevable', 'root']) ||
+                        current_user.sales_rep_for?(@broker_customer)
+  end
 
   def index
     @q = if current_user.has_any_roles?(['accounts_recevable', 'dispatch', 'root'])
@@ -89,7 +93,10 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.build_receivables_contact(broker_customer: @broker_customer)
   end
 
-  def preferences; end
+  def preferences
+    unauthorized unless current_user.has_any_roles?(['accounts_recevable', 'root']) ||
+                        current_user.sales_rep_for?(@broker_customer)
+  end
 
   def pricing; end
 
@@ -153,11 +160,12 @@ class Broker::BrokerCustomersController < Broker::BrokerController
          .shipments
          .includes(
            :applied_rate,
-           :broker_carrier, { broker_carrier: :carrier },
+           :broker_carrier,
+           { broker_carrier: :carrier },
            :items,
            :receiver_address,
            :shipper_address,
-           :tracking_carrier
+           :tracking_carrier,
          ).ransack(params[:q])
 
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -197,6 +205,9 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def update
+    unauthorized unless current_user.has_any_roles?(['accounts_recevable', 'root']) ||
+                        current_user.sales_rep_for?(@broker_customer)
+
     @broker_customer.assign_attributes(broker_customer_params)
 
     render(:edit) && return unless @broker_customer.save
@@ -205,11 +216,12 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def update_pricing
-    if @broker_customer.update(broker_customer_params)
-      redirect_to(edit_pricing_broker_broker_customer_path(@broker_customer)) && return
-    end
+    unauthorized unless current_user.has_any_roles?(['accounts_recevable', 'root']) ||
+                        current_user.sales_rep_for?(@broker_customer)
 
-    render(:edit_pricing)
+    render(:edit_pricing) && return unless @broker_customer.update(broker_customer_params)
+
+    redirect_to(edit_pricing_broker_broker_customer_path(@broker_customer)) && return
   end
 
   private
