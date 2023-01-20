@@ -67,9 +67,10 @@ class UserMailer < ApplicationMailer
 
   def pickup_service_dispatched
     @pickup = params[:pickup]
-    return if !@pickup.shipment.updated_by.blank? || @pickup.shipment.pickup_confirmation.blank?
+    return if @pickup.shipment.updated_by.present? || @pickup.shipment.pickup_confirmation.blank?
 
     @subject = "#{@pickup.dispatcher.first_name} #{@pickup.dispatcher.last_name} Dispatched Load #{@pickup.shipment.load_id}"
+
     send_shipment_updated(@pickup.shipment, __method__)
   end
 
@@ -87,7 +88,7 @@ class UserMailer < ApplicationMailer
       from: from(shipment),
       reply_to: reply_to(shipment),
       to: recipient,
-      subject: [who_performed(@shipment), @subject].join(' ')
+      subject: [who_performed(@shipment), @subject].join(' '),
     )
   end
 
