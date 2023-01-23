@@ -44,9 +44,7 @@
 
     <% if (f.object.carrier.broker_carrier_credential_columns & %i[encrypted_api_key username password]).any? %>
       <h3>API Credentials</h3>
-      <% if f.object.carrier.broker_carrier_credential_columns.include?(:encrypted_api_key) &&
-            f.object.carrier.encrypted_api_key.blank?
-      %>
+      <% if f.object.carrier.broker_carrier_credential_columns.include?(:encrypted_api_key) %>
         <%= f.text_field :encrypted_api_key, autocomplete: 'off' %>
       <% end %>
 
