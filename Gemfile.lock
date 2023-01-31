@@ -278,7 +278,7 @@ GEM
       rake
     font-awesome-sass (6.2.1)
       sassc (~> 2.0)
-    fugit (1.7.1)
+    fugit (1.8.1)
       et-orbi (~> 1, >= 1.2.7)
       raabro (~> 1.4)
     geocoder (1.8.1)
@@ -624,10 +624,9 @@ GEM
       connection_pool (>= 2.2.5)
       rack (~> 2.0)
       redis (>= 4.5.0, < 5)
-    sidekiq-scheduler (4.0.3)
-      redis (>= 4.2.0)
+    sidekiq-scheduler (5.0.1)
       rufus-scheduler (~> 3.2)
-      sidekiq (>= 4, < 7)
+      sidekiq (>= 4, < 8)
       tilt (>= 1.4.0)
     simple_command (1.0.1)
     snaky_hash (2.0.1)
@@ -659,7 +658,7 @@ GEM
       actionpack (>= 6.0.0)
       activejob (>= 6.0.0)
       railties (>= 6.0.0)
-    tzinfo (2.0.5)
+    tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unf (0.1.4)
       unf_ext
@@ -772,7 +771,7 @@ DEPENDENCIES
   selenium-webdriver
   shoulda-matchers (= 5.3.0)
   sidekiq (~> 6.5.7)
-  sidekiq-scheduler (~> 4.0.3)
+  sidekiq-scheduler (~> 5.0.1)
   simple_command
   spacetime!
   spring (~> 4.1.1)

@@ -1,5 +1,5 @@
 :concurrency: <%= ENV.fetch("SIDEKIQ_LOW_PRIORITY_CONCURRENCY") { 2 } %>
-:schedule:
+:scheduler:
   cancel_shipments:
     cron: '30 * * * *'
     class: CancelShipmentsJob

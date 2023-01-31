@@ -80,7 +80,7 @@ gem 'spacetime',
 gem 'honeybadger', '~> 5.0'
 
 gem 'sidekiq', '~> 6.5.7'
-gem 'sidekiq-scheduler', '~> 4.0.3'
+gem 'sidekiq-scheduler', '~> 5.0.1'
 
 gem 'active_model_serializers', '~> 0.10.13'
 gem 'barby'
