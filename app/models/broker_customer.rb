@@ -318,7 +318,8 @@ class BrokerCustomer < ApplicationRecord
     end
     return @quickbooks_customer = result if result.present?
 
-    result = QuickbooksAPIClient::Customers.new(broker:).find_by(name: customer.name)
+    customers = QuickbooksAPIClient::Customers.new(broker:)
+    result = customers.find_by_name(customer.name) # rubocop:disable Rails/DynamicFindBy
     return nil if result.blank?
 
     update_columns(quickbooks_customer_id: result.id)
