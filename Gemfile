@@ -132,3 +132,4 @@ gem 'rss_creator'
 gem 'addressable', '~> 2.8.1'
 
 gem 'activerecord-session_store'
+gem 'graphql-client'
