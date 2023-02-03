@@ -15,8 +15,8 @@ module GraphqlClient
     #   GraphQL::Client.dump_schema(HTTP, "lib/graphql/schema.json")
 
     # # However, it's smart to dump this to a JSON file and load from disk
-    # schema_path = "lib/graphql/schema.json"
-    # Schema = GraphQL::Client.load_schema(schema_path)
+    schema_path = "lib/graphql/schema.json"
+    Schema = GraphQL::Client.load_schema(schema_path)
 
     Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
   end
