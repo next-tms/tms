@@ -499,7 +499,7 @@ GEM
     recordx (0.6.0)
       kvx (~> 1.1, >= 1.1.0)
     redis (4.8.0)
-    regexp_parser (2.6.1)
+    regexp_parser (2.6.2)
     responders (3.0.1)
       actionpack (>= 5.0)
       railties (>= 5.0)
@@ -556,7 +556,7 @@ GEM
     rss_to_dynarex (0.2.1)
       dynarex (~> 1.9, >= 1.9.7)
       nokogiri (~> 1.13, >= 1.13.3)
-    rubocop (1.43.0)
+    rubocop (1.44.1)
       json (~> 2.3)
       parallel (~> 1.10)
       parser (>= 3.2.0.0)
@@ -579,8 +579,8 @@ GEM
     rubocop-rspec (2.18.1)
       rubocop (~> 1.33)
       rubocop-capybara (~> 2.17)
-    rubocop-shopify (2.11.1)
-      rubocop (~> 1.42)
+    rubocop-shopify (2.12.0)
+      rubocop (~> 1.44)
     ruby-next-core (0.15.3)
     ruby-progressbar (1.11.0)
     ruby-rc4 (0.1.5)
@@ -766,7 +766,7 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rake
   rubocop-rspec
-  rubocop-shopify (~> 2.11.1)
+  rubocop-shopify (~> 2.12.0)
   sassc-rails (~> 2.1.2)
   selenium-webdriver
   shoulda-matchers (= 5.3.0)
