@@ -6,6 +6,8 @@
 #
 # @!attribute id
 #   @return [Integer]
+# @!attribute companyable_type
+#   @return [String]
 # @!attribute confirmation_sent_at
 #   @return [Time]
 # @!attribute confirmation_token
@@ -19,6 +21,8 @@
 # @!attribute deactivated
 #   @return [Boolean]
 # @!attribute email
+#   @return [String]
+# @!attribute email_notifications_blacklist
 #   @return [String]
 # @!attribute encrypted_password
 #   @return [String]
@@ -52,6 +56,8 @@
 #   @return [Boolean]
 # @!attribute receive_notifications_from_self
 #   @return [Boolean]
+# @!attribute receive_read_notifications_by_email
+#   @return [Boolean]
 # @!attribute receive_sms_notifications
 #   @return [Boolean]
 # @!attribute remember_created_at
@@ -72,10 +78,10 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute broker_customer_id
-#   @return []
 # @!attribute broker_id
 #   @return [Integer]
+# @!attribute companyable_id
+#   @return []
 # @!attribute contact_id
 #   @return []
 # @!attribute invited_by_id
@@ -83,7 +89,7 @@
 #
 # Indexes
 #
-#  index_users_on_broker_customer_id    (broker_customer_id)
+#  index_users_on_companyable           (companyable_type,companyable_id)
 #  index_users_on_confirmation_token    (confirmation_token) UNIQUE
 #  index_users_on_contact_id            (contact_id)
 #  index_users_on_email                 (email) UNIQUE
@@ -94,44 +100,50 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (broker_customer_id => broker_customers.id)
 #  fk_rails_...  (contact_id => contacts.id)
 #  fk_rails_...  (invited_by_id => users.id)
 #
 FactoryBot.define do
   factory :user do
-    email { Faker::Internet.email }
-    password { 'MyString' }
-    encrypted_password { 'MyString' }
-    reset_password_sent_at { '2022-06-29 23:58:27' }
-    remember_created_at { '2022-06-29 23:58:27' }
-    sign_in_count { 1 }
-    current_sign_in_at { '2022-06-29 23:58:27' }
-    last_sign_in_at { '2022-06-29 23:58:27' }
-    current_sign_in_ip { '' }
-    last_sign_in_ip { '' }
+    confirmation_sent_at { '2022-06-29 23:58:27' }
     confirmation_token { Faker::Number.number(digits: 10) }
     confirmed_at { '2022-06-29 23:58:27' }
-    confirmation_sent_at { '2022-06-29 23:58:27' }
-    unconfirmed_email { 'MyString' }
+    contact
+    current_sign_in_at { '2022-06-29 23:58:27' }
+    current_sign_in_ip { '' }
+    deactivated { false }
+    email { Faker::Internet.email }
     failed_attempts { 1 }
+    first_name { Faker::Name.first_name }
+    invitation_accepted_at { '2022-06-29 23:58:27' }
+    invitation_created_at { '2022-06-29 23:58:27' }
+    invitation_limit { 1 }
+    invitation_sent_at { '2022-06-29 23:58:27' }
+    invitations_count { 1 }
+    last_name { Faker::Name.last_name }
+    last_sign_in_at { '2022-06-29 23:58:27' }
+    last_sign_in_ip { '' }
     locked_at { '2022-06-29 23:58:27' }
-    first_name { 'MyString' }
-    updated_at { '2022-06-29 23:58:27' }
-    broker { create(:broker) }
-    phone { 'MyString' }
-    receive_sms_notifications { false }
-    last_name { 'MyString' }
-    broker_customer {}
+    password { Faker::Internet.password }
+    phone { Faker::PhoneNumber.cell_phone_in_e164 }
     receive_email_notifications { false }
     receive_notifications_from_self { false }
-    contact {}
-    invitation_created_at { '2022-06-29 23:58:27' }
-    invitation_sent_at { '2022-06-29 23:58:27' }
-    invitation_accepted_at { '2022-06-29 23:58:27' }
-    invitation_limit { 1 }
-    invitations_count { 1 }
-    deactivated { false }
+    receive_sms_notifications { false }
+    remember_created_at { '2022-06-29 23:58:27' }
+    reset_password_sent_at { '2022-06-29 23:58:27' }
+    sign_in_count { 1 }
     time_zone_name { 'MyString' }
+    unconfirmed_email { 'MyString' }
+    updated_at { '2022-06-29 23:58:27' }
+
+    factory :broker_user do
+      association :companyable, factory: :broker
+    end
+
+    #    factory :dispatch_user do
+    #      after(:build) do |record|
+    #        record.roles << Role.find_or_create_by!(name: 'dispatch')
+    #      end
+    #    end
   end
 end

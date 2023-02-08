@@ -3,14 +3,20 @@
 
 <%= render 'broker/users/member_header' %>
 
-<% if params[:broker_customer_id].blank? %>
+<% case params[:company_type] %>
+<% when 'Broker' %>
   <div class="alert alert-warning">
     <p class="lead">Inviting staff</p>
-    <p>You’re currently inviting staff to participate in the internal operations of <%= current_user.broker.name %>.</p>
+    <p>You’re inviting staff to participate in the internal operations of <%= current_user.broker.name %>.</p>
+  </div>
+<% when 'BrokerCustomer' %>
+  <div class="alert alert-info">
+    <p class="lead">Inviting customer</p>
+    <p>You’re inviting a customer to log in.</p>
   </div>
 <% end %>
 
-<% if !current_user.has_role?('root') && params[:broker_customer_id].blank? %>
+<% if !current_user.has_role?('root') && params[:company_id].blank? %>
   <div class="alert alert-danger">
     <p class="lead">Access denied</p>
     <p>You don’t have permission to invite staff.</p>
@@ -19,25 +25,33 @@
   <div class="row">
     <div class="col col-md-8">
       <%= bootstrap_form_for(resource, as: resource_name, url: invitation_path(resource_name), data: { turbo: false }, layout: :horizontal) do |f| %>
-        <%= f.hidden_field :broker_customer_id, value: params[:broker_customer_id] %>
+        <%= f.hidden_field :company_id, value: params[:company_id] %>
+        <%= f.hidden_field :company_type, value: params[:company_type] %>
         <%= f.hidden_field :contact_id, value: params[:contact_id] %>
-  
-        <div class="form-group row">
-          <%= f.text_field :first_name, autocomplete: 'off', value: @contact&.first_name, autofocus: true %>
-        </div>
-      
-        <div class="form-group row">
-          <%= f.text_field :last_name, value: @contact&.last_name, autocomplete: 'off' %>
-        </div>
-      
-        <div class="form-group row">
-          <%= f.email_field :email, value: @contact&.email, autocomplete: 'off' %>
-        </div>
 
-        <div class="form-group row">
-          <%= f.phone_field :phone, value: (@contact&.mobile_phone.blank? ? @contact&.work_phone : @contact&.mobile_phone), autocomplete: 'off' %>
-        </div>
-  
+        <% if @contact.present? %>
+          <%= f.hidden_field :first_name, value: @contact.first_name %>
+          <%= f.hidden_field :last_name, value: @contact.last_name %>
+          <%= f.hidden_field :email, value: @contact.email %>
+          <%= f.hidden_field :phone, value: (@contact.mobile_phone.presence || @contact.work_phone) %>
+        <% else %>
+          <div class="form-group row">
+            <%= f.text_field :first_name, autocomplete: 'off', value: @contact&.first_name, autofocus: true %>
+          </div>
+
+          <div class="form-group row">
+            <%= f.text_field :last_name, value: @contact&.last_name, autocomplete: 'off' %>
+          </div>
+
+          <div class="form-group row">
+            <%= f.email_field :email, value: @contact&.email, autocomplete: 'off' %>
+          </div>
+
+          <div class="form-group row">
+            <%= f.phone_field :phone, value: (@contact&.mobile_phone.blank? ? @contact&.work_phone : @contact&.mobile_phone), autocomplete: 'off' %>
+          </div>
+        <% end %>
+
         <div class="form-group row">
           <label class="col-form-label col-sm-2">Permissions</label>
           <div class="col-sm-10">
@@ -47,21 +61,21 @@
                   <%= render 'user_role_form', f: user_roles_form %>
                 <% end %>
               </template>
-      
+
               <% unless f.object.user_roles.blank? %>
                 <%= f.fields_for :user_roles do |user_roles_form| %>
                   <%= render 'user_role_form', f: user_roles_form %>
                 <% end %>
               <% end %>
-      
+
               <div data-nested-form-target="target"></div>
-      
+
               <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
             </div>
           </div>
         </div>
-      
-        <%= f.submit 'Save', class: 'btn btn-primary ml-2' %>
+
+        <%= f.submit 'Invite', class: 'btn btn-primary ml-2' %>
       <% end %>
     </div>
   </div>

@@ -1,27 +1,13 @@
 <%= bootstrap_form_with(model: [:broker, @contact], layout: :horizontal) do |f| %>
-  <%= f.hidden_field :broker_carrier_id, value: params[:broker_carrier_id] %>
-  <%= f.hidden_field :broker_customer_id, value: params[:broker_customer_id] %>
   <%= f.alert_message "Unable to create contact:" %>
 
-  <div class="form-row">
-    <div class="col">
-      <p class="col-title">About</p>
-      <%= f.text_field :first_name, label: 'First', autofocus: true %>
-      <%= f.text_field :last_name, label: 'Last' %>
-      <%= f.text_field :job_title, label: 'Title' %>
-    </div>
-
-    <div class="col">
-      <p class="col-title">Phones</p>
-      <%= f.text_field :mobile_phone, label: 'Mobile' %>
-      <%= f.text_field :work_phone, label: 'Office' %>
-    </div>
-
-    <div class="col">
-      <p class="col-title">Email</p>
-      <%= f.email_field :email %>
-    </div>
-  </div>
+  <%= f.hidden_field :company_sgid, value: params[:company_sgid] %>
+  <%= f.text_field :first_name, autofocus: true %>
+  <%= f.text_field :last_name %>
+  <%= f.text_field :job_title %>
+  <%= f.text_field :mobile_phone %>
+  <%= f.text_field :work_phone %>
+  <%= f.email_field :email %>
 
   <%= f.form_group do %>
     <%= f.submit class: 'btn btn-primary', data: { turbo: false }, value: 'Save' %>

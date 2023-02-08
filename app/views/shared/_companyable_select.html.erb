@@ -1,0 +1,8 @@
+<%= f.grouped_collection_select :company_sgid,
+                                [Broker, BrokerCustomer],
+                                :companyable_order,
+                                :human_name,
+                                :to_sgid_s,
+                                :name,
+                                selected: f.object.companyable
+%>

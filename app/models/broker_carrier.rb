@@ -61,32 +61,34 @@
 #  fk_rails_...  (check_mailing_address_id => addresses.id)
 #
 class BrokerCarrier < ApplicationRecord
+  class << self
+    def companyable_order
+      joins(:carrier).order('carriers.name')
+    end
+  end
+
   include BrokerCarrier::QuickbooksSyncable
+  include Companyable
 
   audited
 
   # API key belonging to customer
   encrypts :encrypted_api_key
 
-  scope :api_configured, -> { where(api_configured: true) }
-  scope :api_unconfigured, -> { where(api_configured: false) }
-  scope :blanket, -> { where(broker_customer: nil) }
-
   before_save :set_api_configured
 
   belongs_to :carrier
   belongs_to :broker
-  belongs_to :broker_customer, required: false, optional: true
+  belongs_to :broker_customer, optional: true
 
-  belongs_to :check_mailing_address, class_name: 'Address', required: false
+  belongs_to :check_mailing_address, class_name: 'Address', optional: true
 
   delegate :scac, to: :carrier
 
-  has_many :contacts
   has_many :overlength_rules
   has_many :payments
   has_many :payment_transactions
-  has_many :preferred_by_broker_customers, class_name: 'PreferredBrokerCarrier', foreign_key: :broker_carrier_id
+  has_many :preferred_by_broker_customers, class_name: 'PreferredBrokerCarrier'
   has_many :pricing_rules
   has_many :rates
   has_many :shipments
@@ -95,14 +97,17 @@ class BrokerCarrier < ApplicationRecord
   has_many :pickups, through: :rates
 
   accepts_nested_attributes_for :check_mailing_address
-  accepts_nested_attributes_for :contacts
   accepts_nested_attributes_for :overlength_rules
   accepts_nested_attributes_for :pricing_rules
 
   monetize :quote_padding_cents
 
+  scope :api_configured, -> { where(api_configured: true) }
+  scope :api_unconfigured, -> { where(api_configured: false) }
+  scope :blanket, -> { where(broker_customer: nil) }
+
   def api_configured?
-    return false unless carrier.broker_carrier_credential_columns.any?
+    return false if carrier.broker_carrier_credential_columns.none?
 
     carrier.broker_carrier_credential_columns.map { |column| public_send(column) }.all?(&:present?)
   end
@@ -112,11 +117,11 @@ class BrokerCarrier < ApplicationRecord
   end
 
   def broker_customer_specific_name
-    return carrier.name unless broker_customer.present?
+    return carrier.name if broker_customer.blank?
 
     "#{carrier.name} - #{broker_customer.customer.name}"
   end
-  alias name broker_customer_specific_name
+  alias_method :name, :broker_customer_specific_name
 
   def to_interstellar_carrier
     @to_interstellar_carrier ||= InterstellarAPIClient::Services::BuildAPIClient.call(broker_carrier: self)
@@ -136,9 +141,7 @@ class BrokerCarrier < ApplicationRecord
     Interstellar::Tariff.new(overlength_rules: interstellar_overlength_rules)
   end
 
-  def pickup_number_is_tracking_number?
-    carrier.pickup_number_is_tracking_number?
-  end
+  delegate :pickup_number_is_tracking_number?, to: :carrier
 
   private
 

@@ -219,6 +219,8 @@ GEM
       ruby-rc4 (>= 0.1.5)
     concurrent-ruby (1.2.0)
     connection_pool (2.3.0)
+    crack (0.4.5)
+      rexml
     crass (1.0.6)
     date (3.3.3)
     devise (4.8.1)
@@ -299,6 +301,7 @@ GEM
     gyoku (1.4.0)
       builder (>= 2.1.2)
       rexml (~> 3.0)
+    hashdiff (1.0.1)
     hashie (5.0.0)
     honeybadger (5.1.0)
     htmlentities (4.3.4)
@@ -687,6 +690,10 @@ GEM
       nokogiri (~> 1.6)
       rubyzip (>= 1.3.0)
       selenium-webdriver (~> 4.0)
+    webmock (3.18.1)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     websocket (1.2.9)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
@@ -787,6 +794,7 @@ DEPENDENCIES
   turbo-rails (~> 1.3.3)
   web-console (>= 3.3.0)
   webdrivers
+  webmock (~> 3.18.1)
 
 RUBY VERSION
    ruby 3.2.0p0

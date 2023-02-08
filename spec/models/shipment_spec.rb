@@ -247,13 +247,16 @@ RSpec.describe(Shipment, type: :model) do
 
   describe '#assign_dispatcher' do
     let(:broker) { create(:broker) }
-    let(:user) { create(:user, broker:) }
+    let(:role) { Role.find_by(name: 'dispatch').presence || create(:role, name: 'dispatch') }
+    let(:user) do
+      record = build(:user, companyable: broker)
+      record.save && record
+    end
     let(:shipment) do
       record = build(:shipment, broker:)
       record.dispatcher = nil
       record
     end
-    let(:role) { create(:role, name: 'dispatch') }
 
     before { user.user_roles.create(role:) }
 
@@ -263,8 +266,11 @@ RSpec.describe(Shipment, type: :model) do
 
     context 'when there is another dispatcher but from another broker' do
       let(:other_broker) { create(:broker) }
-      let(:other_user) { create(:user, broker: other_broker) }
-
+      let(:other_user) do
+        record = build(:user, companyable: other_broker)
+        record.save && record
+      end
+      
       before { other_user.user_roles.create(role:) }
 
       it 'assigns a dispatcher only base from its broker' do
@@ -276,7 +282,10 @@ RSpec.describe(Shipment, type: :model) do
     end
 
     context 'when broker has multiple dispatchers' do
-      let(:other_user) { create(:user, broker:) }
+      let(:other_user) do
+        record = build(:user, companyable: broker)
+        record.save && record
+      end
 
       before { other_user.user_roles.create(role:) }
 

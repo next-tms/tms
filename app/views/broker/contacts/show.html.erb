@@ -1,68 +1,58 @@
 <% provide :title, @contact.full_name %>
-<% provide :menu, render('broker/contacts/menu') %>
 
-<div class="page-header">
-  <h1>Contacts</h1>
-  <p class="lead"><%= yield :title %></p>
-</div>
+<%= render 'member_header' %>
+<h2>Overview</h2>
 
-<div class="row">
-  <div class="col col-md-6">
-    <div class="btn-toolbar mb-3">
-      <div class="btn-group">
-        <% if @contact.broker_customer.present? %>
-          <% if @contact.user.blank? %>
-            <%= link_to icon('solid', 'plus', 'Invite Customer'),
-                        new_user_invitation_path(broker_customer_id: @contact.broker_customer_id, contact_id: @contact.id),
-                        class: 'btn btn-sm btn-primary'
-            %>
-          <% elsif @contact.user.invitation_sent_at? %>
-            <% if @contact.user.invitation_accepted? %>
-              <%= link_to icon('solid', 'plus', 'Invitation Accepted'), '#', class: 'btn btn-sm btn-primary disabled' %>
-            <% else %>
-              <%= link_to icon('solid', 'plus', 'Invitation Sent'), '#', class: 'btn btn-sm btn-primary disabled' %>
+<% if @contact.user.present? %>
+  <% if @contact.user.invitation_sent_at? %>
+    <% if @contact.user.invitation_accepted? %>
+      <%= render 'layouts/message',
+                 title: 'Invitation accepted',
+                 message: "#{@contact.full_name} accepted the invitation.",
+                 classes: 'alert-success'
+      %>
+    <% else %>
+      <%= render 'layouts/message',
+                 title: 'Invitation sent',
+                 message: "#{@contact.full_name} was invited but hasn’t set up their account.",
+                 classes: 'alert-warning'
+      %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div class="table-responsive">
+  <table class="table table-borderless table-striped">
+    <tbody>
+      <tr>
+        <th>Name</th>
+        <td><%= @contact.full_name %></td>
+      </tr>
+      <tr>
+        <th>Title</th>
+        <td><%= @contact.job_title %></td>
+      </tr>
+      <tr>
+        <th>Phones</th>
+        <td>
+          <ul class="list-unstyled">
+            <% unless @contact.mobile_phone.blank? %>
+              <li><%= link_to @contact.mobile_phone.phony_formatted, "tel:#{@contact.mobile_phone}" %> <span class="badge bg-info">Mobile</span></li>
             <% end %>
+            <% unless @contact.work_phone.blank? %>
+              <li><%= link_to @contact.work_phone.phony_formatted, "tel:#{@contact.work_phone}" %> <span class="badge bg-info">Office</span></li>
+            <% end %>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td>
+          <% unless @contact.email.blank? %>
+            <%= link_to @contact.email, "mailto:#{@contact.email}" %>
           <% end %>
-        <% end %>
-
-        <%= link_to icon('solid', 'pencil-alt', 'Edit'), edit_broker_contact_path(@contact), class: 'btn btn-sm btn-light' %>
-      </div>
-    </div>
-
-    <div class="table-responsive">
-      <table class="table table-borderless table-striped">
-        <tbody>
-          <tr>
-            <th>Name</th>
-            <td><%= @contact.full_name %></td>
-          </tr>
-          <tr>
-            <th>Title</th>
-            <td><%= @contact.job_title %></td>
-          </tr>
-          <tr>
-            <th>Phones</th>
-            <td>
-              <ul class="list-unstyled">
-                <% unless @contact.mobile_phone.blank? %>
-                  <li><%= link_to @contact.mobile_phone.phony_formatted, "tel:#{@contact.mobile_phone}" %> <span class="badge bg-info">Mobile</span></li>
-                <% end %>
-                <% unless @contact.work_phone.blank? %>
-                  <li><%= link_to @contact.work_phone.phony_formatted, "tel:#{@contact.work_phone}" %> <span class="badge bg-info">Office</span></li>
-                <% end %>
-              </ul>
-            </td>
-          </tr>
-          <tr>
-            <th>Email</th>
-            <td>
-              <% unless @contact.email.blank? %>
-                <%= link_to @contact.email, "mailto:#{@contact.email}" %>
-              <% end %>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

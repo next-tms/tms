@@ -34,6 +34,8 @@
 #  fk_rails_...  (check_mailing_address_id => addresses.id)
 #
 class Carrier < ApplicationRecord
+  include Companyable
+
   INTERSTELLAR_CREDENTIAL_TYPE_BROKER_CARRIER_COLUMNS = {
     api: %i[username password],
     api_key: %i[encrypted_api_key],
@@ -53,13 +55,10 @@ class Carrier < ApplicationRecord
   has_many :shipments
   has_many :terminals
 
-  belongs_to :broker_billing_address, class_name: 'Address', required: false
+  belongs_to :broker_billing_address, class_name: 'Address', optional: true
 
   # has_many :location_addresses, class_name: 'Address', required: false
-  belongs_to :check_mailing_address, class_name: 'Address', required: false
-
-  has_many :carrier_contacts
-  has_many :contacts, through: :carrier_contacts
+  belongs_to :check_mailing_address, class_name: 'Address', optional: true
 
   accepts_nested_attributes_for :check_mailing_address
 
@@ -77,7 +76,7 @@ class Carrier < ApplicationRecord
   # Which `BrokerCarrier` columns are required for Interstellar to communicate with the carrier's API.
   # @return <Boolean>
   def broker_carrier_credential_columns
-    return [] unless required_interstellar_credentials.present?
+    return [] if required_interstellar_credentials.blank?
 
     columns = required_interstellar_credentials.map do |interstellar_credential_type|
       INTERSTELLAR_CREDENTIAL_TYPE_BROKER_CARRIER_COLUMNS[interstellar_credential_type]

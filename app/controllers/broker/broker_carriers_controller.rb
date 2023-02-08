@@ -3,18 +3,18 @@
 class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :authenticate_user!
   before_action :set_broker_carrier, only: %i[
-    contacts
-    edit
-    payment_transactions
-    payments
-    preferences
-    search_terminals
-    shipments
-    show
-    tariff
-    terminals
-    update
-  ]
+                                             contacts
+                                             edit
+                                             payment_transactions
+                                             payments
+                                             preferences
+                                             search_terminals
+                                             shipments
+                                             show
+                                             tariff
+                                             terminals
+                                             update
+                                           ]
 
   def edit
     @broker_carrier.check_mailing_address = Address.new if @broker_carrier.check_mailing_address.blank?
@@ -32,12 +32,12 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def show
-    if @broker_carrier.broker == current_user.broker
-      @shipments = @broker_carrier.shipments.order(load_id: :desc).limit(25)
-      @carrier_contacts = @broker_carrier.carrier.carrier_contacts
-    else
-      render file: 'public/401', layout: false, status: :unauthorized
+    unless @broker_carrier.broker == current_user.broker
+      render(file: 'public/401', layout: false, status: :unauthorized) && return
     end
+
+    @shipments = @broker_carrier.shipments.order(load_id: :desc).limit(25)
+    @carrier_contacts = @broker_carrier.carrier.contacts
   end
 
   def new
@@ -52,17 +52,17 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @broker_carrier.ignore_bol_requires_tracking_number =
       current_user.broker.ignore_broker_carrier_bol_requires_tracking_number?
 
-    redirect_to [:broker, @broker_carrier] and return if @broker_carrier.save
+    redirect_to([:broker, @broker_carrier]) && return if @broker_carrier.save
 
-    render :new
+    render(:new)
   end
 
   def preferences; end
 
   def quickbooks
-    unauthorized and return unless current_user.broker? &&
-                                   current_user.broker.intuit_account.present? &&
-                                   (current_user.has_role?('root') || current_user.has_role?('accounts_payable'))
+    unauthorized && return unless current_user.broker? &&
+                                  current_user.broker.intuit_account.present? &&
+                                  (current_user.has_role?('root') || current_user.has_role?('accounts_payable'))
 
     @broker_carriers = current_user
                        .broker
@@ -77,19 +77,19 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def update_quickbooks
-    unauthorized and return unless current_user.broker? &&
-                                   current_user.broker.intuit_account.present? &&
-                                   (current_user.has_role?('root') || current_user.has_role?('accounts_payable'))
+    unauthorized && return unless current_user.broker? &&
+                                  current_user.broker.intuit_account.present? &&
+                                  (current_user.has_role?('root') || current_user.has_role?('accounts_payable'))
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
 
     if broker.save
       flash[:success] = 'QuickBooks vendors updated'
-      redirect_to quickbooks_broker_broker_carriers_path and return
+      redirect_to(quickbooks_broker_broker_carriers_path) && return
     end
 
-    render :quickbooks
+    render(:quickbooks)
   end
 
   def tariff
@@ -101,13 +101,13 @@ class Broker::BrokerCarriersController < Broker::BrokerController
                     .carrier_areas
                     .where
                     .not(
-                      id: @broker_carrier.pricing_rules.pluck(:carrier_area_id)
+                      id: @broker_carrier.pricing_rules.pluck(:carrier_area_id),
                     )
 
     return if carrier_areas.blank?
 
     carrier_areas.each do |carrier_area|
-      next unless @broker_carrier.pricing_rules.where(carrier_area:).blank?
+      next if @broker_carrier.pricing_rules.where(carrier_area:).present?
 
       @broker_carrier.pricing_rules.build(carrier_area:, min_pallets: 1)
     end
@@ -141,29 +141,29 @@ class Broker::BrokerCarriersController < Broker::BrokerController
 
     unless @broker_carrier.save
       flash[:error] = 'Unable to update carrier'
-      render :edit and return
+      render(:edit) && return
     end
 
-    redirect_to [:broker, @broker_carrier] and return unless @broker_carrier.api_configured?
+    redirect_to([:broker, @broker_carrier]) && return unless @broker_carrier.api_configured?
 
     update_documents = @broker_carrier.saved_change_to_account? ||
                        @broker_carrier.saved_change_to_username? ||
                        @broker_carrier.saved_change_to_password?
 
-    redirect_to [:broker, @broker_carrier] and return unless update_documents
+    redirect_to([:broker, @broker_carrier]) && return unless update_documents
 
     shipments = @broker_carrier.shipments.where('created_at > ?', 90.days.ago)
-    redirect_to [:broker, @broker_carrier] and return if shipments.blank?
+    redirect_to([:broker, @broker_carrier]) && return if shipments.blank?
 
     TrackShipmentsJob.perform_later(shipments.pluck(:id))
 
     pending_delivery_shipment_ids = shipments.pending_delivery.pluck(:id)
-    FetchShipmentCarrierBOLsJob.perform_later(pending_delivery_shipment_ids) unless pending_delivery_shipment_ids.blank?
+    FetchShipmentCarrierBOLsJob.perform_later(pending_delivery_shipment_ids) if pending_delivery_shipment_ids.present?
 
     delivered_shipment_ids = shipments.delivered.pluck(:id)
-    FetchShipmentCarrierPODsJob.perform_later(delivered_shipment_ids) unless delivered_shipment_ids.blank?
+    FetchShipmentCarrierPODsJob.perform_later(delivered_shipment_ids) if delivered_shipment_ids.present?
 
-    redirect_to [:broker, @broker_carrier] and return
+    redirect_to([:broker, @broker_carrier]) && return
   end
 
   def contacts
@@ -207,7 +207,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
            :items,
            :receiver_address,
            :tracking_carrier,
-           :shipper_address
+           :shipper_address,
          ).ransack(params[:q])
 
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -225,7 +225,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def broker_params
     params.require(:broker).permit(
       :id,
-      broker_carriers_attributes: %i[id quickbooks_vendor_id]
+      broker_carriers_attributes: %i[id quickbooks_vendor_id],
     )
   end
 
@@ -249,36 +249,37 @@ class Broker::BrokerCarriersController < Broker::BrokerController
       :website_password,
       :website_username,
       check_mailing_address_attributes: %i[
-        id
-        ref
-        country_id
-        street
-        street2
-        city
-        region_id
-        zip_code
-      ],
+                                          id
+                                          ref
+                                          country_id
+                                          street
+                                          street2
+                                          city
+                                          region_id
+                                          zip_code
+                                        ],
       overlength_rules_attributes: %i[
-        _destroy
-        id
-        max_length
-        min_length
-        cost
-      ],
+                                     _destroy
+                                     id
+                                     max_length
+                                     min_length
+                                     cost
+                                   ],
       pricing_rules_attributes: %i[
-        id
-        carrier_area_id
-        cost_per_pallet
-        max_pallets
-        min_pallets
-      ]
+                                  id
+                                  carrier_area_id
+                                  cost_per_pallet
+                                  max_pallets
+                                  min_pallets
+                                ],
     )
   end
 
   def required_includes
     [
       :carrier,
-      :broker_customer, { broker_customer: :customer }
+      :broker_customer,
+      { broker_customer: :customer },
     ]
   end
 end

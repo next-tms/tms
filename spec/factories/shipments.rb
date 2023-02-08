@@ -219,7 +219,6 @@ FactoryBot.define do
     dispatched_at { 2.weeks.ago }
     lift_gate_delivery { false }
     lift_gate_pickup { false }
-    load {}
     load_id { 1 }
     lost_on { 5.minutes.ago }
     notify { [true, false].sample }
@@ -267,7 +266,7 @@ FactoryBot.define do
     after(:build) do |record|
       role = Role.find_by(name: 'dispatcher').presence || create(:role, name: 'dispatcher')
 
-      user = create(:user, broker: record.broker)
+      user = build(:user, companyable: record.broker)
       user.roles << role
       record.dispatcher = user
     end

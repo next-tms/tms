@@ -30,43 +30,50 @@
 #  fk_rails_...  (address_id => addresses.id)
 #
 class Broker < ApplicationRecord
+  class << self
+    def companyable_order
+      order(:name)
+    end
+  end
+
   include ::Instigatable
   include Broker::Instigatable
+  include Companyable
+
+  after_create :copy_accessorials_to_broker_accessorials
+  after_commit :update_broker_carrier_ignore_bol_requires_tracking_number
 
   audited
 
+  before_save :unique_countries
+
+  belongs_to :address
+
   has_many :banks
-  accepts_nested_attributes_for :banks
-
+  has_many :broker_accessorials
+  has_many :broker_accessorials, dependent: :destroy
+  has_many :broker_carriers
+  has_many :broker_countries
+  has_many :broker_customers
+  has_many :payment_transactions
+  has_many :payments
   has_many :shipments
-  has_many :rates, through: :shipments
-  has_many :receivables, through: :shipments
-
-  has_many :users
+  has_many :users, as: :companyable, dependent: :destroy
   has_many :websites
 
-  has_many :broker_carriers
-  has_many :carriers, through: :broker_carriers
-  accepts_nested_attributes_for :broker_carriers
-
-  has_many :broker_countries
-  has_many :countries, through: :broker_countries
-  accepts_nested_attributes_for :broker_countries, allow_destroy: true, reject_if: :all_blank
-
-  has_many :broker_customers
-  accepts_nested_attributes_for :broker_customers
-
   has_many :broker_customer_sales_reps, through: :broker_customers
+  has_many :carriers, through: :broker_carriers
+  has_many :countries, through: :broker_countries
   has_many :customers, through: :broker_customers
-
-  has_many :broker_accessorials
-  accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
+  has_many :rates, through: :shipments
+  has_many :receivables, through: :shipments
 
   has_one :intuit_account
   has_one :stripe_account
 
-  belongs_to :address
-  accepts_nested_attributes_for :address
+  phony_normalize :phone, default_country_code: 'US'
+
+  serialize :time_zone
 
   validates :customer_service_email, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :customer_service_email, presence: true
@@ -74,20 +81,13 @@ class Broker < ApplicationRecord
   validates :phone, presence: true
   validates :time_zone_name, presence: true
 
-  phony_normalize :phone, default_country_code: 'US'
-
-  has_many :broker_accessorials, dependent: :destroy
+  accepts_nested_attributes_for :address
+  accepts_nested_attributes_for :banks
   accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
-
-  has_many :payments
-  has_many :payment_transactions
-
-  after_create :copy_accessorials_to_broker_accessorials
-  after_commit :update_broker_carrier_ignore_bol_requires_tracking_number
-
-  before_save :unique_countries
-
-  serialize :time_zone
+  accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :broker_carriers
+  accepts_nested_attributes_for :broker_countries, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :broker_customers
 
   def last_load_id
     shipments.blank? ? first_load_id : shipments.order(load_id: :desc).limit(1).first.load_id
@@ -107,30 +107,30 @@ class Broker < ApplicationRecord
     Interstellar::Location.new(
       contact: Interstellar::Contact.new(
         company_name: name,
-        email: "robot@#{customer_service_email.split('@')[1]}"
+        email: "robot@#{customer_service_email.split("@")[1]}",
       ),
       address1: address.street.sub('Apt', 'Ste'),
       city: address.city,
       postal_code: address.zip_code,
       province: address.region.abbreviation,
-      country: ActiveUtils::Country.find(address.country.alpha2_code)
+      country: ActiveUtils::Country.find(address.country.alpha2_code),
     )
   end
 
   private
 
   def normalize_phone(phone_number:, country_code:)
-    phone_number ? phone_number.phony_formatted(normalize: country_code) : nil
+    phone_number&.phony_formatted(normalize: country_code)
   end
 
   def copy_accessorials_to_broker_accessorials
-    Accessorial.all.each do |accessorial|
+    Accessorial.all.find_each do |accessorial|
       BrokerAccessorial.create(broker: self, accessorial:, code: accessorial.code, name: accessorial.name)
     end
   end
 
   def unique_countries
-    self.countries = countries.distinct unless countries.blank?
+    self.countries = countries.distinct if countries.present?
   end
 
   def update_broker_carrier_ignore_bol_requires_tracking_number

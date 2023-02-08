@@ -1,0 +1,30 @@
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6">
+    <% if @contact.new_record? %>
+      Contact
+    <% else %>
+      <%= @contact.full_name %>
+    <% end %>
+  </h1>
+
+  <% if @contact.companyable.present? && @contact.companyable.class.in?([BrokerCarrier, BrokerCustomer, Carrier]) %>
+    <table class="table table-borderless w-auto">
+      <thead>
+        <tr>
+          <th><%= @contact.companyable.model_name.human %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="lead">
+            <%= link_to @contact.companyable.name, public_send("broker_#{@contact.companyable.model_name.singular_route_key}_path", @contact.companyable) %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% unless @contact.new_record? %>
+    <%= render 'member_menu' %>
+  <% end %>
+</div>

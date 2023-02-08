@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   # Rescue from invalid authenticity token
   rescue_from ActionController::InvalidAuthenticityToken, with: :bad_token
   def bad_token
-    redirect_to '/' and return
+    redirect_to('/') && return
   end
 
   def require_role(role_name)
@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   end
 
   def unauthorized
-    render layout: false, file: 'public/401.html', status: :unauthorized
+    render(layout: false, file: 'public/401.html', status: :unauthorized)
   end
 
   protected
@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_website
-    @website ||= Website.find_by_domain(request.host) || nil
+    @website ||= Website.find_by(domain: request.host) || nil
     redirect_to('https://next-tms.com/', allow_other_host: true) if @website.blank?
   end
 
@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
   end
 
   def sign_out_deactivated_user
-    sign_out_and_redirect(current_user) and return if signed_in? && current_user.deactivated?
+    sign_out_and_redirect(current_user) && return if signed_in? && current_user.deactivated?
   end
 
   def user_sign_in_path
@@ -70,7 +70,7 @@ class ApplicationController < ActionController::Base
   # Devise
 
   def after_sign_in_path_for(resource_or_scope)
-    set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
+    set_flash_message!(:alert, :warn_pwned) if resource.respond_to?(:pwned?) && resource.pwned?
 
     stored_location_for(resource_or_scope) || user_sign_in_path
   end
@@ -84,35 +84,36 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(
       :account_update,
       keys: %i[
-        email
-        first_name
-        last_name
-        password
-        password_confirmation
-        phone
-        receive_email_notifications
-        receive_notifications_from_self
-        receive_read_notifications_by_email
-        receive_sms_notifications
-      ]
+              email
+              first_name
+              last_name
+              password
+              password_confirmation
+              phone
+              receive_email_notifications
+              receive_notifications_from_self
+              receive_read_notifications_by_email
+              receive_sms_notifications
+            ],
     )
 
     devise_parameter_sanitizer.permit(
       :accept_invitation,
-      keys: %i[email broker_customer_id first_name last_name phone]
+      keys: %i[email broker_customer_id first_name last_name phone],
     )
 
     devise_parameter_sanitizer.permit(
       :invite,
       keys: [
-        :email,
-        :broker_customer_id,
-        :contact_id,
-        :first_name,
-        :last_name,
-        :phone,
-        { user_roles_attributes: %i[_destroy role_id] }
-      ]
+              :company_id,
+              :company_type,
+              :contact_id,
+              :email,
+              :first_name,
+              :last_name,
+              :phone,
+              { user_roles_attributes: %i[_destroy role_id] },
+            ],
     )
   end
 

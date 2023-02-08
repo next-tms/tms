@@ -1,10 +1,6 @@
 <% provide :title, 'New Contact' %>
 
-<% provide :menu, render('broker/contacts/menu') %>
-
-<div class="page-header">
-  <h1>Contacts</h1>
-  <p class="lead"><%= yield :title %></p>
-</div>
+<%= render 'member_header' %>
+<h2>New</h2>
 
 <%= render 'form' %>

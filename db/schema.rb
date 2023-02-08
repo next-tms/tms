@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_12_210725) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_03_035644) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -264,15 +264,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_210725) do
     t.index ["to_area_id"], name: "index_carrier_areas_on_to_area_id"
   end
 
-  create_table "carrier_contacts", force: :cascade do |t|
-    t.bigint "broker_id"
-    t.bigint "carrier_id"
-    t.bigint "contact_id"
-    t.index ["broker_id"], name: "index_carrier_contacts_on_broker_id"
-    t.index ["carrier_id"], name: "index_carrier_contacts_on_carrier_id"
-    t.index ["contact_id"], name: "index_carrier_contacts_on_contact_id"
-  end
-
   create_table "carriers", id: :serial, force: :cascade do |t|
     t.string "name"
     t.string "scac"
@@ -339,10 +330,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_210725) do
     t.string "mobile_phone"
     t.string "label"
     t.text "comments"
-    t.bigint "broker_customer_id"
-    t.bigint "broker_carrier_id"
-    t.index ["broker_carrier_id"], name: "index_contacts_on_broker_carrier_id"
-    t.index ["broker_customer_id"], name: "index_contacts_on_broker_customer_id"
+    t.string "companyable_type"
+    t.bigint "companyable_id", null: false
+    t.index ["companyable_type", "companyable_id"], name: "index_contacts_on_companyable"
   end
 
   create_table "countries", force: :cascade do |t|
@@ -956,7 +946,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_210725) do
     t.string "phone"
     t.boolean "receive_sms_notifications"
     t.string "last_name"
-    t.bigint "broker_customer_id"
     t.boolean "receive_email_notifications", default: true
     t.boolean "receive_notifications_from_self", default: true
     t.bigint "contact_id"
@@ -971,7 +960,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_210725) do
     t.string "time_zone_name", null: false
     t.boolean "receive_read_notifications_by_email", default: false
     t.text "email_notifications_blacklist"
-    t.index ["broker_customer_id"], name: "index_users_on_broker_customer_id"
+    t.string "companyable_type", null: false
+    t.bigint "companyable_id", null: false
+    t.index ["companyable_type", "companyable_id"], name: "index_users_on_companyable"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -1026,17 +1017,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_210725) do
   add_foreign_key "carrier_areas", "areas", column: "from_area_id"
   add_foreign_key "carrier_areas", "areas", column: "to_area_id"
   add_foreign_key "carrier_areas", "carriers"
-  add_foreign_key "carrier_contacts", "brokers"
-  add_foreign_key "carrier_contacts", "carriers"
-  add_foreign_key "carrier_contacts", "contacts"
   add_foreign_key "carriers", "addresses", column: "broker_billing_address_id"
   add_foreign_key "carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "claim_items", "claims"
   add_foreign_key "claims", "shipments"
   add_foreign_key "commissions", "shipments"
   add_foreign_key "commissions", "users"
-  add_foreign_key "contacts", "broker_carriers"
-  add_foreign_key "contacts", "broker_customers"
   add_foreign_key "customer_contacts", "brokers"
   add_foreign_key "customer_contacts", "contacts"
   add_foreign_key "customer_contacts", "customers"
@@ -1114,7 +1100,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_210725) do
   add_foreign_key "upcharge_rules", "packagings"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
-  add_foreign_key "users", "broker_customers"
   add_foreign_key "users", "contacts"
   add_foreign_key "users", "users", column: "invited_by_id"
   add_foreign_key "websites", "brokers"

@@ -8,7 +8,7 @@
           <tr>
             <th><%= sort_link q, :first_name, 'Name' %></th>
             <% if controller_name == 'users' %>
-              <th><%= sort_link q, :broker_customer_id, 'Kind' %></th>
+              <th><%= sort_link q, :company_type, 'Kind' %></th>
               <th>Active?</th>
             <% end %>
             <% if controller_name != 'broker_customers' %>
@@ -27,11 +27,7 @@
             <tr class="<% if user.deactivated? %>table-danger<% end %>">
               <td class="text-nowrap"><%= link_to user.full_name, broker_user_path(user), target: '_top' %></td>
               <% if controller_name == 'users' %>
-                <td>
-                  <% unless user.deactivated? %>
-                    <%= user.customer? ? 'Customer' : 'Staff' %>
-                  <% end %>
-                </td>
+                <td><%= user.companyable.model_name.human %></td>
                 <td><% unless user.deactivated? %>✓<% end %></td>
               <% end %>
               <% if controller_name != 'broker_customers' %>

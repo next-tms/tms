@@ -68,13 +68,20 @@
 #  fk_rails_...  (receivables_contact_id => contacts.id)
 #
 class BrokerCustomer < ApplicationRecord
+  class << self
+    def companyable_order
+      joins(:customer).order('customers.name')
+    end
+  end
+
   include ::Instigatable
   include BrokerCustomer::Instigatable
   include BrokerCustomer::QuickbooksSyncable
+  include Companyable
 
   after_commit :problematic_shipments_later
 
-  before_validation :assign_receivables_contact_broker_customer, if: -> { receivables_contact.new_record? }
+  before_validation :set_receivables_contact_companyable, if: -> { receivables_contact&.new_record? }
 
   audited
 
@@ -95,8 +102,6 @@ class BrokerCustomer < ApplicationRecord
   accepts_nested_attributes_for :receivables_contact, allow_destroy: false
 
   enum preferred_broker_carriers_kind: { blacklist: 'blacklist', whitelist: 'whitelist' }
-
-  has_many :contacts, dependent: :destroy
 
   has_many :broker_customer_sales_reps, dependent: :destroy
   has_many :sales_reps, through: :broker_customer_sales_reps, source: 'user'
@@ -126,7 +131,7 @@ class BrokerCustomer < ApplicationRecord
   has_many :upcharge_rules
   accepts_nested_attributes_for :upcharge_rules, allow_destroy: true, reject_if: :all_blank
 
-  has_many :users
+  has_many :users, as: :companyable, dependent: :destroy
 
   enum receivables_schedule: {
     daily: 'daily',
@@ -352,7 +357,7 @@ class BrokerCustomer < ApplicationRecord
     ProblematicJob.perform_later(ids, type: 'Shipment')
   end
 
-  def assign_receivables_contact_broker_customer
-    receivables_contact.assign_attributes(broker_customer: self)
+  def set_receivables_contact_companyable
+    receivables_contact.assign_attributes(companyable: self)
   end
 end

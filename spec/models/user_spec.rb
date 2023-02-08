@@ -6,6 +6,8 @@
 #
 # @!attribute id
 #   @return [Integer]
+# @!attribute companyable_type
+#   @return [String]
 # @!attribute confirmation_sent_at
 #   @return [Time]
 # @!attribute confirmation_token
@@ -19,6 +21,8 @@
 # @!attribute deactivated
 #   @return [Boolean]
 # @!attribute email
+#   @return [String]
+# @!attribute email_notifications_blacklist
 #   @return [String]
 # @!attribute encrypted_password
 #   @return [String]
@@ -52,6 +56,8 @@
 #   @return [Boolean]
 # @!attribute receive_notifications_from_self
 #   @return [Boolean]
+# @!attribute receive_read_notifications_by_email
+#   @return [Boolean]
 # @!attribute receive_sms_notifications
 #   @return [Boolean]
 # @!attribute remember_created_at
@@ -72,10 +78,10 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute broker_customer_id
-#   @return []
 # @!attribute broker_id
 #   @return [Integer]
+# @!attribute companyable_id
+#   @return []
 # @!attribute contact_id
 #   @return []
 # @!attribute invited_by_id
@@ -83,7 +89,7 @@
 #
 # Indexes
 #
-#  index_users_on_broker_customer_id    (broker_customer_id)
+#  index_users_on_companyable           (companyable_type,companyable_id)
 #  index_users_on_confirmation_token    (confirmation_token) UNIQUE
 #  index_users_on_contact_id            (contact_id)
 #  index_users_on_email                 (email) UNIQUE
@@ -94,52 +100,54 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (broker_customer_id => broker_customers.id)
 #  fk_rails_...  (contact_id => contacts.id)
 #  fk_rails_...  (invited_by_id => users.id)
 #
 require 'rails_helper'
 
-RSpec.describe User, type: :model do
-  describe 'relationships' do
-    it { is_expected.to have_many(:user_roles) }
-    it { is_expected.to have_many(:commissions) }
-    it { is_expected.to have_many(:problems) }
-    it { is_expected.to have_many(:roles).through(:user_roles) }
+RSpec.describe(User, type: :model) do
+  it_behaves_like 'has_companyable'
 
-    it { is_expected.to belong_to(:broker) }
-    it { is_expected.to belong_to(:contact) }
-    it { is_expected.to belong_to(:broker_customer).optional }
+  describe 'relationships' do
+    it { is_expected.to(have_many(:user_roles)) }
+    it { is_expected.to(have_many(:commissions)) }
+    it { is_expected.to(have_many(:problems)) }
+    it { is_expected.to(have_many(:roles).through(:user_roles)) }
+
+    it { is_expected.to(belong_to(:contact)) }
   end
 
   describe 'validations' do
-    it { is_expected.to validate_presence_of(:time_zone_name) }
+    it { is_expected.to(validate_presence_of(:time_zone_name)) }
   end
 
   describe '#label' do
     subject { build(:user, first_name: 'John', last_name: 'Doe') }
 
-    it { expect(subject.full_name).to eq('John Doe') }
+    it { expect(subject.full_name).to(eq('John Doe')) }
   end
 
   describe '#dispatcher_for?' do
-    let(:user) { create(:user) }
+    let(:user) do
+      record = build(:user, companyable: create(:broker))
+      record.save && record
+    end
     let(:shipment) { create(:shipment) }
 
     context 'when shipment argument is nil' do
-      it { expect(user.dispatcher_for?(nil)).to be_falsey }
+      it { expect(user).not_to(be_dispatcher_for(nil)) }
     end
 
     context 'when user is the shipments dispatcher' do
       before { shipment.update(dispatcher: user) }
 
-      it { expect(user.dispatcher_for?(shipment)).to be_truthy }
+      it { expect(user).to(be_dispatcher_for(shipment)) }
     end
 
     context 'when user is not shipments dispatcher but has a dispatch role' do
       before { user.user_roles.create(role: create(:role, name: 'dispatch')) }
 
-      it { expect(user.dispatcher_for?(shipment)).to be_truthy }
+      it { expect(user).to(be_dispatcher_for(shipment)) }
     end
   end
 end

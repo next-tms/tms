@@ -1,0 +1,12 @@
+<nav class="nav border-top pt-4 mb-0">
+  <%= link_to 'Overview', broker_contact_path(@contact), class: 'nav-link contacts-show' %>
+
+  <%= link_to 'Edit', edit_broker_contact_path(@contact), class: 'nav-link contacts-edit' %>
+
+  <% if @contact.customer? && @contact.user.blank? %>
+      <%= link_to 'Invite',
+                  new_user_invitation_path(company_id: @contact.company_id, company_type: 'BrokerCustomer', contact_id: @contact.id),
+                  class: 'nav-link'
+      %>
+  <% end %>
+</nav>

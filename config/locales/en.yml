@@ -6,6 +6,8 @@ en:
         commission_flat: flat commission
         commission_percent: percentage-based commission
       contacts:
+        broker_carrier: Carrier
+        broker_customer: Customer
         label: Department
       region:
         iso_3166_2: ISO 3166-2
@@ -17,6 +19,10 @@ en:
         website_username: Username
       broker_customer:
         can_quote: Customer can quote and book shipments
+      contact:
+        company_sgid: Company
+      user:
+        company_sgid: Company
       shipment:
         bol: Bill of Lading Number
         broker_carrier: Carrier
@@ -30,12 +36,18 @@ en:
         total_charges: Charge
         total_cost: Cost
     models:
+      broker_carrier:
+        one: Carrier
+        other: Carriers
       broker_customer:
         one: Customer
         other: Customers
       broker_customer_sales_rep:
         one: Sales Rep
         many: Sales Reps
+      carrier:
+        one: Carrier
+        other: Carriers
       receivable:
         one: Receivable
         other: Receivables

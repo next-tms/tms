@@ -6,7 +6,7 @@ class Broker::UsersController < Broker::BrokerController
   before_action :restrict_to_root, except: %i[impersonate stop_impersonating]
 
   def index
-    @q = current_user.broker.users.includes(required_includes).ransack(params[:q])
+    @q = User.includes(required_includes).ransack(params[:q])
     @q.sorts = 'first_name asc' if @q.sorts.blank?
 
     @pagy, @users = pagy(@q.result)
@@ -18,20 +18,20 @@ class Broker::UsersController < Broker::BrokerController
     @user.assign_attributes(user_params)
 
     if @user.save
-      redirect_to broker_user_path(@user)
+      redirect_to(broker_user_path(@user))
     else
-      render :edit
+      render(:edit)
     end
   end
 
   def impersonate
     impersonate_user(@user)
-    redirect_to root_path, status: :see_other
+    redirect_to(root_path, status: :see_other)
   end
 
   def stop_impersonating
     stop_impersonating_user
-    redirect_to root_path, status: :see_other
+    redirect_to(root_path, status: :see_other)
   end
 
   private
@@ -41,28 +41,28 @@ class Broker::UsersController < Broker::BrokerController
   end
 
   def set_user
-    @user = current_user.broker.users.find(params[:id])
+    @user = User.find(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def user_params
     params.require(:user).permit(
-      :broker_customer_id,
+      :company_sgid,
       :deactivated,
       :email,
       :first_name,
       :last_name,
       :phone,
       user_roles_attributes: %i[
-        _destroy
-        id
-        role_id
-      ]
+                               _destroy
+                               id
+                               role_id
+                             ],
     )
   end
 
   # Query helpers
   def required_includes
-    %i[user_roles roles broker_customer]
+    %i[user_roles roles companyable]
   end
 end

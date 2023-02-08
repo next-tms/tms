@@ -3,8 +3,6 @@
 class Broker::ContactsController < Broker::BrokerController
   before_action :authenticate_user!
   before_action :set_contact, only: %i[edit show update]
-  before_action :set_broker_carrier, only: %i[edit show update]
-  before_action :set_broker_customer, only: %i[edit show update]
 
   def edit; end
 
@@ -14,17 +12,10 @@ class Broker::ContactsController < Broker::BrokerController
     @pagy, @contacts = pagy(@q.result)
   end
 
-  def show
-    unauthorized unless @contact.broker == current_user.broker
-  end
+  def show; end
 
   def new
     @contact = Contact.new
-    @contact.broker_carrier = params[:broker_carrier_id].blank? ? nil : BrokerCarrier.find(params[:broker_carrier_id])
-    @contact.broker_customer = params[:broker_customer_id].blank? ? nil : BrokerCustomer.find(params[:broker_customer_id])
-
-    @broker_carrier = @contact.broker_carrier
-    @broker_customer = @contact.broker_customer
   end
 
   def create
@@ -47,14 +38,6 @@ class Broker::ContactsController < Broker::BrokerController
   private
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_broker_carrier
-    @broker_carrier = @contact.broker_carrier
-  end
-
-  def set_broker_customer
-    @broker_customer = @contact.broker_customer
-  end
-
   def set_contact
     @contact = Contact.find(params[:id])
   end
@@ -63,8 +46,7 @@ class Broker::ContactsController < Broker::BrokerController
   def contact_params
     params.require(:contact).permit(
       :id,
-      :broker_carrier_id,
-      :broker_customer_id,
+      :company_sgid,
       :email,
       :first_name,
       :job_title,
