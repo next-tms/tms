@@ -60,17 +60,17 @@ module QuickbooksOauth
 
   module ClassMethods
     def construct_oauth2_client
-      options = {
-        site: 'https://appcenter.intuit.com/connect/oauth2',
-        authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
-        token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
-      }
+      args = [
+        ENV.fetch('INTUIT_CLIENT_ID'),
+        ENV.fetch('INTUIT_CLIENT_SECRET'),
+        {
+          authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
+          site: 'https://appcenter.intuit.com/connect/oauth2',
+          token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
+        }
+      ]
 
-      OAuth2::Client.new(
-        Rails.application.credentials.intuit.client_id,
-        Rails.application.credentials.intuit.client_secret,
-        options
-      )
+      OAuth2::Client.new(*args)
     end
   end
 end

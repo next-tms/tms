@@ -4,7 +4,7 @@ class StripeAccountsController < ApplicationController
   before_action :set_broker
 
   def authenticate
-    Stripe.api_key = Rails.application.credentials.stripe.api_key
+    Stripe.api_key = ENV.fetch('STRIPE_API_KEY')
 
     account = Stripe::Account.create(type: 'standard').id
 
@@ -24,7 +24,7 @@ class StripeAccountsController < ApplicationController
       redirect_to broker_settings_stripe_url(host: @broker.websites.first), allow_other_host: true and return
     end
 
-    Stripe.api_key = Rails.application.credentials.stripe.api_key
+    Stripe.api_key = ENV.fetch('STRIPE_API_KEY')
     account = Stripe::Account.retrieve(params[:account])
 
     if account.charges_enabled?

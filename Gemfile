@@ -22,6 +22,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'dotenv-rails', '~> 2.8.1'
   gem 'factory_bot_rails'
   gem 'faker', '~> 3.1.1'
   gem 'pry'
@@ -103,7 +104,7 @@ gem 'action_policy-graphql'
 
 gem 'geocoder', '~> 1.8.1'
 gem 'google_places', '~> 2.0.0'
-gem 'mainstreet', git: 'https://github.com/brodyhoskins/mainstreet', ref: 'b8a57d132c89f872235183fdb6f16350fc2e308d'
+gem 'mainstreet', '~> 0.3.0'
 gem 'open_street_map', '~> 1.2.1'
 gem 'StreetAddress',
     git: 'https://github.com/Civitium/street-address',

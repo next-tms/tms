@@ -51,17 +51,17 @@ class IntuitAccountsController < ApplicationController
   private
 
   def intuit_oauth2_client
-    intuit_oauth_params = {
-      site: 'https://appcenter.intuit.com/connect/oauth2',
-      authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
-      token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
-    }
+    args = [
+      ENV.fetch('INTUIT_CLIENT_ID'),
+      ENV.fetch('INTUIT_CLIENT_SECRET'),
+      {
+        authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
+        site: 'https://appcenter.intuit.com/connect/oauth2',
+        token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
+      }
+    ]
 
-    OAuth2::Client.new(
-      Rails.application.credentials.intuit.client_id,
-      Rails.application.credentials.intuit.client_secret,
-      intuit_oauth_params
-    )
+    OAuth2::Client.new(*args)
   end
 
   def oauth_callback_intuit_account_url_with_host

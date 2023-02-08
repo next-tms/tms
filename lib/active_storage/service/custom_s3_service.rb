@@ -10,7 +10,7 @@ class ActiveStorage::Service::CustomS3Service < ActiveStorage::Service::S3Servic
     return object_for(key).public_url unless Rails.env.production?
 
     uri = URI.parse(object_for(key).public_url)
-    uri.host = Rails.application.credentials.custom_s3_service.host
+    uri.host = ENV.fetch('AWS_CDN_HOST')
     uri.to_s
   end
 end

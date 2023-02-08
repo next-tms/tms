@@ -50,7 +50,7 @@ module InterstellarAPIClient
       def selenoid_credentials
         Interstellar::Credential.new(
           type: :selenoid,
-          base_url: URI.parse(Rails.application.credentials.selenoid.base_url),
+          base_url: URI.parse(ENV.fetch('SELENOID_BASE_URL')),
           browser: :chrome
         )
       end

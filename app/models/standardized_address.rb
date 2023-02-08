@@ -86,13 +86,13 @@ class StandardizedAddress < ApplicationRecord
   def commercial?
     return nil unless types
 
-    types.include? 'commercial'
+    types.include?('commercial')
   end
 
   def residential?
     return nil unless types
 
-    types.include? 'residential'
+    types.include?('residential')
   end
 
   def restaurant?
@@ -120,16 +120,16 @@ class StandardizedAddress < ApplicationRecord
       self.google_places_spot_updated_at = nil
     end
 
-    if !google_places_spot_updated_at.blank? && google_places_spot_updated_at > 3.months.ago
+    if google_places_spot_updated_at.present? && google_places_spot_updated_at > 3.months.ago
       return @google_places_spot_cached = google_places_spot_cached
     end
 
-    logger.info 'Calling Google Places API'
+    logger.info('Calling Google Places API')
 
     begin
       retries ||= 0
       result = GooglePlaces::Client
-               .new(Rails.application.credentials.google.api_key)
+               .new(ENV.fetch('GOOGLE_API_KEY'))
                .spots_by_query((names&.first.blank? ? key : "#{names&.first}, #{key}"))
               &.first
     rescue GooglePlaces::APIConnectionError
@@ -156,18 +156,18 @@ class StandardizedAddress < ApplicationRecord
       self.open_street_map_result_updated_at = nil
     end
 
-    if !open_street_map_result_updated_at.blank? && open_street_map_result_updated_at > 3.months.ago
+    if open_street_map_result_updated_at.present? && open_street_map_result_updated_at > 3.months.ago
       return @open_street_map_result_cached = open_street_map_result_cached
     end
 
-    logger.info 'Calling OpenStreetMap API'
+    logger.info('Calling OpenStreetMap API')
 
     client = OpenStreetMap::Client.new
     result = client.search(
       q: "#{key}, #{country.name}",
       format: 'json',
       addressdetails: '1',
-      accept_language: 'en'
+      accept_language: 'en',
     )&.first
 
     accurate = result.is_a?(Hash) &&
@@ -189,11 +189,11 @@ class StandardizedAddress < ApplicationRecord
       self.smarty_streets_result_updated_at = nil
     end
 
-    if !smarty_streets_result_updated_at.blank? && smarty_streets_result_updated_at > 3.months.ago
+    if smarty_streets_result_updated_at.present? && smarty_streets_result_updated_at > 3.months.ago
       return @smarty_streets_result = smarty_streets_result_cached
     end
 
-    logger.info 'Calling SmartyStreet API'
+    logger.info('Calling SmartyStreet API')
     address_data = MainStreet::AddressVerifier.new(key).result&.data
 
     # Error Response is an Arary e.g ['errors', { id: 123, message: 'ERR'} ]
@@ -220,7 +220,7 @@ class StandardizedAddress < ApplicationRecord
       self.street = smarty_streets_result['formatted_address'].split(',').first
       self.street2 = nil
     elsif smarty_streets_result['house_number'].present? && smarty_streets_result['street'].present?
-      self.street = "#{smarty_streets_result['house_number']} #{smarty_streets_result['street']}"
+      self.street = "#{smarty_streets_result["house_number"]} #{smarty_streets_result["street"]}"
       self.street2 = nil
     end
 
@@ -232,10 +232,10 @@ class StandardizedAddress < ApplicationRecord
 
   def next_types
     next_types = []
-    streets_formatted = "#{street || ''} #{street2 || ''}".downcase
+    streets_formatted = "#{street || ""} #{street2 || ""}".downcase
 
     # Removed "aero", "aviation" as they can lead to incorrect type
-    next_types << 'airport' if %w[aircraft avionic hangar].any? { |word| streets_formatted.include?(word) }
+    next_types << 'airport' if ['aircraft', 'avionic', 'hangar'].any? { |word| streets_formatted.include?(word) }
 
     yaml = YAML.load_file(File.join(Rails.root, 'config', 'postal_codes.yml'))
     military_postal_codes = yaml['MILITARY'].inject([]) { |arr, postal_code| arr << postal_code.to_s }
@@ -252,10 +252,10 @@ class StandardizedAddress < ApplicationRecord
   def types
     types = []
 
-    types = google_places_spot.types unless google_places_spot.blank?
-    unless smarty_streets_result.blank?
+    types = google_places_spot.types if google_places_spot.present?
+    if smarty_streets_result.present?
       types << smarty_streets_result.dig('metadata', 'rdi')
-      types -= %w[street_address premise]
+      types -= ['street_address', 'premise']
     end
 
     begin
@@ -264,20 +264,20 @@ class StandardizedAddress < ApplicationRecord
       types = []
     end
 
-    types = types - ['subpremise'] + ['apartment'] if types.include? %w[residential subpremise]
-    types -= %w[establishment premise]
+    types = types - ['subpremise'] + ['apartment'] if types.include?(['residential', 'subpremise'])
+    types -= ['establishment', 'premise']
 
     (next_types + types).sort.uniq
   end
 
   def set_coordinates
-    if !open_street_map_result.blank? && !open_street_map_result['lat'].blank? && !open_street_map_result['lon'].blank?
+    if open_street_map_result.present? && open_street_map_result['lat'].present? && open_street_map_result['lon'].present?
       self.latitude = open_street_map_result['lat']
       self.longitude = open_street_map_result['lon']
       return true
     end
 
-    if !google_places_spot.blank? && !google_places_spot&.lat.blank? && !google_places_spot&.lng.blank?
+    if google_places_spot.present? && google_places_spot&.lat.present? && google_places_spot&.lng.present?
       self.latitude = google_places_spot.lat
       self.longitude = google_places_spot.lng
       return true
@@ -287,13 +287,13 @@ class StandardizedAddress < ApplicationRecord
   end
 
   def time_zone
-    ActiveSupport::TimeZone.new(time_zone_name.blank? ? 'America/Los_Angeles' : time_zone_name)
+    ActiveSupport::TimeZone.new((time_zone_name.presence || 'America/Los_Angeles'))
   end
 
   # private
 
   def set_country
-    return if region.blank? || !country.blank?
+    return if region.blank? || country.present?
 
     self.country = region.country
   end

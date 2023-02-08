@@ -38,4 +38,5 @@ config/initializers/01_development_env.rb
 
 *.dump
 
+.env
 /config/credentials/*.key

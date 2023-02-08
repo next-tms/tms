@@ -6,9 +6,12 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+if ['development', 'test'].include? ENV['RAILS_ENV']
+  Dotenv::Railtie.load
+end
+
 module Liftoff
   class Application < Rails::Application
-    # Initialize configuration defaults for originally generated Rails version.
     if Rails.env.test?
       # Use development credentials in test
       # Set credentials content and key path for test env before `config.load_defaults` for it to take effect
@@ -17,14 +20,12 @@ module Liftoff
       config.credentials.key_path = Rails.root.join("config/credentials/development.key")
     end
 
-    config.load_defaults 7.0
-
     config.i18n.fallbacks = true
 
     # Postmark
     config.action_mailer.delivery_method = :postmark
 
-    config.action_mailer.postmark_settings = { api_token: Rails.application.credentials.postmark&.api_token }
+    config.action_mailer.postmark_settings = { api_token: ENV.fetch('POSTMARK_API_TOKEN') }
 
     # Sidekiq
     config.active_job.queue_adapter = :sidekiq

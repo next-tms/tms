@@ -89,5 +89,5 @@ Rails.application.configure do
   # Postmark
   config.action_mailer.delivery_method = :postmark
 
-  config.action_mailer.postmark_settings = { api_token: Rails.application.credentials.postmark&.api_token }
+  config.action_mailer.postmark_settings = { api_token: ENV.fetch('POSTMARK_API_TOKEN') }
 end

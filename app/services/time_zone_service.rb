@@ -49,7 +49,7 @@ class TimeZoneService
 
     return last_time_zone unless last_time_zone.blank?
 
-    client = GooglePlaces::Client.new(Rails.application.credentials.google.api_key)
+    client = GooglePlaces::Client.new(ENV.fetch('GOOGLE_API_KEY'))
 
     spots = client.spots_by_query("#{city}, #{region.abbreviation}, #{region.country.alpha2_code}")
 
