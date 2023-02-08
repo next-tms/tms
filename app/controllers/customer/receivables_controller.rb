@@ -6,13 +6,13 @@ class Customer::ReceivablesController < Customer::CustomerController
   before_action :require_accounts_payable
 
   def index
-    @q = current_user.broker_customer.receivables.includes(required_includes).ransack(params[:q])
+    @q = current_user.companyable.receivables.includes(required_includes).ransack(params[:q])
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
 
   def paid
-    @q = current_user.broker_customer.receivables.paid.includes(required_includes).ransack(params[:q])
+    @q = current_user.companyable.receivables.paid.includes(required_includes).ransack(params[:q])
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
@@ -22,12 +22,12 @@ class Customer::ReceivablesController < Customer::CustomerController
   private
 
   def require_accounts_payable
-    require_role 'accounts_payable'
+    require_role('accounts_payable')
   end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_receivable
-    @receivable = current_user.broker_customer.receivables.find(params[:id])
+    @receivable = current_user.companyable.receivables.find(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

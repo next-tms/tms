@@ -25,7 +25,7 @@
                 <% end %>
               </div>
             </td>
-            <td><%= humanized_money_with_symbol current_user.broker_customer.carrier_charge_calculator(carrier_cost: rate.cost, shipment: @shipment), no_cents_if_whole: false %></td>
+            <td><%= humanized_money_with_symbol current_user.companyable.carrier_charge_calculator(carrier_cost: rate.cost, shipment: @shipment), no_cents_if_whole: false %></td>
             <td><%= rate.pretty_service_type %></td>
             <td>
               <% unless rate.transit_days.blank? %>

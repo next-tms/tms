@@ -35,24 +35,24 @@ class Customer::ShipmentsController < Customer::CustomerController
   def documents; end
 
   def index
-    @pagy, @shipments = pagy(current_user.broker_customer.shipments.active.includes(default_includes).order(created_at: :desc))
+    @pagy, @shipments = pagy(current_user.companyable.shipments.active.includes(default_includes).order(created_at: :desc))
   end
 
   def new
     @shipment = Shipment.new
 
     # Needed for @shipment.broker_customer.eligible_broker_accessorials
-    @shipment.broker_customer = current_user.broker_customer
+    @shipment.broker_customer = current_user.companyable
 
     @shipment.items << Item.new
-    @shipment.shipper_address = current_user.broker_customer&.primary_pickup_address&.dup || Address.new
+    @shipment.shipper_address = current_user.companyable&.primary_pickup_address&.dup || Address.new
     @shipment.receiver_address = Address.new
 
     @shipment.shipper_contact_name = "#{current_user.first_name} #{current_user.last_name}"
-    @shipment.shipper_name = current_user.broker_customer.customer.name
+    @shipment.shipper_name = current_user.companyable.customer.name
 
-    if current_user.broker_customer.primary_pickup_address.present?
-      @shipment.shipper_address = current_user.broker_customer.primary_pickup_address.dup
+    if current_user.companyable.primary_pickup_address.present?
+      @shipment.shipper_address = current_user.companyable.primary_pickup_address.dup
     end
   end
 
@@ -60,7 +60,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment = Shipment.new
 
     # Needed for @shipment.broker_customer.eligible_broker_accessorials
-    @shipment.broker_customer = current_user.broker_customer
+    @shipment.broker_customer = current_user.companyable
 
     @shipment.items << Item.new
     @shipment.shipper_address = Address.new
@@ -70,7 +70,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def booked
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.broker_customer]).active.booked.order(:booked_at))
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.companyable]).active.booked.order(:booked_at))
   end
 
   def create
@@ -78,8 +78,8 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.created_by = current_user
     @shipment.updated_by = current_user
     @shipment.broker = current_user.broker
-    @shipment.broker_customer = current_user.broker_customer
-    @shipment.load_id = current_user.broker_customer.broker.last_load_id + 1
+    @shipment.broker_customer = current_user.companyable
+    @shipment.load_id = current_user.companyable.broker.last_load_id + 1
 
     if shipment_params[:accessorials_has_been_suggested].blank?
       @shipment.shipper_address.find_or_build_standardized_address
@@ -92,7 +92,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     if @shipment.save
       @shipment.refresh_documents!
 
-      redirect_to(quote_customer_shipment_path(@shipment)) && return if current_user.broker_customer.can_quote?
+      redirect_to(quote_customer_shipment_path(@shipment)) && return if current_user.companyable.can_quote?
 
       redirect_to([:customer, @shipment]) && return
     else
@@ -102,7 +102,7 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def delivered
     @pagy, @shipments = pagy(
-      Shipment.where(broker_customer: current_user.broker_customer).active.delivered.includes(default_includes).order(delivered_at: :desc),
+      Shipment.where(broker_customer: current_user.companyable).active.delivered.includes(default_includes).order(delivered_at: :desc),
     )
   end
 
@@ -115,7 +115,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.updated_by = current_user
 
     if shipment_params[:applied_rate_uid].present?
-      @shipment.carrier_charge = current_user.broker_customer.carrier_charge_calculator(
+      @shipment.carrier_charge = current_user.companyable.carrier_charge_calculator(
         carrier_cost: @shipment.carrier_cost, shipment: @shipment,
       )
     end
@@ -137,18 +137,18 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def pending_delivery
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.pending_delivery.order(:picked_up_at))
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.companyable).active.pending_delivery.order(:picked_up_at))
   end
 
   def pending_dispatch
     @pagy, @shipments = pagy(
-      Shipment.where(broker_customer: current_user.broker_customer).active.pending_dispatch.includes(default_includes).order(:created_at),
+      Shipment.where(broker_customer: current_user.companyable).active.pending_dispatch.includes(default_includes).order(:created_at),
     )
   end
 
   def pending_pickup
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.pending_pickup.distinct)
-    # pending_pickup = Shipment.where(broker_customer: current_user.broker_customer).active.pending_pickup.distinct
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.companyable).active.pending_pickup.distinct)
+    # pending_pickup = Shipment.where(broker_customer: current_user.companyable).active.pending_pickup.distinct
     #
     # @shipments_for_pickup_later = Shipment.none
     # @shipments_for_pickup_today = Shipment.none
@@ -174,7 +174,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def pending_quotation
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.broker_customer).active.pending_quotation.or(Shipment.where(broker_customer: current_user.broker_customer).canceled_recently).distinct.order(:created_at))
+    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.companyable).active.pending_quotation.or(Shipment.where(broker_customer: current_user.companyable).canceled_recently).distinct.order(:created_at))
   end
 
   def quote

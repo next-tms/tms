@@ -12,7 +12,7 @@
         <%= f.email_field :shipper_contact_email, label: 'Email' %>
 
         <div data-controller="address">
-          <%= render 'shipments/address_form', form: f, address_object: :shipper_address, fallback_address: current_user.broker_customer.primary_pickup_address %>
+          <%= render 'shipments/address_form', form: f, address_object: :shipper_address, fallback_address: current_user.companyable.primary_pickup_address %>
         </div>
       </div>
 
@@ -27,7 +27,7 @@
         <%= f.email_field :receiver_contact_email, label: 'Email' %>
 
         <div data-controller="address">
-          <%= render 'shipments/address_form', form: f, address_object: :receiver_address, fallback_address: current_user.broker_customer.primary_pickup_address %>
+          <%= render 'shipments/address_form', form: f, address_object: :receiver_address, fallback_address: current_user.companyable.primary_pickup_address %>
         </div>
       </div>
 
