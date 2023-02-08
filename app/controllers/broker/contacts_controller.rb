@@ -46,7 +46,7 @@ class Broker::ContactsController < Broker::BrokerController
   def contact_params
     params.require(:contact).permit(
       :id,
-      :company_sgid,
+      :companyable_sgid,
       :email,
       :first_name,
       :job_title,

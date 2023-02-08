@@ -47,7 +47,7 @@ class Broker::UsersController < Broker::BrokerController
   # Never trust parameters from the scary internet, only allow the white list through.
   def user_params
     params.require(:user).permit(
-      :company_sgid,
+      :companyable_sgid,
       :deactivated,
       :email,
       :first_name,
