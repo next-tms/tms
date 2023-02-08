@@ -208,7 +208,7 @@ class User < ApplicationRecord
   end
 
   def sales_rep_for?(broker_customer)
-    return false if broker_customer.blank?
+    return false unless broker?
 
     broker_customers.include?(broker_customer)
   end
@@ -233,7 +233,7 @@ class User < ApplicationRecord
     @role_names ||= roles.pluck(:name)
     return true if @role_names.include?('root')
 
-    return true if customer? && role_name == 'accounts_payable' && broker_customer.receivables_contact == contact
+    return true if customer? && role_name == 'accounts_payable' && companyable.receivables_contact == contact
 
     @role_names << 'broker' if broker?
     @role_names << 'customer' if customer?
@@ -254,7 +254,7 @@ class User < ApplicationRecord
   end
 
   def shipments
-    return broker_customer.shipments if customer?
+    return companyable.shipments if customer?
 
     all_shipments = roles.pluck(:name).intersect?([
                                                     'accounts_receivable',
@@ -327,7 +327,7 @@ class User < ApplicationRecord
   def set_time_zone_name
     return unless companyable.present? && time_zone_name.blank?
 
-    self.time_zone_name = companyable.is_a?(Broker) ? companyable.time_zone_name : companyable.broker.time_zone_name
+    self.time_zone_name = broker? ? companyable.time_zone_name : companyable.broker.time_zone_name
   end
 
   def update_contact
