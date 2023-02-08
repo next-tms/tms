@@ -11,13 +11,13 @@ class ContactMailer < ApplicationMailer
       document_name: 'Bill of Lading',
       shipment:,
       from_user:,
-      to_contact:
+      to_contact:,
     )
   end
 
   def broker_dispatch_sheet(from_user:, to_contact:, shipment:)
     # Prevent sending dispatch sheet to customers
-    return if to_contact.broker_customer.present?
+    return if to_contact.companyable.is_a?(BrokerCustomer)
 
     @shipment = shipment
 
@@ -26,7 +26,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Dispatch Sheet',
       shipment:,
       from_user:,
-      to_contact:
+      to_contact:,
     )
   end
 
@@ -38,7 +38,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Quote',
       shipment:,
       from_user:,
-      to_contact:
+      to_contact:,
     )
   end
 
@@ -50,7 +50,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Scanned Bill of Lading',
       shipment:,
       from_user:,
-      to_contact:
+      to_contact:,
     )
   end
 
@@ -62,10 +62,9 @@ class ContactMailer < ApplicationMailer
       document_name: 'Proof of Delivery',
       shipment:,
       from_user:,
-      to_contact:
+      to_contact:,
     )
   end
-
 
   def broker_label(from_user:, to_contact:, shipment:)
     @shipment = shipment
@@ -75,7 +74,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Label',
       shipment:,
       from_user:,
-      to_contact:
+      to_contact:,
     )
   end
 
@@ -88,7 +87,7 @@ class ContactMailer < ApplicationMailer
       document_name: @document_type,
       shipment: params[:shipment],
       from_user: params[:from_user],
-      to_contact: params[:to_contact]
+      to_contact: params[:to_contact],
     )
   end
 
@@ -96,6 +95,7 @@ class ContactMailer < ApplicationMailer
 
   def send_document(document:, document_name:, from_user:, to_contact:, shipment:)
     return unless document.attached?
+
     # Do not send email if document is not yet uploaded and prevent
     # Postmark::InvalidEmailAddressError: Zero-sized attachments not allowed.
 
@@ -124,7 +124,7 @@ class ContactMailer < ApplicationMailer
       cc:,
       reply_to: from_user.blank? ? nil : pretty_email(from_user),
       to: pretty_email(to_contact),
-      subject: subject
+      subject: subject,
     )
   end
 
