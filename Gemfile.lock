@@ -6,14 +6,6 @@ GIT
     StreetAddress (2.0.1.2)
 
 GIT
-  remote: https://github.com/brodyhoskins/mainstreet
-  revision: b8a57d132c89f872235183fdb6f16350fc2e308d
-  ref: b8a57d132c89f872235183fdb6f16350fc2e308d
-  specs:
-    mainstreet (0.2.2)
-      geocoder (>= 1.5.1)
-
-GIT
   remote: https://github.com/next-tms/interstellar
   revision: a11f245c79f7bb826b0d68aea186a809ca336531
   ref: a11f245c79f7bb826b0d68aea186a809ca336531
@@ -238,6 +230,10 @@ GEM
     diff-lcs (1.5.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    dotenv (2.8.1)
+    dotenv-rails (2.8.1)
+      dotenv (= 2.8.1)
+      railties (>= 3.2)
     drb_fileclient-reader (0.2.0)
       c32 (~> 0.3, >= 0.3.0)
     drb_fileclient-readwrite (0.1.8)
@@ -358,6 +354,8 @@ GEM
       net-imap
       net-pop
       net-smtp
+    mainstreet (0.3.0)
+      geocoder (>= 1.5.1)
     marcel (1.0.2)
     matrix (0.4.2)
     measured (2.8.2)
@@ -730,6 +728,7 @@ DEPENDENCIES
   devise (~> 4.8.0)
   devise-pwned_password (~> 0.1.9)
   devise_invitable (~> 2.0.7)
+  dotenv-rails (~> 2.8.1)
   factory_bot_rails
   faker (~> 3.1.1)
   font-awesome-sass (~> 6.2.1)
@@ -750,7 +749,7 @@ DEPENDENCIES
   jwt
   letter_opener
   listen (>= 3.0.5, < 3.9)
-  mainstreet!
+  mainstreet (~> 0.3.0)
   money-rails (~> 1.15.0)
   noticed
   open_street_map (~> 1.2.1)
