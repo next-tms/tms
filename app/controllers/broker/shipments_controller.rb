@@ -261,20 +261,18 @@ class Broker::ShipmentsController < Broker::BrokerController
   def documents; end
 
   def send_document
-    contact_ids = @shipment.broker.users.broker.pluck(:contact_id)
+    ids = @shipment.broker.contacts.ids
 
-    if @shipment&.broker_carrier&.contacts && params[:shipment_method] != 'broker_quote'
-      contact_ids += @shipment.broker_carrier.contacts.where(broker_carrier: @shipment.broker_carrier).ids
+    if params[:shipment_method] != 'broker_quote' && @shipment.broker_carrier.present?
+      ids += @shipment.broker_carrier.contacts.where(companyable: @shipment.broker_carrier).ids
     end
 
-    if @shipment&.broker_customer&.contacts && [
-                                                 'carrier_quote',
-                                                 'broker_dispatch_sheet',
-                                               ].none?(params[:shipment_method])
-      contact_ids += @shipment.broker_customer&.contacts&.where(broker_customer: @shipment&.broker_customer)&.ids
+    if ['broker_dispatch_sheet', 'carrier_quote'].none?(params[:shipment_method]) &&
+       @shipment.broker_customer.present?
+      ids += @shipment.broker_customer.contacts.where(companyable: @shipment.broker_customer).ids
     end
 
-    @contacts = Contact.distinct.where(id: contact_ids).order(:first_name)
+    @contacts = Contact.distinct.where(id: ids).order(:first_name)
 
     render(layout: 'modal')
   end
