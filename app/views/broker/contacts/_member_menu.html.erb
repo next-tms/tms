@@ -5,7 +5,11 @@
 
   <% if @contact.customer? && @contact.user.blank? %>
       <%= link_to 'Invite',
-                  new_user_invitation_path(company_id: @contact.company_id, company_type: 'BrokerCustomer', contact_id: @contact.id),
+                  new_user_invitation_path(
+                    companyable_id: @contact.companyable_id,
+                    companyable_type: 'BrokerCustomer',
+                    contact_id: @contact.id
+                  ),
                   class: 'nav-link'
       %>
   <% end %>

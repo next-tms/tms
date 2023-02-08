@@ -105,8 +105,8 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(
       :invite,
       keys: [
-              :company_id,
-              :company_type,
+              :companyable_id,
+              :companyable_type,
               :contact_id,
               :email,
               :first_name,

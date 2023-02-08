@@ -3,7 +3,7 @@
 
 <%= render 'broker/users/member_header' %>
 
-<% case params[:company_type] %>
+<% case params[:companyable_type] %>
 <% when 'Broker' %>
   <div class="alert alert-warning">
     <p class="lead">Inviting staff</p>
@@ -16,7 +16,7 @@
   </div>
 <% end %>
 
-<% if !current_user.has_role?('root') && params[:company_id].blank? %>
+<% if !current_user.has_role?('root') && params[:companyable_id].blank? %>
   <div class="alert alert-danger">
     <p class="lead">Access denied</p>
     <p>You don’t have permission to invite staff.</p>
@@ -25,8 +25,8 @@
   <div class="row">
     <div class="col col-md-8">
       <%= bootstrap_form_for(resource, as: resource_name, url: invitation_path(resource_name), data: { turbo: false }, layout: :horizontal) do |f| %>
-        <%= f.hidden_field :company_id, value: params[:company_id] %>
-        <%= f.hidden_field :company_type, value: params[:company_type] %>
+        <%= f.hidden_field :companyable_id, value: params[:companyable_id] %>
+        <%= f.hidden_field :companyable_type, value: params[:companyable_type] %>
         <%= f.hidden_field :contact_id, value: params[:contact_id] %>
 
         <% if @contact.present? %>
