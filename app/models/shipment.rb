@@ -912,7 +912,7 @@ class Shipment < ApplicationRecord
     if user.broker?
       return true if user.has_role?('dispatch') || user.has_role?('sales_rep') || user.has_role?('accounting')
     elsif user.customer?
-      return broker_customer == user.broker_customer
+      return broker_customer == user.companyable
     end
 
     false
