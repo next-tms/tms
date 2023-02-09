@@ -146,7 +146,7 @@ class User < ApplicationRecord
   has_many :broker_customer_sales_reps
   has_many :commissions
   has_many :notifications, as: :recipient
-  has_many :problems, as: :assigned_to
+  has_many :problems, foreign_key: :assigned_to_id
   has_many :shipments_as_dispatcher, class_name: 'Shipment', foreign_key: :dispatcher_id
   has_many :user_roles
 
