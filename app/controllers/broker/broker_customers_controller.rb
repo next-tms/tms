@@ -175,7 +175,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def show
     if @broker_customer.broker == current_user.broker
       @shipments = @broker_customer.shipments.order(load_id: :desc).limit(25)
-      @customer_contacts = @broker_customer.customer.customer_contacts
 
       respond_to do |format|
         format.html
