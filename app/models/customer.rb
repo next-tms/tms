@@ -21,11 +21,8 @@ class Customer < ApplicationRecord
 
   has_many :location_addresses, class_name: 'Address'
 
-  has_many :customer_contacts
-  has_many :contacts, through: :customer_contacts
-
   has_many :broker_accessorials
   accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
 
-  validates_uniqueness_of :name
+  validates :name, uniqueness: true
 end

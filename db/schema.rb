@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_03_035644) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_09_035310) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -342,15 +342,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_03_035644) do
     t.integer "un_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "customer_contacts", force: :cascade do |t|
-    t.bigint "broker_id"
-    t.bigint "customer_id"
-    t.bigint "contact_id"
-    t.index ["broker_id"], name: "index_customer_contacts_on_broker_id"
-    t.index ["contact_id"], name: "index_customer_contacts_on_contact_id"
-    t.index ["customer_id"], name: "index_customer_contacts_on_customer_id"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -1023,9 +1014,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_03_035644) do
   add_foreign_key "claims", "shipments"
   add_foreign_key "commissions", "shipments"
   add_foreign_key "commissions", "users"
-  add_foreign_key "customer_contacts", "brokers"
-  add_foreign_key "customer_contacts", "contacts"
-  add_foreign_key "customer_contacts", "customers"
   add_foreign_key "document_preferences", "broker_customers"
   add_foreign_key "document_preferences", "brokers"
   add_foreign_key "document_preferences", "contacts"

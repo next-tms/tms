@@ -17,8 +17,6 @@ RSpec.describe Customer, type: :model do
   describe 'relationships' do
     it { is_expected.to have_many(:broker_customers) }
     it { is_expected.to have_many(:brokers).through(:broker_customers) }
-    it { is_expected.to have_many(:customer_contacts) }
-    it { is_expected.to have_many(:contacts).through(:customer_contacts) }
   end
 
   describe 'validations' do
