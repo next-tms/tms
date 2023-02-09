@@ -7,8 +7,8 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
 
   def index
     @q = User
-         .where(id: current_user.broker.broker_customer_sales_reps.pluck(:user_id))
-         .includes(:broker, :broker_customer)
+         .where(id: BrokerCustomerSalesRep.all.pluck(:user_id))
+         .includes(:companyable)
          .ransack(params[:q])
     @q.sorts = 'first_name asc' if @q.sorts.blank?
 
@@ -27,7 +27,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
   private
 
   def require_admin
-    require_role 'admin'
+    require_role('admin')
   end
 
   def set_broker_customer_sales_rep
@@ -42,7 +42,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
   def required_includes
     [
       :shipment,
-      { shipment: { broker_customer: :customer } }
+      { shipment: { broker_customer: :customer } },
     ]
   end
 end
