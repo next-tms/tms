@@ -62,7 +62,7 @@ gem 'bootstrap', '~> 5.2.3'
 gem 'bootstrap_form', '~> 5.1.0'
 gem 'sassc-rails', '~> 2.1.2'
 
-gem 'font-awesome-sass', '~> 6.2.1'
+gem 'font-awesome-sass', '~> 6.3.0'
 
 gem 'aws-sdk-s3', '~> 1.119.0', group: :production
 gem 'image_processing', '~> 1.12.2'
