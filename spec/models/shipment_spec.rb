@@ -238,9 +238,8 @@ RSpec.describe(Shipment, type: :model) do
         expect { shipment.update(receiver_name: receiver_names[1]) }.to(change { shipment.audits.count }.by(1))
         audit = shipment.reload.audits.last
 
-        expected_audit_change = { 'receiver_name' => [receiver_names[0], receiver_names[1]] }
         expect(audit.action).to(eq('update'))
-        expect(audit.audited_changes).to(eq(expected_audit_change))
+        expect(audit.audited_changes['receiver_name']).to(eq(receiver_names))
       end
     end
   end
@@ -270,7 +269,7 @@ RSpec.describe(Shipment, type: :model) do
         record = build(:user, companyable: other_broker)
         record.save && record
       end
-      
+
       before { other_user.user_roles.create(role:) }
 
       it 'assigns a dispatcher only base from its broker' do

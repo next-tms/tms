@@ -4,6 +4,7 @@ on:
     branches:
       - '**'
       - '!master'
+    workflow_call:
 env:
   AWS_ACCESS_KEY_ID: fake-access-key-id-for-build-env
   AWS_BUCKET: fake-bucket-for-build-env
