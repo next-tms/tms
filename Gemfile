@@ -64,7 +64,7 @@ gem 'sassc-rails', '~> 2.1.2'
 
 gem 'font-awesome-sass', '~> 6.3.0'
 
-gem 'aws-sdk-s3', '~> 1.119.0', group: :production
+gem 'aws-sdk-s3', '~> 1.119.1', group: :production
 gem 'image_processing', '~> 1.12.2'
 
 gem 'devise', '~> 4.8.0'
