@@ -31,7 +31,11 @@
       <% next if !current_user.broker? && (!rate.preferred? || !rate.cost.positive?) %>
 
       <% if current_user.customer? %>
-        <% upcharged_rate = current_user.broker_customer.carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment) %>
+        <% upcharged_rate = current_user
+                            .companyable
+                            .carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment)
+        %>
+
         <% next if upcharged_rate.blank? || !upcharged_rate.positive? || upcharged_rate <= rate.cost %>
       <% end %>
 
