@@ -1024,7 +1024,7 @@ class Shipment < ApplicationRecord
   def validate_pro_and_tracking_carrier_pro
     return unless (pro_changed? || tracking_carrier_pro_changed?) && (broker_carrier.present? && pro.present?)
 
-    error = NotImplementedError
+    errors = ArgumentError, NotImplementedError
 
     # TODO: Call this on the Interstellar::Carrier class directly (see ITR-18)
     begin
@@ -1033,7 +1033,7 @@ class Shipment < ApplicationRecord
       if interstellar_carrier.present? && !interstellar_carrier.valid_tracking_number?(pro)
         errors.add(:base, "Pro #{pro} is invalid for #{broker_carrier.carrier.name}")
       end
-    rescue error
+    rescue *errors
     end
 
     return if tracking_carrier.blank?
