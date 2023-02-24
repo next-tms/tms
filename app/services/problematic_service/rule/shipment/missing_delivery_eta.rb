@@ -15,9 +15,5 @@ module ProblematicService
     def resolvable?
       !record.picked_up? || record.delivery_eta_on.present? || record.delivered?
     end
-
-    def roles
-      @roles ||= Role.where(name: ROLES.map(&:to_s))
-    end
   end
 end

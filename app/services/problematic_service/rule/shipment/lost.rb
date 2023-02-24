@@ -15,9 +15,5 @@ module ProblematicService
     def resolvable?
       record.lost_on.blank? || record.canceled_at.present?
     end
-
-    def roles
-      @roles ||= Role.where(name: ROLES.map(&:to_s))
-    end
   end
 end

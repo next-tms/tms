@@ -22,9 +22,9 @@ class Broker::ProblemsController < Broker::BrokerController
     @problem.created_by = current_user
 
     if @problem.save
-      redirect_to [:broker, @problem]
+      redirect_to([:broker, @problem])
     else
-      render :edit
+      render(:edit)
     end
   end
 
@@ -40,13 +40,13 @@ class Broker::ProblemsController < Broker::BrokerController
   def update
     @problem.assign_attributes(problem_params)
 
-    @problem.resolved_by = current_user if @problem.will_save_change_to_resolved_at? && !@problem.resolved_at.blank?
+    @problem.resolved_by = current_user if @problem.will_save_change_to_resolved_at? && @problem.resolved_at.present?
 
     if @problem.save
-      redirect_to broker_problem_path(@problem)
+      redirect_to(broker_problem_path(@problem))
     else
       flash[:error] = 'Unable to update exception'
-      render :edit
+      render(:edit)
     end
   end
 
@@ -81,7 +81,7 @@ class Broker::ProblemsController < Broker::BrokerController
       :resolved_at,
       :resolvable_id,
       :resolvable_type,
-      :title
+      :title,
     )
   end
 
@@ -90,6 +90,6 @@ class Broker::ProblemsController < Broker::BrokerController
   end
 
   def set_scoped_problems
-    @scoped_problems = current_user.has_role?('root') ? Problem : current_user.problems
+    @scoped_problems = Problem.by_any_role(*current_user.roles)
   end
 end

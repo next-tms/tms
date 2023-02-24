@@ -42,6 +42,23 @@
 #  fk_rails_...  (resolved_by_id => users.id)
 #
 class Problem < ApplicationRecord
+  class << self
+    def by_any_role(*roles)
+      records = none
+      ProblematicService::Rule.by_any_role(*roles).map do |problematic_rule|
+        records = records
+                  .or(
+                    where(
+                      problematic_rule_code: problematic_rule.code,
+                      resolvable_type: problematic_rule.model.name,
+                    ),
+                  )
+      end
+
+      records
+    end
+  end
+
   include HasProblematicRule
 
   after_save :update_suppressions
@@ -86,12 +103,12 @@ class Problem < ApplicationRecord
   private
 
   def update_suppressions
-    suppressions.destroy_all and return if resolved?
+    suppressions.destroy_all && return if resolved?
 
-    return unless problematic_rule.present?
+    return if problematic_rule.blank?
 
     suppressors = problematic_rule.with(problematic).suppressors
-    return unless suppressors.any?
+    return if suppressors.none?
 
     suppressions.where.not(suppressor: suppressors).destroy_all
 
@@ -101,7 +118,7 @@ class Problem < ApplicationRecord
         problem: self,
         problematic: resolvable,
         suppressible_type: suppressor.suppressible_type,
-        suppressor:
+        suppressor:,
       )
     end
   end

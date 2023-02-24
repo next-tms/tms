@@ -5,7 +5,7 @@ module ProblematicService
     ROLES = %i[dispatch root].freeze
 
     def humanized(*)
-      "Missing #{Shipment.human_attribute_name(:pickup_confirmation).downcase}"
+      "Missing #{::Shipment.human_attribute_name(:pickup_confirmation).downcase}"
     end
 
     def problematic?
@@ -19,10 +19,6 @@ module ProblematicService
         record.picked_up_at.present? ||
         record.delivered_at.present? ||
         record.canceled_at.present?
-    end
-
-    def roles
-      @roles ||= Role.where(name: ROLES.map(&:to_s))
     end
   end
 end

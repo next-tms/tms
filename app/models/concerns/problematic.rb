@@ -14,8 +14,12 @@ module Problematic
         "ProblematicService::Processor::#{name}".constantize
       end
 
+      def problematic_rules
+        problematic_processor.rules
+      end
+
       def problematic_rule_codes
-        problematic_processor.rules.map { |rule| rule.code.to_sym }
+        problematic_rules.map { |rule| rule.code.to_sym }
       end
     end
 

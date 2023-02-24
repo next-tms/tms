@@ -10,14 +10,15 @@
       <%= search_form_for(q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
 
-        <% problematic_rule_codes = if current_user.has_role?('root')
-                                      Problem.distinct.pluck(:problematic_rule_code)
-                                    else
-                                      current_user.problems.distinct.pluck(:problematic_rule_code)
-                                    end
+        <% problematic_rules = ProblematicService::Rule
+                               .by_any_role(*current_user.roles)
+                               .sort_by do |problematic_rule|
+                                 [problematic_rule.model.model_name.human, problematic_rule.code]
+                               end
         %>
+
         <%= f.select :problematic_rule_code_eq,
-                     problematic_rule_codes.sort.collect { |c| [c.humanize.downcase, c] },
+                     problematic_rules.collect { |problematic_rule| [problematic_rule.code.humanize, problematic_rule.code] },
                      { include_blank: 'Issue' },
                      class: 'form-control form-select mr-2'
         %>

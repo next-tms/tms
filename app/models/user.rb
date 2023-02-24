@@ -105,6 +105,10 @@
 #
 class User < ApplicationRecord
   class << self
+    def with_any_role(*roles)
+      joins(:user_roles).where(user_roles: { role: roles })
+    end
+
     def with_role(role_name)
       joins(:user_roles).where(user_roles: { role: Role.find_by(name: role_name) })
     end

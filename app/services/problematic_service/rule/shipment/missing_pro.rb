@@ -5,9 +5,9 @@ module ProblematicService
     ROLES = %i[dispatch].freeze
 
     def humanized(*)
-      return "Missing #{Shipment.human_attribute_name(:pro).downcase}" if record.broker_carrier.blank?
+      return "Missing #{::Shipment.human_attribute_name(:pro).downcase}" if record.broker_carrier.blank?
 
-      "Missing #{record.broker_carrier&.carrier&.name} #{Shipment.human_attribute_name(:pro).downcase}".squish
+      "Missing #{record.broker_carrier&.carrier&.name} #{::Shipment.human_attribute_name(:pro).downcase}".squish
     end
 
     def problematic?
@@ -21,10 +21,6 @@ module ProblematicService
         record.canceled_at.present? ||
         record.delivered_at.present? ||
         record.picked_up_at.blank?
-    end
-
-    def roles
-      @roles ||= Role.where(name: ROLES.map(&:to_s))
     end
   end
 end

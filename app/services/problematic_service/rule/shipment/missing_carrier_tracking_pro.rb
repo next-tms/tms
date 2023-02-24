@@ -19,9 +19,5 @@ module ProblematicService
         record.canceled_at.present? ||
         record.delivered_at.present?
     end
-
-    def roles
-      @roles ||= Role.where(name: ROLES.map(&:to_s))
-    end
   end
 end
