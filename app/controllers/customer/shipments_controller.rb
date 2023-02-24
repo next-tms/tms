@@ -220,7 +220,7 @@ class Customer::ShipmentsController < Customer::CustomerController
 
     @broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
 
-    @use_forced_freight_classes = if @shipment.forced_freight_classes.sort == @shipment.calculated_freight_classes.sort
+    @use_forced_freight_classes = if @shipment.forced_freight_classes.compact.sort == @shipment.calculated_freight_classes.compact.sort
                                     false
                                   else
                                     !@shipment.broker_customer.always_show_quotes_based_on_calculated_classes?
