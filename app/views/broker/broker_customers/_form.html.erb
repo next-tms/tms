@@ -70,7 +70,7 @@
         <% else %>
           <div class="col-auto">
             <%= f.select :receivables_contact_id,
-                         f.object.contacts.order(:first_name).all.collect { |contact| [ "#{contact.first_name} #{contact.last_name}", contact.id ] },
+                         f.object.contacts.order(:first_name).all.collect { |contact| [ contact.label, contact.id ] },
                          { label: 'Contact', hide_label: true, wrapper: false },
                          class: 'form-select' %>
           </div>
