@@ -11,7 +11,7 @@
       <% total_amount_cents = 0 %>
       <% total_percent = 0 %>
       <% commissions = if current_user.any_role?(:accounts_payable, :accounts_receivable, :dispatch)
-                         shipment.commissions.order(:name) %>
+                         shipment.commissions.order(:name)
                        else
                          current_user.commissions.where(shipment:)
                        end
