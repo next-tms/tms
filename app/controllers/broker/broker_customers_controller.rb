@@ -114,7 +114,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def profitability_report
-    unauthorized unless current_user.any_role?(accounts_payable(accounts_receivable))
+    unauthorized unless current_user.any_role?(:accounts_payable, :accounts_receivable)
 
     @broker_customers = current_user.broker.broker_customers
     @from_date = Date.current.at_beginning_of_month
