@@ -10,11 +10,13 @@
     <tbody>
       <% total_amount_cents = 0 %>
       <% total_percent = 0 %>
-      <% if current_user.has_role?('accounting') || current_user.has_role?('dispatch') %>
-        <% commissions = shipment.commissions.order(:name) %>
-      <% else %>
-        <% commissions = current_user.commissions.where(shipment: shipment) %>
-      <% end %>
+      <% commissions = if current_user.any_role?(:accounts_payable, :accounts_receivable, :dispatch)
+                         shipment.commissions.order(:name) %>
+                       else
+                         current_user.commissions.where(shipment:)
+                       end
+      %>
+
       <% commissions.find_each do |commission| %>
         <% total_amount_cents += commission.amount_cents %>
         <% total_percent += commission.percent %>

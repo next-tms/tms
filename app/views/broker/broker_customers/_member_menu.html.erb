@@ -2,16 +2,16 @@
   <%= link_to 'Overview', broker_broker_customer_path(@broker_customer), class: 'nav-link broker-customers-show' %>
   <%= link_to 'Shipments', broker_broker_customer_shipments_path(@broker_customer), class: 'nav-link broker-customers-shipments' %>
 
-  <% if current_user.has_role?('accounts_receivable') %>
+  <% if current_user.role?(:accounts_receivable) %>
     <%= link_to 'Receivables', broker_broker_customer_receivables_path(@broker_customer), class: 'nav-link broker-customers-receivables' %>
   <% end %>
 
-  <% if current_user.has_role?('root') %>
+  <% if current_user.role?(:root) %>
     <%= link_to 'Contacts & Users', contacts_broker_broker_customer_path(@broker_customer), class: 'nav-link broker-customers-contacts' %>
     <%= link_to 'Carrier-Specific Pricing', broker_carriers_broker_broker_customer_path(@broker_customer), class: 'nav-link broker-customers-broker-carriers' %>
   <% end %>
 
-  <% if current_user.has_any_roles?(%w[accounts_receivable root]) || current_user.sales_rep_for?(@broker_customer) %>
+  <% if current_user.role?(:accounts_receivable) || current_user.sales_rep_for?(@broker_customer) %>
     <%= link_to 'Preferences', edit_broker_broker_customer_path(@broker_customer), class: 'nav-link broker-customers-edit' %>
     <%= link_to 'Pricing', edit_pricing_broker_broker_customer_path(@broker_customer), class: 'nav-link broker-customers-edit-pricing' %>
   <% end %>

@@ -4,40 +4,40 @@
   </a>
 
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="brokerNavDropdown">
-    <% if current_user.has_role? 'carrier_relations' %>
+    <% if current_user.role?(:carrier_relations) %>
       <li><%= link_to 'Carriers', broker_broker_carriers_path, class: 'dropdown-item', target: '_top' %></li>
     <% end %>
-  
-    <% if current_user.has_role? 'sales_rep' %>
+
+    <% if current_user.role?(:sales_rep) %>
       <li><%= link_to 'Shipments', broker_shipments_path, class: 'dropdown-item', target: '_top' %></li>
     <% end %>
-  
-    <% if current_user.has_role?('root') || current_user.has_role?('sales_rep') %>
+
+    <% if current_user.role?(:sales_rep) %>
       <li><%= link_to 'Customers', broker_broker_customers_path, class: 'dropdown-item', target: '_top' %></li>
     <% end %>
-    
-    <% if current_user.has_role? 'admin' %>
+
+    <% if current_user.role?(:admin) %>
       <li><%= link_to 'Commissions', broker_broker_customer_sales_reps_path, class: 'dropdown-item', target: '_top' %></li>
     <% end %>
-  
-    <% if current_user.has_role? 'sales_rep' %>
+
+    <% if current_user.role?(:sales_rep) %>
       <li><%= link_to 'Commissions', commissions_broker_broker_customer_sales_rep_path(current_user), class: 'dropdown-item', target: '_top' %></li>
     <% end %>
-    
-    <% if current_user.has_role? 'root' %>
+
+    <% if current_user.role?(:root) %>
       <li><%= link_to 'Users', broker_users_path, class: 'dropdown-item', target: '_top' %></li>
     <% end %>
-  
-    <% if current_user.has_role? 'accounts_payable' or current_user.has_role? 'accounts_receivable' or current_user.has_role? 'controller' %>
-      <% if current_user.has_role? 'accounts_payable' %>
+
+    <% if current_user.any_role?(:accounts_payable, :accounts_receivable, :controller) %>
+      <% if current_user.role?(:accounts_payable) %>
         <li><%= link_to 'Payables', broker_payments_path, class: 'dropdown-item', target: '_top' %></li>
       <% end %>
-    
-      <% if current_user.has_role? 'accounts_receivable' %>
+
+      <% if current_user.role?(:accounts_receivable) %>
         <li><%= link_to 'Receivables', broker_receivables_path, class: 'dropdown-item', target: '_top' %></li>
       <% end %>
-    
-      <% if current_user.has_role? 'root' %>
+
+      <% if current_user.role?(:root) %>
         <li><%= link_to 'Accounts', broker_banks_path, class: 'dropdown-item', target: '_top' %></li>
       <% end %>
     <% end %>

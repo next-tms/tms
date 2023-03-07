@@ -138,10 +138,10 @@ class Broker::ShipmentsController < Broker::BrokerController
                         current_user.broker_customers.first
                       end
 
-    # Only root can change the dispatcher on the form, so skip this unless current_user.has_role?('root')
-    if current_user.has_role?('root')
+    # Only root can change the dispatcher on the form, so skip this unless current_user.role?(:root)
+    if current_user.role?(:root)
       @shipment.broker = current_user.broker
-      @shipment.dispatcher = if current_user.has_role?('dispatch')
+      @shipment.dispatcher = if current_user.role?(:dispatch)
                                current_user
                              else
                                @shipment.assign_dispatcher
@@ -151,7 +151,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.shipper_name = broker_customer&.customer&.name
     @shipment.broker_customer = broker_customer
     @shipment.dispatcher = @shipment.assign_dispatcher if broker_customer
-    @shipment.dispatcher = current_user if current_user.has_any_roles?(['dispatch', 'root'])
+    @shipment.dispatcher = current_user if current_user.any_role?(:dispatch)
     @shipment.shipper_address = broker_customer&.primary_pickup_address&.dup || Address.new
     @shipment.receiver_address = Address.new
 
@@ -289,7 +289,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def destroy
-    unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.has_role?('sales_rep_for_all_broker_customers')
+    unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.role?(:sales_rep_for_all_broker_customers)
       unauthorized
     end
     if current_user.broker == @shipment.broker
@@ -564,18 +564,18 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def accounting
-    if !current_user.has_role?('accounts_payable') && !current_user.has_role?('accounts_receivable') && !current_user.sales_rep_for?(@shipment.broker_customer) && !current_user.dispatcher_for?(@shipment)
-      unauthorized
-    end
+    unauthorized unless current_user.any_role?(:accounts_payable, :accounts_receivable) ||
+                        current_user.dispatcher_for?(@shipment) ||
+                        current_user.sales_rep_for?(@shipment.broker_customer)
 
     @payment_transactions_q = @shipment.payment_transactions.ransack(params[:q])
     @receivables_q = @shipment.receivables.ransack(params[:q])
   end
 
   def claims
-    if !current_user.has_role?('claims') && !current_user.has_role?('accounts_payable') && !current_user.has_role?('accounts_receivable') && !current_user.sales_rep_for?(@shipment.broker_customer) && !current_user.dispatcher_for?(@shipment)
-      unauthorized
-    end
+    unauthorized unless current_user.any_role?(:accounts_payable, :accounts_receivable, :claims) ||
+                        current_user.dispatcher_for?(@shipment) ||
+                        current_user.sales_rep_for?(@shipment.broker_customer)
 
     @q = @shipment.claims.ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -593,9 +593,9 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pricing
-    if !current_user.has_role?('accounting') && !current_user.has_role?('dispatch') && !current_user.sales_rep_for?(@shipment.broker_customer)
-      unauthorized
-    end
+    unauthorized unless current_user.any_role?(:accounts_payable, :accounts_receivable) ||
+                        current_user.dispatcher_for?(@shipment) ||
+                        current_user.sales_rep_for?(@shipment.broker_customer)
 
     @total_charges_updated_by = @shipment.whodunnit('total_charges_cents')
   end
@@ -619,13 +619,13 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def transit
-    return if current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
+    return if current_user.role?(:dispatch) || current_user.sales_rep_for?(@shipment.broker_customer)
 
     unauthorized && return
   end
 
   def transit_edit
-    return if current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer)
+    return if current_user.role?(:dispatch) || current_user.sales_rep_for?(@shipment.broker_customer)
 
     unauthorized && return
   end

@@ -32,17 +32,30 @@
 #  index_contacts_on_companyable  (companyable_type,companyable_id)
 #
 class Contact < ApplicationRecord
+  class << self
+    def with_any_role(*roles)
+      joins(:contact_roles).where(contact_roles: { role: roles })
+    end
+
+    def with_role(role)
+      joins(:contact_roles).where(contact_roles: { role: })
+    end
+  end
+
   include HasCompanyable
 
+  has_many :contact_roles, dependent: :destroy
   has_many :document_preferences, dependent: :destroy
 
   has_one :broker_customer_as_receivables_contact,
           class_name: 'BrokerCustomer',
-                                                             dependent: :restrict_with_error,
-                                                             foreign_key: :receivables_contact_id,
-                                                             inverse_of: :receivables_contact
+          dependent: :restrict_with_error,
+          foreign_key: :receivables_contact_id,
+          inverse_of: :receivables_contact
 
   has_one :user, dependent: :restrict_with_error
+
+  accepts_nested_attributes_for :contact_roles, allow_destroy: true, reject_if: :all_blank
 
   phony_normalize :mobile_phone, default_country_code: 'US'
   phony_normalize :work_phone, default_country_code: 'US'
@@ -54,6 +67,16 @@ class Contact < ApplicationRecord
   validate :validate_email
   validate :validate_first_name_and_last_name
 
+  def any_role?(*any_roles)
+    return true if roles.any?(:root)
+
+    roles.intersect?(any_roles)
+  end
+
+  def dispatcher?
+    role?(:dispatcher)
+  end
+
   # @return [String, nil]
   def full_name
     return nil if [first_name, last_name].all?(&:blank?)
@@ -64,6 +87,35 @@ class Contact < ApplicationRecord
   # @return [String]
   def label
     [full_name, super, job_title].compact_blank&.first || ''
+  end
+
+  # @param role [Symbol]
+  # @return role [Symbol]
+  def add_role(role)
+    unless ContactRole.roles.keys.map(&:to_sym).include?(role)
+      raise ArgumentError, "role must be one of #{ContactRole.roles.keys.join(", ")} (Symbol)"
+    end
+
+    return role if role?(role)
+
+    method = new_record? ? :build : :create!
+    contact_roles.public_send(method, role:)
+
+    role
+  end
+
+  # @param role [String, Symbol] Role to check
+  # @return [Boolean]
+  def role?(role)
+    return true if roles.any?(:root)
+
+    return true if customer? && role == 'accounts_payable' && companyable.receivables_contact == contact
+
+    (roles + %i[broker customer]).include?(role.to_sym)
+  end
+
+  def roles
+    contact_roles.pluck(:role).map(&:to_sym)
   end
 
   private

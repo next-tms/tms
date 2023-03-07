@@ -17,7 +17,7 @@
             <th><%= sort_link q, :email, 'Email' %></th>
             <th class="text-nowrap"><%= sort_link q, :invitation_accepted_at, 'Invitation Accepted' %></th>
             <th class="text-nowrap"><%= sort_link q, :last_sign_in_at, 'Last Sign In' %></th>
-            <% if current_user.has_role?('root') %>
+            <% if current_user.role?(:root) %>
               <th></th>
             <% end %>
           </tr>
@@ -40,7 +40,7 @@
               <td class="text-nowrap">
                 <%= pretty_date(user.last_sign_in_at, current_user.time_zone) || 'Never' %>
               </td>
-              <% if current_user.has_role?('root') %>
+              <% if current_user.role?(:root) %>
                 <td>
                   <% if user.customer? && !user.deactivated? %>
                     <%= link_to 'Impersonate',

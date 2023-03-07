@@ -73,7 +73,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def index
-    @q = if current_user.has_any_roles?(['accounts_recevable', 'dispatch', 'root'])
+    @q = if current_user.any_role?(:accounts_recevable, :dispatch)
            current_user.broker_customers.includes(required_includes).ransack(params[:q])
          else
            current_user.broker.broker_customers.includes(required_includes).ransack(params[:q])
@@ -114,7 +114,8 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def profitability_report
-    unauthorized unless current_user.has_role?('accounting')
+    unauthorized unless current_user.any_role?(accounts_payable(accounts_receivable))
+
     @broker_customers = current_user.broker.broker_customers
     @from_date = Date.current.at_beginning_of_month
     @to_date = Date.current
@@ -128,7 +129,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def quickbooks
     unauthorized && return unless current_user.broker? &&
                                   current_user.broker.intuit_account.present? &&
-                                  (current_user.has_role?('root') || current_user.has_role?('accounts_receivable'))
+                                  current_user.role?(:accounts_receivable)
 
     @broker_customers = current_user
                         .broker
@@ -143,7 +144,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def receivables
-    unauthorized unless current_user.has_role?('accounts_receivable')
+    unauthorized unless current_user.role?(:accounts_receivable)
 
     @q = @broker_customer
          .receivables
@@ -190,7 +191,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def update_quickbooks
     unauthorized && return unless current_user.broker? &&
                                   current_user.broker.intuit_account.present? &&
-                                  (current_user.has_role?('root') || current_user.has_role?('accounts_receivable'))
+                                  current_user.role?(:accounts_receivable)
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
@@ -226,17 +227,17 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   private
 
   def allow_sales_rep_or_accounts_receivable!
-    unauthorized if not_sales_rep_for_all_and_broker_customer? && !current_user.has_role?('accounts_receivable')
+    unauthorized if not_sales_rep_for_all_and_broker_customer? && !current_user.role?(:accounts_receivable)
   end
 
   def not_sales_rep_for_all_and_broker_customer?
-    !current_user.sales_rep_for?(@broker_customer) && !current_user.has_role?('sales_rep_for_all_broker_customers')
+    !current_user.sales_rep_for?(@broker_customer) && !current_user.role?(:sales_rep_for_all_broker_customers)
   end
 
   def validate_user_role!
-    return if current_user.has_role?('root') ||
+    return if current_user.role?(:root) ||
               (ALLOWED_ACCESS_FOR_DISPATCHER.include?(action_name) && current_user.dispatcher_only?) ||
-              (ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE.include?(action_name) && current_user.has_role?('accounts_receivable'))
+              (ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE.include?(action_name) && current_user.role?(:accounts_receivable))
 
     unauthorized if not_sales_rep_for_all_and_broker_customer?
   end

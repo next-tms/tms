@@ -5,7 +5,7 @@
     <%= link_to 'Edit', edit_broker_payment_path(@payment), class: 'nav-link payments-edit' %>
   <% end %>
 
-  <% if current_user.has_role?('accounts_payable') %>
+  <% if current_user.role?(:accounts_payable) %>
     <% unless @payment.approved_at.blank? %>
       <%= link_to icon('solid', 'thumbs-up', 'Approve'),
                   broker_payment_path(@payment, payment: { approved_by_id: current_user.id }),

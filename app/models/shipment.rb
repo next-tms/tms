@@ -907,15 +907,9 @@ class Shipment < ApplicationRecord
   end
 
   def accessible_by?(user)
-    return false unless user.is_a?(User)
-
-    if user.broker?
-      return true if user.has_role?('dispatch') || user.has_role?('sales_rep') || user.has_role?('accounting')
-    elsif user.customer?
-      return broker_customer == user.companyable
-    end
-
-    false
+    (user.broker? && user.any_role?(:accounts_payable, :accounts_receivable, :dispatch)) ||
+      (user.broker? && broker_customer.sales_reps.any?(user)) ||
+      (user.customer? && broker_customer == user.broker_customer)
   end
 
   # Dispatcher

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_23_070702) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -319,6 +319,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_23_070702) do
     t.bigint "user_id", null: false
     t.index ["shipment_id"], name: "index_commissions_on_shipment_id"
     t.index ["user_id"], name: "index_commissions_on_user_id"
+  end
+
+  create_table "contact_roles", force: :cascade do |t|
+    t.bigint "contact_id", null: false
+    t.string "role", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id", "role"], name: "index_contact_roles_on_contact_id_and_role", unique: true
+    t.index ["contact_id"], name: "index_contact_roles_on_contact_id"
+    t.index ["role"], name: "index_contact_roles_on_role"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -650,12 +660,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_23_070702) do
     t.index ["name"], name: "index_regions_on_name"
   end
 
-  create_table "roles", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "sessions", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
@@ -903,15 +907,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_23_070702) do
     t.index ["packaging_id"], name: "index_upcharge_rules_on_packaging_id"
   end
 
-  create_table "user_roles", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "role_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["role_id"], name: "index_user_roles_on_role_id"
-    t.index ["user_id"], name: "index_user_roles_on_user_id"
-  end
-
   create_table "users", id: :serial, force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -1014,6 +1009,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_23_070702) do
   add_foreign_key "claims", "shipments"
   add_foreign_key "commissions", "shipments"
   add_foreign_key "commissions", "users"
+  add_foreign_key "contact_roles", "contacts"
   add_foreign_key "document_preferences", "broker_customers"
   add_foreign_key "document_preferences", "brokers"
   add_foreign_key "document_preferences", "contacts"
@@ -1086,8 +1082,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_23_070702) do
   add_foreign_key "tracking_events", "users"
   add_foreign_key "upcharge_rules", "broker_customers"
   add_foreign_key "upcharge_rules", "packagings"
-  add_foreign_key "user_roles", "roles"
-  add_foreign_key "user_roles", "users"
   add_foreign_key "users", "contacts"
   add_foreign_key "users", "users", column: "invited_by_id"
   add_foreign_key "websites", "brokers"

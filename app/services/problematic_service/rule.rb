@@ -18,9 +18,16 @@ module ProblematicService
       end
 
       def by_any_role(*roles)
-        raise ArgumentError, 'roles must all be `Role`s' unless roles.all? { |role| role.is_a?(::Role) }
+        raise ArgumentError, 'roles must all be Symbol' unless roles.all? { |role| role.is_a?(Symbol) }
 
-        all.select { |rule| rule.roles.ids.intersect?(roles.map(&:id)) }
+        contact_roles = ContactRole.roles.keys.map(&:to_sym)
+        roles.each do |role|
+          next if contact_roles.include?(role)
+
+          raise ArgumentError, "Role must be one of #{contact_roles.keys.join(", ")}"
+        end
+
+        all.select { |rule| rule.roles.intersect?(roles) }
       end
 
       def code
@@ -36,7 +43,7 @@ module ProblematicService
       end
 
       def roles
-        ::Role.where(name: self::ROLES.map(&:to_s))
+        self::ROLES
       end
     end
 

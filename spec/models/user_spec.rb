@@ -109,10 +109,8 @@ RSpec.describe(User, type: :model) do
   it_behaves_like 'has_companyable'
 
   describe 'relationships' do
-    it { is_expected.to(have_many(:user_roles)) }
     it { is_expected.to(have_many(:commissions)) }
     it { is_expected.to(have_many(:problems)) }
-    it { is_expected.to(have_many(:roles).through(:user_roles)) }
 
     it { is_expected.to(belong_to(:contact)) }
   end
@@ -130,7 +128,7 @@ RSpec.describe(User, type: :model) do
   describe '#dispatcher_for?' do
     let(:user) do
       record = build(:user, companyable: create(:broker))
-      record.save && record
+      record.save! && record
     end
     let(:shipment) { create(:shipment) }
 
@@ -139,13 +137,13 @@ RSpec.describe(User, type: :model) do
     end
 
     context 'when user is the shipments dispatcher' do
-      before { shipment.update(dispatcher: user) }
+      before { shipment.update!(dispatcher: user) }
 
       it { expect(user).to(be_dispatcher_for(shipment)) }
     end
 
     context 'when user is not shipments dispatcher but has a dispatch role' do
-      before { user.user_roles.create(role: create(:role, name: 'dispatch')) }
+      before { user.contact.contact_roles.create!(role: :dispatch) }
 
       it { expect(user).to(be_dispatcher_for(shipment)) }
     end

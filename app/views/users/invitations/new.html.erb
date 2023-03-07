@@ -16,7 +16,7 @@
   </div>
 <% end %>
 
-<% if !current_user.has_role?('root') && params[:companyable_id].blank? %>
+<% unless params[:broker_customer_id].present? || current_user.role?(:root) %>
   <div class="alert alert-danger">
     <p class="lead">Access denied</p>
     <p>You don’t have permission to invite staff.</p>

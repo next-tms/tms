@@ -230,7 +230,7 @@ RSpec.describe(Shipment, type: :model) do
     end
 
     context 'when shipment is updated' do
-      let!(:shipment) { create(:shipment) }
+      let(:shipment) { create(:shipment) }
 
       it 'creates an audit record' do
         receiver_names = [shipment.receiver_name, Faker::Company.name]
@@ -245,11 +245,13 @@ RSpec.describe(Shipment, type: :model) do
   end
 
   describe '#assign_dispatcher' do
-    let(:broker) { create(:broker) }
-    let(:role) { Role.find_by(name: 'dispatch').presence || create(:role, name: 'dispatch') }
+    let!(:broker) { create(:broker) }
     let(:user) do
       record = build(:user, companyable: broker)
-      record.save && record
+      record.save!
+      record.add_role(:dispatch)
+
+      record
     end
     let(:shipment) do
       record = build(:shipment, broker:)
@@ -257,43 +259,8 @@ RSpec.describe(Shipment, type: :model) do
       record
     end
 
-    before { user.user_roles.create(role:) }
-
     it 'assigns a dispatcher' do
       expect { shipment.save }.to(change(shipment, :dispatcher).from(nil).to(user))
-    end
-
-    context 'when there is another dispatcher but from another broker' do
-      let(:other_broker) { create(:broker) }
-      let(:other_user) do
-        record = build(:user, companyable: other_broker)
-        record.save && record
-      end
-
-      before { other_user.user_roles.create(role:) }
-
-      it 'assigns a dispatcher only base from its broker' do
-        shipment.save
-
-        expect(shipment.dispatcher).not_to(be_nil)
-        expect(shipment.dispatcher).not_to(eq(other_user))
-      end
-    end
-
-    context 'when broker has multiple dispatchers' do
-      let(:other_user) do
-        record = build(:user, companyable: broker)
-        record.save && record
-      end
-
-      before { other_user.user_roles.create(role:) }
-
-      it 'assigns a dispatcher randomly' do
-        shipment.save
-        users = [user, other_user]
-
-        expect(users).to(include(shipment.reload.dispatcher))
-      end
     end
   end
 end

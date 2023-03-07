@@ -1,7 +1,7 @@
 <nav class="nav border-top pt-4 mb-0">
   <%= link_to 'Overview', broker_receivable_path(@receivable), class: 'nav-link receivables-show' %>
 
-  <% if current_user.has_role?('accounts_receivable') %>
+  <% if current_user.role?(:accounts_receivable) %>
     <% if @receivable.authorized_at.blank? %>
       <%= link_to icon('solid', 'thumbs-up', 'Approve'),
                   broker_receivable_path(@receivable, receivable: { authorized_at: DateTime.current }),

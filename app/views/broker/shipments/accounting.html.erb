@@ -3,7 +3,7 @@
 <%= render 'member_header' %>
 <h2>Accounting</h2>
 
-<% if current_user.has_role?('accounts_payable') || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) %>
+<% if current_user.role?(:accounts_payable) || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) %>
   <p class="col-title">Payments</p>
   <% unless @shipment.payments.blank? %>
     <%= render 'show_many_payment_transactions', payment_transactions: @shipment.payment_transactions, link_to_payment: true, q: @payment_transactions_q %>
@@ -12,7 +12,7 @@
   <% end %>
 <% end %>
 
-<% if current_user.has_role?('accounts_payable') || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) || current_user == @shipment.dispatcher %>
+<% if current_user.role?(:accounts_payable) || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) || current_user == @shipment.dispatcher %>
   <p class="col-title">Receivables</p>
   <% unless @shipment.receivables.blank? %>
     <%= render 'broker/receivables/show_many', receivables: @shipment.receivables, q: @receivables_q %>

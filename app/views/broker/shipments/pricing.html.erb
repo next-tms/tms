@@ -35,7 +35,7 @@
   <% end %>
 <% end %>
 
-<% if @shipment.receivables.blank? || current_user.has_role?('accounts_receivable') %>
+<% if @shipment.receivables.blank? || current_user.role?(:accounts_receivable) %>
   <%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment)) do |f| %>
     <p class="col-title"><%= @shipment.broker_carrier.blank? ? 'Carrier' : @shipment.broker_carrier.carrier.name %></p>
     <div class="row gy-2 gx-3 align-items-center mb-4">

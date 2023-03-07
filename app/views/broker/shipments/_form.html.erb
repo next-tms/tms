@@ -12,9 +12,9 @@
     </div>
   <% end %>
 
-  <% if current_user.has_role?('root') || current_user.sales_rep_for?(@shipment.broker_customer) %>
+  <% if current_user.role?(:root) || current_user.sales_rep_for?(@shipment.broker_customer) %>
     <% dispatcher_ids = current_user.broker.users.active.dispatchers.ids %>
-    <% dispatcher_ids << current_user.id if current_user.has_role?('root') %>
+    <% dispatcher_ids << current_user.id if current_user.role?(:root) %>
     <% dispatcher_ids << @shipment.dispatcher_id unless dispatcher_ids.include?(@shipment.dispatcher_id) %>
 
     <%= f.select :dispatcher_id,

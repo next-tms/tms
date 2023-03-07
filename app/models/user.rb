@@ -106,27 +106,15 @@
 class User < ApplicationRecord
   class << self
     def with_any_role(*roles)
-      joins(:user_roles).where(user_roles: { role: roles })
+      joins(:contact).where(contact: Contact.with_any_role(*roles))
     end
 
-    def with_role(role_name)
-      joins(:user_roles).where(user_roles: { role: Role.find_by(name: role_name) })
+    def with_role(role)
+      joins(:contact).where(contact: Contact.with_role(role))
     end
   end
 
   include HasCompanyable
-
-  scope :active, -> { where.not(deactivated: true) }
-  scope :dispatchers, -> { broker.where(id: Role.find_by(name: 'dispatch')&.users&.collect(&:id)) }
-
-  devise :database_authenticatable,
-         :invitable,
-         :pwned_password,
-         :recoverable,
-         :rememberable,
-         :timeoutable,
-         :trackable,
-         :validatable
 
   after_save :reassign_problems
   after_save :reassign_shipments
@@ -137,6 +125,8 @@ class User < ApplicationRecord
   before_validation :set_time_zone_name
 
   belongs_to :contact
+
+  delegate :add_role, :any_role?, :dispatcher?, :role, :role?, :roles, to: :contact
 
   devise :database_authenticatable,
          :invitable,
@@ -155,11 +145,14 @@ class User < ApplicationRecord
   has_many :user_roles
 
   has_many :broker_customers, through: :broker_customer_sales_reps
-  has_many :roles, through: :user_roles
+
+  # Deprecated, do not use
+  has_many :user_roles
 
   phony_normalize :phone, default_country_code: 'US'
 
   scope :active, -> { where.not(deactivated: true) }
+  scope :dispatchers, -> { broker.with_role(:dispatch) }
 
   validates :time_zone_name, presence: true
 
@@ -191,15 +184,13 @@ class User < ApplicationRecord
   def broker_customers
     return BrokerCustomer.none unless broker?
 
-    return companyable.broker_customers if has_any_roles?(['dispatch', 'sales_rep_for_all_broker_customers'])
+    return companyable.broker_customers if any_role?(:dispatch, :sales_rep_for_all_broker_customers)
 
     super
   end
 
   def dispatcher_only?
-    return false if has_role?('root')
-
-    roles.count == 1 && has_role?('dispatch')
+    roles == %i[dispatch]
   end
 
   def dispatcher_for?(shipment)
@@ -207,7 +198,7 @@ class User < ApplicationRecord
 
     return true if shipment.dispatcher == self
 
-    has_role?('dispatch')
+    role?(:dispatch)
     # shipments_as_dispatcher.include?(shipment)
   end
 
@@ -229,29 +220,10 @@ class User < ApplicationRecord
     commissions.where(shipment: shipments.where(delivered_at: from..to))
   end
 
-  def has_any_roles?(role_arr)
-    role_arr.map(&method(:has_role?)).any?(true)
-  end
-
-  def has_role?(role_name)
-    @role_names ||= roles.pluck(:name)
-    return true if @role_names.include?('root')
-
-    return true if customer? && role_name == 'accounts_payable' && companyable.receivables_contact == contact
-
-    @role_names << 'broker' if broker?
-    @role_names << 'customer' if customer?
-    @role_names.include?(role_name)
-  end
-
-  def dispatcher?
-    roles.where(name: 'dispatch').exists?
-  end
-
   def coworkers
     return nil unless broker?
 
-    return companyable.users if has_role?('root')
+    return companyable.users if role?(:root)
 
     scope = roles - [Role.find_by(name: 'sales_rep')]
     User.where(id: UserRole.where(role: scope).where(user: companyable.users).pluck(:user_id))
@@ -260,12 +232,12 @@ class User < ApplicationRecord
   def shipments
     return companyable.shipments if customer?
 
-    all_shipments = roles.pluck(:name).intersect?([
-                                                    'accounts_receivable',
-                                                    'dispatch',
-                                                    'root',
-                                                    'sales_rep_for_all_broker_customers',
-                                                  ])
+    all_shipments = any_role?(
+      :accounts_receivable,
+      :dispatch,
+      :root,
+      :sales_rep_for_all_broker_customers,
+    )
     return companyable.shipments if !sales_rep_only? && all_shipments
 
     broker_customer_ids = sales_rep_for_broker_customers&.ids
@@ -276,8 +248,7 @@ class User < ApplicationRecord
   end
 
   def sales_rep_only?
-    @role_names ||= roles.pluck(:name)
-    @role_names == ['sales_rep']
+    roles == %i[sales_rep]
   end
 
   def enable_notifications

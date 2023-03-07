@@ -264,10 +264,10 @@ FactoryBot.define do
     value_currency { Faker::Currency.code }
 
     after(:build) do |record|
-      role = Role.find_by(name: 'dispatcher').presence || create(:role, name: 'dispatcher')
-
       user = build(:user, companyable: record.broker)
-      user.roles << role
+      user.contact = build(:contact, companyable: record.broker)
+      user.contact.add_role(:dispatch)
+
       record.dispatcher = user
     end
 

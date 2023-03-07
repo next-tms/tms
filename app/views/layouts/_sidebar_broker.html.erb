@@ -1,14 +1,14 @@
 <aside class="col col-md-2 p-4">
-  <ul class="list-unstyled mt-4">
-    <% if current_user.has_role?('root') || current_user.problems.any? %>
+  <% if current_user.role?(:root) || Problem.by_any_role(*current_user.roles).any? %>
+    <ul class="list-unstyled mt-4">
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'table-list', 'Tasks'), unresolved_broker_problems_path, class: 'problems' %>
       </li>
-    <% end %>
-  </ul>
+    </ul>
+  <% end %>
 
   <ul class="list-unstyled mt-4">
-    <% if (%w[accounts_receivable dispatch root sales_rep] & current_user.roles.pluck(:name)).any? %>
+    <% if current_user.any_role?(:accounts_receivable, :dispatch, :sales_rep) %>
 
       <% path = current_user.dispatcher? ? broker_shipments_as_dispatcher_path : broker_shipments_path %>
       <li class="mb-2 p-2">
@@ -16,13 +16,13 @@
       </li>
     <% end %>
 
-    <% if current_user.has_any_roles?(['accounts_payable', 'carrier_relations', 'dispatch', 'root']) %>
+    <% if current_user.any_role?(:accounts_payable, :carrier_relations, :dispatch) %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'truck-moving', 'Carriers'), broker_broker_carriers_path, class: 'broker-carriers' %>
       </li>
     <% end %>
 
-    <% if current_user.has_any_roles?(['accounts_receivable', 'dispatch', 'root', 'sales_rep']) %>
+    <% if current_user.any_role?(:accounts_receivable, :dispatch, :sales_rep) %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'handshake', 'Customers'), broker_broker_customers_path, class: 'broker-customers' %>
       </li>
@@ -30,7 +30,7 @@
   </ul>
 
   <ul class="list-unstyled mt-4">
-    <% if current_user.has_role?('claims') || current_user.has_role?('accounts_payable') || current_user.has_role?('accounts_receivable') || current_user.has_role?('root') %>
+    <% if current_user.any_role?(:accounts_payable, :accounts_receivable, :claims) %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'circle-exclamation', 'Claims'), unpaid_broker_claims_path, class: 'claims-unpaid' %>
       </li>
@@ -38,18 +38,18 @@
   </ul>
 
   <ul class="list-unstyled mt-4">
-    <% if current_user.has_role?('admin') %>
+    <% if current_user.role?(:admin) %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'sack-dollar', 'Commissions'), broker_broker_customer_sales_reps_path, class: 'broker-customer-sales-reps' %>
       </li>
-    <% elsif current_user.has_role? 'sales_rep' %>
+    <% elsif current_user.role?(:sales_rep) %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'sack-dollar', 'Commissions'), broker_broker_customer_sales_rep_path(current_user), class: 'broker-customer-sales-reps' %>
       </li>
     <% end %>
 
-    <% if current_user.has_role? 'accounts_payable' or current_user.has_role? 'accounts_receivable' or current_user.has_role? 'controller' %>
-      <% if current_user.has_role? 'accounts_payable' %>
+    <% if current_user.any_role?(:accounts_payable, :accounts_receivable, :controller) %>
+      <% if current_user.role?(:accounts_payable) %>
         <li class="mb-2 p-2">
           <%= link_to icon('solid', 'money-bills', 'Bills'), due_broker_payment_transactions_path, class: 'payment-transactions' %>
         </li>
@@ -59,7 +59,7 @@
         </li>
       <% end %>
 
-      <% if current_user.has_role? 'accounts_receivable' %>
+      <% if current_user.role?(:accounts_receivable) %>
         <li class="mb-2 p-2">
           <%= link_to icon('solid', 'hand-holding-usd', 'Receivables'), broker_receivables_path, class: 'receivables' %>
         </li>
@@ -68,13 +68,11 @@
   </ul>
 
   <ul class="list-unstyled mt-4">
-    <% if current_user.has_role? 'root' %>
+    <% if current_user.role?(:root) %>
       <li class="mb-2 p-2">
         <%= link_to icon('solid', 'university', 'Banks'), broker_banks_path, class: 'banks' %>
       </li>
-    <% end %>
 
-    <% if current_user.has_role? 'root' %>
       <li class="mb-2 p-2"><%= link_to icon('solid', 'users', 'Users'), broker_users_path, class: 'users' %></li>
     <% end %>
   </ul>

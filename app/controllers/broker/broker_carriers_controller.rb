@@ -62,7 +62,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def quickbooks
     unauthorized && return unless current_user.broker? &&
                                   current_user.broker.intuit_account.present? &&
-                                  (current_user.has_role?('root') || current_user.has_role?('accounts_payable'))
+                                  current_user.any_role?(:accounts_payable)
 
     @broker_carriers = current_user
                        .broker
@@ -79,7 +79,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def update_quickbooks
     unauthorized && return unless current_user.broker? &&
                                   current_user.broker.intuit_account.present? &&
-                                  (current_user.has_role?('root') || current_user.has_role?('accounts_payable'))
+                                  current_user.any_role?(:accounts_payable)
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)

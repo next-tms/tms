@@ -15,10 +15,10 @@ class Broker::BanksController < Broker::BrokerController
            :payment_transactions,
            {
              broker_carrier: [
-               :carrier,
-               { broker_customer: :customer }
-             ]
-           }
+                               :carrier,
+                               { broker_customer: :customer },
+                             ]
+           },
          )
          .ransack(params[:q])
     @q.sorts = 'paid_on DESC' if @q.sorts.blank?
@@ -28,9 +28,9 @@ class Broker::BanksController < Broker::BrokerController
       format.html
       format.csv do
         csv = ''.dup
-        csv += "#{@payments.first.export_headers.join(',')}\n"
+        csv += "#{@payments.first.export_headers.join(",")}\n"
         csv += @payments.inject(''.dup) { |str, p| str << p.to_csv(false) }
-        send_data csv, filename: "#{@bank.pretty_name} Activity.csv"
+        send_data(csv, filename: "#{@bank.pretty_name} Activity.csv")
       end
     end
   end
@@ -39,9 +39,9 @@ class Broker::BanksController < Broker::BrokerController
     @bank = Bank.new(bank_params)
     @bank.broker = current_user.broker
     if @bank.save
-      redirect_to [:broker, @bank]
+      redirect_to([:broker, @bank])
     else
-      render :new
+      render(:new)
     end
   end
 
@@ -59,22 +59,22 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def show
-    render file: 'public/401', layout: false, status: :unauthorized unless @bank.broker == current_user.broker
+    render(file: 'public/401', layout: false, status: :unauthorized) unless @bank.broker == current_user.broker
   end
 
   def update
     @bank.assign_attributes(bank_params)
 
-    redirect_to broker_banks_path and return if @bank.save
+    redirect_to(broker_banks_path) && return if @bank.save
 
     flash[:danger] = 'Unable to update bank'
-    render :edit
+    render(:edit)
   end
 
   def quickbooks
-    unauthorized and return unless current_user.broker? &&
-                                   current_user.broker.intuit_account.present? &&
-                                   current_user.has_role?('root')
+    unauthorized && return unless current_user.broker? &&
+                                  current_user.broker.intuit_account.present? &&
+                                  current_user.role?(:root)
 
     @banks = current_user
              .broker
@@ -88,16 +88,16 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def update_quickbooks
-    unauthorized and return unless current_user.broker? &&
-                                   current_user.broker.intuit_account.present? &&
-                                   current_user.has_role?('root')
+    unauthorized && return unless current_user.broker? &&
+                                  current_user.broker.intuit_account.present? &&
+                                  current_user.role?(:root)
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
 
     if broker.save
       flash[:success] = 'QuickBooks accounts updated'
-      redirect_to quickbooks_broker_banks_path and return
+      redirect_to(quickbooks_broker_banks_path) && return
     end
 
     @accounts = QuickbooksAPIClient::Accounts
@@ -105,7 +105,7 @@ class Broker::BanksController < Broker::BrokerController
                 .find_all
                 .sort_by(&:name)
 
-    render :quickbooks
+    render(:quickbooks)
   end
 
   private
@@ -116,7 +116,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def require_accounts_payable
-    require_role 'accounts_payable'
+    require_role('accounts_payable')
   end
 
   # Use callbacks to share common setup or constraints between actions.
@@ -130,14 +130,14 @@ class Broker::BanksController < Broker::BrokerController
       :id,
       :account_number,
       :name,
-      :quickbooks_account_id
+      :quickbooks_account_id,
     )
   end
 
   def broker_params
     params.require(:broker).permit(
       :id,
-      banks_attributes: %i[id kind quickbooks_account_id]
+      banks_attributes: %i[id kind quickbooks_account_id],
     )
   end
 end

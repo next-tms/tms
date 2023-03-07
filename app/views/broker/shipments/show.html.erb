@@ -6,11 +6,9 @@
 
 <%= render 'member_header' %>
 
-<% if (current_user.has_role?('dispatcher') ||
-       current_user.has_role?('root') ||
-       current_user.sales_rep_for?(@shipment.broker_customer)
-      ) &&
-      @shipment.dispatcher != current_user && @shipment.picked_up_at.blank?
+<% if (current_user.role?(:dispatcher) || current_user.sales_rep_for?(@shipment.broker_customer)) &&
+      @shipment.dispatcher != current_user &&
+      @shipment.picked_up_at.blank?
 %>
   <div class="alert alert-warning">
     <p class="lead">You’re not the dispatcher</p>
@@ -266,8 +264,7 @@
   </div>
 
   <div class="col-sm-6">
-    <% if current_user.has_role?('dispatch') ||
-          current_user.has_role?('accounting') ||
+    <% if current_user.any_role?(:accounts_payable, :accounts_receivable, :dispatch) ||
           (@shipment.broker_customer.present? && @shipment.broker_customer.sales_reps.include?(current_user))
     %>
       <%= render 'pricing', shipment: @shipment %>
@@ -357,12 +354,12 @@
 <%= simple_format @shipment.bol_notes %>
 
 <% if false %>
-<% if current_user.has_role? 'accounts_receivable' or current_user.has_role? 'quoting' %>
+<% if current_user.any_role?(:accounts_receivable, :quoting) %>
   <h2>Easy Copy & Paste</h2>
 
   <div class="row">
 
-    <% if current_user.has_role? 'quoting' %>
+    <% if current_user.role?(:quoting) %>
       <div class="col-sm-4">
         <p class="col-title">For Quoting</p>
 <textarea class="form-control" data-action="click->clipboard#copy" data-controller="clipboard" rows="4" readonly>
@@ -386,7 +383,7 @@ Destination: <%= @shipment.receiver_address.city %>, <%= @shipment.receiver_addr
       </div>
     <% end %>
 
-    <% if current_user.has_role? 'accounts_receivable' %>
+    <% if current_user.role?(:accounts_receivable) %>
       <div class="col-sm-4">
         <p class="col-title">For Invoicing</p>
 <textarea class="form-control copyable" rows="4" readonly>

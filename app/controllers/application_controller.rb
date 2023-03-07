@@ -17,12 +17,12 @@ class ApplicationController < ActionController::Base
     redirect_to('/') && return
   end
 
-  def require_role(role_name)
-    unauthorized unless current_user&.has_role?(role_name)
+  def require_role(role)
+    unauthorized unless current_user&.role?(role)
   end
 
-  def not_require_role(role_name)
-    unauthorized if current_user&.has_role?(role_name)
+  def not_require_role(role)
+    unauthorized if current_user&.role?(role)
   end
 
   def unauthorized
@@ -105,9 +105,12 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(
       :invite,
       keys: [
+              :broker_customer_id,
               :companyable_id,
               :companyable_type,
               :contact_id,
+              :contact_id,
+              :email,
               :email,
               :first_name,
               :last_name,

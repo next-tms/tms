@@ -8,7 +8,7 @@
 
 <%= render 'form' %>
 
-<% if current_user.has_role?('root') %>
+<% if current_user.role?(:root) %>
   <h2>Integrations</h2>
   
   <div class="table-responsive">

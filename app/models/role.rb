@@ -13,6 +13,7 @@
 # @!attribute updated_at
 #   @return [Time]
 #
+# @deprecated Removed, only exists for historical reasons
 class Role < ApplicationRecord
   validates :name, presence: true, uniqueness: true
 

@@ -1,7 +1,7 @@
 <nav class="nav border-top pt-4 mb-0">
   <%= link_to 'Overview', broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-show' %>
   <%= link_to 'Shipments', shipments_broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-shipments' %>
-  <% if current_user.has_role?('accounts_payable') %>
+  <% if current_user.role?(:accounts_payable) %>
     <%= link_to 'Bills', payment_transactions_broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-payment-transactions' %>
     <%= link_to 'Payments', payments_broker_broker_carrier_path(@broker_carrier), class: 'nav-link broker-carriers-payments' %>
   <% end %>

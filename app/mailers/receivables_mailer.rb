@@ -13,7 +13,7 @@ class ReceivablesMailer < ApplicationMailer
 
     bcc = []
     broker_customer.broker.users.broker.active.find_each do |user|
-      bcc << user.email if user.has_role?('accounts_receivable')
+      bcc << user.email if user.role?(:accounts_receivable)
     end
 
     # cc = broker_customer.receivables_contacts.map do |contact|

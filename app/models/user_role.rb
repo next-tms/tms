@@ -25,6 +25,7 @@
 #  fk_rails_...  (role_id => roles.id)
 #  fk_rails_...  (user_id => users.id)
 #
+# @deprecated Removed, only exists for historical reasons
 class UserRole < ApplicationRecord
   belongs_to :user
   belongs_to :role

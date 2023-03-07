@@ -46,24 +46,22 @@
 
     <%= link_to 'Plan', edit_broker_shipment_path(@shipment), class: 'nav-link shipments-edit' %>
 
-    <% if current_user.has_role?('accounting') or current_user.has_role?('dispatch') or @shipment.broker_customer.sales_reps.include?(current_user) %>
+    <% if current_user.any_role?(:accounts_payable, :accounts_receivable, :dispatch) || current_user.sales_rep_for?(@shipment.broker_customer) %>
       <%= link_to 'Pricing', pricing_broker_shipment_path(@shipment), class: 'nav-link shipments-pricing' %>
     <% end %>
 
-    <% if current_user.has_role?('dispatch') || current_user.sales_rep_for?(@shipment.broker_customer) %>
+    <% if current_user.any_role?(:dispatch) || current_user.sales_rep_for?(@shipment.broker_customer) %>
       <%= link_to 'Routing', transit_broker_shipment_path(@shipment), class: 'nav-link shipments-transit shipments-quote' %>
       <%= link_to 'Tracking', edit_tracking_events_broker_shipment_path(@shipment), class: 'nav-link shipments-edit-tracking-events' %>
     <% end %>
 
-    <% if current_user.has_role?('accounts_payable') || current_user.has_role?('accounts_receivable') || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) || current_user == @shipment.dispatcher %>
+    <% if current_user.role?(:accounts_payable) || current_user.role?(:accounts_receivable) || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) || current_user == @shipment.dispatcher %>
       <%= link_to 'Accounting', accounting_broker_shipment_path(@shipment), class: 'nav-link shipments-accounting' %>
     <% end %>
 
     <% if (@shipment.claims.any? || @shipment.broker_carrier.present?) &&
           (
-            current_user.has_role?('claims') ||
-            current_user.has_role?('accounts_payable') ||
-            current_user.has_role?('accounts_receivable') ||
+            current_user.has_any_role?(:accounts_payable, :accounts_receivable, :claims) ||
             current_user.sales_rep_for?(@shipment.broker_customer) ||
             current_user.dispatcher_for?(@shipment) ||
             current_user == @shipment.dispatcher
