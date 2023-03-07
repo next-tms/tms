@@ -61,7 +61,7 @@
 
     <% if (@shipment.claims.any? || @shipment.broker_carrier.present?) &&
           (
-            current_user.has_any_role?(:accounts_payable, :accounts_receivable, :claims) ||
+            current_user.any_role?(:accounts_payable, :accounts_receivable, :claims) ||
             current_user.sales_rep_for?(@shipment.broker_customer) ||
             current_user.dispatcher_for?(@shipment) ||
             current_user == @shipment.dispatcher

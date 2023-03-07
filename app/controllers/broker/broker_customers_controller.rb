@@ -68,7 +68,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def edit_broker_carriers; end
 
   def edit_pricing
-    unauthorized unless current_user.has_any_roles?(['accounts_recevable', 'root']) ||
+    unauthorized unless current_user.any_roles?(['accounts_recevable', 'root']) ||
                         current_user.sales_rep_for?(@broker_customer)
   end
 
@@ -94,7 +94,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def preferences
-    unauthorized unless current_user.has_any_roles?(['accounts_recevable', 'root']) ||
+    unauthorized unless current_user.any_roles?(['accounts_recevable', 'root']) ||
                         current_user.sales_rep_for?(@broker_customer)
   end
 
@@ -205,7 +205,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def update
-    unauthorized unless current_user.has_any_roles?(['accounts_recevable', 'root']) ||
+    unauthorized unless current_user.any_roles?(['accounts_recevable', 'root']) ||
                         current_user.sales_rep_for?(@broker_customer)
 
     @broker_customer.assign_attributes(broker_customer_params)
@@ -216,7 +216,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def update_pricing
-    unauthorized unless current_user.has_any_roles?(['accounts_recevable', 'root']) ||
+    unauthorized unless current_user.any_roles?(['accounts_recevable', 'root']) ||
                         current_user.sales_rep_for?(@broker_customer)
 
     render(:edit_pricing) && return unless @broker_customer.update(broker_customer_params)
