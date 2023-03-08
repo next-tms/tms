@@ -152,6 +152,16 @@ class Address < ApplicationRecord
     )
   end
 
+  def as_graphql_input
+    {
+      address1: street,
+      city:,
+      countryCode: country.alpha2_code,
+      postalCode: zip_code,
+      province: region.abbreviation,
+    }
+  end
+
   def find_or_build_standardized_address
     return unless full_address?
 

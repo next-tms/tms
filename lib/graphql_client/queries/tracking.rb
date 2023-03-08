@@ -2,7 +2,7 @@ module GraphqlClient
   module Queries
     class Tracking
       DETAILS = GraphqlClient::Transponder::Client.parse <<-'GRAPHQL'
-        query($scac: String!, $trackingNumber: String!, $credentials: CarrierCredentialInput!) {
+        query($scac: String!, $trackingNumber: String!, $credentials: [CarrierCredentialInput!]!) {
           trackingInfo(scac: $scac, trackingNumber: $trackingNumber, credentials: $credentials) {
             trackingNumber
             status

@@ -177,6 +177,26 @@ class Item < ApplicationRecord
     )
   end
 
+  def as_graphql_input(use_forced_freight_classes:)
+    {
+      totalGramsOrOunces: weight * 16,
+      dimensions: {
+        length: l,
+        width: w,
+        height: h
+      },
+      packagingType: packaging.interstellar_type&.to_sym,
+      options: {
+        declaredFreightClass: api_freight_class(use_forced_freight_class: use_forced_freight_classes),
+        description: desc,
+        hazmat: hazmat?,
+        nmfc: (nmfc.blank? ? nil : nmfc),
+        quantity: quantity,
+        units: :imperial
+      }
+    }
+  end
+
   private
 
   # Prettify

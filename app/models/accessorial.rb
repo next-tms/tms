@@ -29,6 +29,18 @@ class Accessorial < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
 
+  def self.combined_accessorial_interstellar_codes(shipment:)
+    combined_accessorials = Accessorial.distinct
+                                       .where(
+                                         id: shipment.accessorials.pluck(:id) +
+                                             shipment.assumed_accessorials.pluck(:id)
+                                       )
+
+    combined_accessorials.where.not(interstellar_code: [nil, '']).map do |accessorial|
+      accessorial.interstellar_code.to_sym
+    end
+  end
+
   private
 
   def create_broker_accessorials
