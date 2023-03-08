@@ -299,7 +299,7 @@ GEM
       rexml (~> 3.0)
     hashdiff (1.0.1)
     hashie (5.0.0)
-    honeybadger (5.1.0)
+    honeybadger (5.2.0)
     htmlentities (4.3.4)
     http (5.1.1)
       addressable (~> 2.8)
@@ -738,7 +738,7 @@ DEPENDENCIES
   graphiql-rails!
   graphql (~> 2.0)
   graphql-client
-  honeybadger (~> 5.1)
+  honeybadger (~> 5.2)
   htmlentities
   httparty
   image_processing (~> 1.12.2)
