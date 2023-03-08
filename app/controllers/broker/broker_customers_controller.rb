@@ -68,8 +68,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def edit_broker_carriers; end
 
   def edit_pricing
-    unauthorized unless current_user.any_roles?(['accounts_recevable', 'root']) ||
-                        current_user.sales_rep_for?(@broker_customer)
+    unauthorized unless current_user.role?(:account_payable) || current_user.sales_rep_for?(@broker_customer)
   end
 
   def index
