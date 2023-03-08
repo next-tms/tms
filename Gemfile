@@ -81,7 +81,7 @@ gem 'spacetime',
 
 gem 'honeybadger', '~> 5.2'
 
-gem 'sidekiq', '~> 6.5.7'
+gem 'sidekiq', '~> 7.0.6'
 gem 'sidekiq-scheduler', '~> 5.0.2'
 
 gem 'active_model_serializers', '~> 0.10.13'
