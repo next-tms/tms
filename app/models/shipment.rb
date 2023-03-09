@@ -909,7 +909,7 @@ class Shipment < ApplicationRecord
   def accessible_by?(user)
     (user.broker? && user.any_role?(:accounts_payable, :accounts_receivable, :dispatch)) ||
       (user.broker? && broker_customer.sales_reps.any?(user)) ||
-      (user.customer? && broker_customer == user.broker_customer)
+      (user.customer? && broker_customer == user.companyable)
   end
 
   # Dispatcher
