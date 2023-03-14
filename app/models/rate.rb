@@ -121,6 +121,8 @@ class Rate < ApplicationRecord
   end
 
   def preferred?
+    return true if broker_customer.blank?
+
     shipment.broker_customer.eligible_broker_carriers(user_type: :customer).include?(broker_carrier)
   end
 
@@ -131,7 +133,7 @@ class Rate < ApplicationRecord
   private
 
   def maybe_set_expires_at
-    self.expires_at = DateTime.current + 14.days if expires_at.blank?
+    self.expires_at = Time.current + 14.days if expires_at.blank?
   end
 
   def set_incomplete
