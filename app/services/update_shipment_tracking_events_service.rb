@@ -58,7 +58,15 @@ class UpdateShipmentTrackingEventsService
 
       next unless tracking_event.valid?
 
-      tracking_event.save
+      begin
+        tracking_event.save
+      rescue ActiveRecord::StatementInvalid => e
+        raise unless e.message.include?("PG::CharacterNotInRepertoire")
+
+        # Some XML API responses using ISO-8859-1 encoding instead of UTF-8
+        tracking_event.api_response.force_encoding("ISO-8859-1")
+        tracking_event.save
+      end
 
       next unless shipment.broker.automatically_update_shipment_tracking_based_on_carrier_apis?
 
