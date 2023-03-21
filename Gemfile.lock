@@ -290,7 +290,7 @@ GEM
       launchy (>= 2.2, < 3)
       mini_exiftool (>= 1.0.0)
     gpd-request (0.3.0)
-    graphql (2.0.17)
+    graphql (2.0.19)
     graphql-client (0.18.0)
       activesupport (>= 3.0)
       graphql
