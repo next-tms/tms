@@ -81,6 +81,7 @@ class BrokerCustomer < ApplicationRecord
 
   after_commit :problematic_shipments_later
 
+  before_update :update_quickbooks_invoices, if: :receivables_contact_id_changed?
   before_validation :set_receivables_contact_companyable, if: -> { receivables_contact&.new_record? }
 
   audited
@@ -338,6 +339,12 @@ class BrokerCustomer < ApplicationRecord
       display_name: customer.name,
       shipping_address: primary_pickup_address&.to_quickbooks_physical_address,
     )
+  end
+
+  def update_quickbooks_invoices
+    return unless receivables.unpaid.present?
+
+    receivables.unpaid.each { |receivable| receivable.update_quickbooks_invoice }
   end
 
   private
