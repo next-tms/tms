@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Queries
   class BrokerCustomers < Types::BaseObject
+    description 'Queries for fetching broker customers'
+
     field :broker_customer,
           Types::BrokerCustomerType,
           description: 'Fetch Broker Customer By ID',

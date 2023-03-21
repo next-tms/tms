@@ -2,6 +2,8 @@
 
 module Types
   class MutationType < Types::BaseObject
+    description 'GraphQL Mutations'
+
     field :authenticate, mutation: Mutations::Authenticate
 
     field :address_create, mutation: Mutations::AddressCreate

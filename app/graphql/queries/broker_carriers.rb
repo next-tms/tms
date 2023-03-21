@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Queries
   class BrokerCarriers < Types::BaseObject
+    description 'Queries for fetching broker carriers'
+
     field :broker_carrier,
           Types::BrokerCarrierType,
           description: 'Fetch Broker Carrier By ID',
@@ -22,7 +26,6 @@ module Queries
           null: true do
             argument :broker_customer_id, ID, required: true
           end
-
 
     Types::QueryType.class_eval do
       def broker_carrier(id:)

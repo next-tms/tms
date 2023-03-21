@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Queries
   class Shipments < Types::BaseObject
+    description 'Queries for fetching shipments'
+
     field :shipment_by_load_id,
           Types::ShipmentType,
           description: 'Fetch Shipment By Load ID',
@@ -24,15 +28,14 @@ module Queries
             argument :status, Types::ShipmentStatusEnum, required: true
           end
 
-
     Types::QueryType.class_eval do
       def shipment_by_load_id(load_id:)
-        Shipment.find_by_load_id(load_id)
+        Shipment.find_by(load_id: load_id)
       end
 
       def shipment_by_broker_carrier(broker_carrier_id:)
         broker_carrier = BrokerCarrier.find(broker_carrier_id)
-        raise GraphQL::ExecutionError.new "Broker Carrier doesn't exists" unless broker_carrier
+        raise GraphQL::ExecutionError, "Broker Carrier doesn't exists" unless broker_carrier
 
         broker_carrier.shipments
       end

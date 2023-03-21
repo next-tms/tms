@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Mutations
   class Authenticate < BaseMutation
+    description 'Authenticate User for GraphQL Access'
+
     argument :credentials, Types::AuthProviderCredentialsInputObject, required: false
 
     field :token, String, null: true
@@ -8,7 +12,7 @@ module Mutations
     def resolve(credentials: nil)
       return unless credentials
 
-      user = User.find_by_email(credentials[:email])
+      user = User.find_by(email: credentials[:email])
 
       return unless user
       return unless user.valid_password?(credentials[:password])

@@ -16,11 +16,14 @@ module Mutations
 
       address = ::Address.new(attributes)
 
-      region = Region.find_by_iso31662(address_input[:region_iso31662])
+      region = Region.find_by(iso31662: address_input[:region_iso31662])
       address.region = region
       address.country = region&.country
 
-      raise GraphQL::ExecutionError.new 'Error creating address', extensions: address.errors.to_hash unless address.save
+      raise GraphQL::ExecutionError.new(
+        'Error creating address',
+        extensions: address.errors.to_hash,
+      ) unless address.save
 
       { address: }
     end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Types::Iso31661Alpha2Type < Types::BaseEnum
+  description 'GraphQL Enum for accepted Iso Alpa 2 codes'
+
   value 'AD'
   value 'AE'
   value 'AF'

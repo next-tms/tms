@@ -2,9 +2,11 @@
 
 module Types
   class RegionType < Types::BaseObjectWithTimestamp
-    field :id, ID, null: false
-    field :country, Types::CountryType, null: false
-    field :name, String, null: false
+    description 'GraphQL Object for Region Model'
+
     field :abbreviation, String, null: false
+    field :country, Types::CountryType, null: false
+    field :id, ID, null: false
+    field :name, String, null: false
   end
 end
