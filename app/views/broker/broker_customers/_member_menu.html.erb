@@ -13,6 +13,5 @@
 
   <% if current_user.role?(:accounts_receivable) || current_user.sales_rep_for?(@broker_customer) %>
     <%= link_to 'Preferences', edit_broker_broker_customer_path(@broker_customer), class: 'nav-link broker-customers-edit' %>
-    <%= link_to 'Pricing', edit_pricing_broker_broker_customer_path(@broker_customer), class: 'nav-link broker-customers-edit-pricing' %>
   <% end %>
 </nav>

@@ -1,0 +1,10 @@
+<aside class="nav flex-column ms-4 px-4">
+  <ul class="list-unstyled mt-4">
+    <li class="mb-2 p-2 text-nowrap">
+      <%= link_to icon('solid', 'cog', 'Preferences'), edit_broker_broker_customer_path, class: "#{'fw-bold' if params[:action] == 'edit'}" %>
+    </li>
+    <li class="mb-2 p-2 text-nowrap">
+      <%= link_to icon('solid', 'dollar-sign', 'Pricing'), edit_pricing_broker_broker_customer_path, class: "#{'fw-bold' if params[:action] == 'edit_pricing'}" %>
+    </li>
+  </ul>
+</aside>

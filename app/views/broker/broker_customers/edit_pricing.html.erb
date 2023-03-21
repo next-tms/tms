@@ -1,94 +1,101 @@
 <% provide :title, 'Edit Pricing' %>
 
 <%= render 'member_header' %>
-<h2><%= yield :title %></h2>
 
-<%= bootstrap_form_with(
-      model: [:broker, @broker_customer],
-      url: update_pricing_broker_broker_customer_path(@broker_customer),
-      data: { turbo: false },
-      layout: :horizontal,
-      method: :patch
-    ) do |f| %>
-  <%= f.alert_message 'Unable to save customer:' %>
+<div class="d-flex">
+  <div class="container">
+    <h2><%= yield :title %></h2>
+        
+    <%= bootstrap_form_with(
+          model: [:broker, @broker_customer],
+          url: update_pricing_broker_broker_customer_path(@broker_customer),
+          data: { turbo: false },
+          layout: :horizontal,
+          method: :patch
+        ) do |f| %>
+      <%= f.alert_message 'Unable to save customer:' %>
 
-  <%= f.check_box :can_quote %>
-  <%= f.check_box :always_show_quotes_based_on_calculated_classes, label: 'Always show rates based on calculated class rather than declared class' %>
-  <%= f.check_box :ignore_value_on_api_quotes, label: 'Ignore declared value when retrieving API quotes' %>
+      <%= f.check_box :can_quote %>
+      <%= f.check_box :always_show_quotes_based_on_calculated_classes, label: 'Always show rates based on calculated class rather than declared class' %>
+      <%= f.check_box :ignore_value_on_api_quotes, label: 'Ignore declared value when retrieving API quotes' %>
 
-  <p class="col-title">Receivables</p>
-  <%= f.check_box :requires_shipment_delivery_before_receivable, label: 'Requires shipment to deliver before sending receivable?' %>
-  <%= f.check_box :requires_carrier_bol_on_receivables, label: 'Requires carrier BOL on receivables?' %>
-  <%= f.check_box :requires_carrier_pod_on_receivables, label: 'Requires carrier POD on receivables?' %>
+      <p class="col-title">Receivables</p>
+      <%= f.check_box :requires_shipment_delivery_before_receivable, label: 'Requires shipment to deliver before sending receivable?' %>
+      <%= f.check_box :requires_carrier_bol_on_receivables, label: 'Requires carrier BOL on receivables?' %>
+      <%= f.check_box :requires_carrier_pod_on_receivables, label: 'Requires carrier POD on receivables?' %>
 
-  <p class="mt-2">Send receivable</p>
-  <%= f.select :receivables_schedule,
-               [
-                 ['individually when picked up or delivered (depending on requirements)', 'immediately'],
-                 ['in daily batches', 'daily'],
-                 ['in weekly batches', 'weekly'],
-                 ['in monthly batches', 'monthly'],
-                 ['never', 'never']
-               ],
-               { hide_label: true }
-  %>
+      <p class="mt-2">Send receivable</p>
+      <%= f.select :receivables_schedule,
+                  [
+                    ['individually when picked up or delivered (depending on requirements)', 'immediately'],
+                    ['in daily batches', 'daily'],
+                    ['in weekly batches', 'weekly'],
+                    ['in monthly batches', 'monthly'],
+                    ['never', 'never']
+                  ],
+                  { hide_label: true }
+      %>
 
-  <p class="col-title">Rules</p>
-  <p>Set pricing per unit based on minimum and maximum counts</p>
+      <p class="col-title">Rules</p>
+      <p>Set pricing per unit based on minimum and maximum counts</p>
 
-  <div class="alert alert-warning">
-    <p>Should a shipment contain multiple types of packaging, the highest percentage from the matched rules will be applied as well as the individual dollar charges in the matched rules; however in the event the shipment contains a packaging type that has no matched rules, the fallback pricing (below) will be used instead.</p>
-  </div>
+      <div class="alert alert-warning">
+        <p>Should a shipment contain multiple types of packaging, the highest percentage from the matched rules will be applied as well as the individual dollar charges in the matched rules; however in the event the shipment contains a packaging type that has no matched rules, the fallback pricing (below) will be used instead.</p>
+      </div>
 
-  <div class="alert alert-info">
-    <p>Leave max blank to mean “anything more than minimum count”</p>
-  </div>
+      <div class="alert alert-info">
+        <p>Leave max blank to mean “anything more than minimum count”</p>
+      </div>
 
-  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".upcharge-rule-form-wrapper">
-    <template data-nested-form-target="template">
-      <%= f.fields_for :upcharge_rules, UpchargeRule.new, child_index: 'NEW_RECORD' do |upcharge_rules_form| %>
-        <%= render 'upcharge_rule_form', f: upcharge_rules_form %>
-      <% end %>
-    </template>
+      <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".upcharge-rule-form-wrapper">
+        <template data-nested-form-target="template">
+          <%= f.fields_for :upcharge_rules, UpchargeRule.new, child_index: 'NEW_RECORD' do |upcharge_rules_form| %>
+            <%= render 'upcharge_rule_form', f: upcharge_rules_form %>
+          <% end %>
+        </template>
 
-    <%= f.fields_for :upcharge_rules do |upcharge_rules_form| %>
-      <%= render 'upcharge_rule_form', f: upcharge_rules_form %>
+        <%= f.fields_for :upcharge_rules do |upcharge_rules_form| %>
+          <%= render 'upcharge_rule_form', f: upcharge_rules_form %>
+        <% end %>
+
+        <div data-nested-form-target="target"></div>
+
+        <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+      </div>
+
+      <p class="col-title">Fallback</p>
+      <p>When no rules are matched, apply fallback pricing (per shipment):</p>
+
+      <div class="col-2">
+        <%= f.text_field :default_upcharge, hide_label: true, default: 0, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
+      </div>
+
+      <div class="col-2">
+        <%= f.text_field :default_upcharge_percentage, hide_label: true, default: 0, append: '%', data: money_controller_data, autocomplete: 'off' %>
+      </div>
+
+      <p class="col-title">Services</p>
+      <p>Set bill amounts for specific services</p>
+
+      <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".broker-accessorial-form-wrapper">
+        <template data-nested-form-target="template">
+          <%= f.fields_for :broker_accessorials, BrokerAccessorial.new, child_index: 'NEW_RECORD' do |broker_accessorials_form| %>
+            <%= render 'broker_accessorial_form', f: broker_accessorials_form %>
+          <% end %>
+        </template>
+
+        <%= f.fields_for :broker_accessorials do |broker_accessorials_form| %>
+          <%= render 'broker_accessorial_form', f: broker_accessorials_form %>
+        <% end %>
+
+        <div data-nested-form-target="target"></div>
+
+        <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+      </div>
+
+      <%= f.submit 'Save', class: 'btn btn-primary mt-4' %>
     <% end %>
-
-    <div data-nested-form-target="target"></div>
-
-    <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
   </div>
 
-  <p class="col-title">Fallback</p>
-  <p>When no rules are matched, apply fallback pricing (per shipment):</p>
-
-  <div class="col-2">
-    <%= f.text_field :default_upcharge, hide_label: true, default: 0, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
-  </div>
-
-  <div class="col-2">
-    <%= f.text_field :default_upcharge_percentage, hide_label: true, default: 0, append: '%', data: money_controller_data, autocomplete: 'off' %>
-  </div>
-
-  <p class="col-title">Services</p>
-  <p>Set bill amounts for specific services</p>
-
-  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".broker-accessorial-form-wrapper">
-    <template data-nested-form-target="template">
-      <%= f.fields_for :broker_accessorials, BrokerAccessorial.new, child_index: 'NEW_RECORD' do |broker_accessorials_form| %>
-        <%= render 'broker_accessorial_form', f: broker_accessorials_form %>
-      <% end %>
-    </template>
-
-    <%= f.fields_for :broker_accessorials do |broker_accessorials_form| %>
-      <%= render 'broker_accessorial_form', f: broker_accessorials_form %>
-    <% end %>
-
-    <div data-nested-form-target="target"></div>
-
-    <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
-  </div>
-
-  <%= f.submit 'Save', class: 'btn btn-primary mt-4' %>
-<% end %>
+  <%= render 'preferences_sidebar' %>
+</div>

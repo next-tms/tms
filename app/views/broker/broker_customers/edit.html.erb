@@ -1,6 +1,13 @@
 <% provide :title, 'Preferences' %>
 
 <%= render 'member_header' %>
-<h2><%= yield :title %></h2>
 
-<%= render 'form' %>
+<div class="d-flex ms-4">
+  <div class="flex-grow-1">
+    <h2><%= yield :title %></h2>
+
+    <%= render 'form' %>
+  </div>
+
+  <%= render 'preferences_sidebar' %>
+</div>
