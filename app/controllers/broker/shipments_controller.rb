@@ -31,6 +31,15 @@ class Broker::ShipmentsController < Broker::BrokerController
                         upload_document
                       ]
   before_action :authenticate_user!
+  before_action :authorize_access_to_shipment,
+                only: %i[
+                        :edit_tracking_events
+                        :quote
+                        :update
+                        :upload_document
+                        :show
+                        :tracking_events
+                      ]
 
   def book
     redirect_to_edit = @shipment.quote_only?
@@ -207,8 +216,6 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def update
-    unauthorized && return unless @shipment.accessible_by?(current_user)
-
     @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.updated_by = current_user
 
@@ -235,8 +242,6 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def upload_document
-    unauthorized && return unless @shipment.accessible_by?(current_user)
-
     document_params = params.require(:shipment).permit(:document, :document_type)
     document = document_params[:document]
 
@@ -253,8 +258,6 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def show
-    unauthorized && return unless @shipment&.accessible_by?(current_user)
-
     redirect_to(quote_broker_shipment_path(@shipment)) && return if @shipment.quote_only?
   end
 
@@ -564,18 +567,14 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def accounting
-    unauthorized unless current_user.any_role?(:accounts_payable, :accounts_receivable) ||
-                        current_user.dispatcher_for?(@shipment) ||
-                        current_user.sales_rep_for?(@shipment.broker_customer)
+    authorize! @shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy
 
     @payment_transactions_q = @shipment.payment_transactions.ransack(params[:q])
     @receivables_q = @shipment.receivables.ransack(params[:q])
   end
 
   def claims
-    unauthorized unless current_user.any_role?(:accounts_payable, :accounts_receivable, :claims) ||
-                        current_user.dispatcher_for?(@shipment) ||
-                        current_user.sales_rep_for?(@shipment.broker_customer)
+    authorize! @shipment, to: :accounts_and_claims_show?, with: DispatchAndSalesRepPolicy
 
     @q = @shipment.claims.ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -593,9 +592,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pricing
-    unauthorized unless current_user.any_role?(:accounts_payable, :accounts_receivable) ||
-                        current_user.dispatcher_for?(@shipment) ||
-                        current_user.sales_rep_for?(@shipment.broker_customer)
+    authorize! @shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy
 
     @total_charges_updated_by = @shipment.whodunnit('total_charges_cents')
   end
@@ -610,31 +607,21 @@ class Broker::ShipmentsController < Broker::BrokerController
     end
   end
 
-  def edit_tracking_events
-    unauthorized && return unless @shipment.accessible_by?(current_user)
-  end
+  def edit_tracking_events; end
 
-  def tracking_events
-    unauthorized && return unless @shipment.accessible_by?(current_user)
-  end
+  def tracking_events; end
 
   def transit
-    return if current_user.role?(:dispatch) || current_user.sales_rep_for?(@shipment.broker_customer)
-
-    unauthorized && return
+    authorize! @shipment, to: :show?, with: DispatchAndSalesRepPolicy
   end
 
   def transit_edit
-    return if current_user.role?(:dispatch) || current_user.sales_rep_for?(@shipment.broker_customer)
-
-    unauthorized && return
+    authorize! @shipment, to: :show?, with: DispatchAndSalesRepPolicy
   end
 
   def delivery; end
 
   def quote
-    unauthorized && return unless @shipment.accessible_by?(current_user)
-
     # TODO: Probably move this logic elsewhere
     reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
               false
@@ -685,6 +672,10 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   private
+
+  def authorize_access_to_shipment
+    authorize! @shipment, to: :show?
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_shipment

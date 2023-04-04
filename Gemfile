@@ -101,6 +101,7 @@ gem 'stripe', '~> 6.5.0'
 gem 'bcrypt', '~> 3.1' # explicitly for GraphQL
 gem 'graphql', '~> 2.0'
 gem 'graphiql-rails', git: 'https://github.com/rmosolgo/graphiql-rails.git', branch: 'master', groups: %i[development]
+gem 'action_policy'
 gem 'action_policy-graphql'
 
 gem 'geocoder', '~> 1.8.1'

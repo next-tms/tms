@@ -15,6 +15,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
                                              terminals
                                              update
                                            ]
+  before_action :authorize_broker_carrier_access, only: %i[terminals contacts shipments]
 
   def edit
     @broker_carrier.check_mailing_address = Address.new if @broker_carrier.check_mailing_address.blank?
@@ -32,9 +33,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def show
-    unless @broker_carrier.broker == current_user.broker
-      render(file: 'public/401', layout: false, status: :unauthorized) && return
-    end
+    unauthorized && return unless @broker_carrier.broker == current_user.broker
 
     @shipments = @broker_carrier.shipments.order(load_id: :desc).limit(25)
     @carrier_contacts = @broker_carrier.carrier.contacts
@@ -60,9 +59,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def preferences; end
 
   def quickbooks
-    unauthorized && return unless current_user.broker? &&
-                                  current_user.broker.intuit_account.present? &&
-                                  current_user.any_role?(:accounts_payable)
+    authorize! current_user, to: :accounts_payable_show?, with: QuickbooksPolicy
 
     @broker_carriers = current_user
                        .broker
@@ -77,9 +74,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def update_quickbooks
-    unauthorized && return unless current_user.broker? &&
-                                  current_user.broker.intuit_account.present? &&
-                                  current_user.any_role?(:accounts_payable)
+    authorize! current_user, to: :accounts_payable_show?, with: QuickbooksPolicy
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
@@ -114,8 +109,6 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def terminals
-    unauthorized unless current_user.broker == @broker_carrier.broker
-
     @carrier = @broker_carrier.carrier
 
     @q = @carrier.terminals.ransack(params[:q])
@@ -167,8 +160,6 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def contacts
-    unauthorized unless current_user.broker == @broker_carrier.broker
-
     @q = @broker_carrier.contacts.ransack(params[:q])
     @q.sorts = 'contacts.first_name desc' if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
@@ -198,8 +189,6 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def shipments
-    unauthorized unless current_user.broker == @broker_carrier.broker
-
     @q = @broker_carrier
          .shipments
          .includes(
@@ -215,6 +204,10 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   private
+
+  def authorize_broker_carrier_access
+    authorize! @broker_carrier, to: :show?, with: BrokerPolicy
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_broker_carrier

@@ -1,0 +1,56 @@
+require 'rails_helper'
+
+RSpec.describe AccountsAndSalesRepPolicy do
+  let(:broker) { create(:broker) }
+  let(:contact) do
+    c = build(:contact).tap do |u|
+      u.companyable = broker
+    end
+    c.save
+    c
+  end
+
+  let(:user) do
+    build(:user, contact: contact).tap do |u|
+      u.companyable = broker
+    end
+  end
+
+  let(:shipment) { build(:shipment) }
+
+  let(:policy) { described_class.new(shipment, user: user) }
+
+  describe "#accounts_receivable_show?" do
+    subject { policy.apply(:accounts_receivable_show?) }
+
+    context 'when user role is either root and accounts_receivable' do
+      before do
+        contact.contact_roles.create(role: :accounts_receivable) 
+        contact.contact_roles.create(role: :root)
+      end
+
+      it { is_expected.to eq true }
+    end
+
+    context 'when user role is sales rep for record' do
+      before { expect(user).to receive(:sales_rep_for?).with(shipment).and_return(true) }
+
+      it { is_expected.to eq true }
+    end
+  end
+
+  describe "#accounts_receivable_and_sales_rep_for_all_show?" do
+    subject { policy.apply(:accounts_receivable_and_sales_rep_for_all_show?) }
+
+    context 'when user role is accounts_receivable, sales_rep_for_all_broker_customers and '\
+            'sales_rep for record' do
+      before do
+        contact.contact_roles.create(role: :accounts_receivable) 
+        contact.contact_roles.create(role: :sales_rep_for_all_broker_customers) 
+        expect(user).to receive(:sales_rep_for?).with(shipment).and_return(true)
+      end
+
+      it { is_expected.to eq true }
+    end
+  end
+end

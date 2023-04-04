@@ -59,7 +59,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def show
-    render(file: 'public/401', layout: false, status: :unauthorized) unless @bank.broker == current_user.broker
+    authorize! @bank, to: :show?, with: BrokerPolicy
   end
 
   def update
@@ -72,9 +72,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def quickbooks
-    unauthorized && return unless current_user.broker? &&
-                                  current_user.broker.intuit_account.present? &&
-                                  current_user.role?(:root)
+    authorize! current_user, to: :root_show?, with: QuickbooksPolicy
 
     @banks = current_user
              .broker
@@ -88,9 +86,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def update_quickbooks
-    unauthorized && return unless current_user.broker? &&
-                                  current_user.broker.intuit_account.present? &&
-                                  current_user.role?(:root)
+    authorize! current_user, to: :root_show?, with: QuickbooksPolicy
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)

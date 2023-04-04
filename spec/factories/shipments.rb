@@ -199,7 +199,7 @@ FactoryBot.define do
     booked_at { 2.weeks.ago }
     broker { create(:broker) }
     broker_carrier_id { 1 }
-    broker_customer_id {}
+    broker_customer { create(:broker_customer) }
     broker_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     canceled_at { Time.current }
     carrier_charge_cents { 1 }

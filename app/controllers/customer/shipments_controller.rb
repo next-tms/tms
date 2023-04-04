@@ -178,7 +178,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def quote
-    unauthorized unless @shipment.accessible_by?(current_user)
+    authorize! @shipment, to: :show?
 
     # TODO: Probably move this logic elsewhere
     reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint

@@ -11,6 +11,8 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery with: :exception
 
+  rescue_from ActionPolicy::Unauthorized, with: :unauthorized
+
   # Rescue from invalid authenticity token
   rescue_from ActionController::InvalidAuthenticityToken, with: :bad_token
   def bad_token
