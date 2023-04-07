@@ -118,6 +118,7 @@ class ApplicationController < ActionController::Base
               :last_name,
               :phone,
               { user_roles_attributes: %i[_destroy role_id] },
+              { contact_attributes: { contact_roles_attributes: %i[_destroy role] } }
             ],
     )
   end

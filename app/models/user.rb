@@ -156,7 +156,7 @@ class User < ApplicationRecord
 
   validates :time_zone_name, presence: true
 
-  accepts_nested_attributes_for :user_roles, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :contact, allow_destroy: true, reject_if: :all_blank
 
   def active_for_authentication?
     super && !deactivated

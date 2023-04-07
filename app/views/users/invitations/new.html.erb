@@ -52,28 +52,31 @@
           </div>
         <% end %>
 
-        <div class="form-group row">
-          <label class="col-form-label col-sm-2">Permissions</label>
-          <div class="col-sm-10">
-            <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".user-role-form-wrapper">
-              <template data-nested-form-target="template">
-                <%= f.fields_for :user_roles, UserRole.new, child_index: 'NEW_RECORD' do |user_roles_form| %>
-                  <%= render 'user_role_form', f: user_roles_form %>
-                <% end %>
-              </template>
+        <% if params[:companyable_type] == 'Broker' %>
+          <div class="form-group row">
+            <label class="col-form-label col-sm-2">Permissions</label>
+            <div class="col-sm-10">
+              <% f.object.build_contact if f.object.contact.blank? %>
+              <%= f.fields_for :contact do |contact_form| %>
+                <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".user-role-form-wrapper">
+                  <template data-nested-form-target="template">
+                    <%= contact_form.fields_for :contact_roles, ContactRole.new, child_index: "NEW_RECORD" do |role_form| %>
+                      <%= render 'user_role_form', f: role_form %>
+                    <% end %>
+                  </template>
 
-              <% unless f.object.user_roles.blank? %>
-                <%= f.fields_for :user_roles do |user_roles_form| %>
-                  <%= render 'user_role_form', f: user_roles_form %>
-                <% end %>
+                  <%= contact_form.fields_for :contact_roles do |role_form| %>
+                    <%= render 'user_role_form', f: role_form %>
+                  <% end %>
+
+                  <div data-nested-form-target="target"></div>
+
+                  <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+                </div>
               <% end %>
-
-              <div data-nested-form-target="target"></div>
-
-              <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
             </div>
           </div>
-        </div>
+        <% end %>
 
         <%= f.submit 'Invite', class: 'btn btn-primary ml-2' %>
       <% end %>
