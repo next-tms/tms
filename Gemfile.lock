@@ -284,7 +284,7 @@ GEM
       activesupport (>= 5.0)
     google_places (2.0.0)
       httparty (>= 0.13.1)
-    gotenberg-ruby (1.0.9)
+    gotenberg-ruby (1.0.11)
       faraday (>= 2.0.0)
       faraday-multipart (>= 1.0.4)
       launchy (>= 2.2, < 3)
@@ -740,7 +740,7 @@ DEPENDENCIES
   font-awesome-sass (~> 6.3.0)
   geocoder (~> 1.8.1)
   google_places (~> 2.0.0)
-  gotenberg-ruby (~> 1.0.9)
+  gotenberg-ruby (~> 1.0.11)
   graphiql-rails!
   graphql (~> 2.0)
   graphql-client
