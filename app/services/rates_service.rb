@@ -54,7 +54,7 @@ class RatesService
 
     if !ignore_value &&
        !@shipment.value.zero? &&
-       !@broker_carrier.to_interstellar_carrier.find_rates_with_declared_value?
+       !@broker_carrier.to_interstellar_carrier.class.find_rates_with_declared_value?
       error = StandardError.new('Carrier doesn’t support quoting shipments with declared value')
 
       rate = build_rate(:api)
