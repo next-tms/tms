@@ -177,6 +177,10 @@ class StandardizedAddress < ApplicationRecord
     self.open_street_map_result_updated_at = DateTime.current
 
     @open_street_map_result = open_street_map_result_cached
+  rescue Net::OpenTimeout
+    self.open_street_map_result_updated_at = Time.current
+
+    @open_street_map_result = nil
   end
 
   def smarty_streets_result
@@ -225,8 +229,10 @@ class StandardizedAddress < ApplicationRecord
     end
 
     self.city = smarty_streets_result.dig('components', 'city_name') || city
-    self.region = Region.where(abbreviation: smarty_streets_result.dig('components',
-                                                                       'state_abbreviation'))&.first || region
+    self.region = Region.where(abbreviation: smarty_streets_result.dig(
+      'components',
+      'state_abbreviation',
+    ))&.first || region
     self.postal_code = smarty_streets_result.dig('components', 'zipcode') || postal_code
   end
 
