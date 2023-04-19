@@ -160,6 +160,10 @@ class StandardizedAddress < ApplicationRecord
       return @open_street_map_result_cached = open_street_map_result_cached
     end
 
+    # Temporarily disabled
+    self.open_street_map_result_updated_at = Time.current
+    return @open_street_map_result = nil
+
     logger.info('Calling OpenStreetMap API')
 
     client = OpenStreetMap::Client.new
