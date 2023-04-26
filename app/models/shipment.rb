@@ -439,13 +439,9 @@ class Shipment < ApplicationRecord
 
   # Returns the actual carrier rather than any broker associated
   def carrier
-    return nil if broker_carrier.blank?
+    return if broker_carrier.blank?
 
-    if broker_carrier.carrier.acts_as_broker?
-      tracking_carrier
-    else
-      broker_carrier.carrier
-    end
+    broker_carrier.carrier.acts_as_broker? ? tracking_carrier : broker_carrier.carrier
   end
 
   def dispatcher_full_name
@@ -516,60 +512,24 @@ class Shipment < ApplicationRecord
   end
 
   def delivery_from
-    tz = receiver_address&.time_zone
-    return nil if tz.blank?
-
-    from = promised_delivery_by.presence || delivery_appointment_at.presence || delivery_appointment_on.presence || delivery_eta_on.presence
-    return from if from.present? && !from.is_a?(Date)
-
-    if from.is_a?(Date)
-      return from.in_time_zone(tz).beginning_of_day + 9.hours if delivery_hours_start_at.blank?
-
-      formatted_offset = Time.current.in_time_zone(tz).formatted_offset
-      return Time.zone.parse("#{from} #{delivery_hours_start_at} #{formatted_offset}")
-    end
-
-    return 5.business_days.after(pickup_from.in_time_zone(tz)).beginning_of_day + 9.hours if pickup_from.present?
-
-    nil
+    Shipment::DeliveryDateService.new(shipment: self).delivery_from
   end
 
   def delivery_by
-    tz = receiver_address&.time_zone
-    return nil if tz.blank?
-
-    by = promised_delivery_by.presence || delivery_appointment_at.presence || delivery_appointment_on.presence || delivery_eta_on.presence
-    return by if by.present? && !by.is_a?(Date)
-
-    if by.is_a?(Date)
-      return by.in_time_zone(tz).beginning_of_day + 17.hours if delivery_hours_end_at.blank?
-
-      formatted_offset = Time.current.in_time_zone(tz).formatted_offset
-      return Time.zone.parse("#{by} #{delivery_hours_end_at} #{formatted_offset}")
-    end
-
-    return 5.business_days.after(pickup_by.in_time_zone(tz)).beginning_of_day + 17.hours if pickup_by.present?
-
-    nil
+    Shipment::DeliveryDateService.new(shipment: self).delivery_by
   end
 
   def pickup_from
-    return nil if pickup_on.blank?
-    return nil if pickup_hours_start_at.blank?
-    return nil if shipper_address&.time_zone.blank?
+    return if pickup_on.blank? || pickup_hours_start_at.blank? || shipper_address&.time_zone.blank?
 
     formatted_offset = Time.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
-
     Time.parse("#{pickup_on} #{pickup_hours_start_at} #{formatted_offset}").in_time_zone(shipper_address.time_zone)
   end
 
   def pickup_by
-    return nil if pickup_on.blank?
-    return nil if pickup_hours_end_at.blank?
-    return nil if shipper_address&.time_zone.blank?
+    return if pickup_on.blank? || pickup_hours_end_at.blank? || shipper_address&.time_zone.blank?
 
     formatted_offset = Time.now.in_time_zone(shipper_address.time_zone.name).formatted_offset
-
     Time.zone.parse("#{pickup_on} #{pickup_hours_end_at} #{formatted_offset}")
   end
 
@@ -596,11 +556,7 @@ class Shipment < ApplicationRecord
   def pending_departure?
     return false if picked_up_at.blank? || delivered_at.present?
 
-    if picked_up_at < 52.hours.ago
-      departed_origin_terminal_at.blank?
-    else
-      false
-    end
+    picked_up_at < 52.hours.ago ? departed_origin_terminal_at.blank? : false
   end
 
   def late?
@@ -656,61 +612,6 @@ class Shipment < ApplicationRecord
     return @assumed_accessorials if @assumed_accessorials
 
     @assumed_accessorials = BuildAssumedAccesorialsService.new(shipment: self).call
-    # # TODO: Remove after Regression Testing
-    # @assumed_accessorials = []
-    #
-    # # Airports
-    # if !receiver_name.blank? && %w[airport hangar].any? do |word|
-    #      receiver_name.downcase.include?(word)
-    #    end
-    #   @assumed_accessorials << Accessorial.find_by_code('DAIR')
-    # end
-    # if !shipper_name.blank? && %w[airport hangar].any? do |word|
-    #      shipper_name.downcase.include?(word)
-    #    end
-    #   @assumed_accessorials << Accessorial.find_by_code('PAIR')
-    # end
-    # if !receiver_address.types.blank? && (receiver_address.types.include? 'airport')
-    #   @assumed_accessorials << Accessorial.find_by_code('DAIR')
-    # end
-    # if !shipper_address.types.blank? && (shipper_address.types.include? 'airport')
-    #   @assumed_accessorials << Accessorial.find_by_code('PAIR')
-    # end
-    #
-    # # Military bases
-    # if !receiver_address.types.blank? && (receiver_address.types.include? 'military')
-    #   @assumed_accessorials << Accessorial.find_by_code('DMIL')
-    # end
-    # if !shipper_address.types.blank? && (shipper_address.types.include? 'military')
-    #   @assumed_accessorials << Accessorial.find_by_code('PMIL')
-    # end
-    #
-    # # Residential
-    # if receiver_address.residential? || accessorial_codes.include?('DRES')
-    #   @assumed_accessorials << Accessorial.find_by_code('DRES')
-    #   @assumed_accessorials << Accessorial.find_by_code('DAPP')
-    #   if items.order(Arel.sql('items.weight / items.quantity DESC')).limit(1).first.weight >= 200
-    #     @assumed_accessorials << Accessorial.find_by_code('DLIF')
-    #   end
-    # end
-    # if shipper_address.residential? || accessorial_codes.include?('PRES')
-    #   @assumed_accessorials << Accessorial.find_by_code('PRES')
-    #   @assumed_accessorials << Accessorial.find_by_code('PAPP')
-    #   if items.order(Arel.sql('items.weight / items.quantity DESC')).limit(1).first.weight >= 200
-    #     @assumed_accessorials << Accessorial.find_by_code('PLIF')
-    #   end
-    # end
-    #
-    # # Restaurant
-    # @assumed_accessorials << Accessorial.find_by_code('PRST') if shipper_address.restaurant?
-    # @assumed_accessorials << Accessorial.find_by_code('DRST') if receiver_address.restaurant?
-    #
-    # # Appointment delivery
-    # if !bol_notes.blank? && (bol_notes.downcase.include? 'must contact')
-    #   @assumed_accessorials << Accessorial.find_by_code('DAPP')
-    # end
-    #
-    # @assumed_accessorials = @assumed_accessorials.uniq
   end
 
   def assumed_accessorial_codes
@@ -770,42 +671,24 @@ class Shipment < ApplicationRecord
   end
 
   def total_weight
-    unless @total_weight
-      @total_weight = 0
-      items.each do |item|
-        @total_weight += item.weight
-      end
-    end
-    @total_weight
+    @total_weight ||= items.sum(&:weight)
   end
 
   def total_pieces
-    unless @total_pieces
-      @total_pieces = 0
-      items.each do |item|
-        @total_pieces += item.quantity
-      end
-    end
-    @total_pieces
+    @total_weight ||= items.sum(&:quantity)
   end
 
   def total_cubic_ft(rounded:)
-    total_cubic_ft = 0
-    items.each do |item|
-      return nil if item.cubic_ft(rounded: false).blank?
+    return if items.any? { |item| item.cubic_ft(rounded: false).blank? }
 
-      total_cubic_ft += item.cubic_ft(rounded: false)
-    end
+    total_cubic_ft = items.sum { |item| item.cubic_ft(rounded: false) }
     rounded ? ('%0.2f' % total_cubic_ft).to_f : total_cubic_ft
   end
 
   def total_density(rounded:)
-    total_density = 0
-    items.each do |item|
-      return nil if item.density(rounded: false).blank?
+    return if items.any? { |item| item.density(rounded: false).blank? }
 
-      total_density += item.density(rounded: false)
-    end
+    total_density = items.sum { |item| item.density(rounded: false) }
     rounded ? ('%0.2f' % total_density).to_f : total_density
   end
 
@@ -837,73 +720,7 @@ class Shipment < ApplicationRecord
   def linear_ft
     return @linear_ft if @linear_ft
 
-    items = self.items
-    @linear_ft = 0
-    true_items = []
-    item_rows = []
-
-    items.each do |item|
-      return @linear_ft = nil unless item.l && item.w && item.h
-
-      item.quantity.times do
-        # Rotate the item if longer that 102 inches
-        true_items << if item.long_side > 102
-                        { l: item.short_side, w: item.long_side, allocated: false }
-                      else
-                        { l: item.long_side, w: item.short_side, allocated: false }
-                      end
-      end
-    end
-
-    true_items = true_items.sort_by { |k| k[:l] } # Find longest piece first
-
-    i = 0
-    row_l = 0
-    row_w = 0
-    row_tries = 0
-
-    loop do
-      items_allocated_count = 0
-      true_items.each do |true_item|
-        items_allocated_count += 1 if true_item[:allocated]
-      end
-      if true_items[i].nil?
-        i = 0
-        redo
-      end
-      if items_allocated_count == true_items.count
-        item_rows << { l: row_l, w: row_w }
-        break
-      end
-      if true_items[i][:allocated]
-        i += 1
-        redo
-      end
-      if row_tries > (true_items.count * true_items.count)
-        item_rows << { l: row_l, w: row_w }
-        row_l = 0
-        row_w = 0
-        row_tries = 0
-        redo
-      end
-      if true_items[i][:l] <= (102 - row_l)
-        row_l += true_items[i][:l]
-        row_w = true_items[i][:w] if true_items[i][:w] > row_w
-        true_items[i][:allocated] = true
-        i += 1
-      elsif true_items[i][:l] > (102 - row_l)
-        i += 1
-        row_tries += 1
-        redo
-      end
-    end
-
-    item_rows.each do |item_row|
-      @linear_ft += item_row[:w]
-    end
-
-    @linear_ft = (@linear_ft / 12.to_f).ceil
-    # @linear_ft = ( @linear_ft / 12.to_f )
+    @linear_ft = Shipment::LinearFtService.new(shipment: self).call
   end
 
   def accessible_by?(user)

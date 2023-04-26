@@ -51,6 +51,7 @@ group :test do
   gem 'capybara', '>= 3.35.3'
   gem 'selenium-webdriver'
   gem 'webdrivers'
+  gem 'timecop'
 end
 
 gem 'responders'
