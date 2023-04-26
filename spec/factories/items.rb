@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :item do
     l { 1 }
@@ -6,7 +8,7 @@ FactoryBot.define do
     nmfc { 1 }
     hazmat { false }
     refrigerated { false }
-    desc { "MyString" }
+    desc { 'MyString' }
     packaging { create(:packaging) }
     weight { 1 }
     quantity { 1 }

@@ -2,9 +2,9 @@
 
 require 'rails_helper'
 
-RSpec.describe Shipment::ResetRatesService do
+RSpec.describe(Shipment::ResetRatesService) do
   let(:shipment) { create(:shipment) }
-  let!(:rate) { create(:rate, shipment: shipment, shipment_fingerprint: '123')}
+  let!(:rate) { create(:rate, shipment: shipment, shipment_fingerprint: '123') }
   let!(:other_rate) { create(:rate, shipment: shipment) }
 
   describe '#call' do
@@ -13,17 +13,17 @@ RSpec.describe Shipment::ResetRatesService do
 
       context 'and shipment#applied_rate is blank?' do
         it 'destroy rates' do
-          expect { subject }.to change { Rate.count }.from(2).to(0)
+          expect { subject }.to(change(Rate, :count).from(2).to(0))
         end
       end
-  
+
       context 'and shipment#applied_rate is present' do
         before { shipment.update(applied_rate: other_rate) }
-  
+
         it 'destroy rates except applied rate' do
-          expect { subject }.to change { Rate.count }.from(2).to(1)
-  
-          expect(other_rate.persisted?).to be_truthy
+          expect { subject }.to(change(Rate, :count).from(2).to(1))
+
+          expect(other_rate).to(be_persisted)
         end
       end
     end
@@ -33,43 +33,43 @@ RSpec.describe Shipment::ResetRatesService do
 
       context "and shipment first rate's fingerprint is equal to shipment#fingerprint " do
         it 'does not destroy rates' do
-          expect(shipment).to receive(:fingerprint).and_return(rate.shipment_fingerprint)
+          expect(shipment).to(receive(:fingerprint).and_return(rate.shipment_fingerprint))
 
-          expect { subject }.not_to change { Rate.count }
+          expect { subject }.not_to(change(Rate, :count))
         end
       end
 
-      context "and shipment#calculated_freight_classes and shipment#forced_freight_classes are blank " do
+      context 'and shipment#calculated_freight_classes and shipment#forced_freight_classes are blank ' do
         it 'does not destroy rates' do
-          expect(shipment).to receive(:fingerprint).and_return("Other Fingerprint")
-          expect(shipment).to receive(:calculated_freight_classes).and_return([nil])
-          expect(shipment).to receive(:forced_freight_classes).and_return([])
+          expect(shipment).to(receive(:fingerprint).and_return('Other Fingerprint'))
+          expect(shipment).to(receive(:calculated_freight_classes).and_return([nil]))
+          expect(shipment).to(receive(:forced_freight_classes).and_return([]))
 
-          expect { subject }.not_to change { Rate.count }
+          expect { subject }.not_to(change(Rate, :count))
         end
       end
 
       context 'and rates are destroyable' do
         context 'and shipment#applied_rate is blank?' do
           before do
-            expect(shipment).to receive(:fingerprint).and_return("Other Fingerprint")
+            expect(shipment).to(receive(:fingerprint).and_return('Other Fingerprint'))
           end
 
           it 'destroy rates' do
-            expect { subject }.to change { Rate.count }.from(2).to(0)
+            expect { subject }.to(change(Rate, :count).from(2).to(0))
           end
         end
-    
+
         context 'and shipment#applied_rate is present' do
           before do
             shipment.update(applied_rate: other_rate)
-            expect(shipment).to receive(:fingerprint).and_return("Other Fingerprint")
+            expect(shipment).to(receive(:fingerprint).and_return('Other Fingerprint'))
           end
 
           it 'destroy rates except applied rate' do
-            expect { subject }.to change { Rate.count }.from(2).to(1)
-    
-            expect(other_rate.persisted?).to be_truthy
+            expect { subject }.to(change(Rate, :count).from(2).to(1))
+
+            expect(other_rate).to(be_persisted)
           end
         end
       end

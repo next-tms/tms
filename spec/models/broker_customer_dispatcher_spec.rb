@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: broker_customer_dispatchers
@@ -25,9 +27,9 @@
 #
 require 'rails_helper'
 
-RSpec.describe BrokerCustomerDispatcher, type: :model do
+RSpec.describe(BrokerCustomerDispatcher, type: :model) do
   describe 'relationships' do
-    it { is_expected.to belong_to(:broker_customer) }
-    it { is_expected.to belong_to(:user) }
+    it { is_expected.to(belong_to(:broker_customer)) }
+    it { is_expected.to(belong_to(:user)) }
   end
 end

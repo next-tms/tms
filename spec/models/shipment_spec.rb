@@ -264,7 +264,7 @@ RSpec.describe(Shipment, type: :model) do
     end
   end
 
-  describe "#total_weight" do
+  describe '#total_weight' do
     let(:shipment) do
       record = create(:shipment)
       record.items << create(:item, weight: 100)
@@ -274,11 +274,11 @@ RSpec.describe(Shipment, type: :model) do
     end
 
     it 'returns sum of all items weight' do
-      expect(shipment.total_weight).to eq(200)
+      expect(shipment.total_weight).to(eq(200))
     end
   end
 
-  describe "#total_pieces" do
+  describe '#total_pieces' do
     let(:shipment) do
       record = create(:shipment)
       record.items << create(:item, quantity: 5)
@@ -288,7 +288,7 @@ RSpec.describe(Shipment, type: :model) do
     end
 
     it 'returns sum of all items quantity' do
-      expect(shipment.total_pieces).to eq(10)
+      expect(shipment.total_pieces).to(eq(10))
     end
   end
 
@@ -302,18 +302,18 @@ RSpec.describe(Shipment, type: :model) do
 
     context 'when item density(rounded: false) is blank' do
       before do
-        expect_any_instance_of(Item).to receive(:density).with(rounded: false).and_return(nil)
+        expect_any_instance_of(Item).to(receive(:density).with(rounded: false).and_return(nil))
       end
 
-      it { expect(shipment.total_density(rounded: false)).to be_nil }
+      it { expect(shipment.total_density(rounded: false)).to(be_nil) }
     end
 
     context 'when item density(rounded: false) is present' do
       before do
-        expect_any_instance_of(Item).to receive(:density).twice.with(rounded: false).and_return(100)
+        expect_any_instance_of(Item).to(receive(:density).twice.with(rounded: false).and_return(100))
       end
 
-      it { expect(shipment.total_density(rounded: false)).to eq(100) }
+      it { expect(shipment.total_density(rounded: false)).to(eq(100)) }
     end
   end
 
@@ -327,18 +327,18 @@ RSpec.describe(Shipment, type: :model) do
 
     context 'when item cubic_ft(rounded: false) is blank' do
       before do
-        expect_any_instance_of(Item).to receive(:cubic_ft).with(rounded: false).and_return(nil)
+        expect_any_instance_of(Item).to(receive(:cubic_ft).with(rounded: false).and_return(nil))
       end
 
-      it { expect(shipment.total_cubic_ft(rounded: false)).to be_nil }
+      it { expect(shipment.total_cubic_ft(rounded: false)).to(be_nil) }
     end
 
     context 'when item cubic_ft(rounded: false) is present' do
       before do
-        expect_any_instance_of(Item).to receive(:cubic_ft).twice.with(rounded: false).and_return(100)
+        expect_any_instance_of(Item).to(receive(:cubic_ft).twice.with(rounded: false).and_return(100))
       end
 
-      it { expect(shipment.total_cubic_ft(rounded: false)).to eq(100) }
+      it { expect(shipment.total_cubic_ft(rounded: false)).to(eq(100)) }
     end
   end
 end
