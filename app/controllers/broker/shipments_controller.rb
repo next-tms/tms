@@ -94,42 +94,7 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def duplicate
     original_shipment = Shipment.find_by(load_id: params[:load_id])
-
-    @shipment = original_shipment.dup
-    @shipment.receiver_address = original_shipment.receiver_address.dup
-    @shipment.shipper_address = original_shipment.shipper_address.dup
-    @shipment.shipment_broker_accessorials << original_shipment.shipment_broker_accessorials.collect(&:dup)
-    @shipment.items << original_shipment.items.collect(&:dup)
-    @shipment.load_id = current_user.broker.last_load_id + 1
-
-    attributes_to_nullable = %i[
-                               pickup_on
-                               dispatched_at
-                               pickup_confirmation
-                               tracking_carrier_pickup_confirmation
-                               pickup_driver_assigned_at
-                               pickup_eta_at
-                               picked_up_at
-                               departed_origin_terminal_at
-                               delivery_eta_on
-                               out_for_delivery_at
-                               lost_on
-                               pending_appointment_since
-                               delivery_appointment_on
-                               delivery_appointment_at
-                               delivered_at
-                               canceled_at
-                               dispatched_at
-                               quoted_delivery_by
-                               quote_id
-                               pro
-                             ]
-
-    # You want a duplicated shipment to have a shipment status of 'New'
-    attrs = attributes_to_nullable.map { |attr_name| { attr_name => nil } }
-    @shipment.assign_attributes(attrs.reduce({}, :merge))
-
-    @shipment.save!
+    @shipment = Shipment::DuplicateService.new(shipment: original_shipment).call
 
     flash[:success] = "Duplicated from load ##{original_shipment.load_id}"
     redirect_to(edit_broker_shipment_path(@shipment))
@@ -622,33 +587,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   def delivery; end
 
   def quote
-    # TODO: Probably move this logic elsewhere
-    reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
-              false
-            elsif @shipment.calculated_freight_classes.uniq == [nil] && @shipment.forced_freight_classes.uniq.nil?
-              false
-            elsif @shipment.broker_customer.present? && @shipment.broker_customer.preferred_broker_carriers_kind
-              case @shipment.broker_customer.preferred_broker_carriers_kind
-              when 'whitelist'
-                (@shipment.broker_customer.eligible_broker_carriers.ids - @shipment.rates.pluck(:broker_carrier_id)).any?
-              when 'blacklist'
-                (@shipment.rates.pluck(:broker_carrier_id) - @shipment.broker_customer.eligible_broker_carriers.ids).any?
-              end
-            else
-              true
-            end
-
-    reset = true if !reset && params[:force].present?
-
-    if reset
-      if @shipment.applied_rate.blank?
-        @shipment.rates.destroy_all
-      else
-        @shipment.rates.where.not(
-          id: [@shipment.applied_rate.id] + @shipment.pickups.pluck(:rate_id),
-        ).destroy_all
-      end
-    end
+    Shipment::ResetRatesService.new(shipment: @shipment, force_reset: params[:force].present?).call
 
     @shipment.rates.where.not(error_object: nil).destroy_all
 

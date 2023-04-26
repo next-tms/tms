@@ -180,33 +180,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   def quote
     authorize! @shipment, to: :show?
 
-    # TODO: Probably move this logic elsewhere
-    reset = if @shipment.rates&.first&.shipment_fingerprint == @shipment.fingerprint
-              false
-            elsif @shipment.calculated_freight_classes.uniq == [nil] && @shipment.forced_freight_classes.uniq.nil?
-              false
-            elsif @shipment.broker_customer.preferred_broker_carriers_kind
-              case @shipment.broker_customer.preferred_broker_carriers_kind
-              when 'whitelist'
-                (@shipment.broker_customer.eligible_broker_carriers.ids - @shipment.rates.pluck(:broker_carrier_id)).any?
-              when 'blacklist'
-                (@shipment.rates.pluck(:broker_carrier_id) - @shipment.broker_customer.eligible_broker_carriers.ids).any?
-              end
-            else
-              true
-            end
-
-    reset = true if !reset && params[:force].present?
-
-    if reset
-      applied_rate = @shipment.applied_rate
-
-      if @shipment.applied_rate.blank?
-        @shipment.rates.destroy_all
-      else
-        @shipment.rates.where.not(id: @shipment.applied_rate.id).destroy_all
-      end
-    end
+    Shipment::ResetRatesService.new(shipment: @shipment, force_reset: params[:force].present?).call
 
     @shipment.rates.where.not(error_object: nil).destroy_all
 

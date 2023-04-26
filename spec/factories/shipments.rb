@@ -203,9 +203,9 @@ FactoryBot.define do
     broker_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     canceled_at { Time.current }
     carrier_charge_cents { 1 }
-    carrier_charge_currency { Faker::Currency.code }
+    carrier_charge_currency { Faker::Currency.code  }
     carrier_cost_cents { 1 }
-    carrier_cost_currency { Faker::Currency.code }
+    carrier_cost_currency { Faker::Currency.code  }
     created_by_id {}
     customer_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     customer_reference { Faker::Number.number }
@@ -261,7 +261,7 @@ FactoryBot.define do
     total_cost_currency { Faker::Currency.code }
     truckload { [true, false].sample }
     value_cents { Faker::Number.between(from: 100, to: 5_000).ceil }
-    value_currency { Faker::Currency.code }
+    value_currency { Faker::Currency.code  }
 
     after(:build) do |record|
       user = build(:user, companyable: record.broker)
