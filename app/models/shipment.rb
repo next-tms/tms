@@ -671,11 +671,11 @@ class Shipment < ApplicationRecord
   end
 
   def total_weight
-    @total_weight ||= items.sum(&:weight)
+    items.sum(:weight)
   end
 
   def total_pieces
-    @total_weight ||= items.sum(&:quantity)
+    items.sum(:quantity)
   end
 
   def total_cubic_ft(rounded:)
