@@ -72,10 +72,10 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def index
-    @q = if current_user.any_role?(:accounts_recevable, :dispatch)
-           current_user.broker_customers.includes(required_includes).ransack(params[:q])
-         else
+    @q = if current_user.any_role?(:dispatch, :root)
            current_user.broker.broker_customers.includes(required_includes).ransack(params[:q])
+         else
+           current_user.broker_customers.includes(required_includes).ransack(params[:q])
          end
 
     @q.sorts = 'customer_name asc' if @q.sorts.blank?
@@ -126,7 +126,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def quickbooks
-    authorize! current_user,to: :accounts_receivable_show?, with: QuickbooksPolicy
+    authorize!(current_user, to: :accounts_receivable_show?, with: QuickbooksPolicy)
 
     @broker_customers = current_user
                         .broker
@@ -186,7 +186,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def update_quickbooks
-    authorize! current_user,to: :accounts_receivable_show?, with: QuickbooksPolicy
+    authorize!(current_user, to: :accounts_receivable_show?, with: QuickbooksPolicy)
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
@@ -200,7 +200,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def update
-    authorize! @broker_customer, to: :accounts_receivable_show?, with: AccountsAndSalesRepPolicy
+    authorize!(@broker_customer, to: :accounts_receivable_show?, with: AccountsAndSalesRepPolicy)
 
     @broker_customer.assign_attributes(broker_customer_params)
 
@@ -210,7 +210,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def update_pricing
-    authorize! @broker_customer, to: :accounts_receivable_show?, with: AccountsAndSalesRepPolicy
+    authorize!(@broker_customer, to: :accounts_receivable_show?, with: AccountsAndSalesRepPolicy)
 
     render(:edit_pricing) && return unless @broker_customer.update(broker_customer_params)
 
@@ -220,7 +220,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   private
 
   def allow_sales_rep_or_accounts_receivable!
-    authorize! @broker_customer, to: :accounts_receivable_and_sales_rep_for_all_show?, with: AccountsAndSalesRepPolicy
+    authorize!(@broker_customer, to: :accounts_receivable_and_sales_rep_for_all_show?, with: AccountsAndSalesRepPolicy)
   end
 
   def not_sales_rep_for_all_and_broker_customer?
