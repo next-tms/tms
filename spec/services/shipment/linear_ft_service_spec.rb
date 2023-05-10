@@ -13,7 +13,6 @@ RSpec.describe(Shipment::LinearFtService) do
 
   describe '#call' do
     subject { described_class.new(shipment:).call }
-
     context 'when item does not have length, width and height' do
       before do
         item.update(l: nil, w: nil, h: nil)

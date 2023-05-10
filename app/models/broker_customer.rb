@@ -183,103 +183,11 @@ class BrokerCustomer < ApplicationRecord
   end
 
   def carrier_charge_calculator(carrier_cost:, shipment:)
-    return nil unless carrier_cost&.positive?
-
-    return nil if default_upcharge.blank? && upcharge_rules.blank?
-
-    if upcharge_rules.blank? && default_upcharge.present? && default_upcharge.positive?
-      return (carrier_cost + default_upcharge)
-    end
-
-    # Do all shipment.items have a matching UpchargeRule?
-    matched = true
-    matched_percentage = 0
-
-    packaging_ids = shipment.items.pluck(:packaging_id)
-    packaging_ids.each do |packaging_id|
-      quantity = shipment.items.where(packaging_id:).sum(:quantity)
-      try_upcharge_rules = upcharge_rules
-                           .where(packaging: packaging_id)
-                           .where('min <= ?', quantity)
-                           .where('max >= ?', quantity)
-                           .or(
-                             upcharge_rules
-                             .where(packaging: packaging_id)
-                             .where('min <= ?', quantity)
-                             .where(max: nil),
-                           )
-      if try_upcharge_rules.blank?
-        matched = false
-        break
-      else
-        upcharge_percentage = try_upcharge_rules.pluck(:upcharge_percentage).max
-        matched_percentage = upcharge_percentage if upcharge_percentage > matched_percentage
-      end
-    end
-
-    # Apply default default pricing
-    return nil unless (matched && default_upcharge.positive?) || default_upcharge_percentage.positive?
-
-    carrier_charges = carrier_cost
-
-    carrier_charges += default_upcharge if default_upcharge.positive?
-    return carrier_charges unless default_upcharge_percentage.positive?
-
-    carrier_charges += carrier_cost * (default_upcharge_percentage.to_f / 100)
-
-    return carrier_charges
-
-    carrier_charge = carrier_cost
-
-    carrier_charge = carrier_cost + ((matched_percentage.to_f / 100) * carrier_cost) if matched_percentage
-
-    shipment.items.each do |item|
-      try_upcharge_rules = upcharge_rules
-                           .where(packaging: item.packaging)
-                           .where('min <= ?', item.quantity)
-                           .where('max >= ?', item.quantity)
-                           .or(
-                             upcharge_rules
-                             .where(packaging: item.packaging)
-                             .where('min <= ?', item.quantity)
-                             .where(max: nil),
-                           )
-
-      max = try_upcharge_rules.pluck(:upcharge_cents).max
-      upcharge = try_upcharge_rules.where(upcharge_cents: max).first.upcharge
-      carrier_charge += upcharge * item.quantity
-    end
-
-    carrier_charge > carrier_cost ? carrier_charge : nil
+    BrokerCustomer::CarrierChargeCalculatorService.new(broker_customer: self, carrier_cost:, shipment:).call
   end
 
   def profitability_report(from_date = nil, to_date = nil)
-    if from_date
-      if to_date
-        return nil unless to_date
-
-        shipments = self.shipments.active.where(broker_customer: self).where(
-          picked_up_at: (from_date.beginning_of_day..to_date.end_of_day),
-        )
-      end
-    else
-      shipments = self.shipments
-    end
-
-    return if shipments.blank?
-
-    total_cost = shipments.active.map(&:total_cost).inject(Money.new(0)) { |sum, x| sum + x }
-    total_charges = shipments.active.map(&:total_charges).inject(Money.new(0)) { |sum, x| sum + x }
-    total_profit = total_charges - total_cost
-    total_margin = ((1 - (total_cost / total_charges)) * 100).round(1)
-
-    {
-      total_shipments: shipments.size,
-      total_cost:,
-      total_charges:,
-      total_profit:,
-      total_margin:
-    }
+    BrokerCustomer::ProfitabilityReportJsonService.new(broker_customer: self, from_date:, to_date:).call
   end
 
   def create_quickbooks_customer

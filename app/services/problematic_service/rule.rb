@@ -132,9 +132,9 @@ module ProblematicService
     private
 
     def assign
-      return record.dispatcher if record.is_a?(Shipment) &&
+      return record.dispatcher if record.is_a?(::Shipment) &&
                                   record.dispatcher.present? &&
-                                  roles.pluck(:name).any?('dispatch')
+                                  roles.any?(:dispatch)
 
       users = User.with_any_role(*roles).where(companyable: record.broker)
 
@@ -151,7 +151,7 @@ module ProblematicService
 
       Rails.logger.warn(<<~WARN.squish)
         Unable to find User with broker=(name: "#{record.broker.name}"),
-                                 role=(name: [#{roles.pluck(:name).join(", ")}])
+                                 role=(name: [#{roles.join(", ")}])
       WARN
 
       Role
