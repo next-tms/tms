@@ -22,9 +22,10 @@ module Liftoff
 
     config.i18n.fallbacks = true
 
+    config.action_mailer.default_url_options = { host: ENV.fetch('DOMAIN', 'localhost:3000') }
+
     # Postmark
     config.action_mailer.delivery_method = :postmark
-
     config.action_mailer.postmark_settings = { api_token: ENV.fetch('POSTMARK_API_TOKEN') }
 
     # Sidekiq
