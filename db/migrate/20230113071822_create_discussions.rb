@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+class CreateDiscussions < ActiveRecord::Migration[7.0]
+  def change
+    create_table(:discussions) do |t|
+      t.references(:subject, null: false, polymorphic: true)
+
+      t.timestamps
+    end
+  end
+end

@@ -309,6 +309,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
     t.index ["shipment_id"], name: "index_claims_on_shipment_id"
   end
 
+  create_table "comments", force: :cascade do |t|
+    t.bigint "contact_id", null: false
+    t.bigint "discussion_topic_id", null: false
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id"], name: "index_comments_on_contact_id"
+    t.index ["discussion_topic_id"], name: "index_comments_on_discussion_topic_id"
+  end
+
   create_table "commissions", force: :cascade do |t|
     t.boolean "paid", default: false
     t.integer "amount_cents", default: 0, null: false
@@ -357,6 +367,26 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
   create_table "customers", force: :cascade do |t|
     t.string "name"
     t.index ["name"], name: "index_customers_on_name"
+  end
+
+  create_table "discussion_topics", force: :cascade do |t|
+    t.bigint "discussion_id", null: false
+    t.string "topic_type", null: false
+    t.bigint "topic_id", null: false
+    t.string "contact_scope", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_scope"], name: "index_discussion_topics_on_contact_scope"
+    t.index ["discussion_id"], name: "index_discussion_topics_on_discussion_id"
+    t.index ["topic_type", "topic_id"], name: "index_discussion_topics_on_topic"
+  end
+
+  create_table "discussions", force: :cascade do |t|
+    t.string "subject_type", null: false
+    t.bigint "subject_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["subject_type", "subject_id"], name: "index_discussions_on_subject"
   end
 
   create_table "document_preferences", force: :cascade do |t|
@@ -822,6 +852,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
     t.index ["broker_id"], name: "index_stripe_accounts_on_broker_id"
   end
 
+  create_table "subscriptions", force: :cascade do |t|
+    t.datetime "canceled_at"
+    t.bigint "contact_id", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["canceled_at"], name: "index_subscriptions_on_canceled_at"
+    t.index ["contact_id", "record_id", "record_type"], name: "index_subscriptions_on_contact_id_and_record_id_and_record_type", unique: true
+    t.index ["contact_id"], name: "index_subscriptions_on_contact_id"
+    t.index ["record_type", "record_id"], name: "index_subscriptions_on_record"
+  end
+
   create_table "suppressions", force: :cascade do |t|
     t.datetime "ignored_at"
     t.bigint "ignored_by_id"
@@ -1007,6 +1050,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
   add_foreign_key "carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "claim_items", "claims"
   add_foreign_key "claims", "shipments"
+  add_foreign_key "comments", "contacts"
+  add_foreign_key "comments", "discussion_topics"
   add_foreign_key "commissions", "shipments"
   add_foreign_key "commissions", "users"
   add_foreign_key "contact_roles", "contacts"
@@ -1068,6 +1113,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
   add_foreign_key "standardized_addresses", "countries"
   add_foreign_key "standardized_addresses", "regions"
   add_foreign_key "stripe_accounts", "brokers"
+  add_foreign_key "subscriptions", "contacts"
   add_foreign_key "suppressions", "problems"
   add_foreign_key "suppressions", "suppressors"
   add_foreign_key "suppressions", "users", column: "ignored_by_id"

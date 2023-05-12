@@ -59,6 +59,7 @@ class Problem < ApplicationRecord
     end
   end
 
+  include DiscussableTopic
   include HasProblematicRule
 
   after_save :update_suppressions
@@ -66,7 +67,6 @@ class Problem < ApplicationRecord
   alias_attribute :problematic, :resolvable
 
   belongs_to :assigned_to, class_name: 'User'
-  # belongs_to :problem_type
   belongs_to :resolvable, polymorphic: true # TODO: Rename to problematic
   belongs_to :resolved_by, class_name: 'User', optional: true
 
@@ -82,6 +82,31 @@ class Problem < ApplicationRecord
   scope :unresolved, -> { where(resolved_at: nil) }
   scope :resolved, -> { where.not(id: unresolved) }
   scope :suppressive, -> { unresolved.where(suppressions_count: (1..)) }
+
+  def build_discussable_topic?
+    true
+  end
+
+  def contact_scope
+    :broker
+  end
+
+  # @note `delegate`, `has_one` both fail in `before_save` callback so it should be a method
+  def discussion
+    resolvable&.discussion
+  end
+
+  def discussable_topic_description
+    title
+  end
+
+  def eligible_discussable_contacts
+    Contact.where(id: discussion.subscriptions.active.pluck(:contact_id)).broker
+  end
+
+  def discussion_topic_translation_key
+    problematic_rule_code
+  end
 
   # @note For HasProblematicRule
   def problematic_type

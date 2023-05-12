@@ -112,6 +112,7 @@ RSpec.describe(User, type: :model) do
     it { is_expected.to(have_many(:commissions)) }
     it { is_expected.to(have_many(:problems)) }
 
+    it { is_expected.to(belong_to(:companyable)) }
     it { is_expected.to(belong_to(:contact)) }
   end
 
@@ -120,9 +121,9 @@ RSpec.describe(User, type: :model) do
   end
 
   describe '#label' do
-    subject { build(:user, first_name: 'John', last_name: 'Doe') }
+    let(:record) { build(:user, first_name: 'John', last_name: 'Doe') }
 
-    it { expect(subject.full_name).to(eq('John Doe')) }
+    it { expect(record.full_name).to(eq('John Doe')) }
   end
 
   describe '#dispatcher_for?' do
@@ -136,8 +137,11 @@ RSpec.describe(User, type: :model) do
       it { expect(user).not_to(be_dispatcher_for(nil)) }
     end
 
-    context 'when user is the shipments dispatcher' do
-      before { shipment.update!(dispatcher: user) }
+    context "when user is the shipment's dispatcher" do
+      before do
+        user.update(companyable: shipment.broker)
+        shipment.update(dispatcher: user)
+      end
 
       it { expect(user).to(be_dispatcher_for(shipment)) }
     end

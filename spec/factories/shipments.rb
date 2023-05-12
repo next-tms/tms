@@ -268,6 +268,7 @@ FactoryBot.define do
       user.contact = build(:contact, companyable: record.broker)
       user.contact.add_role(:dispatch)
 
+      record.discussion = record.build_discussion
       record.dispatcher = user
     end
 

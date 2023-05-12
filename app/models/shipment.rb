@@ -200,6 +200,7 @@ class Shipment < ApplicationRecord
   include Shipment::HasReceivables
   include Shipment::Interstellarable
 
+  include Discussable
   include Problematic
 
   attr_accessor :dispatch_pickup
@@ -304,7 +305,7 @@ class Shipment < ApplicationRecord
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, optional: true
 
-  belongs_to :dispatcher, class_name: 'User', optional: true
+  belongs_to :dispatcher, class_name: 'User'
 
   has_many :claims
   has_many :commissions, dependent: :destroy
@@ -390,8 +391,7 @@ class Shipment < ApplicationRecord
     broker_carrier_id_changed? || broker_customer_id_changed? || total_charges_cents_changed? || total_cost_cents_changed?
   }
 
-  # Dispatcher
-  before_save :assign_dispatcher
+  before_validation :set_dispatcher
 
   monetize :carrier_charge_cents, allow_nil: true
   monetize :carrier_cost_cents, allow_nil: true
@@ -455,6 +455,24 @@ class Shipment < ApplicationRecord
     end
 
     false
+  end
+
+  def eligible_discussable_contacts
+    ids = if broker_customer.present?
+            broker_customer.contacts.customer.ids +
+              broker_customer.dispatchers.pluck(:contact_id) +
+              broker_customer.sales_reps.pluck(:contact_id)
+          else
+            User.with_role('dispatch').broker.pluck(:contact_id)
+          end
+    ids << updated_by.contact_id if updated_by.present?
+
+    return if broker.nil?
+
+    # Fallback
+    ids = broker.users.with_role('root').pluck(:contact_id) if ids.empty?
+
+    Contact.where(id: ids)
   end
 
   def missing_delivery_eta_on?
@@ -729,16 +747,6 @@ class Shipment < ApplicationRecord
       (user.customer? && broker_customer == user.companyable)
   end
 
-  # Dispatcher
-  # @note Public method because `Broker::ShipmentsController#new` calls it
-  def assign_dispatcher
-    return if broker.blank? || dispatcher.present?
-
-    preferred_dispatchers = broker_customer&.dispatchers.presence || broker.users.active.dispatchers
-
-    self.dispatcher = preferred_dispatchers.order(Arel.sql('RANDOM()')).take
-  end
-
   def to_param
     load_id.to_s
   end
@@ -809,6 +817,16 @@ class Shipment < ApplicationRecord
       address.street = address.street2
       address.street2 = nil
     end
+  end
+
+  # Dispatcher
+  # @note Public method because `Broker::ShipmentsController#new` calls it
+  def set_dispatcher
+    return if broker.blank? || (dispatcher.present? && dispatcher.broker == broker)
+
+    preferred_dispatchers = broker_customer&.dispatchers.presence || broker.users.active.dispatchers
+
+    self.dispatcher = preferred_dispatchers.order(Arel.sql('RANDOM()')).take
   end
 
   def set_previous_changes

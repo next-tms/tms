@@ -68,3 +68,21 @@ en:
         pro: "Pro #"
         quote_id: "Quote #"
         shipper_reference: "SO #"
+  discussion_topics:
+    tracking_event:
+      arrived_at_terminal: #{model_name} arrived near %{city}, %{region_abbreviation} %{country_alpha2_code}
+      delivered: #{model_name} was delivered
+      delivery_appointment_scheduled: #{model_name} delivery appointment scheduled
+      departed: #{model_name} left %{city}, %{region_abbreviation} %{country_alpha2_code}
+      found: #{model_name} was found near %{city}, %{region_abbreviation} %{country_alpha2_code}
+      located: #{model_name} was located near %{city}, %{region_abbreviation} %{country_alpha2_code}
+      lost: #{model_name} was lost
+      out_for_delivery: #{model_name} was out for delivery near %{city}, %{region_abbreviation} %{country_alpha2_code}
+      pending_delivery_appointment: #{model_name} was pending delivery appointment
+      picked_up: #{model_name} was picked up
+      pickup_driver_assigned: #{model_name} assigned to a driver
+      pickup_information_received_by_carrier: #{model_name} pickup information received by carrier
+      pickup_information_sent_to_carrier: #{model_name} pickup information sent to carrier
+      sailed: #{model_name} left %{city}, %{region_abbreviation} %{country_alpha2_code} by ship
+      trailer_closed: #{model_name} was in a closed trailer %{city}, %{region_abbreviation} %{country_alpha2_code}
+      trailer_unloaded: #{model_name} was in an unloaded in %{city}, %{region_abbreviation} %{country_alpha2_code}

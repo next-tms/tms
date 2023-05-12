@@ -33,6 +33,8 @@
 #
 FactoryBot.define do
   factory :contact do
+    association :companyable, factory: %i[broker_carrier broker_customer broker].sample
+
     email { Faker::Internet.email }
     first_name { Faker::Name.first_name }
     job_title { Faker::Job.title }

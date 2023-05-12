@@ -46,6 +46,7 @@ class Contact < ApplicationRecord
 
   has_many :contact_roles, dependent: :destroy
   has_many :document_preferences, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
 
   has_one :broker_customer_as_receivables_contact,
           class_name: 'BrokerCustomer',
@@ -60,12 +61,13 @@ class Contact < ApplicationRecord
   phony_normalize :mobile_phone, default_country_code: 'US'
   phony_normalize :work_phone, default_country_code: 'US'
 
-  validates :email, presence: true, uniqueness: { scope: %i[companyable_id companyable_type] }, if: -> {
-                                                                                                      email.present?
-                                                                                                    }
-
   validate :validate_email
   validate :validate_first_name_and_last_name
+
+  validates :email,
+            presence: true,
+            uniqueness: { scope: %i[companyable_id companyable_type] },
+            if: -> { email.present? }
 
   def any_role?(*any_roles)
     return true if roles.any?(:root)
@@ -75,6 +77,12 @@ class Contact < ApplicationRecord
 
   def dispatcher?
     role?(:dispatcher)
+  end
+
+  def active?
+    return true if user.blank?
+
+    !user.deactivated?
   end
 
   # @return [String, nil]

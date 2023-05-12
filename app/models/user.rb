@@ -149,6 +149,11 @@ class User < ApplicationRecord
   # Deprecated, do not use
   has_many :user_roles
 
+  has_many :subscriptions, through: :contact
+
+  has_many :discussions, through: :subscriptions, source: :record, source_type: 'Discussion'
+  has_many :discussion_topics, through: :subscriptions, source: :record, source_type: 'DiscussionTopic'
+
   phony_normalize :phone, default_country_code: 'US'
 
   scope :active, -> { where.not(deactivated: true) }
