@@ -33,12 +33,12 @@ class Broker::ShipmentsController < Broker::BrokerController
   before_action :authenticate_user!
   before_action :authorize_access_to_shipment,
                 only: %i[
-                        :edit_tracking_events
-                        :quote
-                        :update
-                        :upload_document
-                        :show
-                        :tracking_events
+                        edit_tracking_events
+                        quote
+                        update
+                        upload_document
+                        show
+                        tracking_events
                       ]
 
   def book
@@ -112,22 +112,12 @@ class Broker::ShipmentsController < Broker::BrokerController
                         current_user.broker_customers.first
                       end
 
-    # Only root can change the dispatcher on the form, so skip this unless current_user.role?(:root)
-    if current_user.role?(:root)
-      @shipment.broker = current_user.broker
-      @shipment.dispatcher = if current_user.role?(:dispatch)
-                               current_user
-                             else
-                               @shipment.assign_dispatcher
-                             end
-    end
-
-    @shipment.shipper_name = broker_customer&.customer&.name
+    @shipment.broker = Broker.first
     @shipment.broker_customer = broker_customer
-    @shipment.dispatcher = @shipment.assign_dispatcher if broker_customer
-    @shipment.dispatcher = current_user if current_user.any_role?(:dispatch)
-    @shipment.shipper_address = broker_customer&.primary_pickup_address&.dup || Address.new
+    @shipment.dispatcher = current_user if current_user.role?(:dispatch) && !current_user.role?(:root)
     @shipment.receiver_address = Address.new
+    @shipment.shipper_address = broker_customer&.primary_pickup_address&.dup || Address.new
+    @shipment.shipper_name = broker_customer&.customer&.name
 
     @customer_dispatcher_ids = @broker_customers.map { |customer| customer.dispatchers.take&.id || 'n' }.join(',')
   end
@@ -532,14 +522,14 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def accounting
-    authorize! @shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy
+    authorize!(@shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy)
 
     @payment_transactions_q = @shipment.payment_transactions.ransack(params[:q])
     @receivables_q = @shipment.receivables.ransack(params[:q])
   end
 
   def claims
-    authorize! @shipment, to: :accounts_and_claims_show?, with: DispatchAndSalesRepPolicy
+    authorize!(@shipment, to: :accounts_and_claims_show?, with: DispatchAndSalesRepPolicy)
 
     @q = @shipment.claims.ransack(params[:q])
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -557,7 +547,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def pricing
-    authorize! @shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy
+    authorize!(@shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy)
 
     @total_charges_updated_by = @shipment.whodunnit('total_charges_cents')
   end
@@ -577,11 +567,11 @@ class Broker::ShipmentsController < Broker::BrokerController
   def tracking_events; end
 
   def transit
-    authorize! @shipment, to: :show?, with: DispatchAndSalesRepPolicy
+    authorize!(@shipment, to: :show?, with: DispatchAndSalesRepPolicy)
   end
 
   def transit_edit
-    authorize! @shipment, to: :show?, with: DispatchAndSalesRepPolicy
+    authorize!(@shipment, to: :show?, with: DispatchAndSalesRepPolicy)
   end
 
   def delivery; end
@@ -613,7 +603,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   private
 
   def authorize_access_to_shipment
-    authorize! @shipment, to: :show?
+    authorize!(@shipment, to: :show?)
   end
 
   # Use callbacks to share common setup or constraints between actions.

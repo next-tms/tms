@@ -679,7 +679,7 @@ class Shipment < ApplicationRecord
   end
 
   def incomplete?
-    !shipper_address.full_address? || !receiver_address.full_address? || shipper_name.blank? || receiver_name.blank? ? true : false
+    [shipper_address, receiver_address].map(&:full_address?).any?(false) || [shipper_name, receiver_name].any?(&:blank?)
   end
 
   def whodunnit(column)
@@ -742,9 +742,15 @@ class Shipment < ApplicationRecord
   end
 
   def accessible_by?(user)
-    (user.broker? && user.any_role?(:accounts_payable, :accounts_receivable, :dispatch)) ||
-      (user.broker? && broker_customer.sales_reps.any?(user)) ||
-      (user.customer? && broker_customer == user.companyable)
+    if user.broker?
+      return user.any_role?(
+        :accounts_payable,
+        :accounts_receivable,
+        :dispatch,
+      ) || broker_customer.sales_reps.include?(user)
+    end
+
+    user.customer? && broker_customer == user.companyable
   end
 
   def to_param
@@ -819,8 +825,6 @@ class Shipment < ApplicationRecord
     end
   end
 
-  # Dispatcher
-  # @note Public method because `Broker::ShipmentsController#new` calls it
   def set_dispatcher
     return if broker.blank? || (dispatcher.present? && dispatcher.broker == broker)
 
