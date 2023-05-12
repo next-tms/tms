@@ -581,9 +581,6 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     @shipment.rates.where.not(error_object: nil).destroy_all
 
-    # Allow brokers to see all rates
-    @broker_carriers = @shipment.valid_broker_carriers_for_quotation(user_type: :broker)
-
     calculated_freight_classes = @shipment.forced_freight_classes
     forced_freight_classes = @shipment.calculated_freight_classes
 
@@ -593,6 +590,10 @@ class Broker::ShipmentsController < Broker::BrokerController
       @use_forced_freight_classes = []
       @use_forced_freight_classes << false unless @shipment.calculated_freight_classes == [nil]
       @use_forced_freight_classes << true unless @shipment.forced_freight_classes == [nil]
+    end
+
+    @use_forced_freight_classes.each do |use_forced_freight_class|
+      PopulateRatesJob.perform_later(@shipment.id, current_user.id, use_forced_freight_class)
     end
   end
 

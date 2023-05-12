@@ -1,0 +1,141 @@
+<% unless rates.blank? %>
+  <% rates.each do |rate| %>
+    <% if rate.error_object.present? %>
+      <% next if user.customer? %>
+      <tr data-rate-id="<%= rate.id %>" class="table-warning">
+        <td></td>
+        <td>
+          <div class="text-nowrap">
+            <% if not rate.tracking_carrier.blank? %>
+              <%= rate.tracking_carrier.name %>
+              <br>
+              <span class="text-muted"> via <%= rate.broker_carrier.carrier.name %></span>
+            <% else %>
+              <%= rate.broker_carrier.carrier.name %>
+            <% end %>
+            <% unless rate.broker_carrier.broker_customer.blank? %>
+              <br>
+              <span class="text-muted"> via <%= rate.broker_carrier.broker_customer.customer.name %> account</span>
+            <% end %>
+          </div>
+        </td>
+        <td></td>
+        <td data-sort="ZZZZ" colspan="5">
+          <%= pretty_api_error(rate.error_object) %>
+        </td>
+      </tr>
+      <% next %>
+    <% end %>
+
+    <% next if !user.broker? && (!rate.preferred? || !rate.cost.positive?) %>
+
+    <% if user.customer? %>
+      <% upcharged_rate = user
+                          .companyable
+                          .carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment)
+      %>
+
+      <% next if upcharged_rate.blank? || !upcharged_rate.positive? || upcharged_rate <= rate.cost %>
+    <% end %>
+
+    <% css_class = if !rate.preferred?
+                      'table-danger'
+                    elsif rate.applied?
+                      'table-warning'
+                    end
+    %>
+    <tr data-rate-id="<%= rate.id %>" class="<%= css_class %>">
+      <td class="text-nowrap">
+        <div class="btn-toolbar">
+          <div class="btn-group">
+            <% unless shipment.broker_customer.blank? %>
+              <%= link_to 'Book', '#', data: { action: 'book#handle', controller: 'book', url: (user.customer? ? customer_shipment_path(shipment) : broker_shipment_path(shipment)), applied_rate_uid: rate.uid }, class: 'btn btn-sm btn-primary' %>
+            <% else %>
+              <%= link_to 'Book', book_modal_broker_shipment_path(shipment, shipment: { applied_rate_uid: rate.uid }), data: { 'turbo-frame': 'modal' }, class: 'btn btn-sm btn-primary' %>
+            <% end %>
+
+            <% if user.broker? &&
+                  rate.broker_carrier.api_configured? &&
+                  rate.broker_carrier.carrier.create_pickup_implemented? %>
+              <%= link_to 'Pickup',
+                          pickup_modal_broker_shipment_path(
+                            shipment,
+                            shipment: { applied_rate_uid: rate.uid }
+                          ),
+                          data: { 'turbo-frame': 'modal' },
+                          class: 'btn btn-sm btn-outline-primary'
+              %>
+            <% end %>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="text-nowrap">
+          <% if not rate.tracking_carrier.blank? %>
+            <%= rate.tracking_carrier.name %>
+            <br>
+            <span class="text-muted"> via <%= rate.broker_carrier.carrier.name %></span>
+            <% unless rate.preferred? %>
+              <br>
+              <%= icon 'solid', 'triangle-exclamation', 'Unpreferred' %>
+            <% end %>
+          <% else %>
+            <%= rate.broker_carrier.carrier.name %>
+          <% end %>
+          <% unless rate.broker_carrier.broker_customer.blank? %>
+            <br>
+            <span class="text-muted"> via <%= rate.broker_carrier.broker_customer.customer.name %> account</span>
+          <% end %>
+        </div>
+      </td>
+      <% if !user.customer? %>
+        <td>
+          <% unless rate.reference.blank? %>
+            <%= rate.reference %>
+            <span class="text-nowrap"><%= link_to icon('solid', 'eye', 'Show'), quote_uri(shipment), target: '_blank' unless quote_uri(shipment).blank? %></span>
+          <% else %>
+            <em>Not provided</em>
+          <% end %>
+        </td>
+      <% end %>
+      <td data-sort="<%= user.customer? ? (upcharged_rate * 100).round : rate.cost_cents %>">
+        <% if rate.pricing_rule? && rate.cost.zero? %>
+          <em>Contact for quote</em>
+        <% elsif user.customer? %>
+          <%= humanized_money_with_symbol upcharged_rate, no_cents_if_whole: false %>
+        <% else %>
+          <%= humanized_money_with_symbol rate.cost, no_cents_if_whole: false %>
+          <%= link_to 'Details',
+                      broker_rate_breakdown_modal_path(rate),
+                      data: { 'turbo-frame': 'modal' },
+                      class: 'btn btn-sm btn-outline-secondary'
+          %>
+        <% end %>
+      </td>
+
+      <% if user.broker? %>
+        <td>
+          <% if rate.pricing_rule? %>
+            <%= icon 'solid', 'triangle-exclamation' %>
+          <% end %>
+
+          <%= enum_l(rate, :source) %>
+        </td>
+      <% end %>
+
+      <td><%= rate.pretty_service_type %></td>
+      <td>
+        <% unless rate.transit_days.blank? %>
+          <%= rate.transit_days %> <%= 'day'.pluralize(rate.transit_days ? rate.transit_days.to_i : 0) %>
+          <br/>
+          <%= short_date rate.transit_days.to_i.business_days.after(shipment.shipper_available_at || Date.current).in_time_zone(shipment.receiver_address.time_zone.name), shipment.receiver_address.time_zone %>
+        <% else %>
+          <em>Not provided</em>
+        <% end %>
+      </td>
+      <% if !user.customer? && shipment.total_charges != 0 %>
+        <td><%= humanized_money_with_symbol (shipment.total_charges - rate.cost), no_cents_if_whole: false %></td>
+      <% end %>
+    </tr>
+  <% end %>
+<% end %>

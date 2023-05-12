@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class RatesServiceController < ApplicationController
+  # TODO: Deprecate After Regression Testing
   before_action :set_broker_carrier
   before_action :set_shipment
   before_action :set_use_forced_freight_classes
