@@ -66,7 +66,7 @@ require 'rails_helper'
 RSpec.describe(TrackingEvent, type: :model) do
   it_behaves_like 'discussable_topic'
 
-  describe 'build_discussion_topic?' do
+  describe '#build_discussable_topic?' do
     let(:record) { build(:tracking_event) }
 
     context 'when Event#active_shipping_code included in TrackingEvent::DISCUSSABLE_EVENT_ACTIVE_SHIPPING_CODES' do
@@ -75,11 +75,11 @@ RSpec.describe(TrackingEvent, type: :model) do
         allow(record.event).to(receive(:active_shipping_code).and_return(included_active_shipping_code))
       end
 
-      it { expect(record).to(be_build_discussion_topic) }
+      it { expect(record).to(be_build_discussable_topic) }
     end
 
     context 'when Event#active_shipping_code not included in TrackingEvent::DISCUSSABLE_EVENT_ACTIVE_SHIPPING_CODES' do
-      it { is_expected.not_to(be_build_discussion_topic) }
+      it { is_expected.not_to(be_build_discussable_topic) }
     end
   end
 end

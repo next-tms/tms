@@ -95,7 +95,7 @@ class TrackingEvent < ApplicationRecord
 
   validates :time_zone_name, presence: true
 
-  def build_discussion_topic?
+  def build_discussable_topic?
     return false if event.blank?
 
     DISCUSSABLE_EVENT_ACTIVE_SHIPPING_CODES.include?(event.active_shipping_code.to_sym)
