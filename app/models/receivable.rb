@@ -217,6 +217,8 @@ class Receivable < ApplicationRecord
     return false if sent? || balance_cents.zero?
     return false unless invoice.attached? || fetch_invoice
 
+    return false if shipment.requires_charges_confirmed_on_receivables? && !shipment.charges_confirmed?
+
     unless broker_customer.receivables_schedule == 'immediately'
       now = Time.current.in_time_zone(broker_customer.broker.time_zone)
 

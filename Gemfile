@@ -117,7 +117,6 @@ gem 'StreetAddress',
 gem 'htmlentities'
 gem 'phony_rails'
 
-gem 'combine_pdf', '~> 1.0.22'
 gem 'gotenberg-ruby', '~> 1.0.11'
 gem 'prawn', '~> 2.4.0'
 gem 'prawn-labels', '~> 1.2.6', require: 'prawn/labels'

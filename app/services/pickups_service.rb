@@ -20,7 +20,7 @@ class PickupsService
       company_name: @shipment.receiver_name,
       email: @shipment.receiver_contact_email,
       name: @shipment.receiver_contact_name,
-      phone: @shipment.receiver_contact_phone
+      phone: @shipment.receiver_contact_phone,
     )
 
     interstellar_origin = @shipment.shipper_address.to_interstellar_shipping_address
@@ -28,7 +28,7 @@ class PickupsService
       company_name: @shipment.shipper_name,
       email: @shipment.shipper_contact_email,
       name: @shipment.shipper_contact_name,
-      phone: @shipment.shipper_contact_phone
+      phone: @shipment.shipper_contact_phone,
     )
 
     interstellar_shipment = Interstellar::Shipment.new(
@@ -39,13 +39,13 @@ class PickupsService
       origin: interstellar_origin,
       packages:,
       po_number: @shipment.customer_reference,
-      pro: @shipment.pro
+      pro: @shipment.pro,
     )
 
     interstellar_dispatcher = Interstellar::Contact.new(
       email: @pickup.dispatcher.email,
-      name: @pickup.dispatcher.full_name.blank? ? 'Dispatcher' : @pickup.dispatcher.full_name,
-      phone: @pickup.dispatcher.phone
+      name: (@pickup.dispatcher.full_name.presence || 'Dispatcher'),
+      phone: @pickup.dispatcher.phone,
     )
 
     error = nil
@@ -60,7 +60,7 @@ class PickupsService
         pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
         scac: @broker_carrier.carrier.scac,
         service: @shipment.applied_rate.interstellar_service_type.to_sym,
-        shipment: interstellar_shipment
+        shipment: interstellar_shipment,
       )
     rescue StandardError => e
       error = e
@@ -68,7 +68,7 @@ class PickupsService
 
     error ||= response&.error
 
-    unless error.blank?
+    if error.present?
       if !Rails.env.development? && !error.is_a?(Interstellar::Error)
         attributes = {
           broker_carrier_id: @broker_carrier&.id,
@@ -93,36 +93,26 @@ class PickupsService
       api_request: response.request,
       api_response: response.response,
       pickup_confirmation:,
-      updated_by: nil
+      updated_by: nil,
     )
 
     return if response&.labels&.empty?
 
-    label_paths = []
+    paths = response.labels.map do |label|
+      Tempfile.open do |_tempfile|
+        f.binmode
+        f.write(Base64.decode64(label.data))
+        f.rewind
 
-    response.labels.each do |api_label|
-      path = File.join(Dir.tmpdir, "#{DateTime.current.to_i}.pdf")
-
-      File.binwrite(path, Base64.decode64(api_label.data))
-
-      label_paths << path
+        f.path
+      end
     end
 
-    pdf = CombinePDF.new
+    content_type = 'application/pdf'
+    filename = "#{@shipment.load_id} Labels.pdf"
+    io = PDFService.merge(*paths)
 
-    label_paths.each do |label_path|
-      pdf << CombinePDF.load(label_path)
-    end
-
-    filename = "#{DateTime.current.to_i}.pdf"
-    path = File.join(Dir.tmpdir, filename)
-    pdf.save(path)
-
-    blob = ActiveStorage::Blob.create_and_upload!(
-      content_type: 'application/pdf',
-      filename:,
-      io: File.open(path)
-    )
+    blob = ActiveStorage::Blob.create_and_upload!(content_type:, filename:, io:)
 
     @shipment.carrier_label.attach(blob)
   end
@@ -140,7 +130,7 @@ class PickupsService
                                .distinct
                                .where(
                                  id: @shipment.accessorials.pluck(:id) +
-                                     @shipment.assumed_accessorials.pluck(:id)
+                                     @shipment.assumed_accessorials.pluck(:id),
                                )
   end
 

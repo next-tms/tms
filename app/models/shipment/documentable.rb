@@ -22,7 +22,7 @@ module Shipment::Documentable
           self,
           :documents,
           target: broadcast_target(document_type, namespace),
-          html: ApplicationController.render(partial:, locals: { shipment: self, this_dom_id: dom_id(self) }).html_safe
+          html: ApplicationController.render(partial:, locals: { shipment: self, this_dom_id: dom_id(self) }).html_safe,
         )
       end
     end
@@ -34,8 +34,8 @@ module Shipment::Documentable
         broadcast_replace_to(
           self,
           :documents,
-          target: ,
-          html: "<tr id=\"#{target}\"></tr>".html_safe
+          target:,
+          html: "<tr id=\"#{target}\"></tr>".html_safe,
         )
       end
     end
@@ -86,17 +86,15 @@ module Shipment::Documentable
   def refresh_documents!
     return unless can_create_broker_bol? || can_create_broker_quote? || can_create_broker_label?
 
-    domain = broker.websites.first.homepage_domain
-
     if can_create_broker_quote?
       broker_quote.purge
-      CreateShipmentBrokerQuoteJob.perform_later(broker_documents_fingerprint:, domain:, shipment: self)
+      CreateShipmentBrokerQuoteJob.perform_later(broker_documents_fingerprint:, shipment: self)
     end
 
     if can_create_broker_bol?
       broker_bol.purge
       broker_label.purge # for can_create_broker_label? below
-      CreateShipmentBrokerBOLJob.perform_later(broker_documents_fingerprint:, domain:, shipment: self)
+      CreateShipmentBrokerBOLJob.perform_later(broker_documents_fingerprint:, shipment: self)
     end
 
     if can_create_broker_label?
@@ -107,6 +105,6 @@ module Shipment::Documentable
     return unless can_create_broker_dispatch_sheet?
 
     broker_dispatch_sheet.purge
-    CreateShipmentBrokerDispatchSheetJob.perform_later(broker_documents_fingerprint:, domain:, shipment: self)
+    CreateShipmentBrokerDispatchSheetJob.perform_later(broker_documents_fingerprint:, shipment: self)
   end
 end
