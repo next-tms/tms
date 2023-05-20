@@ -758,6 +758,7 @@ DEPENDENCIES
   letter_opener
   listen (>= 3.0.5, < 3.9)
   mainstreet (~> 0.3.0)
+  matrix
   money-rails (~> 1.15.0)
   noticed
   open_street_map (~> 1.2.1)
