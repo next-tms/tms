@@ -7,6 +7,7 @@ class DownloadAttachmentService
       path = Rails.root.join('tmp', "{Time.current.to_i}.#{attachment.filename.extension}")
 
       File.binwrite(path, binary)
+      File.open(path)
     end
   end
 end
