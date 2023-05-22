@@ -3,7 +3,10 @@
 class DownloadAttachmentService
   class << self
     def call(attachment)
-      File.write(Rails.root.join('tmp', Time.current.to_i.to_s, attachment.filename.extension))
+      binary = attachment.download
+      path = Rails.root.join('tmp', Time.current.to_i.to_s, attachment.filename.extension)
+
+      File.binwrite(path, binary)
     end
   end
 end
