@@ -16,7 +16,7 @@ gem 'turbo-rails', '~> 1.3.3'
 
 gem 'jbuilder', '~> 2.11'
 
-gem 'redis', '~> 5.0'
+gem 'redis', '~> 4.8'
 
 gem 'bootsnap', '>= 1.4.2', require: false
 
