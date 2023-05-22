@@ -8,10 +8,10 @@ module PDFService
 
     def merge(*paths)
       result = Gotenberg::PdfEngines.call(ENV['GOTENBERG_URL']) { |doc| doc.merge(*paths) }
-      
+
       raise result.exception unless result.success?
-      
-      result
+
+      result.to_binary
     end
   end
 end

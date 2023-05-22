@@ -8,7 +8,7 @@ class ReceivablesMailer < ApplicationMailer
 
     attachments[pdf_filename] = {
       mime_type: 'application/pdf',
-      content: pdf.to_pdf
+      content: pdf
     }
 
     bcc = []
