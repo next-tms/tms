@@ -132,9 +132,5 @@ gem 'pretender'
 gem 'public_suffix'
 gem 'rss_creator'
 
-# CVE-2021-32740
-# TODO: Remove this once dependencies define version > 2.4.0
-gem 'addressable', '~> 2.8.1'
-
 gem 'activerecord-session_store'
 gem 'graphql-client'
