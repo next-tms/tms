@@ -64,7 +64,7 @@ module ProblematicService
         return record.reload.problems
       end
 
-      roles_problems = Problem.by_any_role(*roles).where(assigned_to: record.broker.users)
+      roles_problems = record.problems.by_any_role(*roles).where(assigned_to: record.broker.users)
 
       if roles_problems.any?
         roles_problems.update_all(resolved_at: nil, resolved_by_id: nil)
