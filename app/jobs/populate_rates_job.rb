@@ -2,6 +2,8 @@
 
 class PopulateRatesJob < ApplicationJob
   def perform(shipment_id, user_id, use_forced_freight_class)
+    sleep(5)
+
     shipment = Shipment.find shipment_id
     user = User.find user_id
     broker_carriers = shipment.valid_broker_carriers_for_quotation(user_type: :broker)
