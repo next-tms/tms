@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
 class PopulateRatesJob < ApplicationJob
-  def perform(shipment_id, user_id, use_forced_freight_class)
+  def perform(shipment_id, user_id, use_forced_freight_class, broker_carrier_ids=[])
     sleep(5)
 
     shipment = Shipment.find shipment_id
     user = User.find user_id
-    broker_carriers = shipment.valid_broker_carriers_for_quotation(user_type: :broker)
+    if broker_carrier_ids.present?
+      broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
+    else
+      broker_carriers = shipment.valid_broker_carriers_for_quotation(user_type: :broker)
+    end
 
     broker_carriers.each do |broker_carrier|
       rates = Rate.by_shipment_and_broker_carrier(shipment, broker_carrier, use_forced_freight_class)

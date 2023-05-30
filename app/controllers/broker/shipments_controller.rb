@@ -578,23 +578,13 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   def quote
     Shipment::ResetRatesService.new(shipment: @shipment, force_reset: params[:force].present?).call
-
     @shipment.rates.where.not(error_object: nil).destroy_all
 
-    calculated_freight_classes = @shipment.forced_freight_classes
-    forced_freight_classes = @shipment.calculated_freight_classes
-
-    if calculated_freight_classes.sort == forced_freight_classes.sort
-      @use_forced_freight_classes = [false]
-    else
-      @use_forced_freight_classes = []
-      @use_forced_freight_classes << false unless @shipment.calculated_freight_classes == [nil]
-      @use_forced_freight_classes << true unless @shipment.forced_freight_classes == [nil]
-    end
-
-    @use_forced_freight_classes.each do |use_forced_freight_class|
-      PopulateRatesJob.perform_later(@shipment.id, current_user.id, use_forced_freight_class)
-    end
+    service = Shipment::FetchAndCreateRatesService.new(shipment: @shipment, user_id: current_user.id).call
+    @use_forced_freight_classes = service.use_forced_freight_classes
+    @rates_forced_freight_false = service.rates_forced_freight_false
+    @rates_forced_freight_true = service.rates_forced_freight_true
+    @populate_rate_jobs_on_queue = service.populate_rate_jobs_on_queue
   end
 
   def history

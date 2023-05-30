@@ -4,12 +4,14 @@
 <div data-controller="rates">
   <h4>Find Rates</h4>
 
-  <div class="alert alert-success d-flex justify-content-between" data-rates-target="loading">
-    <h5>Fetching Rates  </h5>
-    <span class="spinner-border" role="status">
-      <span class="sr-only">Loading...</span>
-    </span> 
-  </div>
+  <% if @populate_rate_jobs_on_queue %>
+    <div class="alert alert-success d-flex justify-content-between" data-rates-target="loading">
+      <h5>Fetching Rates  </h5>
+      <span class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </span> 
+    </div>
+  <% end %>
 
   <% if !@shipment.broker_carrier.blank? && !@shipment.pickup_confirmation.blank? %>
     <%= render 'layouts/message', classes: 'alert-warning', title: 'Dispatched', message: "You must contact #{@shipment.broker_carrier.carrier.name} to cancel pickup #{@shipment.pickup_confirmation} or you may be charged." %>
@@ -39,6 +41,7 @@
           </tr>
         </thead>
         <tbody id="rates_false" data-rates-target="ratesContainer" data-shipment-id="<%= @shipment.id %>">
+          <%= render "rates_service/rates", rates: @rates_forced_freight_false, shipment: @shipment if @rates_forced_freight_false %>
         </tbody>
       </table>
     </div>
@@ -72,6 +75,8 @@
                 </tr>
               </thead>
               <tbody id="rates_<%= use_forced_freight_classes %>" data-rates-target="ratesContainer" data-shipment-id="<%= @shipment.id %>">
+                <% existing_rates = instance_variable_get("@rates_forced_freight_#{use_forced_freight_classes}") %>
+                <%= render "rates_service/rates", rates: existing_rates, shipment: @shipment if existing_rates.present? %>
               </tbody>
             </table>
           </div>

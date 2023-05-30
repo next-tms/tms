@@ -1,3 +1,5 @@
+<% user ||= current_user %>
+
 <% unless rates.blank? %>
   <% rates.each do |rate| %>
     <% if rate.error_object.present? %>
