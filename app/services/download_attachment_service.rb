@@ -4,7 +4,8 @@ class DownloadAttachmentService
   class << self
     def call(attachment)
       binary = attachment.download
-      path = Rails.root.join('tmp', "#{Time.current.to_i}.#{attachment.filename.extension}")
+      filename = "#{Time.current.to_i}_#{rand(1..1000)}.#{attachment.filename.extension}"
+      path = Rails.root.join('tmp', filename)
 
       File.binwrite(path, binary)
       File.open(path)
