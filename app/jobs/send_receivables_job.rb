@@ -35,8 +35,8 @@ class SendReceivablesJob < ApplicationJob
     broker_customers.where(receivables_schedule: :immediately).find_each do |broker_customer|
       receivables = broker_customer.receivables.unsent.with_attached_invoice.order(order).select(&:sendable?)
 
-      paths = []
       receivables.each do |receivable|
+        paths = []
         paths << DownloadAttachmentService.call(receivable.invoice).path
 
         if broker_customer.requires_carrier_bol_on_receivables?
