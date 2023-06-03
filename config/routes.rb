@@ -48,8 +48,9 @@ Rails.application.routes.draw do
   get 'gateway/accounts/intuit/oauth-callback', as: :oauth_callback_intuit_account, to: 'intuit_accounts#oauth_callback'
   get 'gateway/accounts/stripe/authenticate', as: :authenticate_stripe_account, to: 'stripe_accounts#authenticate'
   get 'gateway/accounts/stripe/oauth-callback', as: :oauth_callback_stripe_account, to: 'stripe_accounts#oauth_callback'
-  get 'gateway/accounts/stripe/oauth-refresh', as: :oauth_callback_refresh_stripe_account,
-                                               to: 'stripe_accounts#oauth_callback_refresh'
+  get 'gateway/accounts/stripe/oauth-refresh',
+      as: :oauth_callback_refresh_stripe_account,
+                                                     to: 'stripe_accounts#oauth_callback_refresh'
 
   resources :notifications, only: %i[show index]
 
@@ -157,7 +158,8 @@ Rails.application.routes.draw do
       collection do
         get :resolved
         get :suppressive
-        get :unresolved
+        get :team
+        get :yours
       end
     end
 
@@ -236,8 +238,11 @@ Rails.application.routes.draw do
     get 'shipments/pending-pickup', to: 'shipments#pending_pickup'
     get 'shipments/pending-quotation', to: 'shipments#pending_quotation'
     get 'shipments/quote-only' => 'shipments#new_quote_only', as: :quote_only
-    resources :shipments, path: 'shipments', as: :shipments, param: :load_id,
-                          only: %i[index new create edit show update] do
+    resources :shipments,
+              path: 'shipments',
+              as: :shipments,
+              param: :load_id,
+                                        only: %i[index new create edit show update] do
       member { get 'book' => 'shipments#book', as: :book }
       member { get 'documents' => 'shipments#documents', as: :documents }
       member { get 'documents/bol' => 'shipments#documents_bol', as: :bol_document }

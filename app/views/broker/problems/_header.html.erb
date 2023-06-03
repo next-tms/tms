@@ -4,18 +4,23 @@
   <table class="table table-borderless">
     <thead>
       <tr>
-        <th>Open</th>
+        <th>Yours</th>
+        <th>Team</th>
         <th>Suppressive</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td class="display-6">
-          <%= link_to @scoped_problems.unresolved.size, unresolved_broker_problems_path, class: 'problems-unresolved' %>
+          <%= link_to @scoped_problems.unresolved.where(assigned_to: current_user).size, yours_broker_problems_path, class: 'problems-yours' %>
         </td>
 
         <td class="display-6">
-          <%= link_to @scoped_problems.suppressive.size, suppressive_broker_problems_path, class: 'problems-suppressive' %>
+          <%= link_to Problem.unresolved.size, team_broker_problems_path, class: 'problems-team' %>
+        </td>
+
+        <td class="display-6">
+          <%= link_to @scoped_problems.unresolved.suppressive.size, suppressive_broker_problems_path, class: 'problems-suppressive' %>
         </td>
       </tr>
     </tbody>
