@@ -39,6 +39,7 @@ class PopulateRatesJob < ApplicationJob
       data = {
         html: partial,
         use_forced_freight_class: use_forced_freight_class,
+        cost: rates.map(&:cost_cents).max
       }
 
       ActionCable.server.broadcast("rates_channel_#{shipment_id}", data)

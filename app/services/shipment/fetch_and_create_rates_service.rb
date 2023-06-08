@@ -32,7 +32,10 @@ class Shipment::FetchAndCreateRatesService
         end
       end
 
-      instance_variable_set("@rates_forced_freight_#{use_forced_freight_class}", existing_rates.flatten.uniq)
+      instance_variable_set(
+        "@rates_forced_freight_#{use_forced_freight_class}",
+        existing_rates.flatten.uniq.sort_by { |r| r.cost_cents }
+      )
       next unless broker_carrier_with_no_rate_ids.present?
 
       @populate_rate_jobs_on_queue = true

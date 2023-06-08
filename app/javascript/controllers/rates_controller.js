@@ -29,8 +29,26 @@ export default class extends Controller {
   _cableReceived(data) {
     // Called when there's incoming data on the websocket for this channel
     if (data.html) {
-        let targetContainer = this.ratesContainerTargets.find(c => c.id == "rates_" + data.use_forced_freight_class)
-        targetContainer.innerHTML = this.ratesContainerTarget.innerHTML += data.html
+      let targetContainer = this.ratesContainerTargets.find(c => c.id == "rates_" + data.use_forced_freight_class)
+      targetContainer.innerHTML = targetContainer.innerHTML += data.html
+
+      var rates = Array.from(targetContainer.children)
+      var validRates = rates.filter(r => r.dataset.cost)
+      var apiErroRates = rates.filter(r => r.dataset.cost == undefined)
+  
+      // Sort Rates by Cost and append HTML by lowest to highest Cost
+      if (validRates.length != 0) {
+        var sortedRates = validRates.sort(function (a, b) {
+          return Number(a.dataset.cost) - Number(b.dataset.cost);
+        })
+  
+        targetContainer.innerHTML = sortedRates.map(sortedRate => sortedRate.outerHTML).join('')
+      }
+   
+      // Append Rates with API Errors after appending the Valid Rates
+      if (apiErroRates.length != 0) {
+        targetContainer.innerHTML = targetContainer.innerHTML += apiErroRates.map(errorRate => errorRate.outerHTML).join('')
+      }
     } else if (data.finished) {
         this.loadingTarget.classList.add('d-none')
     }
