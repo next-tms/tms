@@ -18,6 +18,7 @@ gem 'jbuilder', '~> 2.11'
 
 gem 'redis', '~> 4.8'
 
+gem 'tzinfo-data'
 gem 'bootsnap', '>= 1.4.2', require: false
 
 group :development, :test do

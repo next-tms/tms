@@ -338,18 +338,12 @@ class Shipment < ApplicationRecord
 
   has_many :pickups
 
-  belongs_to :receiver_address, class_name: 'Address', optional: false
-  belongs_to :shipper_address, class_name: 'Address', optional: false
+  belongs_to :receiver_address, class_name: 'Address'
+  belongs_to :shipper_address, class_name: 'Address'
 
   belongs_to :tracking_carrier, class_name: 'Carrier', optional: true
 
   belongs_to :broker_customer, optional: true
-
-  accepts_nested_attributes_for :receiver_address
-  validates_associated :receiver_address, presence: true
-
-  accepts_nested_attributes_for :shipper_address
-  validates_associated :shipper_address, presence: true
 
   before_save :remove_tracking_events, if: -> { pro_changed? || tracking_carrier_pro_changed? }
 
@@ -416,6 +410,9 @@ class Shipment < ApplicationRecord
   validate :validate_future_pickup_by, if: -> { dispatch_pickup }
   validate :validate_past_or_present_attributes
   validate :validate_pro_and_tracking_carrier_pro
+
+  accepts_nested_attributes_for :receiver_address
+  accepts_nested_attributes_for :shipper_address
 
   def applied_rate_uid=(rate_uid)
     rate = Rate.find_by(uid: rate_uid)
@@ -814,7 +811,7 @@ class Shipment < ApplicationRecord
       attribute = set[0]
       address = set[1]
 
-      next if address.street.blank? || !address.street.strip.upcase.start_with?('C/O')
+      next unless address&.street.present? && address.street.strip.upcase.start_with?('C/O')
 
       new_value = send(attribute) || ''
       new_value = "#{new_value} #{address.street}".strip

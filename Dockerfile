@@ -1,0 +1,44 @@
+FROM ruby:3.2.2-alpine3.18 AS runtime
+
+RUN apk -U upgrade && apk add --no-cache git libpq-dev libxml2 libxslt imagemagick nodejs npm yarn
+
+FROM runtime AS build
+
+ENV BUILD_ENV 1
+ENV BUNDLER_WITHOUT development test
+ENV DATABASE_URL postgres://fake@localhost/fake
+ENV GEONAMES_USERNAME 1
+ENV POSTMARK_API_TOKEN 1
+ENV RACK_ENV production
+ENV RAILS_ENV production
+
+COPY . /app
+WORKDIR /app
+
+RUN apk add --no-cache --virtual .gem-installdeps build-base \
+                                                  imagemagick-c++ \
+                                                  imagemagick-dev \
+                                                  imagemagick-libs \
+                                                  libxml2-dev \
+                                                  libxslt-dev && \
+    gem install bundler -v 2.4.10 && \
+    gem install nokogiri --platform=ruby -- --use-system-libraries && \
+    bundle install --retry 5 && \
+    bundle exec bootsnap precompile app/ lib/ && \
+    SECRET_KEY_BASE=`bundle exec rake secret` bin/rails assets:precompile && \
+    rm -rf $GEM_HOME/cache && \
+    apk del .gem-installdeps
+
+FROM runtime
+COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build /app /app
+
+WORKDIR /app
+
+RUN mkdir -p tmp/pids
+
+ENV RAILS_LOG_TO_STDOUT 1
+ENV RAILS_SERVE_STATIC_FILES true
+
+EXPOSE 3000
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]

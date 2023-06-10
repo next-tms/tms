@@ -86,6 +86,13 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
+  # Docker build step
+  if ENV["BUILD_ENV"].present?
+    config.active_record.encryption.primary_key = "build"
+    config.active_record.encryption.deterministic_key = "build"
+    config.active_record.encryption.key_derivation_salt = "build"
+  end
+
   # Postmark
   config.action_mailer.delivery_method = :postmark
 
