@@ -18,6 +18,7 @@ class CreateShipmentBrokerQuoteJob < ApplicationJob
 
     shipment.broker_quote.attach(blob)
     shipment.update!(broker_quote_shipment_fingerprint: shipment.broker_documents_fingerprint)
+    # shipment.problematic!
 
     shipment.broadcast_new_document_generated(:broker_quote)
   end

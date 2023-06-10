@@ -10,7 +10,7 @@ class InterstellarDocumentService
       broker_carrier = shipment.broker_carrier
       interstellar_document_response = InterstellarAPIClient.fetch_bol(broker_carrier:, tracking_number: shipment.pro)
 
-      return nil unless interstellar_document_response&.data.present?
+      return nil if interstellar_document_response&.data.blank?
 
       attach_document(type: :bol, document: interstellar_document_response, shipment:)
       deliver_mail_to_contacts(shipment:, type: :carrier_bol)
@@ -25,7 +25,7 @@ class InterstellarDocumentService
       broker_carrier = shipment.broker_carrier
       interstellar_document_response = InterstellarAPIClient.fetch_pod(broker_carrier:, tracking_number: shipment.pro)
 
-      return nil unless interstellar_document_response&.data.present?
+      return nil if interstellar_document_response&.data.blank?
 
       attach_document(type: :pod, document: interstellar_document_response, shipment:)
       deliver_mail_to_contacts(shipment:, type: :carrier_pod)
@@ -43,10 +43,10 @@ class InterstellarDocumentService
                                        .send(
                                          interstellar_method,
                                          broker_carrier:,
-                                         tracking_number: shipment.pro
+                                         tracking_number: shipment.pro,
                                        )
 
-      return nil unless interstellar_document_response&.data.present?
+      return nil if interstellar_document_response&.data.blank?
 
       document = shipment.send("carrier_#{document_type}")
       document.purge
@@ -63,9 +63,11 @@ class InterstellarDocumentService
       blob = ActiveStorage::Blob.create_and_upload!(
         io: StringIO.new(document.data),
         filename: "#{shipment.load_id} #{type.upcase} (Carrier)#{Rack::Mime::MIME_TYPES.invert[document.content_type]}",
-        content_type: document.content_type
+        content_type: document.content_type,
       )
       attachment.attach(blob)
+
+      shipment.problematic!
     end
 
     def deliver_mail_to_contacts(shipment:, type:)
@@ -76,13 +78,13 @@ class InterstellarDocumentService
 
         if user
           DocumentNotification
-            .with(
-              from_user: nil,
-              to_contact: contact,
-              shipment:,
-              document_type: type
-            )
-            .deliver(user)
+          .with(
+            from_user: nil,
+            to_contact: contact,
+            shipment:,
+            document_type: type,
+          )
+          .deliver(user)
 
           next
         end

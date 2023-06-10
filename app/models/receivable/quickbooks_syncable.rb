@@ -7,7 +7,7 @@ module Receivable::QuickbooksSyncable
     def create_quickbooks_invoice
       return nil unless broker.intuit_account&.connected?
 
-      return update_quickbooks_invoice unless quickbooks_invoice.blank?
+      return update_quickbooks_invoice if quickbooks_invoice.present?
 
       broker_customer.create_quickbooks_customer if broker_customer.quickbooks_customer.blank?
 
@@ -20,20 +20,20 @@ module Receivable::QuickbooksSyncable
 
     def quickbooks_invoice
       return nil unless broker.intuit_account&.connected?
-      return @quickbooks_invoice unless @quickbooks_invoice.blank?
+      return @quickbooks_invoice if @quickbooks_invoice.present?
 
       result = nil
 
-      unless quickbooks_invoice_id.blank?
+      if quickbooks_invoice_id.present?
         result = QuickbooksAPIClient::Invoices.new(broker:).find(quickbooks_invoice_id)
       end
-      unless result.blank?
+      if result.present?
         persisted? ? update_columns(quickbooks_invoice_id: result.id) : self.quickbooks_invoice_id = result.id
         return @quickbooks_invoice = result
       end
 
-      result = QuickbooksAPIClient::Invoices.new(broker:).find_by_doc_number(shipment.load_id)
-      unless result.blank?
+      result = QuickbooksAPIClient::Invoices.new(broker:).find_by(doc_number: shipment.load_id)
+      if result.present?
         persisted? ? update_columns(quickbooks_invoice_id: result.id) : self.quickbooks_invoice_id = result.id
         return @quickbooks_invoice = result
       end
@@ -63,12 +63,14 @@ module Receivable::QuickbooksSyncable
 
       blob = ActiveStorage::Blob.create_and_upload!(io: File.open(path), filename:, content_type: 'application/pdf')
       invoice.attach(blob)
+
+      shipment.problematic!
     end
 
     def update_from_quickbooks_invoice
       return if quickbooks_invoice.blank?
 
-      now = DateTime.current
+      now = Time.current
 
       # Using update_columns so we can bypass the validation that recalculates amounts
       update_columns(balance_cents: (quickbooks_invoice.balance.to_f * 100).to_i)
@@ -87,7 +89,7 @@ module Receivable::QuickbooksSyncable
 
       return create_quickbooks_invoice if quickbooks_invoice.blank?
 
-      shipment.broker_customer.create_quickbooks_customer unless shipment.broker_customer.quickbooks_customer.present?
+      shipment.broker_customer.create_quickbooks_customer if shipment.broker_customer.quickbooks_customer.blank?
 
       result = QuickbooksAPIClient::Invoices.new(broker:).update(self)
       return @quickbooks_invoice = nil if result.blank?

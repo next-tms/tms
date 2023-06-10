@@ -17,6 +17,7 @@ class CreateShipmentBrokerDispatchSheetJob < ApplicationJob
 
     shipment.broker_dispatch_sheet.attach(blob)
     shipment.update!(broker_dispatch_sheet_shipment_fingerprint: shipment.broker_documents_fingerprint)
+    # shipment.problematic!
 
     shipment.broadcast_new_document_generated(:broker_dispatch_sheet)
   end

@@ -18,6 +18,7 @@ class CreateShipmentBrokerBOLJob < ApplicationJob
 
     shipment.broker_bol.attach(blob)
     shipment.update!(broker_bol_shipment_fingerprint: shipment.broker_documents_fingerprint)
+    # shipment.problematic!
 
     shipment.broadcast_new_document_generated(:broker_bol)
   end

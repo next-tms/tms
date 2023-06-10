@@ -207,6 +207,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     )
 
     @shipment.send(document_params[:document_type].to_sym).attach(blob)
+    @shipment.problematic!
 
     flash[:success] = "Successfully uploaded document for Shipment ##{@shipment.load_id}"
     redirect_to(documents_broker_shipment_path(@shipment))

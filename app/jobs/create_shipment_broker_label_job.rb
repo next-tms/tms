@@ -16,7 +16,7 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
                       else
                         'Piece'
                       end
-    pro = shipment.tracking_carrier_pro.present? ? shipment.tracking_carrier_pro : shipment.pro
+    pro = (shipment.tracking_carrier_pro.presence || shipment.pro)
     pro = if pro.blank?
             "\n"
           else
@@ -56,11 +56,12 @@ class CreateShipmentBrokerLabelJob < ApplicationJob
     blob = ActiveStorage::Blob.create_and_upload!(
       io: file,
       filename: "#{shipment.load_id} Labels.pdf",
-      content_type: 'application/pdf'
+      content_type: 'application/pdf',
     )
     shipment.broker_label.attach(blob)
-
     shipment.broadcast_new_document_generated(:broker_label)
+
+    shipment.problematic!
 
     file.unlink
   end
