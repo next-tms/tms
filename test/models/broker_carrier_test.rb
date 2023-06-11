@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: broker_carriers
@@ -10,12 +12,18 @@
 #   @return [String]
 # @!attribute accounting_notes
 #   @return [String]
+# @!attribute api_configured
+#   @return [Boolean]
 # @!attribute create_invoice_on_pickup
 #   @return [Boolean]
 # @!attribute days_to_pay_after_invoice_date
 #   @return [Integer]
 # @!attribute default_bol_notes
 #   @return [String]
+# @!attribute encrypted_api_key
+#   @return [String]
+# @!attribute ignore_bol_requires_tracking_number
+#   @return [Boolean]
 # @!attribute password
 #   @return [String]
 # @!attribute quote_padding_cents
@@ -42,6 +50,8 @@
 #   @return [Integer]
 # @!attribute check_mailing_address_id
 #   @return []
+# @!attribute quickbooks_vendor_id
+#   @return [Integer]
 #
 # Indexes
 #

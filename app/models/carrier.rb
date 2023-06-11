@@ -8,10 +8,16 @@
 #   @return [Integer]
 # @!attribute acts_as_broker
 #   @return [Boolean]
-# @!attribute has_seperate_website_credentials
+# @!attribute consider_bol_and_pod_documents_same
 #   @return [Boolean]
+# @!attribute encrypted_api_key
+#   @return [String]
+# @!attribute encrypted_proxy_url
+#   @return [String]
 # @!attribute has_traceable_pickup_confirmation
 #   @return [Boolean]
+# @!attribute mc_number
+#   @return [String]
 # @!attribute name
 #   @return [String]
 # @!attribute scac
@@ -41,6 +47,8 @@ class Carrier < ApplicationRecord
     api_key: %i[encrypted_api_key],
     website: %i[website_username website_password]
   }.freeze
+  
+  belongs_to :company
 
   # API key belonging to Next TMS
   encrypts :encrypted_api_key
@@ -63,11 +71,7 @@ class Carrier < ApplicationRecord
   accepts_nested_attributes_for :check_mailing_address
 
   validates :name, uniqueness: true
-  validates :scac, uniqueness: { allow_nil: true }
-  validates :mc_number,
-            length: { is: 6 },
-            numericality: { only_integer: true },
-            uniqueness: { allow_nil: true }
+  validates :mc_number, :scac, uniqueness: { allow_nil: true }
 
   def bol_requires_tracking_number?
     !!interstellar_class&.bol_requires_tracking_number?

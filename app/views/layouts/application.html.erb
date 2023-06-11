@@ -1,28 +1,19 @@
 <!DOCTYPE html>
   <head>
-    <title><%= yield :title %> — <%= @website ? @website.broker.name : t(:app_name) %></title>
+    <title><%= yield :title %> — <%= Setting.value!(:name) %></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="<%= Setting.value!(:website_desc) %>"/>
 
-    <% unless @website.blank? %>
-      <% unless @website&.manifest&.dig('head', 'links').blank? %>
-        <% @website.manifest.dig('head', 'links').each do |link_options| %>
-          <%= tag 'link', link_options %>
-        <% end %>
-      <% end %>
-      <meta name="description" content="<%= @website.desc %>"/>
-    <% else %>
-      <meta name="description" content="<%= t :app_name %> breathes life into your shipments by automating your biggest headaches."/>
-    <% end %>
     <% if !yield(:no_cache).blank? || !flash.blank? %>
       <meta name="turbo-cache-control" content="no-cache"/>
     <% end %>
 
     <%= yield :alt_links %>
 
-    <meta name="theme-color" content="<%= @website&.manifest&.dig('head', 'meta', 'theme-color') || 'black' %>">
+    <meta name="theme-color" content="black">
 
-    <link href="https://<%= @website.blank? ? 'tms.next-tms.com' : @website.domain %><%= request.fullpath %>" rel="canonical" />
+    <link href="https://<%= ENV.fetch('DOMAIN') %><%= request.fullpath %>" rel="canonical" />
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -128,16 +119,13 @@
 
     <div class="container-fluid">
       <div class="row">
-        <% if @website && current_user %>
+        <% if current_user %>
           <%= render 'layouts/sidebar' %>
-        <% end %>
 
-        <% if @website && current_user %>
           <div class="col col-md-10 p-3" data-controller="emails">
             <%= yield %>
-            <!--
-              <%= render 'layouts/footer' %>
-            -->
+
+            <%= render 'layouts/footer' %>
           </div>
         <% else %>
           <div class="col m-4" data-controller="emails">

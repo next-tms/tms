@@ -12,6 +12,8 @@
 #   @return [String]
 # @!attribute booked_at
 #   @return [Time]
+# @!attribute broker_and_broker_customer_notes
+#   @return [String]
 # @!attribute broker_bol_shipment_fingerprint
 #   @return [String]
 # @!attribute broker_dispatch_sheet_shipment_fingerprint
@@ -30,6 +32,8 @@
 #   @return [Integer]
 # @!attribute carrier_cost_currency
 #   @return [String]
+# @!attribute charges_confirmed
+#   @return [Boolean]
 # @!attribute customer_notes
 #   @return [String]
 # @!attribute customer_reference

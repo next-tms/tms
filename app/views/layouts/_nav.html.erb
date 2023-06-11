@@ -1,19 +1,23 @@
 <nav class="navbar navbar-expand sticky-top">
   <div class="container-fluid">
-    <% url = user_signed_in? ? root_path : @website.homepage %>
+    <% url = user_signed_in? ? root_path : Setting.value!(:website_homepage) %>
 
-    <%= link_to url, class: 'navbar-brand bg-black rounded p-2' do %>
-      <% if @website.logo_image_data.present? %>
-        <%= image_tag @website.logo_image_data, alt: @website.broker.name, class: 'navbar-brand-logo' %>
-      <% else %>
-        <%= @website.broker.name %>
+    <% name = Setting.value!(:name) %>
+    <% data = Setting.value(:website_logo_image_data) %>
+    <% cache(data) do %>
+      <%= link_to url, class: 'navbar-brand bg-black rounded p-2' do %>
+        <% if data.present? %>
+          <%= image_tag(data, alt: name, class: 'navbar-brand-logo') %>
+        <% else %>
+          <%= Setting.value!(:name) %>
+        <% end %>
       <% end %>
     <% end %>
 
     <ul class="navbar-nav"></ul>
 
     <ul class="navbar-nav ml-auto">
-      <% unless current_user %>
+      <% unless user_signed_in? %>
         <li class="nav-item">
           <%= link_to 'Track Shipment', tracking_path, target: '_top', class: 'nav-link' %>
         </li>
@@ -24,26 +28,28 @@
       <% end %>
     </ul>
 
-    <% if current_user && current_user.broker? %>
-      <div class='d-flex'>
-        <%= bootstrap_form_tag(url: broker_search_path, layout: :inline, method: :get) do |f| %>
+    <% if user_signed_in? %>
+      <% if current_user.broker? %>
+        <div class='d-flex'>
+          <%= bootstrap_form_tag(url: broker_search_path, layout: :inline, method: :get) do |f| %>
+            <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search' %>
+          <% end %>
+  
+          <%= turbo_stream_from current_user, :notifications %>
+  
+          <%= link_to notifications_path, class: "btn btn-primary position-relative ms-4" do %>
+            <%= icon('solid', 'bell') %>
+            <span id="<%= dom_id(current_user) %>_unread_notifications_count"
+                  class="position-absolute start-100 translate-middle badge rounded-pill bg-danger"
+                  style="top: 15%">
+              <%= current_user.notifications.unread.count %>
+            </span>
+          <% end %>
+        </div>
+      <% elsif current_user.customer? %>
+        <%= bootstrap_form_tag(url: customer_search_path, layout: :inline, method: :get) do |f| %>
           <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search' %>
         <% end %>
-
-        <%= turbo_stream_from current_user, :notifications %>
-
-        <%= link_to notifications_path, class: "btn btn-primary position-relative ms-4" do %>
-          <%= icon('solid', 'bell') %>
-          <span id="<%= dom_id(current_user) %>_unread_notifications_count"
-                class="position-absolute start-100 translate-middle badge rounded-pill bg-danger"
-                style="top: 15%">
-            <%= current_user.notifications.unread.count %>
-          </span>
-        <% end %>
-      </div>
-    <% elsif current_user && current_user.customer? %>
-      <%= bootstrap_form_tag(url: customer_search_path, layout: :inline, method: :get) do |f| %>
-        <%= f.text_field :q, label: 'Search', hide_label: true, placeholder: 'Search' %>
       <% end %>
     <% end %>
   </div>

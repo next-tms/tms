@@ -8,12 +8,16 @@
 #   @return [Integer]
 # @!attribute acts_as_broker
 #   @return [Boolean]
+# @!attribute consider_bol_and_pod_documents_same
+#   @return [Boolean]
 # @!attribute encrypted_api_key
 #   @return [String]
-# @!attribute has_seperate_website_credentials
-#   @return [Boolean]
+# @!attribute encrypted_proxy_url
+#   @return [String]
 # @!attribute has_traceable_pickup_confirmation
 #   @return [Boolean]
+# @!attribute mc_number
+#   @return [Integer]
 # @!attribute name
 #   @return [String]
 # @!attribute scac
@@ -52,7 +56,5 @@ RSpec.describe(Carrier, type: :model) do
     it { is_expected.to(validate_uniqueness_of(:scac).allow_nil) }
 
     it { is_expected.to(validate_uniqueness_of(:mc_number).allow_nil) }
-    it { is_expected.to(validate_length_of(:mc_number).is_equal_to(6)) }
-    it { is_expected.to(validate_numericality_of(:mc_number).only_integer) }
   end
 end

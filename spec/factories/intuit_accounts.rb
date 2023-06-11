@@ -2,28 +2,30 @@
 
 # == Schema Information
 #
-# Table name: contact_roles
+# Table name: intuit_accounts
 #
 # @!attribute id
 #   @return []
-# @!attribute role
+# @!attribute encrypted_oauth2_access_token
 #   @return [String]
+# @!attribute encrypted_oauth2_refresh_token
+#   @return [String]
+# @!attribute oauth2_access_token_expires_at
+#   @return [Time]
+# @!attribute oauth2_refresh_token_expires_at
+#   @return [Time]
 # @!attribute created_at
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute contact_id
+# @!attribute broker_id
 #   @return []
+# @!attribute realm_id
+#   @return [String]
 #
 # Indexes
 #
-#  index_contact_roles_on_contact_id           (contact_id)
-#  index_contact_roles_on_contact_id_and_role  (contact_id,role) UNIQUE
-#  index_contact_roles_on_role                 (role)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (contact_id => contacts.id)
+#  index_intuit_accounts_on_broker_id  (broker_id)
 #
 FactoryBot.define do
   factory :intuit_account do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_10_081613) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -272,7 +272,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
     t.boolean "has_traceable_pickup_confirmation", default: false
     t.bigint "broker_billing_address_id"
     t.string "encrypted_api_key"
-    t.string "mc_number"
+    t.integer "mc_number"
     t.boolean "consider_bol_and_pod_documents_same", default: false
     t.string "encrypted_proxy_url"
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
@@ -699,6 +699,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
+  create_table "settings", force: :cascade do |t|
+    t.string "key"
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_settings_on_key"
+  end
+
   create_table "shipment_accessorials", force: :cascade do |t|
     t.bigint "shipment_id", null: false
     t.bigint "accessorial_id", null: false
@@ -1001,24 +1009,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
-  create_table "websites", force: :cascade do |t|
-    t.bigint "broker_id"
-    t.string "domain"
-    t.string "copyright_holder"
-    t.text "logo_image_data"
-    t.text "css"
-    t.string "slogan"
-    t.text "desc"
-    t.text "v_card_logo_base64"
-    t.string "sign_out_url"
-    t.string "footer_url"
-    t.string "modal_url"
-    t.string "manifest_url"
-    t.string "homepage"
-    t.jsonb "manifest"
-    t.index ["broker_id"], name: "index_websites_on_broker_id"
-  end
-
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "countries"
@@ -1130,5 +1120,4 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_064411) do
   add_foreign_key "upcharge_rules", "packagings"
   add_foreign_key "users", "contacts"
   add_foreign_key "users", "users", column: "invited_by_id"
-  add_foreign_key "websites", "brokers"
 end

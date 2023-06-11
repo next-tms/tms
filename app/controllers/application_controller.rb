@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
   impersonates :user
 
   before_action :add_floc_opt_out_header
-  before_action :check_website, :check_if_website_belongs_to_broker, unless: :global_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :sign_out_deactivated_user
 
@@ -46,11 +45,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def check_website
-    @website ||= Website.find_by(domain: request.host) || nil
-    redirect_to('https://next-tms.com/', allow_other_host: true) if @website.blank?
-  end
-
   def global_controller?
     false
   end
@@ -76,11 +70,6 @@ class ApplicationController < ActionController::Base
 
     stored_location_for(resource_or_scope) || user_sign_in_path
   end
-
-  # def after_sign_out_path_for(_resource_or_scope)
-  #   check_website
-  #   @website.manifest.dig('landings', 'sign-out', 'url') || root_path
-  # end
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(
@@ -118,7 +107,7 @@ class ApplicationController < ActionController::Base
               :last_name,
               :phone,
               { user_roles_attributes: %i[_destroy role_id] },
-              { contact_attributes: { contact_roles_attributes: %i[_destroy role] } }
+              { contact_attributes: { contact_roles_attributes: %i[_destroy role] } },
             ],
     )
   end

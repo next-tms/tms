@@ -12,6 +12,8 @@
 #   @return [String]
 # @!attribute booked_at
 #   @return [Time]
+# @!attribute broker_and_broker_customer_notes
+#   @return [String]
 # @!attribute broker_bol_shipment_fingerprint
 #   @return [String]
 # @!attribute broker_dispatch_sheet_shipment_fingerprint
@@ -30,6 +32,8 @@
 #   @return [Integer]
 # @!attribute carrier_cost_currency
 #   @return [String]
+# @!attribute charges_confirmed
+#   @return [Boolean]
 # @!attribute customer_notes
 #   @return [String]
 # @!attribute customer_reference
@@ -203,9 +207,9 @@ FactoryBot.define do
     broker_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     canceled_at { nil }
     carrier_charge_cents { 1 }
-    carrier_charge_currency { Faker::Currency.code  }
+    carrier_charge_currency { Faker::Currency.code }
     carrier_cost_cents { 1 }
-    carrier_cost_currency { Faker::Currency.code  }
+    carrier_cost_currency { Faker::Currency.code }
     created_by_id {}
     customer_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     customer_reference { Faker::Number.number }
@@ -261,7 +265,7 @@ FactoryBot.define do
     total_cost_currency { Faker::Currency.code }
     truckload { [true, false].sample }
     value_cents { Faker::Number.between(from: 100, to: 5_000).ceil }
-    value_currency { Faker::Currency.code  }
+    value_currency { Faker::Currency.code }
 
     after(:build) do |record|
       user = build(:user, companyable: record.broker)

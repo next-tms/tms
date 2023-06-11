@@ -17,7 +17,7 @@
 # @!attribute has_traceable_pickup_confirmation
 #   @return [Boolean]
 # @!attribute mc_number
-#   @return [String]
+#   @return [Integer]
 # @!attribute name
 #   @return [String]
 # @!attribute scac

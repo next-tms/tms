@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: carriers
@@ -6,10 +8,16 @@
 #   @return [Integer]
 # @!attribute acts_as_broker
 #   @return [Boolean]
-# @!attribute has_seperate_website_credentials
+# @!attribute consider_bol_and_pod_documents_same
 #   @return [Boolean]
+# @!attribute encrypted_api_key
+#   @return [String]
+# @!attribute encrypted_proxy_url
+#   @return [String]
 # @!attribute has_traceable_pickup_confirmation
 #   @return [Boolean]
+# @!attribute mc_number
+#   @return [Integer]
 # @!attribute name
 #   @return [String]
 # @!attribute scac

@@ -1,27 +1,29 @@
-<% if !@website&.manifest&.dig('footer', 'html').blank? %>
-  <%= CGI.unescapeHTML(@website.manifest.dig('footer', 'html')).html_safe %>
-<% else %>
-  <footer class="mt-6">
-    <div class="container-fluid">
-      <div class="footer-bottom">
-        <p class="h3"><%= @website.broker.name %></p>
-        <% if @website %>
-          <div class="row">
-            <div class="col-sm-12 col-md-3">
-              <ul class="list-unstyled">
-                <li><%= link_to @website.broker.phone.phony_formatted, "tel:#{@website.broker.phone.phony_formatted}" %></li>
-                <li><%= link_to @website.broker.customer_service_email, "mailto:#{@website.broker.customer_service_email}" %></li>
-              </ul>
-            </div>
-            <div class="col-sm-12 col-md-3">
-              <ul class="list-unstyled">
-                <li><%= @website.broker.address.pretty('<br>').gsub('Apt', 'Ste').html_safe %></li>
-              </ul>
-            </div>
-          </div>
-        <% end %>
-        <p>© <%= DateTime.now.year %> <%= @website.copyright_holder %></p>
-      </div>
+<footer class="mt-6">
+  <div class="container-fluid">
+    <% if user_signed_in? && current_user.customer? %>
+      <% customer_service_email = Setting.value(:customer_service_email) %>
+      <% phone = Setting.value(:phone)&.phony_formatted %>
+
+      <% if [customer_service_email, phone].any?(&:present?) %>
+        <ul class="list-unstyled">
+          <% if phone.present? %>
+            <li class="list-inline-item"><%= link_to phone, "tel:#{phone}" %></li>
+          <% end %>
+
+          <% if customer_service_email.present? %>
+            <li class="list-inline-item"><%= link_to customer_service_email, "mailto:#{customer_service_email}" %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    <% end %>
+
+    <% tz = Setting.value(:time_zone, 'America/Los_Angeles') %>
+    <div class="mt-2">
+      <small class="text-muted">
+        Copyright ©
+        <%= Time.current.in_time_zone(tz).year %>
+        <%= Setting.first_value(:copyright_holder, :name) %>
+      </small>
     </div>
-  </footer>
-<% end %>
+  </div>
+</footer>
