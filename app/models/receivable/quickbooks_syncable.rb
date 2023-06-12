@@ -32,7 +32,10 @@ module Receivable::QuickbooksSyncable
         return @quickbooks_invoice = result
       end
 
-      result = QuickbooksAPIClient::Invoices.new(broker:).find_by(doc_number: shipment.load_id)
+      # rubocop:disable Rails/DynamicFindBy
+      result = QuickbooksAPIClient::Invoices.new(broker:).find_by_doc_number(shipment.load_id)
+      # rubocop:enable Rails/DynamicFindBy
+
       if result.present?
         persisted? ? update_columns(quickbooks_invoice_id: result.id) : self.quickbooks_invoice_id = result.id
         return @quickbooks_invoice = result
