@@ -8,10 +8,10 @@ class IntuitAccountsController < ApplicationController
       redirect_uri:,
       response_type: 'code',
       state: current_user.broker.uuid,
-      scope: 'com.intuit.quickbooks.accounting'
+      scope: 'com.intuit.quickbooks.accounting',
     )
 
-    redirect_to grant_url, allow_other_host: true
+    redirect_to(grant_url, allow_other_host: true)
   end
 
   def oauth_callback
@@ -30,7 +30,7 @@ class IntuitAccountsController < ApplicationController
     intuit_account.assign_attributes(
       encrypted_oauth2_access_token: response.token,
       encrypted_oauth2_refresh_token: response.refresh_token,
-      realm_id: params[:realmId]
+      realm_id: params[:realmId],
     )
     intuit_account.save!
 
@@ -39,9 +39,9 @@ class IntuitAccountsController < ApplicationController
 
     flash[:success] = 'QuickBooks has been connected; data is being synced behind the scenes'
 
-    redirect_to 'http://localhost:3000/' and return if Rails.env.development?
+    redirect_to('http://localhost:3000/') and return if Rails.env.development?
 
-    redirect_to "https://#{broker.websites.first.domain}/", allow_other_host: true
+    redirect_to(Setting.value!(:website_homepage), allow_other_host: true)
   end
 
   def global_controller?
@@ -52,14 +52,14 @@ class IntuitAccountsController < ApplicationController
 
   def intuit_oauth2_client
     args = [
-      ENV.fetch('INTUIT_CLIENT_ID'),
-      ENV.fetch('INTUIT_CLIENT_SECRET'),
-      {
-        authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
-        site: 'https://appcenter.intuit.com/connect/oauth2',
-        token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
-      }
-    ]
+             ENV.fetch('INTUIT_CLIENT_ID'),
+             ENV.fetch('INTUIT_CLIENT_SECRET'),
+             {
+               authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
+               site: 'https://appcenter.intuit.com/connect/oauth2',
+               token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
+             },
+           ]
 
     OAuth2::Client.new(*args)
   end

@@ -28,4 +28,4 @@
   <% end %>
 </p>
 
-<%= link_to "View shipment here", broker_shipment_url(@shipment, host: @shipment.broker.websites.first.domain) %>
+<%= link_to "View shipment here", broker_shipment_url(@shipment, host: ENV.fetch('DOMAIN')) %>
