@@ -2,7 +2,7 @@
 
 class GeocoderController < ApplicationController
   def fetch_details_by_zip_code
-    locations = Geocoder.search(params[:zip_code])
+    locations = Geocoder.search(params[:postal_code])
     render json: { error: 'No Location Found' } and return unless locations.present?
 
     selected_country = params[:country]
@@ -30,12 +30,24 @@ class GeocoderController < ApplicationController
     address = broker_customer.primary_pickup_address
     render json: { error: "No Address Found" } and return if address.blank?
 
+    if address.standardized_address_id.blank?
+      address.find_or_build_standardized_address && address.save
+    end
+
     render json: {
       city: address.city,
       state: address.region.name,
       street: address.street,
       street2: address.street2,
-      zip_code: address.zip_code
+      zip_code: address.zip_code,
+      standardized_address_id: address.reload.standardized_address_id
     }
+  end
+
+  def validate_address
+    standardized_address = Address::FindOrCreateViaSmartyStreetsService.new(**params).call
+    render json: { error: "No Address Found" } and return unless standardized_address
+
+    render json: { standardized_address_id: standardized_address.id }
   end
 end

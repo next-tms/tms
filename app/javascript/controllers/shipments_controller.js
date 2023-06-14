@@ -30,6 +30,7 @@ export default class extends Controller {
                 document.getElementById('shipment_shipper_address_attributes_street2').value = data.street2
                 document.getElementById('shipment_shipper_address_attributes_city').value = data.city
                 document.getElementById('shipment_shipper_address_attributes_zip_code').value = data.zip_code
+                document.getElementById('shipment_shipper_address_attributes_standardized_address_id').value = data.standardized_address_id;
                 var stateSelect = document.getElementById('shipment_shipper_address_attributes_region_id')
                 Array.from(stateSelect.options).forEach(function(option) {
                     if (option.text ===  data.state) {

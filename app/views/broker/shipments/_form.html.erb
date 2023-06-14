@@ -20,6 +20,7 @@
     <%= f.select :dispatcher_id,
                  User.where(id: dispatcher_ids).order(:first_name).collect { |user| [ user.full_name, user.id ] },
                  { include_blank: 'None — assign automatically', label: 'Dispatcher' },
+                 id: 'shipment_dispatcher_id',
                  class: 'form-select col-sm-6 col-md-4 mt-2 mb-4'
     %>
   <% end %>

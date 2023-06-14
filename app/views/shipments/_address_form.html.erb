@@ -1,8 +1,8 @@
 <%= form.fields_for address_object do |address_form| %>
   <%= address_form.text_field :ref %>
-  <%= address_form.text_field :street %>
+  <%= address_form.text_field :street, data: { address_target: 'field' } %>
   <%= address_form.text_field :street2, label: '&nbsp;'.html_safe %>
-  <%= address_form.text_field :city %>
+  <%= address_form.text_field :city, data: { address_target: 'field' } %>
   <%= address_form.select :region_id,
                           (address_form.object.region_id.blank? ? [[fallback_address.region.name, fallback_address.region.id]] : [[address_form.object.region.name, address_form.object.region_id]]),
                           { label: 'State' },
@@ -11,7 +11,7 @@
 
   <%= address_form.text_field :zip_code,
                               label: 'ZIP',
-                              data: { action: "keyup->address#fillCityAndStateByZipCode" },
+                              data: { action: "keyup->address#fillCityAndStateByZipCode", address_target: 'field' },
                               help: "City and State will be filled based from ZIP" %>
 
   <%= address_form.select :country_id,
@@ -19,4 +19,21 @@
                           { selected: (address_form.object.country_id.blank? ? fallback_address.country_id : address_form.object.country_id) },
                           data: { action: 'address#handle', 'address-target': 'country' },
                           class: 'form-select' %>
+
+  <%= address_form.hidden_field :standardized_address_id, data: { address_target: 'standardizedAddressId'} %>
+
+  <div class="text-warning my-4 d-none" data-address-target="validateAddressLoading"> 
+    <div class="spinner-border spinner-border-sm text-warning" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    Validating Address ...
+  </div>
+
+  <div class="text-danger my-4 d-none" data-address-target="validateAddressFailed"> 
+    <%= icon('solid', 'exclamation', 'Address not found with SmartyStreets Address Verification. Ensure address is correct.')%>
+  </div>
+
+  <div class="text-success my-4 d-none" data-address-target="validateAddressSuccess"> 
+    <%= icon('solid', 'check', 'Address Verified via SmartyStreets Verification')%>
+  </div>
 <% end %>

@@ -79,20 +79,20 @@ class StandardizedAddress < ApplicationRecord
   validates :smarty_streets_result_updated_at, presence: true
   validates :street, presence: true
 
+  attr_accessor :skip_smarty_streets_result_api_request,
+                :skip_google_places_spot_api_request,
+                :skip_open_street_map_result_api_request
+
   def permanently_closed?
     @permanently_closed ||= google_places_spot.permanently_closed
   end
 
   def commercial?
-    return nil unless types
-
-    types.include?('commercial')
+    types&.include?('commercial')
   end
 
   def residential?
-    return nil unless types
-
-    types.include?('residential')
+    types&.include?('residential')
   end
 
   def restaurant?
@@ -113,123 +113,65 @@ class StandardizedAddress < ApplicationRecord
   end
 
   def google_places_spot
+    return if skip_google_places_spot_api_request
     return @google_places_spot if @google_places_spot
+    return @google_places_spot_cached = google_places_spot_cached if up_to_date_cached_response?(:google_places_spot)
 
-    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_postal_code?
-      self.google_places_spot_cached = nil
-      self.google_places_spot_updated_at = nil
-    end
+    address_key = names&.first.blank? ? key : "#{names.first}, #{key}"
+    result = Address::GooglePlacesVerifyService.new(address_key:, street:).call
 
-    if google_places_spot_updated_at.present? && google_places_spot_updated_at > 3.months.ago
-      return @google_places_spot_cached = google_places_spot_cached
-    end
-
-    logger.info('Calling Google Places API')
-
-    begin
-      retries ||= 0
-      result = GooglePlaces::Client
-               .new(ENV.fetch('GOOGLE_API_KEY'))
-               .spots_by_query((names&.first.blank? ? key : "#{names&.first}, #{key}"))
-              &.first
-    rescue GooglePlaces::APIConnectionError
-      retries += 1
-      sleep(1)
-      retry if retries < 3
-
-      raise
-    end
-
-    accurate = result.is_a?(GooglePlaces::Spot) &&
-               street.scan(/\d+/).map { |d| result.formatted_address.include?(d) }.all?(true)
-
-    self.google_places_spot_cached = accurate ? result : nil
-    self.google_places_spot_updated_at = DateTime.current
-
-    @google_places_spot = google_places_spot_cached
+    update_api_response_cache_and_timestamp(:google_places_spot, result)
+    @google_places_spot = result
   end
 
   def open_street_map_result
+    return if skip_open_street_map_result_api_request
     return @open_street_map_result if @open_street_map_result
-
-    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_postal_code?
-      self.open_street_map_result_updated_at = nil
-    end
-
-    if open_street_map_result_updated_at.present? && open_street_map_result_updated_at > 3.months.ago
-      return @open_street_map_result_cached = open_street_map_result_cached
-    end
+    return @open_street_map_result = open_street_map_result_cached if up_to_date_cached_response?(:open_street_map_result)
 
     # Temporarily disabled
     self.open_street_map_result_updated_at = Time.current
     return @open_street_map_result = nil
+    # Temporarily disabled
 
-    logger.info('Calling OpenStreetMap API')
+    @open_street_map_result = Address::OpenStreetMapVerifyService.new(address_key: key, country:, street:).call
 
-    client = OpenStreetMap::Client.new
-    result = client.search(
-      q: "#{key}, #{country.name}",
-      format: 'json',
-      addressdetails: '1',
-      accept_language: 'en',
-    )&.first
-
-    accurate = result.is_a?(Hash) &&
-               street.scan(/\d+/).map { |d| result['display_name'].include?(d) }.all?(true)
-
-    self.open_street_map_result_cached = accurate ? result : nil
-    self.open_street_map_result_updated_at = DateTime.current
-
+    update_api_response_cache_and_timestamp(:open_street_map_result, @open_street_map_result)
     @open_street_map_result = open_street_map_result_cached
   rescue Net::OpenTimeout
     self.open_street_map_result_updated_at = Time.current
-
     @open_street_map_result = nil
   end
 
   def smarty_streets_result
+    return if skip_smarty_streets_result_api_request
     return @smarty_streets_result if @smarty_streets_result
+    return @smarty_streets_result = smarty_streets_result_cached if up_to_date_cached_response?(:smarty_streets_result)
 
+    @smarty_streets_result = Address::SmartyStreetsVerifyService.new(address_key: key).call
+
+    update_api_response_cache_and_timestamp(:smarty_streets_result, @smarty_streets_result)
+    @smarty_streets_result
+  end
+
+  def fetch_third_party_geolocation_services_data
+    smarty_streets_result unless skip_smarty_streets_result_api_request
     google_places_spot
     open_street_map_result
-
-    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_postal_code?
-      self.smarty_streets_result_updated_at = nil
-    end
-
-    if smarty_streets_result_updated_at.present? && smarty_streets_result_updated_at > 3.months.ago
-      return @smarty_streets_result = smarty_streets_result_cached
-    end
-
-    logger.info('Calling SmartyStreet API')
-    address_data = MainStreet::AddressVerifier.new(key).result&.data
-
-    # Error Response is an Arary e.g ['errors', { id: 123, message: 'ERR'} ]
-    if address_data.is_a?(Array)
-      error_key, error_data = address_data
-      return unless error_key == 'errors'
-
-      Honeybadger.notify(error_message: error_data.first['message'])
-    else
-      self.smarty_streets_result_cached = address_data&.to_hash
-
-      self.smarty_streets_result_updated_at = DateTime.current
-      @smarty_streets_result = smarty_streets_result_cached
-    end
   end
 
   def standardize_address
+    fetch_third_party_geolocation_services_data
     return if smarty_streets_result.blank?
+
+    self.street2 = nil
 
     if smarty_streets_result['delivery_line_1'].present?
       self.street = smarty_streets_result['delivery_line_1']
-      self.street2 = nil
     elsif smarty_streets_result['formatted_address'].present?
       self.street = smarty_streets_result['formatted_address'].split(',').first
-      self.street2 = nil
     elsif smarty_streets_result['house_number'].present? && smarty_streets_result['street'].present?
       self.street = "#{smarty_streets_result["house_number"]} #{smarty_streets_result["street"]}"
-      self.street2 = nil
     end
 
     self.city = smarty_streets_result.dig('components', 'city_name') || city
@@ -316,16 +258,46 @@ class StandardizedAddress < ApplicationRecord
 
   def set_time_zone_name
     set_coordinates if latitude.blank? || longitude.blank?
+    return self.time_zone_name = 'America/Los_Angeles' if latitude.blank? || longitude.blank?
 
-    if latitude.blank? || longitude.blank?
-      self.time_zone_name = 'America/Los_Angeles'
-      return
+    self.time_zone_name = Timezone.lookup(latitude, longitude)&.name || 'America/Los_Angeles'
+  rescue Timezone::Error::GeoNames
+    self.time_zone_name = 'America/Los_Angeles'
+  end
+
+  private
+
+  def up_to_date_cached_response?(type)
+    cache_key = "#{type}_cached"
+    updated_at_key = "#{type}_updated_at"
+
+    if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_postal_code?
+      self.send("#{cache_key}=", nil)
+      self.send("#{updated_at_key}=", nil)
     end
 
-    begin
-      self.time_zone_name = Timezone.lookup(latitude, longitude)&.name || 'America/Los_Angeles'
-    rescue Timezone::Error::GeoNames
-      self.time_zone_name = 'America/Los_Angeles'
+    updated_at_timestamp = send(updated_at_key)
+
+    updated_at_timestamp.present? && updated_at_timestamp > 3.months.ago
+  end
+
+  def update_api_response_cache_and_timestamp(type, response)
+    cache_key = "#{type}_cached"
+    updated_at_key = "#{type}_updated_at"
+    skip_api_request_key = "skip_#{type}_api_request"
+
+    # Prevent calling the API multiple times during Shipment Creation. Before a shipment is created standardized address is
+    # called multiple times for address checking specifically on Suggesting Broker Accessorials. On Shipment creation previously the
+    # Geolocation APIs are called atleast 8 times
+    self.send("#{skip_api_request_key}=", true) if response.blank? && self.new_record?
+
+    # Update table columns to ensure we only call the API every 3 months if its already cached,
+    # use #update_columns so it would just directly update the DB and not run any active record callbacks
+    if self.persisted?
+      update_columns(cache_key => response, updated_at_key => DateTime.current)
+    else
+      self.send("#{cache_key}=", response)
+      self.send("#{updated_at_key}=",  DateTime.current)
     end
   end
 end

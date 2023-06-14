@@ -1,10 +1,72 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ['country', 'regions']
+    static targets = [
+        'country',
+        'regions',
+        'field',
+        'validateAddressLoading',
+        'validateAddressFailed',
+        'validateAddressSuccess',
+        'standardizedAddressId'
+    ]
 
     connect(e) {
         this.handle()
+
+        if (this.hasFieldTarget && this.hasCountryTarget && this.hasRegionsTarget) {
+            this.fieldTargets.concat([this.countryTarget, this.regionsTarget]).forEach((input) => {
+                input.addEventListener('change', this.validateAddress.bind(this))
+            })
+        }
+    }
+
+    validateAddress() {
+      let hasFilledAddress = this.fieldTargets.every(select => select.value) && !!this.countryTarget.value && !!this.regionsTarget.value
+
+      if (hasFilledAddress) {
+        const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
+        let success = this.validateAddressSuccessTarget;
+        let failed = this.validateAddressFailedTarget;
+        let loading = this.validateAddressLoadingTarget;
+        let standardizedAddressId = this.standardizedAddressIdTarget;
+
+        success.classList.add('d-none')
+        failed.classList.add('d-none')
+        loading.classList.remove('d-none')
+
+        let street = this.fieldTargets.find(field => field.id.includes('_street')).value
+        let zip = this.fieldTargets.find(field => field.id.includes('_zip')).value
+        let city = this.fieldTargets.find(field => field.id.includes('_city')).value
+
+        let data = { street: street, city: city, zip_code: zip, region_id: this.regionsTarget.value }
+
+        fetch('/validate_address', {
+            method: 'POST',
+            headers: {
+              'Accept': 'text/javascript',
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': authenticityToken
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(function(data) {
+            setTimeout(()=>{
+                console.log(data)
+                loading.classList.add('d-none')
+
+                if (data.error == null) {
+                    let id = data.standardized_address_id
+                    standardizedAddressId.value = id;
+                    success.classList.remove('d-none')
+                } else {
+                    failed.classList.remove('d-none')
+                }
+            }, 1000)
+
+        })
+      }
     }
 
     handle(e) {
@@ -53,7 +115,6 @@ export default class extends Controller {
     fillCityAndStateByZipCode(event) {
         event.preventDefault();
 
-        console.log(event.target)
         let zipCode = event.target.value;
         let textField = event.target
         let elementId = textField.id
@@ -63,7 +124,7 @@ export default class extends Controller {
         const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
         var duration = 1000;
 
-        let data = { zip_code: zipCode, country: selectedCountry }
+        let data = { postal_code: zipCode, country: selectedCountry }
 
 
         if (zipCode == null || zipCode == "") {

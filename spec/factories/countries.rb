@@ -20,7 +20,7 @@
 #   @return [Time]
 #
 FactoryBot.define do
-  data = ActiveUtils::Country::COUNTRIES.sample
+  data = ActiveUtils::Country::COUNTRIES.find { |country| country[:alpha2] == 'US' }
 
   factory :country do
     alpha2_code { data[:alpha2] }

@@ -145,8 +145,8 @@ class Broker::ShipmentsController < Broker::BrokerController
       @shipment.updated_by = current_user
 
       if shipment_params[:accessorials_has_been_suggested].blank?
-        @shipment.shipper_address.find_or_build_standardized_address
-        @shipment.receiver_address.find_or_build_standardized_address
+        @shipment.shipper_address.find_or_build_standardized_address unless @shipment.shipper_address.standardized_address_id
+        @shipment.receiver_address.find_or_build_standardized_address unless @shipment.receiver_address.standardized_address_id
 
         @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
         render(:new) && return if @accessorials_has_been_suggested
@@ -713,6 +713,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                      region_id
                                      zip_code
                                      country_id
+                                     standardized_address_id
                                    ],
       shipper_address_attributes: %i[
                                     id
@@ -723,6 +724,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                     region_id
                                     zip_code
                                     country_id
+                                    standardized_address_id
                                   ],
       shipment_accessorials_attributes: %i[_destroy accessorial_id],
       shipment_broker_accessorials_attributes: %i[
