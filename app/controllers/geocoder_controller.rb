@@ -45,9 +45,17 @@ class GeocoderController < ApplicationController
   end
 
   def validate_address
-    standardized_address = Address::FindOrCreateViaSmartyStreetsService.new(**params).call
+    standardized_address = Address::FindOrCreateViaSmartyStreetsService.new(
+      **address_params.to_h.deep_symbolize_keys
+    ).call
     render json: { error: "No Address Found" } and return unless standardized_address
 
     render json: { standardized_address_id: standardized_address.id }
+  end
+
+  private
+
+  def address_params
+    params.require(:geocoder).permit(:street, :city, :zip_code, :region_id)
   end
 end
