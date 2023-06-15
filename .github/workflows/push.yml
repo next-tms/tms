@@ -1,0 +1,30 @@
+name: Push Image
+on:
+  push:
+    branches:
+      - master
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  FLIGHT_SERVICE_ACCOUNT_USERNAME: ${{ secrets.FLIGHT_SERVICE_ACCOUNT_USERNAME }}
+  FLIGHT_SERVICE_ACCOUNT_PASSWORD: ${{ secrets.FLIGHT_SERVICE_ACCOUNT_PASSWORD }}
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+  push:
+    name: Push
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: export BUILD_NUMBER=$(git rev-list --count HEAD)
+      - run: export COMMIT_HASH=$(git rev-parse HEAD)
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Configure Docker via Fly
+        run: flyctl auth docker
+      - name: Push
+        run: docker push registry.fly.io/next-tms:master-${BUILD_NUMBER}
+      - run: >
+          curl -H 'Content-Type: application/json'
+               -u "${FLIGHT_SERVICE_ACCOUNT_USERNAME}:${FLIGHT_SERVICE_ACCOUNT_PASSWORD}"
+               -d "{\"build\": { \"app_kind\": \"tms\", \"commit_hash\": \"${COMMIT_HASH}\" \"image_url\": \"https://registry.fly.io/next-tms:master-${BUILD_NUMBER}\"} }"
+               'https://flight.next-tms.com/builds'
