@@ -42,9 +42,8 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
       - name: Notify Flight
-        run: |
-          export BUILD_NUMBER=$(git rev-list --count HEAD)
+        run: >
           curl -H 'Content-Type: application/json'
                -u "${FLIGHT_SERVICE_ACCOUNT_USERNAME}:${FLIGHT_SERVICE_ACCOUNT_PASSWORD}"
-               -d "{\"build\": { \"app_kind\": \"tms\", \"commit_hash\": \"${{ github.sha }}\" \"image_url\": \"https://registry.fly.io/next-tms:master-${BUILD_NUMBER}\"} }"
+               -d "{\"build\": { \"app_kind\": \"tms\", \"commit_hash\": \"${{ github.sha }}\" \"image_url\": \"https://registry.fly.io/next-tms:master-$(git rev-list --count HEAD)\"} }"
                'https://flight.next-tms.com/builds'
