@@ -121,7 +121,11 @@ class RatesService
         error_object: response.error
       )
 
-      cost = Money.new(interstellar_rate.total_cents)
+      begin
+        cost = Money.new(interstellar_rate.total_cents)
+      rescue => e
+        cost = 0
+      end
 
       unless cost.positive?
         rate.assign_attributes(error_object: StandardError.new('Cost was empty'))

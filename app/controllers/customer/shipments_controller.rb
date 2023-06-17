@@ -181,24 +181,13 @@ class Customer::ShipmentsController < Customer::CustomerController
     authorize! @shipment, to: :show?
 
     Shipment::ResetRatesService.new(shipment: @shipment, force_reset: params[:force].present?).call
-
     @shipment.rates.where.not(error_object: nil).destroy_all
 
-    broker_carrier_ids = []
-    broker_carrier_ids += if @shipment.broker_customer.blank?
-                            @shipment.broker.broker_carriers.blanket.api_configured.pluck(:id)
-                          else
-                            @shipment.broker_customer.eligible_broker_carriers.api_configured.pluck(:id)
-                          end
-    broker_carrier_ids += PricingRule.where(broker_carrier: @shipment.broker.broker_carriers).pluck(:broker_carrier_id)
-
-    @broker_carriers = BrokerCarrier.where(id: broker_carrier_ids)
-
-    @use_forced_freight_classes = if @shipment.forced_freight_classes.compact.sort == @shipment.calculated_freight_classes.compact.sort
-                                    false
-                                  else
-                                    !@shipment.broker_customer.always_show_quotes_based_on_calculated_classes?
-                                  end
+    service = Shipment::FetchAndCreateRatesService.new(shipment: @shipment, user_id: current_user.id, user_type: :customer).call
+    @use_forced_freight_classes = service.use_forced_freight_classes.first
+    @rates_forced_freight_false = service.rates_forced_freight_false
+    @rates_forced_freight_true = service.rates_forced_freight_true
+    @populate_rate_jobs_on_queue = service.populate_rate_jobs_on_queue
   end
 
   private

@@ -2,49 +2,52 @@
 
 <%= render 'member_header' %>
 
-<h2><%= yield :title %></h2>
+<div data-controller="rates">
+  <h2><%= yield :title %></h2>
 
-<% whodunnit = @shipment.whodunnit('total_charges_cents') %>
-
-<% if !@shipment.quote_only? && @shipment.incomplete? %>
-  <%= render 'layouts/message', classes: 'alert-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>
-<% end %>
-
-<% if @shipment.booked_at.present? %>
-  <% action = @shipment.whodunnit('total_charges_cents')&.broker? ? 'For more information about pricing' : 'To make changes' %>
-  <% who = @shipment.dispatcher&.full_name || current_user.broker.name %>
-  <%= render 'layouts/message',
-      classes: 'alert-info',
-      title: "Contact #{current_user.broker.name}",
-      message: "#{action}, please contact #{who}."
-  %>
-<% else %>
-  <div class="table-responsive">
-    <table class="table table-borderless table-striped table-hover sortable">
-      <thead>
-        <tr>
-          <% unless @shipment.quote_only? %>
-            <th></th>
-          <% end %>
-          <th>Carrier</th>
-          <th>Rate</th>
-          <th>Service</th>
-          <th>Transit</th>
-        </tr>
-      </thead>
-      <tbody id="rates_<%= @use_forced_freight_classes %>">
-      </tbody>
-    </table>
-  </div>
-
-  <% @broker_carriers.each do |broker_carrier| %>
-    <% src = rates_fetch_path(
-               broker_carrier_id: broker_carrier.id,
-               shipment_id: @shipment.id,
-               use_forced_freight_classes: @use_forced_freight_classes,
-               format: 'turbo_stream'
-             )
-    %>
-    <%= turbo_frame_tag("#{@shipment.id}_#{broker_carrier.id}_forced_freight_classes_#{@use_forced_freight_classes}", src:) %>
+  <% if @populate_rate_jobs_on_queue %>
+    <div class="alert alert-success d-flex justify-content-between" data-rates-target="loading">
+      <h5>Fetching Rates  </h5>
+      <span class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </span> 
+    </div>
   <% end %>
-<% end %>
+
+  <% whodunnit = @shipment.whodunnit('total_charges_cents') %>
+
+  <% if !@shipment.quote_only? && @shipment.incomplete? %>
+    <%= render 'layouts/message', classes: 'alert-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>
+  <% end %>
+
+  <% if @shipment.booked_at.present? %>
+    <% action = @shipment.whodunnit('total_charges_cents')&.broker? ? 'For more information about pricing' : 'To make changes' %>
+    <% who = @shipment.dispatcher&.full_name || current_user.broker.name %>
+    <%= render 'layouts/message',
+        classes: 'alert-info',
+        title: "Contact #{current_user.broker.name}",
+        message: "#{action}, please contact #{who}."
+    %>
+  <% else %>
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped table-hover sortable">
+        <thead>
+          <tr>
+            <% unless @shipment.quote_only? %>
+              <th></th>
+            <% end %>
+            <th>Carrier</th>
+            <th>Rate</th>
+            <th>Service</th>
+            <th>Transit</th>
+          </tr>
+        </thead>
+        <tbody id="rates_<%= @use_forced_freight_classes %>" data-rates-target="ratesContainer" data-shipment-id="<%= @shipment.id %>">
+          <% existing_rates = instance_variable_get("@rates_forced_freight_#{@use_forced_freight_classes}") %>
+          <%= render "rates_service/rates", rates: existing_rates, shipment: @shipment if existing_rates.present? %>
+        </tbody>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>
