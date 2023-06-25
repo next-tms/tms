@@ -63,7 +63,7 @@ source 'https://rails-assets.org' do
 end
 
 gem 'bootstrap', '~> 5.2.3'
-gem 'bootstrap_form', '~> 5.1.0'
+gem 'bootstrap_form', '~> 5.2.3'
 gem 'sassc-rails', '~> 2.1.2'
 
 gem 'font-awesome-sass', '~> 6.3.0'
