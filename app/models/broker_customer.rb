@@ -164,22 +164,27 @@ class BrokerCustomer < ApplicationRecord
 
   # @return [BrokerCarrier::ActiveRecord_Relation]
   def eligible_broker_carriers(user_type: :customer)
-    @eligible_broker_carriers ||= {}
-    return @eligible_broker_carriers[user_type] if @eligible_broker_carriers[user_type].present?
+    scope = BrokerCarrier.where(broker_customer: [nil, self])
 
-    scope = if user_type == :broker
-              broker.broker_carriers
-            else
-              case preferred_broker_carriers_kind
-              when nil then broker.broker_carriers
-              when 'whitelist'
-                BrokerCarrier.where(id: preferred_broker_carriers.pluck(:broker_carrier_id))
-              when 'blacklist'
-                broker.broker_carriers.where.not(id: preferred_broker_carriers.pluck(:broker_carrier_id))
-              end
+    # @note Always prefer customer-sepcific accounts
+    if broker_carriers.any?
+      scope = scope
+              .where
+              .not(broker_customer: nil, carrier_id: broker_carriers.pluck(:carrier_id))
+    end
+
+    return scope if user_type == :broker || preferred_broker_carriers_kind.blank?
+
+    # @note Apply the whitelist/blacklist
+    # @note A warning is shown to brokers when a non-preferred carrier is shown
+    scope = case preferred_broker_carriers_kind
+            when 'whitelist'
+              scope.where(id: preferred_broker_carriers.pluck(:broker_carrier_id))
+            when 'blacklist'
+              scope.where.not(id: preferred_broker_carriers.pluck(:broker_carrier_id))
             end
 
-    @eligible_broker_carriers[user_type] = scope.where(broker_customer: [nil, self])
+    scope
   end
 
   def carrier_charge_calculator(carrier_cost:, shipment:)
@@ -222,7 +227,7 @@ class BrokerCustomer < ApplicationRecord
   end
 
   def quickbooks_customer
-    return nil unless broker.intuit_account&.connected?
+    return unless broker.intuit_account&.connected?
     return @quickbooks_customer if @quickbooks_customer.present?
 
     result = nil
@@ -234,7 +239,7 @@ class BrokerCustomer < ApplicationRecord
 
     customers = QuickbooksAPIClient::Customers.new(broker:)
     result = customers.find_by_name(customer.name) # rubocop:disable Rails/DynamicFindBy
-    return nil if result.blank?
+    return if result.blank?
 
     update_columns(quickbooks_customer_id: result.id)
     @quickbooks_customer = result
@@ -250,9 +255,9 @@ class BrokerCustomer < ApplicationRecord
   end
 
   def update_quickbooks_invoices
-    return unless receivables.unpaid.present?
+    return if receivables.unpaid.none?
 
-    receivables.unpaid.each { |receivable| receivable.update_quickbooks_invoice }
+    receivables.unpaid.each(&:update_quickbooks_invoice)
   end
 
   private
