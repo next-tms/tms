@@ -381,9 +381,7 @@ class Shipment < ApplicationRecord
   # Pricing
   before_save :set_total_charges
   before_save :set_total_cost
-  before_save :build_commissions, if: lambda {
-    broker_carrier_id_changed? || broker_customer_id_changed? || total_charges_cents_changed? || total_cost_cents_changed?
-  }
+  before_save :build_commissions
 
   before_validation :set_dispatcher
 
@@ -709,7 +707,7 @@ class Shipment < ApplicationRecord
 
   def longest_dimension
     return @longest_dimension if @longest_dimension
-    return nil if items.map(&:w).include?(nil) || items.map(&:l).include?(nil)
+    return if items.map(&:w).include?(nil) || items.map(&:l).include?(nil)
 
     longest_l = items.max_by(&:l).l
     longest_w = items.max_by(&:w).w
@@ -782,8 +780,12 @@ class Shipment < ApplicationRecord
   private
 
   def build_commissions
-    return if broker_customer.blank? || total_cost == Money.new(0) || total_charges == Money.new(0)
-
+    return unless broker_customer.present? && [total_charges_cents, total_cost_cents].all?(&:positive?)
+    
+    return unless %i[broker_customer_id total_charges_cents total_cost_cents]
+                  .map { |attribute| public_send("will_save_change_to_#{attribute}?") }
+                  .any?(true)
+    
     if commissions.present?
       if commissions.pluck(:paid).include?(true)
         errors.add(:base, 'Pricing cannot be updated because commission(s) have already been paid')
