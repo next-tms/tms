@@ -3,4 +3,4 @@
 <%= render 'member_header' %>
 <h2><%= yield :title %></h2>
 
-<%= render 'show_many_commissions', commissions: @broker_customer_sales_rep.commissions %>
+<%= render 'show_many_commissions', commissions: @commissions, pagy: @pagy, q: @q %>

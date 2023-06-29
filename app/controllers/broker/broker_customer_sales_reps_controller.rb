@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
-  before_action :set_broker_customer_sales_rep, only: %i[commissions destroy edit show update]
-  before_action :authenticate_user!, except: %i[commissions]
-  before_action :require_admin, except: %i[commissions show]
+  before_action :set_broker_customer_sales_rep, only: %i[show]
+  before_action :authenticate_user!
+  before_action :require_admin, except: %i[show]
 
   def index
     @q = User
@@ -19,7 +19,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
     require_admin unless @broker_customer_sales_rep.id == current_user.id
 
     @q = @broker_customer_sales_rep.commissions.includes(required_includes).ransack(params[:q])
-    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @q.sorts = 'shipment_load_id desc' if @q.sorts.blank?
 
     @pagy, @commissions = pagy(@q.result)
   end

@@ -1,20 +1,29 @@
 <%= turbo_frame_tag :commissions do %>
-  <% unless commissions.blank? %>
-    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% if commissions.any? %>
+    <%= render 'layouts/pagy', pagy: %>
 
     <div class="table-responsive mb-2">
       <table class="table table-condensed table-borderless table-striped table-hover h-100">
         <thead>
-          <th>Customer</th>
-          <th>Load</th>
-          <th>Amount</th>
+          <th>
+            <%= sort_link(q, :shipment_broker_customer_name, 'Customer') %>
+          </th>
+
+          <th>
+            <%= sort_link(q, :shipment_load_id, 'Load') %>
+          </th>
+
+          <th>
+            <%= sort_link(q, :amount, 'Amount') %>
+          </th>
+
           <th>%</th>
           <th class="text-nowrap">Picked Up?</th>
           <th>Delivered?</th>
           <th>Paid?</th>
         </thead>
         <tbody>
-          <% commissions.includes({shipment: { broker_customer: :customer}}).each do |commission| %>
+          <% commissions.each do |commission| %>
             <tr class="
               <% if commission.shipment.picked_up_at.blank? || commission.shipment.delivered_at.blank? %>
                 <% if commission.paid? %>
@@ -31,10 +40,10 @@
               <td><%= humanized_money_with_symbol commission.amount, no_cents_if_whole: false %></td>
               <td><%= commission.percent * 100 %></td>
               <td>
-                <% if !commission.shipment.picked_up_at.blank? %>✓<% end %>
+                <% if commission.shipment.picked_up_at.present? %>✓<% end %>
               </td>
               <td>
-                <% if !commission.shipment.delivered_at.blank? %>✓<% end %>
+                <% if commission.shipment.delivered_at.present? %>✓<% end %>
               </td>
               <td>
                 <% if commission.paid? %>✓<% end %>
@@ -45,7 +54,7 @@
       </table>
     </div>
 
-    <%= render 'layouts/pagy', pagy: @pagy %>
+    <%= render 'layouts/pagy', pagy: %>
   <% else %>
     <%= render 'layouts/no_content' %>
   <% end %>
