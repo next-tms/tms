@@ -72,11 +72,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def index
-    @q = if current_user.any_role?(:dispatch, :root)
-           current_user.broker.broker_customers.includes(required_includes).ransack(params[:q])
-         else
-           current_user.broker_customers.includes(required_includes).ransack(params[:q])
-         end
+    @q = current_user.broker_customers.includes(required_includes).ransack(params[:q])
 
     @q.sorts = 'customer_name asc' if @q.sorts.blank?
     @pagy, @broker_customers = pagy(@q.result)
