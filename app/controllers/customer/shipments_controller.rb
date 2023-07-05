@@ -178,12 +178,16 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def quote
-    authorize! @shipment, to: :show?
+    authorize!(@shipment, to: :show?)
 
     Shipment::ResetRatesService.new(shipment: @shipment, force_reset: params[:force].present?).call
     @shipment.rates.where.not(error_object: nil).destroy_all
 
-    service = Shipment::FetchAndCreateRatesService.new(shipment: @shipment, user_id: current_user.id, user_type: :customer).call
+    service = Shipment::FetchAndCreateRatesService.new(
+      shipment: @shipment,
+      user_id: current_user.id,
+      user_type: :customer,
+    ).call
     @use_forced_freight_classes = service.use_forced_freight_classes.first
     @rates_forced_freight_false = service.rates_forced_freight_false
     @rates_forced_freight_true = service.rates_forced_freight_true
@@ -233,6 +237,7 @@ class Customer::ShipmentsController < Customer::CustomerController
       :dispatched_at,
       :dispatched,
       :lift_gate,
+      :linear_ft,
       :out_for_delivery_at,
       :picked_up_at,
       :picked_up,

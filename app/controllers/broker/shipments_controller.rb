@@ -653,6 +653,7 @@ class Broker::ShipmentsController < Broker::BrokerController
       :dispatched,
       :dispatcher_id,
       :lift_gate,
+      :linear_ft,
       :lost_on,
       :out_for_delivery_at,
       :pending_appointment_since,

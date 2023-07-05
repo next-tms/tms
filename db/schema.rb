@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_10_081613) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_05_191457) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -815,6 +815,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_10_081613) do
     t.bigint "dispatcher_id", null: false
     t.text "broker_and_broker_customer_notes"
     t.boolean "charges_confirmed", default: false
+    t.integer "linear_ft"
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
     t.index ["broker_customer_id"], name: "index_shipments_on_broker_customer_id"
     t.index ["broker_id", "load_id"], name: "index_shipments_on_broker_id_and_load_id", unique: true

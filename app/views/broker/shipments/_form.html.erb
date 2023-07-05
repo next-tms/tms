@@ -83,6 +83,8 @@
 
   <%= render 'shipments/nested_items_form', f: f %>
 
+  <%= f.number_field :linear_ft, append: 'feet', autocomplete: 'off', step: 1 %>
+
   <p class="col-title mt-4">Special Instructions</p>
   <%= f.text_area :bol_notes, hide_label: true, rows: 5, autofocus: @accessorials_has_been_suggested.present?  %>
 
