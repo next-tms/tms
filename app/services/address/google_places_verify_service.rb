@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Provides access to broker's Stripe API
 class Address::GooglePlacesVerifyService
   attr_reader :address_key, :street
@@ -19,6 +21,10 @@ class Address::GooglePlacesVerifyService
       retry if retries < 3
 
       raise
+    rescue GooglePlaces::RequestDeniedError => e
+      Honeybadger.notify(e)
+
+      return
     end
 
     accurate = result.is_a?(GooglePlaces::Spot) &&
