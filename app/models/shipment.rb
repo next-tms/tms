@@ -779,6 +779,24 @@ class Shipment < ApplicationRecord
     broker_customer&.requires_charges_confirmed_on_receivables || broker.requires_charges_confirmed_on_receivables
   end
 
+  def users_to_notify
+    user_ids = (broker_customer&.sales_reps&.ids || []) +
+               (broker.users.broker.with_role('dispatch')&.ids || []) +
+               (broker.users.broker.with_role('root')&.ids || [])
+
+    user_ids -= broker.users.broker.with_role('notifications:-dispatch')&.ids || []
+
+    if updated_by.present?
+      if updated_by.receive_notifications_from_self?
+        user_ids << updated_by.id
+      else
+        user_ids -= [updated_by.id]
+      end
+    end
+
+    User.distinct.active.where(id: user_ids)
+  end
+
   private
 
   def build_commissions
@@ -1071,24 +1089,6 @@ class Shipment < ApplicationRecord
 
     notification = ShipmentNotification.with(shipment: self, attribute_changed: :new_shipment)
     notification.deliver_later(users_to_notify)
-  end
-
-  def users_to_notify
-    user_ids = (broker_customer&.sales_reps&.ids || []) +
-               (broker.users.broker.with_role('dispatch')&.ids || []) +
-               (broker.users.broker.with_role('root')&.ids || [])
-
-    user_ids -= broker.users.broker.with_role('notifications:-dispatch')&.ids || []
-
-    if updated_by.present?
-      if updated_by.receive_notifications_from_self?
-        user_ids << updated_by.id
-      else
-        user_ids -= [updated_by.id]
-      end
-    end
-
-    User.distinct.active.where(id: user_ids)
   end
 
   def send_notification
