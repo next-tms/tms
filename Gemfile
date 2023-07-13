@@ -78,7 +78,7 @@ gem 'devise-pwned_password', '~> 0.1.10'
 gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'a11f245c79f7bb826b0d68aea186a809ca336531'
 gem 'interstellar-next',
     git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next',
-    ref: '674fe39bd6c1c108ffa87da46036856469e25a06'
+    ref: '2766305da67630caf715d6538520b9590fd2713f'
 gem 'spacetime',
     git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime',
     ref: 'b430558c2458c6d674ec1803246ff5fcccacff94'
