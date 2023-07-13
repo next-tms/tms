@@ -54,6 +54,7 @@ module Liftoff
       Interstellar::ExpiredCredentialsError,
       Interstellar::HTTPError,
       Interstellar::InvalidCredentialsError,
+      Interstellar::PickupResponse,
       Interstellar::ResponseError,
       Interstellar::ShipmentNotFoundError,
       Interstellar::UnserviceableAccessorialsError,
