@@ -1,9 +1,7 @@
-<% provide :title, 'Settings' %>
-<% provide :menu, render('menu') %>
+<% provide :title, 'Edit' %>
 
-<div class="page-header">
-  <h1>Settings</h1>
-  <p class="lead">Overview</p>
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6">Company</h1>
 </div>
 
 <%= render 'form' %>
@@ -20,20 +18,10 @@
       <tbody>
         <tr>
           <td>
-            <%= link_to 'Intuit QuickBooks', broker_settings_intuit_path, target: '_blank' %>
+            <%= link_to 'Intuit QuickBooks', broker_settings_company_intuit_path, target: '_blank' %>
           </td>
           <td>
             <% if current_user.broker.intuit_account&.connected? %>
-              ✓
-            <% end %>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <%= link_to 'Stripe', broker_settings_stripe_path, target: '_blank' %>
-          </td>
-          <td>
-            <% if current_user.broker.stripe_account&.connected? %>
               ✓
             <% end %>
           </td>

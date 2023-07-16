@@ -79,7 +79,17 @@
 
   <ul class="list-unstyled mt-4">
     <li class="mb-2 p-2"><%= link_to icon('solid', 'user-circle', 'Account'), edit_user_registration_path, class: 'registrations' %></li>
-    <li class="mb-2 p-2"><%= link_to icon('solid', 'cog', 'Settings'), broker_settings_path, class: 'broker' %></li>
+
+    <% if current_user.role?(:root) %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('solid', 'building', 'Company'), broker_settings_company_path, class: 'broker' %>
+      </li>
+
+      <li class="mb-2 p-2">
+        <%= link_to icon('solid', 'cog', 'Settings'), broker_settings_path, class: 'settings' %>
+      </li>
+    <% end %>
+
     <li class="mb-2 p-2"><%= link_to icon('solid', 'sign-out-alt', 'Logout'), destroy_user_session_path, data: { action: 'authentication#signout' } %></li>
   </ul>
 </aside>

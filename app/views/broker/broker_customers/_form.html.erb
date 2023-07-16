@@ -163,12 +163,9 @@
   <div class="form-group row my-4">
     <label class="col-form-label col-sm-2">Receivables</label>
     <div class="col-sm-10">
-      <%= f.check_box :requires_charges_confirmed_on_receivables,
-                      label: 'Require shipment pricing to be confirmed before creating receivables?' %>
-      <%= f.check_box :requires_shipment_shipper_reference_on_receivables,
-                      label: 'Require SO on receivables?' %>
-      <%= f.check_box :requires_customer_reference_number_on_receivables,
-                      label: 'Require PO on receivables?' %>
+      <%= f.check_box :requires_charges_confirmed_on_receivables %>
+      <%= f.check_box :requires_shipment_shipper_reference_on_receivables %>
+      <%= f.check_box :requires_customer_reference_number_on_receivables %>
     </div>
   </div>
 

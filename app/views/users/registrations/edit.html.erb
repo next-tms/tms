@@ -27,6 +27,25 @@
       <%= f.check_box :receive_email_notifications, label: 'Receive notifications by email?' %>
       <%= f.check_box :receive_read_notifications_by_email, label: 'Receive notifications that you’ve already seen by email?' %>
 
+      <label class="col-form-label fw-bold"> Notification Preferences: List of Events to be notified on via email when you're not logged in</label>
+
+      <% if current_user.broker? %>
+        <div class="d-flex">
+          <% @splitted_notification_types.each do |notif_group| %>
+            <table class="table table-borderless w-auto me-4">
+              <tbody>
+                <% notif_group.each do |notification_type| %>
+                  <tr>
+                    <td><%= humanized_notification_type(notification_type) %></td>
+                    <td> <%= check_box_tag "email_notifications_blacklist[]", notification_type, @blacklist.exclude?(notification_type), class: "form-check-input" %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% end %>
+        </div>
+      <% end %>
+
       <p class="col-title mt-4">Password</p>
       <p>Only complete this section to change your password:</p>
       <%= f.password_field :password, placeholder: 'New password', autocomplete: 'new-password' %>

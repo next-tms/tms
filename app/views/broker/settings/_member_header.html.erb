@@ -1,0 +1,15 @@
+<div class="page-header bg-light p-4 mb-4">
+  <h1 class="mb-6">
+    <% if @setting.key.present? %>
+      <span class="font-monospace">
+        <%= @setting.key %>
+      </span>
+    <% else %>
+      Setting
+    <% end %>
+  </h1>
+
+  <% unless @setting.new_record? %>
+    <%= render 'member_menu' %>
+  <% end %>
+</div>

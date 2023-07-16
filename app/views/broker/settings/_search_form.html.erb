@@ -1,0 +1,14 @@
+<% unless q.blank? %>
+  <div class="row">
+    <div class="col">
+      <%= render 'layouts/pagy', pagy: @pagy %>
+    </div>
+
+    <div class="col-auto float-right">
+      <%= search_form_for(q, url: request.path, class: 'form-inline mb-3') do |f| %>
+        <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
+        <%= f.text_field :key_or_value_cont, placeholder: 'Search', autocomplete: 'off', class: 'form-control mr-1' %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,27 @@
+settings:
+  - key: automatically_authorize_receivables
+    value: true
+  - key: customer_service_email
+    value: ""
+  - key: default_bol_notes
+    value: ""
+  - key: ignore_broker_carrier_bol_requires_tracking_number
+    value: false
+  - key: name
+    value: ""
+  - key: phone
+    value: ""
+  - key: robot_email
+    value: ""
+  - key: time_zone_name
+    value: America/Los_Angeles
+  - key: website_desc
+    value: ""
+  - key: website_homepage
+    value: ""
+  - key: website_logo_image_data
+    value:  ""
+  - key: website_sign_out_url
+    value: ""
+  - key: website_slogan
+    value: ""

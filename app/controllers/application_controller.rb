@@ -76,6 +76,7 @@ class ApplicationController < ActionController::Base
       :account_update,
       keys: %i[
               email
+              email_notifications_blacklist
               first_name
               last_name
               password

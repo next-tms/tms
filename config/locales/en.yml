@@ -2,15 +2,6 @@ en:
   app_name: "Liftoff"
   activerecord:
     attributes:
-      broker_customer_sales_rep:
-        commission_flat: flat commission
-        commission_percent: percentage-based commission
-      contacts:
-        broker_carrier: Carrier
-        broker_customer: Customer
-        label: Department
-      region:
-        iso_3166_2: ISO 3166-2
       broker_carrier:
         encrypted_api_key: API Key
         password: Password
@@ -19,10 +10,21 @@ en:
         website_username: Username
       broker_customer:
         can_quote: Customer can quote and book shipments
+        requires_charges_confirmed_on_receivables: Prevent creating receivable until shipment charges are confirmed?
+        requires_customer_reference_number_on_receivables: "Prevent creating receivable until shipment customer reference number is present?"
+        requires_shipment_delivery_before_receivable: Prevent creating receivable until shipment is delivered?
+        requires_shipment_shipper_reference_on_receivables: "Prevent creating receivable until shipment shipper reference number is present?"
+      broker_customer_sales_rep:
+        commission_flat: flat commission
+        commission_percent: percentage-based commission
+      contacts:
+        broker_carrier: Carrier
+        broker_customer: Customer
+        label: Department
       contact:
         company_sgid: Company
-      user:
-        company_sgid: Company
+      region:
+        iso_3166_2: ISO 3166-2
       shipment:
         bol: Bill of Lading Number
         broker_carrier: Carrier
@@ -36,6 +38,8 @@ en:
         shipper_reference: Shipper Reference
         total_charges: Charge
         total_cost: Cost
+      user:
+        company_sgid: Company
     models:
       broker_carrier:
         one: Carrier
@@ -87,3 +91,18 @@ en:
       sailed: #{model_name} left %{city}, %{region_abbreviation} %{country_alpha2_code} by ship
       trailer_closed: #{model_name} was in a closed trailer %{city}, %{region_abbreviation} %{country_alpha2_code}
       trailer_unloaded: #{model_name} was in an unloaded in %{city}, %{region_abbreviation} %{country_alpha2_code}
+  settings:
+    automatically_authorize_receivables: Automatically authorize receivable after creation?
+    automatically_update_shipment_tracking_based_on_carrier_apis: Automatically update shipment tracking information based on carrier API's?
+    copyright_holder: Legal name of your company (used for the copyright notice), e.g. My Company, LLC
+    customer_service_email: Email address displayed to customers for customer service
+    domain: Domain used for Next TMS, e.g. tms.mycompany.com
+    ignore_broker_carrier_bol_requires_tracking_number: Allow creating bill of lading when shipment tracking number is missing and the carrier requires it to be present?
+    name: Display name of your company, e.g. My Company
+    phone: Customer service phone number in E.164 format, e.g. +1-555-555-5555
+    requires_charges_confirmed_on_receivables: Prevent creating receivable until shipment charges are confirmed?
+    robot_email: Email address used for notification emails
+    time_zone_name: IANA time zone name
+    website_desc: Content for the <meta name="description"> HTML tag used for search engine results
+    website_homepage: URL to your landing website, e.g. https://mycompany.com/
+    website_logo_image_data: URL to your SVG logo (can be a data:-encoded URL)

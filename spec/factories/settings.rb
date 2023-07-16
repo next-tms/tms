@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+FactoryBot.define do
+  factory :setting do
+    key { Faker::Alphanumeric.alpha.downcase }
+    value { Faker::Alphanumeric.alpha }
+  end
+end

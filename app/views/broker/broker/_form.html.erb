@@ -1,5 +1,5 @@
-<%= bootstrap_form_with(model: [:broker, @broker], url: broker_update_settings_path, layout: :horizontal) do |f| %>
-  <%= f.alert_message "Unable to save customer:" %>
+<%= bootstrap_form_with(model: [:broker, @broker], url: broker_settings_company_path, layout: :horizontal) do |f| %>
+  <%= f.alert_message "Unable to save:" %>
 
   <div class="form-group form-row">
     <label class="col-form-label col-sm-2">Address</label>
@@ -29,52 +29,6 @@
       <%= link_to_add_fields icon('solid', 'plus', 'Add'), f, :broker_countries, 'btn btn-light mt-2 mb-4' %>
     </div>
   </div>
-
-  <div class="form-row">
-    <%= f.check_box :automatically_authorize_receivables %>
-  </div>
-
-  <div class="form-row">
-    <%= f.check_box :automatically_update_shipment_tracking_based_on_carrier_apis %>
-  </div>
-
-  <div class="form-row">
-    <%=
-      f.check_box :ignore_broker_carrier_bol_requires_tracking_number,
-                  label: 'Generate BOL even if pro is missing and the carrier requires it?'
-    %>
-  </div>
-
-  <div class="form-row">
-    <%= f.check_box :requires_charges_confirmed_on_receivables,
-                    label: 'Require Shipment Charges to be Confirmed before sending Receivables?' %>
-  </div>
-
-  <hr>
-
-  <label class="col-form-label fw-bold"> Notification Preferences: List of Events to be notified on via email when you're not logged in</label>
-
-  <div class="d-flex">
-    <% @splitted_notification_types.each do |notif_group| %>
-      <table class="table table-borderless w-auto me-4">
-        <tbody>
-          <% notif_group.each do |notification_type| %>
-            <tr>
-              <td><%= humanized_notification_type(notification_type) %></td>
-              <td> <%= check_box_tag "email_notifications_blacklist[]", notification_type, @blacklist.exclude?(notification_type), class: "form-check-input" %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% end %>
-  </div>
-
-  <label class="col-form-label fw-bold">Customize UI Theme</label>
-
-    <%= f.color_field :theme_primary_color, label: "Primary Colour" %>
-    <%= f.color_field :theme_sidebar_background_color, label: "Side Navigation Background Colour" %>
-    <%= f.color_field :theme_sidebar_text_color, label: "Side Navigation Text Colour" %>
-
 
   <div class="form-row my-4">
     <%= f.submit 'Save', data: { turbo: false }, class: 'btn btn-primary' %>

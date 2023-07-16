@@ -1,0 +1,15 @@
+<% provide :title, @setting.key %>
+
+<%= render 'member_header' %>
+
+<% if @setting.help.present? %>
+  <p class="col-title">Description</p>
+
+  <%= simple_format(@setting.help) %>
+<% end %>
+
+<p class="col-title">Value</p>
+
+<div class="font-monospace text-break w-100 p-2 bg-light rounded">
+  <%= @setting.value %>
+</div>

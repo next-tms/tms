@@ -30,11 +30,11 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :users, controllers: { invitations: 'users/invitations' }
+  devise_for :users, controllers: { invitations: 'users/invitations', registrations: 'users/registrations' }
 
   as :user do
-    get 'users/edit' => 'devise/registrations#edit', as: 'edit_user_registration'
-    put 'users' => 'devise/registrations#update', as: 'user_registration'
+    get 'users/edit' => 'users/registrations#edit', as: 'edit_user_registration'
+    put 'users' => 'users/registrations#update', as: 'user_registration'
   end
 
   get 'contact-card', to: 'brokers#contact_card'
@@ -59,6 +59,12 @@ Rails.application.routes.draw do
     get 'customers/profitability-report' => 'broker_customers#profitability_report'
     get 'customers/:id/receivables' => 'broker_customers#receivables', as: :broker_customer_receivables
     get 'customers/:id/shipments' => 'broker_customers#shipments', as: :broker_customer_shipments
+
+    get 'settings/company', to: 'broker#settings'
+    match 'settings/company', to: 'broker#update', via: %i[patch put post]
+    resources :broker_accessorials, path: 'settings/company/accessorials'
+
+    get 'settings/company/intuit', to: 'intuit_account#show'
 
     resources :broker_customers, path: 'customers' do
       collection do
@@ -116,9 +122,6 @@ Rails.application.routes.draw do
 
     get 'rates/:uid/breakdown-modal', as: 'rate_breakdown_modal', to: 'rates#breakdown_modal'
 
-    get 'settings/intuit', to: 'intuit_account#show'
-    get 'settings/stripe', to: 'stripe_account#show'
-
     resources :payment_transactions, path: 'bills' do
       collection do
         get :due
@@ -148,10 +151,6 @@ Rails.application.routes.draw do
       member { get 'rebuild', as: :rebuild }
     end
 
-    get 'settings', to: 'broker#settings', as: :settings
-    match 'settings', to: 'broker#update', as: :update_settings, via: %i[patch put post]
-    resources :broker_accessorials, path: 'settings/accessorials'
-
     resources :pickups, only: %i[create]
     get 'pickups', to: 'pickups#create' # used by Broker::ShipmentsControlller
 
@@ -163,6 +162,8 @@ Rails.application.routes.draw do
         get :yours
       end
     end
+
+    resources :settings
 
     get 'shipments/booked', to: 'shipments#booked'
     get 'shipments/pending-dispatch', to: 'shipments#pending_dispatch'

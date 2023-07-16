@@ -1,0 +1,15 @@
+<div class="row">
+  <div class="col col-md-8">
+    <%= bootstrap_form_with(model: [:broker, @setting], local: true, layout: :horizontal) do |f| %>
+      <% if f.object.new_record? %>
+        <%= f.text_field :key, autofocus: 'autofocus', class: 'font-monospace' %>
+      <% end %>
+
+      <%= f.text_area :value, rows: 25, class: 'font-monospace' %>
+
+      <div class="form-group">
+        <%= f.submit class: 'btn btn-primary mt-4', data: { turbo: false }, value: 'Save' %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -3,7 +3,7 @@
     <title><%= yield :title %> — <%= Setting.value!(:name) %></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="<%= Setting.value!(:website_desc) %>"/>
+    <meta name="description" content="<%= Setting.value(:website_desc) %>"/>
 
     <% if !yield(:no_cache).blank? || !flash.blank? %>
       <meta name="turbo-cache-control" content="no-cache"/>
@@ -30,7 +30,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
- 
+
   <% if current_user %>
     <style>
       <% broker = current_user.broker %>
@@ -72,7 +72,7 @@
       aside, aside a, aside a:active, aside a:hover, aside a:visited {
         color: <%= broker.theme_sidebar_text_color %>;
       }
-    </style> 
+    </style>
   <% end %>
 
   <body data-controller="active" data-active-controller-value="<%= controller.controller_name.gsub('_', '-') %>" data-active-action-value="<%= action_name.gsub('_', '-') %>">

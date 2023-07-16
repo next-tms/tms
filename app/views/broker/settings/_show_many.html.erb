@@ -1,0 +1,33 @@
+<%= turbo_frame_tag :settings do %>
+  <%= render 'broker/settings/search_form', q: q %>
+
+  <% if settings.any? %>
+    <div class="table-responsive">
+      <table class="table table-condensed table-borderless table-striped table-hover h-100">
+        <thead>
+          <tr>
+            <th><%= sort_link q, :key, 'Key' %></th>
+            <th><%= sort_link q, :value, 'Value' %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% settings.each do |setting| %>
+            <tr>
+              <td class="font-monospace">
+                <%= link_to setting.key, broker_setting_path(setting), target: '_top' %>
+              </td>
+
+              <td class="font-monospace text-truncate" style="max-width: 25rem;">
+                <%= setting.value %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'shared/no_content' %>
+  <% end %>
+<% end %>
