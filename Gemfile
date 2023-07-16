@@ -27,13 +27,14 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'faker', '~> 3.2.0'
   gem 'pry'
+  gem 'rails-controller-testing', '~> 1.0.5'
   gem 'rspec-rails', '~> 6.0'
-  gem 'shoulda-matchers', '5.3.0'
+  gem 'rubocop-graphql', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', require: false
   gem 'rubocop-shopify', '~> 2.14.0', require: false
-  gem 'rubocop-graphql', require: false
+  gem 'shoulda-matchers', '5.3.0'
   gem 'webmock', '~> 3.18.1'
 end
 

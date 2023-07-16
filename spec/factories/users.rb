@@ -138,6 +138,12 @@ FactoryBot.define do
 
     factory :broker_user do
       association :companyable, factory: :broker
+
+      factory :root_broker_user do
+        after(:create) do |record|
+          record.contact.contact_roles.create!(role: :root)
+        end
+      end
     end
 
     #    factory :dispatch_user do
