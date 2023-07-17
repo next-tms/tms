@@ -28,9 +28,23 @@ class Broker::UsersController < Broker::BrokerController
   end
 
   def update
-    redirect_to(broker_user_path(@user)) && return if @user.update(user_params)
+    @user.assign_attributes(user_params)
 
-    render(:edit)
+    # Manually map new roles and roles that are marked for deletion because
+    # the Contact#accept_nested_attributes is not triggered on #update since we are
+    # not updating or tou the @user.contact record
+    new_roles = @user.contact.contact_roles.select(&:new_record?)
+    new_roles.map(&:save!) if new_roles
+
+    removeable_roles = @user.contact.contact_roles.select(&:_destroy)
+    removeable_roles.map(&:destroy!) if removeable_roles.present?
+    
+    if @user.save
+      flash[:success] = "Successfully Updated User"
+      redirect_to(broker_user_path(@user))
+    else
+      render(:edit)
+    end
   end
 
   private
