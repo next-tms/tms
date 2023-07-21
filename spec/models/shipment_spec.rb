@@ -270,6 +270,18 @@ RSpec.describe(Shipment, type: :model) do
     end
   end
 
+  describe '#picked_up?' do
+    let(:shipment) { create(:shipment, picked_up_at: Time.current) }
+
+    it { expect(shipment.picked_up?).to(eq(true)) }
+
+    context 'when not picked_up_at.present?' do
+      let(:shipment) { create(:shipment, picked_up_at: nil) }
+
+      it { expect(shipment.picked_up?).to(eq(false)) }
+    end
+  end
+
   describe '#total_weight' do
     let(:shipment) do
       record = create(:shipment)

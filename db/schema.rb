@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_10_081613) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_21_221755) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -740,7 +740,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_10_081613) do
     t.string "customer_reference"
     t.string "pro"
     t.string "pickup_confirmation"
-    t.boolean "picked_up"
     t.integer "priority"
     t.time "shipper_unavailable_at"
     t.time "receiver_available_at"

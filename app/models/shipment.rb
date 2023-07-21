@@ -64,8 +64,6 @@
 #   @return [Time]
 # @!attribute pending_appointment_since
 #   @return [Date]
-# @!attribute picked_up
-#   @return [Boolean]
 # @!attribute picked_up_at
 #   @return [Time]
 # @!attribute pickup_confirmation
@@ -540,6 +538,10 @@ class Shipment < ApplicationRecord
     Shipment::DeliveryDateService.new(shipment: self).delivery_by
   end
 
+  def picked_up?
+    picked_up_at.present?
+  end
+
   def pickup_from
     return if pickup_on.blank? || pickup_hours_start_at.blank? || shipper_address&.time_zone.blank?
 
@@ -808,9 +810,9 @@ class Shipment < ApplicationRecord
   def build_commissions
     return unless broker_customer.present? && [total_charges_cents, total_cost_cents].all?(&:positive?)
 
-    return unless %i[broker_customer_id total_charges_cents total_cost_cents]
-                  .map { |attribute| public_send("will_save_change_to_#{attribute}?") }
-                  .any?(true)
+    return if %i[broker_customer_id total_charges_cents total_cost_cents]
+              .map { |attribute| public_send("will_save_change_to_#{attribute}?") }
+              .none?(true)
 
     if commissions.present?
       if commissions.pluck(:paid).include?(true)

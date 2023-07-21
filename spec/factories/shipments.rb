@@ -68,8 +68,6 @@
 #   @return [Time]
 # @!attribute pending_appointment_since
 #   @return [Date]
-# @!attribute picked_up
-#   @return [Boolean]
 # @!attribute picked_up_at
 #   @return [Time]
 # @!attribute pickup_confirmation
@@ -228,7 +226,6 @@ FactoryBot.define do
     notify { [true, false].sample }
     out_for_delivery_at { 1.week.ago }
     pending_appointment_since { 13.days.ago }
-    picked_up { [true, false].sample }
     picked_up_at { 13.days.ago }
     pickup_confirmation { Faker::Number.number }
     pickup_driver_assigned_at { 2.weeks.ago }
