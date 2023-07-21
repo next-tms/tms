@@ -427,7 +427,11 @@ class Shipment < ApplicationRecord
   end
 
   def calculated_freight_classes?
-    applied_rate&.with_calculated_freight_classes? || broker_customer&.always_show_quotes_based_on_calculated_classes? || false
+    return applied_rate.with_calculated_freight_classes? if applied_rate.present?
+
+    return broker_customer..always_show_quotes_based_on_calculated_classes? if broker_customer.present?
+
+    false
   end
 
   def canceled_at=(val)
