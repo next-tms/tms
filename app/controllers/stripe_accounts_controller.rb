@@ -21,7 +21,7 @@ class StripeAccountsController < ApplicationController
   def oauth_callback
     if params[:account].blank?
       flash[:error] = 'Unknown error'
-      redirect_to broker_settings_stripe_url(host: @broker.websites.first), allow_other_host: true and return
+      redirect_to broker_settings_stripe_url(host: ENV.fetch('DOMAIN')), allow_other_host: true and return
     end
 
     Stripe.api_key = ENV.fetch('STRIPE_API_KEY')
@@ -38,11 +38,11 @@ class StripeAccountsController < ApplicationController
       flash[:error] = 'Your account does not accept payments'
     end
 
-    redirect_to broker_settings_stripe_url(host: @broker.websites.first.domain), allow_other_host: true
+    redirect_to broker_settings_stripe_url(host: ENV.fetch('DOMAIN')), allow_other_host: true
   end
 
   def oauth_callback_refresh
-    redirect_to authenticate_stripe_account_url(host: @broker.websites.first.domain)
+    redirect_to authenticate_stripe_account_url(host: ENV.fetch('DOMAIN'))
   end
 
   def global_controller?
