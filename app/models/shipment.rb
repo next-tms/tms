@@ -426,6 +426,10 @@ class Shipment < ApplicationRecord
     super
   end
 
+  def calculated_freight_classes?
+    applied_rate&.with_calculated_freight_classes? || broker_customer&.always_show_quotes_based_on_calculated_classes? || false
+  end
+
   def canceled_at=(val)
     return self.canceled_at = Time.current if val == 'now' # for UI
 
@@ -799,11 +803,11 @@ class Shipment < ApplicationRecord
 
   def build_commissions
     return unless broker_customer.present? && [total_charges_cents, total_cost_cents].all?(&:positive?)
-    
+
     return unless %i[broker_customer_id total_charges_cents total_cost_cents]
                   .map { |attribute| public_send("will_save_change_to_#{attribute}?") }
                   .any?(true)
-    
+
     if commissions.present?
       if commissions.pluck(:paid).include?(true)
         errors.add(:base, 'Pricing cannot be updated because commission(s) have already been paid')

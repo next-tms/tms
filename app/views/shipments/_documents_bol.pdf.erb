@@ -184,7 +184,13 @@
             <% end %>
           </td>
           <td><% if item.hazmat %>✓<% end %></td>
-          <td><%= item.forced_freight_class ? item.forced_freight_class : item.calculated_freight_class %></td>
+          <td>
+            <% if shipment.calculated_freight_classes? %>
+              <%= item.calculated_freight_class.presence || item.forced_freight_class %>
+            <% else %>
+              <%= item.forced_freight_class.presence || item.calculated_freight_class %>
+            <% end %>
+          </td>
           </td>
           <td><%= item.nmfc %></td>
           <td>
