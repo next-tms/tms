@@ -31,7 +31,6 @@ en:
         carrier_bol: Scanned Bill of Lading
         carrier_pod: Proof of Delivery
         customer_reference: Customer Reference
-        linear_ft: Linear Feet
         pickup_confirmation: Pickup Confirmation Number
         pro: Pro Number
         quote_id: Quote Number

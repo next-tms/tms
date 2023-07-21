@@ -21,9 +21,9 @@ module Shipment::Fingerprintable
       str += pickup_on&.to_s || ''
       str += pro || ''
       str += quote_id || ''
-      str += receiver_address.pretty(', ') if receiver_address.present?
+      str += receiver_address.pretty(', ') unless receiver_address.blank?
       str += receiver_name || ''
-      str += shipper_address.pretty(', ') if shipper_address.present?
+      str += shipper_address.pretty(', ') unless shipper_address.blank?
       str += shipper_bol || ''
       str += shipper_name || ''
       str += shipper_reference || ''
@@ -40,29 +40,23 @@ module Shipment::Fingerprintable
     def fingerprint
       str = ''.dup
 
-      if flattened_items.present?
+      unless flattened_items.blank?
         flattened_items.each do |flattened_item|
           str += flattened_item
                  .attributes
                  .except(
-                   'created_at', 'updated_at'
+                   *%w[created_at updated_at]
                  )
                  .to_s
         end
       end
 
       str += accessorial_codes.to_json
-      str += shipper_address.pretty(', ') if shipper_address.present?
-      str += receiver_address.pretty(', ') if receiver_address.present?
+      str += shipper_address.pretty(', ') unless shipper_address.blank?
+      str += receiver_address.pretty(', ') unless receiver_address.blank?
 
-      if created_at.present?
-        if created_at.in_time_zone('America/Los_Angeles').to_date >= Date.parse('2022-01-09')
-          str += value_cents.to_s
-        end
-
-        if created_at.in_time_zone('America/Los_Angeles').to_date >= Date.parse('2023-07-06')
-          str += linear_ft.to_s
-        end
+      if !created_at.blank? && created_at.in_time_zone('America/Los_Angeles').to_date >= Date.parse('2022-01-09')
+        str += value_cents.to_s
       end
 
       Digest::SHA2.hexdigest(str)

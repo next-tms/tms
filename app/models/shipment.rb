@@ -403,7 +403,6 @@ class Shipment < ApplicationRecord
 
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
-  validates :linear_ft, numericality: { only_integer: true }, allow_blank: true
   validates :load_id, uniqueness: { scope: :broker }
 
   validate :validate_future_pickup_by, if: -> { dispatch_pickup }
@@ -731,12 +730,11 @@ class Shipment < ApplicationRecord
     @flattened_items
   end
 
-  # @todo Calculate linear ft automatically when nil
-  # def linear_ft
-  #   return @linear_ft if @linear_ft
-  #
-  #   @linear_ft = Shipment::LinearFtService.new(shipment: self).call
-  # end
+  def linear_ft
+    return @linear_ft if @linear_ft
+
+    @linear_ft = Shipment::LinearFtService.new(shipment: self).call
+  end
 
   def accessible_by?(user)
     if user.broker?
@@ -801,11 +799,11 @@ class Shipment < ApplicationRecord
 
   def build_commissions
     return unless broker_customer.present? && [total_charges_cents, total_cost_cents].all?(&:positive?)
-
-    return if %i[broker_customer_id total_charges_cents total_cost_cents]
-              .map { |attribute| public_send("will_save_change_to_#{attribute}?") }
-              .none?(true)
-
+    
+    return unless %i[broker_customer_id total_charges_cents total_cost_cents]
+                  .map { |attribute| public_send("will_save_change_to_#{attribute}?") }
+                  .any?(true)
+    
     if commissions.present?
       if commissions.pluck(:paid).include?(true)
         errors.add(:base, 'Pricing cannot be updated because commission(s) have already been paid')
