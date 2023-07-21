@@ -2,7 +2,7 @@
 
 module ProblematicService
   class Rule::Shipment::MissingCarrierTrackingPro < Rule::Shipment
-    ROLES = %i[dispatch].freeze
+    ROLES = %i[dispatch root].freeze
 
     def humanized(*)
       "missing #{record.tracking_carrier&.name} tracking number".squish

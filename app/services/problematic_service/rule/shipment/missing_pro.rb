@@ -2,7 +2,7 @@
 
 module ProblematicService
   class Rule::Shipment::MissingPro < Rule::Shipment
-    ROLES = %i[dispatch].freeze
+    ROLES = %i[dispatch root].freeze
 
     def humanized(*)
       return "Missing #{::Shipment.human_attribute_name(:pro).downcase}" if record.broker_carrier.blank?

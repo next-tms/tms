@@ -2,7 +2,7 @@
 
 module ProblematicService
   class Rule::Shipment::MissingBrokerCarrierId < Rule::Shipment
-    ROLES = %i[dispatch].freeze
+    ROLES = %i[dispatch root].freeze
 
     def humanized(*)
       'carrier unassigned'

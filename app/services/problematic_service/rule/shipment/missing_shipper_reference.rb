@@ -2,7 +2,7 @@
 
 module ProblematicService
   class Rule::Shipment::MissingShipperReference < Rule::Shipment
-    ROLES = %i[accounts_receivable dispatch].freeze
+    ROLES = %i[accounts_receivable dispatch root].freeze
 
     def humanized(*)
       "Missing #{::Shipment.human_attribute_name(:shipper_reference).downcase}"

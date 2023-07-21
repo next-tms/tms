@@ -2,7 +2,7 @@
 
 module ProblematicService
   class Rule::Shipment::MissingDeliveryAt < Rule::Shipment
-    ROLES = %i[dispatch].freeze
+    ROLES = %i[dispatch root].freeze
 
     def humanized(*)
       'not delivered'
