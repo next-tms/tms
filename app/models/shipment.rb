@@ -748,6 +748,8 @@ class Shipment < ApplicationRecord
 
   def accessible_by?(user)
     if user.broker?
+      return true if broker_customer.blank?
+
       return user.any_role?(
         :accounts_payable,
         :accounts_receivable,
