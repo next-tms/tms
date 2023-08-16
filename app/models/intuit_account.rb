@@ -27,7 +27,14 @@
 #
 #  index_intuit_accounts_on_broker_id  (broker_id)
 #
+# @todo Move to Setting model
 class IntuitAccount < ApplicationRecord
+  class << self
+    def connected?
+      !!first&.connected?
+    end
+  end
+
   include QuickbooksOauth
 
   belongs_to :broker

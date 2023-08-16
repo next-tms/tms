@@ -198,13 +198,13 @@ class Receivable < ApplicationRecord
   end
 
   def missing_carrier_bol?
-    return false unless shipment.broker_customer.requires_carrier_bol_on_receivables?
+    return false unless broker_customer.present? && broker_customer.requires_carrier_bol_on_receivables?
 
     !shipment.carrier_bol.attached?
   end
 
   def missing_carrier_pod?
-    return false unless shipment.broker_customer.requires_carrier_pod_on_receivables?
+    return false unless broker_customer.present? && broker_customer.requires_carrier_pod_on_receivables?
 
     !shipment.carrier_pod.attached?
   end
@@ -296,7 +296,7 @@ class Receivable < ApplicationRecord
   def set_invoiced
     return if invoiced?
 
-    self.invoiced = true if broker_customer.broker.intuit_account&.connected? && quickbooks_invoice.present?
+    self.invoiced = IntuitAccount.connected? && quickbooks_invoice.present?
   end
 
   def set_sent_at

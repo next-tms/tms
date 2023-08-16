@@ -63,6 +63,62 @@
 #
 require 'rails_helper'
 
-RSpec.describe Receivable, type: :model do
+RSpec.describe(Receivable, type: :model) do
   it_behaves_like 'discussable'
+
+  describe '#missing_carrier_bol?' do
+    let(:broker_customer) { create(:broker_customer) }
+    let(:shipment) { create(:shipment, broker_customer:) }
+    let(:record) { create(:receivable, shipment:) }
+
+    let(:result) { record.missing_carrier_bol? }
+
+    it { expect { result }.not_to(raise_error) }
+
+    context 'when broker_customer.blank?' do
+      let(:shipment) { create(:shipment, broker_customer: nil) }
+
+      it { expect(result).to(eq(false)) }
+    end
+
+    context 'when broker_customer.requires_carrier_bol_on_receivables?' do
+      let(:broker_customer) { create(:broker_customer, requires_carrier_bol_on_receivables: true) }
+
+      it { expect(result).to(eq(true)) }
+    end
+
+    context 'when not broker_customer.requires_carrier_bol_on_receivables?' do
+      let(:broker_customer) { create(:broker_customer, requires_carrier_bol_on_receivables: false) }
+
+      it { expect(result).to(eq(false)) }
+    end
+  end
+
+  describe '#missing_carrier_pod?' do
+    let(:broker_customer) { create(:broker_customer) }
+    let(:shipment) { create(:shipment, broker_customer:) }
+    let(:record) { create(:receivable, shipment:) }
+
+    let(:result) { record.missing_carrier_pod? }
+
+    it { expect { result }.not_to(raise_error) }
+
+    context 'when broker_customer.blank?' do
+      let(:shipment) { create(:shipment, broker_customer: nil) }
+
+      it { expect(result).to(eq(false)) }
+    end
+
+    context 'when broker_customer.requires_carrier_pod_on_receivables?' do
+      let(:broker_customer) { create(:broker_customer, requires_carrier_pod_on_receivables: true) }
+
+      it { expect(result).to(eq(true)) }
+    end
+
+    context 'when not broker_customer.requires_carrier_pod_on_receivables?' do
+      let(:broker_customer) { create(:broker_customer, requires_carrier_pod_on_receivables: false) }
+
+      it { expect(result).to(eq(false)) }
+    end
+  end
 end
