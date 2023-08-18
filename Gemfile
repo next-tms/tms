@@ -10,7 +10,7 @@ gem 'sprockets-rails', '~> 3.4.2'
 gem 'pg', '~> 1.4.6'
 gem 'puma', '~> 6.2.2'
 
-gem 'importmap-rails', '~> 1.1.6'
+gem 'importmap-rails', '~> 1.2.1'
 gem 'stimulus-rails', '~> 1.1.1'
 gem 'turbo-rails', '~> 1.3.3'
 

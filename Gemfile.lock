@@ -313,7 +313,7 @@ GEM
     image_processing (1.12.2)
       mini_magick (>= 4.9.5, < 5)
       ruby-vips (>= 2.0.17, < 3)
-    importmap-rails (1.1.6)
+    importmap-rails (1.2.1)
       actionpack (>= 6.0.0)
       railties (>= 6.0.0)
     jbuilder (2.11.5)
@@ -472,8 +472,9 @@ GEM
       actionpack (>= 5.0.1.rc1)
       actionview (>= 5.0.1.rc1)
       activesupport (>= 5.0.1.rc1)
-    rails-dom-testing (2.0.3)
-      activesupport (>= 4.2.0)
+    rails-dom-testing (2.2.0)
+      activesupport (>= 5.0.0)
+      minitest
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.5.0)
       loofah (~> 2.19, >= 2.19.1)
@@ -709,7 +710,7 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.6.8)
+    zeitwerk (2.6.11)
     zlib (2.1.1)
 
 PLATFORMS
@@ -752,7 +753,7 @@ DEPENDENCIES
   htmlentities
   httparty
   image_processing (~> 1.12.2)
-  importmap-rails (~> 1.1.6)
+  importmap-rails (~> 1.2.1)
   interstellar!
   interstellar-next!
   jbuilder (~> 2.11)
