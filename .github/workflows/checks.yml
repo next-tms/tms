@@ -5,6 +5,9 @@ on:
       - '**'
       - '!master'
   workflow_call:
+    secrets:
+      BUNDLER_GITHUB_OAUTH_KEY:
+        required: true
 env:
   AWS_ACCESS_KEY_ID: fake-access-key-id-for-build-env
   AWS_BUCKET: fake-bucket-for-build-env
@@ -12,7 +15,6 @@ env:
   AWS_ENDPOINT: https://fake-endpoint-for-build-env
   AWS_REGION: fake-region-for-build-env
   AWS_SECRET_ACCESS_KEY: fake-secret-access-key-for-build-env
-  BUNDLER_GITHUB_OAUTH_KEY: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
   DATABASE_URL: postgresql://postgres:password@localhost/liftoff_test
   GEONAMES_USERNAME: fake-username-for-build-env
   POSTMARK_API_TOKEN: fake-api-token-for-build-env
@@ -31,7 +33,7 @@ jobs:
           ruby-version: 3.2.2
       - run: |
           gem install bundler
-          bundle config github.com "$BUNDLER_GITHUB_OAUTH_KEY"
+          bundle config github.com "${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}"
           bundle install --jobs 4 --retry 3
       - run: bundle exec rubocop --only Lint/Syntax
   tests:
@@ -68,7 +70,7 @@ jobs:
       - run: sudo apt-get -yqq install libpq-dev
       - run: |
           gem install bundler
-          bundle config github.com "$BUNDLER_GITHUB_OAUTH_KEY"
+          bundle config github.com "${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}"
           bundle install --jobs 4 --retry 3
       - run: bin/rails db:create db:schema:load
       - run: bundle exec rspec

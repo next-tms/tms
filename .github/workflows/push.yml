@@ -3,14 +3,11 @@ on:
   push:
     branches:
       - master
-env:
-  BUNDLER_GITHUB_OAUTH_KEY: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
-  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-  FLIGHT_SERVICE_ACCOUNT_USERNAME: ${{ secrets.FLIGHT_SERVICE_ACCOUNT_USERNAME }}
-  FLIGHT_SERVICE_ACCOUNT_PASSWORD: ${{ secrets.FLIGHT_SERVICE_ACCOUNT_PASSWORD }}
 jobs:
   checks:
     uses: ./.github/workflows/checks.yml
+    secrets:
+      BUNDLER_GITHUB_OAUTH_KEY: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
   push:
     name: Push
     needs: checks
@@ -48,6 +45,6 @@ jobs:
           curl -v \
                -H 'Accept: application/json' \
                -H 'Content-Type: application/json' \
-               -u "${FLIGHT_SERVICE_ACCOUNT_USERNAME}:${FLIGHT_SERVICE_ACCOUNT_PASSWORD}" \
+               -u "${{ secrets.FLIGHT_SERVICE_ACCOUNT_USERNAME }}:${{ secrets.FLIGHT_SERVICE_ACCOUNT_PASSWORD }}" \
                -d "{\"build\": {\"app_kind\": \"tms\", \"build_number\": ${{ github.run_number }}, \"commit_hash\": \"${{ github.sha }}\", \"image_url\": \"https://registry.fly.io/next-tms:${{ github.sha }}\"}}" \
                'https://flight.next-tms.com/api/v1/builds'
