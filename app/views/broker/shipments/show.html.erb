@@ -23,6 +23,17 @@
   </div>
 <% end %>
 
+<% if @shipment.broker_carrier.present? &&
+      @shipment.eligible_broker_carriers(user_type: :customer).exclude?(@shipment.broker_carrier) %>
+  <div class="alert alert-danger">
+    <p class="lead">Assigned to invalid carrier account</p>
+    <p>
+      This shipment is assigned to a carrier account not associated with <%= @shipment.broker_customer.name %>. Does
+      <%= @shipment.broker_customer.name %> have account-specific pricing for <%= @shipment.broker_carrier.name %>?
+    </p>
+  </div>
+<% end %>
+
 <% problems = @shipment.problems.unresolved.or(@shipment.problems.resolved.where('resolved_at >= ?', 4.hours.ago)).order(:created_at, :resolved_at) %>
 <% if problems.any? %>
   <div class="alert">

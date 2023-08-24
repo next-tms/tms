@@ -458,6 +458,10 @@ class Shipment < ApplicationRecord
     false
   end
 
+  def eligible_broker_carriers(user_type: :customer)
+    broker_customer&.eligible_broker_carriers(user_type:) || BrokerCarrier.where(broker_customer: nil)
+  end
+
   def eligible_discussable_contacts
     ids = if broker_customer.present?
             broker_customer.contacts.customer.ids +
