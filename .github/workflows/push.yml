@@ -4,6 +4,7 @@ on:
     branches:
       - master
 env:
+  BUNDLER_GITHUB_OAUTH_KEY: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
   FLIGHT_SERVICE_ACCOUNT_USERNAME: ${{ secrets.FLIGHT_SERVICE_ACCOUNT_USERNAME }}
   FLIGHT_SERVICE_ACCOUNT_PASSWORD: ${{ secrets.FLIGHT_SERVICE_ACCOUNT_PASSWORD }}
@@ -38,6 +39,7 @@ jobs:
           tags: registry.fly.io/next-tms:${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+          build-args: BUNDLER_GITHUB_OAUTH_KEY="${BUNDLER_GITHUB_OAUTH_KEY}"
       - run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
