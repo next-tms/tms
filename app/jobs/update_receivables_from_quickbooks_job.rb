@@ -2,7 +2,7 @@
 
 class UpdateReceivablesFromQuickbooksJob < ApplicationJob
   def perform
-    IntuitAccount.all.find_each do |intuit_account|
+    IntuitAccount.all.each do |intuit_account|
       next unless intuit_account&.connected?
 
       receivables = intuit_account.broker.receivables.unpaid.or(intuit_account.broker.receivables.unsent).distinct
