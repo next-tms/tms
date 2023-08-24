@@ -6,6 +6,12 @@
 #
 # @!attribute id
 #   @return []
+# @!attribute api_request
+#   @return [String]
+# @!attribute api_response
+#   @return [String]
+# @!attribute breakdown
+#   @return [Hash]
 # @!attribute cost_cents
 #   @return [Integer]
 # @!attribute cost_currency
@@ -14,17 +20,15 @@
 #   @return [String]
 # @!attribute expires_at
 #   @return [Time]
+# @!attribute freight_kit_service_type
+#   @return [String]
 # @!attribute incomplete
 #   @return [Boolean]
-# @!attribute interstellar_service_type
-#   @return [String]
 # @!attribute reference
 #   @return [String]
-# @!attribute request
-#   @return [String]
-# @!attribute response
-#   @return [String]
 # @!attribute shipment_fingerprint
+#   @return [String]
+# @!attribute source
 #   @return [String]
 # @!attribute transit_days
 #   @return [Integer]
@@ -47,11 +51,11 @@
 #
 # Indexes
 #
-#  index_rates_on_broker_carrier_id          (broker_carrier_id)
-#  index_rates_on_broker_customer_id         (broker_customer_id)
-#  index_rates_on_interstellar_service_type  (interstellar_service_type)
-#  index_rates_on_shipment_id                (shipment_id)
-#  index_rates_on_tracking_carrier_id        (tracking_carrier_id)
+#  index_rates_on_broker_carrier_id         (broker_carrier_id)
+#  index_rates_on_broker_customer_id        (broker_customer_id)
+#  index_rates_on_freight_kit_service_type  (freight_kit_service_type)
+#  index_rates_on_shipment_id               (shipment_id)
+#  index_rates_on_tracking_carrier_id       (tracking_carrier_id)
 #
 # Foreign Keys
 #
@@ -105,7 +109,7 @@ class Rate < ApplicationRecord
 
   # Returns the actual carrier rather than any broker associated
   def carrier
-    return nil if broker_carrier.blank?
+    return if broker_carrier.blank?
 
     if broker_carrier.carrier.acts_as_broker?
       tracking_carrier
@@ -115,9 +119,9 @@ class Rate < ApplicationRecord
   end
 
   def pretty_service_type
-    return '' if interstellar_service_type.blank?
+    return '' if freight_kit_service_type.blank?
 
-    "#{interstellar_service_type.sub("_", " ").titleize.sub("Am", "AM").sub("Pm", "PM")} LTL"
+    "#{freight_kit_service_type.sub("_", " ").titleize.sub("Am", "AM").sub("Pm", "PM")} LTL"
   end
 
   def preferred?

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: tracking_events
@@ -10,7 +12,7 @@
 #   @return [String]
 # @!attribute country_alpha2
 #   @return [String]
-# @!attribute interstellar_carrier_fingerprint
+# @!attribute freight_kit_carrier_fingerprint
 #   @return [String]
 # @!attribute legacy_time_zone
 #   @return [String]

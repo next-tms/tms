@@ -16,7 +16,7 @@
 #   @return [String]
 # @!attribute country_alpha2
 #   @return [String]
-# @!attribute interstellar_carrier_fingerprint
+# @!attribute freight_kit_carrier_fingerprint
 #   @return [String]
 # @!attribute public
 #   @return [Boolean]
@@ -69,7 +69,7 @@ FactoryBot.define do
     at { Faker::Time.between(from: 2.weeks.ago, to: Time.current) }
     event { create(:event) }
     time_zone_name { Faker::Address.time_zone }
-    
+
     after(:build) { |record| record.country = record.region.country }
   end
 end

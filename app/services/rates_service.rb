@@ -37,12 +37,12 @@ class RatesService
                                .distinct
                                .where(
                                  id: @shipment.accessorials.pluck(:id) +
-                                     @shipment.assumed_accessorials.pluck(:id)
+                                     @shipment.assumed_accessorials.pluck(:id),
                                )
   end
 
   def fetch_api_rates
-    return if @broker_carrier.to_interstellar_carrier.blank?
+    return if @broker_carrier.to_freight_kit_carrier.blank?
 
     response = nil
 
@@ -54,7 +54,7 @@ class RatesService
 
     if !ignore_value &&
        !@shipment.value.zero? &&
-       !@broker_carrier.to_interstellar_carrier.class.find_rates_with_declared_value?
+       !@broker_carrier.to_freight_kit_carrier.class.find_rates_with_declared_value?
       error = StandardError.new('Carrier doesn’t support quoting shipments with declared value')
 
       rate = build_rate(:api)
@@ -65,22 +65,22 @@ class RatesService
       return
     end
 
-    api_shipment = Interstellar::Shipment.new(
+    api_shipment = FreightKit::Shipment.new(
       accessorials:,
       declared_value_cents: @shipment.value_cents,
-      origin: @shipment.shipper_address.to_interstellar_shipping_address,
-      destination: @shipment.receiver_address.to_interstellar_shipping_address,
+      origin: @shipment.shipper_address.to_freight_kit_shipping_address,
+      destination: @shipment.receiver_address.to_freight_kit_shipping_address,
       packages:,
-      pickup_at:
+      pickup_at:,
     )
 
     begin
-      response = InterstellarAPIClient.fetch_rates(
+      response = FreightKitAPIClient.fetch_rates(
         broker_carrier: @broker_carrier,
-        shipment: api_shipment
+        shipment: api_shipment,
       )
     rescue StandardError => e
-      if !Rails.env.development? && !e.is_a?(Interstellar::Error)
+      if !Rails.env.development? && !e.is_a?(FreightKit::Error)
         attributes = {
           broker_carrier_id: @broker_carrier&.id,
           shipment_id: @shipment&.id,
@@ -98,14 +98,14 @@ class RatesService
       return
     end
 
-    interstellar_rates = response&.rates
+    freight_kit_rates = response&.rates
 
-    if interstellar_rates.blank?
+    if freight_kit_rates.blank?
       rate = build_rate(:api)
       rate.assign_attributes(
         api_request: response&.request,
         api_response: response&.response,
-        error_object: response&.error || StandardError.new('No rates returned from API')
+        error_object: response&.error || StandardError.new('No rates returned from API'),
       )
       @rates << rate
       rate.save! if @save_new_rates
@@ -113,16 +113,16 @@ class RatesService
       return
     end
 
-    interstellar_rates.each do |interstellar_rate|
+    freight_kit_rates.each do |freight_kit_rate|
       rate = build_rate(:api)
       rate.assign_attributes(
         api_request: response.request,
         api_response: response.response,
-        error_object: response.error
+        error_object: response.error,
       )
 
       begin
-        cost = Money.new(interstellar_rate.total_cents)
+        cost = Money.new(freight_kit_rate.total_cents)
       rescue => e
         cost = 0
       end
@@ -137,18 +137,18 @@ class RatesService
       end
 
       # cost += @broker_carrier.quote_padding unless @broker_carrier.quote_padding.blank?
-      breakdown = interstellar_rate.prices
+      breakdown = freight_kit_rate.prices
 
       tracking_carrier = nil
       if @broker_carrier.carrier.acts_as_broker?
-        carrier_name = interstellar_rate.carrier_name
-        carrier_scac = interstellar_rate.scac
+        carrier_name = freight_kit_rate.carrier_name
+        carrier_scac = freight_kit_rate.scac
 
         if carrier_scac.blank? || carrier_name.blank?
           rate.assign_attributes(
             error_object: StandardError.new(
-              'Carrier (acting as broker) API returned quote with missing carrier name and SCAC'
-            )
+              'Carrier (acting as broker) API returned quote with missing carrier name and SCAC',
+            ),
           )
 
           @rates << rate
@@ -158,20 +158,19 @@ class RatesService
         end
 
         # Import carrier information
-        tracking_carrier = if Carrier.find_by_scac(carrier_scac).blank?
-                             Carrier.create(name: carrier_name.titleize, scac: carrier_scac.upcase)
-                           else
-                             Carrier.find_by_scac(carrier_scac)
-                           end
+        tracking_carrier = (Carrier.find_by(scac: carrier_scac).presence || Carrier.create(
+          name: carrier_name.titleize,
+          scac: carrier_scac.upcase,
+        ))
       end
 
       rate.assign_attributes(
         breakdown:,
         cost:,
-        interstellar_service_type: interstellar_rate.service_name.to_s,
-        reference: interstellar_rate.estimate_reference,
+        freight_kit_service_type: freight_kit_rate.service_name.to_s,
+        reference: freight_kit_rate.estimate_reference,
         tracking_carrier:,
-        transit_days: interstellar_rate.transit_days
+        transit_days: freight_kit_rate.transit_days,
       )
 
       @rates << rate
@@ -182,17 +181,17 @@ class RatesService
   end
 
   def fetch_pricing_rule_rates
-    return unless @broker_carrier.pricing_rules.any?
+    return if @broker_carrier.pricing_rules.none?
 
     from_locations = Location
                      .where(zip_code: @shipment.shipper_address.zip_code)
                      .or(
-                       Location.where(region: @shipment.shipper_address.region, zip_code: nil)
+                       Location.where(region: @shipment.shipper_address.region, zip_code: nil),
                      )
     to_locations = Location
                    .where(zip_code: @shipment.receiver_address.zip_code)
                    .or(
-                     Location.where(region: @shipment.receiver_address.region, zip_code: nil)
+                     Location.where(region: @shipment.receiver_address.region, zip_code: nil),
                    )
 
     return unless from_locations.present? && to_locations.present?
@@ -246,28 +245,28 @@ class RatesService
       shipment_fingerprint: @shipment.fingerprint,
       shipment: @shipment,
       source:,
-      with_calculated_freight_classes: !@use_forced_freight_classes
+      with_calculated_freight_classes: !@use_forced_freight_classes,
     )
   end
 
   def packages
     @packages ||= @shipment.items.map do |i|
-      i.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes)
+      i.as_freight_kit_package(use_forced_freight_class: @use_forced_freight_classes)
     end
   end
 
   def pickup_at
-    return @shipment.pickup_from unless @shipment.pickup_from.blank?
+    return @shipment.pickup_from if @shipment.pickup_from.present?
 
-    DateTime.current.in_time_zone(@shipment.shipper_address.time_zone) + 3.hours
+    Time.current.in_time_zone(@shipment.shipper_address.time_zone) + 3.hours
   end
 
   def accessorials
     return @accessorials if @accessorials
 
     @accessorials = []
-    combined_accessorials.where.not(interstellar_code: [nil, '']).find_each do |accessorial|
-      @accessorials << accessorial.interstellar_code.to_sym
+    combined_accessorials.where.not(freight_kit_code: [nil, '']).find_each do |accessorial|
+      @accessorials << accessorial.freight_kit_code.to_sym
     end
 
     @accessorials

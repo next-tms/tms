@@ -142,8 +142,8 @@ class Address < ApplicationRecord
     standardized_address&.types || []
   end
 
-  def to_interstellar_shipping_address
-    Interstellar::Location.new(
+  def to_freight_kit_shipping_address
+    FreightKit::Location.new(
       address1: street,
       city:,
       country: ActiveUtils::Country.find(country.alpha2_code),
@@ -158,7 +158,7 @@ class Address < ApplicationRecord
       city:,
       countryCode: country.alpha2_code,
       postalCode: zip_code,
-      province: region.abbreviation,
+      province: region.abbreviation
     }
   end
 

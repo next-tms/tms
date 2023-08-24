@@ -6,39 +6,13 @@ GIT
     StreetAddress (2.0.1.2)
 
 GIT
-  remote: https://github.com/next-tms/interstellar
-  revision: c55f59b17df05ec21fce728c190c47482594e51a
-  ref: c55f59b17df05ec21fce728c190c47482594e51a
+  remote: https://github.com/next-tms/freight_kit-next
+  revision: 97663fba1f946d4d4c3c6bf7ba3d1300c722a283
+  tag: v0.0.1
   specs:
-    interstellar (0.1.pre28)
-      active_utils (~> 3.3.1)
-      activemodel (>= 4.2, < 7.0.8)
-      activesupport (>= 4.2, < 7.0.8)
-      httparty (~> 0.10)
-      measured (>= 2.0, < 2.8.3)
-      mimemagic (~> 0.4.3)
-      nokogiri (>= 1.6, < 1.14)
-      savon (>= 2.0, < 2.13)
-      spacetime (~> 0.1.pre1)
-      watir (>= 7.0, < 7.2)
-
-GIT
-  remote: https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next
-  revision: 6e872bf3f849cb55d2acb6bc58c86d925f8569b8
-  ref: 6e872bf3f849cb55d2acb6bc58c86d925f8569b8
-  specs:
-    interstellar-next (0.1.pre27)
-      interstellar (= 0.1.pre28)
+    freight_kit-next (0.0.1)
+      freight_kit (~> 0.1.0)
       rmagick (~> 4.2.5)
-
-GIT
-  remote: https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime
-  revision: b430558c2458c6d674ec1803246ff5fcccacff94
-  ref: b430558c2458c6d674ec1803246ff5fcccacff94
-  specs:
-    spacetime (0.1.0)
-      activesupport (>= 6.0.0, < 7.1)
-      fastcsv (~> 0.0.6)
 
 GEM
   remote: https://rails-assets.org/
@@ -265,6 +239,17 @@ GEM
       rake
     font-awesome-sass (6.3.0)
       sassc (~> 2.0)
+    freight_kit (0.1.0)
+      active_utils (~> 3.3.1)
+      activemodel (>= 4.2, < 7.0.8)
+      activesupport (>= 4.2, < 7.0.8)
+      httparty (~> 0.10)
+      measured (>= 2.0, < 2.8.3)
+      mimemagic (~> 0.4.3)
+      nokogiri (>= 1.6, < 1.14)
+      place_kit (~> 0.0.1)
+      savon (>= 2.0, < 2.13)
+      watir (>= 7.0, < 7.2)
     fugit (1.8.1)
       et-orbi (~> 1, >= 1.2.7)
       raabro (~> 1.4)
@@ -419,6 +404,9 @@ GEM
     phony_rails (0.15.0)
       activesupport (>= 3.0)
       phony (>= 2.18.12)
+    place_kit (0.0.1)
+      activesupport (>= 6.0.0, < 7.1)
+      fastcsv (~> 0.0.6)
     popper_js (2.11.6)
     postmark (1.23.0)
       json
@@ -743,6 +731,7 @@ DEPENDENCIES
   factory_bot_rails
   faker (~> 3.2.0)
   font-awesome-sass (~> 6.3.0)
+  freight_kit-next!
   geocoder (~> 1.8.1)
   google_places (~> 2.0.0)
   gotenberg-ruby (~> 1.0.11)
@@ -754,8 +743,6 @@ DEPENDENCIES
   httparty
   image_processing (~> 1.12.2)
   importmap-rails (~> 1.2.1)
-  interstellar!
-  interstellar-next!
   jbuilder (~> 2.11)
   jwt
   letter_opener
@@ -768,6 +755,7 @@ DEPENDENCIES
   pagy
   pg (~> 1.4.6)
   phony_rails
+  place_kit (~> 0.0.1)
   postmark-rails
   prawn (~> 2.4.0)
   prawn-labels (~> 1.2.6)
@@ -797,7 +785,6 @@ DEPENDENCIES
   sidekiq (~> 7.1.0)
   sidekiq-scheduler (~> 5.0.3)
   simple_command
-  spacetime!
   spring (~> 4.1.1)
   sprockets-rails (~> 3.4.2)
   stimulus-rails (~> 1.1.1)

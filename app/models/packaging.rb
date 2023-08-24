@@ -6,16 +6,16 @@
 #
 # @!attribute id
 #   @return []
-# @!attribute interstellar_type
+# @!attribute freight_kit_type
 #   @return [String]
 # @!attribute name
 #   @return [String]
 #
 # Indexes
 #
-#  index_packagings_on_interstellar_type  (interstellar_type)
+#  index_packagings_on_freight_kit_type  (freight_kit_type)
 #
 class Packaging < ApplicationRecord
   has_many :items
-  validates_uniqueness_of :name
+  validates :name, uniqueness: true
 end

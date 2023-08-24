@@ -37,7 +37,7 @@ class TransponderGraphqlInputBuilder
 
   def rates
     {
-      pickupAt: (shipment.pickup_from.presence || DateTime.current.in_time_zone(shipment.shipper_address.time_zone) + 3.hours).iso8601,
+      pickupAt: (shipment.pickup_from.presence || Time.current.in_time_zone(shipment.shipper_address.time_zone) + 3.hours).iso8601,
       destination: shipment.receiver_address.as_graphql_input,
       origin: shipment.shipper_address.as_graphql_input,
       packages:,
@@ -62,19 +62,19 @@ class TransponderGraphqlInputBuilder
       accessorials:,
       dispatcher: {
         email: opts[:pickup].dispatcher.email,
-        name: opts[:pickup].dispatcher.full_name.blank? ? 'Dispatcher' : opts[:pickup].dispatcher.full_name,
+        name: (opts[:pickup].dispatcher.full_name.presence || 'Dispatcher'),
         phone: opts[:pickup].dispatcher.phone
       }
     }.compact
   end
 
   def carrier_credentials
-    required_credential_types = broker_carrier.carrier.required_interstellar_credentials
+    required_credential_types = broker_carrier.carrier.required_freight_kit_credentials
     credentials = required_credential_types.map do |type|
-      InterstellarAPIClient::Services::BuildInterstellarCredential.new(
+      FreightKitAPIClient::Services::BuildFreightKitCredential.new(
         type: type,
         broker_carrier:,
-        return_hash: true
+        return_hash: true,
       ).call.transform_keys { |k| k.to_s.camelize(:lower) }.compact
     end.compact
 
@@ -88,7 +88,7 @@ class TransponderGraphqlInputBuilder
   end
 
   def accessorials
-    Accessorial.combined_accessorial_interstellar_codes(shipment:)
+    Accessorial.combined_accessorial_freight_kit_codes(shipment:)
   end
 
   def contact_details(type)

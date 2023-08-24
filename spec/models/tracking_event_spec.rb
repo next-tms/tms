@@ -16,7 +16,7 @@
 #   @return [String]
 # @!attribute country_alpha2
 #   @return [String]
-# @!attribute interstellar_carrier_fingerprint
+# @!attribute freight_kit_carrier_fingerprint
 #   @return [String]
 # @!attribute public
 #   @return [Boolean]

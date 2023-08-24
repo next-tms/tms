@@ -5,22 +5,22 @@ class TimeZoneService
 
   attr_reader :output, :time_zone
 
-  def self.from_interstellar_date_time(date_time)
-    raise ArgumentError, 'date_time must be an `Interstellar::DateTime`' unless date_time.is_a?(Interstellar::DateTime)
+  def self.from_freight_kit_date_time(date_time)
+    raise ArgumentError, 'date_time must be an `FreightKit::DateTime`' unless date_time.is_a?(FreightKit::DateTime)
 
-    return date_time.date_time_with_zone unless date_time.date_time_with_zone.blank?
+    return date_time.date_time_with_zone if date_time.date_time_with_zone.present?
 
-    unless date_time.local_date_time.blank?
-      interstellar_city = date_time.location&.city
-      interstellar_country = date_time.location&.country
-      interstellar_province = date_time.location&.province
+    if date_time.local_date_time.present?
+      freight_kit_city = date_time.location&.city
+      freight_kit_country = date_time.location&.country
+      freight_kit_province = date_time.location&.province
 
-      if [interstellar_city, interstellar_country, interstellar_province].any?(&:blank?)
+      if [freight_kit_city, freight_kit_country, freight_kit_province].any?(&:blank?)
         tz = default_time_zone
         return tz.parse(date_time.local_date_time)
       end
 
-      country = Country.find_by_alpha2_code(interstellar_country.code(:alpha2).value)
+      country = Country.find_by(alpha2_code: freight_kit_country.code(:alpha2).value)
       region = country.regions.where(abbreviation: date_time.location.province)&.first
 
       city = date_time.location.city
@@ -31,11 +31,11 @@ class TimeZoneService
       end
     end
 
-    date_time.local_date.beginning_of_day unless date_time.local_date.blank?
+    date_time.local_date.beginning_of_day if date_time.local_date.present?
   end
 
   def self.default_time_zone
-    Rails.logger.warn 'Using TimeZoneService.default_time_zone'
+    Rails.logger.warn('Using TimeZoneService.default_time_zone')
 
     ActiveSupport::TimeZone.new(DEFAULT_TIME_ZONE_NAME)
   end
@@ -43,11 +43,11 @@ class TimeZoneService
   def self.tz_by_city_and_region(city, region)
     last_time_zone = StandardizedAddress.where(city:, region:)&.last&.time_zone
 
-    return last_time_zone unless last_time_zone.blank?
+    return last_time_zone if last_time_zone.present?
 
     last_time_zone = TrackingEvent.where(city:, region:)&.last&.time_zone
 
-    return last_time_zone unless last_time_zone.blank?
+    return last_time_zone if last_time_zone.present?
 
     client = GooglePlaces::Client.new(ENV.fetch('GOOGLE_API_KEY'))
 

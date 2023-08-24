@@ -32,7 +32,7 @@
 
   <%= f.text_area :default_bol_notes, label: 'Default BOL Notes', rows: 7 %>
 
-  <% if f.object.carrier&.interstellar_class.present? %>
+  <% if f.object.carrier&.freight_kit_class.present? %>
     <h3>Website Credentials</h3>
 
     <% if (f.object.carrier.broker_carrier_credential_columns & %i[website_username website_password]).any? %>

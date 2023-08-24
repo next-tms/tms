@@ -12,7 +12,7 @@
 #   @return [String]
 # @!attribute country_alpha2
 #   @return [String]
-# @!attribute interstellar_carrier_fingerprint
+# @!attribute freight_kit_carrier_fingerprint
 #   @return [String]
 # @!attribute public
 #   @return [Boolean]
@@ -136,7 +136,7 @@ class TrackingEvent < ApplicationRecord
   end
 
   def time_zone
-    return nil if time_zone_name.blank?
+    return if time_zone_name.blank?
 
     ActiveSupport::TimeZone.new(time_zone_name)
   end

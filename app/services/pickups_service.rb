@@ -10,39 +10,39 @@ class PickupsService
 
   def dispatch
     packages = @shipment.items.map do |item|
-      item.as_interstellar_package(use_forced_freight_class: @use_forced_freight_classes)
+      item.as_freight_kit_package(use_forced_freight_class: @use_forced_freight_classes)
     end
 
     response = nil
 
-    interstellar_destination = @shipment.receiver_address.to_interstellar_shipping_address
-    interstellar_destination.contact = Interstellar::Contact.new(
+    freight_kit_destination = @shipment.receiver_address.to_freight_kit_shipping_address
+    freight_kit_destination.contact = FreightKit::Contact.new(
       company_name: @shipment.receiver_name,
       email: @shipment.receiver_contact_email,
       name: @shipment.receiver_contact_name,
       phone: @shipment.receiver_contact_phone,
     )
 
-    interstellar_origin = @shipment.shipper_address.to_interstellar_shipping_address
-    interstellar_origin.contact = Interstellar::Contact.new(
+    freight_kit_origin = @shipment.shipper_address.to_freight_kit_shipping_address
+    freight_kit_origin.contact = FreightKit::Contact.new(
       company_name: @shipment.shipper_name,
       email: @shipment.shipper_contact_email,
       name: @shipment.shipper_contact_name,
       phone: @shipment.shipper_contact_phone,
     )
 
-    interstellar_shipment = Interstellar::Shipment.new(
+    freight_kit_shipment = FreightKit::Shipment.new(
       accessorials:,
       declared_value_cents: @shipment.value_cents,
-      destination: interstellar_destination,
+      destination: freight_kit_destination,
       order_number: @shipment.shipper_reference,
-      origin: interstellar_origin,
+      origin: freight_kit_origin,
       packages:,
       po_number: @shipment.customer_reference,
       pro: @shipment.pro,
     )
 
-    interstellar_dispatcher = Interstellar::Contact.new(
+    freight_kit_dispatcher = FreightKit::Contact.new(
       email: @pickup.dispatcher.email,
       name: (@pickup.dispatcher.full_name.presence || 'Dispatcher'),
       phone: @pickup.dispatcher.phone,
@@ -51,16 +51,16 @@ class PickupsService
     error = nil
 
     begin
-      response = InterstellarAPIClient.create_pickup(
+      response = FreightKitAPIClient.create_pickup(
         broker_carrier: @broker_carrier,
         delivery_from: @shipment.delivery_from,
         delivery_to: @shipment.delivery_by,
-        dispatcher: interstellar_dispatcher,
+        dispatcher: freight_kit_dispatcher,
         pickup_from: @shipment.pickup_from.in_time_zone(@shipment.shipper_address.time_zone),
         pickup_to: @shipment.pickup_by.in_time_zone(@shipment.shipper_address.time_zone),
         scac: @broker_carrier.carrier.scac,
-        service: @shipment.applied_rate.interstellar_service_type.to_sym,
-        shipment: interstellar_shipment,
+        service: @shipment.applied_rate.freight_kit_service_type.to_sym,
+        shipment: freight_kit_shipment,
       )
     rescue StandardError => e
       error = e
@@ -69,7 +69,7 @@ class PickupsService
     error ||= response&.error
 
     if error.present?
-      if !Rails.env.development? && !error.is_a?(Interstellar::Error)
+      if !Rails.env.development? && !error.is_a?(FreightKit::Error)
         attributes = {
           broker_carrier_id: @broker_carrier&.id,
           pickup_id: @pickup&.id,
@@ -120,8 +120,8 @@ class PickupsService
   private
 
   def accessorials
-    @accessorials ||= combined_accessorials.where.not(interstellar_code: [nil, '']).map do |accessorial|
-      accessorial.interstellar_code.to_sym
+    @accessorials ||= combined_accessorials.where.not(freight_kit_code: [nil, '']).map do |accessorial|
+      accessorial.freight_kit_code.to_sym
     end
   end
 

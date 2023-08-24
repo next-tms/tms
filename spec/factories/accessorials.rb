@@ -10,7 +10,7 @@
 #   @return [String]
 # @!attribute fee
 #   @return [Boolean]
-# @!attribute interstellar_code
+# @!attribute freight_kit_code
 #   @return [String]
 # @!attribute name
 #   @return [String]
@@ -23,7 +23,7 @@ FactoryBot.define do
   factory :accessorial do
     name { 'MyString' }
     code { 'MyString' }
-    interstellar_code { 'MyString' }
+    freight_kit_code { 'MyString' }
     fee { false }
   end
 end

@@ -103,9 +103,9 @@ class Broker < ApplicationRecord
     ActiveSupport::TimeZone.new(time_zone_name)
   end
 
-  def as_interstellar_location
-    Interstellar::Location.new(
-      contact: Interstellar::Contact.new(
+  def as_freight_kit_location
+    FreightKit::Location.new(
+      contact: FreightKit::Contact.new(
         company_name: name,
         email: "robot@#{customer_service_email.split("@")[1]}",
       ),

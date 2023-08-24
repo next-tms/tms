@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module InterstellarAPIClient
+module FreightKitAPIClient
   module Services
-    class BuildInterstellarCredential
+    class BuildFreightKitCredential
       def initialize(type:, broker_carrier: nil, return_hash: false)
         @type = type.to_sym
         @broker_carrier = broker_carrier
@@ -10,19 +10,19 @@ module InterstellarAPIClient
       end
 
       def call
-        return nil if %i[api api_key api_proxy selenoid website].exclude?(type)
+        return if %i[api api_key api_proxy selenoid website].exclude?(type)
 
         creds = send("#{type}_credentials")
         return creds if @return_hash
 
-        Interstellar::Credential.new(**creds)
+        FreightKit::Credential.new(**creds)
       end
 
       private
 
       attr_reader :type, :broker_carrier
 
-      # @note Okay to pass blank `Interstellar::Credential` attributes
+      # @note Okay to pass blank `FreightKit::Credential` attributes
       def api_credentials
         {
           type: :api,
@@ -33,21 +33,21 @@ module InterstellarAPIClient
         }
       end
 
-      # `Interstellar::Credential` with only `#api_key`, `#proxy_url` attributes
+      # `FreightKit::Credential` with only `#api_key`, `#proxy_url` attributes
       def api_proxy_credentials
         {
           type: :api_proxy,
           proxy_url: broker_carrier.carrier.encrypted_proxy_url,
-          api_key:,
+          api_key:
         }
       end
 
-      # `Interstellar::Credential` with only `#api_key`, `#account` attributes
+      # `FreightKit::Credential` with only `#api_key`, `#account` attributes
       def api_key_credentials
         {
           type: :api_key,
           account: broker_carrier.account,
-          api_key:,
+          api_key:
         }
       end
 
@@ -60,7 +60,7 @@ module InterstellarAPIClient
       end
 
       def website_credentials
-        return nil if [broker_carrier.website_username, broker_carrier.website_password].any?(&:blank?)
+        return if [broker_carrier.website_username, broker_carrier.website_password].any?(&:blank?)
 
         {
           type: :website,

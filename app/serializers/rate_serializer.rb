@@ -1,28 +1,34 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: rates
 #
 # @!attribute id
 #   @return []
+# @!attribute api_request
+#   @return [String]
+# @!attribute api_response
+#   @return [String]
+# @!attribute breakdown
+#   @return [Hash]
 # @!attribute cost_cents
 #   @return [Integer]
 # @!attribute cost_currency
 #   @return [String]
-# @!attribute error
+# @!attribute error_object
 #   @return [String]
 # @!attribute expires_at
 #   @return [Time]
+# @!attribute freight_kit_service_type
+#   @return [String]
 # @!attribute incomplete
 #   @return [Boolean]
-# @!attribute interstellar_service_type
-#   @return [String]
 # @!attribute reference
 #   @return [String]
-# @!attribute request
-#   @return [String]
-# @!attribute response
-#   @return [String]
 # @!attribute shipment_fingerprint
+#   @return [String]
+# @!attribute source
 #   @return [String]
 # @!attribute transit_days
 #   @return [Integer]
@@ -45,11 +51,11 @@
 #
 # Indexes
 #
-#  index_rates_on_broker_carrier_id          (broker_carrier_id)
-#  index_rates_on_broker_customer_id         (broker_customer_id)
-#  index_rates_on_interstellar_service_type  (interstellar_service_type)
-#  index_rates_on_shipment_id                (shipment_id)
-#  index_rates_on_tracking_carrier_id        (tracking_carrier_id)
+#  index_rates_on_broker_carrier_id         (broker_carrier_id)
+#  index_rates_on_broker_customer_id        (broker_customer_id)
+#  index_rates_on_freight_kit_service_type  (freight_kit_service_type)
+#  index_rates_on_shipment_id               (shipment_id)
+#  index_rates_on_tracking_carrier_id       (tracking_carrier_id)
 #
 # Foreign Keys
 #
@@ -73,7 +79,5 @@ class RateSerializer < ActiveModel::Serializer
     object.cost_currency
   end
 
-  def uid
-    object.uid
-  end
+  delegate :uid, to: :object
 end

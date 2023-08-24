@@ -20,10 +20,10 @@
 #   @return [String]
 # @!attribute expires_at
 #   @return [Time]
+# @!attribute freight_kit_service_type
+#   @return [String]
 # @!attribute incomplete
 #   @return [Boolean]
-# @!attribute interstellar_service_type
-#   @return [String]
 # @!attribute reference
 #   @return [String]
 # @!attribute shipment_fingerprint
@@ -51,11 +51,11 @@
 #
 # Indexes
 #
-#  index_rates_on_broker_carrier_id          (broker_carrier_id)
-#  index_rates_on_broker_customer_id         (broker_customer_id)
-#  index_rates_on_interstellar_service_type  (interstellar_service_type)
-#  index_rates_on_shipment_id                (shipment_id)
-#  index_rates_on_tracking_carrier_id        (tracking_carrier_id)
+#  index_rates_on_broker_carrier_id         (broker_carrier_id)
+#  index_rates_on_broker_customer_id        (broker_customer_id)
+#  index_rates_on_freight_kit_service_type  (freight_kit_service_type)
+#  index_rates_on_shipment_id               (shipment_id)
+#  index_rates_on_tracking_carrier_id       (tracking_carrier_id)
 #
 # Foreign Keys
 #
@@ -81,7 +81,7 @@ FactoryBot.define do
     incomplete { false }
     shipment_fingerprint { 'MyString' }
     uid { 'MyString' }
-    interstellar_service_type { 'MyString' }
+    freight_kit_service_type { 'MyString' }
     error_object { 'MyString' }
     breakdown { '' }
     source { 'api' }

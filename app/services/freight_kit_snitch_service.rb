@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-class InterstellarSnitchService
+class FreightKitSnitchService
   def self.snitch(error:, record:, request:, response:)
-    return false if error.is_a?(Interstellar::Error) && Rails.env.production?
+    return false if error.is_a?(FreightKit::Error) && Rails.env.production?
 
-    message = "#{record.class.name} id=#{record&.id || '(new)'}\n"\
+    message = "#{record.class.name} id=#{record&.id || "(new)"}\n"\
               "error   : #{error.inspect}\n"\
               "request : #{request}\n"\
               "response: #{response}"

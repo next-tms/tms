@@ -10,7 +10,7 @@
 #   @return [String]
 # @!attribute fee
 #   @return [Boolean]
-# @!attribute interstellar_code
+# @!attribute freight_kit_code
 #   @return [String]
 # @!attribute name
 #   @return [String]
@@ -29,15 +29,15 @@ class Accessorial < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
 
-  def self.combined_accessorial_interstellar_codes(shipment:)
+  def self.combined_accessorial_freight_kit_codes(shipment:)
     combined_accessorials = Accessorial.distinct
-                                       .where(
-                                         id: shipment.accessorials.pluck(:id) +
-                                             shipment.assumed_accessorials.pluck(:id)
-                                       )
+                            .where(
+                              id: shipment.accessorials.pluck(:id) +
+                                  shipment.assumed_accessorials.pluck(:id),
+                            )
 
-    combined_accessorials.where.not(interstellar_code: [nil, '']).map do |accessorial|
-      accessorial.interstellar_code.to_sym
+    combined_accessorials.where.not(freight_kit_code: [nil, '']).map do |accessorial|
+      accessorial.freight_kit_code.to_sym
     end
   end
 
@@ -51,7 +51,7 @@ class Accessorial < ApplicationRecord
         broker_only: false,
         code: code,
         fee: fee,
-        name: name
+        name: name,
       )
     end
   end

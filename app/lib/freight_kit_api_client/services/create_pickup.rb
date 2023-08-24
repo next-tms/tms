@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module InterstellarAPIClient
+module FreightKitAPIClient
   module Services
     class CreatePickup < Base
       def create(
@@ -13,7 +13,7 @@ module InterstellarAPIClient
         service:,
         shipment:
       )
-        interstellar_api_call_block do
+        freight_kit_api_call_block do
           carrier_client&.create_pickup(
             delivery_from:,
             delivery_to:,
@@ -22,7 +22,7 @@ module InterstellarAPIClient
             pickup_to:,
             scac:,
             service:,
-            shipment:
+            shipment:,
           )
         end
       end

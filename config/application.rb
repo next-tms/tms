@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'boot'
 
 require 'rails/all'
@@ -6,7 +8,7 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-if ['development', 'test'].include? ENV['RAILS_ENV']
+if ['development', 'test'].include?(ENV['RAILS_ENV'])
   Dotenv::Railtie.load
 end
 
@@ -16,8 +18,8 @@ module Liftoff
       # Use development credentials in test
       # Set credentials content and key path for test env before `config.load_defaults` for it to take effect
 
-      config.credentials.content_path = Rails.root.join("config/credentials/development.yml.enc")
-      config.credentials.key_path = Rails.root.join("config/credentials/development.key")
+      config.credentials.content_path = Rails.root.join('config/credentials/development.yml.enc')
+      config.credentials.key_path = Rails.root.join('config/credentials/development.key')
     end
 
     config.i18n.fallbacks = true
@@ -44,25 +46,25 @@ module Liftoff
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.active_record.yaml_column_permitted_classes = [
-      ActiveSupport::TimeWithZone,
-      Array,
-      GooglePlaces::Photo,
-      GooglePlaces::Spot,
-      Hash,
-      HTTPI::Response,
-      Interstellar::DocumentNotFoundError,
-      Interstellar::ExpiredCredentialsError,
-      Interstellar::HTTPError,
-      Interstellar::InvalidCredentialsError,
-      Interstellar::PickupResponse,
-      Interstellar::ResponseError,
-      Interstellar::ShipmentNotFoundError,
-      Interstellar::UnserviceableAccessorialsError,
-      Interstellar::UnserviceableError,
-      JSON::ParserError,
-      StandardError,
-      Symbol,
-      Timezone::Zone
-    ]
+                                                           ActiveSupport::TimeWithZone,
+                                                           Array,
+                                                           GooglePlaces::Photo,
+                                                           GooglePlaces::Spot,
+                                                           Hash,
+                                                           HTTPI::Response,
+                                                           FreightKit::DocumentNotFoundError,
+                                                           FreightKit::ExpiredCredentialsError,
+                                                           FreightKit::HTTPError,
+                                                           FreightKit::InvalidCredentialsError,
+                                                           FreightKit::PickupResponse,
+                                                           FreightKit::ResponseError,
+                                                           FreightKit::ShipmentNotFoundError,
+                                                           FreightKit::UnserviceableAccessorialsError,
+                                                           FreightKit::UnserviceableError,
+                                                           JSON::ParserError,
+                                                           StandardError,
+                                                           Symbol,
+                                                           Timezone::Zone,
+                                                         ]
   end
 end

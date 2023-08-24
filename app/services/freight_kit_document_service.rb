@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 # Fetch Documents (Either BOL (Bill of Landing) or POD (Proof of Delivery)) from
-# Interstellar API
-class InterstellarDocumentService
+# FreightKit API
+class FreightKitDocumentService
   class << self
     def carrier_bol(shipment:)
-      return nil if shipment.pro.blank? || shipment.carrier_bol.attached?
+      return if shipment.pro.blank? || shipment.carrier_bol.attached?
 
       broker_carrier = shipment.broker_carrier
-      interstellar_document_response = InterstellarAPIClient.fetch_bol(broker_carrier:, tracking_number: shipment.pro)
+      freight_kit_document_response = FreightKitAPIClient.fetch_bol(broker_carrier:, tracking_number: shipment.pro)
 
-      return nil if interstellar_document_response&.data.blank?
+      return if freight_kit_document_response&.data.blank?
 
-      attach_document(type: :bol, document: interstellar_document_response, shipment:)
+      attach_document(type: :bol, document: freight_kit_document_response, shipment:)
       deliver_mail_to_contacts(shipment:, type: :carrier_bol)
       shipment.problematic!
 
@@ -20,14 +20,14 @@ class InterstellarDocumentService
     end
 
     def carrier_pod(shipment:)
-      return nil if shipment.pro.blank? || shipment.carrier_pod.attached?
+      return if shipment.pro.blank? || shipment.carrier_pod.attached?
 
       broker_carrier = shipment.broker_carrier
-      interstellar_document_response = InterstellarAPIClient.fetch_pod(broker_carrier:, tracking_number: shipment.pro)
+      freight_kit_document_response = FreightKitAPIClient.fetch_pod(broker_carrier:, tracking_number: shipment.pro)
 
-      return nil if interstellar_document_response&.data.blank?
+      return if freight_kit_document_response&.data.blank?
 
-      attach_document(type: :pod, document: interstellar_document_response, shipment:)
+      attach_document(type: :pod, document: freight_kit_document_response, shipment:)
       deliver_mail_to_contacts(shipment:, type: :carrier_pod)
       shipment.problematic!
 
@@ -37,22 +37,22 @@ class InterstellarDocumentService
     def reattach_document(shipment:, document_type:)
       return unless %i[bol pod].include?(document_type)
 
-      interstellar_method = "fetch_#{document_type}"
+      freight_kit_method = "fetch_#{document_type}"
       broker_carrier = shipment.broker_carrier
-      interstellar_document_response = InterstellarAPIClient
-                                       .send(
-                                         interstellar_method,
-                                         broker_carrier:,
-                                         tracking_number: shipment.pro,
-                                       )
+      freight_kit_document_response = FreightKitAPIClient
+                                      .send(
+                                        freight_kit_method,
+                                        broker_carrier:,
+                                        tracking_number: shipment.pro,
+                                      )
 
-      return nil if interstellar_document_response&.data.blank?
+      return if freight_kit_document_response&.data.blank?
 
       document = shipment.send("carrier_#{document_type}")
       document.purge
 
       shipment.reload
-      attach_document(type: :bol, document: interstellar_document_response, shipment:)
+      attach_document(type: :bol, document: freight_kit_document_response, shipment:)
     end
 
     private

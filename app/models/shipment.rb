@@ -196,7 +196,7 @@ class Shipment < ApplicationRecord
   include Shipment::Fingerprintable
   include Shipment::HasPaymentTransactions
   include Shipment::HasReceivables
-  include Shipment::Interstellarable
+  include Shipment::FreightKitable
 
   include Discussable
   include Problematic
@@ -252,8 +252,8 @@ class Shipment < ApplicationRecord
       BrokerAccessorial.where(
         accessorial_id:
         [
-          Accessorial.find_by(interstellar_code: 'appointment_delivery').id,
-          Accessorial.find_by(interstellar_code: 'residential_delivery').id,
+          Accessorial.find_by(freight_kit_code: 'appointment_delivery').id,
+          Accessorial.find_by(freight_kit_code: 'residential_delivery').id,
         ],
       ).pluck(:id),
     )
@@ -888,11 +888,11 @@ class Shipment < ApplicationRecord
 
     error_classes = ArgumentError, NotImplementedError
 
-    # TODO: Call this on the Interstellar::Carrier class directly (see ITR-18)
+    # TODO: Call this on the FreightKit::Carrier class directly (see ITR-18)
     begin
-      interstellar_carrier = broker_carrier.to_interstellar_carrier
+      freight_kit_carrier = broker_carrier.to_freight_kit_carrier
 
-      if interstellar_carrier.present? && !interstellar_carrier.valid_tracking_number?(pro)
+      if freight_kit_carrier.present? && !freight_kit_carrier.valid_tracking_number?(pro)
         errors.add(:base, "Pro #{pro} is invalid for #{broker_carrier.carrier.name}")
       end
     rescue *error_classes
@@ -900,12 +900,12 @@ class Shipment < ApplicationRecord
 
     return if tracking_carrier.blank?
 
-    # TODO: Call this on the Interstellar::Carrier class directly (see ITR-18)
-    # if tracking_carrier.interstellar_class.present? && tracking_carrier_pro.present?
+    # TODO: Call this on the FreightKit::Carrier class directly (see ITR-18)
+    # if tracking_carrier.freight_kit_class.present? && tracking_carrier_pro.present?
     #   begin
-    #     interstellar_class = tracking_carrier.interstellar_class
+    #     freight_kit_class = tracking_carrier.freight_kit_class
     #
-    #     if interstellar_class.present? && !interstellar_class.valid_tracking_number?(tracking_carrier_pro)
+    #     if freight_kit_class.present? && !freight_kit_class.valid_tracking_number?(tracking_carrier_pro)
     #       errors.add(:base, "Carrier #{tracking_carrier.name} pro #{tracking_carrier_pro} is invalid")
     #     end
     #   rescue error

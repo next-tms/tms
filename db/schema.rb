@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_21_221755) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_24_030549) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -21,7 +21,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_21_221755) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "code"
-    t.string "interstellar_code"
+    t.string "freight_kit_code"
     t.boolean "fee", default: false
   end
 
@@ -479,8 +479,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_21_221755) do
 
   create_table "packagings", force: :cascade do |t|
     t.string "name"
-    t.string "interstellar_type"
-    t.index ["interstellar_type"], name: "index_packagings_on_interstellar_type"
+    t.string "freight_kit_type"
+    t.index ["freight_kit_type"], name: "index_packagings_on_freight_kit_type"
   end
 
   create_table "payment_methods", force: :cascade do |t|
@@ -628,13 +628,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_21_221755) do
     t.boolean "incomplete"
     t.string "shipment_fingerprint"
     t.string "uid"
-    t.string "interstellar_service_type"
+    t.string "freight_kit_service_type"
     t.string "error_object"
     t.json "breakdown"
     t.string "source"
     t.index ["broker_carrier_id"], name: "index_rates_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_rates_on_broker_customer_id"
-    t.index ["interstellar_service_type"], name: "index_rates_on_interstellar_service_type"
+    t.index ["freight_kit_service_type"], name: "index_rates_on_freight_kit_service_type"
     t.index ["shipment_id"], name: "index_rates_on_shipment_id"
     t.index ["tracking_carrier_id"], name: "index_rates_on_tracking_carrier_id"
   end
@@ -927,7 +927,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_21_221755) do
     t.bigint "terminal_id"
     t.string "city"
     t.string "country_alpha2", limit: 2
-    t.string "interstellar_carrier_fingerprint"
+    t.string "freight_kit_carrier_fingerprint"
     t.bigint "user_id"
     t.bigint "country_id"
     t.bigint "region_id"

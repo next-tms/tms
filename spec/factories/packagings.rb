@@ -6,18 +6,18 @@
 #
 # @!attribute id
 #   @return []
-# @!attribute interstellar_type
+# @!attribute freight_kit_type
 #   @return [String]
 # @!attribute name
 #   @return [String]
 #
 # Indexes
 #
-#  index_packagings_on_interstellar_type  (interstellar_type)
+#  index_packagings_on_freight_kit_type  (freight_kit_type)
 #
 FactoryBot.define do
   factory :packaging do
     name { Faker::Name.name }
-    interstellar_type { 'MyString' }
+    freight_kit_type { 'MyString' }
   end
 end

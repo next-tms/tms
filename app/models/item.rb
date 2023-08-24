@@ -50,11 +50,11 @@ class Item < ApplicationRecord
 
   # Set Packaging based on names (for API)
   def packaging_name=(name)
-    self.packaging = Packaging.find_by_name(name)
+    self.packaging = Packaging.find_by(name: name)
   end
 
   def packaging_name
-    packaging ? packaging.name : nil
+    packaging&.name
   end
 
   # Prettify
@@ -67,12 +67,12 @@ class Item < ApplicationRecord
   end
 
   def pallet_or_crate?
-    %w[crate drum pallet tote].include? packaging.name
+    ['crate', 'drum', 'pallet', 'tote'].include?(packaging.name)
   end
 
   def short_side
     if l && w && h
-      return l < w ? l : w
+      return [l, w].min
     end
 
     nil
@@ -80,7 +80,7 @@ class Item < ApplicationRecord
 
   def long_side
     if l && w && h
-      return l > w ? l : w
+      return [l, w].max
     end
 
     nil
@@ -103,10 +103,10 @@ class Item < ApplicationRecord
   end
 
   def sanitized_freight_class(freight_class)
-    return nil unless freight_class
+    return unless freight_class
 
     valid_classes = [55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400]
-    if valid_classes.include? freight_class
+    if valid_classes.include?(freight_class)
       return freight_class.to_i == freight_class ? freight_class.to_i : freight_class
     end
 
@@ -114,66 +114,66 @@ class Item < ApplicationRecord
   end
 
   def density_to_freight_class(density)
-    return nil unless density
+    return unless density
     return 400 if density < 1
     return 60 if density > 30
 
     density_table = [
-      [1, 2, 300],
-      [2, 4, 250],
-      [4, 6, 175],
-      [6, 8, 125],
-      [8, 10, 100],
-      [10, 12, 92.5],
-      [12, 15, 85],
-      [15, 22.5, 70],
-      [22.5, 30, 65],
-      [30, 35, 60]
-    ]
+                      [1, 2, 300],
+                      [2, 4, 250],
+                      [4, 6, 175],
+                      [6, 8, 125],
+                      [8, 10, 100],
+                      [10, 12, 92.5],
+                      [12, 15, 85],
+                      [15, 22.5, 70],
+                      [22.5, 30, 65],
+                      [30, 35, 60],
+                    ]
     density_table.each do |density_row|
       return density_row[2] if (density >= density_row[0]) && (density < density_row[1])
     end
   end
 
   def calculated_freight_class
-    sanitized_freight_class density_to_freight_class(density(rounded: false))
+    sanitized_freight_class(density_to_freight_class(density(rounded: false)))
   end
 
   def forced_freight_class
-    sanitized_freight_class forced_class
+    sanitized_freight_class(forced_class)
   end
 
   def display_freight_class
     if forced_class.blank?
       calculated_freight_class
     else
-      sanitized_freight_class forced_class
+      sanitized_freight_class(forced_class)
     end
   end
 
   def api_freight_class(use_forced_freight_class:)
     if use_forced_freight_class
-      forced_freight_class.blank? ? calculated_freight_class : forced_freight_class
+      (forced_freight_class.presence || calculated_freight_class)
     else
-      calculated_freight_class.blank? ? forced_freight_class : calculated_freight_class
+      (calculated_freight_class.presence || forced_freight_class)
     end
   end
 
-  def as_interstellar_package(use_forced_freight_class:)
-    Interstellar::Package.new(
+  def as_freight_kit_package(use_forced_freight_class:)
+    FreightKit::Package.new(
       weight * 16,
       {
         length: l,
         width: w,
         height: h
       },
-      packaging.interstellar_type&.to_sym,
+      packaging.freight_kit_type&.to_sym,
       declared_freight_class: api_freight_class(use_forced_freight_class: use_forced_freight_class),
       description: desc,
       hazmat: hazmat?,
-      nmfc: (nmfc.blank? ? nil : nmfc),
+      nmfc: nmfc.presence,
       quantity: quantity,
-      units: :imperial
+      units: :imperial,
     )
   end
 
@@ -185,12 +185,12 @@ class Item < ApplicationRecord
         width: w,
         height: h
       },
-      packagingType: packaging.interstellar_type&.to_sym,
+      packagingType: packaging.freight_kit_type&.to_sym,
       options: {
         declaredFreightClass: api_freight_class(use_forced_freight_class: use_forced_freight_classes),
         description: desc,
         hazmat: hazmat?,
-        nmfc: (nmfc.blank? ? nil : nmfc),
+        nmfc: nmfc.presence,
         quantity: quantity,
         units: :imperial
       }

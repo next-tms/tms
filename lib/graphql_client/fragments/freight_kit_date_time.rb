@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module GraphqlClient
   module Fragments
-    class InterstellarDateTime
-      DETAILS = GraphqlClient::Transponder::Client.parse <<-'GRAPHQL'
-        fragment on InterstellarDateTime {
+    class FreightKitDateTime
+      DETAILS = GraphqlClient::Transponder::Client.parse(<<-GRAPHQL)
+        fragment on FreightKitDateTime {
           localDateTime
           localDate
           dateTimeWithZone

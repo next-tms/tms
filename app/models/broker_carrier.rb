@@ -123,14 +123,14 @@ class BrokerCarrier < ApplicationRecord
   end
   alias_method :name, :broker_customer_specific_name
 
-  def to_interstellar_carrier
-    @to_interstellar_carrier ||= InterstellarAPIClient::Services::BuildAPIClient.call(broker_carrier: self)
+  def to_freight_kit_carrier
+    @to_freight_kit_carrier ||= FreightKitAPIClient::Services::BuildAPIClient.call(broker_carrier: self)
   end
 
-  def to_interstellar_tariff
-    return nil if overlength_rules.blank?
+  def to_freight_kit_tariff
+    return if overlength_rules.blank?
 
-    interstellar_overlength_rules = overlength_rules.map do |overlength_rule|
+    freight_kit_overlength_rules = overlength_rules.map do |overlength_rule|
       fee_cents = overlength_rule.cost_cents
       max_length = Measured::Length.new(overlength_rule.max_length, :inches) if overlength_rule.max_length.present?
       min_length = Measured::Length.new(overlength_rule.min_length, :inches)
@@ -138,7 +138,7 @@ class BrokerCarrier < ApplicationRecord
       { fee_cents:, max_length:, min_length: }
     end
 
-    Interstellar::Tariff.new(overlength_rules: interstellar_overlength_rules)
+    FreightKit::Tariff.new(overlength_rules: freight_kit_overlength_rules)
   end
 
   delegate :pickup_number_is_tracking_number?, to: :carrier

@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-module Shipment::Interstellarable
+module Shipment::FreightKitable
   extend ActiveSupport::Concern
 
   included do
     def fetch_carrier_bol
-      InterstellarDocumentService.carrier_bol(shipment: self)
+      FreightKitDocumentService.carrier_bol(shipment: self)
     end
 
     def fetch_carrier_pod
-      InterstellarDocumentService.carrier_pod(shipment: self)
+      FreightKitDocumentService.carrier_pod(shipment: self)
     end
 
     def fetch_pro
-      InterstellarProService.call(shipment: self)
+      FreightKitProService.call(shipment: self)
     end
 
     def update_tracking_events

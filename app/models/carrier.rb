@@ -47,7 +47,7 @@ class Carrier < ApplicationRecord
     api_key: %i[encrypted_api_key],
     website: %i[website_username website_password]
   }.freeze
-  
+
   belongs_to :company
 
   # API key belonging to Next TMS
@@ -74,29 +74,29 @@ class Carrier < ApplicationRecord
   validates :mc_number, :scac, uniqueness: { allow_nil: true }
 
   def bol_requires_tracking_number?
-    !!interstellar_class&.bol_requires_tracking_number?
+    !!freight_kit_class&.bol_requires_tracking_number?
   end
 
-  # Which `BrokerCarrier` columns are required for Interstellar to communicate with the carrier's API.
+  # Which `BrokerCarrier` columns are required for FreightKit to communicate with the carrier's API.
   # @return <Boolean>
   def broker_carrier_credential_columns
-    return [] if required_interstellar_credentials.blank?
+    return [] if required_freight_kit_credentials.blank?
 
-    columns = required_interstellar_credentials.map do |interstellar_credential_type|
-      INTERSTELLAR_CREDENTIAL_TYPE_BROKER_CARRIER_COLUMNS[interstellar_credential_type]
+    columns = required_freight_kit_credentials.map do |freight_kit_credential_type|
+      INTERSTELLAR_CREDENTIAL_TYPE_BROKER_CARRIER_COLUMNS[freight_kit_credential_type]
     end
 
     columns.flatten.compact
   end
 
   def create_pickup_implemented?
-    !!interstellar_class&.create_pickup_implemented?
+    !!freight_kit_class&.create_pickup_implemented?
   end
 
-  def interstellar_class
-    return nil if scac.blank?
+  def freight_kit_class
+    return if scac.blank?
 
-    @interstellar_class ||= ::Interstellar.const_get(scac)
+    @freight_kit_class ||= ::FreightKit.const_get(scac)
   rescue NameError
     nil
   end
@@ -104,10 +104,10 @@ class Carrier < ApplicationRecord
   # Whether the carrier considers `Shipment#pickup_confirmation`, `Shipment#pro` to be the same.
   # @return <Boolean>
   def pickup_number_is_tracking_number?
-    !!interstellar_class&.pickup_number_is_tracking_number?
+    !!freight_kit_class&.pickup_number_is_tracking_number?
   end
 
-  def required_interstellar_credentials
-    interstellar_class&.required_credential_types || []
+  def required_freight_kit_credentials
+    freight_kit_class&.required_credential_types || []
   end
 end

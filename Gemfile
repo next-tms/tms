@@ -76,13 +76,8 @@ gem 'devise', '~> 4.8.0'
 gem 'devise_invitable', '~> 2.0.8'
 gem 'devise-pwned_password', '~> 0.1.10'
 
-gem 'interstellar', git: 'https://github.com/next-tms/interstellar', ref: 'c55f59b17df05ec21fce728c190c47482594e51a'
-gem 'interstellar-next',
-    git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/interstellar-next',
-    ref: '6e872bf3f849cb55d2acb6bc58c86d925f8569b8'
-gem 'spacetime',
-    git: 'https://REDACTED:x-oauth-basic@github.com/next-tms/spacetime',
-    ref: 'b430558c2458c6d674ec1803246ff5fcccacff94'
+gem 'freight_kit-next', git: 'https://github.com/next-tms/freight_kit-next', tag: 'v0.0.1'
+gem 'place_kit', '~> 0.0.1'
 
 gem 'honeybadger', '~> 5.2'
 

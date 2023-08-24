@@ -3416,7 +3416,7 @@
         },
         {
           "kind": "OBJECT",
-          "name": "InterstellarCountry",
+          "name": "FreightKitCountry",
           "description": null,
           "interfaces": [
 
@@ -3493,7 +3493,7 @@
         },
         {
           "kind": "OBJECT",
-          "name": "InterstellarDateTime",
+          "name": "FreightKitDateTime",
           "description": null,
           "interfaces": [
 
@@ -3547,7 +3547,7 @@
               "description": null,
               "type": {
                 "kind": "OBJECT",
-                "name": "InterstellarLocation",
+                "name": "FreightKitLocation",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -3562,7 +3562,7 @@
         },
         {
           "kind": "OBJECT",
-          "name": "InterstellarLocation",
+          "name": "FreightKitLocation",
           "description": null,
           "interfaces": [
 
@@ -3588,7 +3588,7 @@
               "description": null,
               "type": {
                 "kind": "OBJECT",
-                "name": "InterstellarCountry",
+                "name": "FreightKitCountry",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -4799,7 +4799,7 @@
               "description": null,
               "type": {
                 "kind": "OBJECT",
-                "name": "InterstellarDateTime",
+                "name": "FreightKitDateTime",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -4813,7 +4813,7 @@
               "description": null,
               "type": {
                 "kind": "OBJECT",
-                "name": "InterstellarLocation",
+                "name": "FreightKitLocation",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -4906,7 +4906,7 @@
               "description": null,
               "type": {
                 "kind": "OBJECT",
-                "name": "InterstellarLocation",
+                "name": "FreightKitLocation",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -4934,7 +4934,7 @@
               "description": null,
               "type": {
                 "kind": "OBJECT",
-                "name": "InterstellarLocation",
+                "name": "FreightKitLocation",
                 "ofType": null
               },
               "isDeprecated": false,

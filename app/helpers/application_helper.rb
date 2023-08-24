@@ -27,7 +27,7 @@ module ApplicationHelper
         flatpickr_alt_input: true,
         flatpickr_alt_format: 'Y-m-d h:i K',
         flatpickr_enable_time: true,
-        flatpickr_date_format: 'Y-m-dTH:i:00-00:00'
+        flatpickr_date_format: 'Y-m-dTH:i:00-00:00',
       )
     end
 
@@ -42,7 +42,7 @@ module ApplicationHelper
       flatpickr_alt_input: true,
       flatpickr_alt_format: 'Y-m-d h:i K',
       flatpickr_enable_time: true,
-      flatpickr_date_format: "Y-m-dTH:i:00#{formatted_offset}"
+      flatpickr_date_format: "Y-m-dTH:i:00#{formatted_offset}",
     )
   end
 
@@ -57,7 +57,7 @@ module ApplicationHelper
     html_options[:class] = content_class
 
     html = content_tag(:i, nil, html_options)
-    html << ' ' << text.to_s unless text.blank?
+    html << ' ' << text.to_s if text.present?
     html
   end
 
@@ -81,7 +81,7 @@ module ApplicationHelper
   end
 
   def pretty_date(date, time_zone)
-    return nil if date.blank? || time_zone.blank?
+    return if date.blank? || time_zone.blank?
 
     unless time_zone.is_a?(ActiveSupport::TimeZone)
       raise ArgumentError,
@@ -89,13 +89,13 @@ module ApplicationHelper
     end
 
     if date.instance_of?(ActiveSupport::TimeWithZone)
-      if date.year == DateTime.current.year
+      if date.year == Time.current.year
         date.in_time_zone(time_zone.name).strftime("%m/%d %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       else
         date.in_time_zone(time_zone.name).strftime("%m/%d/%y %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       end
     elsif date.instance_of?(Date)
-      if date.year == DateTime.current.year
+      if date.year == Time.current.year
         date.in_time_zone(time_zone.name).strftime("%m/%d %a <small>#{time_zone.tzinfo.abbr}</small>").html_safe
       else
         date.in_time_zone(time_zone.name).strftime("%m/%d/%y <small>#{time_zone.tzinfo.abbr}</small>").html_safe
@@ -104,14 +104,14 @@ module ApplicationHelper
   end
 
   def short_date(date, time_zone)
-    return nil if date.blank? || time_zone.blank?
+    return if date.blank? || time_zone.blank?
 
     unless time_zone.is_a?(ActiveSupport::TimeZone)
       raise ArgumentError,
             "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
     end
 
-    if date.year == DateTime.current.year
+    if date.year == Time.current.year
       date.in_time_zone(time_zone).strftime('%m/%d').html_safe
     else
       date.in_time_zone(time_zone).strftime('%m/%d/%y').html_safe
@@ -119,7 +119,7 @@ module ApplicationHelper
   end
 
   def long_date(date, time_zone)
-    return nil if date.blank? || time_zone.blank?
+    return if date.blank? || time_zone.blank?
 
     unless time_zone.is_a?(ActiveSupport::TimeZone)
       raise ArgumentError,
@@ -147,7 +147,7 @@ module ApplicationHelper
   def pretty_api_error(error)
     return 'Unknown error' if error.blank?
 
-    if error.class.name.to_s.deconstantize == 'Interstellar'
+    if error.class.name.to_s.deconstantize == 'FreightKit'
       case error.class.name.split('::').last
       when 'ExpiredCredentialsError'
         'Your username and/or password is expired'
@@ -155,11 +155,11 @@ module ApplicationHelper
         'Your username and/or password is incorrect'
       when 'UnserviceableAccessorialsError'
         accessorial_names = Accessorial
-                            .where(interstellar_code: error.accessorials)
+                            .where(freight_kit_code: error.accessorials)
                             .pluck(:name)
                             .map(&:downcase)
 
-        "Unable to service #{accessorial_names.join(', ')}"
+        "Unable to service #{accessorial_names.join(", ")}"
       when 'UnserviceableError'
         error.message.blank? ? 'Carrier unable to accept this shipment' : clean_sentence(error.message)
       else
@@ -221,14 +221,14 @@ module ApplicationHelper
       render("#{association.to_s.singularize}_fields", f: builder)
     end
 
-    link_to name, '#', class: "add-fields #{classes}", data: { id:, fields: fields.gsub("\n", '') }
+    link_to(name, '#', class: "add-fields #{classes}", data: { id:, fields: fields.gsub("\n", '') })
   end
 
   def real_carrier(shipment)
-    return nil if shipment.broker_carrier.blank?
+    return if shipment.broker_carrier.blank?
 
     if shipment.broker_carrier.carrier.acts_as_broker
-      shipment.tracking_carrier.blank? ? shipment.broker_carrier.carrier : shipment.tracking_carrier
+      (shipment.tracking_carrier.presence || shipment.broker_carrier.carrier)
     else
       shipment.broker_carrier.carrier
     end
@@ -243,10 +243,10 @@ module ApplicationHelper
   end
 
   def pickup_uri(shipment)
-    return nil if shipment.broker_carrier.blank?
+    return if shipment.broker_carrier.blank?
 
     carrier = real_carrier(shipment)
-    return nil if carrier.scac.blank?
+    return if carrier.scac.blank?
 
     case carrier.scac.upcase
     when 'FWDA'
@@ -264,8 +264,8 @@ module ApplicationHelper
   end
 
   def quote_uri(shipment)
-    return nil if shipment.broker_carrier.blank?
-    return nil if shipment.broker_carrier.carrier.scac.blank?
+    return if shipment.broker_carrier.blank?
+    return if shipment.broker_carrier.carrier.scac.blank?
 
     case shipment.broker_carrier.carrier.scac.upcase
     when 'RDFS'
@@ -276,10 +276,10 @@ module ApplicationHelper
   end
 
   def tracking_uri(shipment)
-    return nil if shipment.broker_carrier.blank?
+    return if shipment.broker_carrier.blank?
 
     carrier = real_carrier(shipment)
-    return nil if carrier.scac.blank?
+    return if carrier.scac.blank?
 
     case carrier.scac.upcase
     when 'BTVP'
@@ -351,8 +351,8 @@ module ApplicationHelper
   end
 
   def pod_uri(shipment)
-    return nil if shipment.broker_carrier.blank?
-    return nil if shipment.broker_carrier.carrier.scac.blank?
+    return if shipment.broker_carrier.blank?
+    return if shipment.broker_carrier.carrier.scac.blank?
 
     case shipment.broker_carrier.carrier.scac.upcase
     when 'CNWY'
@@ -364,6 +364,6 @@ module ApplicationHelper
 
   def highlightable_element(id, table_element: false, &block)
     element = table_element ? :tbody : :div
-    content_tag element, id: id.to_sym, tabindex: '-1', &block
+    content_tag(element, id: id.to_sym, tabindex: '-1', &block)
   end
 end

@@ -3,7 +3,7 @@
 <%= render 'member_header' %>
 <h2><%= yield :title %></h2>
 
-<% if @broker_carrier.to_interstellar_carrier.present? && !@broker_carrier.to_interstellar_carrier.rates_with_excessive_length_fees %>
+<% if @broker_carrier.to_freight_kit_carrier.present? && !@broker_carrier.to_freight_kit_carrier.rates_with_excessive_length_fees %>
   <%= bootstrap_form_with(model: [:broker, @broker_carrier]) do |f| %>
     <%= f.alert_message 'Unable to update account:' %>
 
@@ -53,7 +53,7 @@
     <% end %>
   <% end %>
 <% else %>
-  <% message = @broker_carrier.to_interstellar_carrier.present? ? 'This carrier’s API handles tariff-specific pricing on its own.' : nil %>
+  <% message = @broker_carrier.to_freight_kit_carrier.present? ? 'This carrier’s API handles tariff-specific pricing on its own.' : nil %>
   <%= render 'layouts/message',
              title: 'Nothing to configure',
              message:

@@ -3,6 +3,7 @@ FROM ruby:3.2.2-alpine3.18 AS runtime
 RUN apk -U upgrade && apk add --no-cache git libpq-dev libxml2 libxslt imagemagick nodejs npm yarn
 
 FROM runtime AS build
+ARG BUNDLER_GITHUB_OAUTH_KEY
 
 ENV BUILD_ENV 1
 ENV BUNDLER_WITHOUT development test
@@ -23,6 +24,7 @@ RUN apk add --no-cache --virtual .gem-installdeps build-base \
                                                   libxslt-dev && \
     gem install bundler -v 2.4.10 && \
     gem install nokogiri --platform=ruby -- --use-system-libraries && \
+    bundle config github.com $BUNDLER_GITHUB_OAUTH_KEY && \
     bundle install --retry 5 && \
     bundle exec bootsnap precompile app/ lib/ && \
     SECRET_KEY_BASE=`bundle exec rake secret` bin/rails assets:precompile && \
