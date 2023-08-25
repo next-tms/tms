@@ -642,7 +642,7 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    stimulus-rails (1.1.1)
+    stimulus-rails (1.2.2)
       railties (>= 6.0.0)
     stripe (6.5.0)
     table-formatter (0.7.1)
@@ -787,7 +787,7 @@ DEPENDENCIES
   simple_command
   spring (~> 4.1.1)
   sprockets-rails (~> 3.4.2)
-  stimulus-rails (~> 1.1.1)
+  stimulus-rails (~> 1.2.2)
   stripe (~> 6.5.0)
   timecop
   timezone (~> 1.3)
