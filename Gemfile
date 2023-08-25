@@ -72,7 +72,7 @@ gem 'font-awesome-sass', '~> 6.3.0'
 gem 'aws-sdk-s3', '~> 1.130.0', group: :production
 gem 'image_processing', '~> 1.12.2'
 
-gem 'devise', '~> 4.8.0'
+gem 'devise', '~> 4.9.2'
 gem 'devise_invitable', '~> 2.0.8'
 gem 'devise-pwned_password', '~> 0.1.10'
 

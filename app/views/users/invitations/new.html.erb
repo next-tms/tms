@@ -24,7 +24,12 @@
 <% else %>
   <div class="row">
     <div class="col col-md-8">
-      <%= bootstrap_form_for(resource, as: resource_name, url: invitation_path(resource_name), data: { turbo: false }, layout: :horizontal) do |f| %>
+      <%= bootstrap_form_for(
+            resource,
+            as: resource_name,
+            url: invitation_path(resource_name),
+            layout: :horizontal
+          ) do |f| %>
         <%= f.hidden_field :companyable_id, value: params[:companyable_id] %>
         <%= f.hidden_field :companyable_type, value: params[:companyable_type] %>
         <%= f.hidden_field :contact_id, value: params[:contact_id] %>
