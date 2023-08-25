@@ -12,7 +12,7 @@ gem 'puma', '~> 6.3.1'
 
 gem 'importmap-rails', '~> 1.2.1'
 gem 'stimulus-rails', '~> 1.1.1'
-gem 'turbo-rails', '~> 1.3.3'
+gem 'turbo-rails', '~> 1.4.0'
 
 gem 'jbuilder', '~> 2.11'
 
