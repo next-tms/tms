@@ -489,7 +489,8 @@ GEM
     rdiscount (2.2.7)
     recordx (0.6.0)
       kvx (~> 1.1, >= 1.1.0)
-    redis (4.8.1)
+    redis (5.0.7)
+      redis-client (>= 0.9.0)
     redis-client (0.14.1)
       connection_pool
     regexp_parser (2.8.1)
@@ -769,7 +770,7 @@ DEPENDENCIES
   rails-controller-testing (~> 1.0.5)
   rails_real_favicon
   ransack (~> 3.2.1)
-  redis (~> 4.8)
+  redis (~> 5.0)
   responders
   rqrcode
   rspec-rails (~> 6.0)
