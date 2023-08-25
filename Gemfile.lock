@@ -621,7 +621,7 @@ GEM
       websocket (~> 1.0)
     shoulda-matchers (5.3.0)
       activesupport (>= 5.2.0)
-    sidekiq (7.1.0)
+    sidekiq (7.1.2)
       concurrent-ruby (< 2)
       connection_pool (>= 2.3.0)
       rack (>= 2.2.4)
@@ -783,7 +783,7 @@ DEPENDENCIES
   sassc-rails (~> 2.1.2)
   selenium-webdriver
   shoulda-matchers (= 5.3.0)
-  sidekiq (~> 7.1.0)
+  sidekiq (~> 7.1.2)
   sidekiq-scheduler (~> 5.0.3)
   simple_command
   spring (~> 4.1.1)

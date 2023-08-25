@@ -81,7 +81,7 @@ gem 'place_kit', '~> 0.0.1'
 
 gem 'honeybadger', '~> 5.2'
 
-gem 'sidekiq', '~> 7.1.0'
+gem 'sidekiq', '~> 7.1.2'
 gem 'sidekiq-scheduler', '~> 5.0.3'
 
 gem 'active_model_serializers', '~> 0.10.13'
