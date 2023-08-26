@@ -3,9 +3,9 @@
 class TransponderGraphqlInputBuilder
   attr_reader :shipment, :broker_carrier, :opts, :operation
 
-  def initialize(shipment:, opts: {}, operation:)
+  def initialize(shipment:, opts: {}, operation:, broker_carrier: nil)
     @shipment = shipment
-    @broker_carrier = shipment.broker_carrier
+    @broker_carrier = broker_carrier.presence || shipment.broker_carrier
     @opts = opts
     @operation = operation
   end
@@ -37,9 +37,9 @@ class TransponderGraphqlInputBuilder
 
   def rates
     {
-      pickupAt: (shipment.pickup_from.presence || Time.current.in_time_zone(shipment.shipper_address.time_zone) + 3.hours).iso8601,
-      destination: shipment.receiver_address.as_graphql_input,
-      origin: shipment.shipper_address.as_graphql_input,
+      pickupAt: (shipment.pickup_from.presence || DateTime.current.in_time_zone(shipment.shipper_address.time_zone) + 3.hours).iso8601,
+      destination: shipment.receiver_address.as_graphql_input.merge(contact_details(:receiver)),
+      origin: shipment.shipper_address.as_graphql_input.merge(contact_details(:shipper)),
       packages:,
       accessorials:
     }.compact

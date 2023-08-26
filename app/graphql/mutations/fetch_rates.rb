@@ -40,7 +40,7 @@ module Mutations
         shipment: shipment,
         use_forced_freight_classes: use_forced_freight_classes,
         save_new_rates: true,
-      ).to_rates if rates.blank?
+      ).call if rates.blank?
 
       rates
     end

@@ -8,6 +8,7 @@ module GraphqlClient
           localDateTime
           localDate
           dateTimeWithZone
+          dateTimeWithZoneName
           location {
             ...GraphqlClient::Fragments::Location::DETAILS
           }

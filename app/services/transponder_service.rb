@@ -18,9 +18,9 @@ class TransponderService
 
   class TransponderApiError < StandardError; end
 
-  def initialize(shipment:)
+  def initialize(shipment:, broker_carrier: nil)
     @shipment = shipment
-    @broker_carrier = shipment.broker_carrier
+    @broker_carrier = broker_carrier.presence || shipment.broker_carrier
   end
 
   def tracking
@@ -61,20 +61,37 @@ class TransponderService
   private
 
   def commit(opts: {}, operation_class:, operation: QUERY)
-    args = TransponderGraphqlInputBuilder.new(shipment:, opts: opts, operation: operation_class.underscore).call
+    return if broker_carrier.to_freight_kit_carrier.blank?
 
-    GraphqlClient::Transponder::Client.query(
+    args = TransponderGraphqlInputBuilder.new(
+      shipment:,
+      opts: opts,
+      operation: operation_class.underscore,
+      broker_carrier: broker_carrier
+    ).call
+
+    response = GraphqlClient::Transponder::Client.query(
       "#{operation}::#{operation_class}::DETAILS".constantize, variables: {
         **args,
       }.compact
     )
+
+    return response unless response.original_hash['errors'].present?
+
+    error_msgs = response.original_hash['errors'].map { |k| k['message'] }.join(', ')
+    raise TransponderApiError, error_msgs
   rescue *API_EXCEPTIONS => e
     raise TransponderApiError, e.message
   end
 
   def parse_response(response:, operation_name:)
+    return if response.blank?
     return response.errors.messages if response.errors.present?
 
-    response.original_hash.dig('data', operation_name).deep_symbolize_keys
+    data_obj = response.original_hash.dig('data', operation_name)
+    return data_obj if data_obj.blank?
+    return data_obj if data_obj.is_a?(String)
+
+    data_obj.deep_symbolize_keys
   end
 end

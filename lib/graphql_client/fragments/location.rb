@@ -9,6 +9,7 @@ module GraphqlClient
           country {
             ...GraphqlClient::Fragments::Country::DETAILS
           }
+          province
         }
       GRAPHQL
     end

@@ -147,8 +147,17 @@ module ApplicationHelper
   def pretty_api_error(error)
     return 'Unknown error' if error.blank?
 
-    if error.class.name.to_s.deconstantize == 'FreightKit'
-      case error.class.name.split('::').last
+    begin
+      error = error.constantize
+    rescue
+      return error if error.is_a?(String)
+    end
+
+    klass = error.class.name.to_s
+    klass = error.to_s if error.class.name.to_s == 'Class'
+
+    if klass.deconstantize == 'Interstellar' || klass.deconstantize == 'FreightKit'
+      case klass.split('::').last
       when 'ExpiredCredentialsError'
         'Your username and/or password is expired'
       when 'InvalidCredentialsError'

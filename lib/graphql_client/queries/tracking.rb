@@ -8,10 +8,19 @@ module GraphqlClient
             status
             statusCode
             statusDescription
-            shipTime
+            shipTime {
+              ...GraphqlClient::Fragments::FreightKitDateTime::DETAILS
+            }
             shipperAddress
-            estimatedDeliveryDate
-            actualDeliveryDate
+            estimatedDeliveryDate {
+              ...GraphqlClient::Fragments::FreightKitDateTime::DETAILS
+            }
+            actualDeliveryDate {
+              ...GraphqlClient::Fragments::FreightKitDateTime::DETAILS
+            }
+            attemptedDeliveryDate {
+              ...GraphqlClient::Fragments::FreightKitDateTime::DETAILS
+            }
             deliverySignature
             origin {
               ...GraphqlClient::Fragments::Location::DETAILS
@@ -22,6 +31,9 @@ module GraphqlClient
             shipmentEvents {
               ...GraphqlClient::Fragments::ShipmentEvent::DETAILS
             }
+            request
+            response
+            error
           }
         }
       GRAPHQL

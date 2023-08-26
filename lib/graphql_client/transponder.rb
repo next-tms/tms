@@ -10,11 +10,10 @@ module GraphqlClient
 
     # Fetch latest schema on init, this will make a network request
     # Schema = GraphQL::Client.load_schema(HTTP)
-
     # Run it from a script or rake task to populate schema.json
     #   GraphQL::Client.dump_schema(HTTP, "lib/graphql/schema.json")
 
-    # # However, it's smart to dump this to a JSON file and load from disk
+    # However, it's smart to dump this to a JSON file and load from disk
     schema_path = "lib/graphql/schema.json"
     Schema = GraphQL::Client.load_schema(schema_path)
 

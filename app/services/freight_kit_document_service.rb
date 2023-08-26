@@ -8,11 +8,11 @@ class FreightKitDocumentService
       return if shipment.pro.blank? || shipment.carrier_bol.attached?
 
       broker_carrier = shipment.broker_carrier
-      freight_kit_document_response = FreightKitAPIClient.fetch_bol(broker_carrier:, tracking_number: shipment.pro)
+      transponder_document_response = TransponderService.new(shipment:).document(document_type: :bol)
 
-      return if freight_kit_document_response&.data.blank?
+      return nil if transponder_document_response[:data].blank?
 
-      attach_document(type: :bol, document: freight_kit_document_response, shipment:)
+      attach_document(type: :bol, document: transponder_document_response, shipment:)
       deliver_mail_to_contacts(shipment:, type: :carrier_bol)
       shipment.problematic!
 
@@ -23,11 +23,11 @@ class FreightKitDocumentService
       return if shipment.pro.blank? || shipment.carrier_pod.attached?
 
       broker_carrier = shipment.broker_carrier
-      freight_kit_document_response = FreightKitAPIClient.fetch_pod(broker_carrier:, tracking_number: shipment.pro)
+      transponder_document_response = TransponderService.new(shipment:).document(document_type: :pod)
 
-      return if freight_kit_document_response&.data.blank?
+      return nil if transponder_document_response[:data].blank?
 
-      attach_document(type: :pod, document: freight_kit_document_response, shipment:)
+      attach_document(type: :pod, document: transponder_document_response, shipment:)
       deliver_mail_to_contacts(shipment:, type: :carrier_pod)
       shipment.problematic!
 
@@ -37,16 +37,8 @@ class FreightKitDocumentService
     def reattach_document(shipment:, document_type:)
       return unless %i[bol pod].include?(document_type)
 
-      freight_kit_method = "fetch_#{document_type}"
-      broker_carrier = shipment.broker_carrier
-      freight_kit_document_response = FreightKitAPIClient
-                                      .send(
-                                        freight_kit_method,
-                                        broker_carrier:,
-                                        tracking_number: shipment.pro,
-                                      )
-
-      return if freight_kit_document_response&.data.blank?
+      transponder_document_response = TransponderService.new(shipment:).document(document_type: document_type.to_sym)
+      return nil if transponder_document_response[:data].blank?
 
       document = shipment.send("carrier_#{document_type}")
       document.purge
@@ -61,9 +53,9 @@ class FreightKitDocumentService
       attachment = shipment.send("carrier_#{type}")
 
       blob = ActiveStorage::Blob.create_and_upload!(
-        io: StringIO.new(document.data),
-        filename: "#{shipment.load_id} #{type.upcase} (Carrier)#{Rack::Mime::MIME_TYPES.invert[document.content_type]}",
-        content_type: document.content_type,
+        io: StringIO.new(document[:data]),
+        filename: "#{shipment.load_id} #{type.upcase} (Carrier)#{Rack::Mime::MIME_TYPES.invert[document[:contentType]]}",
+        content_type: document[:contentType],
       )
       attachment.attach(blob)
 
