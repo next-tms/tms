@@ -184,24 +184,6 @@
               "deprecationReason": null
             },
             {
-              "name": "api_key",
-              "description": null,
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "api_proxy",
-              "description": null,
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "selenoid",
-              "description": null,
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
               "name": "website",
               "description": null,
               "isDeprecated": false,
@@ -228,27 +210,7 @@
               "defaultValue": null
             },
             {
-              "name": "apiKey",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "baseUrl",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "browser",
+              "name": "username",
               "description": null,
               "type": {
                 "kind": "SCALAR",
@@ -259,6 +221,16 @@
             },
             {
               "name": "password",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "apiKey",
               "description": null,
               "type": {
                 "kind": "SCALAR",
@@ -288,16 +260,6 @@
                   "name": "CarrierCredentialCategory",
                   "ofType": null
                 }
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "username",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
               },
               "defaultValue": null
             }
@@ -364,16 +326,6 @@
           "fields": null,
           "inputFields": [
             {
-              "name": "height",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "Float",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
               "name": "length",
               "description": null,
               "type": {
@@ -385,6 +337,16 @@
             },
             {
               "name": "width",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "height",
               "description": null,
               "type": {
                 "kind": "SCALAR",
@@ -457,20 +419,6 @@
               ]
             },
             {
-              "name": "error",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
               "name": "request",
               "description": null,
               "type": {
@@ -495,235 +443,6 @@
           "interfaces": null,
           "possibleTypes": null,
           "fields": null,
-          "inputFields": null,
-          "enumValues": null
-        },
-        {
-          "kind": "OBJECT",
-          "name": "FreightKitCountry",
-          "description": null,
-          "interfaces": [
-
-          ],
-          "possibleTypes": null,
-          "fields": [
-            {
-              "name": "alpha2",
-              "description": null,
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "ENUM",
-                  "name": "ISO31661Alpha2",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "alpha3",
-              "description": null,
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "ENUM",
-                  "name": "ISO31661Alpha3",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "name",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "numeric",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            }
-          ],
-          "inputFields": null,
-          "enumValues": null
-        },
-        {
-          "kind": "OBJECT",
-          "name": "FreightKitDateTime",
-          "description": null,
-          "interfaces": [
-
-          ],
-          "possibleTypes": null,
-          "fields": [
-            {
-              "name": "dateTimeWithZone",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "ISO8601DateTime",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "dateTimeWithZoneName",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "localDate",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "localDateTime",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "location",
-              "description": null,
-              "type": {
-                "kind": "OBJECT",
-                "name": "FreightKitLocation",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            }
-          ],
-          "inputFields": null,
-          "enumValues": null
-        },
-        {
-          "kind": "OBJECT",
-          "name": "FreightKitLocation",
-          "description": null,
-          "interfaces": [
-
-          ],
-          "possibleTypes": null,
-          "fields": [
-            {
-              "name": "city",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "country",
-              "description": null,
-              "type": {
-                "kind": "OBJECT",
-                "name": "FreightKitCountry",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "province",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "timeZone",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            }
-          ],
           "inputFields": null,
           "enumValues": null
         },
@@ -3696,6 +3415,207 @@
           "enumValues": null
         },
         {
+          "kind": "OBJECT",
+          "name": "FreightKitCountry",
+          "description": null,
+          "interfaces": [
+
+          ],
+          "possibleTypes": null,
+          "fields": [
+            {
+              "name": "alpha2",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "ISO31661Alpha2",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            },
+            {
+              "name": "alpha3",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "ISO31661Alpha3",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            },
+            {
+              "name": "name",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            },
+            {
+              "name": "numeric",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            }
+          ],
+          "inputFields": null,
+          "enumValues": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "FreightKitDateTime",
+          "description": null,
+          "interfaces": [
+
+          ],
+          "possibleTypes": null,
+          "fields": [
+            {
+              "name": "dateTimeWithZone",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            },
+            {
+              "name": "localDate",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            },
+            {
+              "name": "localDateTime",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            },
+            {
+              "name": "location",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "FreightKitLocation",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            }
+          ],
+          "inputFields": null,
+          "enumValues": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "FreightKitLocation",
+          "description": null,
+          "interfaces": [
+
+          ],
+          "possibleTypes": null,
+          "fields": [
+            {
+              "name": "city",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            },
+            {
+              "name": "country",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "FreightKitCountry",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            },
+            {
+              "name": "province",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null,
+              "args": [
+
+              ]
+            }
+          ],
+          "inputFields": null,
+          "enumValues": null
+        },
+        {
           "kind": "SCALAR",
           "name": "JSON",
           "description": "Represents untyped JSON",
@@ -3819,16 +3739,6 @@
               "defaultValue": null
             },
             {
-              "name": "contact",
-              "description": null,
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "ContactInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
               "name": "countryCode",
               "description": null,
               "type": {
@@ -3854,6 +3764,16 @@
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "contact",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "ContactInput",
                 "ofType": null
               },
               "defaultValue": null
@@ -3923,6 +3843,20 @@
               "deprecationReason": null,
               "args": [
                 {
+                  "name": "scac",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "credentials",
                   "description": null,
                   "type": {
@@ -3945,20 +3879,6 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "scac",
-                  "description": null,
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
                   "name": "deliveryFrom",
                   "description": null,
                   "type": {
@@ -3974,16 +3894,6 @@
                   "type": {
                     "kind": "SCALAR",
                     "name": "ISO8601DateTime",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "dispatcher",
-                  "description": null,
-                  "type": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "ContactInput",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -4019,6 +3929,16 @@
                   "defaultValue": null
                 },
                 {
+                  "name": "dispatcher",
+                  "description": null,
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "ContactInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "accessorials",
                   "description": null,
                   "type": {
@@ -4037,31 +3957,11 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "destination",
-                  "description": null,
-                  "type": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "LocationInput",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "orderNumber",
+                  "name": "valueCents",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "origin",
-                  "description": null,
-                  "type": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "LocationInput",
+                    "name": "Float",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -4089,7 +3989,37 @@
                   "defaultValue": null
                 },
                 {
+                  "name": "origin",
+                  "description": null,
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "LocationInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "destination",
+                  "description": null,
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "LocationInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "poNumber",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "orderNumber",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -4104,16 +4034,6 @@
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "valueCents",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Float",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -4133,21 +4053,21 @@
           "fields": null,
           "inputFields": [
             {
-              "name": "dimensions",
+              "name": "totalGramsOrOunces",
               "description": null,
               "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "DimensionInput",
+                "kind": "SCALAR",
+                "name": "Float",
                 "ofType": null
               },
               "defaultValue": null
             },
             {
-              "name": "options",
+              "name": "dimensions",
               "description": null,
               "type": {
-                "kind": "SCALAR",
-                "name": "JSON",
+                "kind": "INPUT_OBJECT",
+                "name": "DimensionInput",
                 "ofType": null
               },
               "defaultValue": null
@@ -4163,43 +4083,16 @@
               "defaultValue": null
             },
             {
-              "name": "totalGramsOrOunces",
+              "name": "options",
               "description": null,
               "type": {
                 "kind": "SCALAR",
-                "name": "Float",
+                "name": "JSON",
                 "ofType": null
               },
               "defaultValue": null
             }
           ],
-          "enumValues": null
-        },
-        {
-          "kind": "OBJECT",
-          "name": "PickupLabel",
-          "description": null,
-          "interfaces": [
-
-          ],
-          "possibleTypes": null,
-          "fields": [
-            {
-              "name": "data",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            }
-          ],
-          "inputFields": null,
           "enumValues": null
         },
         {
@@ -4212,75 +4105,11 @@
           "possibleTypes": null,
           "fields": [
             {
-              "name": "error",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "labels",
-              "description": null,
-              "type": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "PickupLabel",
-                    "ofType": null
-                  }
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
               "name": "pickupNumber",
               "description": null,
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "request",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "JSON",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "response",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "JSON",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -4367,6 +4196,20 @@
               "deprecationReason": null,
               "args": [
                 {
+                  "name": "scac",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "credentials",
                   "description": null,
                   "type": {
@@ -4384,20 +4227,6 @@
                           "ofType": null
                         }
                       }
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "scac",
-                  "description": null,
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
                     }
                   },
                   "defaultValue": null
@@ -4444,6 +4273,20 @@
               "deprecationReason": null,
               "args": [
                 {
+                  "name": "scac",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "credentials",
                   "description": null,
                   "type": {
@@ -4462,30 +4305,6 @@
                         }
                       }
                     }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "scac",
-                  "description": null,
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "dispatchedAt",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ISO8601Date",
-                    "ofType": null
                   },
                   "defaultValue": null
                 },
@@ -4512,6 +4331,16 @@
                     "ofType": null
                   },
                   "defaultValue": null
+                },
+                {
+                  "name": "dispatchedAt",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "ISO8601Date",
+                    "ofType": null
+                  },
+                  "defaultValue": null
                 }
               ]
             },
@@ -4526,6 +4355,20 @@
               "isDeprecated": false,
               "deprecationReason": null,
               "args": [
+                {
+                  "name": "scac",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
                 {
                   "name": "credentials",
                   "description": null,
@@ -4549,20 +4392,6 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "scac",
-                  "description": null,
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
                   "name": "accessorials",
                   "description": null,
                   "type": {
@@ -4581,21 +4410,11 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "destination",
+                  "name": "valueCents",
                   "description": null,
                   "type": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "LocationInput",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "origin",
-                  "description": null,
-                  "type": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "LocationInput",
+                    "kind": "SCALAR",
+                    "name": "Float",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -4623,21 +4442,31 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "pickupAt",
+                  "name": "origin",
                   "description": null,
                   "type": {
-                    "kind": "SCALAR",
-                    "name": "ISO8601DateTime",
+                    "kind": "INPUT_OBJECT",
+                    "name": "LocationInput",
                     "ofType": null
                   },
                   "defaultValue": null
                 },
                 {
-                  "name": "valueCents",
+                  "name": "destination",
+                  "description": null,
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "LocationInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "pickupAt",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
-                    "name": "Float",
+                    "name": "ISO8601DateTime",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -4656,6 +4485,20 @@
               "deprecationReason": null,
               "args": [
                 {
+                  "name": "scac",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "credentials",
                   "description": null,
                   "type": {
@@ -4673,20 +4516,6 @@
                           "ofType": null
                         }
                       }
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "scac",
-                  "description": null,
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
                     }
                   },
                   "defaultValue": null
@@ -4803,34 +4632,6 @@
               ]
             },
             {
-              "name": "scac",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "serviceName",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
               "name": "totalCents",
               "description": null,
               "type": {
@@ -4930,20 +4731,6 @@
           ],
           "possibleTypes": null,
           "fields": [
-            {
-              "name": "error",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
             {
               "name": "rates",
               "description": null,
@@ -5076,8 +4863,8 @@
               "name": "actualDeliveryDate",
               "description": null,
               "type": {
-                "kind": "OBJECT",
-                "name": "FreightKitDateTime",
+                "kind": "SCALAR",
+                "name": "String",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -5090,8 +4877,8 @@
               "name": "attemptedDeliveryDate",
               "description": null,
               "type": {
-                "kind": "OBJECT",
-                "name": "FreightKitDateTime",
+                "kind": "SCALAR",
+                "name": "String",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -5129,25 +4916,11 @@
               ]
             },
             {
-              "name": "error",
+              "name": "estimatedDeliveryDate",
               "description": null,
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "estimatedDeliveryDate",
-              "description": null,
-              "type": {
-                "kind": "OBJECT",
-                "name": "FreightKitDateTime",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -5171,39 +4944,11 @@
               ]
             },
             {
-              "name": "request",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "JSON",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
-              "name": "response",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "JSON",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
-            {
               "name": "scheduledDeliveryDate",
               "description": null,
               "type": {
-                "kind": "OBJECT",
-                "name": "FreightKitDateTime",
+                "kind": "SCALAR",
+                "name": "String",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -5216,8 +4961,8 @@
               "name": "shipTime",
               "description": null,
               "type": {
-                "kind": "OBJECT",
-                "name": "FreightKitDateTime",
+                "kind": "SCALAR",
+                "name": "String",
                 "ofType": null
               },
               "isDeprecated": false,

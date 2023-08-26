@@ -29,16 +29,14 @@ class Accessorial < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
 
-  def self.combined_accessorials(shipment:)
-    Accessorial.distinct
-               .where(
-                 id: shipment.accessorials.pluck(:id) +
-                     shipment.assumed_accessorials.pluck(:id)
-               )
-  end
-
   def self.combined_accessorial_freight_kit_codes(shipment:)
-    combined_accessorials(shipment:).where.not(freight_kit_code: [nil, '']).map do |accessorial|
+    combined_accessorials = Accessorial.distinct
+                            .where(
+                              id: shipment.accessorials.pluck(:id) +
+                                  shipment.assumed_accessorials.pluck(:id),
+                            )
+
+    combined_accessorials.where.not(freight_kit_code: [nil, '']).map do |accessorial|
       accessorial.freight_kit_code.to_sym
     end
   end

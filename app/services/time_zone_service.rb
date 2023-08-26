@@ -5,35 +5,8 @@ class TimeZoneService
 
   attr_reader :output, :time_zone
 
-  def self.from_transponder_date_time(date_time)
-    return Time.parse(date_time[:dateTimeWithZone]).in_time_zone(date_time[:dateTimeWithZoneName]) unless date_time[:dateTimeWithZone].blank?
-
-    unless date_time[:localDateTime].blank?
-      transponder_city = date_time.dig(:location, :city)
-      transponder_country = date_time.dig(:location, :country)
-      transponder_province = date_time.dig(:location, :province)
-
-      if [transponder_city, transponder_country, transponder_province].any?(&:blank?)
-        tz = default_time_zone
-        return tz.parse(date_time[:localDateTime])
-      end
-
-      country = Country.find_by_alpha2_code(transponder_country[:alpha2])
-      region = country.regions.where(abbreviation: transponder_province)&.first
-
-      city = date_time.dig(:location, :city)
-
-      unless city.blank? || region.blank?
-        tz = tz_by_city_and_region(city, region)
-        return tz.parse(date_time[:localDateTime])
-      end
-    end
-
-    date_time[:localDate].beginning_of_day unless date_time[:localDate].blank?
-  end
-
   def self.from_freight_kit_date_time(date_time)
-    raise ArgumentError, 'date_time must be an `FreightKit::DateTime`' unless date_time.is_a?(Interstellar::DateTime)
+    raise ArgumentError, 'date_time must be an `FreightKit::DateTime`' unless date_time.is_a?(FreightKit::DateTime)
 
     return date_time.date_time_with_zone if date_time.date_time_with_zone.present?
 

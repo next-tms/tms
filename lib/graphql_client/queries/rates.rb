@@ -29,8 +29,6 @@ module GraphqlClient
               }
               currency
               carrierName
-              scac
-              serviceName
               estimateReference
               withExcessiveLengthFees
               transitDays
@@ -43,9 +41,6 @@ module GraphqlClient
               }
               expiresAt
             }
-            response
-            request
-            error
           }
         }
       GRAPHQL

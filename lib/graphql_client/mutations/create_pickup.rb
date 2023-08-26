@@ -39,12 +39,6 @@ module GraphqlClient
             dispatcher: $dispatcher
           ) {
             pickupNumber
-            response
-            request
-            error
-            labels {
-              data
-            }
           }
         }
       GRAPHQL

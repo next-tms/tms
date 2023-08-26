@@ -7,7 +7,6 @@ module GraphqlClient
             request
             data
             contentType
-            error
           }
         }
       GRAPHQL

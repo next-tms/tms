@@ -25,7 +25,7 @@ class PopulateRatesJob < ApplicationJob
                 )
   
         begin
-          rates = fetch.call
+          rates = fetch.to_rates
         rescue StandardError
           next
         end

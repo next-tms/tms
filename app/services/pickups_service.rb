@@ -9,91 +9,6 @@ class PickupsService
   end
 
   def dispatch
-    error = nil
-
-    begin
-      response = TransponderService.new(shipment:).create_pickup(pickup:)
-    rescue StandardError => e
-      error = e
-    end
-
-    error ||= response.dig(:response, :error, :errormessage) || response[:error]
-
-    if error.present?
-      if !Rails.env.development? && !error.is_a?(Interstellar::Error)
-        attributes = {
-          broker_carrier_id: @broker_carrier&.id,
-          pickup_id: @pickup&.id,
-          shipment_id: @pickup&.shipment_id,
-          use_forced_freight_classes: @use_forced_freight_classes
-        }
-
-        Honeybadger.notify(error, attributes)
-      end
-
-      error_object = response || error
-
-      @pickup.update(api_request: response[:request], api_response: response[:response], error_object:, updated_by: nil)
-      Honeybadger.notify(error, pickup_attributes: @pickup.attributes) unless Rails.env.development?
-
-      return false
-    end
-
-    pickup_confirmation = response[:pickupNumber]
-    @pickup.update(
-      api_request: response[:request],
-      api_response: response[:response],
-      pickup_confirmation:,
-      updated_by: nil,
-    )
-
-    return if response[:labels]&.empty?
-
-    paths = response[:labels].map do |label|
-      Tempfile.open do |_tempfile|
-        f.binmode
-        f.write(Base64.decode64(label[:data]))
-        f.rewind
-
-        f.path
-      end
-    end
-
-    content_type = 'application/pdf'
-    filename = "#{@shipment.load_id} Labels.pdf"
-    io = PDFService.merge(*paths)
-
-    blob = ActiveStorage::Blob.create_and_upload!(content_type:, filename:, io:)
-
-    @shipment.carrier_label.attach(blob)
-  end
-
-  private
-
-  def accessorials
-    @accessorials ||= Accessorial.combined_accessorial_freight_kit_codes(shipment: @shipment)
-  end
-
-  def contact_name(key)
-    case key
-    when :receiver
-      @shipment.receiver_contact_name || @shipment.receiver_name
-    when :shipper
-      @shipment.shipper_contact_name || @shipment.shipper_name
-    end
-  end
-
-  def scac
-    return @shipment.tracking_carrier.scac if @broker_carrier.carrier.acts_as_broker?
-
-    @broker_carrier.carrier.scac
-  end
-end
-
-=begin
-  // Old Dispatch Code using Interstellar-Next
-  // TODO: Remove After Regression Testing
-  def dispatch
     packages = @shipment.items.map do |item|
       item.as_freight_kit_package(use_forced_freight_class: @use_forced_freight_classes)
     end
@@ -201,4 +116,36 @@ end
 
     @shipment.carrier_label.attach(blob)
   end
-=end
+
+  private
+
+  def accessorials
+    @accessorials ||= combined_accessorials.where.not(freight_kit_code: [nil, '']).map do |accessorial|
+      accessorial.freight_kit_code.to_sym
+    end
+  end
+
+  def combined_accessorials
+    @combined_accessorials ||= Accessorial
+                               .distinct
+                               .where(
+                                 id: @shipment.accessorials.pluck(:id) +
+                                     @shipment.assumed_accessorials.pluck(:id),
+                               )
+  end
+
+  def contact_name(key)
+    case key
+    when :receiver
+      @shipment.receiver_contact_name || @shipment.receiver_name
+    when :shipper
+      @shipment.shipper_contact_name || @shipment.shipper_name
+    end
+  end
+
+  def scac
+    return @shipment.tracking_carrier.scac if @broker_carrier.carrier.acts_as_broker?
+
+    @broker_carrier.carrier.scac
+  end
+end
