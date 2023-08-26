@@ -156,7 +156,7 @@ module ApplicationHelper
     klass = error.class.name.to_s
     klass = error.to_s if error.class.name.to_s == 'Class'
 
-    if klass.deconstantize == 'Interstellar' || klass.deconstantize == 'FreightKit'
+    if klass.deconstantize == 'FreightKit' || klass.deconstantize == 'FreightKit'
       case klass.split('::').last
       when 'ExpiredCredentialsError'
         'Your username and/or password is expired'
