@@ -293,7 +293,7 @@ module ApplicationHelper
     when 'CNWY'
       "https://ext-web.ltl-xpo.com/public-app/shipments?referenceNumber=#{real_pro(shipment)}"
     when 'CTBV'
-      "https://www.customco.com/scripts/cgiip.exe/boldetail.htm?wbtn=PRO&wpro1=#{real_pro(shipment)}"
+      "https://api.customco.com/scripts/cgiip.exe/boldetail.htm?wbtn=PRO&wpro1=#{real_pro(shipment)}"
     when 'CTII'
       "http://www.centraltransportint.com/confirm/trace.aspx?pro=#{real_pro(shipment)}"
     when 'DPHE'
