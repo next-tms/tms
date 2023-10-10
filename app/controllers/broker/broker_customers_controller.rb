@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomersController < Broker::BrokerController
-  ALLOWED_ACCESS_FOR_DISPATCHER = ['show', 'shipments'].freeze
   ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE = ['show', 'shipments', 'update'].freeze
+  ALLOWED_ACCESS_FOR_DISPATCHER = ['show', 'shipments'].freeze
+  ALLOWED_ACCESS_FOR_SALES_REP = ['contacts'].freeze
 
   before_action :set_broker_customer, only: %i[
                                               broker_carriers
@@ -227,6 +228,8 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     return if current_user.role?(:root) ||
               (ALLOWED_ACCESS_FOR_DISPATCHER.include?(action_name) && current_user.dispatcher_only?) ||
               (ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE.include?(action_name) && current_user.role?(:accounts_receivable))
+
+    return if @broker_customer.present? && current_user.sales_rep_for?(@broker_customer)
 
     unauthorized if not_sales_rep_for_all_and_broker_customer?
   end
