@@ -4,30 +4,20 @@ class TrackingController < ApplicationController
   before_action :set_load_id
 
   def show
-    redirect_to root_path and return unless @website
+    @shipment = if @load_id.present?
+                  Shipment.active.find_by(load_id: @load_id) ||
+                    Shipment.active.find_by(pro: @load_id) ||
+                    Shipment.active.find_by(bol: @load_id)
+                end
 
-    @shipment = Shipment.none
-    unless @load_id.blank?
-      @shipment = @website.broker.shipments.active.where(load_id: @load_id)
-      @shipment = @shipment.first unless @shipment.blank?
-    end
-    if @shipment.blank? && !@load_id.blank?
-      @shipment = @website.broker.shipments.active.where(pro: @load_id)
-      @shipment = @shipment.first unless @shipment.blank?
-    end
-    if @shipment.blank? && !@load_id.blank?
-      @shipment = @website.broker.shipments.active.where(bol: @load_id)
-      @shipment = @shipment.first unless @shipment.blank?
-    end
-
-    @shipment.update_tracking_events unless @shipment.blank?
+    @shipment.update_tracking_events if @shipment.present?
 
     respond_to do |format|
       format.html
       format.rss do
-        render :no_content and return if @shipment.blank?
+        render(:no_content) and return if @shipment.blank?
 
-        render plain: rss, content_type: 'application/rss+xml'
+        render(plain: rss, content_type: 'application/rss+xml')
       end
     end
   end
@@ -36,7 +26,7 @@ class TrackingController < ApplicationController
 
   def rss
     desc = ["Tracking events for Load #{@shipment.load_id} (#{@website.broker.name})"]
-    desc << "\n\nNotes:\n#{@shipment.public_notes}" unless @shipment.public_notes.blank?
+    desc << "\n\nNotes:\n#{@shipment.public_notes}" if @shipment.public_notes.present?
 
     rss = RSScreator.new
     rss.title = "Load #{@shipment.load_id}"
@@ -48,9 +38,9 @@ class TrackingController < ApplicationController
           title: tracking_event.event.name.titleize,
           link: tracking_url(load_id: @shipment),
           description: "#{tracking_event.event.name.capitalize} in #{tracking_event.pretty_location} at #{ApplicationController.helpers.strip_tags(ApplicationController.helpers.pretty_date(
-                                                                                                                                                     tracking_event.at, tracking_event.time_zone
-                                                                                                                                                   ))}"
-        }
+            tracking_event.at, tracking_event.time_zone
+          ))}"
+        },
       )
     end
 
