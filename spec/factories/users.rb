@@ -146,6 +146,10 @@ FactoryBot.define do
       end
     end
 
+    factory :customer_user do
+      association :companyable, factory: :broker_customer
+    end
+
     #    factory :dispatch_user do
     #      after(:build) do |record|
     #        record.roles << Role.find_or_create_by!(name: 'dispatch')

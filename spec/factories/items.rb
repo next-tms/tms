@@ -35,16 +35,19 @@
 #
 FactoryBot.define do
   factory :item do
-    l { 1 }
-    w { 1 }
-    h { 1 }
-    nmfc { 1 }
-    hazmat { false }
-    refrigerated { false }
-    desc { 'MyString' }
-    packaging { create(:packaging) }
-    weight { 1 }
-    quantity { 1 }
-    forced_class { 1.5 }
+    association :packaging
+
+    declared_freight_class { [nil, Item::FREIGHT_CLASSES.sample].sample }
+    desc { Faker::Lorem.words.map(&:upcase_first).join(' ') }
+    hazmat { [true, false].sample }
+    nmfc { [nil, rand(1000..9999)].sample }
+    quantity { rand(1..5) }
+    refrigerated { [true, false].sample }
+
+    l { rand(1..99) }
+    w { rand(1..99) }
+    h { rand(1..99) }
+
+    weight { rand(1..99) }
   end
 end

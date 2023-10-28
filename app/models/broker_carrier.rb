@@ -83,6 +83,7 @@ class BrokerCarrier < ApplicationRecord
 
   belongs_to :check_mailing_address, class_name: 'Address', optional: true
 
+  delegate :acts_as_broker?, to: :carrier
   delegate :scac, to: :carrier
 
   has_many :overlength_rules

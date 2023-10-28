@@ -42,8 +42,8 @@
             <th>Transit</th>
           </tr>
         </thead>
-        <tbody id="rates_<%= @use_forced_freight_classes %>" data-rates-target="ratesContainer" data-shipment-id="<%= @shipment.id %>">
-          <% existing_rates = instance_variable_get("@rates_forced_freight_#{@use_forced_freight_classes}") %>
+        <tbody id="rates_<%= @declared_freight_classes %>" data-rates-target="ratesContainer" data-shipment-id="<%= @shipment.id %>">
+          <% existing_rates = instance_variable_get("@rates_declared_freight_classes_#{@declared_freight_classes}") %>
           <%= render "rates_service/rates", rates: existing_rates, shipment: @shipment if existing_rates.present? %>
         </tbody>
         </tbody>

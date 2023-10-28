@@ -196,7 +196,7 @@ class Shipment < ApplicationRecord
   include Shipment::Fingerprintable
   include Shipment::HasPaymentTransactions
   include Shipment::HasReceivables
-  include Shipment::FreightKitable
+  include Shipment::Transponible
 
   include Discussable
   include Problematic
@@ -425,7 +425,7 @@ class Shipment < ApplicationRecord
   end
 
   def calculated_freight_classes?
-    return applied_rate.with_calculated_freight_classes? if applied_rate.present?
+    return !applied_rate.declared_freight_classes? if applied_rate.present?
 
     return broker_customer.always_show_quotes_based_on_calculated_classes? if broker_customer.present?
 
@@ -458,8 +458,9 @@ class Shipment < ApplicationRecord
     false
   end
 
-  def eligible_broker_carriers(user_type: :customer)
-    broker_customer&.eligible_broker_carriers(user_type:) || BrokerCarrier.where(broker_customer: nil)
+  # @return [BrokerCarrier::ActiveRecord_Relation]
+  def eligible_broker_carriers(user_type = :customer)
+    broker_customer&.eligible_broker_carriers(user_type) || BrokerCarrier.where(broker_customer: nil)
   end
 
   def eligible_discussable_contacts
@@ -675,16 +676,16 @@ class Shipment < ApplicationRecord
     @suggested_broker_accessorials
   end
 
-  def freight_classes(use_forced_freight_class:)
-    items.inject([]) { |arr, item| arr << item.api_freight_class(use_forced_freight_class:) }
+  def freight_classes(use_declared_freight_class:)
+    items.inject([]) { |arr, item| arr << item.api_freight_class(use_declared_freight_class:) }
   end
 
   def calculated_freight_classes
-    @calculated_freight_classes ||= freight_classes(use_forced_freight_class: false)
+    @calculated_freight_classes ||= freight_classes(use_declared_freight_class: false)
   end
 
-  def forced_freight_classes
-    @forced_freight_classes ||= freight_classes(use_forced_freight_class: true)
+  def declared_freight_classes
+    @declared_freight_classes ||= freight_classes(use_declared_freight_class: true)
   end
 
   def incomplete?
@@ -768,12 +769,13 @@ class Shipment < ApplicationRecord
     load_id.to_s
   end
 
-  def valid_broker_carriers_for_quotation(user_type: :customer)
+  # @return [BrokerCarrier::ActiveRecord_Relation]
+  def valid_broker_carriers_for_quotation(user_type = :customer)
     broker_carrier_ids = []
     broker_carrier_ids += if broker_customer.blank?
                             broker.broker_carriers.blanket.api_configured.ids
                           else
-                            broker_customer.eligible_broker_carriers(user_type: user_type).api_configured.ids
+                            broker_customer.eligible_broker_carriers(user_type).api_configured.ids
                           end
 
     broker_carrier_ids += if broker_customer.blank?
@@ -782,7 +784,7 @@ class Shipment < ApplicationRecord
                             .pluck(:broker_carrier_id)
                           else
                             PricingRule
-                            .where(broker_carrier: broker_customer.eligible_broker_carriers(user_type: user_type))
+                            .where(broker_carrier: broker_customer.eligible_broker_carriers(user_type))
                             .pluck(:broker_carrier_id)
                           end
 

@@ -175,7 +175,7 @@
               <% end %>
               <%= number_with_delimiter item.weight %> <% if item.quantity > 1 %>total<% end %>
             </td>
-            <td><%= item.calculated_freight_class || item.forced_freight_class %></td>
+            <td><%= item.calculated_freight_class || item.declared_freight_class %></td>
             <td><%= item.nmfc %></td>
             <td><%= item.cubic_ft rounded: true %></td>
             <td><%= item.density rounded: true %></td>

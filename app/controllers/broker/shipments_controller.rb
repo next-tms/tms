@@ -19,7 +19,6 @@ class Broker::ShipmentsController < Broker::BrokerController
                         pickup_modal
                         pricing
                         quote
-                        rate_uid
                         send_document
                         send_document_with_contact_mailer
                         show
@@ -42,19 +41,18 @@ class Broker::ShipmentsController < Broker::BrokerController
                       ]
 
   def book
-    redirect_to_edit = @shipment.quote_only?
-
-    @shipment.update_columns(
+    @shipment.update!(
       booked_at: Time.current,
       quote_only: false,
       updated_by_id: current_user.id,
     )
 
-    if redirect_to_edit
-      redirect_to(edit_broker_shipment_path(@shipment)) && return
-    else
-      redirect_to([:broker, @shipment])
+    if @shipment.quote_only?
+      redirect_to(edit_broker_shipment_path(@shipment))
+      return
     end
+
+    redirect_to([:broker, @shipment])
   end
 
   def book_modal
@@ -133,7 +131,6 @@ class Broker::ShipmentsController < Broker::BrokerController
     @broker_customers = current_user.broker_customers.includes(:customer).order('customers.name')
 
     Shipment.transaction do
-      broker_customer = shipment_params[:broker_customer_id].blank? ? nil : BrokerCustomer.find(shipment_params[:broker_customer_id])
       @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
       @shipment.lock! # Avoid Race Condition
 
@@ -145,24 +142,35 @@ class Broker::ShipmentsController < Broker::BrokerController
       @shipment.updated_by = current_user
 
       if shipment_params[:accessorials_has_been_suggested].blank?
-        @shipment.shipper_address.find_or_build_standardized_address unless @shipment.shipper_address.standardized_address_id
-        @shipment.receiver_address.find_or_build_standardized_address unless @shipment.receiver_address.standardized_address_id
+        if @shipment.shipper_address.standardized_address.blank?
+          @shipment.shipper_address.find_or_build_standardized_address
+        end
+
+        if @shipment.receiver_address.standardized_address.blank?
+          @shipment.receiver_address.find_or_build_standardized_address
+        end
 
         @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
-        render(:new) && return if @accessorials_has_been_suggested
-      end
 
-      if @shipment.save
-        @shipment.refresh_documents!
-
-        if @shipment.quote_only?
-          redirect_to(quote_broker_shipment_path(@shipment))
-        else
-          redirect_to([:broker, @shipment])
+        if @accessorials_has_been_suggested
+          render(:new)
+          return
         end
-      else
-        render(:new)
       end
+
+      unless @shipment.save
+        render(:new)
+        return
+      end
+
+      @shipment.refresh_documents!
+
+      if @shipment.quote_only?
+        redirect_to(quote_broker_shipment_path(@shipment))
+        return
+      end
+
+      redirect_to([:broker, @shipment])
     end
   end
 
@@ -248,12 +256,19 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def destroy
-    unless current_user.sales_rep_for?(@shipment.broker_customer) || current_user.role?(:sales_rep_for_all_broker_customers)
+    unless current_user.sales_rep_for?(@shipment.broker_customer) ||
+           current_user.role?(:sales_rep_for_all_broker_customers)
       unauthorized
     end
+
     if current_user.broker == @shipment.broker
-      @shipment.destroy
-      flash[:notice] = 'Shipment deleted'
+      if @shipment.destroy
+        flash[:notice] = 'Shipment deleted'
+      else
+        flash[:danger] = 'Error deleting shipment'
+        redirect_back(fallback_location: shipment_path(@shipment))
+        return
+      end
     else
       flash[:danger] = '403 Unauthorized'
     end
@@ -578,13 +593,19 @@ class Broker::ShipmentsController < Broker::BrokerController
   def delivery; end
 
   def quote
-    Shipment::ResetRatesService.new(shipment: @shipment, force_reset: params[:force].present?).call
-    @shipment.rates.where.not(error_object: nil).destroy_all
+    Shipment::ResetRatesService.call(@shipment, force_reset: params[:force].present?)
+    @shipment.rates.errored.destroy_all
 
-    service = Shipment::FetchAndCreateRatesService.new(shipment: @shipment, user_id: current_user.id).call
-    @use_forced_freight_classes = service.use_forced_freight_classes
-    @rates_forced_freight_false = service.rates_forced_freight_false
-    @rates_forced_freight_true = service.rates_forced_freight_true
+    service = Shipment::FetchAndCreateRatesService
+              .call(
+                @shipment,
+                user_type: current_user.type,
+                shipment_fingerprint: @shipment.fingerprint,
+              )
+
+    @declared_freight_classes = service.declared_freight_classes
+    @rates_declared_freight_classes_false = service.rates_declared_freight_classes_false
+    @rates_declared_freight_classes_true = service.rates_declared_freight_classes_true
     @populate_rate_jobs_on_queue = service.populate_rate_jobs_on_queue
   end
 
@@ -607,7 +628,6 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment = Shipment.find_by(load_id: params[:load_id])
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
   def tracking_event_params
     params.require(:tracking_event).permit(
       :id,
@@ -697,7 +717,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                           w
                           h
                           nmfc
-                          forced_class
+                          declared_freight_class
                           hazmat
                           refrigerated
                           desc

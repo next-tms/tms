@@ -9,17 +9,18 @@ class Customer::ShipmentsController < Customer::CustomerController
   def book
     redirect_to_edit = @shipment.quote_only?
 
-    @shipment.update_columns(
+    @shipment.update!(
       booked_at: Time.current,
       quote_only: false,
       updated_by_id: current_user.id,
     )
 
     if redirect_to_edit
-      redirect_to(edit_customer_shipment_path(@shipment)) && return
-    else
-      redirect_to([:customer, @shipment])
+      redirect_to(edit_customer_shipment_path(@shipment))
+      return
     end
+
+    redirect_to([:customer, @shipment])
   end
 
   def unbook
@@ -35,7 +36,8 @@ class Customer::ShipmentsController < Customer::CustomerController
   def documents; end
 
   def index
-    @pagy, @shipments = pagy(current_user.companyable.shipments.active.includes(default_includes).order(created_at: :desc))
+    shipments = current_user.companyable.shipments.active.includes(default_includes).order(created_at: :desc)
+    @pagy, @shipments = pagy(shipments)
   end
 
   def new
@@ -51,9 +53,9 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.shipper_contact_name = "#{current_user.first_name} #{current_user.last_name}"
     @shipment.shipper_name = current_user.companyable.customer.name
 
-    if current_user.companyable.primary_pickup_address.present?
-      @shipment.shipper_address = current_user.companyable.primary_pickup_address.dup
-    end
+    return if current_user.companyable.primary_pickup_address.blank?
+
+    @shipment.shipper_address = current_user.companyable.primary_pickup_address.dup
   end
 
   def new_quote_only
@@ -70,7 +72,8 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def booked
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: [current_user.companyable]).active.booked.order(:booked_at))
+    shipments = Shipment.where(broker_customer: [current_user.companyable]).active.booked.order(:booked_at)
+    @pagy, @shipments = pagy(shipments)
   end
 
   def create
@@ -89,21 +92,26 @@ class Customer::ShipmentsController < Customer::CustomerController
       render(:new) && return if @accessorials_has_been_suggested
     end
 
-    if @shipment.save
-      @shipment.refresh_documents!
-
-      redirect_to(quote_customer_shipment_path(@shipment)) && return if current_user.companyable.can_quote?
-
-      redirect_to([:customer, @shipment]) && return
-    else
+    unless @shipment.save
       render(:new)
+      return
     end
+
+    @shipment.refresh_documents!
+
+    redirect_to(quote_customer_shipment_path(@shipment)) && return if current_user.companyable.can_quote?
+
+    redirect_to([:customer, @shipment]) && return
   end
 
   def delivered
-    @pagy, @shipments = pagy(
-      Shipment.where(broker_customer: current_user.companyable).active.delivered.includes(default_includes).order(delivered_at: :desc),
-    )
+    shipments = Shipment
+                .where(broker_customer: current_user.companyable)
+                .active
+                .delivered
+                .includes(default_includes)
+                .order(delivered_at: :desc)
+    @pagy, @shipments = pagy(shipments)
   end
 
   def edit; end
@@ -115,9 +123,12 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.updated_by = current_user
 
     if shipment_params[:applied_rate_uid].present?
-      @shipment.carrier_charge = current_user.companyable.carrier_charge_calculator(
-        carrier_cost: @shipment.carrier_cost, shipment: @shipment,
-      )
+      carrier_charge = current_user
+                       .companyable
+                       .carrier_charge_calculator(
+                         carrier_cost: @shipment.carrier_cost, shipment: @shipment,
+                       )
+      @shipment.carrier_charge = carrier_charge
     end
 
     respond_to do |format|
@@ -137,13 +148,19 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def pending_delivery
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.companyable).active.pending_delivery.order(:picked_up_at))
+    shipments = Shipment.where(broker_customer: current_user.companyable).active.pending_delivery.order(:picked_up_at)
+    @pagy, @shipments = pagy(shipments)
   end
 
   def pending_dispatch
-    @pagy, @shipments = pagy(
-      Shipment.where(broker_customer: current_user.companyable).active.pending_dispatch.includes(default_includes).order(:created_at),
-    )
+    shipments = Shipment
+                .where(broker_customer: current_user.companyable)
+                .active
+                .pending_dispatch
+                .includes(default_includes)
+                .order(:created_at)
+
+    @pagy, @shipments = pagy(shipments)
   end
 
   def pending_pickup
@@ -174,19 +191,38 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def pending_quotation
-    @pagy, @shipments = pagy(Shipment.where(broker_customer: current_user.companyable).active.pending_quotation.or(Shipment.where(broker_customer: current_user.companyable).canceled_recently).distinct.order(:created_at))
+    shipments = current_user
+                .companyable
+                .shipments
+                .active
+                .pending_quotation
+                .or(
+                  current_user
+                  .companyable
+                  .shipments
+                  .canceled_recently,
+                )
+                .distinct
+                .order(:created_at)
+    @pagy, @shipments = pagy(shipments)
   end
 
   def quote
-    authorize! @shipment, to: :show?
+    authorize!(@shipment, to: :show?)
 
-    Shipment::ResetRatesService.new(shipment: @shipment, force_reset: params[:force].present?).call
+    Shipment::ResetShipment::RatesService.new(shipment: @shipment, force_reset: params[:force].present?).call
     @shipment.rates.where.not(error_object: nil).destroy_all
 
-    service = Shipment::FetchAndCreateRatesService.new(shipment: @shipment, user_id: current_user.id, user_type: :customer).call
-    @use_forced_freight_classes = service.use_forced_freight_classes.first
-    @rates_forced_freight_false = service.rates_forced_freight_false
-    @rates_forced_freight_true = service.rates_forced_freight_true
+    service = Shipment::FetchAndCreateRatesService
+              .call(
+                @shipment,
+                user_type: current_user.type,
+                shipment_fingerprint: @shipment.fingerprint,
+              )
+
+    @declared_freight_classes = service.declared_freight_classes.first
+    @rates_declared_freight_classes_false = service.rates_declared_freight_classes_false
+    @rates_declared_freight_classes_true = service.rates_declared_freight_classes_true
     @populate_rate_jobs_on_queue = service.populate_rate_jobs_on_queue
   end
 
@@ -210,7 +246,6 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment = Shipment.find_by(load_id: params[:load_id])
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
   def shipment_params
     params.require(:shipment).permit(
       :id,
@@ -290,7 +325,7 @@ class Customer::ShipmentsController < Customer::CustomerController
                           w
                           h
                           nmfc
-                          forced_class
+                          declared_freight_class
                           hazmat
                           refrigerated
                           desc

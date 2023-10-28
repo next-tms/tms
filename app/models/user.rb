@@ -226,7 +226,7 @@ class User < ApplicationRecord
   end
 
   def coworkers
-    return nil unless broker?
+    return unless broker?
 
     return companyable.users if role?(:root)
 
@@ -254,6 +254,14 @@ class User < ApplicationRecord
 
   def sales_rep_only?
     roles == %i[sales_rep]
+  end
+
+  def type
+    return if companyable.blank?
+
+    return :broker if broker?
+
+    :customer if customer?
   end
 
   def enable_notifications

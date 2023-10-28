@@ -8,7 +8,7 @@
 #   @return []
 # @!attribute desc
 #   @return [String]
-# @!attribute forced_class
+# @!attribute declared_freight_class
 #   @return [Float]
 # @!attribute h
 #   @return [Integer]
@@ -34,6 +34,8 @@
 #   @return [Integer]
 #
 class Item < ApplicationRecord
+  FREIGHT_CLASSES = [55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400]
+
   scope :packaging, lambda { |packaging|
     where(packaging: packaging)
   }
@@ -103,11 +105,12 @@ class Item < ApplicationRecord
   end
 
   def sanitized_freight_class(freight_class)
-    return unless freight_class
+    return unless freight_class.present?
 
-    valid_classes = [55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400]
-    if valid_classes.include?(freight_class)
-      return freight_class.to_i == freight_class ? freight_class.to_i : freight_class
+    if FREIGHT_CLASSES.include?(freight_class)
+      return freight_class.to_i if freight_class.to_i == freight_class
+
+      return freight_class
     end
 
     nil
@@ -139,27 +142,27 @@ class Item < ApplicationRecord
     sanitized_freight_class(density_to_freight_class(density(rounded: false)))
   end
 
-  def forced_freight_class
-    sanitized_freight_class(forced_class)
+  def declared_freight_class
+    sanitized_freight_class(super)
   end
 
   def display_freight_class
-    if forced_class.blank?
+    if declared_freight_class.blank?
       calculated_freight_class
     else
-      sanitized_freight_class(forced_class)
+      sanitized_freight_class(declared_freight_class)
     end
   end
 
-  def api_freight_class(use_forced_freight_class:)
-    if use_forced_freight_class
-      (forced_freight_class.presence || calculated_freight_class)
+  def api_freight_class(use_declared_freight_class:)
+    if use_declared_freight_class
+      (declared_freight_class.presence || calculated_freight_class)
     else
-      (calculated_freight_class.presence || forced_freight_class)
+      (calculated_freight_class.presence || declared_freight_class)
     end
   end
 
-  def as_freight_kit_package(use_forced_freight_class:)
+  def as_freight_kit_package(use_declared_freight_class:)
     FreightKit::Package.new(
       weight * 16,
       {
@@ -168,7 +171,7 @@ class Item < ApplicationRecord
         height: h
       },
       packaging.freight_kit_type&.to_sym,
-      declared_freight_class: api_freight_class(use_forced_freight_class: use_forced_freight_class),
+      declared_freight_class: api_freight_class(use_declared_freight_class: use_declared_freight_class),
       description: desc,
       hazmat: hazmat?,
       nmfc: nmfc.presence,
@@ -177,22 +180,34 @@ class Item < ApplicationRecord
     )
   end
 
-  def as_graphql_input(use_forced_freight_classes:)
+  def as_graphql_input(declared_freight_classes:)
     {
-      totalGramsOrOunces: weight * 16,
       dimensions: {
-        length: l,
-        width: w,
-        height: h
+        length: {
+          amount: l,
+          unit: 'in'
+        },
+        width: {
+          amount: w,
+          unit: 'in'
+        },
+        height: {
+          amount: h,
+          unit: 'in'
+        }
       },
-      packagingType: packaging.freight_kit_type&.to_sym,
+      packaging: packaging.freight_kit_type&.to_sym,
       options: {
-        declaredFreightClass: api_freight_class(use_forced_freight_class: use_forced_freight_classes),
+        declaredFreightClass: api_freight_class(use_declared_freight_class: declared_freight_classes),
         description: desc,
         hazmat: hazmat?,
         nmfc: nmfc.presence,
         quantity: quantity,
         units: :imperial
+      },
+      weight: {
+        amount: weight,
+        unit: 'lb'
       }
     }
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_24_030549) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_04_203435) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -433,7 +433,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_24_030549) do
     t.integer "packaging_id"
     t.integer "weight"
     t.integer "quantity"
-    t.float "forced_class"
+    t.float "declared_freight_class"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -551,6 +551,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_24_030549) do
     t.text "error_object"
     t.text "api_request"
     t.text "api_response"
+    t.jsonb "api_errors", default: "[]", null: false
     t.index ["dispatcher_id"], name: "index_pickups_on_dispatcher_id"
     t.index ["rate_id"], name: "index_pickups_on_rate_id"
     t.index ["shipment_id"], name: "index_pickups_on_shipment_id"
@@ -622,7 +623,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_24_030549) do
     t.text "api_request"
     t.text "api_response"
     t.integer "transit_days"
-    t.boolean "with_calculated_freight_classes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "incomplete"
@@ -632,6 +632,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_24_030549) do
     t.string "error_object"
     t.json "breakdown"
     t.string "source"
+    t.boolean "declared_freight_classes", null: false
+    t.jsonb "api_errors", default: "[]", null: false
     t.index ["broker_carrier_id"], name: "index_rates_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_rates_on_broker_customer_id"
     t.index ["freight_kit_service_type"], name: "index_rates_on_freight_kit_service_type"

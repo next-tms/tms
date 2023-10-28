@@ -34,7 +34,7 @@
 #   @return [Integer]
 # @!attribute uid
 #   @return [String]
-# @!attribute with_calculated_freight_classes
+# @!attribute declared_freight_classes
 #   @return [Boolean]
 # @!attribute created_at
 #   @return [Time]
@@ -66,24 +66,24 @@
 #
 FactoryBot.define do
   factory :rate do
-    broker_carrier { create(:broker_carrier) }
-    tracking_carrier_id { create(:carrier) }
-    broker_customer { create(:broker_customer) }
-    shipment { create(:shipment) }
-    cost_cents { 1 }
-    cost_currency { 'MyString' }
-    expires_at { '2023-04-05 23:21:03' }
-    reference { 'MyString' }
     api_request { 'MyText' }
     api_response { 'MyText' }
-    transit_days { 1 }
-    with_calculated_freight_classes { false }
-    incomplete { false }
-    shipment_fingerprint { 'MyString' }
-    uid { 'MyString' }
-    freight_kit_service_type { 'MyString' }
-    error_object { 'MyString' }
     breakdown { '' }
+    broker_carrier { create(:broker_carrier) }
+    broker_customer { create(:broker_customer) }
+    cost_cents { 1 }
+    cost_currency { 'MyString' }
+    declared_freight_classes { [true, false].sample }
+    error_object { 'MyString' }
+    expires_at { '2023-04-05 23:21:03' }
+    freight_kit_service_type { 'MyString' }
+    incomplete { false }
+    reference { 'MyString' }
+    shipment { create(:shipment) }
+    shipment_fingerprint { 'MyString' }
     source { 'api' }
+    tracking_carrier_id { create(:carrier) }
+    transit_days { 1 }
+    uid { 'MyString' }
   end
 end

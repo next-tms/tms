@@ -152,4 +152,26 @@ RSpec.describe(User, type: :model) do
       it { expect(user).to(be_dispatcher_for(shipment)) }
     end
   end
+
+  describe '#type' do
+    let(:record) { build(:user) }
+
+    it { expect(record.type).to(eq(nil)) }
+
+    context 'when companyable is a Broker' do
+      let(:broker) { create(:broker) }
+
+      before { record.companyable = broker }
+
+      it { expect(record.type).to(eq(:broker)) }
+    end
+
+    context 'when companyable is a BrokerCustomer' do
+      let(:broker_customer) { create(:broker_customer) }
+
+      before { record.companyable = broker_customer }
+
+      it { expect(record.type).to(eq(:customer)) }
+    end
+  end
 end

@@ -34,7 +34,7 @@
 #   @return [Integer]
 # @!attribute uid
 #   @return [String]
-# @!attribute with_calculated_freight_classes
+# @!attribute declared_freight_classes
 #   @return [Boolean]
 # @!attribute created_at
 #   @return [Time]

@@ -143,7 +143,7 @@ class Receivable < ApplicationRecord
           #{item.packaging.name}
           #{item.desc}
           #{dimensions}
-          #{item.forced_freight_class.presence || item.calculated_freight_class}
+          #{item.declared_freight_class.presence || item.calculated_freight_class}
           #{ActionController::Base.helpers.number_with_delimiter(item.weight)} lbs
         DESC
       end.join("\n"),

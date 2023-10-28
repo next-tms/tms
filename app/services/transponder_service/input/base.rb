@@ -1,0 +1,27 @@
+# frozen_string_literal: true
+
+module TransponderService
+  module Input
+    class Base
+      class << self
+        def call(object, **kwargs)
+          new(object, **kwargs).call
+        end
+      end
+
+      attr_reader :object, :options
+
+      def initialize(object, **kwargs)
+        @object = object
+      end
+
+      def build
+        raise NotImplementedError
+      end
+
+      def call
+        build.compact.deep_transform_keys { |key| key.to_s.camelize(:lower) }
+      end
+    end
+  end
+end

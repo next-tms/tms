@@ -152,13 +152,15 @@ class Address < ApplicationRecord
     )
   end
 
-  def as_graphql_input
+  def to_transponder_graphql_input
     {
       address1: street,
       city:,
-      countryCode: country.alpha2_code,
+      country: {
+        alpha3: country.alpha3_code
+      },
       postalCode: zip_code,
-      province: region.abbreviation
+      regionAbbreviation: region.abbreviation
     }
   end
 

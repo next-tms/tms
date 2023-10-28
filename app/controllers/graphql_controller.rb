@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-class GraphqlController < ActionController::API
+class GraphQLController < ActionController::API
   # If accessing from outside this domain, nullify the session
   # This allows for outside API access while preventing CSRF attacks,
   # but you'll have to authenticate your user separately
   # protect_from_forgery with: :null_session
-  include GraphqlAuthentication
+  include GraphQLAuthentication
 
   def execute
     variables = prepare_variables(params[:variables])
@@ -16,7 +16,7 @@ class GraphqlController < ActionController::API
       session:
     }
     result = LiftoffSchema.execute(query, variables:, context:, operation_name:)
-    render json: result
+    render(json: result)
   rescue StandardError => e
     raise e unless Rails.env.development?
 
@@ -46,9 +46,9 @@ class GraphqlController < ActionController::API
   end
 
   def handle_error_in_development(e)
-    logger.error e.message
-    logger.error e.backtrace.join("\n")
+    logger.error(e.message)
+    logger.error(e.backtrace.join("\n"))
 
-    render json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: 500
+    render(json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: :internal_server_error)
   end
 end

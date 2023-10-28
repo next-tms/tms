@@ -32,8 +32,8 @@ module ApplicationHelper
     end
 
     unless time_zone.is_a?(ActiveSupport::TimeZone)
-      raise ArgumentError,
-            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+      message = "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+      raise ArgumentError, message
     end
 
     formatted_offset = time_zone.formatted_offset
@@ -84,23 +84,21 @@ module ApplicationHelper
     return if date.blank? || time_zone.blank?
 
     unless time_zone.is_a?(ActiveSupport::TimeZone)
-      raise ArgumentError,
-            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+      message = "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+      raise ArgumentError, message
     end
 
-    if date.instance_of?(ActiveSupport::TimeWithZone)
-      if date.year == Time.current.year
-        date.in_time_zone(time_zone.name).strftime("%m/%d %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>").html_safe
-      else
-        date.in_time_zone(time_zone.name).strftime("%m/%d/%y %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>").html_safe
-      end
-    elsif date.instance_of?(Date)
-      if date.year == Time.current.year
-        date.in_time_zone(time_zone.name).strftime("%m/%d %a <small>#{time_zone.tzinfo.abbr}</small>").html_safe
-      else
-        date.in_time_zone(time_zone.name).strftime("%m/%d/%y <small>#{time_zone.tzinfo.abbr}</small>").html_safe
-      end
+    if date.year == Time.current.year
+      return date
+             .in_time_zone(time_zone.name)
+             .strftime("%m/%d %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>")
+             .html_safe
     end
+
+    date
+    .in_time_zone(time_zone.name)
+    .strftime("%m/%d/%y %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>")
+    .html_safe
   end
 
   def short_date(date, time_zone)
@@ -144,30 +142,46 @@ module ApplicationHelper
     pluralize(number_with_delimiter(count), singular, plural)
   end
 
-  def pretty_api_error(error)
-    return 'Unknown error' if error.blank?
+  def pretty_api_error(rate)
+    return 'Unknown error' if rate.error_object.blank? && rate.api_errors.empty?
 
-    if error.class.name.to_s.deconstantize == 'FreightKit'
-      case error.class.name.split('::').last
-      when 'ExpiredCredentialsError'
-        'Your username and/or password is expired'
-      when 'InvalidCredentialsError'
-        'Your username and/or password is incorrect'
+    if rate.api_errors.any?
+      messages = rate.api_errors.map { |error| error['message'] }.compact
+      return 'Unknown error' if messages.empty?
+
+      return messages.join(', ')
+    end
+
+    error = rate.error_object
+
+    begin
+      error = error.constantize
+    rescue
+      return error if error.is_a?(String)
+    end
+
+    klass = error.class.name.to_s
+    klass = error.to_s if error.class.name.to_s == 'Class'
+
+    if ['FreightKit', 'Interstellar'].include?(klass.deconstantize)
+      case klass.split('::').last
+      when 'ExpiredCredentialsError' then return 'Your username and/or password is expired'
+      when 'InvalidCredentialsError' then return 'Your username and/or password is incorrect'
       when 'UnserviceableAccessorialsError'
         accessorial_names = Accessorial
                             .where(freight_kit_code: error.accessorials)
                             .pluck(:name)
                             .map(&:downcase)
 
-        "Unable to service #{accessorial_names.join(", ")}"
+        return "Unable to service #{accessorial_names.join(", ")}"
       when 'UnserviceableError'
-        error.message.blank? ? 'Carrier unable to accept this shipment' : clean_sentence(error.message)
-      else
-        error.message
+        return 'Carrier unable to accept this shipment' if error.message.blank?
+
+        return clean_sentence(error.message)
       end
-    else
-      error.message
     end
+
+    error.message
   end
 
   def clean_sentence(str)

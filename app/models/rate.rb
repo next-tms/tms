@@ -34,7 +34,7 @@
 #   @return [Integer]
 # @!attribute uid
 #   @return [String]
-# @!attribute with_calculated_freight_classes
+# @!attribute declared_freight_classes
 #   @return [Boolean]
 # @!attribute created_at
 #   @return [Time]
@@ -65,43 +65,29 @@
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
 #
 class Rate < ApplicationRecord
+  include HasAPI
+
   enum source: { api: 'api', pricing_rule: 'pricing_rule' }
 
-  scope :with_calculated_freight_classes, -> { where(with_calculated_freight_classes: true) }
-  scope :with_forced_freight_classes, -> { where(with_calculated_freight_classes: false) }
-  scope :with_error, -> { where.not(error: nil).where.not(error: '') }
-  scope :without_error, -> { where.not(id: with_error) }
-
-  before_save :maybe_set_expires_at
-  before_save :set_incomplete
-  before_save :set_shipment_fingerprint
-  before_save :set_uid
-
-  has_one :pickup, required: false
+  before_save :set_expires_at, if: -> { new_record? }
+  before_save :set_incomplete, if: -> { new_record? }
+  before_save :set_shipment_fingerprint, if: -> { new_record? }
+  before_save :set_uid, if: -> { new_record? }
 
   belongs_to :broker_carrier
-  validates :broker_carrier, presence: true
-
   belongs_to :broker_customer, optional: true
-
-  monetize :cost_cents
-
   belongs_to :shipment
   belongs_to :tracking_carrier, class_name: 'Carrier', optional: true
 
+  has_many :pickups, dependent: :restrict_with_exception
   has_many :rate_accessorials, dependent: :destroy
+
   has_many :accessorials, through: :rate_accessorials
 
-  scope :by_shipment_and_broker_carrier, ->(shipment, broker_carrier, use_forced_freight_classes) {
-    where(
-      broker_carrier: broker_carrier,
-      shipment_fingerprint: shipment.fingerprint,
-      shipment: shipment,
-      with_calculated_freight_classes: !use_forced_freight_classes,
-    )
-  }
+  monetize :cost_cents
 
-  serialize :error_object
+  scope :calculated_freight_classes, -> { where(declared_freight_classes: false) }
+  scope :declared_freight_classes, -> { where(declared_freight_classes: true) }
 
   def applied?
     shipment.applied_rate == self
@@ -111,17 +97,9 @@ class Rate < ApplicationRecord
   def carrier
     return if broker_carrier.blank?
 
-    if broker_carrier.carrier.acts_as_broker?
-      tracking_carrier
-    else
-      broker_carrier
-    end
-  end
+    return tracking_carrier if broker_carrier.carrier.acts_as_broker?
 
-  def pretty_service_type
-    return '' if freight_kit_service_type.blank?
-
-    "#{freight_kit_service_type.sub("_", " ").titleize.sub("Am", "AM").sub("Pm", "PM")} LTL"
+    broker_carrier
   end
 
   def preferred?
@@ -130,14 +108,20 @@ class Rate < ApplicationRecord
     shipment.broker_customer.eligible_broker_carriers(user_type: :customer).include?(broker_carrier)
   end
 
+  def pretty_service_type
+    return '' if freight_kit_service_type.blank?
+
+    "#{freight_kit_service_type.sub("_", " ").titleize.sub("Am", "AM").sub("Pm", "PM")} LTL"
+  end
+
   def to_param
     uid.to_s
   end
 
   private
 
-  def maybe_set_expires_at
-    self.expires_at = Time.current + 14.days if expires_at.blank?
+  def set_expires_at
+    self.expires_at ||= Time.current + 14.days
   end
 
   def set_incomplete

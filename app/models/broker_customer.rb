@@ -163,7 +163,7 @@ class BrokerCustomer < ApplicationRecord
   end
 
   # @return [BrokerCarrier::ActiveRecord_Relation]
-  def eligible_broker_carriers(user_type: :customer)
+  def eligible_broker_carriers(user_type = :customer)
     scope = BrokerCarrier.where(broker_customer: [nil, self])
 
     # @note Always prefer customer-sepcific accounts

@@ -1,7 +1,7 @@
 <% unless @rates.blank? %>
-  <%= turbo_stream.append "rates_#{!@rates.first.with_calculated_freight_classes?}" do %>
+  <%= turbo_stream.append "rates_#{@rates.first.declared_freight_classes?}" do %>
     <% @rates.each do |rate| %>
-      <% if rate.error_object.present? %>
+      <% if rate.errored? %>
         <% next if current_user.customer? %>
         <tr data-rate-id="<%= rate.id %>" class="table-warning">
           <td></td>
@@ -22,7 +22,7 @@
           </td>
           <td></td>
           <td data-sort="ZZZZ" colspan="5">
-            <%= pretty_api_error(rate.error_object) %>
+            <%= pretty_api_error(rate) %>
           </td>
         </tr>
         <% next %>

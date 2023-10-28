@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module GraphqlAuthentication
+module GraphQLAuthentication
   extend ActiveSupport::Concern
 
   InvalidCredentials = Class.new(StandardError)
@@ -10,13 +10,13 @@ module GraphqlAuthentication
   end
 
   def authenticate!
-    return if params[:operationName] == "IntrospectionQuery"
+    return if params[:operationName] == 'IntrospectionQuery'
     return if params[:query].include?('authenticate')
 
-    @jwt_error, @current_user = decode_jwt(token: request.headers["Authorization"])
+    @jwt_error, @current_user = decode_jwt(token: request.headers['Authorization'])
 
     render_unauthorized_error_response(@jwt_error) and return if @jwt_error
-    render_unauthorized_error_response("Not Authorized") and return unless @current_user
+    render_unauthorized_error_response('Not Authorized') and return unless @current_user
   end
 
   def decode_jwt(token:)
@@ -25,13 +25,13 @@ module GraphqlAuthentication
     jwt = Regexp.last_match(1)
     decoded_jwt = ::JwtManagerService.decode(jwt: jwt)
     jwt_error = decoded_jwt.error_message
-    id = decoded_jwt.payload&.fetch("id", nil)
+    id = decoded_jwt.payload&.fetch('id', nil)
     user = User.find_by(id: id)
 
     [jwt_error, user]
   end
 
   def render_unauthorized_error_response(error)
-    render json: { error: error }, status: :unauthorized
+    render(json: { error: error }, status: :unauthorized)
   end
 end

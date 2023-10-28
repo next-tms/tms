@@ -317,7 +317,7 @@
               <% end %>
               <%= number_with_delimiter item.weight %> <% if item.quantity > 1 %>total<% end %>
             </td>
-            <td><%= item.forced_freight_class %></td>
+            <td><%= item.declared_freight_class %></td>
             <td><%= item.calculated_freight_class %></td>
             <td><%= item.nmfc %></td>
             <td><%= item.cubic_ft rounded: true %></td>
@@ -419,7 +419,7 @@ Destination
 
 <% unless @shipment.items.empty? %>
 <% @shipment.items.each do |item| %>
-<%= item.quantity %> <%= item.packaging.name %> <%= item.desc %> <% if item.l and item.w and item.h %><%= item.l %>x<%= item.w %>x<%= item.h %><% end %> <%= item.forced_freight_class ? item.forced_freight_class : item.calculated_freight_class %> <%= number_with_delimiter item.weight %> lbs
+<%= item.quantity %> <%= item.packaging.name %> <%= item.desc %> <% if item.l and item.w and item.h %><%= item.l %>x<%= item.w %>x<%= item.h %><% end %> <%= item.declared_freight_class ? item.declared_freight_class : item.calculated_freight_class %> <%= number_with_delimiter item.weight %> lbs
 <% end %>
 <% end %>
 </textarea>

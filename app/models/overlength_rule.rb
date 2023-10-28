@@ -28,5 +28,18 @@
 class OverlengthRule < ApplicationRecord
   belongs_to :broker_carrier
   monetize :cost_cents, allow_nil: false
-  validates_presence_of :min_length
+
+  validates :min_length, presence: true
+
+  # @return [Measured::Length]
+  def measured_max_length
+    return if max_length.blank?
+
+    Measured::Length.new(max_length, :inches)
+  end
+
+  # @return [Measured::Length, nil]
+  def measured_min_length
+    Measured::Length.new(min_length, :inches)
+  end
 end

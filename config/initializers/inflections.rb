@@ -21,6 +21,8 @@ ActiveSupport::Inflector.inflections do |inflect|
   inflect.acronym('API')
   inflect.acronym('BOL')
   inflect.acronym('BOLs')
+  inflect.acronym('GraphQL')
+  inflect.acronym('LTL')
   inflect.acronym('PDF')
   inflect.acronym('PO')
   inflect.acronym('POD')

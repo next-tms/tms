@@ -3,61 +3,74 @@
 require 'rails_helper'
 
 RSpec.describe(Shipment::FetchAndCreateRatesService) do
-  let(:shipment) { create(:shipment) }
-  let(:user_type) { :broker }
-
-  shared_examples_for "fetch and create rates" do
+  shared_examples_for 'fetch and create rates' do
     context 'when shipment has existing rates for all broker carriers valid for quotation' do
       let(:broker_carrier) { create(:broker_carrier) }
-      let!(:rate) { create(:rate, shipment: shipment, broker_carrier: broker_carrier) }
+      let!(:rate) { create(:rate, shipment:, broker_carrier:) }
+
       before do
-        expect(shipment).to receive(:valid_broker_carriers_for_quotation)
-                        .with(user_type: user_type)
-                        .and_return([broker_carrier])
-        expect(Rate).to receive(:by_shipment_and_broker_carrier)
-                    .with(shipment, broker_carrier, false)
-                    .and_return(rate)
+        allow(Rate)
+        .to(
+          receive(:find_by)
+          .with(
+            broker_carrier:,
+            declared_freight_classes: false,
+            shipment_fingerprint:,
+            shipment: shipment,
+          )
+          .and_return(rate),
+        )
+
+        allow(shipment)
+        .to(
+          receive(:valid_broker_carriers_for_quotation)
+          .with(user_type)
+          .and_return([broker_carrier]),
+        )
       end
 
-      it 'returns rates and does not enqueued populate rates job' do
-        response = subject
-
-        expect(response.rates_forced_freight_false).to eq([rate])
-        expect(response.rates_forced_freight_true).to eq([])
-        expect(response.populate_rate_jobs_on_queue).to eq(false)
-      end
+      it { expect(subject.rates_declared_freight_classes_true).to(eq([])) }
+      it { expect(subject.rates_declared_freight_classes_false).to(eq([rate])) }
+      it { expect(subject.populate_rate_jobs_on_queue).to(eq(false)) }
     end
 
     context 'when shipment has existing rates and has no rates for other broker carriers' do
       let(:broker_carrier) { create(:broker_carrier) }
       let(:broker_carrier2) { create(:broker_carrier) }
       let!(:rate) do
-        create(:rate,
-              shipment: shipment,
-              broker_carrier: broker_carrier,
-              with_calculated_freight_classes: true,
-              shipment_fingerprint: shipment.fingerprint)
+        create(
+          :rate,
+          shipment: shipment,
+          broker_carrier: broker_carrier,
+          declared_freight_classes: false,
+          shipment_fingerprint: shipment.fingerprint,
+        )
       end
+
       before do
-        expect(shipment).to receive(:valid_broker_carriers_for_quotation)
-                        .with(user_type: user_type)
-                        .and_return([broker_carrier, broker_carrier2])
+        allow(shipment)
+        .to(
+          receive(:valid_broker_carriers_for_quotation)
+          .with(user_type)
+          .and_return([broker_carrier, broker_carrier2]),
+        )
       end
 
-      it 'returns rates and does not enqueued populate rates job' do
-        response = subject
-
-        expect(response.rates_forced_freight_false).to eq([rate])
-        expect(response.rates_forced_freight_true).to eq([])
-        expect(response.populate_rate_jobs_on_queue).to eq(true)
-      end
+      it { expect(subject.rates_declared_freight_classes_true).to(eq([])) }
+      it { expect(subject.rates_declared_freight_classes_false).to(eq([rate])) }
+      it { expect(subject.populate_rate_jobs_on_queue).to(eq(true)) }
     end
   end
-  
+
   describe '#call' do
-    subject { described_class.new(shipment:, user_id: 1, user_type:).call }
+    subject { described_class.new(shipment, shipment_fingerprint:, user_type:).call }
+
+    let(:shipment) { create(:shipment) }
+    let(:shipment_fingerprint) { shipment.fingerprint }
 
     context 'when user type is broker' do
+      let(:user_type) { :broker }
+
       it_behaves_like 'fetch and create rates'
     end
 

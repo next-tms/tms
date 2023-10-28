@@ -4,18 +4,24 @@ class RatesServiceController < ApplicationController
   # TODO: Deprecate After Regression Testing
   before_action :set_broker_carrier
   before_action :set_shipment
-  before_action :set_use_forced_freight_classes
+  before_action :set_declared_freight_classes
 
   def fetch
-    @rates = Rate.by_shipment_and_broker_carrier(@shipment, @broker_carrier, @use_forced_freight_classes)
+    @rates = Rate
+             .by_shipment_and_broker_carrier(
+               @shipment,
+               @shipment.fingerprint,
+               @broker_carrier,
+               @declared_freight_classes,
+             )
 
-    if @rates.blank?
-      fetch = RatesService
+    if @rates.empty?
+      fetch = Shipment::RatesService
               .new(
                 broker_carrier: @broker_carrier,
                 shipment: @shipment,
-                use_forced_freight_classes: @use_forced_freight_classes,
-                save_new_rates: true
+                declared_freight_classes: @declared_freight_classes,
+                save_new_rates: true,
               )
 
       @rates = fetch.to_rates
@@ -36,7 +42,7 @@ class RatesServiceController < ApplicationController
     @shipment = Shipment.find(params[:shipment_id])
   end
 
-  def set_use_forced_freight_classes
-    @use_forced_freight_classes = params[:use_forced_freight_classes] == 'true'
+  def set_declared_freight_classes
+    @declared_freight_classes = params[:declared_freight_classes] == 'true'
   end
 end

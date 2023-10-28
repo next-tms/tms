@@ -23,7 +23,7 @@
     <%= render 'layouts/message', classes: 'alert-warning', title: 'Partial quote', message: 'In order to ensure rates are accurate make the shipper’s name and street address, the receiver’s name and street address, and all freight dimensions and weights are completed.' %>
   <% end %>
 
-  <% if @use_forced_freight_classes == [false] %>
+  <% if @declared_freight_classes == [false] %>
     <div class="table-responsive">
       <table class="table table-borderless table-striped table-hover sortable">
         <thead>
@@ -41,17 +41,17 @@
           </tr>
         </thead>
         <tbody id="rates_false" data-rates-target="ratesContainer" data-shipment-id="<%= @shipment.id %>">
-          <%= render "rates_service/rates", rates: @rates_forced_freight_false, shipment: @shipment if @rates_forced_freight_false %>
+          <%= render "rates_service/rates", rates: @rates_declared_freight_classes_false, shipment: @shipment if @rates_declared_freight_classes_false %>
         </tbody>
       </table>
     </div>
   <% else %>
     <div class="row">
-      <% @use_forced_freight_classes.each do |use_forced_freight_classes| %>
+      <% @declared_freight_classes.each do |declared_freight_classes| %>
         <div class="col col-md-6">
           <p class="col-title">
-            <% classes = @shipment.freight_classes(use_forced_freight_class: use_forced_freight_classes) %>
-            Based on <%= use_forced_freight_classes ? 'Declared' : 'Calculated' %>
+            <% classes = @shipment.freight_classes(use_declared_freight_class: declared_freight_classes) %>
+            Based on <%= declared_freight_classes ? 'Declared' : 'Calculated' %>
             <%= 'class'.pluralize(classes.size).titleize %>
             <%= classes.join(', ') %>
           </p>
@@ -74,8 +74,8 @@
                   <% end %>
                 </tr>
               </thead>
-              <tbody id="rates_<%= use_forced_freight_classes %>" data-rates-target="ratesContainer" data-shipment-id="<%= @shipment.id %>">
-                <% existing_rates = instance_variable_get("@rates_forced_freight_#{use_forced_freight_classes}") %>
+              <tbody id="rates_<%= declared_freight_classes %>" data-rates-target="ratesContainer" data-shipment-id="<%= @shipment.id %>">
+                <% existing_rates = instance_variable_get("@rates_declared_freight_classes_#{declared_freight_classes}") %>
                 <%= render "rates_service/rates", rates: existing_rates, shipment: @shipment if existing_rates.present? %>
               </tbody>
             </table>

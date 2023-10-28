@@ -9,7 +9,7 @@ RSpec.describe(Shipment::ResetRatesService) do
 
   describe '#call' do
     context 'when force_reset params is true' do
-      subject { described_class.new(shipment:, force_reset: true).call }
+      subject { described_class.new(shipment, force_reset: true).call }
 
       context 'and shipment#applied_rate is blank?' do
         it 'destroy rates' do
@@ -29,7 +29,7 @@ RSpec.describe(Shipment::ResetRatesService) do
     end
 
     context 'when force_reset params if false' do
-      subject { described_class.new(shipment:).call }
+      subject { described_class.new(shipment).call }
 
       context "and shipment first rate's fingerprint is equal to shipment#fingerprint " do
         it 'does not destroy rates' do
@@ -39,11 +39,11 @@ RSpec.describe(Shipment::ResetRatesService) do
         end
       end
 
-      context 'and shipment#calculated_freight_classes and shipment#forced_freight_classes are blank ' do
+      context 'and shipment#calculated_freight_classes and shipment#declared_freight_classes are blank ' do
         it 'does not destroy rates' do
           expect(shipment).to(receive(:fingerprint).and_return('Other Fingerprint'))
           expect(shipment).to(receive(:calculated_freight_classes).and_return([nil]))
-          expect(shipment).to(receive(:forced_freight_classes).and_return([]))
+          expect(shipment).to(receive(:declared_freight_classes).and_return([]))
 
           expect { subject }.not_to(change(Rate, :count))
         end

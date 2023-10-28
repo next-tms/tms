@@ -44,14 +44,18 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Pickup < ApplicationRecord
+  include HasAPI
+
   after_commit :update_shipment
 
-  belongs_to :dispatcher, class_name: 'User', required: true
+  before_validation :set_shipment, if: -> { will_save_change_to_rate_id? }
+
+  belongs_to :dispatcher, class_name: 'User'
   belongs_to :rate
   belongs_to :shipment
-  belongs_to :updated_by, class_name: 'User', required: false
+  belongs_to :updated_by, class_name: 'User', optional: true
 
-  delegate :with_calculated_freight_classes, to: :rate
+  delegate :declared_freight_classes, to: :rate
 
   has_one :broker_carrier, through: :rate
   has_one :tracking_carrier, through: :rate
@@ -61,10 +65,10 @@ class Pickup < ApplicationRecord
 
   serialize :error_object
 
-  validate :shipment_complete
+  validate :validate_shipment_complete
 
   def confirmed?
-    !pickup_confirmation.blank?
+    pickup_confirmation.present?
   end
 
   def pending?
@@ -72,30 +76,33 @@ class Pickup < ApplicationRecord
   end
 
   def rate_uid=(rate_uid)
-    self.rate = Rate.find_by_uid(rate_uid)
-    self.shipment = rate.shipment
+    self.rate = Rate.find_by(uid: rate_uid)
   end
 
   private
 
-  def shipment_complete
-    errors.add(:shipment, 'must not be incomplete') if shipment.incomplete?
+  def set_shipment
+    self.shipment = rate&.shipment
   end
 
   def update_shipment
-    return if shipment.blank? || !shipment.picked_up_at.blank?
-
-    shipment = self.shipment
+    return if shipment.blank? || shipment.picked_up_at.present?
 
     shipment.assign_attributes(
       applied_rate: rate,
-      dispatched_at: DateTime.current,
+      dispatched_at: Time.current,
       pickup_confirmation:,
-      updated_by:
+      updated_by:,
     )
 
     shipment.pro = pro if saved_change_to_pro?
 
     shipment.save
+  end
+
+  def validate_shipment_complete
+    return unless shipment.incomplete?
+
+    errors.add(:shipment, 'must not be complete')
   end
 end

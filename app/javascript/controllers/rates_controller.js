@@ -29,7 +29,7 @@ export default class extends Controller {
   _cableReceived(data) {
     // Called when there's incoming data on the websocket for this channel
     if (data.html) {
-      let targetContainer = this.ratesContainerTargets.find(c => c.id == "rates_" + data.use_forced_freight_class)
+      let targetContainer = this.ratesContainerTargets.find(c => c.id == "rates_" + data.declared_freight_classes)
       targetContainer.innerHTML = targetContainer.innerHTML += data.html
 
       var rates = Array.from(targetContainer.children)

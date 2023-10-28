@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: items
@@ -6,7 +8,7 @@
 #   @return []
 # @!attribute desc
 #   @return [String]
-# @!attribute forced_class
+# @!attribute declared_freight_class
 #   @return [Float]
 # @!attribute h
 #   @return [Integer]
