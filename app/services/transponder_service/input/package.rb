@@ -19,7 +19,7 @@ module TransponderService
           dimensions:,
           freight_class:,
           hazardous: !!object.hazmat?,
-          nmfc: object.nmfc.presence,
+          nmfc: object.nmfc&.to_s,
           packaging:,
           weight:
         }

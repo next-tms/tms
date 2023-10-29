@@ -102,15 +102,16 @@ class Item < ApplicationRecord
   end
 
   def density(rounded:)
-    if l && w && h && weight && quantity
-      density = (weight.to_f / quantity) / cubic_ft(rounded: false)
-      return rounded ? ('%0.2f' % density).to_f : density
-    end
-    nil
+    return unless [l, w, h, quantity].all?(&:present?)
+
+    value = (weight.to_f / quantity) / cubic_ft(rounded: false)
+    return value unless rounded
+
+    value.ceil
   end
 
   def sanitized_freight_class(freight_class)
-    return unless freight_class.present?
+    return if freight_class.blank?
 
     if FREIGHT_CLASSES.include?(freight_class)
       return freight_class.to_i if freight_class.to_i == freight_class
@@ -206,7 +207,7 @@ class Item < ApplicationRecord
         declaredFreightClass: api_freight_class(use_declared_freight_class: declared_freight_classes),
         description: desc,
         hazmat: hazmat?,
-        nmfc: nmfc.presence,
+        nmfc: nmfc&.to_s,
         quantity: quantity,
         units: :imperial
       },
