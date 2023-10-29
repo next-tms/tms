@@ -75,7 +75,7 @@ class Shipment::FetchAndCreateRatesService
   def declared_freight_classes
     return [false] if shipment.calculated_freight_classes.sort == shipment.declared_freight_classes.sort
 
-    if user.broker?
+    if user_type == :broker
       return [].tap do |builder|
                builder << false if shipment.calculated_freight_classes.compact.any?
                builder << true if shipment.declared_freight_classes.compact.any?
