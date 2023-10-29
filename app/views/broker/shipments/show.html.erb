@@ -292,7 +292,7 @@
     <table class="table table-borderless table-striped table-hover">
       <thead>
         <tr>
-          <th>Piece</th>
+          <th><%= Item.model_name.human %></th>
           <th>Description</th>
           <th>HZ<small class="text-muted">***</small></th>
           <th><small class="text-muted">inches</small><br>Dimensions</th>
@@ -327,12 +327,14 @@
       </tbody>
       <tfoot>
         <tr class="bg-light font-weight-bold">
-          <td><%= pluralize @shipment.total_pieces, 'piece' %></td>
+          <td>
+            <%= pluralize @shipment.total_pieces, Item.model_name.human.downcase %>
+          </td>
           <td>&nbsp;</td>
           <td>&nbsp;</td>
           <td>
             <% if @shipment.linear_ft %>
-              <span class="text-nowrap"><%= @shipment.linear_ft %> linear ft <small class="text-muted">*, **</small></span>
+              <span class="text-nowrap"><%= @shipment.linear_ft %> linear ft <small class="text-muted">*</small></span>
             <% end %>
           </td>
           <td><%= number_with_delimiter @shipment.total_weight %> lbs</td>
@@ -341,19 +343,23 @@
           <td>&nbsp;</td>
           <td>
             <% if @shipment.total_cubic_ft(rounded: true) %>
-              <%= number_with_delimiter @shipment.total_cubic_ft(rounded: true) %> <small class="text-muted">*</small>
+              <%= number_with_delimiter @shipment.total_cubic_ft(rounded: true) %> <small class="text-muted">**</small>
             <% end %>
           </td>
           <td>
             <% if @shipment.total_density(rounded: true) %>
-              <%= number_with_delimiter @shipment.total_density(rounded: true) %> <small class="text-muted">*</small>
+              <%= number_with_delimiter @shipment.total_density(rounded: true) %> <small class="text-muted">**</small>
             <% end %>
           </td>
         </tr>
       </tfoot>
     </table>
     <p class="text-muted">
-      <small>* Individual values shown may not match total shown as individual lines are rounded up, but totals are calculated precisely then rounded up ** Linear footage calculation assumes pallets can be rotated in any direction *** HZ indicates hazardous material</small>
+      <small>
+        * Assuming trailer length of 48 ft
+        ** Sum of individual <%= Item.model_name.human.pluralize.downcase %>’ values may not equal total value. Each <%= Item.model_name.human.downcase %>’s value is rounded up; total value is calculated as a sum of precise <%= Item.model_name.human.downcase %> values then rounded up
+        *** HZ indicates hazardous material
+      </small>
     </p>
   </div>
 <% end %>

@@ -709,8 +709,10 @@ class Shipment < ApplicationRecord
   def total_cubic_ft(rounded:)
     return if items.any? { |item| item.cubic_ft(rounded: false).blank? }
 
-    total_cubic_ft = items.sum { |item| item.cubic_ft(rounded: false) }
-    rounded ? ('%0.2f' % total_cubic_ft).to_f : total_cubic_ft
+    value = items.sum { |item| item.cubic_ft(rounded: false) }
+    return value unless rounded
+
+    value.ceil
   end
 
   def total_density(rounded:)
@@ -746,9 +748,9 @@ class Shipment < ApplicationRecord
   end
 
   def linear_ft
-    return @linear_ft if @linear_ft
-
-    @linear_ft = Shipment::LinearFtService.new(shipment: self).call
+    Shipment::LinearFtService.call(self).value.to_i
+  rescue Shipment::LinearFtService::UncalculableError
+    nil
   end
 
   def accessible_by?(user)

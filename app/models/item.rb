@@ -89,11 +89,16 @@ class Item < ApplicationRecord
   end
 
   def cubic_ft(rounded:)
-    if l && w && h
-      cubic_ft = (l * w * h).to_f / 1728
-      return rounded ? ('%0.2f' % cubic_ft).to_f : cubic_ft
-    end
-    nil
+    return unless [l, w, h].all?(&:present?)
+
+    length_ft = Measured::Length.new(l, :in).convert_to(:ft).value
+    width_ft = Measured::Length.new(w, :in).convert_to(:ft).value
+    height_ft = Measured::Length.new(h, :in).convert_to(:ft).value
+
+    value = (length_ft * width_ft * height_ft)
+    return value unless rounded
+
+    value.ceil
   end
 
   def density(rounded:)
