@@ -135,7 +135,6 @@ class Broker::ShipmentsController < Broker::BrokerController
       @shipment.lock! # Avoid Race Condition
 
       @shipment.broker = current_user.broker
-      @shipment.broker_customer = broker_customer
       @shipment.created_by = current_user
       @shipment.dispatcher = current_user if @shipment.dispatcher.blank? && current_user.dispatcher_for?(@shipment)
       @shipment.load_id = current_user.broker.last_load_id + 1
