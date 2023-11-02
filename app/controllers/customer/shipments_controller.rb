@@ -306,6 +306,7 @@ class Customer::ShipmentsController < Customer::CustomerController
                                     region_id
                                     zip_code
                                     country_id
+                                    standardized_address_id
                                   ],
       receiver_address_attributes: %i[
                                      id
@@ -316,6 +317,7 @@ class Customer::ShipmentsController < Customer::CustomerController
                                      region_id
                                      zip_code
                                      country_id
+                                     standardized_address_id
                                    ],
       items_attributes: %i[
                           _destroy
