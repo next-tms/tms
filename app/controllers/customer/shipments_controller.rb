@@ -210,8 +210,8 @@ class Customer::ShipmentsController < Customer::CustomerController
   def quote
     authorize!(@shipment, to: :show?)
 
-    Shipment::ResetShipment::RatesService.new(shipment: @shipment, force_reset: params[:force].present?).call
-    @shipment.rates.where.not(error_object: nil).destroy_all
+    Shipment::ResetRatesService.call(@shipment, force_reset: params[:force].present?)
+    @shipment.rates.errored.destroy_all
 
     service = Shipment::FetchAndCreateRatesService
               .call(
