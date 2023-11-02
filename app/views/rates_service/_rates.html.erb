@@ -1,7 +1,9 @@
+<% user_type ||= current_user.broker? ? :broker : :customer %>
+
 <% if rates.any? %>
   <% rates.each do |rate| %>
     <% if rate.errored? %>
-      <% next if current_user.customer? %>
+      <% next if user_type == :customer %>
       <tr data-rate-id="<%= rate.id %>" class="table-warning">
         <td></td>
         <td>
@@ -27,10 +29,10 @@
       <% next %>
     <% end %>
 
-    <% next if current_user.customer? && (!rate.preferred? || !rate.cost.positive?) %>
+    <% next if user_type == :customer && (!rate.preferred? || !rate.cost.positive?) %>
 
-    <% if current_user.customer? %>
-      <% upcharged_rate = current_user
+    <% if user_type == :customer %>
+      <% upcharged_rate = user
                           .companyable
                           .carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment)
       %>
@@ -54,7 +56,7 @@
                           data: {
                             action: 'book#handle',
                             controller: 'book',
-                            url: (current_user.customer? ? customer_shipment_path(shipment) : broker_shipment_path(shipment)),
+                            url: (user_type == :customer ? customer_shipment_path(shipment) : broker_shipment_path(shipment)),
                             applied_rate_uid: rate.uid
                           },
                           class: 'btn btn-sm btn-primary'
@@ -67,7 +69,7 @@
               %>
             <% end %>
 
-            <% if current_user.customer? &&
+            <% if user_type == :customer &&
                   rate.broker_carrier.api_configured? &&
                   rate.broker_carrier.carrier.create_pickup_implemented? %>
               <%= link_to 'Pickup',
@@ -103,11 +105,11 @@
         </div>
       </td>
 
-      <% if current_user.broker? %>
+      <% if user_type == :broker %>
         <td>
           <% if rate.reference.present? %>
             <%= rate.reference %>
-
+            
             <% if quote_uri(shipment).present? %>
               <span class="text-nowrap">
                 <%= link_to icon('solid', 'eye', 'Show'),
@@ -122,10 +124,10 @@
         </td>
       <% end %>
 
-      <td data-sort="<%= current_user.customer? ? (upcharged_rate * 100).round : rate.cost_cents %>">
+      <td data-sort="<%= user_type == :customer ? (upcharged_rate * 100).round : rate.cost_cents %>">
         <% if rate.pricing_rule? && rate.cost.zero? %>
           <em>Contact for quote</em>
-        <% elsif current_user.customer? %>
+        <% elsif user_type == :customer %>
           <%= humanized_money_with_symbol(upcharged_rate, no_cents_if_whole: false) %>
         <% else %>
           <%= humanized_money_with_symbol(rate.cost, no_cents_if_whole: false) %>
@@ -137,7 +139,7 @@
         <% end %>
       </td>
 
-      <% if current_user.broker? %>
+      <% if user_type == :broker %>
         <td>
           <% if rate.pricing_rule? %>
             <%= icon 'solid', 'triangle-exclamation' %>
@@ -159,7 +161,7 @@
         <% end %>
       </td>
 
-      <% if current_user.broker? && shipment.total_charges != 0 %>
+      <% if user_type == :broker && shipment.total_charges != 0 %>
         <td><%= humanized_money_with_symbol((shipment.total_charges - rate.cost), no_cents_if_whole: false) %></td>
       <% end %>
     </tr>
