@@ -10,7 +10,7 @@
       <h5>Fetching Rates  </h5>
       <span class="spinner-border" role="status">
         <span class="sr-only">Loading...</span>
-      </span> 
+      </span>
     </div>
   <% end %>
 
@@ -44,7 +44,10 @@
         </thead>
         <tbody id="rates_<%= @declared_freight_classes %>" data-rates-target="ratesContainer" data-shipment-id="<%= @shipment.id %>">
           <% existing_rates = instance_variable_get("@rates_declared_freight_classes_#{@declared_freight_classes}") %>
-          <%= render "rates_service/rates", rates: existing_rates, shipment: @shipment if existing_rates.present? %>
+
+          <% if existing_rates.present? %>
+            <%= render 'rates_service/rates', rates: existing_rates, shipment: @shipment, user_type: current_user.type %>
+          <% end %>
         </tbody>
         </tbody>
       </table>

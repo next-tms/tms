@@ -1,5 +1,3 @@
-<% user_type ||= current_user.broker? ? :broker : :customer %>
-
 <% if rates.any? %>
   <% rates.each do |rate| %>
     <% if rate.errored? %>
@@ -32,11 +30,7 @@
     <% next if user_type == :customer && (!rate.preferred? || !rate.cost.positive?) %>
 
     <% if user_type == :customer %>
-      <% upcharged_rate = user
-                          .companyable
-                          .carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment)
-      %>
-
+      <% upcharged_rate = shipment.broker_customer&.carrier_charge_calculator(carrier_cost: rate.cost, shipment:) %>
       <% next if upcharged_rate.blank? || !upcharged_rate.positive? || upcharged_rate <= rate.cost %>
     <% end %>
 
@@ -109,7 +103,7 @@
         <td>
           <% if rate.reference.present? %>
             <%= rate.reference %>
-            
+
             <% if quote_uri(shipment).present? %>
               <span class="text-nowrap">
                 <%= link_to icon('solid', 'eye', 'Show'),
