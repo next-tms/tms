@@ -3,7 +3,11 @@
 <%= render 'member_header' %>
 <h2><%= yield :title %></h2>
 
-<% if @broker_carrier.to_freight_kit_carrier.present? && !@broker_carrier.to_freight_kit_carrier.rates_with_excessive_length_fees %>
+<% nothing = true %>
+
+<% if @broker_carrier.to_freight_kit_carrier.try(:find_rates_implemented?) &&
+      !@broker_carrier.to_freight_kit_carrier.rates_with_excessive_length_fees %>
+  <% nothing = false %>
   <%= bootstrap_form_with(model: [:broker, @broker_carrier]) do |f| %>
     <%= f.alert_message 'Unable to update account:' %>
 
@@ -34,7 +38,10 @@
       <%= f.submit class: 'btn btn-primary', value: 'Save' %>
     <% end %>
   <% end %>
-<% elsif @broker_carrier.carrier.carrier_areas.any? %>
+<% end %>
+
+<% unless @broker_carrier.to_freight_kit_carrier.try(:find_rates_implemented?) %>
+  <% nothing = false %>
   <%= bootstrap_form_with(model: [:broker, @broker_carrier], path: [:broker, @broker_carrier]) do |f| %>
     <%= f.alert_message 'Unable to update account:' %>
 
@@ -52,7 +59,9 @@
       <%= f.submit class: 'btn btn-primary', value: 'Save' %>
     <% end %>
   <% end %>
-<% else %>
+<% end %>
+
+<% if nothing %>
   <% message = @broker_carrier.to_freight_kit_carrier.present? ? 'This carrier’s API handles tariff-specific pricing on its own.' : nil %>
   <%= render 'layouts/message',
              title: 'Nothing to configure',
