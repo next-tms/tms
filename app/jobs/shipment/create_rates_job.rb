@@ -8,7 +8,7 @@ class Shipment::CreateRatesJob < ApplicationJob
 
     raise ArgumentError, 'shipment must be a Shipment' unless shipment.is_a?(Shipment)
     raise ArgumentError, 'shipment_fingerprint must be a String' unless shipment_fingerprint.is_a?(String)
-    raise ArgumentError, 'user_type must be one of :broker, :customer' if %i[broker user].exclude?(user_type)
+    raise ArgumentError, 'user_type must be one of :broker, :customer' if %i[broker customer].exclude?(user_type)
 
     return if shipment.reload.fingerprint != shipment_fingerprint
 
