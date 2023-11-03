@@ -41,6 +41,7 @@ module TransponderService
                 else
                   (object.calculated_freight_class.presence || object.declared_freight_class)
                 end
+        return if value.blank?
 
         "_#{value.to_s.gsub(".", "_")}" # e.g. 77.5 → _77_5
       end

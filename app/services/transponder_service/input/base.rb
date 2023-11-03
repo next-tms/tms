@@ -20,6 +20,9 @@ module TransponderService
       end
 
       def call
+        result = build
+        return if result.blank?
+
         build.compact.deep_transform_keys { |key| key.to_s.camelize(:lower) }
       end
     end
