@@ -46,9 +46,9 @@ class Item < ApplicationRecord
   has_many :shipment_items, dependent: :destroy
   has_many :shipments, through: :shipment_items
 
-  validates :desc, :quantity, :weight, presence: true
-  validates :nmfc, allow_blank: true, format: { with: /\A\d{5}(-\d{1,2})?\z/, message: 'is not in the correct format' }
-  validates :quantity, :weight, numericality: { only_integer: true, greater_than: 0 }
+  validates :quantity, numericality: { only_integer: true, greater_than: 0 }, presence: true
+  validates :weight, numericality: { only_integer: true, greater_than: 0 }, presence: true
+  validates :desc, presence: true
 
   # Set Packaging based on names (for API)
   def packaging_name=(name)

@@ -23,7 +23,6 @@ ActiveSupport::Inflector.inflections do |inflect|
   inflect.acronym('BOLs')
   inflect.acronym('GraphQL')
   inflect.acronym('LTL')
-  inflect.acronym('NMFC')
   inflect.acronym('PDF')
   inflect.acronym('PO')
   inflect.acronym('POD')
