@@ -40,7 +40,7 @@ FactoryBot.define do
     declared_freight_class { [nil, Item::FREIGHT_CLASSES.sample].sample }
     desc { Faker::Lorem.words.map(&:upcase_first).join(' ') }
     hazmat { [true, false].sample }
-    nmfc { [nil, rand(1000..9999)].sample }
+    nmfc { [nil, rand(1000..99999)].sample&.to_s }
     quantity { rand(1..5) }
     refrigerated { [true, false].sample }
 
