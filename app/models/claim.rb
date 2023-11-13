@@ -49,18 +49,18 @@ class Claim < ApplicationRecord
   monetize :total_cents
 
   scope :paid, -> { where('balance_cents <= ?', 0) }
-  scope :unpaid, -> { where.not(balance_cents: 0) }
+  scope :unpaid, -> { where('balance_cents > ?', 0) }
 
   private
 
   def set_balance_cents
-    return unless claim_items.any?
+    return if claim_items.none?
 
     self.balance_cents = claim_items.sum(&:balance_cents)
   end
 
   def set_total_cents
-    return unless claim_items.any?
+    return if claim_items.none?
 
     self.total_cents = claim_items.sum(&:total_cents)
   end
