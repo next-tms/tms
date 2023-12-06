@@ -864,7 +864,7 @@ class Shipment < ApplicationRecord
   end
 
   def set_broker
-    self.broker = Broker.first
+    self.broker ||= broker_customer&.broker || broker_carrier&.broker || Broker.first
   end
 
   def set_dispatcher
