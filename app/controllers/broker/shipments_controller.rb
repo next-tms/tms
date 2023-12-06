@@ -3,7 +3,7 @@
 class Broker::ShipmentsController < Broker::BrokerController
   include SuggestedShipmentAccessorials
 
-  before_action :set_shipment_by_load_id,
+  before_action :set_shipment,
                 only: %i[
                         accounting
                         book
@@ -123,8 +123,8 @@ class Broker::ShipmentsController < Broker::BrokerController
   def new_quote_only
     @shipment = Shipment.new
     @shipment.items << Item.new
-    @shipment.shipper_address = Address.new
     @shipment.receiver_address = Address.new
+    @shipment.shipper_address = Address.new
   end
 
   def create
@@ -132,15 +132,17 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     Shipment.transaction do
       @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
-      @shipment.lock! # Avoid Race Condition
+      # @shipment.lock! # Avoid Race Condition
+
+      form = @shipment.quote_only? ? :new_quote_only : :new
 
       @shipment.broker = current_user.broker
       @shipment.created_by = current_user
-      @shipment.dispatcher = current_user if @shipment.dispatcher.blank? && current_user.dispatcher_for?(@shipment)
-      @shipment.load_id = current_user.broker.last_load_id + 1
+      @shipment.dispatcher ||= current_user if current_user.dispatcher_for?(@shipment)
+      @shipment.load_id = Broker.first.last_load_id + 1
       @shipment.updated_by = current_user
 
-      if shipment_params[:accessorials_has_been_suggested].blank?
+      if !@shipment.quote_only? && shipment_params[:accessorials_has_been_suggested].blank?
         if @shipment.shipper_address.standardized_address.blank?
           @shipment.shipper_address.find_or_build_standardized_address
         end
@@ -152,25 +154,25 @@ class Broker::ShipmentsController < Broker::BrokerController
         @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
 
         if @accessorials_has_been_suggested
-          render(:new)
+          render(form)
           return
         end
       end
 
-      unless @shipment.save
-        render(:new)
+      unless @shipment.save!
+        render(form)
         return
       end
-
-      @shipment.refresh_documents!
-
-      if @shipment.quote_only?
-        redirect_to(quote_broker_shipment_path(@shipment))
-        return
-      end
-
-      redirect_to([:broker, @shipment])
     end
+
+    @shipment.refresh_documents!
+
+    if @shipment.quote_only?
+      redirect_to(quote_broker_shipment_path(@shipment))
+      return
+    end
+
+    redirect_to([:broker, @shipment])
   end
 
   def edit
@@ -620,11 +622,7 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_shipment
-    @shipment = Shipment.find(params[:id])
-  end
-
-  def set_shipment_by_load_id
-    @shipment = Shipment.find_by(load_id: params[:load_id])
+    @shipment = Shipment.find_by!(load_id: params[:load_id])
   end
 
   def tracking_event_params

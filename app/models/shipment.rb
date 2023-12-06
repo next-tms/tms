@@ -381,6 +381,7 @@ class Shipment < ApplicationRecord
   before_save :set_total_cost
   before_save :build_commissions
 
+  before_validation :set_broker # before set_dispatcher
   before_validation :set_dispatcher
 
   monetize :carrier_charge_cents, allow_nil: true
@@ -401,7 +402,7 @@ class Shipment < ApplicationRecord
 
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
-  validates :load_id, uniqueness: { scope: :broker }
+  validates :load_id, presence: true, uniqueness: { scope: :broker }
 
   validate :validate_future_pickup_by, if: -> { dispatch_pickup }
   validate :validate_past_or_present_attributes
@@ -860,6 +861,10 @@ class Shipment < ApplicationRecord
       address.street = address.street2
       address.street2 = nil
     end
+  end
+
+  def set_broker
+    self.broker = Broker.first
   end
 
   def set_dispatcher
