@@ -17,7 +17,7 @@
       </thead>
       <tbody>
         <% @rate.breakdown.each do |line| %>
-          <% total_cents = line.dig('cents', 'value').presence || line['cents'] %>
+          <% total_cents = line.dig('cents', 'value').presence || line['cents'].presence || line.dig('cost', 'fractional') %>
           <tr>
             <td><%= line['description'] %></td>
             <td><%= humanized_money_with_symbol (total_cents.to_f / 100), no_cents_if_whole: false %></td>
