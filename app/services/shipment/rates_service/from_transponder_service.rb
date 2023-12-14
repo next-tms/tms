@@ -37,6 +37,8 @@ class Shipment::RatesService
         return rates
       end
 
+      return rates if response.blank?
+
       errors = response[:errors]
 
       if errors.any?
