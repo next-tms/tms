@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Shipment::CreateRatesJob < ApplicationJob
+  queue_as :high_priority
+
   def perform(shipment, shipment_fingerprint, user_type, declared_freight_classes, broker_carrier_ids = [])
     if [true, false].exclude?(declared_freight_classes)
       raise ArgumentError, 'declared_freight_classes must be one of true, false'
