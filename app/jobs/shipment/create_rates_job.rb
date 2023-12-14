@@ -18,7 +18,8 @@ class Shipment::CreateRatesJob < ApplicationJob
                         shipment.valid_broker_carriers_for_quotation(user_type)
                       end
 
-    broker_carriers.each do |broker_carrier|
+    # @note Using RANDOM() order so that one slow request doesn't always slow down following requests
+    broker_carriers.order(Arel.sql('RANDOM()')).each do |broker_carrier|
       rates = Shipment::RatesService
               .call(
                 broker_carrier,
