@@ -111,10 +111,8 @@ class Shipment::RatesService
 
           next if carrier_name.blank? || carrier_scac.blank?
 
-          carrier_scac.upcase!
-
           # Import carrier information
-          tracking_carrier = Carrier.find_or_initialize_by(scac: carrier_scac)
+          tracking_carrier = Carrier.find_or_initialize_by(scac: carrier_scac.upcase)
           tracking_carrier.name ||= carrier_name.titleize
           tracking_carrier.save!
         end
