@@ -159,7 +159,7 @@ class Broker::ShipmentsController < Broker::BrokerController
         end
       end
 
-      unless @shipment.save!
+      unless @shipment.save
         render(form)
         return
       end
