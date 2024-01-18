@@ -5,12 +5,10 @@ module GraphQLClient
     DETAILS = GraphQLClient::Transponder::Client.parse(<<-GRAPHQL)
         query(
           $carrier: CarrierInput!,
-          $pickupAt: ISO8601DateTime,
           $shipment: ShipmentInput!
         ) {
           fetchRates(
             carrier: $carrier,
-            pickupAt: $pickupAt,
             shipment: $shipment
           ) {
             rates {

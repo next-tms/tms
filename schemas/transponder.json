@@ -1659,6 +1659,12 @@
               "deprecationReason": null
             },
             {
+              "name": "PICKUP_SCHEDULED",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "SAILED",
               "description": null,
               "isDeprecated": false,
@@ -1882,12 +1888,18 @@
         {
           "kind": "ENUM",
           "name": "ISO31661Alpha2",
-          "description": "See https://www.rubydoc.info/gems/active_utils/3.3.19/ActiveUtils/Country",
+          "description": "See https://www.rubydoc.info/gems/active_utils/3.4.1/ActiveUtils/Country",
           "interfaces": null,
           "possibleTypes": null,
           "fields": null,
           "inputFields": null,
           "enumValues": [
+            {
+              "name": "AC",
+              "description": "Ascension Island",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
             {
               "name": "AD",
               "description": "Andorra",
@@ -3173,6 +3185,12 @@
               "deprecationReason": null
             },
             {
+              "name": "TA",
+              "description": "Tristan da Cunha",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "TC",
               "description": "Turks and Caicos Islands",
               "isDeprecated": false,
@@ -3399,7 +3417,7 @@
         {
           "kind": "ENUM",
           "name": "ISO31661Alpha3",
-          "description": "See https://www.rubydoc.info/gems/active_utils/3.3.19/ActiveUtils/Country",
+          "description": "See https://www.rubydoc.info/gems/active_utils/3.4.1/ActiveUtils/Country",
           "interfaces": null,
           "possibleTypes": null,
           "fields": null,
@@ -3468,6 +3486,12 @@
             {
               "name": "ARM",
               "description": "Armenia",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "ASC",
+              "description": "Ascension Island",
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -4698,6 +4722,12 @@
             {
               "name": "SYR",
               "description": "Syrian Arab Republic",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "TAA",
+              "description": "Tristan da Cunha",
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -6836,7 +6866,7 @@
         {
           "kind": "ENUM",
           "name": "Packaging",
-          "description": "See https://github.com/next-tms/freight_kit/blob/v0.1.0/lib/freight_kit/packaging.rb",
+          "description": "See https://github.com/next-tms/freight_kit/blob/v0.1.1/lib/freight_kit/packaging.rb",
           "interfaces": null,
           "possibleTypes": null,
           "fields": null,
@@ -7241,18 +7271,6 @@
                       "name": "CarrierInput",
                       "ofType": null
                     }
-                  },
-                  "defaultValue": null,
-                  "isDeprecated": false,
-                  "deprecationReason": null
-                },
-                {
-                  "name": "pickupAt",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ISO8601DateTime",
-                    "ofType": null
                   },
                   "defaultValue": null,
                   "isDeprecated": false,
@@ -7710,9 +7728,13 @@
               "name": "pickupAt",
               "description": null,
               "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "DateTimeInput",
-                "ofType": null
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "DateTimeInput",
+                  "ofType": null
+                }
               },
               "defaultValue": null,
               "isDeprecated": false,

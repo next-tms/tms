@@ -14,18 +14,10 @@ module TransponderService
       end
 
       def build
-        { pickup_at:, shipment: }
+        { shipment: }
       end
 
       private
-
-      def pickup_at
-        pickup_range.pickup_from
-      end
-
-      def pickup_range
-        @pickup_range ||= Input::DateTime::PickupRange.new(object)
-      end
 
       def shipment
         Shipment.call(object, declared_freight_classes:)
