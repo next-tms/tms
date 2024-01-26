@@ -2,10 +2,6 @@
 
 class TrackShipmentsJob < ApplicationJob
   def perform(shipment_ids)
-    shipments = Shipment.where(id: shipment_ids)
-
-    shipments.find_each do |shipment|
-      TrackShipmentJob.perform_later(shipment)
-    end
+    Shipment.where(id: shipment_ids).find_each { |shipment| TrackShipmentJob.perform_later(shipment) }
   end
 end

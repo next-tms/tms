@@ -2,6 +2,8 @@
 
 class TrackShipmentsPendingDepartureJob < ApplicationJob
   def perform
-    TrackShipmentsJob.perform_later(Shipment.active.pending_departure.ids)
+    shipment_ids = Shipment.active.pending_departure.where.not(pro: nil).ids
+
+    TrackShipmentsJob.perform_later(shipment_ids)
   end
 end

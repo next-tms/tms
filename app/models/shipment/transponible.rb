@@ -18,6 +18,8 @@ module Shipment::Transponible
 
     # @return [Boolean]
     def update_tracking_events
+      return false if pro.blank?
+
       TransponderService::FetchTracking.call(self)
     end
   end
