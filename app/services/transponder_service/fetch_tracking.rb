@@ -64,10 +64,6 @@ module TransponderService
 
     private
 
-    def incomplete_location?(location)
-      location.blank? || location[:city].blank? || location[:region_abbreviation].blank? || location[:country].blank?
-    end
-
     # Notify Honeybadger only once per day to prevent their spam notice every 30 minutes
     # @return [Boolean]
     def log_invalid_data_to_honeybadger(shipment_event:, attr_name:)
@@ -78,66 +74,67 @@ module TransponderService
 
       Rails.cache.write(cache_key, 'notified', expires_in: 1.day)
 
-      Honeybadger.notify(
-        "Shipment id=#{id} #freight_kit_tracking returned ShipmentEvent from #{broker_carrier.carrier.name} with " \
-        "invalid ##{attr_name}: #{shipment_event.attributes}",
-      )
+      message = <<~MESSAGE
+        Shipment id=#{id}: Received invalid #{attr_name} from #{broker_carrier.carrier.name}:
+
+        #{shipment_event}
+      MESSAGE
+
+      Honeybadger.notify(message)
 
       true
     end
 
+    def parse_location(location)
+      city = location[:city]
+      region = Region.find_by!(abbreviation: transponder_location[:region_abbreviation])
+      country = Parser::Country.call(location[:country])
+
+      [city, region, country]
+    end
+
     def parse_shipment_event(shipment_event)
-      location = shipment_event[:location]
-      type_code = shipment_event[:type_code]
+      city, region, country = parse_location(shipment_event[:location])
 
-      return if incomplete_location?(location)
+      if [city, region, country].any?(&:blank?)
+        log_invalid_data_to_honeybadger(shipment_event:, attr_name: 'location')
 
-      log_invalid_data_to_honeybadger(
-        shipment_event:,
-        attr_name: 'date_time',
-      ) && return if shipment_event[:date_time].blank?
+        return
+      end
 
       at = Parser::DateTime.call(shipment_event[:date_time])
 
       if at.blank?
-        log_invalid_data_to_honeybadger(shipment_event:, attr_name: 'location')
-        return if shipment_event.dig(:location, :time_zone).blank?
+        log_invalid_data_to_honeybadger(shipment_event:, attr_name: 'date_time')
 
-        # Hack
-        at = Time.current.in_time_zone(shipment_event.dig(:location, :time_zone))
+        return
       end
 
-      freight_kit_carrier_fingerprint = Digest::SHA2.hexdigest([at.to_fs(:db), type_code.to_s].join)
+      code = shipment_event[:code]
+
+      freight_kit_carrier_fingerprint = Digest::SHA2.hexdigest([at.to_fs(:db), code.to_s].join)
       tracking_event = tracking_events.find_or_initialize_by(freight_kit_carrier_fingerprint:)
 
       # Hack for carriers that return Midnight on everything
       now = Time.current.in_time_zone(at.time_zone)
       at = now if at == now.beginning_of_day
+      tracking_event.at ||= at # keep original time since it may have already been hacked
 
-      time_zone_name = at.time_zone.name
-
-      event = Event.find_by(active_shipping_code: type_code.to_s)
-      return if event.blank?
-
-      country = Parser::Country.call(location[:country])
+      event = Event.find_by!(active_shipping_code: code.to_s)
 
       tracking_event.assign_attributes(
         api_request: transponder_tracking[:request],
         api_response: transponder_tracking[:response],
-        city: transponder_location[:city],
+        city:,
         country:,
         event:,
         freight_kit_carrier_fingerprint: fingerprint,
-        region: Region.find_by(abbreviation: transponder_location[:province]),
-        time_zone_name:,
+        region:,
+        time_zone_name: at.time_zone.name,
       )
 
-      tracking_event.at ||= at # keep original time since sometimes we hack it
-
-      return unless tracking_event.valid?
-
       begin
-        tracking_event.save
+        tracking_event.save!
       rescue ActiveRecord::StatementInvalid => e
         raise unless e.message.include?('PG::CharacterNotInRepertoire')
 
@@ -158,15 +155,15 @@ module TransponderService
     def update_shipment_base_from_tracking_event_code!(tracking_event)
       case tracking_event.event.active_shipping_code
       when 'delivered'
-        shipment.delivered_at = tracking_event.at if shipment.delivered_at.blank?
+        shipment.delivered_at ||= tracking_event.at
       when 'departed_origin_terminal'
-        shipment.departed_origin_terminal_at = tracking_event.at if shipment.departed_origin_terminal_at.blank?
+        shipment.departed_origin_terminal_at ||= tracking_event.at
       when 'out_for_delivery'
-        shipment.out_for_delivery_at = tracking_event.at if shipment.out_for_delivery_at.blank?
+        shipment.out_for_delivery_at ||= tracking_event.at
       when 'pending_delivery_appointment'
-        shipment.pending_appointment_since = tracking_event.at if shipment.pending_appointment_since.blank?
+        shipment.pending_appointment_since ||= tracking_event.at
       when 'picked_up'
-        shipment.picked_up_at = tracking_event.at if shipment.picked_up_at.blank?
+        shipment.picked_up_at ||= tracking_event.at
       end
     end
   end
