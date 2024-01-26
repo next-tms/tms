@@ -86,6 +86,8 @@ module TransponderService
     end
 
     def parse_location(location)
+      return [] if location.blank?
+
       city = location[:city]
       region = Region.find_by!(abbreviation: location[:region_abbreviation])
       country = Parser::Country.call(location[:country])
@@ -110,9 +112,9 @@ module TransponderService
         return
       end
 
-      code = shipment_event[:code]
+      code = shipment_event[:code].downcase
 
-      freight_kit_carrier_fingerprint = Digest::SHA2.hexdigest([at.to_fs(:db), code.to_s].join)
+      freight_kit_carrier_fingerprint = Digest::SHA2.hexdigest([at.to_fs(:db), code].join)
       tracking_event = tracking_events.find_or_initialize_by(freight_kit_carrier_fingerprint:)
 
       # Hack for carriers that return Midnight on everything
@@ -120,7 +122,7 @@ module TransponderService
       at = now if at == now.beginning_of_day
       tracking_event.at ||= at # keep original time since it may have already been hacked
 
-      event = Event.find_by!(active_shipping_code: code.to_s)
+      event = Event.find_by!(active_shipping_code: code)
 
       tracking_event.assign_attributes(
         api_request: transponder_tracking[:request],
