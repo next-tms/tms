@@ -130,7 +130,7 @@ module TransponderService
         city:,
         country:,
         event:,
-        freight_kit_carrier_fingerprint: fingerprint,
+        freight_kit_carrier_fingerprint:,
         region:,
         time_zone_name: at.time_zone.name,
       )
