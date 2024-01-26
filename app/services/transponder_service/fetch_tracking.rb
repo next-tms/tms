@@ -87,7 +87,7 @@ module TransponderService
 
     def parse_location(location)
       city = location[:city]
-      region = Region.find_by!(abbreviation: transponder_location[:region_abbreviation])
+      region = Region.find_by!(abbreviation: location[:region_abbreviation])
       country = Parser::Country.call(location[:country])
 
       [city, region, country]
