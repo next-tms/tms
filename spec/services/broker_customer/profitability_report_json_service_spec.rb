@@ -2,15 +2,19 @@
 
 require 'rails_helper'
 
-RSpec.describe BrokerCustomer::ProfitabilityReportJsonService do
+RSpec.describe(BrokerCustomer::ProfitabilityReportJsonService) do
   let(:broker_customer) { create(:broker_customer) }
-  let(:picked_up_at) { Date.today - 1.month }
+  let(:picked_up_at) { 14.days.ago }
   let!(:shipment) do
-    create(:shipment,
-           broker_customer: broker_customer,
-           picked_up_at:,
-           carrier_cost_cents: 1000, carrier_cost_currency: "USD",
-           carrier_charge_cents: 1500, carrier_charge_currency: "USD")
+    create(
+      :shipment,
+      broker_customer: broker_customer,
+      picked_up_at:,
+      carrier_cost_cents: 1000,
+carrier_cost_currency: 'USD',
+      carrier_charge_cents: 1500,
+carrier_charge_currency: 'USD',
+    )
   end
 
   let(:from_date) { nil }
@@ -26,13 +30,9 @@ RSpec.describe BrokerCustomer::ProfitabilityReportJsonService do
     }
   end
 
-  before do
-    Timecop.freeze(Time.zone.now)
-  end
+  before { Timecop.freeze(Time.zone.now) }
 
-  after do
-    Timecop.return
-  end
+  after { Timecop.return }
 
   describe '#call' do
     subject { described_class.new(broker_customer:, from_date:, to_date:).call }
@@ -40,15 +40,15 @@ RSpec.describe BrokerCustomer::ProfitabilityReportJsonService do
     context 'when from_date and to_date are blank' do
       context 'and broker customer shipments is blank' do
         it 'does not persist' do
-          expect(broker_customer).to receive(:shipments).and_return([])
+          expect(broker_customer).to(receive(:shipments).and_return([]))
 
-          expect(subject).to be_nil
+          expect(subject).to(be_nil)
         end
       end
 
       context 'and broker customer shipments is blank' do
         it 'returns json report' do
-          expect(subject).to eq(expected_json)
+          expect(subject).to(eq(expected_json))
         end
       end
     end
@@ -57,12 +57,10 @@ RSpec.describe BrokerCustomer::ProfitabilityReportJsonService do
       let(:from_date) { picked_up_at.beginning_of_month }
       let(:to_date) { picked_up_at.end_of_month }
 
-      before do
-        create(:shipment, broker_customer:, picked_up_at: Date.today - 1.year)
-      end
+      before { create(:shipment, broker_customer:, picked_up_at: 1.year.ago) }
 
       it 'only includes shipment where picked_up_at is between the from and to date' do
-        expect(subject).to eq(expected_json)
+        expect(subject).to(eq(expected_json))
       end
     end
   end
