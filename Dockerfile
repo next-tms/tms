@@ -1,6 +1,6 @@
 FROM ruby:3.2.3-alpine3.19 AS runtime
 
-RUN apk -U upgrade && apk add --no-cache git libpq-dev libxml2 libxslt imagemagick nodejs npm yarn
+RUN apk -U upgrade && apk add --no-cache git libpq-dev libxml2 libxslt imagemagick nodejs npm shared-mime-info yarn
 
 FROM runtime AS build
 ARG BUNDLER_GITHUB_OAUTH_KEY
