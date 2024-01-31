@@ -28,11 +28,7 @@ module TransponderService
     # Updates `Shipment`, `Shipment#tracking_events`
     # @return [Boolean]
     def call
-      if transponder_tracking[:events].blank?
-        Rails.logger.info('transponder_tracking[:events] blank')
-        Rails.logger.info(transponder_tracking)
-        return false
-      end
+      return false if transponder_tracking.blank?
 
       transponder_tracking[:events].each { |shipment_event| parse_shipment_event(shipment_event) }
 
