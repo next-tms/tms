@@ -28,7 +28,10 @@ module TransponderService
     # Updates `Shipment`, `Shipment#tracking_events`
     # @return [Boolean]
     def call
-      return false if transponder_tracking.blank?
+      return false if shipment.broker_carrier.blank? ||
+                      shipment.broker_carrier.scac.blank? ||
+                      transponder_tracking.blank? ||
+                      transponder_tracking[:events].blank?
 
       transponder_tracking[:events].each { |shipment_event| parse_shipment_event(shipment_event) }
 
