@@ -118,7 +118,7 @@ module TransponderService
       at = now if at == now.beginning_of_day
       tracking_event.at ||= at # keep original time since it may have already been hacked
 
-      event = Event.find_by_or_initialize_by(active_shipping_code: code)
+      event = Event.find_or_initialize_by(active_shipping_code: code)
 
       if event.new_record?
         event.name = code.humanize.downcase
