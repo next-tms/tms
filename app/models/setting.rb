@@ -34,7 +34,7 @@ class Setting < ApplicationRecord
     end
 
     def value(key, fallback_value = nil)
-      value!(key).presence || fallback_value
+      value!(key)
     rescue ActiveRecord::RecordNotFound
       fallback_value
     end

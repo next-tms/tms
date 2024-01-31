@@ -5,7 +5,6 @@ module Types
     description 'GraphQL Object for Broker Model'
 
     field :automatically_authorize_receivables, Boolean
-    field :automatically_update_shipment_tracking_based_on_carrier_apis, Boolean
     field :customer_service_email, String
     field :default_bol_notes, String
     field :first_load_id, Integer

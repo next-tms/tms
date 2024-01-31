@@ -18,7 +18,6 @@ class Broker::BrokerController < ApplicationController
     params.require(:broker).permit(
       :id,
       :automatically_authorize_receivables,
-      :automatically_update_shipment_tracking_based_on_carrier_apis,
       :customer_service_email,
       :ignore_broker_carrier_bol_requires_tracking_number,
       :phone,

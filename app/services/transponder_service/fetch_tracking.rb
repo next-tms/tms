@@ -35,7 +35,7 @@ module TransponderService
 
       transponder_tracking[:events].each { |shipment_event| parse_shipment_event(shipment_event) }
 
-      return true unless shipment.broker.automatically_update_shipment_tracking_based_on_carrier_apis?
+      return true unless automatically_update_shipment_tracking_based_on_carrier_apis?
 
       estimated_delivery = Parser::DateTime.call(transponder_tracking[:estimated_delivery])
 
@@ -62,6 +62,12 @@ module TransponderService
     end
 
     private
+
+    def automatically_update_shipment_tracking_based_on_carrier_apis?
+      @automatically_update_shipment_tracking_based_on_carrier_apis ||= Setting.value(
+        :automatically_update_shipment_tracking_based_on_carrier_apis, true
+      )
+    end
 
     # Notify Honeybadger only once per day to prevent their spam notice every 30 minutes
     # @return [Boolean]
@@ -149,7 +155,7 @@ module TransponderService
         tracking_event.save!
       end
 
-      return unless shipment.broker.automatically_update_shipment_tracking_based_on_carrier_apis?
+      return unless automatically_update_shipment_tracking_based_on_carrier_apis?
 
       update_shipment_base_from_tracking_event_code!(tracking_event)
     end
