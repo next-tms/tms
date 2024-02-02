@@ -310,6 +310,8 @@ module ApplicationHelper
       "https://api.customco.com/scripts/cgiip.exe/boldetail.htm?wbtn=PRO&wpro1=#{real_pro(shipment)}"
     when 'CTII'
       "http://www.centraltransportint.com/confirm/trace.aspx?pro=#{real_pro(shipment)}"
+    when 'DCHA'
+      'https://tracking.carrierlogistics.com/scripts/dcha.pol/boldetail.htm?wbtn=PRO&wpro1=#{real_pro(shipment)}'
     when 'DPHE'
       "https://portal.godependable.com/secure/ltl/tracking?pro=#{real_pro(shipment)}"
     when 'DRRQ'
