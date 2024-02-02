@@ -112,14 +112,19 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def profitability_report
     unauthorized unless current_user.any_role?(:accounts_payable, :accounts_receivable)
 
-    @broker_customers = current_user.broker.broker_customers
-    @from_date = Date.current.at_beginning_of_month
-    @to_date = Date.current
+    @broker_customers = BrokerCustomer.includes(:customer).order('customers.name ASC')
 
-    return if params[:from_date].blank?
-
-    @from_date = Date.parse(params[:from_date])
-    @to_date = params[:to_date].blank? ? Date.current : Date.parse(params[:to_date])
+    @tz = ActiveSupport::TimeZone.new(Setting.value!(:time_zone_name))
+    @from_date = if params[:from_date].present?
+                   @tz.parse(params[:from_date]).to_date
+                 else
+                   @tz.now.at_beginning_of_month.to_date
+                 end
+    @to_date = if params[:to_date].present?
+                 @tz.parse(params[:to_date]).to_date
+               else
+                 @tz.now.at_end_of_month.to_date
+               end
   end
 
   def quickbooks

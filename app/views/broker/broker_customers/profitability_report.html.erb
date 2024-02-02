@@ -6,15 +6,28 @@
 <div class="row">
   <div class="col col-md-4">
     <%= bootstrap_form_tag(url: broker_customers_profitability_report_path, method: :get, layout: :horizontal) do |f| %>
-      <%= f.text_field :from_date, label: 'From', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), class: 'mr-2', value: (@from_date ? @from_date : '') %>
-      <%= f.text_field :to_date, label: 'Until', autocomplete: 'off', data: flatpickr_data({ max_date: Date.current }), value: (@to_date ? @to_date : '') %>
-    
+      <%= f.text_field :from_date,
+                       autocomplete: 'off',
+                       class: 'mr-2',
+                       label: 'From',
+                       data: flatpickr_data({ max_date: @tz.now.to_date }),
+                       value: @from_date
+      %>
+
+      <%= f.text_field :to_date,
+                       autocomplete: 'off',
+                       class: 'mr-2',
+                       label: 'To',
+                       data: flatpickr_data({ max_date: @tz.now.to_date }),
+                       value: @to_date
+      %>
+
       <%= f.submit class: 'btn btn-primary', value: 'Generate' %>
     <% end %>
   </div>
 </div>
 
-<% unless current_user.broker.broker_customers.blank? %>
+<% if BrokerCustomer.any? %>
   <div class="table-responsive">
     <table class="table table-borderless table-striped table-hover sortable">
       <thead>
