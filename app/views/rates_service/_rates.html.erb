@@ -65,7 +65,8 @@
 
             <% if user_type == :customer &&
                   rate.broker_carrier.api_configured? &&
-                  rate.broker_carrier.carrier.create_pickup_implemented? %>
+                  rate.broker_carrier.carrier.class.implemented?(:create_pickup)
+            %>
               <%= link_to 'Pickup',
                           pickup_modal_broker_shipment_path(
                             shipment,
