@@ -7,10 +7,10 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/freight_kit-next
-  revision: 9c5c6841c02d4cfc4bc93c8dadfc5245f0330cbb
-  tag: v0.1.13
+  revision: 23e803a38f20faeed7605c788f046d02a2a2ce0e
+  tag: v0.1.15
   specs:
-    freight_kit-next (0.1.13)
+    freight_kit-next (0.1.15)
       freight_kit (~> 0.1.3)
       rmagick (>= 4.2.5, < 5.5.0)
 
