@@ -272,7 +272,7 @@ module ApplicationHelper
     when 'CTII'
       "http://www.centraltransportint.com/confirm/trace.aspx?pro=#{real_pro(shipment)}"
     when 'DCHA'
-      'https://tracking.carrierlogistics.com/scripts/dcha.pol/boldetail.htm?wbtn=PRO&wpro1=#{real_pro(shipment)}'
+      "https://tracking.carrierlogistics.com/scripts/dcha.pol/boldetail.htm?wbtn=PRO&wpro1=#{real_pro(shipment)}"
     when 'DPHE'
       "https://portal.godependable.com/secure/ltl/tracking?pro=#{real_pro(shipment)}"
     when 'DRRQ'
@@ -289,7 +289,7 @@ module ApplicationHelper
       "https://www.fedex.com/fedextrack/?tracknumbers=#{real_pro(shipment)}"
     when 'HSXF'
       "http://apps.hawaiianexpress.com/track_freight.php?prono=#{real_pro(shipment)}"
-    when 'NUMT'
+    when 'NUMK'
       "http://tracking.numarktransportation.net/cgibin/wbprotrk?wbfb=#{real_pro(shipment)}&wbscac=&idbutton=Trace"
     when 'OTCL'
       "https://www.ontrac.com/trackingresults.asp?tracking_number=#{real_pro(shipment)}"
