@@ -16,8 +16,6 @@
 #   @return [Integer]
 # @!attribute cost_currency
 #   @return [String]
-# @!attribute error_object
-#   @return [String]
 # @!attribute expires_at
 #   @return [Time]
 # @!attribute freight_kit_service_type

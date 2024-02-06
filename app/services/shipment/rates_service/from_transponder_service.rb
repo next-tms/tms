@@ -2,11 +2,6 @@
 
 class Shipment::RatesService
   class FromTransponderService < Base
-    EMPTY_COST_ERROR = StandardError.new('Cost was empty')
-    MISSING_SCAC_ERROR = StandardError.new('Carrier (acting as broker) API returned quote with missing carrier name and SCAC')
-    NO_RATES_ERROR = StandardError.new('No rates returned from API')
-    DeclaredValueNotImplementedByCarrierError = StandardError.new('Carrier doesn’t support quoting shipments with declared value')
-
     def call
       return rates if broker_carrier.to_freight_kit_carrier.blank?
 
@@ -37,11 +32,11 @@ class Shipment::RatesService
         return rates
       end
 
-      return rates if response.blank?
-
       errors = response[:errors]
 
       if errors.any?
+        return rates if errors.any? { |error| error[:code] == 'CARRIER_NOT_KNOWN_ERROR' }
+
         rate = build_rate(:api)
         rate.assign_attributes(
           api_errors: errors,
@@ -57,13 +52,11 @@ class Shipment::RatesService
 
       transponder_rates = response[:rates]
 
-      if transponder_rates.blank? || transponder_rates.try(:empty?)
+      unless transponder_rates.try(:any?)
         rate = build_rate(:api)
 
-        errors = [{ message: "No #{Rate.model_name.human.downcase.pluralize} returned" }]
-
         rate.assign_attributes(
-          api_errors: errors,
+          api_errors: response[:errors],
           api_request: response[:request],
           api_response: response[:response],
         )
@@ -94,8 +87,6 @@ class Shipment::RatesService
         if [currency, fractional].all?(&:present?)
           cost = Money.new(fractional, currency)
         else
-          rate.errors = [{ message: 'No rates returned from the carrier' }]
-
           @rates << rate
           rate.save! if save?
 

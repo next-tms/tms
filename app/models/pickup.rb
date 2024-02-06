@@ -63,8 +63,6 @@ class Pickup < ApplicationRecord
   scope :confirmed, -> { where.not(pickup_confirmation: nil) }
   scope :pending, -> { where(pickup_confirmation: nil) }
 
-  serialize :error_object
-
   validate :validate_shipment_complete
 
   def confirmed?

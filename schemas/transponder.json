@@ -6866,7 +6866,7 @@
         {
           "kind": "ENUM",
           "name": "Packaging",
-          "description": "See https://github.com/next-tms/freight_kit/blob/v0.1.1/lib/freight_kit/packaging.rb",
+          "description": "See https://github.com/next-tms/freight_kit/blob/v0.1.3/lib/freight_kit/packaging.rb",
           "interfaces": null,
           "possibleTypes": null,
           "fields": null,
@@ -7548,20 +7548,6 @@
           ],
           "possibleTypes": null,
           "fields": [
-            {
-              "name": "error",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null,
-              "args": [
-
-              ]
-            },
             {
               "name": "rates",
               "description": null,

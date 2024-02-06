@@ -143,45 +143,6 @@ module ApplicationHelper
   end
 
   def pretty_api_error(rate)
-    return 'Unknown error' if rate.error_object.blank? && rate.api_errors.empty?
-
-    if rate.api_errors.any?
-      messages = rate.api_errors.map { |error| error['message'] }.compact
-      return 'Unknown error' if messages.empty?
-
-      return messages.join(', ')
-    end
-
-    error = rate.error_object
-
-    begin
-      error = error.constantize
-    rescue
-      return error if error.is_a?(String)
-    end
-
-    klass = error.class.name.to_s
-    klass = error.to_s if error.class.name.to_s == 'Class'
-
-    if ['FreightKit', 'Interstellar'].include?(klass.deconstantize)
-      case klass.split('::').last
-      when 'ExpiredCredentialsError' then return 'Your username and/or password is expired'
-      when 'InvalidCredentialsError' then return 'Your username and/or password is incorrect'
-      when 'UnserviceableAccessorialsError'
-        accessorial_names = Accessorial
-                            .where(freight_kit_code: error.accessorials)
-                            .pluck(:name)
-                            .map(&:downcase)
-
-        return "Unable to service #{accessorial_names.join(", ")}"
-      when 'UnserviceableError'
-        return 'Carrier unable to accept this shipment' if error.message.blank?
-
-        return clean_sentence(error.message)
-      end
-    end
-
-    error.message
   end
 
   def clean_sentence(str)

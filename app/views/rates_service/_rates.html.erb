@@ -21,7 +21,11 @@
         </td>
         <td></td>
         <td data-sort="ZZZZ" colspan="5">
-          <%= pretty_api_error(rate) %>
+          <ul class="list-unstyled">
+            <% rate.human_readable_errors.each do |human_readable_error| %>
+              <%= human_readable_error %>
+            <% end %>
+          </ul>
         </td>
       </tr>
       <% next %>

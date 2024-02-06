@@ -160,7 +160,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_02_235559) do
     t.boolean "ignore_bol_requires_tracking_number", default: false
     t.integer "quickbooks_vendor_id"
     t.string "encrypted_api_key"
-    t.boolean "api_configured", default: false
+    t.boolean "api_configured"
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
@@ -548,10 +548,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_02_235559) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "dispatcher_id"
-    t.text "error_object"
     t.text "api_request"
     t.text "api_response"
     t.jsonb "api_errors", default: "[]", null: false
+    t.string "error_object"
     t.index ["dispatcher_id"], name: "index_pickups_on_dispatcher_id"
     t.index ["rate_id"], name: "index_pickups_on_rate_id"
     t.index ["shipment_id"], name: "index_pickups_on_shipment_id"
@@ -629,11 +629,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_02_235559) do
     t.string "shipment_fingerprint"
     t.string "uid"
     t.string "freight_kit_service_type"
-    t.string "error_object"
     t.json "breakdown"
     t.string "source"
     t.boolean "declared_freight_classes", null: false
     t.jsonb "api_errors", default: "[]", null: false
+    t.string "error_object"
     t.index ["broker_carrier_id"], name: "index_rates_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_rates_on_broker_customer_id"
     t.index ["freight_kit_service_type"], name: "index_rates_on_freight_kit_service_type"

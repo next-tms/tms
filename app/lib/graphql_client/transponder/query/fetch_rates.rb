@@ -36,7 +36,6 @@ module GraphQLClient
             }
             response
             request
-            error
           }
         }
     GRAPHQL

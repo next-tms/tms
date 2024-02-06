@@ -4,8 +4,8 @@ module HasAPI
   extend ActiveSupport::Concern
 
   included do
-    scope :errored, -> { where.not(api_errors: '[]').or(where.not(error_object: nil).where.not(error_object: '')) }
-    scope :successful, -> { where(api_errors: '[]').where(error_object: [nil, '']) }
+    scope :errored, -> { where.not(api_errors: '[]') }
+    scope :successful, -> { where(api_errors: '[]') }
   end
 
   def api_errors=(object)
@@ -15,7 +15,7 @@ module HasAPI
   def api_errors
     return super unless super.is_a?(String)
 
-    JSON.parse(super, symbolize_names: true)
+    JSON.parse(super)
   end
 
   def api_request=(object)
@@ -26,8 +26,16 @@ module HasAPI
     super(sanitize_api_object(object))
   end
 
+  def human_readable_errors
+    HasAPI::ErrorParser.call(self)
+  end
+
   def errored?
-    api_errors.any? || error_object.present?
+    api_errors.any?
+  end
+
+  def has_api?
+    true
   end
 
   def successful?
@@ -38,16 +46,21 @@ module HasAPI
 
   def sanitize_api_object(object)
     case object
-    when Array then object.to_json
+    when Array then return object.to_json
     when Hash then return object.to_json
+    when NilClass then return object
     when String
-      begin
-        return sanitize_api_object(JSON.parse(object))
-      rescue JSON::ParserError
-        # do nothing
+      if object.start_with?('http://') || object.start_with?('https://')
+        return sanitize_api_object({ url: object })
+      else
+        begin
+          return sanitize_api_object(JSON.parse(object))
+        rescue JSON::ParserError
+          # do nothing
+        end
       end
     end
 
-    object
+    raise "Not sure how to convert #{object.class} to JSON: #{object}"
   end
 end
