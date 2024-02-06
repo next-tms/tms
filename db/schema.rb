@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_02_235559) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_04_232931) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -551,7 +551,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_02_235559) do
     t.text "api_request"
     t.text "api_response"
     t.jsonb "api_errors", default: "[]", null: false
-    t.string "error_object"
     t.index ["dispatcher_id"], name: "index_pickups_on_dispatcher_id"
     t.index ["rate_id"], name: "index_pickups_on_rate_id"
     t.index ["shipment_id"], name: "index_pickups_on_shipment_id"
@@ -633,7 +632,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_02_235559) do
     t.string "source"
     t.boolean "declared_freight_classes", null: false
     t.jsonb "api_errors", default: "[]", null: false
-    t.string "error_object"
     t.index ["broker_carrier_id"], name: "index_rates_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_rates_on_broker_customer_id"
     t.index ["freight_kit_service_type"], name: "index_rates_on_freight_kit_service_type"
