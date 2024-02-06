@@ -37,7 +37,7 @@ module HasAPI
     def fix_grammar(message)
       return if message.blank?
       
-      message.gsub!(/zip code/i, 'ZIP code')
+      message.gsub(/zip code/i, 'ZIP code')
     end
   
     def parse_api_errors   
