@@ -75,8 +75,6 @@ class BrokerCarrier < ApplicationRecord
   # API key belonging to customer
   encrypts :encrypted_api_key
 
-  before_save :set_api_configured
-
   belongs_to :carrier
   belongs_to :broker
   belongs_to :broker_customer, optional: true
@@ -103,8 +101,15 @@ class BrokerCarrier < ApplicationRecord
 
   monetize :quote_padding_cents
 
-  scope :api_configured, -> { where(api_configured: true) }
-  scope :api_unconfigured, -> { where(api_configured: false) }
+  scope :api_configured, -> do
+    ids = joins(:carrier)
+          .where(carrier: Carrier.freight_kit_api)
+          .select(&:api_configured?)
+          .map(&:id)
+
+    where(id: ids)
+  end
+  scope :api_unconfigured, -> { where.not(id: api_configured.ids) }
   scope :blanket, -> { where(broker_customer: nil) }
 
   def api_configured?
@@ -143,16 +148,4 @@ class BrokerCarrier < ApplicationRecord
   end
 
   delegate :pickup_number_is_tracking_number?, to: :carrier
-
-  private
-
-  def set_api_configured
-    return self.api_configured = false if carrier.blank? || carrier.broker_carrier_credential_columns.empty?
-
-    carrier.broker_carrier_credential_columns.each do |column|
-      return self.api_configured = false if public_send(column).blank?
-    end
-
-    self.api_configured = true
-  end
 end

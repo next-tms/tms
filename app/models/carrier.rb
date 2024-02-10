@@ -70,6 +70,13 @@ class Carrier < ApplicationRecord
 
   accepts_nested_attributes_for :check_mailing_address
 
+  scope :freight_kit_api, -> do
+    ids = where(scac: FreightKit::Carriers.all.map(&:scac))
+          .select { |record| record.broker_carrier_credential_columns.any? }
+          .map(&:id)
+    where(id: ids)
+  end
+
   validates :name, uniqueness: true
   validates :mc_number, :scac, uniqueness: { allow_nil: true }
 

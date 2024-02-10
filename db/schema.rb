@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_04_232931) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_10_210604) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -160,7 +160,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_04_232931) do
     t.boolean "ignore_bol_requires_tracking_number", default: false
     t.integer "quickbooks_vendor_id"
     t.string "encrypted_api_key"
-    t.boolean "api_configured"
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
