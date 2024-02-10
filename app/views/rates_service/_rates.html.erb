@@ -6,14 +6,14 @@
         <td></td>
         <td>
           <div class="text-nowrap">
-            <% if not rate.tracking_carrier.blank? %>
+            <% if rate.tracking_carrier.present? %>
               <%= rate.tracking_carrier.name %>
               <br>
               <span class="text-muted"> via <%= rate.broker_carrier.carrier.name %></span>
             <% else %>
               <%= rate.broker_carrier.carrier.name %>
             <% end %>
-            <% unless rate.broker_carrier.broker_customer.blank? %>
+            <% if rate.broker_carrier.broker_customer.present? %>
               <br>
               <span class="text-muted"> via <%= rate.broker_carrier.broker_customer.customer.name %> account</span>
             <% end %>
@@ -57,27 +57,27 @@
                             url: (user_type == :customer ? customer_shipment_path(shipment) : broker_shipment_path(shipment)),
                             applied_rate_uid: rate.uid
                           },
-                          class: 'btn btn-sm btn-primary'
+                          class: 'btn btn-sm btn-success'
               %>
             <% else %>
               <%= link_to 'Book',
                           book_modal_broker_shipment_path(shipment, shipment: { applied_rate_uid: rate.uid }),
                           data: { turbo_frame: 'modal' },
-                          class: 'btn btn-sm btn-primary'
+                          class: 'btn btn-sm btn-success'
               %>
             <% end %>
 
-            <% if user_type == :customer &&
+            <% if user_type == :broker &&
                   rate.broker_carrier.api_configured? &&
                   rate.broker_carrier.to_freight_kit_carrier.class.implemented?(:create_pickup)
             %>
-              <%= link_to 'Pickup',
+              <%= link_to 'Dispatch',
                           pickup_modal_broker_shipment_path(
                             shipment,
                             shipment: { applied_rate_uid: rate.uid }
                           ),
-                          data: { 'turbo-frame': 'modal' },
-                          class: 'btn btn-sm btn-outline-primary'
+                          data: { turbo_frame: 'modal' },
+                          class: 'btn btn-sm btn-outline-success'
               %>
             <% end %>
           </div>
@@ -86,10 +86,11 @@
 
       <td>
         <div class="text-nowrap">
-          <% if not rate.tracking_carrier.blank? %>
+          <% if rate.tracking_carrier.present? %>
             <%= rate.tracking_carrier.name %>
             <br>
             <span class="text-muted"> via <%= rate.broker_carrier.carrier.name %></span>
+
             <% unless rate.preferred? %>
               <br>
               <%= icon 'solid', 'triangle-exclamation', 'Unpreferred' %>
@@ -97,7 +98,8 @@
           <% else %>
             <%= rate.broker_carrier.carrier.name %>
           <% end %>
-          <% unless rate.broker_carrier.broker_customer.blank? %>
+
+          <% if rate.broker_carrier.broker_customer.present? %>
             <br>
             <span class="text-muted"> via <%= rate.broker_carrier.broker_customer.customer.name %> account</span>
           <% end %>
@@ -129,12 +131,9 @@
         <% elsif user_type == :customer %>
           <%= humanized_money_with_symbol(upcharged_rate, no_cents_if_whole: false) %>
         <% else %>
-          <%= humanized_money_with_symbol(rate.cost, no_cents_if_whole: false) %>
-          <%= link_to 'Details',
-                      broker_rate_breakdown_modal_path(rate),
-                      data: { 'turbo-frame': 'modal' },
-                      class: 'btn btn-sm btn-outline-secondary'
-          %>
+          <%= link_to broker_rate_breakdown_modal_path(rate), data: { turbo_frame: 'modal' } do %>
+            <%= humanized_money_with_symbol(rate.cost, no_cents_if_whole: false) %>
+          <% end %>
         <% end %>
       </td>
 
