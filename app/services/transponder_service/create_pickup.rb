@@ -23,16 +23,6 @@ module TransponderService
     def call
       response = TransponderService.mutate(:create_pickup, pickup.broker_carrier, pickup)
 
-      raise response[:errors].map { |error| error[:message] }.join(', ') if response.dig(:errors).any?
-
-      if response[:error].present?
-        raise response[:error] if Rails.env.development?
-
-        Honeybadger.notify(response[:error])
-
-        return false
-      end
-
       pickup_confirmation = response[:pickup_number]
 
       if pickup_confirmation.present?

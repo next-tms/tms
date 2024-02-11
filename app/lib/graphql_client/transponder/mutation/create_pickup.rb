@@ -25,7 +25,6 @@ module GraphQLClient
             service: $service,
             shipment: $shipment
           ) {
-            error
             labels {
               contentType
               dataBase64
