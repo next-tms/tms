@@ -8,10 +8,12 @@ ARG BUNDLER_GITHUB_OAUTH_KEY
 ENV BUILD_ENV 1
 ENV BUNDLER_WITHOUT development test
 ENV DATABASE_URL postgres://fake@localhost/fake
+ENV DOMAIN=example.com
 ENV GEONAMES_USERNAME 1
 ENV POSTMARK_API_TOKEN 1
 ENV RACK_ENV production
 ENV RAILS_ENV production
+ENV SECRET_KEY_BASE_DUMMY=1
 
 COPY . /app
 WORKDIR /app
@@ -23,11 +25,11 @@ RUN apk add --no-cache --virtual .gem-installdeps build-base \
                                                   libxml2-dev \
                                                   libxslt-dev && \
     gem install bundler -v 2.5.5 && \
-    gem install nokogiri --platform=ruby -- --use-system-libraries && \
+    gem install nokogiri -v 1.16.2 --platform=ruby -- --use-system-libraries && \
     bundle config github.com $BUNDLER_GITHUB_OAUTH_KEY && \
     bundle install --retry 5 && \
     bundle exec bootsnap precompile app/ lib/ && \
-    SECRET_KEY_BASE=`bundle exec rake secret` bin/rails assets:precompile && \
+    bin/rails assets:precompile && \
     rm -rf $GEM_HOME/cache && \
     apk del .gem-installdeps
 
