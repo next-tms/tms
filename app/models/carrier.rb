@@ -48,8 +48,6 @@ class Carrier < ApplicationRecord
     website: %i[website_username website_password]
   }.freeze
 
-  belongs_to :company
-
   # API key belonging to Next TMS
   encrypts :encrypted_api_key
   encrypts :encrypted_proxy_url

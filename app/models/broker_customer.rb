@@ -144,8 +144,8 @@ class BrokerCustomer < ApplicationRecord
 
   monetize :default_upcharge_cents, allow_nil: true
 
-  serialize :shipment_string_patterns, Array
-  serialize :valid_freight_classes, Array
+  serialize :shipment_string_patterns, coder: YAML, type: Array
+  serialize :valid_freight_classes, coder: YAML, type: Array
 
   validate :check_pricing_rules
 

@@ -64,8 +64,6 @@ class Problem < ApplicationRecord
 
   after_save :update_suppressions
 
-  alias_attribute :problematic, :resolvable
-
   belongs_to :assigned_to, class_name: 'User'
   belongs_to :resolvable, polymorphic: true # TODO: Rename to problematic
   belongs_to :resolved_by, class_name: 'User', optional: true
@@ -118,7 +116,7 @@ class Problem < ApplicationRecord
   end
 
   def suppressive?
-    return true unless resolved? || suppressions.empty?
+    unresolved? && suppressions.any?
   end
 
   def unresolved?
@@ -132,7 +130,7 @@ class Problem < ApplicationRecord
 
     return if problematic_rule.blank?
 
-    suppressors = problematic_rule.with(problematic).suppressors
+    suppressors = problematic_rule.with(resolvable).suppressors
     return if suppressors.none?
 
     suppressions.where.not(suppressor: suppressors).destroy_all

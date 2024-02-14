@@ -73,8 +73,6 @@ class Broker < ApplicationRecord
 
   phony_normalize :phone, default_country_code: 'US'
 
-  serialize :time_zone
-
   validates :customer_service_email, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :customer_service_email, presence: true
   validates :name, presence: true

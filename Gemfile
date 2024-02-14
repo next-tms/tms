@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.3'
 
-gem 'rails', '~> 7.0.8'
+gem 'rails', '~> 7.1.0'
 gem 'sprockets-rails', '~> 3.4.2'
 
 gem 'pg', '~> 1.4.6'
@@ -40,7 +40,7 @@ end
 
 group :development do
   gem 'annotate', '~> 3.2.0'
-  gem 'bullet', '~> 7.0.7'
+  gem 'bullet', '~> 7.1.6'
   gem 'graphiql-rails', '~> 1.9'
   gem 'letter_opener'
   gem 'listen', '>= 3.0.5', '< 3.9'

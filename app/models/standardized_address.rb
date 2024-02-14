@@ -64,10 +64,10 @@ class StandardizedAddress < ApplicationRecord
 
   has_many :addresses, dependent: :nullify
 
-  serialize :google_places_spot_cached
-  serialize :open_street_map_result_cached
-  serialize :original_attributes
-  serialize :smarty_streets_result_cached
+  serialize :google_places_spot_cached, coder: YAML
+  serialize :open_street_map_result_cached, coder: YAML
+  serialize :original_attributes, coder: YAML
+  serialize :smarty_streets_result_cached, coder: YAML
 
   validate :region_matches_country
 
@@ -96,9 +96,9 @@ class StandardizedAddress < ApplicationRecord
   end
 
   def restaurant?
-    return nil unless types
+    return unless types
 
-    !(types & ['food', 'meal takeaway', 'restaurant']).empty?
+    !!types.intersect?(['food', 'meal takeaway', 'restaurant'])
   end
 
   def blank_to_nil(obj)
@@ -127,7 +127,10 @@ class StandardizedAddress < ApplicationRecord
   def open_street_map_result
     return if skip_open_street_map_result_api_request
     return @open_street_map_result if @open_street_map_result
-    return @open_street_map_result = open_street_map_result_cached if up_to_date_cached_response?(:open_street_map_result)
+
+    if up_to_date_cached_response?(:open_street_map_result)
+      return @open_street_map_result = open_street_map_result_cached
+    end
 
     # Temporarily disabled
     self.open_street_map_result_updated_at = Time.current
@@ -189,7 +192,7 @@ class StandardizedAddress < ApplicationRecord
     # Removed "aero", "aviation" as they can lead to incorrect type
     next_types << 'airport' if ['aircraft', 'avionic', 'hangar'].any? { |word| streets_formatted.include?(word) }
 
-    yaml = YAML.load_file(File.join(Rails.root, 'config', 'postal_codes.yml'))
+    yaml = YAML.load_file(Rails.root.join('config/postal_codes.yml').to_s)
     military_postal_codes = yaml['MILITARY'].inject([]) { |arr, postal_code| arr << postal_code.to_s }
     military_postal_codes.each do |military_postal_code|
       if postal_code.start_with?(military_postal_code) || (postal_code == military_postal_code)
@@ -223,7 +226,9 @@ class StandardizedAddress < ApplicationRecord
   end
 
   def set_coordinates
-    if open_street_map_result.present? && open_street_map_result['lat'].present? && open_street_map_result['lon'].present?
+    if open_street_map_result.present? &&
+       open_street_map_result['lat'].present? &&
+       open_street_map_result['lon'].present?
       self.latitude = open_street_map_result['lat']
       self.longitude = open_street_map_result['lon']
       return true
@@ -272,8 +277,8 @@ class StandardizedAddress < ApplicationRecord
     updated_at_key = "#{type}_updated_at"
 
     if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_postal_code?
-      self.send("#{cache_key}=", nil)
-      self.send("#{updated_at_key}=", nil)
+      send("#{cache_key}=", nil)
+      send("#{updated_at_key}=", nil)
     end
 
     updated_at_timestamp = send(updated_at_key)
@@ -286,18 +291,18 @@ class StandardizedAddress < ApplicationRecord
     updated_at_key = "#{type}_updated_at"
     skip_api_request_key = "skip_#{type}_api_request"
 
-    # Prevent calling the API multiple times during Shipment Creation. Before a shipment is created standardized address is
-    # called multiple times for address checking specifically on Suggesting Broker Accessorials. On Shipment creation previously the
-    # Geolocation APIs are called atleast 8 times
-    self.send("#{skip_api_request_key}=", true) if response.blank? && self.new_record?
+    # Prevent calling the API multiple times during Shipment Creation. Before a shipment is created standardized address
+    # is called multiple times for address checking specifically on Suggesting Broker Accessorials. On Shipment creation
+    # previously the Geolocation APIs are called atleast 8 times
+    send("#{skip_api_request_key}=", true) if response.blank? && new_record?
 
     # Update table columns to ensure we only call the API every 3 months if its already cached,
     # use #update_columns so it would just directly update the DB and not run any active record callbacks
-    if self.persisted?
-      update_columns(cache_key => response, updated_at_key => DateTime.current)
+    if persisted?
+      update_columns(cache_key: response, updated_at_key: Time.current)
     else
-      self.send("#{cache_key}=", response)
-      self.send("#{updated_at_key}=",  DateTime.current)
+      send("#{cache_key}=", response)
+      send("#{updated_at_key}=", Time.current)
     end
   end
 end
