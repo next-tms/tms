@@ -1,9 +1,5 @@
 <% provide :title, "Load #{@shipment.load_id}" %>
 
-<% content_for(:alt_links) do %>
-  <link rel="alternate" type="application/json" title="JSON" href="<%= api_v1_customer_shipment_path(@shipment) %>" />
-<% end %>
-
 <%= render 'member_header' %>
 
 <h2>Overview</h2>

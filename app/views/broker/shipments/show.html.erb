@@ -1,9 +1,5 @@
 <% provide :title, "Load #{@shipment.load_id}" %>
 
-<% content_for(:alt_links) do %>
-  <link rel="alternate" type="application/json" title="JSON" href="<%= api_v1_broker_shipment_path(@shipment) %>" />
-<% end %>
-
 <%= render 'member_header' %>
 
 <% if (current_user.role?(:dispatcher) || current_user.sales_rep_for?(@shipment.broker_customer)) &&

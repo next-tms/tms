@@ -14,8 +14,6 @@ gem 'importmap-rails', '~> 1.2.1'
 gem 'stimulus-rails', '~> 1.1.1'
 gem 'turbo-rails', '~> 1.4.0'
 
-gem 'jbuilder', '~> 2.11'
-
 gem 'redis', '~> 4.8'
 
 gem 'tzinfo-data'
@@ -57,8 +55,6 @@ group :test do
   gem 'timecop'
 end
 
-gem 'responders'
-
 source 'https://rails-assets.org' do
   gem 'rails-assets-tether', '>= 1.3.3'
 end
@@ -84,11 +80,9 @@ gem 'honeybadger', '~> 5.2'
 gem 'sidekiq', '~> 7.2.0'
 gem 'sidekiq-scheduler', '~> 5.0.3'
 
-gem 'active_model_serializers', '~> 0.10.13'
 gem 'barby'
 gem 'business_time'
 gem 'httparty'
-gem 'jwt'
 gem 'money-rails', '~> 1.15.0'
 gem 'postmark-rails'
 gem 'simple_command'

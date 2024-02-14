@@ -10,26 +10,6 @@ Rails.application.routes.draw do
 
   mount Sidekiq::Web => '/sidekiq'
 
-  namespace :api, defaults: { format: :json } do
-    namespace :v1 do
-      post 'authenticate', to: 'authentication#authenticate'
-
-      resources :shipments, param: :load_id do
-        member { get 'tracking-events', as: :tracking_events }
-      end
-
-      namespace :broker do
-        resources :shipments, param: :load_id
-      end
-
-      namespace :customer do
-        resources :shipments, param: :load_id do
-          member { get 'quote', as: :quote }
-        end
-      end
-    end
-  end
-
   devise_for :users, controllers: { invitations: 'users/invitations', registrations: 'users/registrations' }
 
   as :user do

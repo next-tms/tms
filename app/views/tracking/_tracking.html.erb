@@ -13,8 +13,6 @@
   </a>
   <ul class="dropdown-menu" aria-labelledby="shipment-mark-dropdown">
     <%= link_to 'RSS', tracking_path(load_id: @shipment.load_id, format: 'rss'), target: '_blank', class: 'dropdown-item' %>
-    <div class="dropdown-divider"></div>
-    <%= link_to 'API (JSON)', tracking_events_api_v1_shipment_path(@shipment), target: '_blank', class: 'dropdown-item' %>
   </ul>
 </div>
 
