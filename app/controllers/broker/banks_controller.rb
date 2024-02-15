@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Broker::BanksController < Broker::BrokerController
-  before_action :set_bank, only: %i[activity show edit update destroy]
+  before_action :set_bank, only: %i[activity show edit update]
   before_action :authenticate_user!
   before_action :require_accounts_payable
 
@@ -59,7 +59,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def show
-    authorize! @bank, to: :show?, with: BrokerPolicy
+    authorize!(@bank, to: :show?, with: BrokerPolicy)
   end
 
   def update
@@ -72,7 +72,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def quickbooks
-    authorize! current_user, to: :root_show?, with: QuickbooksPolicy
+    authorize!(current_user, to: :root_show?, with: QuickbooksPolicy)
 
     @banks = current_user
              .broker
@@ -86,7 +86,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def update_quickbooks
-    authorize! current_user, to: :root_show?, with: QuickbooksPolicy
+    authorize!(current_user, to: :root_show?, with: QuickbooksPolicy)
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)

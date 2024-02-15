@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
 class Broker::ClaimsController < Broker::BrokerController
-  before_action :set_claim, only: %i[destroy edit pay show update]
+  before_action :set_claim, only: %i[destroy edit show update]
   before_action :authenticate_user!
   before_action :require_claims
 
   def create
     @claim = Claim.new(claim_params)
 
-    redirect_to [:broker, @claim] and return if @claim.save
+    redirect_to([:broker, @claim]) and return if @claim.save
 
-    render :new
+    render(:new)
   end
 
   def destroy
     @claim.destroy
-    redirect_to broker_claims_path
+    redirect_to(broker_claims_path)
   end
 
   def edit; end
@@ -30,11 +30,11 @@ class Broker::ClaimsController < Broker::BrokerController
   def new
     @claim = Claim.new
     @claim.due_on = 90.days.from_now.in_time_zone(current_user.broker.time_zone).to_date
-    @claim.shipment = current_user.broker.shipments.find_by_id(params[:shipment_id])
+    @claim.shipment = current_user.broker.shipments.find_by(id: params[:shipment_id])
 
     @claim.claim_items.build(payee: @claim.shipment.broker_carrier, total: @claim.shipment.total_charges)
 
-    return unless @claim.shipment.blank?
+    return if @claim.shipment.present?
 
     flash[:error] = 'Cannot open a claim without a shipment'
     redirect_back(fallback_location: root_path)
@@ -51,10 +51,10 @@ class Broker::ClaimsController < Broker::BrokerController
   end
 
   def update
-    redirect_to broker_claim_path(@claim) and return if @claim.update(claim_params)
+    redirect_to(broker_claim_path(@claim)) and return if @claim.update(claim_params)
 
     flash[:error] = 'Unable to update claim'
-    render :edit
+    render(:edit)
   end
 
   def show; end
@@ -62,7 +62,7 @@ class Broker::ClaimsController < Broker::BrokerController
   private
 
   def require_claims
-    require_role 'claims'
+    require_role('claims')
   end
 
   # Use callbacks to share common setup or constraints between actions.
@@ -78,13 +78,13 @@ class Broker::ClaimsController < Broker::BrokerController
       :due_on,
       :shipment_id,
       claim_items_attributes: %i[
-        _destroy
-        id
-        balance
-        payee_id
-        payee_type
-        total
-      ]
+                                _destroy
+                                id
+                                balance
+                                payee_id
+                                payee_type
+                                total
+                              ],
     )
   end
 

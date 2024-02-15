@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Broker::ReceivablesController < Broker::BrokerController
-  before_action :set_receivable, only: %i[destroy edit pay rebuild show update]
+  before_action :set_receivable, only: %i[destroy edit rebuild show update]
   before_action :authenticate_user!
   before_action :require_accounts_receivable
 
   def destroy
     @receivable.destroy
-    redirect_to broker_receivables_path
+    redirect_to(broker_receivables_path)
   end
 
   def index
@@ -30,7 +30,7 @@ class Broker::ReceivablesController < Broker::BrokerController
 
   def paid
     @q = current_user.broker.receivables.paid.includes(
-      [:shipment, { broker_customer: :customer }, :authorized_by]
+      [:shipment, { broker_customer: :customer }, :authorized_by],
     ).ransack(params[:q])
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
@@ -51,7 +51,7 @@ class Broker::ReceivablesController < Broker::BrokerController
     @receivable.updated_by = current_user
     @receivable.save
 
-    redirect_to broker_receivable_path(@receivable)
+    redirect_to(broker_receivable_path(@receivable))
   end
 
   def create; end
@@ -62,19 +62,19 @@ class Broker::ReceivablesController < Broker::BrokerController
     @receivable.assign_attributes(receivable_params)
     @receivable.updated_by = current_user
 
-    @receivable.authorized_by = current_user unless receivable_params[:authorized_at].blank?
-    @receivable.sent_by = current_user unless receivable_params[:sent_at].blank?
+    @receivable.authorized_by = current_user if receivable_params[:authorized_at].present?
+    @receivable.sent_by = current_user if receivable_params[:sent_at].present?
 
     if @receivable.save
       if current_user.broker.intuit_account&.connected?
         PushReceivableToQuickbooksJob.perform_now(receivable: @receivable)
       end
 
-      redirect_to broker_receivable_path(@receivable) and return
+      redirect_to(broker_receivable_path(@receivable)) and return
     end
 
-    flash[:error] = "Unable to update invoice: #{@receivable.errors.full_messages.join('<br>').html_safe}"
-    render :show
+    flash[:error] = "Unable to update invoice: #{@receivable.errors.full_messages.join("<br>").html_safe}"
+    render(:show)
   end
 
   def show
@@ -86,7 +86,7 @@ class Broker::ReceivablesController < Broker::BrokerController
   private
 
   def require_accounts_receivable
-    require_role 'accounts_receivable'
+    require_role('accounts_receivable')
   end
 
   # Use callbacks to share common setup or constraints between actions.
@@ -100,6 +100,6 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def required_includes
-    [{ shipment: { carrier_pod_attachment: :blob }}, { broker_customer: :customer }, :authorized_by]
+    [{ shipment: { carrier_pod_attachment: :blob } }, { broker_customer: :customer }, :authorized_by]
   end
 end

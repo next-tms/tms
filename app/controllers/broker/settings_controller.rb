@@ -6,7 +6,7 @@ class Broker::SettingsController < Broker::BrokerController
     require_role('accounts_payable')
   end
 
-  before_action :set_setting, only: %i[company destroy edit show update]
+  before_action :set_setting, only: %i[company edit show update]
 
   def company
   end
