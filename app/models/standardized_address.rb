@@ -299,7 +299,7 @@ class StandardizedAddress < ApplicationRecord
     # Update table columns to ensure we only call the API every 3 months if its already cached,
     # use #update_columns so it would just directly update the DB and not run any active record callbacks
     if persisted?
-      update_columns(cache_key: response, updated_at_key: Time.current)
+      update_columns(cache_key => response, updated_at_key => Time.current)
     else
       send("#{cache_key}=", response)
       send("#{updated_at_key}=", Time.current)
