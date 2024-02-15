@@ -114,7 +114,7 @@ gem 'matrix' # explicitly for prawn
 gem 'rqrcode'
 
 gem 'pagy'
-gem 'ransack', '~> 3.2.1'
+gem 'ransack', '~> 4.1.1'
 
 gem 'audited'
 gem 'noticed'

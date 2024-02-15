@@ -57,6 +57,14 @@ class Problem < ApplicationRecord
 
       records
     end
+
+    def ransackable_attributes(auth_object = nil)
+      ['problematic_rule_code']
+    end
+
+    def ransackable_associations(auth_object = nil)
+      []
+    end
   end
 
   include DiscussableTopic

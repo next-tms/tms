@@ -72,6 +72,14 @@ class BrokerCustomer < ApplicationRecord
     def companyable_order
       joins(:customer).order('customers.name')
     end
+
+    def ransackable_attributes(auth_object = nil)
+      []
+    end
+
+    def ransackable_associations(auth_object = nil)
+      ['customer']
+    end
   end
 
   include ::Instigatable

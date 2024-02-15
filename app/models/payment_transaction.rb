@@ -56,6 +56,16 @@
 #  fk_rails_...  (shipment_id => shipments.id)
 #
 class PaymentTransaction < ApplicationRecord
+  class << self
+    def ransackable_attributes(auth_object = nil)
+      ['id', 'legacy_load_id', 'notes']
+    end
+
+    def ransackable_associations(auth_object = nil)
+      ['shipment']
+    end
+  end
+
   include PaymentTransaction::QuickbooksSyncable
 
   audited
@@ -86,7 +96,7 @@ class PaymentTransaction < ApplicationRecord
   end
 
   def duplicates
-    return [] unless shipment.present?
+    return [] if shipment.blank?
 
     broker_carrier.payment_transactions.where(shipment:) - [self]
   end
@@ -96,7 +106,7 @@ class PaymentTransaction < ApplicationRecord
   end
 
   def shipment_load_id=(load_id)
-    self.shipment = Shipment.find_by_load_id(load_id)
+    self.shipment = Shipment.find_by(load_id: load_id)
   end
 
   def shipment_load_id
@@ -119,7 +129,7 @@ class PaymentTransaction < ApplicationRecord
   end
 
   def set_invoice
-    return unless invoice.blank?
+    return if invoice.present?
 
     self.invoice = shipment&.pro || legacy_load_id
   end
@@ -130,7 +140,7 @@ class PaymentTransaction < ApplicationRecord
     new_shipment = Shipment.where(broker_carrier:).where(pro:)
     self.shipment = new_shipment.first if new_shipment.size == 1
 
-    return unless shipment.present?
+    return if shipment.blank?
 
     self.broker ||= shipment.broker
     self.broker_carrier = shipment.broker_carrier

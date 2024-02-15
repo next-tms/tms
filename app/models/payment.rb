@@ -55,6 +55,16 @@
 #  fk_rails_...  (payment_method_id => payment_methods.id)
 #
 class Payment < ApplicationRecord
+  class << self
+    def ransackable_attributes(auth_object = nil)
+      ['id']
+    end
+
+    def ransackable_associations(auth_object = nil)
+      ['approved_by', 'bank', 'broker_carrier', 'payment_transactions']
+    end
+  end
+
   include Payment::QuickbooksSyncable
 
   audited
@@ -94,7 +104,7 @@ class Payment < ApplicationRecord
   end
 
   def overdue?
-    due? && due_on < DateTime.current.in_time_zone(broker.time_zone).to_date
+    due? && due_on < broker.time_zone.now.to_date
   end
 
   def paid

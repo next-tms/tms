@@ -192,6 +192,28 @@
 #  fk_rails_...  (updated_by_id => users.id)
 #
 class Shipment < ApplicationRecord
+  class << self
+    def ransackable_attributes(auth_object = nil)
+      [
+        'bol_notes',
+        'broker_notes',
+        'created_at',
+        'delivered_at',
+        'load_id',
+        'pro',
+        'receiver_contact_name',
+        'receiver_name',
+        'shipper_contact_name',
+        'shipper_name',
+        'tracking_carrier_pro',
+      ]
+    end
+
+    def ransackable_associations(auth_object = nil)
+      ['broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address']
+    end
+  end
+
   include Shipment::Documentable
   include Shipment::Fingerprintable
   include Shipment::HasPaymentTransactions

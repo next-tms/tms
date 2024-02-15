@@ -26,6 +26,16 @@
 #  fk_rails_...  (broker_id => brokers.id)
 #
 class Bank < ApplicationRecord
+  class << self
+    def ransackable_attributes(auth_object = nil)
+      ['name']
+    end
+
+    def ransackable_associations(auth_object = nil)
+      []
+    end
+  end
+
   include Bank::QuickbooksSyncable
 
   belongs_to :broker

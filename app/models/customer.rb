@@ -14,6 +14,16 @@
 #  index_customers_on_name  (name)
 #
 class Customer < ApplicationRecord
+  class << self
+    def ransackable_attributes(auth_object = nil)
+      ['name']
+    end
+
+    def ransackable_associations(auth_object = nil)
+      []
+    end
+  end
+
   has_many :broker_customers
   has_many :brokers, through: :broker_customers
 

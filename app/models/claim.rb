@@ -33,6 +33,16 @@
 #  fk_rails_...  (shipment_id => shipments.id)
 #
 class Claim < ApplicationRecord
+  class << self
+    def ransackable_attributes(auth_object = nil)
+      []
+    end
+
+    def ransackable_associations(auth_object = nil)
+      ['shipment']
+    end
+  end
+
   before_save :set_balance_cents
   before_save :set_total_cents
 

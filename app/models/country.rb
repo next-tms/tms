@@ -20,6 +20,16 @@
 #   @return [Time]
 #
 class Country < ApplicationRecord
+  class << self
+    def ransackable_attributes(auth_object = nil)
+      ['alpha2_code', 'alpha3_code', 'un_code']
+    end
+
+    def ransackable_associations(auth_object = nil)
+      ['regions']
+    end
+  end
+
   has_many :broker_countries
   has_many :brokers, through: :broker_countries
   has_many :regions
@@ -29,7 +39,7 @@ class Country < ApplicationRecord
   validates :un_code, presence: true
 
   def format_address(str)
-    return nil if str.blank?
+    return if str.blank?
 
     case alpha2_code
     when 'US'

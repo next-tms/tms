@@ -28,6 +28,16 @@
 #  fk_rails_...  (country_id => countries.id)
 #
 class Region < ApplicationRecord
+  class << self
+    def ransackable_attributes(auth_object = nil)
+      ['abbreviation', 'iso31662']
+    end
+
+    def ransackable_associations(auth_object = nil)
+      ['country']
+    end
+  end
+
   after_save :create_area
 
   belongs_to :country

@@ -61,6 +61,14 @@ class Receivable < ApplicationRecord
   class << self
     # @todo Remove
     delegate :build_from_shipment, to: :new
+
+    def ransackable_attributes(auth_object = nil)
+      []
+    end
+
+    def ransackable_associations(auth_object = nil)
+      ['authorized_by', 'shipment']
+    end
   end
 
   include Receivable::QuickbooksSyncable

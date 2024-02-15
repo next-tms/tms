@@ -33,6 +33,14 @@ class Setting < ApplicationRecord
       CONFIGURATION.map { |entry| entry[:key] }
     end
 
+    def ransackable_attributes(auth_object = nil)
+      ['key', 'value']
+    end
+
+    def ransackable_associations(auth_object = nil)
+      []
+    end
+
     def value(key, fallback_value = nil)
       value!(key)
     rescue ActiveRecord::RecordNotFound

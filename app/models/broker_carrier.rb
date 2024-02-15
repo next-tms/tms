@@ -65,6 +65,14 @@ class BrokerCarrier < ApplicationRecord
     def companyable_order
       joins(:carrier).order('carriers.name')
     end
+
+    def ransackable_attributes(auth_object = nil)
+      []
+    end
+
+    def ransackable_associations(auth_object = nil)
+      ['broker_customer', 'carrier']
+    end
   end
 
   include BrokerCarrier::QuickbooksSyncable

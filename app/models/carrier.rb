@@ -40,6 +40,16 @@
 #  fk_rails_...  (check_mailing_address_id => addresses.id)
 #
 class Carrier < ApplicationRecord
+  class << self
+    def ransackable_attributes(auth_object = nil)
+      ['name', 'scac']
+    end
+
+    def ransackable_associations(auth_object = nil)
+      []
+    end
+  end
+
   include Companyable
 
   INTERSTELLAR_CREDENTIAL_TYPE_BROKER_CARRIER_COLUMNS = {
