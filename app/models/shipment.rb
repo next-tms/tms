@@ -784,12 +784,6 @@ class Shipment < ApplicationRecord
     @flattened_items
   end
 
-  def linear_ft
-    Shipment::LinearFtService.call(self).value.to_i
-  rescue Shipment::LinearFtService::UncalculableError
-    nil
-  end
-
   def accessible_by?(user)
     if user.broker?
       return true if broker_customer.blank?

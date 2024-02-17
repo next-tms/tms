@@ -149,7 +149,7 @@
         <tr>
           <th>Piece</th>
           <th>Description</th>
-          <th>HZ<small class="text-muted">***</small></th>
+          <th>HZ<small class="text-muted">**</small></th>
           <th><small class="text-muted">inches</small><br>Dimensions</th>
           <th><small class="text-muted">lbs</small><br>Weight</th>
           <th>Class</th>
@@ -183,11 +183,7 @@
           <td><%= pluralize @shipment.total_pieces, 'piece' %></td>
           <td>&nbsp;</td>
           <td>&nbsp;</td>
-          <td>
-            <% if @shipment.linear_ft %>
-              <span class="text-nowrap"><%= @shipment.linear_ft %> linear ft <small class="text-muted">*, **</small></span>
-            <% end %>
-          </td>
+          <td>&nbsp;</td>
           <td><%= number_with_delimiter @shipment.total_weight %> lbs</td>
           <td>&nbsp;</td>
           <td>&nbsp;</td>
@@ -205,7 +201,7 @@
       </tfoot>
     </table>
     <p class="text-muted">
-      <small>* Individual values shown may not match total shown as individual lines are rounded up, but totals are calculated precisely then rounded up ** Linear footage calculation assumes pallets can be rotated in any direction *** HZ indicates hazardous material</small>
+      <small>* Individual values shown may not match total shown as individual lines are rounded up, but totals are calculated precisely then rounded up ** HZ indicates hazardous material</small>
     </p>
   </div>
 <% end %>
