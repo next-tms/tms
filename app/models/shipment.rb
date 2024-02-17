@@ -214,20 +214,20 @@ class Shipment < ApplicationRecord
     end
   end
 
-  include Shipment::Documentable
+  include Documentable
+  include Discussable
+  include Problematic
+
   include Shipment::Fingerprintable
   include Shipment::HasPaymentTransactions
   include Shipment::HasReceivables
   include Shipment::Transponible
 
-  include Discussable
-  include Problematic
+  DOCUMENTABLE_TYPES = %i[broker_quote broker_bol broker_label broker_dispatch_sheet]
 
   attr_accessor :dispatch_pickup
-  attr_reader :previous_changes
 
   before_save :sanitize_addresses_street
-  before_save :set_previous_changes
 
   audited
 
@@ -358,6 +358,15 @@ class Shipment < ApplicationRecord
 
   has_many :pickups
 
+  has_one_attached :broker_bol
+  has_one_attached :broker_dispatch_sheet
+  has_one_attached :broker_label
+  has_one_attached :broker_quote
+  has_one_attached :carrier_bol   # TODO: Rename to carrier_scanned_bol
+  has_one_attached :carrier_label # TODO: Rename to carrier_bol
+  has_one_attached :carrier_pod
+  has_one_attached :broker_carrier_quote
+
   belongs_to :receiver_address, class_name: 'Address'
   belongs_to :shipper_address, class_name: 'Address'
 
@@ -416,6 +425,7 @@ class Shipment < ApplicationRecord
   phony_normalize :receiver_contact_phone, default_country_code: 'US'
 
   after_create :notify_of_new_shipment
+
   before_save :send_notification
 
   # Remove applied_rate when carrier changes
@@ -445,6 +455,10 @@ class Shipment < ApplicationRecord
     return self.booked_at = Time.current if val == 'now' # for UI
 
     super
+  end
+
+  def broker_carrier_bol_requires_tracking_number?
+    broker_carrier.present? && broker_carrier.bol_requires_tracking_number?
   end
 
   def calculated_freight_classes?
@@ -895,10 +909,6 @@ class Shipment < ApplicationRecord
     preferred_dispatchers = broker_customer&.dispatchers.presence || broker.users.active.dispatchers
 
     self.dispatcher = preferred_dispatchers.order(Arel.sql('RANDOM()')).take
-  end
-
-  def set_previous_changes
-    @previous_changes = changes
   end
 
   def validate_future_pickup_by

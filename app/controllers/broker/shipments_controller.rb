@@ -165,8 +165,6 @@ class Broker::ShipmentsController < Broker::BrokerController
       end
     end
 
-    @shipment.refresh_documents!
-
     if @shipment.quote_only?
       redirect_to(quote_broker_shipment_path(@shipment))
       return
@@ -185,8 +183,6 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     respond_to do |format|
       if @shipment.save
-        @shipment.refresh_documents!
-
         format.html do
           if @shipment.dispatch_pickup
             redirect_to(broker_pickups_path(pickup: { rate_uid: @shipment.applied_rate.uid })) && return

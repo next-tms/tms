@@ -199,6 +199,7 @@ require 'rails_helper'
 
 RSpec.describe(Shipment, type: :model) do
   it_behaves_like 'discussable'
+  it_behaves_like 'documentable'
 
   describe 'relationships' do
     it { is_expected.to(belong_to(:applied_rate).required(false)) }
