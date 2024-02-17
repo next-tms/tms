@@ -1,5 +1,5 @@
 <tr id="<%= this_dom_id %>_broker_quote">
-  <% if shipment.broker_quote_valid? && shipment.broker_quote.attached? %>
+  <% if shipment.broker_quote.attached? %>
     <td><%= shipment.broker.name %></td>
     <td>Quote</td>
     <%= render 'broker/shipments/documents/actions', shipment:, document_type: :broker_quote %>

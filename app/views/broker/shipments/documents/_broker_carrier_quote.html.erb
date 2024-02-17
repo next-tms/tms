@@ -1,5 +1,5 @@
 <tr id="<%= this_dom_id %>_broker_carrier_quote">
-  <% if shipment.broker_carrier.present? && shipment.broker_carrier_quote.attached? %>
+  <% if shipment.broker_carrier_quote.attached? %>
     <td><%= shipment.broker_carrier.carrier.name %></td>
     <td>Carrier Quote</td>
     <%= render 'broker/shipments/documents/actions', shipment:, document_type: :broker_carrier_quote %>

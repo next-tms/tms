@@ -3,26 +3,18 @@
 <%= turbo_stream_from @shipment, :documents %>
 
 <%= render 'member_header' %>
-<h2>Documents</h2>
 
-<% if !@shipment.broker_bol_valid? && @shipment.pro.blank? && @shipment.broker_carrier&.bol_requires_tracking_number? %>
+<% if @shipment.undocumentable_reasons.any? %>
   <div class="alert alert-warning">
-    <p class="lead">Missing pro number</p>
-    <p>Some documents for this shipment were not generated because <%= @shipment.broker_carrier.carrier.name %> requires the pro number to be entered first.</p>
-  </div>
-<% end %>
+    <p class="lead">Documents missing</p>
 
-<% if !@shipment.broker_bol_valid? && (@shipment.shipper_name.blank? || @shipment.receiver_name.blank?) %>
-  <div class="alert alert-warning">
-    <p class="lead">Missing shipper or receiver name</p>
-    <p>Some documents for this shipment were not generated because the shipper or receiver name is blank.</p>
-  </div>
-<% end %>
+    <p>Errors prevented some documents from being created:</p>
 
-<% if !@shipment.broker_bol_valid? && !(@shipment.shipper_address.full_address? && @shipment.receiver_address.full_address?) %>
-  <div class="alert alert-warning">
-    <p class="lead">Missing shipper or receiver address</p>
-    <p>Some documents for this shipment were not generated because the shipper or receiver address is incomplete.</p>
+    <ul>
+      <% @shipment.undocumentable_reasons.each do |undocumentable_reason| %>
+        <li><%= undocumentable_reason %></li>
+      <% end %>
+    </ul>
   </div>
 <% end %>
 

@@ -828,6 +828,28 @@ class Shipment < ApplicationRecord
     broker_customer&.requires_charges_confirmed_on_receivables || broker.requires_charges_confirmed_on_receivables
   end
 
+  def undocumentable_reasons
+    return [] if broker_bol.attached?
+
+    [].tap do |builder|
+      if pro.blank? && broker_carrier.present? && broker_carrier.bol_requires_tracking_number?
+        builder << "#{self.class.human_attribute_name(:pro)} is blank and #{broker_carrier.carrier.name} requires it"
+      end
+
+      %i[shipper_name receiver_name].each do |attribute|
+        next if public_send(attribute).present?
+
+        builder << "#{self.class.human_attribute_name(attribute)} is blank"
+      end
+
+      %i[shipper_address receiver_address].each do |attribute|
+        next if public_send(attribute).full_address?
+
+        builder << "#{self.class.human_attribute_name(attribute)} is incomplete"
+      end
+    end
+  end
+
   def users_to_notify
     user_ids = (broker_customer&.sales_reps&.ids || []) +
                (broker.users.broker.with_role('dispatch')&.ids || []) +
