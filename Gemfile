@@ -26,7 +26,7 @@ group :development, :test do
   gem 'faker', '~> 3.2.0'
   gem 'pry'
   gem 'rails-controller-testing', '~> 1.0.5'
-  gem 'rspec-rails', '~> 6.0'
+  gem 'rspec-rails', '~> 6.1.1'
   gem 'rubocop-graphql', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false
