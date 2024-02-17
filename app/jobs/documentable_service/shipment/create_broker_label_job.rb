@@ -4,9 +4,9 @@ module DocumentableService
   class Shipment::CreateBrokerLabelJob < ApplicationJob
     queue_as :high_priority
 
-    def perform(broker_documents_fingerprint:, shipment:)
-      if [shipment.broker_documents_fingerprint, shipment.broker_label_shipment_fingerprint]
-         .include?(broker_documents_fingerprint)
+    def perform(shipment, broker_documents_fingerprint:)
+      if shipment.broker_label_shipment_fingerprint == broker_documents_fingerprint ||
+         shipment.broker_documents_fingerprint != broker_documents_fingerprint
         return
       end
 

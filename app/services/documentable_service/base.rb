@@ -39,8 +39,8 @@ module DocumentableService
 
       document_job_class
       .perform_later(
+        record,
         broker_documents_fingerprint: record.broker_documents_fingerprint,
-        record:,
       )
     end
 
