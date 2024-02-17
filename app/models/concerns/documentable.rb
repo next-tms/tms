@@ -10,16 +10,14 @@ module Documentable
 
   def broadcast_new_document_generated(document_type)
     broadcast_namespaces(document_type).each do |namespace|
-      partial = "#{namespace}/#{self.class.name.snakecase.pluralize}/documents/#{document_type}"
-
       broadcast_replace_to(
         self,
         :documents,
         target: broadcast_target(document_type, namespace),
         html: ApplicationController.render(
-          partial:,
+          partial: "#{namespace}/#{self.class.name.snakecase.pluralize}/documents/#{document_type}",
           locals: {
-            self.class.name.snakecase => self,
+            self.class.name.snakecase.to_sym => self,
             this_dom_id: dom_id(self)
           },
         ).html_safe,
@@ -29,12 +27,10 @@ module Documentable
 
   def broadcast_outdated_document(document_type)
     broadcast_namespaces(document_type).each do |namespace|
-      target = broadcast_target(document_type, namespace)
-
       broadcast_replace_to(
         self,
         :documents,
-        target:,
+        target: broadcast_target(document_type, namespace),
         html: "<tr id=\"#{target}\"></tr>".html_safe,
       )
     end
