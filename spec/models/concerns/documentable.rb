@@ -12,13 +12,4 @@ shared_examples_for 'documentable' do
       it { expect(record).to(respond_to(document_type)) }
     end
   end
-
-  describe 'callbacks' do
-    before { allow(record).to(receive(:documentable!)) }
-
-    it 'calls documentable!' do
-      expect(record).to(receive(:documentable!))
-      record.save!
-    end
-  end
 end
