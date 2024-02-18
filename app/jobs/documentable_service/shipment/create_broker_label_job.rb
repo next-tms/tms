@@ -53,6 +53,8 @@ module DocumentableService
         filename: "#{shipment.load_id} Labels.pdf",
         content_type: 'application/pdf',
       )
+
+      shipment.skip_documentable_callback = true
       shipment.broker_label.attach(blob)
       shipment.broadcast_new_document_generated(:broker_label)
 

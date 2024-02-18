@@ -11,8 +11,8 @@ module DocumentableService
 
       blob = ActiveStorage::Blob.create_and_upload!(content_type:, filename:, io:)
 
+      shipment.skip_documentable_callback = true
       shipment.broker_dispatch_sheet.attach(blob)
-
       shipment.broadcast_new_document_generated(:broker_dispatch_sheet)
     end
   end

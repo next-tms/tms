@@ -5,11 +5,13 @@ module Documentable
   include ActionView::RecordIdentifier
 
   included do
-    attr_accessor :changed_associations
+    attr_accessor :skip_documentable_callback
 
-    after_save :documentable!
+    after_commit :documentable!, unless: :skip_documentable_callback?
 
     before_save :set_changed_associations
+
+    store :documentable_data, accessors: %i[changed_associations]
   end
 
   def broadcast_new_document_generated(document_type)
@@ -82,5 +84,9 @@ module Documentable
 
       changed_associations[association.name] = true
     end
+  end
+
+  def skip_documentable_callback?
+    @skip_documentable_callback
   end
 end

@@ -25,6 +25,8 @@ module DocumentableService
     end
 
     def call
+      record.skip_documentable_callback = true
+
       if missing_changes.any?
         destroy_document!
         return
@@ -62,33 +64,29 @@ module DocumentableService
     end
 
     def matched_changes
-      @matched_changes ||= [].tap do |builder|
-        ActiveRecord::Base.transaction(requires_new: true) do
-          check_associations.each do |association|
-            next if record.changed_associations.exclude?(association)
+      @matched_changes ||= if record.changed_associations.nil?
+                             return []
+                           else
+                             [].tap do |builder|
+                               ActiveRecord::Base.transaction(requires_new: true) do
+                                 check_associations.each do |association|
+                                   next if record.changed_associations.exclude?(association)
 
-            builder << association
-          end
+                                   builder << association
+                                 end
 
-          check_attributes.each do |attribute|
-            next unless record.public_send("saved_change_to_#{attribute}?")
+                                 check_attributes.each do |attribute|
+                                   next unless record.public_send("saved_change_to_#{attribute}?")
 
-            builder << attribute
-          end
-        end
-      end
+                                   builder << attribute
+                                 end
+                               end
+                             end
+                           end
     end
 
     def missing_changes
       @missing_changes ||= []
-    end
-
-    def removed_association?(association)
-      audits = record.audits.last
-      return false unless audits
-
-      changes = audits.audited_changes[association.to_s]
-      changes && changes[0].is_a?(Array) && changes[1].is_a?(Array) && changes[0].count > changes[1].count
     end
   end
 end
