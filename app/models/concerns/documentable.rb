@@ -7,7 +7,7 @@ module Documentable
   included do
     attr_accessor :changed_associations
 
-    after_commit :documentable!
+    after_save :documentable!
 
     before_save :set_changed_associations
   end
