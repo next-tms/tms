@@ -1,0 +1,27 @@
+# frozen_string_literal: true
+
+module DocumentableService
+  module Shipment
+    class BrokerQuote < Base
+      private
+
+      def check_attributes
+        @check_attributes ||= super.tap do |builder|
+          builder << :total_charges_cents
+          builder << :total_cost_cents
+          builder << :value_cents
+
+          if record.picked_up?
+            builder.reject! { |attribute| scheduling_attributes.include?(attribute) }
+          end
+        end
+      end
+
+      def missing_changes
+        @missing_changes ||= super.tap do |builder|
+          builder << :total_charges_cents if record.total_charges_cents.zero?
+        end
+      end
+    end
+  end
+end

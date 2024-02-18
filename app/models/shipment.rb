@@ -223,7 +223,7 @@ class Shipment < ApplicationRecord
   include Shipment::HasReceivables
   include Shipment::Transponible
 
-  DOCUMENTABLE_TYPES = %i[broker_quote broker_bol broker_label broker_dispatch_sheet]
+  DOCUMENTABLE_TYPES = %i[broker_bol broker_label broker_dispatch_sheet broker_quote]
 
   attr_accessor :dispatch_pickup
 

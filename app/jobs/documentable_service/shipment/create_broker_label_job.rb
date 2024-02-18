@@ -4,14 +4,7 @@ module DocumentableService
   class Shipment::CreateBrokerLabelJob < ApplicationJob
     queue_as :high_priority
 
-    def perform(shipment, broker_documents_fingerprint:)
-      if shipment.broker_label_shipment_fingerprint == broker_documents_fingerprint ||
-         shipment.broker_documents_fingerprint != broker_documents_fingerprint
-        return
-      end
-
-      shipment.broadcast_outdated_document(:broker_label)
-
+    def perform(shipment)
       items_count = shipment.items.sum(:quantity)
       packaging_label = if Packaging.where(id: shipment.items.pluck(:packaging_id)).pluck(:name).uniq.size == 1
                           shipment.items.first.packaging.name.titleize
@@ -64,8 +57,6 @@ module DocumentableService
       shipment.broadcast_new_document_generated(:broker_label)
 
       file.unlink
-
-      shipment.update!(broker_label_shipment_fingerprint: broker_documents_fingerprint)
     end
   end
 end
