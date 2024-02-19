@@ -166,30 +166,33 @@ Rails.application.routes.draw do
       # Stupid, but required for some AJAX without PATCH
       get 'update' => 'shipments#update', as: :update
 
-      member { patch 'upload_document', to: 'shipments#upload_document', as: :upload_document }
-
-      member { get 'book' => 'shipments#book', as: :book }
-      member { get 'book-modal' => 'shipments#book_modal', as: :book_modal }
-      member { get 'documents' => 'shipments#documents', as: :documents }
-      member { get 'documents/send/:shipment_method' => 'shipments#send_document', as: :send_document }
       member do
-        post 'documents/send/:active_storage_blob_id' => 'shipments#send_document_with_contact_mailer',
+        get :accounting
+        get :book
+        get :claims
+        get :documents
+        get :history
+        get :notes
+        get :pricing
+        get :quote
+        get :tracking, as: :tracking_events, to: 'shipments#tracking_events'
+        get :transit
+        get :unbook
+        get 'book-modal'
+        get 'documents/send/:shipment_method', to: 'shipments#send_document', as: :send_document
+        get 'pickup-modal'
+        get 'tracking/edit', as: :edit_tracking_events, to: 'shipments#edit_tracking_events'
+        get 'tracking/update', as: :update_tracking_events, to: 'shipments#update_tracking_events'
+
+        patch 'update-transit'
+        patch 'upload-document'
+
+        post :duplicate
+        post 'documents/send/:active_storage_blob_id',
+             to: 'shipments#send_document_with_contact_mailer',
              as: :send_document_with_contact_mailer
+        post 'tracking/create', as: :create_tracking_event, to: 'shipments#create_tracking_event'
       end
-      member { get 'accounting', as: :accounting }
-      member { get 'claims', as: :claims }
-      member { get 'notes', as: :notes }
-      member { get 'history', as: :history }
-      member { get 'pickup-modal', as: :pickup_modal }
-      member { get 'pricing', as: :pricing }
-      member { get 'quote', as: :quote }
-      member { get 'transit', as: :transit }
-      member { get 'tracking', as: :tracking_events, to: 'shipments#tracking_events' }
-      member { get 'tracking/edit', as: :edit_tracking_events, to: 'shipments#edit_tracking_events' }
-      member { get 'tracking/update', as: :update_tracking_events, to: 'shipments#update_tracking_events' }
-      member { post 'tracking/create', as: :create_tracking_event, to: 'shipments#create_tracking_event' }
-      member { get 'unbook' => 'shipments#unbook', as: :unbook }
-      member { post 'duplicate', as: :duplicate }
     end
 
     get 'search' => 'search#search'

@@ -1,68 +1,75 @@
-<%= turbo_frame_tag :new_shipment do %>
-  <%= bootstrap_form_with(model: [:customer, @shipment], local: true, layout: :horizontal, label_col: 'col-sm-3', control_col: 'col-sm-8', id: 'shipment-form', data: { turbo: false }) do |f| %>
-    <div class="row">
-      <div class="col-sm-6 col-md-4">
-        <p class="col-title"><%= icon 'solid', 'industry', 'Shipper' %></p>
-        <%= f.text_field :shipper_name, label: 'Name', autofocus: @accessorials_has_been_suggested.blank? %>
-        <%= f.text_field :pickup_on, label: 'Pickup', data: flatpickr_data %>
-        <%= f.text_field :pickup_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
-        <%= f.text_field :pickup_hours_end_at, label: '&nbsp;'.html_safe, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
-        <%= f.text_field :shipper_contact_name, label: 'Contact' %>
-        <%= f.telephone_field :shipper_contact_phone, label: 'Phone' %>
-        <%= f.email_field :shipper_contact_email, label: 'Email' %>
-
-        <div data-controller="address">
-          <%= render 'shipments/address_form', form: f, address_object: :shipper_address, fallback_address: current_user.companyable.primary_pickup_address %>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-4">
-        <p class="col-title"><%= icon 'solid', 'cart-arrow-down', 'Receiver' %></p>
-        <%= f.text_field :receiver_name, label: 'Name' %>
-        <%= f.text_field :delivery_appointment_on, label: 'Appointment', data: flatpickr_data %>
-        <%= f.text_field :delivery_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
-        <%= f.text_field :delivery_hours_end_at, label: '&nbsp;'.html_safe, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
-        <%= f.text_field :receiver_contact_name, label: 'Contact' %>
-        <%= f.telephone_field :receiver_contact_phone, label: 'Phone' %>
-        <%= f.email_field :receiver_contact_email, label: 'Email' %>
-
-        <div data-controller="address">
-          <%= render 'shipments/address_form', form: f, address_object: :receiver_address, fallback_address: current_user.companyable.primary_pickup_address %>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-4">
-        <p class="col-title"><%= icon 'solid', 'barcode', 'References' %></p>
-        <%= f.text_field :shipper_reference, label: 'SO #', autocomplete: 'off' %>
-        <%= f.text_field :customer_reference, label: 'PO #', autocomplete: 'off' %>
-        <%= f.text_field :bol, label: 'BOL #', autocomplete: 'off' %>
-        <%= f.text_field :pro, label: 'Pro #', autocomplete: 'off' %>
-
-        <p class="col-title"><%= icon 'solid', 'dollar-sign', 'Value' %></p>
-        <%= f.text_field :value, label: 'Total', prepend: '$', data: money_controller_data, autocomplete: 'off' %>
+<%= bootstrap_form_with(
+      control_col: 'col-sm-8',
+      data: { controller: 'autofill-shipper', 'autofill-shipper-target': 'form' },
+      id: 'shipment-form',
+      label_col: 'col-sm-3',
+      layout: :horizontal,
+      model: [:customer, @shipment],
+    ) do |f| %>
+  <div class="row">
+    <div class="col-sm-6 col-md-4">
+      <p class="col-title"><%= icon 'solid', 'industry', 'Shipper' %></p>
+      <%= f.text_field :shipper_name, label: 'Name', autofocus: @accessorials_has_been_suggested.blank? %>
+      <%= f.text_field :pickup_on, label: 'Pickup', data: flatpickr_data %>
+      <%= f.text_field :pickup_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      <%= f.text_field :pickup_hours_end_at, label: '&nbsp;'.html_safe, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      <%= f.text_field :shipper_contact_name, label: 'Contact' %>
+      <%= f.telephone_field :shipper_contact_phone, label: 'Phone' %>
+      <%= f.email_field :shipper_contact_email, label: 'Email' %>
+  
+      <div data-controller="address">
+        <%= render 'shipments/address_form', form: f, address_object: :shipper_address, fallback_address: current_user.companyable.primary_pickup_address %>
       </div>
     </div>
-
-    <div data-controller="shipments">
-      <span class="btn btn-primary" data-action="click->shipments#switchAddresses"> <%= icon('solid', 'repeat', 'Switch Shipper and Receiver Addresses')%> </span>
+  
+    <div class="col-sm-6 col-md-4">
+      <p class="col-title"><%= icon 'solid', 'cart-arrow-down', 'Receiver' %></p>
+      <%= f.text_field :receiver_name, label: 'Name' %>
+      <%= f.text_field :delivery_appointment_on, label: 'Appointment', data: flatpickr_data %>
+      <%= f.text_field :delivery_hours_start_at, label: 'Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      <%= f.text_field :delivery_hours_end_at, label: '&nbsp;'.html_safe, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+      <%= f.text_field :receiver_contact_name, label: 'Contact' %>
+      <%= f.telephone_field :receiver_contact_phone, label: 'Phone' %>
+      <%= f.email_field :receiver_contact_email, label: 'Email' %>
+  
+      <div data-controller="address">
+        <%= render 'shipments/address_form', form: f, address_object: :receiver_address, fallback_address: current_user.companyable.primary_pickup_address %>
+      </div>
     </div>
-
-    <p class="col-title mt-4">Services</p>
-
-    <%= render 'shipments/nested_broker_accessorials_form',
-               f: f,
-               accessorials_has_been_suggested: @accessorials_has_been_suggested %>
-
-    <p class="col-title mt-4">Freight</p>
-    <%= f.check_box :truckload, label: 'Ship as a truckload?', class: 'mb-4' %>
-
-    <%= render 'shipments/nested_items_form', f: f %>
-
-    <p class="col-title mt-4">Special Instructions</p>
-    <%= f.text_area :bol_notes, hide_label: true, rows: 5, autofocus: @accessorials_has_been_suggested.present? %>
-
-    <div class="form-group">
-      <%= f.submit class: 'btn btn-primary mt-4', value: 'Save' %>
+  
+    <div class="col-sm-6 col-md-4">
+      <p class="col-title"><%= icon 'solid', 'barcode', 'References' %></p>
+      <%= f.text_field :shipper_reference, label: 'SO #', autocomplete: 'off' %>
+      <%= f.text_field :customer_reference, label: 'PO #', autocomplete: 'off' %>
+      <%= f.text_field :bol, label: 'BOL #', autocomplete: 'off' %>
+      <%= f.text_field :pro, label: 'Pro #', autocomplete: 'off' %>
+  
+      <p class="col-title"><%= icon 'solid', 'dollar-sign', 'Value' %></p>
+      <%= f.text_field :value, label: 'Total', prepend: '$', data: money_controller_data, autocomplete: 'off' %>
     </div>
-  <% end %>
+  </div>
+  
+  <div data-controller="shipments">
+    <span class="btn btn-primary" data-action="click->shipments#switchAddresses">
+      <%= icon('solid', 'right-left', 'Switch') %>
+    </span>
+  </div>
+  
+  <p class="col-title mt-4">Services</p>
+  
+  <%= render 'shipments/nested_broker_accessorials_form',
+             f: f,
+             accessorials_has_been_suggested: @accessorials_has_been_suggested %>
+  
+  <p class="col-title mt-4">Freight</p>
+  <%= f.check_box :truckload, label: 'Ship as a truckload?', class: 'mb-4' %>
+  
+  <%= render 'shipments/nested_items_form', f: f %>
+  
+  <p class="col-title mt-4">Special Instructions</p>
+  <%= f.text_area :bol_notes, hide_label: true, rows: 5, autofocus: @accessorials_has_been_suggested.present? %>
+  
+  <div class="form-group">
+    <%= f.submit class: 'btn btn-success mt-4', value: 'Save' %>
+  </div>
 <% end %>

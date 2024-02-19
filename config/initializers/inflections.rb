@@ -29,4 +29,5 @@ ActiveSupport::Inflector.inflections do |inflect|
   inflect.acronym('POD')
   inflect.acronym('PODs')
   inflect.acronym('SO')
+  inflect.acronym('ZIP')
 end

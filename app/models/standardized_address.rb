@@ -55,6 +55,15 @@
 #  fk_rails_...  (region_id => regions.id)
 #
 class StandardizedAddress < ApplicationRecord
+  DOWNCASEABLE_ATTRIBUTES = []
+  SQUISHABLE_ATTRIBUTES = %i[city postal_code street street2]
+
+  include Normalizable
+
+  attr_accessor :skip_smarty_streets_result_api_request,
+                :skip_google_places_spot_api_request,
+                :skip_open_street_map_result_api_request
+
   before_validation :standardize_address
   before_validation :set_coordinates
   before_validation :set_time_zone_name
@@ -78,10 +87,6 @@ class StandardizedAddress < ApplicationRecord
   validates :postal_code, presence: true
   validates :smarty_streets_result_updated_at, presence: true
   validates :street, presence: true
-
-  attr_accessor :skip_smarty_streets_result_api_request,
-                :skip_google_places_spot_api_request,
-                :skip_open_street_map_result_api_request
 
   def permanently_closed?
     @permanently_closed ||= google_places_spot.permanently_closed

@@ -2,6 +2,8 @@ en:
   app_name: "Liftoff"
   activerecord:
     attributes:
+      address:
+        ref: Reference
       broker_carrier:
         encrypted_api_key: API Key
         password: Password
@@ -26,15 +28,15 @@ en:
       region:
         iso_3166_2: ISO 3166-2
       shipment:
-        bol: Bill of Lading Number
+        bol: "BOL #"
         broker_carrier: Carrier
         carrier_bol: Scanned Bill of Lading
         carrier_pod: Proof of Delivery
-        customer_reference: Customer Reference
-        pickup_confirmation: Pickup Confirmation Number
-        pro: Pro Number
-        quote_id: Quote Number
-        shipper_reference: Shipper Reference
+        customer_reference: "PO #"
+        pickup_confirmation: "PU #"
+        pro: "PRO #"
+        quote_id: "Quote #"
+        shipper_reference: "SO #"
         total_charges: Charge
         total_cost: Cost
       user:

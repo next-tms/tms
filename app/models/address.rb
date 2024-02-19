@@ -72,8 +72,6 @@ class Address < ApplicationRecord
     end
   end
 
-  before_save :sanitize_city
-  before_save :sanitize_street
   before_save :set_standardized_address, unless: -> { Rails.env.test? }
 
   before_validation :set_country
@@ -82,9 +80,31 @@ class Address < ApplicationRecord
   belongs_to :region
   belongs_to :standardized_address, counter_cache: true, optional: true
 
+  normalizes :city, with: ->(city) do
+    new_city = city
+    new_city = new_city.split(',')[0] if new_city.include?(',')
+    new_city = city.titleize if (new_city == new_city.downcase) || (new_city == new_city.upcase)
+    new_city.squish
+  end
+  normalizes :ref, with: ->(ref) { ref.squish }
+  normalizes :street, with: ->(street) do
+    new_street = street
+    new_street = new_street.titleize if (new_street == new_street.downcase) || (new_street == new_street.upcase)
+    new_street.squish
+  end
+  normalizes :street2, with: ->(street2) do
+    new_street2 = street2
+    new_street2 = new_street2.titleize if (new_street2 == new_street2.downcase) || (new_street2 == new_street2.upcase)
+    new_street2.squish
+  end
+  normalizes :zip_code, with: ->(zip_code) { zip_code.squish }
+
   serialize :types, coder: YAML
 
   validate :region_matches_country
+  validate :validate_ref, if: -> { ref.present? && ref_changed? }
+  validate :validate_street_attributes
+  validate :validate_zip_code, if: -> { zip_code.present? && country.present? }
 
   validates :city, presence: true
   validates :zip_code, presence: true
@@ -222,37 +242,6 @@ class Address < ApplicationRecord
 
   private
 
-  def sanitize_city
-    new_city = city
-
-    new_city = new_city.titleize if (new_city == new_city.downcase) || (new_city == new_city.upcase)
-
-    until new_city.strip.last != ','
-      new_city.strip!
-      new_city = new_city[..-2]
-    end
-
-    new_city.strip!
-
-    self.city = new_city
-  end
-
-  def sanitize_street
-    return if street.blank?
-
-    new_street = street
-    new_street = new_street.titleize if (new_street == new_street.downcase) || (new_street == new_street.upcase)
-
-    until new_street.strip.last != ','
-      new_street.strip!
-      new_street = new_street[..-2]
-    end
-
-    new_street.strip!
-
-    self.street = new_street
-  end
-
   def set_country
     return if region.blank? || country.present?
 
@@ -263,5 +252,42 @@ class Address < ApplicationRecord
     return if region.blank? || country.blank?
 
     errors.add(:region, "isn't within #{country.name}") unless region.country == country
+  end
+
+  def validate_ref
+    case ref.downcase
+    when 'none' then errors.add(ref, "cannot be “#{value}”")
+    when 'verbal' then errors.add(ref, "cannot be “#{value}”")
+    end
+
+    ['C/O', 'P/O', 'P/U', 'Ref:', 'S/O', '#'].each do |prefix|
+      matched_prefix = ref.match(/\A#{Regexp.escape(prefix)}/i)
+      next if matched_prefix.blank?
+
+      errors.add(:ref, "cannot start with “#{matched_prefix}”")
+    end
+  end
+
+  def validate_street_attributes
+    %i[street street2].each do |attribute|
+      next unless public_send("#{attribute}_changed?")
+
+      value = public_send(attribute)
+      next if value.blank?
+
+      matched_prefix = value.match(/\A#{Regexp.escape('C/O')}/i)
+      errors.add(attribute, "cannot start with “#{matched_prefix}”") if matched_prefix.present?
+
+      matched_prefix = value.match(/\A#{Regexp.escape('Ref:')}/i)
+      next if matched_prefix.blank?
+
+      errors.add(attribute, "cannot start with “#{matched_prefix}”")
+    end
+  end
+
+  def validate_zip_code
+    return if country.valid_postal_code?(zip_code)
+
+    errors.add(:zip_code, "is not valid for #{country.name}")
   end
 end

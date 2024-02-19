@@ -214,8 +214,21 @@ class Shipment < ApplicationRecord
     end
   end
 
-  include Documentable
+  DOCUMENTABLE_TYPES = %i[broker_bol broker_label broker_dispatch_sheet broker_quote]
+  DOWNCASEABLE_ATTRIBUTES = %i[receiver_contact_email shipper_contact_email]
+  REFERENCE_ATTRIBUTES = %i[bol customer_reference pickup_confirmation pro quote_id shipper_reference]
+  SQUISHABLE_ATTRIBUTES = REFERENCE_ATTRIBUTES + %i[
+                                                   receiver_name
+                                                   receiver_contact_email
+                                                   receiver_contact_name
+                                                   shipper_name
+                                                   shipper_contact_email
+                                                   shipper_contact_name
+                                                 ]
+
   include Discussable
+  include Documentable
+  include Normalizable
   include Problematic
 
   include Shipment::Fingerprintable
@@ -223,104 +236,11 @@ class Shipment < ApplicationRecord
   include Shipment::HasReceivables
   include Shipment::Transponible
 
-  DOCUMENTABLE_TYPES = %i[broker_bol broker_label broker_dispatch_sheet broker_quote]
-
   attr_accessor :dispatch_pickup
 
   before_save :sanitize_addresses_street
 
   audited
-
-  ransacker :load_id do
-    Arel.sql("to_char(\"#{table_name}\".\"load_id\", '99999999')")
-  end
-
-  scope :canceled, -> { where.not(canceled_at: nil) }
-  scope :canceled_recently, -> { where('canceled_at > ?', 1.day.ago) }
-  scope :active, -> { where.not(id: canceled) }
-
-  scope :booked, -> { active.where.not(booked_at: nil).where(dispatched_at: nil) }
-  scope :pending_dispatch, lambda {
-                             active.where.not(broker_carrier: nil).where(dispatched_at: nil).where(picked_up_at: nil).where(out_for_delivery_at: nil).where(delivered_at: nil)
-                           }
-  scope :pending_found, -> { active.pending_delivery.where.not(lost_on: nil) }
-  scope :pending_pickup, -> { active.where.not(dispatched_at: nil).where(picked_up_at: nil) }
-
-  scope :pending_quotation, lambda {
-    where(broker_carrier: nil, canceled_at: nil)
-    .or(
-      where(broker_carrier: nil)
-      .where(id: canceled_recently),
-    )
-  }
-
-  scope :pending_delivery, lambda {
-    active
-    .where.not(picked_up_at: nil)
-    .where(delivered_at: nil)
-  }
-
-  scope :pending_departure, lambda {
-    active
-    .where.not(picked_up_at: nil)
-    .where(departed_origin_terminal_at: nil)
-    .where(delivered_at: nil)
-  }
-
-  scope :missing_delivery_appointment, lambda {
-    joins(:broker_accessorials)
-    .where(
-      'broker_accessorials.id IN (?)',
-      BrokerAccessorial.where(
-        accessorial_id:
-        [
-          Accessorial.find_by(freight_kit_code: 'appointment_delivery').id,
-          Accessorial.find_by(freight_kit_code: 'residential_delivery').id,
-        ],
-      ).pluck(:id),
-    )
-    .or(
-      Shipment
-      .where.not(pending_appointment_since: nil),
-    )
-    .pending_delivery
-    .where(delivery_appointment_on: nil)
-    .where(delivery_appointment_at: nil)
-  }
-
-  scope :missing_pro, -> { active.pending_delivery.where(pro: ['', nil]) }
-
-  scope :missing_cost, -> { active.where.not(id: pending_quotation).where(carrier_cost_cents: 0) }
-
-  scope :missing_charge, -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
-
-  scope :missing_delivery_eta_on, -> { where(delivery_eta_on: ['', nil]) }
-
-  scope :not_missing_delivery_eta_on, -> { where.not(id: missing_delivery_eta_on) }
-
-  scope :missing_pricing, lambda {
-    active.missing_cost.or(active.missing_charge).where.not(picked_up_at: nil)
-  }
-
-  scope :delivered, -> { where.not(delivered_at: nil) }
-
-  scope :late_per_delivery_eta_on, lambda {
-    where.not(id: delivered).where('delivery_eta_on < ?', Date.current)
-  }
-
-  scope :late_per_promised_delivery_by, lambda {
-    where.not(id: delivered).where('promised_delivery_by < ?', Date.current)
-  }
-
-  scope :late_per_quoted_delivery_by, lambda {
-    where.not(id: delivered).where('quoted_delivery_by < ?', Date.current + 3.days)
-  }
-
-  scope :late, lambda {
-    where(id: late_per_promised_delivery_by).or(where(id: late_per_delivery_eta_on)).distinct
-  }
-
-  scope :not_late, -> { where.not(id: late) }
 
   belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, optional: true
@@ -415,15 +335,6 @@ class Shipment < ApplicationRecord
   before_validation :set_broker # before set_dispatcher
   before_validation :set_dispatcher
 
-  monetize :carrier_charge_cents, allow_nil: true
-  monetize :carrier_cost_cents, allow_nil: true
-  monetize :total_cost_cents, allow_nil: true
-  monetize :total_charges_cents, allow_nil: true
-  monetize :value_cents, allow_nil: true
-
-  phony_normalize :shipper_contact_phone, default_country_code: 'US'
-  phony_normalize :receiver_contact_phone, default_country_code: 'US'
-
   after_create :notify_of_new_shipment
 
   before_save :send_notification
@@ -434,9 +345,110 @@ class Shipment < ApplicationRecord
 
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
+  monetize :carrier_charge_cents, allow_nil: true
+  monetize :carrier_cost_cents, allow_nil: true
+  monetize :total_cost_cents, allow_nil: true
+  monetize :total_charges_cents, allow_nil: true
+  monetize :value_cents, allow_nil: true
+
+  phony_normalize :shipper_contact_phone, default_country_code: 'US'
+  phony_normalize :receiver_contact_phone, default_country_code: 'US'
+
+  ransacker :load_id do
+    Arel.sql("to_char(\"#{table_name}\".\"load_id\", '99999999')")
+  end
+
+  scope :canceled, -> { where.not(canceled_at: nil) }
+  scope :canceled_recently, -> { where('canceled_at > ?', 1.day.ago) }
+  scope :active, -> { where.not(id: canceled) }
+
+  scope :booked, -> { active.where.not(booked_at: nil).where(dispatched_at: nil) }
+  scope :pending_dispatch, lambda {
+                             active.where.not(broker_carrier: nil).where(dispatched_at: nil).where(picked_up_at: nil).where(out_for_delivery_at: nil).where(delivered_at: nil)
+                           }
+  scope :pending_found, -> { active.pending_delivery.where.not(lost_on: nil) }
+  scope :pending_pickup, -> { active.where.not(dispatched_at: nil).where(picked_up_at: nil) }
+
+  scope :pending_quotation, lambda {
+    where(broker_carrier: nil, canceled_at: nil)
+    .or(
+      where(broker_carrier: nil)
+      .where(id: canceled_recently),
+    )
+  }
+
+  scope :pending_delivery, lambda {
+    active
+    .where.not(picked_up_at: nil)
+    .where(delivered_at: nil)
+  }
+
+  scope :pending_departure, lambda {
+    active
+    .where.not(picked_up_at: nil)
+    .where(departed_origin_terminal_at: nil)
+    .where(delivered_at: nil)
+  }
+
+  scope :missing_delivery_appointment, lambda {
+    joins(:broker_accessorials)
+    .where(
+      'broker_accessorials.id IN (?)',
+      BrokerAccessorial.where(
+        accessorial_id:
+        [
+          Accessorial.find_by(freight_kit_code: 'appointment_delivery').id,
+          Accessorial.find_by(freight_kit_code: 'residential_delivery').id,
+        ],
+      ).pluck(:id),
+    )
+    .or(
+      Shipment
+      .where.not(pending_appointment_since: nil),
+    )
+    .pending_delivery
+    .where(delivery_appointment_on: nil)
+    .where(delivery_appointment_at: nil)
+  }
+
+  scope :missing_pro, -> { active.pending_delivery.where(pro: ['', nil]) }
+
+  scope :missing_cost, -> { active.where.not(id: pending_quotation).where(carrier_cost_cents: 0) }
+
+  scope :missing_charge, -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
+
+  scope :missing_delivery_eta_on, -> { where(delivery_eta_on: ['', nil]) }
+
+  scope :not_missing_delivery_eta_on, -> { where.not(id: missing_delivery_eta_on) }
+
+  scope :missing_pricing, lambda {
+    active.missing_cost.or(active.missing_charge).where.not(picked_up_at: nil)
+  }
+
+  scope :delivered, -> { where.not(delivered_at: nil) }
+
+  scope :late_per_delivery_eta_on, lambda {
+    where.not(id: delivered).where('delivery_eta_on < ?', Date.current)
+  }
+
+  scope :late_per_promised_delivery_by, lambda {
+    where.not(id: delivered).where('promised_delivery_by < ?', Date.current)
+  }
+
+  scope :late_per_quoted_delivery_by, lambda {
+    where.not(id: delivered).where('quoted_delivery_by < ?', Date.current + 3.days)
+  }
+
+  scope :late, lambda {
+    where(id: late_per_promised_delivery_by).or(where(id: late_per_delivery_eta_on)).distinct
+  }
+
+  scope :not_late, -> { where.not(id: late) }
+
   validates :load_id, presence: true, uniqueness: { scope: :broker }
 
   validate :validate_future_pickup_by, if: -> { dispatch_pickup }
+  validate :validate_reference_attributes
   validate :validate_past_or_present_attributes
   validate :validate_pro_and_tracking_carrier_pro
 
@@ -931,6 +943,27 @@ class Shipment < ApplicationRecord
     return unless pickup_by
 
     errors.add(:pickup_on, 'date and time must be in the future') if pickup_by < Time.current
+  end
+
+  def validate_reference_attributes
+    REFERENCE_ATTRIBUTES.each do |attribute|
+      next unless public_send("#{attribute}_changed?")
+
+      value = public_send(attribute)
+      next if value.blank?
+
+      case value.scan(/[a-zA-Z]+/).join.downcase
+      when 'none' then errors.add(attribute, 'cannot be “none”')
+      when 'verbal' then errors.add(attribute, 'cannot be “verbal”')
+      end
+
+      ['bol', 'pro', 'Ref:', 'P/O', 'PO', 'P/U', 'S/O', 'SO', '#'].each do |prefix|
+        matched_prefix = value.match(/\A#{Regexp.escape(prefix)}/i)
+        next if matched_prefix.blank?
+
+        errors.add(attribute, "cannot start with “#{matched_prefix}”")
+      end
+    end
   end
 
   def validate_past_or_present_attributes

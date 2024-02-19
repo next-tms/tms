@@ -9,11 +9,12 @@ class Broker::ShipmentsController < Broker::BrokerController
                         book
                         book_modal
                         claims
-                        documents
                         create_tracking_event
                         destroy
+                        documents
                         edit
                         edit_tracking_events
+                        history
                         notes
                         pickup
                         pickup_modal
@@ -26,7 +27,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                         transit
                         unbook
                         update
-                        history
+                        update_transit
                         upload_document
                       ]
   before_action :authenticate_user!
@@ -132,9 +133,7 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     Shipment.transaction do
       @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
-      # @shipment.lock! # Avoid Race Condition
-
-      form = @shipment.quote_only? ? :new_quote_only : :new
+      @shipment.lock! # Avoid race condition on Shipment#load_id
 
       @shipment.broker = current_user.broker
       @shipment.created_by = current_user
@@ -150,27 +149,20 @@ class Broker::ShipmentsController < Broker::BrokerController
         if @shipment.receiver_address.standardized_address.blank?
           @shipment.receiver_address.find_or_build_standardized_address
         end
-
-        @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
-
-        if @accessorials_has_been_suggested
-          render(form)
-          return
-        end
-      end
-
-      unless @shipment.save
-        render(form)
-        return
       end
     end
 
-    if @shipment.quote_only?
-      redirect_to(quote_broker_shipment_path(@shipment))
-      return
-    end
+    respond_to do |format|
+      if @shipment.save
+        location = [:broker, @shipment]
 
-    redirect_to([:broker, @shipment])
+        format.html { redirect_to(location) }
+        format.json { render(:show, status: :created, location:) }
+      else
+        format.html { render(view, status: :unprocessable_entity) }
+        format.json { render(json: @shipment.errors, status: :unprocessable_entity) }
+      end
+    end
   end
 
   def edit
@@ -185,17 +177,35 @@ class Broker::ShipmentsController < Broker::BrokerController
       if @shipment.save
         format.html do
           if @shipment.dispatch_pickup
-            redirect_to(broker_pickups_path(pickup: { rate_uid: @shipment.applied_rate.uid })) && return
+            redirect_to(broker_pickups_path(pickup: { rate_uid: @shipment.applied_rate.uid }))
           else
-            redirect_to(broker_shipment_path(@shipment)) && return
+            flash[:success] = "#{Shipment.model_name.human.downcase.upcase_first} updated"
+            redirect_to(broker_shipment_path(@shipment))
           end
         end
         format.json { render(json: { location: broker_shipment_path(@shipment) }) }
       else
+        format.html { render(:edit, status: :unprocessable_entity) }
+        format.json { render(json: @shipment.errors, status: :unprocessable_entity) }
+      end
+    end
+  end
+
+  def update_transit
+    @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
+    @shipment.updated_by = current_user
+
+    respond_to do |format|
+      if @shipment.save
+        location = transit_broker_shipment_path(@shipment)
+
         format.html do
-          flash[:error] = "Unable to update shipment: #{@shipment.errors.full_messages.join(", ")}"
-          redirect_back(fallback_location: edit_broker_shipment_path(@shipment))
+          flash[:success] = "#{Shipment.model_name.human.downcase.upcase_first} updated"
+          redirect_to(location)
         end
+        format.json { render(:transit, status: :ok, location:) }
+      else
+        format.html { render(:transit, status: :unprocessable_entity) }
         format.json { render(json: @shipment.errors, status: :unprocessable_entity) }
       end
     end
@@ -219,7 +229,9 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def show
-    redirect_to(quote_broker_shipment_path(@shipment)) && return if @shipment.quote_only?
+    return unless @shipment.quote_only?
+
+    redirect_to(quote_broker_shipment_path(@shipment))
   end
 
   def documents; end

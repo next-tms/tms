@@ -46,4 +46,13 @@ class Country < ApplicationRecord
       StreetAddress::US.parse_address(str).to_s
     end
   end
+
+  def valid_postal_code?(postal_code)
+    case alpha2_code
+    when 'CA' then return false unless postal_code.match?(/^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$/)
+    when 'US' then return false unless postal_code.match?(/^\d{5}(?:-\d{4})?$/)
+    end
+
+    true
+  end
 end

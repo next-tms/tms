@@ -1,6 +1,4 @@
-<%= bootstrap_form_with(model: [:broker, @shipment], data: { turbo: false }, layout: :horizontal) do |f| %>
-
-  <%= f.alert_message "Unable to create quote:" %>
+<%= bootstrap_form_with(model: [:broker, @shipment], layout: :horizontal) do |f| %>
   <%= f.hidden_field :quote_only, value: true %>
 
   <%= f.select :broker_customer_id, [['None — Blanket Pricing', nil]] +
@@ -91,7 +89,7 @@
   </div>
 
   <div class="form-group">
-    <%= f.submit class: 'btn btn-primary mt-4', value: 'Quote' %>
+    <%= f.submit class: 'btn btn-success mt-4', value: 'Quote' %>
   </div>
 
 <% end %>

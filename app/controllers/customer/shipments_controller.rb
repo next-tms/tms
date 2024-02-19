@@ -84,22 +84,21 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.broker_customer = current_user.companyable
     @shipment.load_id = current_user.companyable.broker.last_load_id + 1
 
-    if shipment_params[:accessorials_has_been_suggested].blank?
-      @shipment.shipper_address.find_or_build_standardized_address
-      @shipment.receiver_address.find_or_build_standardized_address
+    respond_to do |format|
+      if @shipment.save
+        location = if current_user.companyable.can_quote?
+                     quote_customer_shipment_path(@shipment)
+                   else
+                     [:customer, @shipment]
+                   end
 
-      @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment)
-      render(:new) && return if @accessorials_has_been_suggested
+        format.html { redirect_to(location) }
+        format.json { render(:show, status: :created, location:) }
+      else
+        format.html { render(:new, status: :unprocessable_entity) }
+        format.json { render(json: @shipment.errors, status: :unprocessable_entity) }
+      end
     end
-
-    unless @shipment.save
-      render(:new)
-      return
-    end
-
-    redirect_to(quote_customer_shipment_path(@shipment)) && return if current_user.companyable.can_quote?
-
-    redirect_to([:customer, @shipment]) && return
   end
 
   def delivered
@@ -120,24 +119,14 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.updated_by = current_user
 
-    if shipment_params[:applied_rate_uid].present?
-      carrier_charge = current_user
-                       .companyable
-                       .carrier_charge_calculator(
-                         carrier_cost: @shipment.carrier_cost, shipment: @shipment,
-                       )
-      @shipment.carrier_charge = carrier_charge
-    end
-
     respond_to do |format|
       if @shipment.save
-        format.html { redirect_to(customer_shipment_path(@shipment)) }
-        format.json { render(json: { location: customer_shipment_path(@shipment) }) }
+        location = customer_shipment_path(@shipment)
+
+        format.html { redirect_to(location) }
+        format.json { render(json: { location: }) }
       else
-        format.html do
-          flash[:error] = "Unable to update shipment: #{@shipment.errors.full_messages.join(", ")}"
-          redirect_back(fallback_location: edit_customer_shipment_path(@shipment))
-        end
+        format.html { render(:edit, status: :unprocessable_entity) }
         format.json { render(json: @shipment.errors, status: :unprocessable_entity) }
       end
     end
