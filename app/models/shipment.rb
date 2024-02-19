@@ -200,6 +200,7 @@ class Shipment < ApplicationRecord
         'created_at',
         'delivered_at',
         'load_id',
+        'picked_up_at',
         'pro',
         'receiver_contact_name',
         'receiver_name',
