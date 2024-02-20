@@ -276,12 +276,14 @@ class Address < ApplicationRecord
       next if value.blank?
 
       matched_prefix = value.match(/\A#{Regexp.escape('C/O')}/i)
-      errors.add(attribute, "cannot start with “#{matched_prefix}”") if matched_prefix.present?
+      errors.add(attribute, "cannot contain “#{matched_prefix}”") if matched_prefix.present?
 
-      matched_prefix = value.match(/\A#{Regexp.escape('Ref:')}/i)
-      next if matched_prefix.blank?
+      ['Re:', 'Ref:'].each do |prefix|
+        matched_prefix = value.match(/\A#{Regexp.escape(prefix)}/i)
+        next if matched_prefix.blank?
 
-      errors.add(attribute, "cannot start with “#{matched_prefix}”")
+        errors.add(attribute, "cannot start with “#{matched_prefix}”")
+      end
     end
   end
 
