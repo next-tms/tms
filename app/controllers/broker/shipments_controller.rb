@@ -159,7 +159,7 @@ class Broker::ShipmentsController < Broker::BrokerController
         format.html { redirect_to(location) }
         format.json { render(:show, status: :created, location:) }
       else
-        format.html { render(view, status: :unprocessable_entity) }
+        format.html { render(:new, status: :unprocessable_entity) }
         format.json { render(json: @shipment.errors, status: :unprocessable_entity) }
       end
     end
