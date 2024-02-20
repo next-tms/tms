@@ -292,7 +292,7 @@ module ApplicationHelper
     when 'NUMK'
       "http://tracking.numarktransportation.net/cgibin/wbprotrk?wbfb=#{real_pro(shipment)}&wbscac=&idbutton=Trace"
     when 'OTCL'
-      "https://www.ontrac.com/trackingresults.asp?tracking_number=#{real_pro(shipment)}"
+      "https://www.ontrac.com/tracking/?number=#{real_pro(shipment)}"
     when 'PYLE'
       "https://www.aduiepyle.com/LTL/ShipmentTracking?Pro=#{real_pro(shipment)}"
     when 'RDFS'
