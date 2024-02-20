@@ -64,25 +64,23 @@ module DocumentableService
     end
 
     def matched_changes
-      @matched_changes ||= if record.changed_associations.nil?
-                             return []
-                           else
-                             [].tap do |builder|
-                               ActiveRecord::Base.transaction(requires_new: true) do
-                                 check_associations.each do |association|
-                                   next if record.changed_associations.exclude?(association)
+      @matched_changes ||= [].tap do |builder|
+        ActiveRecord::Base.transaction(requires_new: true) do
+          check_attributes.each do |attribute|
+            next unless record.public_send("saved_change_to_#{attribute}?")
 
-                                   builder << association
-                                 end
+            builder << attribute
+          end
 
-                                 check_attributes.each do |attribute|
-                                   next unless record.public_send("saved_change_to_#{attribute}?")
+          if record.changed_associations.present?
+            check_associations.each do |association|
+              next if record.changed_associations.exclude?(association)
 
-                                   builder << attribute
-                                 end
-                               end
-                             end
-                           end
+              builder << association
+            end
+          end
+        end
+      end
     end
 
     def missing_changes
