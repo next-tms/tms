@@ -33,6 +33,14 @@
 #
 class Contact < ApplicationRecord
   class << self
+    def ransackable_associations(auth_object = nil)
+      ['companyable', 'contact_roles', 'user']
+    end
+
+    def ransackable_attributes(auth_object = nil)
+      ['comments', 'email', 'first_name', 'job_title', 'label', 'last_name']
+    end
+
     def with_any_role(*roles)
       joins(:contact_roles).where(contact_roles: { role: roles })
     end
@@ -87,7 +95,7 @@ class Contact < ApplicationRecord
 
   # @return [String, nil]
   def full_name
-    return nil if [first_name, last_name].all?(&:blank?)
+    return if [first_name, last_name].all?(&:blank?)
 
     "#{first_name} #{last_name}"
   end
