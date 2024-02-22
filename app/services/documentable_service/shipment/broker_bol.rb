@@ -19,15 +19,20 @@ module DocumentableService
         end
       end
 
-      def missing_changes
-        @missing_changes ||= super.tap do |builder|
-          builder << :broker_carrier if record.broker_carrier.blank?
-          builder << :pro if pro_number_required? && matched_changes.exclude?(:pro)
-        end
+      def pro_number_required?
+        @pro_number_required ||= shipment.broker_carrier.present? &&
+                                 shipment.broker_carrier.bol_requires_tracking_number?
       end
 
-      def pro_number_required?
-        @pro_number_required ||= shipment.broker_carrier.present? && shipment.broker_carrier.bol_requires_tracking_number?
+      def requirements
+        @requirements ||= super.tap do |builder|
+          builder << :broker_carrier
+          builder << :receiver_address
+          builder << :receiver_name
+          builder << :shipper_address
+          builder << :shipper_name
+          builder << :pro if pro_number_required?
+        end
       end
     end
   end

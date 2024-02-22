@@ -4,17 +4,25 @@
 
 <%= render 'member_header' %>
 
-<% if @shipment.undocumentable_reasons.any? %>
+<% undocumentable_reasons = @shipment.undocumentable_reasons %>
+<% if undocumentable_reasons.values.any? { |value| value.any? } %>
   <div class="alert alert-warning">
-    <p class="lead">Documents missing</p>
+    <p class="lead">
+      <%= 'Document'.pluralize(undocumentable_reasons.keys.count) %>
+      pending
+    </p>
 
-    <p>Errors prevented some documents from being created:</p>
+    <% undocumentable_reasons.each do |documentable_type, undocumentable_reasons| %>
+      <% next if undocumentable_reasons.empty? %>
 
-    <ul>
-      <% @shipment.undocumentable_reasons.each do |undocumentable_reason| %>
-        <li><%= undocumentable_reason %></li>
-      <% end %>
-    </ul>
+      <p><%= Shipment.human_attribute_name(documentable_type).downcase.capitalize %> hasn’t been created because:</p>
+
+      <ul>
+        <% undocumentable_reasons.sort.each do |undocumentable_reason| %>
+          <li><%= undocumentable_reason %></li>
+        <% end %>
+      </ul>
+    <% end %>
   </div>
 <% end %>
 

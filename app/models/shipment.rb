@@ -842,23 +842,18 @@ class Shipment < ApplicationRecord
   end
 
   def undocumentable_reasons
-    return [] if broker_bol.attached?
+    {}.tap do |builder|
+      DOCUMENTABLE_TYPES.each do |documentable_type|
+        service = "DocumentableService::Shipment::#{documentable_type.to_s.camelcase}".constantize.new(self)
 
-    [].tap do |builder|
-      if pro.blank? && broker_carrier.present? && broker_carrier.bol_requires_tracking_number?
-        builder << "#{self.class.human_attribute_name(:pro)} is blank and #{broker_carrier.carrier.name} requires it"
-      end
+        missing_requirements = service.missing_requirements
+        next if missing_requirements.empty?
 
-      %i[shipper_name receiver_name].each do |attribute|
-        next if public_send(attribute).present?
-
-        builder << "#{self.class.human_attribute_name(attribute)} is blank"
-      end
-
-      %i[shipper_address receiver_address].each do |attribute|
-        next if public_send(attribute).full_address?
-
-        builder << "#{self.class.human_attribute_name(attribute)} is incomplete"
+        builder[documentable_type] = [].tap do |reasons_builder|
+          missing_requirements.map do |requirement|
+            reasons_builder << "#{self.class.human_attribute_name(requirement).downcase.upcase_first} is invalid"
+          end
+        end
       end
     end
   end

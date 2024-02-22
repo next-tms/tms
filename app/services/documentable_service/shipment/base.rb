@@ -27,9 +27,9 @@ module DocumentableService
                                                       ]
       end
 
-      def missing_changes
-        @missing_changes ||= super.tap do |builder|
-          builder << :items if record.items.empty?
+      def requirements
+        @requirements ||= super.tap do |builder|
+          builder << :items
         end
       end
 

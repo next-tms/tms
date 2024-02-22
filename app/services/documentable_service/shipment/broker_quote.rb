@@ -17,9 +17,9 @@ module DocumentableService
         end
       end
 
-      def missing_changes
+      def requirements
         @missing_changes ||= super.tap do |builder|
-          builder << :total_charges_cents if record.total_charges_cents.zero?
+          builder << :total_charges_cents
         end
       end
     end

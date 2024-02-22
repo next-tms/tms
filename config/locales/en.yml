@@ -29,7 +29,10 @@ en:
         iso_3166_2: ISO 3166-2
       shipment:
         bol: "BOL #"
+        broker_bol: Bill of Lading
         broker_carrier: Carrier
+        broker_dispatch_sheet: Dispatch Sheet
+        broker_quote: Quote
         carrier_bol: Scanned Bill of Lading
         carrier_pod: Proof of Delivery
         customer_reference: "PO #"
@@ -38,7 +41,9 @@ en:
         quote_id: "Quote #"
         shipper_reference: "SO #"
         total_charges: Charge
-        total_cost: Cost
+        total_charges_cents: Charge
+        total_cost: Carrier Cost
+        total_cost_cents: Carrier Cost
       user:
         company_sgid: Company
     models:

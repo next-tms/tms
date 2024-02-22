@@ -27,7 +27,7 @@ module DocumentableService
     def call
       record.skip_documentable_callback = true
 
-      if missing_changes.any?
+      if missing_requirements.any?
         destroy_document!
         return
       end
@@ -38,6 +38,19 @@ module DocumentableService
       create_document!
 
       nil
+    end
+
+    def missing_requirements
+      requirements.reject do |requirement|
+        value = record.public_send(requirement)
+
+        case value
+        when Address then value.full_address?
+        when Integer then value.positive?
+        else
+          value.try(:any?) || value.present?
+        end
+      end
     end
 
     private
@@ -83,8 +96,8 @@ module DocumentableService
       end
     end
 
-    def missing_changes
-      @missing_changes ||= []
+    def requirements
+      []
     end
   end
 end
