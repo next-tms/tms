@@ -103,6 +103,7 @@ class Address < ApplicationRecord
 
   validate :region_matches_country
   validate :validate_ref, if: -> { ref.present? && ref_changed? }
+  validate :validate_street, if: -> { street.present? && country.present? }
   validate :validate_street_attributes
   validate :validate_zip_code, if: -> { zip_code.present? && country.present? }
 
@@ -266,6 +267,12 @@ class Address < ApplicationRecord
 
       errors.add(:ref, "cannot start with “#{matched_prefix}”")
     end
+  end
+  
+  def validate_street
+    return if country.valid_street?(street)
+    
+    errors.add(:street, "is not valid for #{country.name}")
   end
 
   def validate_street_attributes

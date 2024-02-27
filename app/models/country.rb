@@ -55,4 +55,10 @@ class Country < ApplicationRecord
 
     true
   end
+  
+  def valid_street?(street)
+    return true unless alpha2_code == 'US'
+    
+    street.match?(/\A\d*\s[a-z]/i)
+  end
 end
