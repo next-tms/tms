@@ -278,7 +278,7 @@ class Address < ApplicationRecord
       matched_prefix = value.match(/\A#{Regexp.escape('C/O')}/i)
       errors.add(attribute, "cannot contain “#{matched_prefix}”") if matched_prefix.present?
 
-      ['Re:', 'Ref:'].each do |prefix|
+      ['Re:', 'Ref:', 'Release'].each do |prefix|
         matched_prefix = value.match(/\A#{Regexp.escape(prefix)}/i)
         next if matched_prefix.blank?
 
