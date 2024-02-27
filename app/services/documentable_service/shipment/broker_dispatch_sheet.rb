@@ -27,6 +27,11 @@ module DocumentableService
       def requirements
         @requirements ||= super.tap do |builder|
           builder << :broker_carrier
+          builder << :delivery_hours_end_at
+          builder << :delivery_hours_start_at
+          builder << :pickup_hours_end_at
+          builder << :pickup_hours_start_at
+          builder << :pickup_on
           builder << :pro if pro_number_required?
           builder << :receiver_address
           builder << :shipper_address
