@@ -26,24 +26,60 @@ RSpec.describe(Country, type: :model) do
     let(:alpha2_code) { 'CA' }
     let(:record) { create(:country, alpha2_code:) }
 
-    it { expect(record.valid_street?(Faker::Alphanumeric.alphanumeric)).to eq(true) }
+    it { expect(record.valid_street?(Faker::Alphanumeric.alphanumeric)).to(eq(true)) }
 
     context "when alpha2_code == 'US'" do
       let(:alpha2_code) { 'US' }
 
-      it { expect(record.valid_street?('1-123 Main St Ste A')).to eq(false) }
-      it { expect(record.valid_street?('1-123 Main St')).to eq(false) }
-      it { expect(record.valid_street?('123 Main St Ste A')).to eq(true) }
-      it { expect(record.valid_street?('123 Main St')).to eq(true) }
-      it { expect(record.valid_street?('123-1 Main St Ste A')).to eq(false) }
-      it { expect(record.valid_street?('123-1 Main St')).to eq(false) }
-      it { expect(record.valid_street?('123A Main St Ste A')).to eq(true) }
-      it { expect(record.valid_street?('123A Main St')).to eq(true) }
-      it { expect(record.valid_street?('Main St Bldg 1200')).to eq(true) }
-      it { expect(record.valid_street?('Main St Ste A')).to eq(true) }
-      it { expect(record.valid_street?('Main St')).to eq(true) }
-      it { expect(record.valid_street?('W229N1492 Westwood Dr Ste 2')).to eq(true) }
-      it { expect(record.valid_street?('W229N1492 Westwood Dr')).to eq(true) }
+      it { expect(record.valid_street?('1-123 5th St Ste A')).to(eq(false)) }
+      it { expect(record.valid_street?('1-123 5th St')).to(eq(false)) }
+      it { expect(record.valid_street?('1-123 39th Avenue Dr Ste A')).to(eq(false)) }
+      it { expect(record.valid_street?('1-123 39th Avenue Dr')).to(eq(false)) }
+      it { expect(record.valid_street?('1-123 Johnson-Lewis Hwy Ste A')).to(eq(false)) }
+      it { expect(record.valid_street?('1-123 Johnson-Lewis Hwy')).to(eq(false)) }
+      it { expect(record.valid_street?('1-123 Main St Ste A')).to(eq(false)) }
+      it { expect(record.valid_street?('1-123 Main St')).to(eq(false)) }
+      it { expect(record.valid_street?('5th St Bldg 1200')).to(eq(true)) }
+      it { expect(record.valid_street?('5th St Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('5th St')).to(eq(true)) }
+      it { expect(record.valid_street?('39th Avenue Dr Bldg 1200')).to(eq(true)) }
+      it { expect(record.valid_street?('39th Avenue Dr Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('39th Avenue Dr')).to(eq(true)) }
+      it { expect(record.valid_street?('123 5th St Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('123 5th St')).to(eq(true)) }
+      it { expect(record.valid_street?('123 Johnson-Lewis Hwy Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('123 Johnson-Lewis Hwy')).to(eq(true)) }
+      it { expect(record.valid_street?('123 Main St Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('123 Main St')).to(eq(true)) }
+      it { expect(record.valid_street?('123-1 5th St Ste A')).to(eq(false)) }
+      it { expect(record.valid_street?('123-1 5th St')).to(eq(false)) }
+      it { expect(record.valid_street?('123-1 Johnson-Lewis Hwy Ste A')).to(eq(false)) }
+      it { expect(record.valid_street?('123-1 Johnson-Lewis Hwy')).to(eq(false)) }
+      it { expect(record.valid_street?('123-1 Main St Ste A')).to(eq(false)) }
+      it { expect(record.valid_street?('123-1 Main St')).to(eq(false)) }
+      it { expect(record.valid_street?('123A 5th St Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('123A 5th St')).to(eq(true)) }
+      it { expect(record.valid_street?('123A Johnson-Lewis Hwy Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('123A Johnson-Lewis Hwy')).to(eq(true)) }
+      it { expect(record.valid_street?('123A Main St Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('123A Main St')).to(eq(true)) }
+      it { expect(record.valid_street?('Johnson-Lewis Hwy Bldg 1200')).to(eq(true)) }
+      it { expect(record.valid_street?('Johnson-Lewis Hwy Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('Johnson-Lewis Hwy')).to(eq(true)) }
+      it { expect(record.valid_street?('Main St Bldg 1200')).to(eq(true)) }
+      it { expect(record.valid_street?('Main St Ste A')).to(eq(true)) }
+      it { expect(record.valid_street?('Main St')).to(eq(true)) }
+      it { expect(record.valid_street?('W229N1492 Westwood Dr Ste 2')).to(eq(true)) }
+      it { expect(record.valid_street?('W229N1492 Westwood Dr')).to(eq(true)) }
+      it { expect(record.valid_street?("1-123 O'Keefe Blvd Ste A")).to(eq(false)) }
+      it { expect(record.valid_street?("1-123 O'Keefe Blvd")).to(eq(false)) }
+      it { expect(record.valid_street?("123 O'Keefe Blvd Ste A")).to(eq(true)) }
+      it { expect(record.valid_street?("123-1 O'Keefe Blvd")).to(eq(false)) }
+      it { expect(record.valid_street?("123A O'Keefe Blvd Ste A")).to(eq(true)) }
+      it { expect(record.valid_street?("123A O'Keefe Blvd")).to(eq(true)) }
+      it { expect(record.valid_street?("O'Keefe Blvd Bldg 1200")).to(eq(true)) }
+      it { expect(record.valid_street?("O'Keefe Blvd Ste A")).to(eq(true)) }
+      it { expect(record.valid_street?("O'Keefe Blvd")).to(eq(true)) }
     end
   end
 end

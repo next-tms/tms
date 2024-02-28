@@ -59,7 +59,7 @@ class Country < ApplicationRecord
 
   def valid_street?(street)
     case alpha2_code
-    when 'US' then return street.match?(/\A\d*[a-z]?(?:\d*\s*[a-z]*)*\z/i)
+    when 'US' then return !street.start_with?(/\d*-\d*/)
     end
 
     true
