@@ -20,10 +20,16 @@ module DocumentableService
 
       def check_attributes
         @check_attributes ||= scheduling_attributes + %i[
+                                                        broker_carrier_id
+                                                        receiver_address_id
                                                         receiver_name
+                                                        shipper_address_id
                                                         shipper_bol
                                                         shipper_name
                                                         shipper_reference
+                                                        tracking_carrier_id
+                                                        tracking_carrier_pickup_confirmation
+                                                        tracking_carrier_pro
                                                       ]
       end
 

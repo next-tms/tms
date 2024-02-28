@@ -5,8 +5,15 @@ module DocumentableService
     class BrokerDispatchSheet < Base
       private
 
+      def check_associations
+        @check_associations ||= super.tap do |builder|
+          builder << :dispatcher
+        end
+      end
+
       def check_attributes
         @check_attributes ||= super.tap do |builder|
+          builder << :dispatcher_id
           builder << :pickup_confirmation
           builder << :pro
           builder << :quote_id
