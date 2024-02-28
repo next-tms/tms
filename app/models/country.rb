@@ -42,23 +42,26 @@ class Country < ApplicationRecord
     return if str.blank?
 
     case alpha2_code
-    when 'US'
-      StreetAddress::US.parse_address(str).to_s
+    when 'US' then StreetAddress::US.parse_address(str).to_s
     end
+
+    str
   end
 
   def valid_postal_code?(postal_code)
     case alpha2_code
-    when 'CA' then return false unless postal_code.match?(/^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$/)
-    when 'US' then return false unless postal_code.match?(/^\d{5}(?:-\d{4})?$/)
+    when 'CA' then return postal_code.match?(/^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$/)
+    when 'US' then return postal_code.match?(/^\d{5}(?:-\d{4})?$/)
     end
 
     true
   end
-  
+
   def valid_street?(street)
-    return true unless alpha2_code == 'US'
-    
-    street.match?(/\A\d*\s[a-z]/i)
+    case alpha2_code
+    when 'US' then return street.match?(/\A\d*[a-z]?(?:\d*\s*[a-z]*)*\z/i)
+    end
+
+    true
   end
 end
