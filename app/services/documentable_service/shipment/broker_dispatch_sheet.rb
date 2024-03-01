@@ -19,10 +19,6 @@ module DocumentableService
           builder << :quote_id
           builder << :total_cost_cents
           builder << :value_cents
-
-          if record.picked_up?
-            builder.reject! { |attribute| scheduling_attributes.include?(attribute) }
-          end
         end
       end
 
