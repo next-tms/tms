@@ -32,8 +32,18 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Commission < ApplicationRecord
-  belongs_to :user
+  class << self
+    def ransackable_associations(auth_object = nil)
+      ['shipment', 'user']
+    end
+
+    def ransackable_attributes(auth_object = nil)
+      ['amount_cents', 'amount_currency', 'paid', 'shipment_id', 'updated_at', 'user_id']
+    end
+  end
+
   belongs_to :shipment
+  belongs_to :user
 
   monetize :amount_cents
 
