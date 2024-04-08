@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ShipmentsHelper
   TABLE_DATA = {
     broker_carrier: {
@@ -107,21 +109,20 @@ module ShipmentsHelper
   }
 
   PREPENDED_TABLE_DATA = [
-    display_name: 'Load',
-    column_name: :load_id,
-    link: true,
-    path: :broker_shipment_path
-  ]
+                           display_name: 'Load',
+                           column_name: :load_id,
+                           partial: 'broker/shipments/show_many_td_load_id',
+                         ]
 
   APPENDED_TABLE_DATA = [
-    display_name: 'Dispatcher',
-    column_name: :dispatcher_full_name,
-    wrap: true
-  ]
+                          display_name: 'Dispatcher',
+                          column_name: :dispatcher_full_name,
+                          wrap: true,
+                        ]
 
   def shipment_table_row_class(shipment)
-    if action_name == 'pending_pickup' && !shipment.pickup_on.blank?
-      current_shipper_time = DateTime.current.in_time_zone(shipment.shipper_address.time_zone.name).to_date
+    if action_name == 'pending_pickup' && shipment.pickup_on.present?
+      current_shipper_time = Time.current.in_time_zone(shipment.shipper_address.time_zone.name).to_date
 
       if current_shipper_time > shipment.pickup_on
         'table-danger'
@@ -130,13 +131,13 @@ module ShipmentsHelper
       end
     elsif shipment.pending_departure?
       'table-danger'
-    elsif shipment.late? || !shipment.canceled_at.blank? || shipment.dispatch_incomplete? || (!shipment.picked_up_at.blank? && shipment.missing_delivery_eta_on?)
+    elsif shipment.late? || shipment.canceled_at.present? || shipment.dispatch_incomplete? || (shipment.picked_up_at.present? && shipment.missing_delivery_eta_on?)
       'table-warning'
     end
   end
 
   def default_packaging_id
-    @default_packaging_id ||= Packaging.find_by_name('pallet')&.id
+    @default_packaging_id ||= Packaging.find_by(name: 'pallet')&.id
   end
 
   def table_data_to_itereate(td_names)
@@ -150,10 +151,13 @@ module ShipmentsHelper
   end
 
   def charges_confirmed_note(shipment)
-    audit = shipment.audits.where("audited_changes @> ?", {"charges_confirmed" => [false, true]}.to_json ).first
+    audit = shipment.audits.where('audited_changes @> ?', { 'charges_confirmed' => [false, true] }.to_json).first
     changed_by = audit.user
 
-    "Shipment Charges Confirmed by #{changed_by.full_name} at #{(pretty_date audit.created_at, current_user.time_zone)}".html_safe
+    "Shipment Charges Confirmed by #{changed_by.full_name} at #{pretty_date(
+      audit.created_at,
+      current_user.time_zone,
+    )}".html_safe
   end
 
   def requires_charges_confirmed_note(shipment)

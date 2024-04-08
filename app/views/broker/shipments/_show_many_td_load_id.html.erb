@@ -1,0 +1,8 @@
+<td class="text-nowrap">
+  <%= link_to shipment.load_id, broker_shipment_path(shipment) %>
+  <% if shipment.promised_delivery_by.present? %>
+    <span data-controller="tooltip" data-toggle="tooltip" title="Promised Delivery">
+      <%= icon 'solid', 'circle-exclamation' %>
+    </span>
+  <% end %>
+</td>
