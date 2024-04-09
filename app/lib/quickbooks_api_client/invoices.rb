@@ -19,7 +19,7 @@ module QuickbooksAPIClient
         rescue Quickbooks::IntuitRequestException => e
           raise unless e.message.include?('Duplicate Document Number Error')
 
-          result = find_by_doc_number(invoice.load_id)
+          result = find_by_doc_number(invoice.doc_number)
           return result if result.present?
 
           raise
