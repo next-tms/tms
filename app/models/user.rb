@@ -129,7 +129,7 @@ class User < ApplicationRecord
   after_save :send_invitation
   after_save :update_contact
 
-  before_validation :set_contact
+  before_validation :build_contact, if: -> { companyable.present? && contact.blank? && email.present? }
   before_validation :set_time_zone_name
 
   belongs_to :contact
@@ -289,6 +289,15 @@ class User < ApplicationRecord
 
   private
 
+  def build_contact
+    new_contact = companyable.contacts.find_or_initialize_by(email: email.downcase)
+    return if new_contact.persisted?
+
+    new_contact.assign_attributes(companyable:, first_name:, last_name:)
+
+    self.contact = new_contact
+  end
+
   def reassign_problems
     return unless saved_change_to_deactivated && deactivated?
 
@@ -311,15 +320,6 @@ class User < ApplicationRecord
     invite!(invited_by)
   end
 
-  def set_contact
-    return unless [companyable, email].all?(&:present?)
-
-    self.contact = companyable.contacts.where(email: email.downcase)&.first
-    return if contact.present?
-
-    self.contact = build_contact(companyable:, email:, first_name:, last_name:)
-  end
-
   def set_time_zone_name
     return unless companyable.present? && time_zone_name.blank?
 
@@ -327,10 +327,16 @@ class User < ApplicationRecord
   end
 
   def update_contact
-    new_attributes = { first_name:, last_name: }.delete_if { |_key, value| value.blank? }
-    return if new_attributes.none?
+    %i[companyable_id companyable_type first_name last_name].each do |attribute|
+      next unless public_send("saved_change_to_#{attribute}?")
 
-    contact.update!(new_attributes)
+      value = public_send(attribute)
+      next if value.blank?
+
+      contact.public_send("#{attribute}=", value)
+    end
+
+    contact.save! if contact.changed?
   end
 
   protected

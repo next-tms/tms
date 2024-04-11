@@ -29,7 +29,8 @@
 #
 # Indexes
 #
-#  index_contacts_on_companyable  (companyable_type,companyable_id)
+#  idx_on_companyable_id_companyable_type_email_1de3a153e6  (companyable_id,companyable_type,email) UNIQUE
+#  index_contacts_on_companyable                            (companyable_type,companyable_id)
 #
 class Contact < ApplicationRecord
   class << self
