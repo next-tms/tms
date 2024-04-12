@@ -35,7 +35,11 @@
       <tbody>
         <tr>
           <td class="lead">
-            <%= link_to @receivable.broker_customer.customer.name, broker_broker_customer_path(@receivable.broker_customer), target: '_blank' %>
+            <% if @receivable.broker_customer.present? %>
+              <%= link_to @receivable.broker_customer.customer.name,
+                          broker_broker_customer_path(@receivable.broker_customer),
+                          target: '_blank' %>
+            <% end %>
           </td>
 
           <td class="lead">

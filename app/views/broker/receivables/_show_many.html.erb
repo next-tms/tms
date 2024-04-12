@@ -30,9 +30,13 @@
               <td>
                 <%= link_to receivable.shipment.load_id, broker_receivable_path(receivable), target: '_top' %>
               </td>
-              <% unless controller.controller_name == 'broker_customers' %>
+              <% if controller.controller_name != 'broker_customers' %>
                 <td>
-                  <%= link_to receivable.broker_customer.customer.name, broker_broker_customer_path(receivable.broker_customer), target: '_new' %>
+                  <% if receivable.broker_customer.present? %>
+                    <%= link_to receivable.broker_customer.customer.name,
+                                broker_broker_customer_path(receivable.broker_customer),
+                                target: '_new' %>
+                  <% end %>
                 </td>
               <% end %>
               <td><%= short_date receivable.shipment.picked_up_at, current_user.time_zone %></td>
