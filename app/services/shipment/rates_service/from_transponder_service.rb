@@ -32,6 +32,13 @@ class Shipment::RatesService
         return rates
       end
 
+      if response.blank?
+        error = StandardError.new("response was blank (BrokerCarrier id=#{broker_carrier.id}, Shipment id=#{shipment.id})")
+        Rails.env.development? ? raise(error) : Honeybadger.notify(error)
+
+        return rates
+      end
+
       errors = response[:errors]
 
       if errors.any?
