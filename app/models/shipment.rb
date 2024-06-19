@@ -192,26 +192,7 @@ class Shipment < ApplicationRecord
   class << self
     def last_load_id = maximum(:load_id) || Setting.first_load_id.to_i
 
-    def ransackable_attributes(auth_object = nil)
-      [
-        'bol_notes',
-        'broker_notes',
-        'created_at',
-        'delivered_at',
-        'load_id',
-        'picked_up_at',
-        'pro',
-        'receiver_contact_name',
-        'receiver_name',
-        'shipper_contact_name',
-        'shipper_name',
-        'tracking_carrier_pro'
-      ]
-    end
-
-    def ransackable_associations(auth_object = nil)
-      [ 'broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address' ]
-    end
+    def ransackable_associations(auth_object = nil) = [ 'broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address' ]
   end
 
   DOCUMENTABLE_TYPES = %i[broker_bol broker_label broker_dispatch_sheet broker_quote]
@@ -226,6 +207,7 @@ class Shipment < ApplicationRecord
                                                    shipper_contact_name
                                                  ]
 
+  include AuthorizedAttributable
   include Discussable
   include Documentable
   include Normalizable
