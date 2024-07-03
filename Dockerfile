@@ -26,7 +26,7 @@ RUN apk add --no-cache --virtual .gem-installdeps build-base \
                                                   libxslt-dev && \
     gem update --system && \
     gem install bundler -v 2.5.14 && \
-    gem install nokogiri -v 1.16.2 --platform=ruby -- --use-system-libraries && \
+    gem install nokogiri -v 1.16.6 --platform=ruby -- --use-system-libraries && \
     bundle config github.com $BUNDLER_GITHUB_OAUTH_KEY && \
     bundle install --retry 5 && \
     bundle exec bootsnap precompile app/ lib/ && \
