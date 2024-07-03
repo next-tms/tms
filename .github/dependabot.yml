@@ -10,4 +10,5 @@ registries:
   github-registry:
     type: git
     url: https://github.com
-    token: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
+    username: "${{ secrets.BUNDLER_GITHUB_USERNAME }}"
+    password: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
