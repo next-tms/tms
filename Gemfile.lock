@@ -533,7 +533,8 @@ GEM
     rexle-builder (1.0.8)
     rexle-css (0.2.0)
     rexleparser (0.9.10)
-    rexml (3.2.6)
+    rexml (3.3.1)
+      strscan
     rexslt (0.8.0)
       rexle (~> 1.5, >= 1.5.14)
       rxfreader (~> 0.2, >= 0.2.1)
@@ -666,6 +667,7 @@ GEM
     stimulus-rails (1.1.1)
       railties (>= 6.0.0)
     stringio (3.1.1)
+    strscan (3.1.0)
     table-formatter (0.7.1)
       c32 (~> 0.2, >= 0.2.0)
       rdiscount (~> 2.2, >= 2.2.0.1)
