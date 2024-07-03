@@ -77,7 +77,7 @@ gem 'place_kit', '~> 0.0.1'
 
 gem 'honeybadger', '~> 5.2'
 
-gem 'sidekiq', '~> 7.2.0'
+gem 'sidekiq', '~> 7.2.4'
 gem 'sidekiq-scheduler', '~> 5.0.3'
 
 gem 'barby'
