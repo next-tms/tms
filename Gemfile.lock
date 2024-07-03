@@ -188,9 +188,9 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
-    devise-pwned_password (0.1.10)
+    devise-pwned_password (0.1.12)
       devise (~> 4)
-      pwned (~> 2.0.0)
+      pwned (~> 2.4)
     devise_invitable (2.0.9)
       actionmailer (>= 5.0)
       devise (>= 4.6)
@@ -437,7 +437,7 @@ GEM
     public_suffix (5.0.1)
     puma (6.4.2)
       nio4r (~> 2.0)
-    pwned (2.0.2)
+    pwned (2.4.1)
     quickbooks-ruby (2.0.3)
       activemodel (> 4.0)
       faraday (< 3.0)
@@ -750,7 +750,7 @@ DEPENDENCIES
   byebug
   capybara (>= 3.35.3)
   devise (~> 4.9.2)
-  devise-pwned_password (~> 0.1.10)
+  devise-pwned_password (~> 0.1.12)
   devise_invitable (~> 2.0.9)
   dotenv-rails (~> 2.8.1)
   factory_bot_rails
