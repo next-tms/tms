@@ -1,4 +1,4 @@
-FROM ruby:3.2.3-alpine3.19 AS runtime
+FROM ruby:3.3.3-alpine3.20 AS runtime
 
 RUN apk -U upgrade && apk add --no-cache git libpq-dev libxml2 libxslt imagemagick nodejs npm shared-mime-info yarn
 
@@ -24,6 +24,7 @@ RUN apk add --no-cache --virtual .gem-installdeps build-base \
                                                   imagemagick-libs \
                                                   libxml2-dev \
                                                   libxslt-dev && \
+    gem update --system && \
     gem install bundler -v 2.5.6 && \
     gem install nokogiri -v 1.16.2 --platform=ruby -- --use-system-libraries && \
     bundle config github.com $BUNDLER_GITHUB_OAUTH_KEY && \
