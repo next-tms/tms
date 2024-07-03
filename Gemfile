@@ -69,7 +69,7 @@ gem 'aws-sdk-s3', '~> 1.130.0', group: :production
 gem 'image_processing', '~> 1.12.2'
 
 gem 'devise', '~> 4.9.2'
-gem 'devise_invitable', '~> 2.0.8'
+gem 'devise_invitable', '~> 2.0.9'
 gem 'devise-pwned_password', '~> 0.1.10'
 
 gem 'freight_kit-next', git: 'https://github.com/next-tms/freight_kit-next', tag: 'v0.1.23'

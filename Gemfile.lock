@@ -191,7 +191,7 @@ GEM
     devise-pwned_password (0.1.10)
       devise (~> 4)
       pwned (~> 2.0.0)
-    devise_invitable (2.0.8)
+    devise_invitable (2.0.9)
       actionmailer (>= 5.0)
       devise (>= 4.6)
     diff-lcs (1.5.1)
@@ -377,6 +377,7 @@ GEM
       date
       net-protocol
     net-pop (0.1.2)
+      net-protocol
     net-protocol (0.2.2)
       timeout
     net-smtp (0.5.0)
@@ -516,7 +517,7 @@ GEM
       io-console (~> 0.5)
     request_store (1.5.1)
       rack (>= 1.4)
-    responders (3.1.0)
+    responders (3.1.1)
       actionpack (>= 5.2)
       railties (>= 5.2)
     rest-client (2.1.0)
@@ -750,7 +751,7 @@ DEPENDENCIES
   capybara (>= 3.35.3)
   devise (~> 4.9.2)
   devise-pwned_password (~> 0.1.10)
-  devise_invitable (~> 2.0.8)
+  devise_invitable (~> 2.0.9)
   dotenv-rails (~> 2.8.1)
   factory_bot_rails
   faker (~> 3.2.0)
