@@ -75,7 +75,7 @@ gem 'devise-pwned_password', '~> 0.1.12'
 gem 'freight_kit-next', git: 'https://github.com/next-tms/freight_kit-next', tag: 'v0.1.23'
 gem 'place_kit', '~> 0.0.1'
 
-gem 'honeybadger', '~> 5.2'
+gem 'honeybadger', '~> 5.13'
 
 gem 'sidekiq', '~> 7.2.4'
 gem 'sidekiq-scheduler', '~> 5.0.3'
