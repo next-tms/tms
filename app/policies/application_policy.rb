@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # See https://github.com/palkan/action_policy/blob/master/docs/custom_policy.md#
 class ApplicationPolicy
   include ActionPolicy::Policy::Core
@@ -24,34 +22,32 @@ class ApplicationPolicy
 
   default_rule :manage?
 
-  alias_rule :create?, :destroy?, :edit?, :new?, :update?, :view?, to: :manage?
+  alias_rule :create?, :destroy?, :edit?, :new?, :update?, to: :manage?
   alias_rule :show?, to: :view?
 
   def admin?
-    any_role?(:root)
+    return false unless any_role?(:root)
+
+    return true if broker?
+
+    record.try(authorizable.companyable.model_name.singular.to_sym) == authorizable.companyable
   end
 
-  def any_role?(*roles)
-    authorizable.any_role?(*roles)
-  end
-
-  def broker?
-    authorizable.companyable.broker?
-  end
-
-  def carrier?
-    authorizable.companyable.carrier?
-  end
-
-  def customer?
-    authorizable.companyable.customer?
-  end
-
-  def manage?
-    owner? || (broker? && admin?)
-  end
+  def any_role?(*roles) = authorizable.any_role?(*roles)
+  def broker? = authorizable.companyable.broker?
+  def carrier? = authorizable.companyable.carrier?
+  def customer? = authorizable.companyable.customer?
+  def manage? = admin? || owner? || party?
 
   def owner?
-    record.try(:user) == authorizable
+    record.try(:created_by) == authorizable || record.try(:user) == authorizable
   end
+
+  def party?
+    owner? || authorizable.roles.any? do |role|
+      record.try(role) == authorizable || record.try(role.to_s.pluralize.to_sym)&.include?(authorizable)
+    end
+  end
+
+  def view? = party?
 end
