@@ -8,7 +8,7 @@
           <tr>
             <th><%= sort_link q, :first_name, 'Name' %></th>
             <% if controller_name == 'users' %>
-              <th><%= sort_link q, :company_type, 'Kind' %></th>
+              <th><%= sort_link q, :companyable_type, 'Kind' %></th>
               <th>Active?</th>
             <% end %>
             <% if controller_name != 'broker_customers' %>

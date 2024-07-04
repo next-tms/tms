@@ -57,7 +57,7 @@
 class Payment < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['id']
+      ['due_on', 'id', 'paid_cents']
     end
 
     def ransackable_associations(auth_object = nil)

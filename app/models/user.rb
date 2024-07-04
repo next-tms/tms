@@ -114,7 +114,7 @@ class User < ApplicationRecord
     end
 
     def ransackable_attributes(auth_object = nil)
-      ['email', 'first_name', 'last_name']
+      ['companyable_type', 'email', 'first_name', 'invitation_accepted_at', 'last_name', 'last_sign_in_at']
     end
 
     def ransackable_associations(auth_object = nil)

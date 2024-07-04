@@ -83,7 +83,7 @@ class BrokerCarrier < ApplicationRecord
     end
 
     def ransackable_attributes(auth_object = nil)
-      []
+      ['name', 'shipments_count']
     end
 
     def ransackable_associations(auth_object = nil)
