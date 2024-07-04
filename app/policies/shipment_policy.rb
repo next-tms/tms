@@ -19,21 +19,32 @@ class ShipmentPolicy < ApplicationPolicy
                           updated_at
                         ]
 
-  BROKER_ATTRIBUTES.each do |attribute|
-    define_method("#{attribute}_attribute?") do
-      broker?
-    end
+  include AuthorizedAttributablePolicy
+
+  def manage?
+    return broker_party? if broker?
+
+    record_customer? && (any_role?(:root) || record.created_by == authorizable)
   end
 
-  CUSTOMER_ATTRIBUTES.each do |attribute|
-    define_method("#{attribute}_attribute?") do
-      customer? || broker?
-    end
+  def party?
+    return broker_party? if broker?
+
+    record_customer? && record.created_by == authorizable
   end
 
-  def show?
+  def view?
     return false unless record
 
-    record.accessible_by?(user)
+    manage? || record.accessible_by?(authorizable)
   end
+
+  private
+
+  def broker_party?
+    record.broker == authorizable.companyable &&
+      (any_role?(:dispatch, :root, :sales_rep_for_all_broker_customers) || record.dispatcher == authorizable)
+  end
+
+  def record_customer? = customer? && record.broker_customer == authorizable.companyable
 end

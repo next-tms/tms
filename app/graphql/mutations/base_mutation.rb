@@ -6,5 +6,7 @@ module Mutations
     object_class Types::BaseObject
 
     include ActionPolicy::GraphQL::Behaviour
+
+    authorize :authorizable, through: :current_user
   end
 end
