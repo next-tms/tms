@@ -608,7 +608,7 @@ GEM
       rubocop (~> 1.0)
     rubocop-rspec (3.0.2)
       rubocop (~> 1.61)
-    rubocop-shopify (2.14.0)
+    rubocop-shopify (2.15.1)
       rubocop (~> 1.51)
     ruby-next-core (1.0.3)
     ruby-progressbar (1.13.0)
@@ -806,7 +806,7 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rake
   rubocop-rspec
-  rubocop-shopify (~> 2.14.0)
+  rubocop-shopify (~> 2.15.1)
   sassc-rails (~> 2.1.2)
   selenium-webdriver
   shoulda-matchers (= 5.3.0)

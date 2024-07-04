@@ -31,7 +31,7 @@ group :development, :test do
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', require: false
-  gem 'rubocop-shopify', '~> 2.14.0', require: false
+  gem 'rubocop-shopify', '~> 2.15.1', require: false
   gem 'shoulda-matchers', '5.3.0'
   gem 'webmock', '~> 3.18.1'
 end
