@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class NotificationsController < ApplicationController
   before_action :authenticate_user!
 
   def show
-    @notification = Notification.find params[:id]
+    @notification = Notification.find(params[:id])
     @notification.mark_as_read!
   end
 
@@ -14,7 +16,7 @@ class NotificationsController < ApplicationController
       notifications = current_user.notifications.where(id: ids).newest_first
     end
 
-    @q = notifications.ransack({})
+    @q = notifications.ransack({}, auth_object: current_user)
     @pagy, @notifications = pagy(@q.result)
   end
 end

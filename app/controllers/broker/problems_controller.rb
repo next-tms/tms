@@ -6,7 +6,7 @@ class Broker::ProblemsController < Broker::BrokerController
   before_action :authenticate_user!
 
   def index
-    @q = @scoped_problems.includes(required_includes).ransack(params[:q])
+    @q = @scoped_problems.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
@@ -31,7 +31,10 @@ class Broker::ProblemsController < Broker::BrokerController
   def edit; end
 
   def suppressive
-    @q = @scoped_problems.unresolved.suppressive.includes(required_includes).ransack(params[:q])
+    @q = @scoped_problems.unresolved.suppressive.includes(required_includes).ransack(
+      params[:q],
+      auth_object: current_user,
+    )
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
@@ -51,7 +54,10 @@ class Broker::ProblemsController < Broker::BrokerController
   end
 
   def resolved
-    @q = @scoped_problems.resolved.includes(required_includes + %i[resolved_by]).ransack(params[:q])
+    @q = @scoped_problems.resolved.includes(required_includes + %i[resolved_by]).ransack(
+      params[:q],
+      auth_object: current_user,
+    )
     @q.sorts = 'resolved_at desc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
@@ -60,14 +66,17 @@ class Broker::ProblemsController < Broker::BrokerController
   def show; end
 
   def team
-    @q = @scoped_problems.unresolved.includes(required_includes).ransack(params[:q])
+    @q = @scoped_problems.unresolved.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)
   end
 
   def yours
-    @q = @scoped_problems.unresolved.where(assigned_to: current_user).includes(required_includes).ransack(params[:q])
+    @q = @scoped_problems.unresolved.where(assigned_to: current_user).includes(required_includes).ransack(
+      params[:q],
+      auth_object: current_user,
+    )
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @problems = pagy(@q.result)

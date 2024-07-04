@@ -26,7 +26,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
          .broker
          .broker_carriers
          .includes(required_includes)
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
 
     @q.sorts = "#{Carrier.table_name.singularize}_name" if @q.sorts.blank?
     @pagy, @broker_carriers = pagy(@q.result)
@@ -59,7 +59,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def preferences; end
 
   def quickbooks
-    authorize! current_user, to: :accounts_payable_show?, with: QuickbooksPolicy
+    authorize!(current_user, to: :accounts_payable_show?, with: QuickbooksPolicy)
 
     @broker_carriers = current_user
                        .broker
@@ -74,7 +74,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def update_quickbooks
-    authorize! current_user, to: :accounts_payable_show?, with: QuickbooksPolicy
+    authorize!(current_user, to: :accounts_payable_show?, with: QuickbooksPolicy)
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
@@ -111,7 +111,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def terminals
     @carrier = @broker_carrier.carrier
 
-    @q = @carrier.terminals.ransack(params[:q])
+    @q = @carrier.terminals.ransack(params[:q], auth_object: current_user)
     @pagy, @terminals = pagy(@q.result)
   end
 
@@ -160,7 +160,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def contacts
-    @q = @broker_carrier.contacts.ransack(params[:q])
+    @q = @broker_carrier.contacts.ransack(params[:q], auth_object: current_user)
     @q.sorts = 'contacts.first_name desc' if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
   end
@@ -170,7 +170,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
 
     @q = @broker_carrier
          .payment_transactions
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'due_on desc' if @q.sorts.blank?
     @pagy, @payment_transactions = pagy(@q.result)
@@ -182,7 +182,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @q = @broker_carrier
          .payments
          .includes(:payment_transactions)
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'due_on desc' if @q.sorts.blank?
     @pagy, @payments = pagy(@q.result)
@@ -197,7 +197,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
            :receiver_address,
            :tracking_carrier,
            :shipper_address,
-         ).ransack(params[:q])
+         ).ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)
@@ -206,7 +206,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   private
 
   def authorize_broker_carrier_access
-    authorize! @broker_carrier, to: :show?, with: BrokerPolicy
+    authorize!(@broker_carrier, to: :show?, with: BrokerPolicy)
   end
 
   # Use callbacks to share common setup or constraints between actions.

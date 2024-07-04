@@ -9,7 +9,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
     @q = User
          .where(id: BrokerCustomerSalesRep.all.pluck(:user_id))
          .includes(:companyable)
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'first_name asc' if @q.sorts.blank?
 
     @pagy, @broker_customer_sales_reps = pagy(@q.result)
@@ -18,7 +18,13 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
   def show
     require_admin unless @broker_customer_sales_rep.id == current_user.id
 
-    @q = @broker_customer_sales_rep.commissions.includes(required_includes).ransack(params[:q])
+    @q = @broker_customer_sales_rep
+         .commissions
+         .includes(required_includes)
+         .ransack(
+           params[:q],
+           auth_object: current_user,
+         )
     @q.sorts = 'shipment_load_id desc' if @q.sorts.blank?
 
     @pagy, @commissions = pagy(@q.result)

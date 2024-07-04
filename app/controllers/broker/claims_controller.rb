@@ -21,7 +21,7 @@ class Broker::ClaimsController < Broker::BrokerController
   def edit; end
 
   def index
-    @q = Claim.includes(required_includes).ransack(params[:q])
+    @q = Claim.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_on desc' if @q.sorts.blank?
 
     @pagy, @claims = pagy(@q.result)
@@ -41,12 +41,12 @@ class Broker::ClaimsController < Broker::BrokerController
   end
 
   def paid
-    @q = Claim.paid.includes(required_includes).ransack(params[:q])
+    @q = Claim.paid.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @pagy, @claims = pagy(@q.result(distinct: true))
   end
 
   def unpaid
-    @q = Claim.unpaid.includes(required_includes).ransack(params[:q])
+    @q = Claim.unpaid.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @pagy, @claims = pagy(@q.result(distinct: true))
   end
 

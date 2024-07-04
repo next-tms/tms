@@ -85,7 +85,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { broker_customer: :customer },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -299,7 +299,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { broker_customer: :customer },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -319,7 +319,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { broker_customer: :customer },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -339,7 +339,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { broker_customer: :customer },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -362,7 +362,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'booked_at desc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -385,7 +385,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -405,7 +405,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { broker_customer: :customer },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at desc, promised_delivery_by desc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -427,7 +427,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -446,7 +446,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { broker_customer: :customer },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -469,7 +469,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'pickup_on' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -497,7 +497,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result(distinct: true))
@@ -520,7 +520,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'delivered_at desc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -540,7 +540,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { broker_customer: :customer },
            ],
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
@@ -549,14 +549,14 @@ class Broker::ShipmentsController < Broker::BrokerController
   def accounting
     authorize!(@shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy)
 
-    @payment_transactions_q = @shipment.payment_transactions.ransack(params[:q])
-    @receivables_q = @shipment.receivables.ransack(params[:q])
+    @payment_transactions_q = @shipment.payment_transactions.ransack(params[:q], auth_object: current_user)
+    @receivables_q = @shipment.receivables.ransack(params[:q], auth_object: current_user)
   end
 
   def claims
     authorize!(@shipment, to: :accounts_and_claims_show?, with: DispatchAndSalesRepPolicy)
 
-    @q = @shipment.claims.ransack(params[:q])
+    @q = @shipment.claims.ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @claims = pagy(@q.result)
   end

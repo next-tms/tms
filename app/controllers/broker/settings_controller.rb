@@ -22,7 +22,7 @@ class Broker::SettingsController < Broker::BrokerController
   def edit; end
 
   def index
-    @q = Setting.ransack(params[:q])
+    @q = Setting.ransack(params[:q], auth_object: current_user)
     @q.sorts = 'key asc' if @q.sorts.blank?
 
     @pagy, @settings = pagy(@q.result)

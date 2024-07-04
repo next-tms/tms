@@ -36,14 +36,14 @@ class Broker::BrokerCustomersController < Broker::BrokerController
              { broker_customer: :customer },
              :carrier,
            ],
-         ).ransack(params[:q])
+         ).ransack(params[:q], auth_object: current_user)
 
     @q.sorts = "#{"#{Carrier.table_name}.name"} desc" if @q.sorts.blank?
     @pagy, @broker_carriers = pagy(@q.result)
   end
 
   def contacts
-    @q = @broker_customer.contacts.ransack(params[:q])
+    @q = @broker_customer.contacts.ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
   end
@@ -73,7 +73,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def index
-    @q = current_user.broker_customers.includes(required_includes).ransack(params[:q])
+    @q = current_user.broker_customers.includes(required_includes).ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'customer_name asc' if @q.sorts.blank?
     @pagy, @broker_customers = pagy(@q.result)
@@ -147,7 +147,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
     @q = @broker_customer
          .receivables
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
@@ -166,7 +166,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
            :receiver_address,
            :shipper_address,
            :tracking_carrier,
-         ).ransack(params[:q])
+         ).ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @shipments = pagy(@q.result)

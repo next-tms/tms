@@ -20,7 +20,7 @@ class Broker::BanksController < Broker::BrokerController
                              ]
            },
          )
-         .ransack(params[:q])
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'paid_on DESC' if @q.sorts.blank?
     @pagy, @payments = pagy(paid_or_pending_filter(@q))
 
@@ -48,7 +48,7 @@ class Broker::BanksController < Broker::BrokerController
   def edit; end
 
   def index
-    @q = current_user.broker.banks.ransack(params[:q])
+    @q = current_user.broker.banks.ransack(params[:q], auth_object: current_user)
     @q.sorts = 'name asc' if @q.sorts.blank?
 
     @pagy, @banks = pagy(@q.result)

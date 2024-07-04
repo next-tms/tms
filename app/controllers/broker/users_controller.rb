@@ -14,7 +14,7 @@ class Broker::UsersController < Broker::BrokerController
   end
 
   def index
-    @q = User.includes(required_includes).ransack(params[:q])
+    @q = User.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'first_name asc' if @q.sorts.blank?
 
     @pagy, @users = pagy(@q.result)
@@ -38,9 +38,9 @@ class Broker::UsersController < Broker::BrokerController
 
     removeable_roles = @user.contact.contact_roles.select(&:_destroy)
     removeable_roles.map(&:destroy!) if removeable_roles.present?
-    
+
     if @user.save
-      flash[:success] = "Successfully Updated User"
+      flash[:success] = 'Successfully Updated User'
       redirect_to(broker_user_path(@user))
     else
       render(:edit)
