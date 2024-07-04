@@ -3,6 +3,9 @@ require 'rails_helper'
 shared_examples_for 'authorized_attributable' do
   let(:record) { create(described_class.name.underscore.to_sym) }
 
+  it { expect(described_class.authorized_attributable?).to(eq(true)) }
+  it { expect(record.authorized_attributable?).to(eq(true)) }
+
   describe '.ransackable_attributes' do
     let(:user) { create(:broker_user) }
     let(:result) { described_class.ransackable_attributes(user) }
