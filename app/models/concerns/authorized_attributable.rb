@@ -6,7 +6,20 @@ module AuthorizedAttributable
   class_methods do
     def authorized_attributable? = true
     def policy_class = "#{name}Policy".constantize
-    def ransackable_attributes(authorizable) = "#{policy_class}::#{authorizable.type.upcase}_ATTRIBUTES".constantize
+
+    def ransackable_attributes(authorizable = nil)
+      return [] if authorizable.blank?
+
+      return broker_ransackable_attributes if authorizable.broker?
+      return customer_ransackable_attributes if authorizable.customer?
+
+      []
+    end
+
+    private
+
+    def broker_ransackable_attributes = policy_class::BROKER_ATTRIBUTES.map(&:to_s) + customer_ransackable_attributes
+    def customer_ransackable_attributes = policy_class::CUSTOMER_ATTRIBUTES.map(&:to_s)
   end
 
   def authorized_attribute!(attribute, authorizable)
