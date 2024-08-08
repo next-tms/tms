@@ -543,7 +543,7 @@ GEM
     rexle-builder (1.0.8)
     rexle-css (0.2.0)
     rexleparser (0.9.10)
-    rexml (3.3.1)
+    rexml (3.3.3)
       strscan
     rexslt (0.8.0)
       rexle (~> 1.5, >= 1.5.14)
