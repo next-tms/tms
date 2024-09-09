@@ -28,8 +28,6 @@
     </thead>
   </table>
 
-  <h2><%= !shipment.broker_carrier.blank? ? shipment.broker_carrier.carrier.name : '&nbsp;'.html_safe %></h2>
-
   <table>
     <tbody>
       <tr>
@@ -125,17 +123,12 @@
       <th class="text-right">Charge</th>
     </thead>
     <tbody>
-      <% unless shipment.broker_carrier.blank? %>
-        <tr>
-          <td><%= shipment.broker_carrier.carrier.name %></td>
-          <td class="text-right"><%= humanized_money_with_symbol shipment.carrier_charge, no_cents_if_whole: false %></td>
-        </tr>
-      <% else %>
-        <tr>
-          <td>Shipping</td>
-          <td class="text-right"><%= humanized_money_with_symbol shipment.carrier_charge, no_cents_if_whole: false %></td>
-        </tr>
-      <% end %>
+      <tr>
+        <td>Shipping</td>
+        <td class="text-right">
+          <%= humanized_money_with_symbol shipment.carrier_charge, no_cents_if_whole: false %>
+        </td>
+      </tr>
 
       <% shipment.shipment_broker_accessorials.sort_by{ |shipment_broker_accessorial| shipment_broker_accessorial.broker_accessorial.name }.each do |shipment_broker_accessorial| %>
         <% unless shipment_broker_accessorial.broker_accessorial.broker_only %>
