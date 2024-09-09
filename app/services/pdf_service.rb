@@ -7,7 +7,9 @@ module PDFService
     end
 
     def merge(*paths)
-      result = Gotenberg::PdfEngines.call(ENV['GOTENBERG_URL']) { |doc| doc.merge(*paths) }
+      return File.binread(paths[0]) if paths.count == 1
+
+      result = Gotenberg::PdfEngines.call(gotenberg_url) { |doc| doc.merge(*paths) }
 
       raise result.exception unless result.success?
 
