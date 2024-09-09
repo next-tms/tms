@@ -76,7 +76,15 @@
         </ul>
         <p>
           <% unless shipment.pickup_on.blank? %>
-            <strong>Pickup Appointment:</strong>
+            <strong>
+              Pickup
+              <% if shipment.accessorials.map(&:freight_kit_code).include?('appointment_pickup') %>
+                Appointment
+              <% else %>
+                Hours
+              <% end %>
+              :
+            </strong>
             <br>
             <%= pretty_date shipment.pickup_on, shipment.shipper_address.time_zone %>
             <% if not shipment.pickup_hours_start_at.blank? and not shipment.pickup_hours_end_at.blank? %>
@@ -105,7 +113,15 @@
         </ul>
         <p>
           <% if not shipment.delivery_appointment_at.blank? %>
-            <strong>Delivery Appointment:</strong>
+            <strong>
+              Delivery
+              <% if shipment.accessorials.map(&:freight_kit_code).include?('appointment_delivery') %>
+                Appointment
+              <% else %>
+                Hours
+              <% end %>
+              :
+            </strong>
             <br>
             <%= pretty_date shipment.delivery_appointment_at, shipment.shipper_address.time_zone %>
           <% else %>
