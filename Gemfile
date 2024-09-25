@@ -41,7 +41,7 @@ group :development do
   gem 'bullet', '~> 7.1.6'
   gem 'graphiql-rails', '~> 1.9'
   gem 'letter_opener'
-  gem 'listen', '>= 3.0.5', '< 3.9'
+  gem 'listen', '>= 3.0.5', '< 3.10'
   gem 'rails_real_favicon'
   gem 'spring', '~> 4.1.1'
   gem 'traceroute'
