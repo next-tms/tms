@@ -8,17 +8,18 @@ ARG BUNDLER_GITHUB_OAUTH_KEY
 ENV BUILD_ENV 1
 ENV BUNDLER_WITHOUT development test
 ENV DATABASE_URL postgres://fake@localhost/fake
-ENV DOMAIN=example.com
+ENV DOMAIN example.com
 ENV GEONAMES_USERNAME 1
 ENV POSTMARK_API_TOKEN 1
 ENV RACK_ENV production
 ENV RAILS_ENV production
-ENV SECRET_KEY_BASE_DUMMY=1
+ENV SECRET_KEY_BASE_DUMMY 1
 
 COPY . /app
 WORKDIR /app
 
 RUN apk add --no-cache --virtual .gem-installdeps build-base \
+                                                  gcompat \
                                                   imagemagick-c++ \
                                                   imagemagick-dev \
                                                   imagemagick-libs \
@@ -26,7 +27,7 @@ RUN apk add --no-cache --virtual .gem-installdeps build-base \
                                                   libxslt-dev && \
     gem update --system && \
     gem install bundler -v 2.5.14 && \
-    gem install nokogiri -v 1.16.6 --platform=ruby -- --use-system-libraries && \
+    gem install nokogiri -v 1.16.6 -- --use-system-libraries && \
     bundle config github.com $BUNDLER_GITHUB_OAUTH_KEY && \
     bundle install --retry 5 && \
     bundle exec bootsnap precompile app/ lib/ && \
