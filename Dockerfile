@@ -26,7 +26,7 @@ RUN apk add --no-cache --virtual .gem-installdeps build-base \
                                                   libxml2-dev \
                                                   libxslt-dev && \
     gem update --system && \
-    gem install bundler -v 2.5.14 && \
+    gem install bundler -v 2.5.20 && \
     gem install nokogiri -v 1.16.6 -- --use-system-libraries && \
     bundle config github.com $BUNDLER_GITHUB_OAUTH_KEY && \
     bundle install --retry 5 && \
