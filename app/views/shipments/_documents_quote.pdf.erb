@@ -10,7 +10,7 @@
             <li><%= shipment.broker.phone.phony_formatted %></li>
             <li><%= shipment.broker.customer_service_email %></li>
           </ul>
-        <td class="text-right">
+        <td class="text-end">
           <h2>Quote</h2>
           <ul class="list-unstyled">
             <li><b>Load:</b> <%= shipment.load_id %></li>
@@ -120,12 +120,12 @@
   <table class="w-33 bordered">
     <thead>
       <th>Service</th>
-      <th class="text-right">Charge</th>
+      <th class="text-end">Charge</th>
     </thead>
     <tbody>
       <tr>
         <td>Shipping</td>
-        <td class="text-right">
+        <td class="text-end">
           <%= humanized_money_with_symbol shipment.carrier_charge, no_cents_if_whole: false %>
         </td>
       </tr>
@@ -134,14 +134,14 @@
         <% unless shipment_broker_accessorial.broker_accessorial.broker_only %>
           <tr>
             <td><%= shipment_broker_accessorial.broker_accessorial.name %></td>
-            <td class="text-right"><%= humanized_money_with_symbol shipment_broker_accessorial.charge, no_cents_if_whole: false %></td>
+            <td class="text-end"><%= humanized_money_with_symbol shipment_broker_accessorial.charge, no_cents_if_whole: false %></td>
           </tr>
         <% end %>
       <% end %>
 
       <tr class="font-weight-bold">
         <td></td>
-        <td class="text-right"><strong>Total: <%= humanized_money_with_symbol shipment.total_charges, no_cents_if_whole: false %></strong></td>
+        <td class="text-end"><strong>Total: <%= humanized_money_with_symbol shipment.total_charges, no_cents_if_whole: false %></strong></td>
       </tr>
     </tbody>
   </table>

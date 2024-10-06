@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <td>
-          <%= image_tag QrCodeService.tracking_data_uri(shipment), class: 'float-left' %>
+          <%= image_tag QrCodeService.tracking_data_uri(shipment), class: 'float-start' %>
           <h1><%= shipment.broker.name %></h1>
           <address><%= shipment.broker.address.pretty(', ').gsub('Apt', 'Ste').html_safe %></address>
           <ul class="list-unstyled list-inline">
@@ -13,7 +13,7 @@
           </ul>
         </td>
 
-        <td class="text-right">
+        <td class="text-end">
           <h2>Dispatch</h2>
           <ul class="list-unstyled">
             <li><b>Load:</b> <%= shipment.load_id %></li>
@@ -171,21 +171,21 @@
   <table class="w-33 bordered">
     <thead>
       <th>Service</th>
-      <th class="text-right">Rate</th>
+      <th class="text-end">Rate</th>
     </thead>
     <tbody>
       <% shipment.shipment_broker_accessorials.sort_by{ |shipment_broker_accessorial| shipment_broker_accessorial.broker_accessorial.name }.each do |shipment_broker_accessorial| %>
         <% unless shipment_broker_accessorial.broker_accessorial.broker_only %>
           <tr>
             <td><%= shipment_broker_accessorial.broker_accessorial.name %></td>
-            <td class="text-right"></td>
+            <td class="text-end"></td>
           </tr>
         <% end %>
       <% end %>
 
       <tr class="font-weight-bold">
         <td></td>
-        <td class="text-right"><strong>Total: <%= humanized_money_with_symbol shipment.total_cost, no_cents_if_whole: false %></strong></td>
+        <td class="text-end"><strong>Total: <%= humanized_money_with_symbol shipment.total_cost, no_cents_if_whole: false %></strong></td>
       </tr>
     </tbody>
   </table>

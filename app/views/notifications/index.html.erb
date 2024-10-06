@@ -9,9 +9,9 @@
     <div class="col">
       <%= render 'layouts/pagy', pagy: @pagy %>
     </div>
-    <div class="col-auto float-right">
+    <div class="col-auto float-end">
       <%= search_form_for(@q, url: request.path, class: 'form-inline mb-3') do |f| %>
-        <%= f.text_field :params_cont, value: params.dig(:q, :params_cont), placeholder: 'Filter', class: 'form-control mr-2' %>
+        <%= f.text_field :params_cont, value: params.dig(:q, :params_cont), placeholder: 'Filter', class: 'form-control me-2' %>
         <%= f.submit 'Filter', class: 'btn btn-primary' %>
       <% end %>
     </div>

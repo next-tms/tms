@@ -1,0 +1,48 @@
+<style>
+  <% theme_primary_color = Setting.value!(:theme_primary_color) %>
+  <% theme_sidebar_background_color = Setting.value!(:theme_sidebar_background_color) %>
+  <% theme_sidebar_text_color = Setting.value!(:theme_sidebar_text_color) %>
+
+  <% key = [theme_primary_color, theme_sidebar_background_color, theme_sidebar_text_color].join %>
+
+  <% cache(key) do %>
+    :root {
+      --bs-primary: <%= theme_primary_color %>;
+      --bs-link-color: <%= theme_primary_color %>;
+      --bs-link-color-rgb: <%= ColorService.hex_to_rgb(theme_primary_color) %>;
+      --bs-link-hover-color: <%= theme_primary_color %>;
+      --bs-link-hover-color-rgb: <%= ColorService.hex_to_rgb(theme_primary_color) %>;
+      --bs-pagination-active-border-color: <%= theme_primary_color %>;
+      --bs-pagination-border-color: <%= theme_primary_color %>;
+    }
+
+    .form-control:focus {
+      border-color: <%= theme_primary_color %>;
+    }
+
+    .form-check-input:checked {
+      border-color: <%= theme_primary_color %>;
+      background-color: <%= theme_primary_color %>;
+    }
+
+    .pagination {
+      --bs-pagination-active-bg: <%= theme_primary_color %>;
+      --bs-pagination-active-border-color: <%= theme_primary_color %>;
+    }
+
+    .btn-primary {
+      --bs-btn-bg: <%= theme_primary_color %>;
+      --bs-btn-border-color: <%= theme_primary_color %>;
+      --bs-btn-hover-bg: <%= theme_primary_color %>;
+      --bs-btn-hover-border-color: <%= theme_primary_color %>;
+    }
+
+    aside {
+      background: <%= theme_sidebar_background_color %>;
+    }
+
+    aside, aside a, aside a:active, aside a:hover, aside a:visited {
+      color: <%= theme_sidebar_text_color %>;
+    }
+  <% end %>
+</style>

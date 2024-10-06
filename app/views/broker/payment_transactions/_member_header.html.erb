@@ -1,4 +1,4 @@
-<div class="page-header bg-light p-4 mb-4">
+<div class="page-header p-4 mb-4">
   <h1 class="mb-6">Bill <%= @payment_transaction.shipment&.load_id || @payment_transaction.legacy_load_id %></h1>
 
   <% if @payment_transaction.persisted? %>

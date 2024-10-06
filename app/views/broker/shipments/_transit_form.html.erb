@@ -76,7 +76,7 @@
         <% end %>
 
         <% unless shipment.shipper_address.time_zone.blank? %>
-          <p class="text-muted text-right">Pickup times in <%= shipment.shipper_address.time_zone.tzinfo.abbr %></p>
+          <p class="text-muted text-end">Pickup times in <%= shipment.shipper_address.time_zone.tzinfo.abbr %></p>
         <% end %>
       <% end %>
     </div>
@@ -106,7 +106,7 @@
         <% end %>
 
         <% unless shipment.receiver_address.time_zone.blank? %>
-          <p class="text-muted text-right">Delivery times in <%= shipment.receiver_address.time_zone.tzinfo.abbr %></p>
+          <p class="text-muted text-end">Delivery times in <%= shipment.receiver_address.time_zone.tzinfo.abbr %></p>
         <% end %>
       <% end %>
     </div>

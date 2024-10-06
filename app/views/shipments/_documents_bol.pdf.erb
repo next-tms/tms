@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <td>
-          <%= image_tag QrCodeService.tracking_data_uri(shipment), class: 'float-left' %>
+          <%= image_tag QrCodeService.tracking_data_uri(shipment), class: 'float-start' %>
           <h1><%= shipment.broker.name %></h1>
           <address><%= shipment.broker.address.pretty('<br>').html_safe.gsub('Apt', 'Ste').html_safe %></address>
           <ul class="list-unstyled list-inline">
@@ -13,7 +13,7 @@
           </ul>
         </td>
 
-        <td class="text-right">
+        <td class="text-end">
           <h2>Bill of Lading</h2>
           <ul class="list-unstyled">
             <li><b>Load:</b> <%= shipment.load_id %></li>
@@ -47,7 +47,7 @@
         <h2><%= shipment.carrier.blank? ? nil : shipment.carrier.name %></h2>
       </td>
       <% if !shipment.broker_carrier.blank? && !shipment.pro.blank? %>
-        <td class="text-right">
+        <td class="text-end">
           <h2>Pro <%= shipment.pro %></h2>
         </td>
       <% end %>
@@ -277,7 +277,7 @@
         <td>
           <p><tiny>* HZ indicates hazardous material</tiny></p>
         </td>
-        <td class="text-right">
+        <td class="text-end">
           <p><tiny>STRAIGHT BILL OF LADING (ORIGINAL NON-NEGOTIABLE)</tiny></p>
         </div>
       </tr>
