@@ -10,7 +10,7 @@ gem 'sprockets-rails', '~> 3.4.2'
 gem 'pg', '~> 1.4.6'
 gem 'puma', '~> 6.4.2'
 
-gem 'importmap-rails', '~> 1.2.1'
+gem 'importmap-rails', '~> 2.0.1'
 gem 'stimulus-rails', '~> 1.1.1'
 gem 'turbo-rails', '~> 1.4.0'
 
@@ -60,7 +60,7 @@ source 'https://rails-assets.org' do
 end
 
 gem 'bootstrap', '~> 5.3.3'
-gem 'bootstrap_form', '~> 5.2.3'
+gem 'bootstrap_form', '~> 5.4.0'
 gem 'sassc-rails', '~> 2.1.2'
 
 gem 'font-awesome-sass', '~> 6.3.0'

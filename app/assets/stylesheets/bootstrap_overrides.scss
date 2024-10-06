@@ -12,8 +12,10 @@ table thead tr th, table tbody tr th {
   font-weight: 600;
 }
 
-.page-header table thead tr th, .page-header table tbody tr th {
-  font-weight: 400;
+.page-header table {
+  --bs-table-bg: transparent;
+
+  thead tr th, tbody tr th { font-weight: 400; }
 }
 
 .lead, .brand {

@@ -18,8 +18,6 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <link rel="stylesheet" href="https://ga.jspm.io/npm:flatpickr@4.6.13/dist/flatpickr.min.css">
-
     <% if yield(:prefetch_urls_csv) %>
       <% yield(:prefetech_urls_csv).split(', ').each do |url| %>
         <link rel="prefetch" href="<%= url %>"/>

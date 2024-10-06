@@ -5,7 +5,9 @@
 @import "bootstrap_overrides";
 @import "bootstrap4_form_inline";
 
+@import "flatpickr"; // @4.6.13 → vendor/assets/stylesheets/flatpickr.css
 @import "flatpickr_overrides";
+
 @import "turbo_overrides";
 
 @import "font-awesome";
