@@ -91,7 +91,7 @@ gem 'timezone', '~> 1.3'
 gem 'quickbooks-ruby', '~> 2.0'
 
 gem 'bcrypt', '~> 3.1' # explicitly for GraphQL
-gem 'graphql', '~> 2.0'
+gem 'graphql', '~> 2.0.31'
 gem 'action_policy'
 gem 'action_policy-graphql'
 

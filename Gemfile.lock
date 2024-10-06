@@ -278,7 +278,8 @@ GEM
     graphiql-rails (1.9.0)
       railties
       sprockets-rails
-    graphql (2.0.24)
+    graphql (2.0.31)
+      base64
     graphql-client (0.18.0)
       activesupport (>= 3.0)
       graphql
@@ -776,7 +777,7 @@ DEPENDENCIES
   google_places (~> 2.0.0)
   gotenberg-ruby (~> 1.0.11)
   graphiql-rails (~> 1.9)
-  graphql (~> 2.0)
+  graphql (~> 2.0.31)
   graphql-client
   honeybadger (~> 5.13)
   htmlentities
