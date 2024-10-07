@@ -79,9 +79,11 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
   def index
     @q = current_user.broker_customers.includes(required_includes).ransack(params[:q], auth_object: current_user)
-
+    # TODO: Switch to:
+    # @q = authorized_scope(BrokerCustomer.all).includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'customer_name asc' if @q.sorts.blank?
-    @pagy, @broker_customers = pagy(@q.result)
+
+    respond_with_export(@q.result)
   end
 
   def new

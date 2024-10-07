@@ -62,7 +62,12 @@
 require 'rails_helper'
 
 RSpec.describe(Receivable) do
+  it_behaves_like 'authorized_attributable'
   it_behaves_like 'discussable'
+
+  describe '.ransackable_attributes' do
+    it { expect(described_class.ransackable_attributes(create(:broker_user))).to(include('balance_cents', 'total_cents')) }
+  end
 
   describe '#missing_carrier_bol?' do
     let(:broker_customer) { create(:broker_customer) }

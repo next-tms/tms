@@ -3,6 +3,4 @@
 <%= render 'header' %>
 <h2><%= yield :title %></h2>
 
-<%= turbo_frame_tag :broker_customers do %>
-  <%= render 'show_many', broker_customers: @broker_customers, q: @q %>
-<% end %>
+<%= render 'show_many', broker_customers: @broker_customers, q: @q %>

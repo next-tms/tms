@@ -36,10 +36,6 @@ class Contact < ApplicationRecord
       [ 'companyable', 'contact_roles', 'user' ]
     end
 
-    def ransackable_attributes(auth_object = nil)
-      [ 'comments', 'email', 'first_name', 'job_title', 'label', 'last_name' ]
-    end
-
     def with_any_role(*roles)
       joins(:contact_roles).where(contact_roles: { role: roles })
     end
@@ -49,6 +45,7 @@ class Contact < ApplicationRecord
     end
   end
 
+  include AuthorizedAttributable
   include HasCompanyable
 
   has_many :contact_roles, dependent: :destroy

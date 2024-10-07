@@ -73,6 +73,9 @@ en:
       carrier_area:
         one: Lane
         other: Lanes
+      contact:
+        one: Contact
+        other: Contacts
       overlength_rule:
         one: Overlength Rule
         many: Overlength Rules

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include ExportableController
   include Pagy::Backend
   impersonates :user
 

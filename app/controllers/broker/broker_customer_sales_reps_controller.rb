@@ -19,10 +19,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
     @q = @broker_customer_sales_rep
          .commissions
          .includes(required_includes)
-         .ransack(
-           params[:q],
-           auth_object: current_user,
-         )
+         .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'shipment_load_id desc' if @q.sorts.blank?
 
     @pagy, @commissions = pagy(@q.result)

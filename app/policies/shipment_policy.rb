@@ -1,10 +1,5 @@
 class ShipmentPolicy < ApplicationPolicy
-  BROKER_ATTRIBUTES = %i[
-                        carrier_cost
-                        carrier_cost_cents
-                        carrier_cost_currency
-                        tracking_carrier_pro
-                      ]
+  BROKER_ATTRIBUTES = %i[broker_notes carrier_cost carrier_cost_cents carrier_cost_currency tracking_carrier_pro]
   CUSTOMER_ATTRIBUTES = %i[
                           bol_notes
                           created_at

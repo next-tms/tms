@@ -66,6 +66,7 @@ RSpec.describe(BrokerCarrier) do
   subject { build(:broker_carrier) }
 
   it_behaves_like 'accounting_syncable', resource: :vendor, record: 'Accounting::QuickBooks::Vendor'
+  it_behaves_like 'authorized_attributable'
   it_behaves_like 'companyable'
 
   describe '.encrypted_attributes' do

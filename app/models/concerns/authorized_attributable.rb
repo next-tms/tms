@@ -10,16 +10,16 @@ module AuthorizedAttributable
     def ransackable_attributes(authorizable = nil)
       return [] if authorizable.blank?
 
-      return broker_ransackable_attributes if authorizable.broker?
-      return customer_ransackable_attributes if authorizable.customer?
+      return ransackable_broker_attributes if authorizable.broker?
+      return ransackable_customer_attributes if authorizable.customer?
 
       []
     end
 
     private
 
-    def broker_ransackable_attributes = policy_class::BROKER_ATTRIBUTES.map(&:to_s) + customer_ransackable_attributes
-    def customer_ransackable_attributes = policy_class::CUSTOMER_ATTRIBUTES.map(&:to_s)
+    def ransackable_broker_attributes = ransackable_customer_attributes + policy_class::BROKER_ATTRIBUTES.map(&:to_s)
+    def ransackable_customer_attributes = policy_class::CUSTOMER_ATTRIBUTES.map(&:to_s)
   end
 
   def authorized_attribute!(attribute, authorizable)

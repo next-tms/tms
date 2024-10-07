@@ -104,6 +104,32 @@ RSpec.describe(Broker::BrokerCarriersController) do
     it { expect(broker_carrier.reload).to(have_attributes(ach_attributes)) }
   end
 
+
+  describe 'GET #index' do
+    let(:broker_carrier) { create(:broker_carrier, broker: current_user.broker) }
+
+    before do
+      broker_carrier
+      get(:index, format:)
+    end
+
+    context 'when CSV' do
+      let(:format) { :csv }
+
+      it { is_expected.to(have_http_status(:ok)) }
+      it { expect(response.media_type).to(eq('text/csv')) }
+      it { expect(response.body).to(include(broker_carrier.name)) }
+      it { expect(response.body).not_to(include(BrokerCarrier.human_attribute_name(:password))) }
+    end
+
+    context 'when YAML' do
+      let(:format) { :yaml }
+
+      it { is_expected.to(have_http_status(:ok)) }
+      it { expect(response.media_type).to(eq('application/x-yaml')) }
+    end
+  end
+
   describe 'PATCH #update_accounting' do
     let(:broker_carrier) { create(:broker_carrier) }
 

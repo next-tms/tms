@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe(Broker::BrokerCustomersController) do
   subject { response }
 
+  let(:broker_customer) { create(:broker_customer, broker: current_user.broker) }
   let(:current_user) { create(:root_broker_user) }
 
   before do
@@ -28,6 +29,42 @@ RSpec.describe(Broker::BrokerCustomersController) do
       let(:current_user) { create(:customer_user).tap { |customer| customer.contact.contact_roles.create!(role: :root) } }
 
       it { is_expected.to(have_http_status(:not_found)) }
+    end
+  end
+
+  describe 'GET #index' do
+    before do
+      broker_customer
+      current_user.contact.contact_roles.create!(role: :sales_rep_for_all_broker_customers)
+    end
+
+    context 'when format is CSV' do
+      before { get(:index, format: :csv) }
+
+      it { is_expected.to(have_http_status(:ok)) }
+      it { expect(response.content_type).to(start_with('text/csv')) }
+      it { expect(response.body).to(include(BrokerCustomer.human_attribute_name(:name))) }
+      it { expect(response.body).to(include(broker_customer.name)) }
+      it { expect(response.body).to(include(Address.human_attribute_name(:street))) }
+
+      context 'with ransack filter' do
+        let(:other_broker_customer) { create(:broker_customer, broker: current_user.broker) }
+
+        before do
+          other_broker_customer
+          get(:index, format: :csv, params: { q: { customer_name_cont: broker_customer.name } })
+        end
+
+        it { expect(response.body).to(include(broker_customer.name)) }
+        it { expect(response.body).not_to(include(other_broker_customer.name)) }
+      end
+    end
+
+    context 'when format is HTML' do
+      before { get(:index) }
+
+      it { is_expected.to(have_http_status(:ok)) }
+      it { expect(assigns(:broker_customers)).to(include(broker_customer)) }
     end
   end
 

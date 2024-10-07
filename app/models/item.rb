@@ -34,14 +34,12 @@
 class Item < ApplicationRecord
   FREIGHT_CLASSES = [ 55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400 ]
 
-  scope :packaging, lambda { |packaging|
-    where(packaging:)
-  }
-
   audited associated_with: :shipment
 
   belongs_to :packaging
   belongs_to :shipment
+
+  scope :packaging, ->(value) { where(packaging: value) }
 
   validate :validate_declared_freight_class
 

@@ -66,45 +66,40 @@ class BrokerCarrier < ApplicationRecord
       joins(:carrier).order('carriers.name')
     end
 
-    def ransackable_attributes(auth_object = nil)
-      [ 'name', 'shipments_count' ]
-    end
-
-    def ransackable_associations(auth_object = nil)
-      [ 'broker_customer', 'carrier' ]
-    end
+    def ransackable_associations(auth_object = nil) = [ 'broker_customer', 'carrier' ]
+    def ransackable_broker_attributes(auth_object = nil) = [ 'name', 'shipments_count' ]
+    def ransackable_customer_attributes(auth_object = nil) = [ 'name', 'shipments_count' ]
   end
 
   include AccountingSyncable
+  include AuthorizedAttributable
   include Companyable
 
   accounting_syncs :vendor, match: -> { { name: carrier.name } }
 
   audited
 
-  belongs_to :broker_customer, optional: true
-  belongs_to :carrier
-  belongs_to :check_mailing_address, class_name: 'Address', optional: true
-
-  delegate :acts_as_broker?, to: :carrier
-  delegate :pickup_number_is_tracking_number?, to: :carrier
-  delegate :scac, to: :carrier
+  delegate :acts_as_broker?, :pickup_number_is_tracking_number?, :scac, to: :carrier
 
   encrypts :encrypted_ach_account_number
   encrypts :encrypted_ach_bank_name
   encrypts :encrypted_ach_routing_number
   encrypts :encrypted_api_key
 
+  belongs_to :broker_customer, optional: true
+  belongs_to :carrier
+  belongs_to :check_mailing_address, class_name: 'Address', optional: true
+
   has_many :overlength_rules
-  has_many :payments
   has_many :payment_transactions
+  has_many :payments
   has_many :preferred_by_broker_customers, class_name: 'PreferredBrokerCarrier'
   has_many :pricing_rules
   has_many :rates
   has_many :shipments
-  has_many :terminals, through: :carrier
 
   has_many :pickups, through: :rates
+  has_many :terminals, through: :carrier
 
   monetize :quote_padding_cents
 
@@ -130,8 +125,7 @@ class BrokerCarrier < ApplicationRecord
   def ach? = encrypted_ach_account_number.present? && encrypted_ach_routing_number.present?
 
   def api_configured?
-    return false if carrier.broker_carrier_credential_columns.none?
-
+    carrier.broker_carrier_credential_columns.any? &&
     carrier.broker_carrier_credential_columns.map { |column| public_send(column) }.all?(&:present?)
   end
 

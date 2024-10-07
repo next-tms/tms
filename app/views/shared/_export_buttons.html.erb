@@ -1,0 +1,34 @@
+<% if exportable? %>
+  <% default_columns = ExporterService.default_columns(export_record_class, current_user) %>
+
+  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#export-modal">
+    <%= icon('solid', 'download', 'Export') %>
+  </button>
+
+  <div class="modal fade" id="export-modal" tabindex="-1" aria-labelledby="export-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <%= form_with url: url_for(format: :csv), method: :get, class: 'modal-content', data: { turbo: false } do %>
+        <%= export_hidden_fields %>
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="export-modal-title">Export <%= export_record_class.model_name.human(count: :other) %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <% ExporterService.available_columns(export_record_class, current_user).each do |column| %>
+            <div class="form-check">
+              <%= check_box_tag 'columns[]', column, default_columns.include?(column), id: "export-column-#{column.parameterize}", class: 'form-check-input' %>
+              <%= label_tag "export-column-#{column.parameterize}", ExporterService.column_header(export_record_class, column), class: 'form-check-label' %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="modal-footer">
+          <%= button_tag 'Export YAML', type: 'submit', class: 'btn btn-outline-secondary', formaction: url_for(format: :yaml), name: nil %>
+          <%= button_tag 'Export CSV', type: 'submit', class: 'btn btn-primary', name: nil %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

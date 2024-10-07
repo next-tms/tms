@@ -21,7 +21,8 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @q = BrokerCarrier.includes(required_includes).ransack(params[:q], auth_object: current_user)
 
     @q.sorts = "#{Carrier.table_name.singularize}_name" if @q.sorts.blank?
-    @pagy, @broker_carriers = pagy(@q.result)
+
+    respond_with_export(@q.result)
   end
 
   def show

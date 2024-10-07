@@ -11,7 +11,8 @@ class Broker::ReceivablesController < Broker::BrokerController
   def index
     @q = Receivable.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_by asc' if @q.sorts.blank?
-    @pagy, @receivables = pagy(@q.result)
+
+    respond_with_export(@q.result)
   end
 
   def authorized

@@ -34,6 +34,8 @@
 require 'rails_helper'
 
 RSpec.describe(Contact) do
+  it_behaves_like 'authorized_attributable'
+
   describe 'relationships' do
     it { is_expected.to(have_many(:contact_roles)) }
     it { is_expected.to(have_many(:document_preferences)) }

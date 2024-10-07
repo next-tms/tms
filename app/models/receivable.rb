@@ -60,16 +60,11 @@ class Receivable < ApplicationRecord
     # @todo Remove
     delegate :build_from_shipment, to: :new
 
-    def ransackable_attributes(auth_object = nil)
-      [ 'balance_cents', 'due_by', 'invoiced', 'sent_at', 'total_cents', 'paid_at' ]
-    end
-
-    def ransackable_associations(auth_object = nil)
-      [ 'authorized_by', 'broker_customer', 'shipment' ]
-    end
+    def ransackable_associations(auth_object = nil) = [ 'authorized_by', 'broker_customer', 'shipment' ]
   end
 
   include AccountingSyncable
+  include AuthorizedAttributable
   include Discussable
   include Suppressible
 

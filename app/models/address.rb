@@ -59,14 +59,11 @@
 #
 class Address < ApplicationRecord
   class << self
-    def ransackable_attributes(auth_object = nil)
-      [ 'city', 'country_alpha2', 'region_iso31662', 'street', 'street2', 'zip_code' ]
-    end
-
-    def ransackable_associations(auth_object = nil)
-      []
-    end
+    def ransackable_associations(auth_object = nil) = []
+    def ransackable_attributes(auth_object = nil) = [ 'city', 'country_alpha2', 'region_iso31662', 'street', 'street2', 'zip_code' ]
   end
+
+  include AuthorizedAttributable
 
   before_save :set_standardized_address, unless: -> { Rails.env.test? }
 

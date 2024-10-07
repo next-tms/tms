@@ -8,7 +8,15 @@ RSpec.describe(Address) do
   end
 
   describe '.ransackable_attributes' do
-    it { expect(described_class.ransackable_attributes).to(include('country_alpha2', 'region_iso31662')) }
+    it { expect(described_class.ransackable_attributes).to(eq(AddressPolicy::CUSTOMER_ATTRIBUTES.map(&:to_s))) }
+  end
+
+  describe '#authorized_attribute!' do
+    let(:user) { create(:customer_user) }
+
+    AddressPolicy::CUSTOMER_ATTRIBUTES.each do |attribute|
+      it { expect(address.authorized_attribute!(attribute, user)).to(eq(address.public_send(attribute))) }
+    end
   end
 
   describe '#country' do

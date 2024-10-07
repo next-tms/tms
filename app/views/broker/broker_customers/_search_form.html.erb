@@ -6,12 +6,16 @@
   <% end %>
 
   <% if q %>
-    <div class="col-auto float-end">
-      <%= search_form_for(q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
-        <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
-        <%= f.text_field :customer_name_cont, placeholder: 'Filter', class: 'form-control me-2' %>
-        <%= f.submit 'Filter', class: 'btn btn-primary' %>
-      <% end %>
+    <div class="col-auto">
+      <div class="d-flex align-items-center mb-3">
+        <%= search_form_for(q, url: request.path, method: :get, local: true, class: 'form-inline me-2') do |f| %>
+          <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
+          <%= f.text_field :customer_name_cont, placeholder: 'Filter', class: 'form-control me-2' %>
+          <%= f.submit 'Filter', class: 'btn btn-primary' %>
+        <% end %>
+
+        <%= render 'shared/export_buttons' %>
+      </div>
     </div>
   <% end %>
 </div>

@@ -8,8 +8,7 @@ class BrokerCarrierPolicy < ApplicationPolicy
                         days_to_pay_after_invoice_date
                         default_bol_notes
                         ignore_bol_requires_tracking_number
-                        quote_padding_cents
-                        quote_padding_currency
+                        quote_padding
                         shipments_count
                       ]
   CUSTOMER_ATTRIBUTES = %i[name]

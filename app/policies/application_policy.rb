@@ -40,7 +40,10 @@ class ApplicationPolicy
   def manage? = admin? || owner? || party?
 
   def owner?
-    record.try(:created_by) == authorizable || record.try(:user) == authorizable
+    record == authorizable.companyable ||
+      record.try(authorizable.companyable.model_name.singular.to_s.to_sym) == authorizable.companyable ||
+      record.try(:created_by) == authorizable ||
+      record.try(:user) == authorizable
   end
 
   def party?

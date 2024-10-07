@@ -16,7 +16,7 @@ shared_examples_for 'authorized_attributable' do
     context 'when authorizable.broker?' do
       let(:authorizable) { create(:broker_user) }
 
-      it { is_expected.to(eq(described_class.send(:broker_ransackable_attributes))) }
+      it { is_expected.to(eq(described_class.send(:ransackable_broker_attributes))) }
     end
 
     context 'when authorizable.carrier_user?' do
@@ -28,41 +28,29 @@ shared_examples_for 'authorized_attributable' do
     context 'when authorizable.customer?' do
       let(:authorizable) { create(:customer_user) }
 
-      it { is_expected.to(eq(described_class.send(:customer_ransackable_attributes))) }
+      it { is_expected.to(eq(described_class.send(:ransackable_customer_attributes))) }
     end
   end
 
-  describe '#attribute!' do
-    let(:user) { create(:broker_user) }
+  describe '#authorized_attribute!' do
+    let(:user) { create(:customer_user) }
 
-    ("#{described_class.name}Policy::BROKER_ATTRIBUTES".constantize + "#{described_class.name}Policy::CUSTOMER_ATTRIBUTES".constantize).each do |attribute|
+    "#{described_class.name}Policy::BROKER_ATTRIBUTES".constantize.each do |attribute|
+      it {
+        expect do
+          record.authorized_attribute!(attribute, user)
+        end.to(raise_error(AuthorizedAttributable::UnauthorizedAttributeError))
+      }
+    end
+
+    "#{described_class.name}Policy::CUSTOMER_ATTRIBUTES".constantize.each do |attribute|
       it { expect(record.authorized_attribute!(attribute, user)).to(eq(record.public_send(attribute))) }
     end
 
     context 'when authorizable.broker?' do
-      let(:user) { create(:customer_user) }
+      let(:user) { create(:broker_user) }
 
-      "#{described_class.name}Policy::BROKER_ATTRIBUTES".constantize.each do |attribute|
-        it { expect(record.authorized_attribute!(attribute, user)).to(eq(record.public_send(attribute))) }
-      end
-
-      "#{described_class.name}Policy::CUSTOMER_ATTRIBUTES".constantize.each do |attribute|
-        it { expect(record.authorized_attribute!(attribute, user)).to(eq(record.public_send(attribute))) }
-      end
-    end
-
-    context 'when authorizable.customer?' do
-      let(:user) { create(:customer_user) }
-
-      "#{described_class.name}Policy::BROKER_ATTRIBUTES".constantize.each do |attribute|
-        it {
-          expect do
-            record.authorized_attribute!(attribute, user)
-          end.to(raise_error(AuthorizedAttributable::UnauthorizedAttributeError))
-        }
-      end
-
-      "#{described_class.name}Policy::CUSTOMER_ATTRIBUTES".constantize.each do |attribute|
+      ("#{described_class.name}Policy::BROKER_ATTRIBUTES".constantize + "#{described_class.name}Policy::CUSTOMER_ATTRIBUTES".constantize).each do |attribute|
         it { expect(record.authorized_attribute!(attribute, user)).to(eq(record.public_send(attribute))) }
       end
     end
