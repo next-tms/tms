@@ -1,11 +1,17 @@
 # frozen_string_literal: true
 
 class ApplicationRecord < ActiveRecord::Base
+  class << self
+    # @note For grouped_collection_select in forms
+    def human_name
+      model_name.human
+    end
+  end
+
   self.abstract_class = true
 
-  # Here mainly for grouped_collection_select in forms
-  def self.human_name
-    model_name.human
+  def human_attribute_name(attribute)
+    self.class.human_attribute_name(attribute)
   end
 
   def to_sgid_s

@@ -25,6 +25,12 @@ en:
         label: Department
       contact:
         company_sgid: Company
+      item:
+        declared_freight_class: Freight class
+        desc: Description
+        h: Height
+        l: Length
+        w: Width
       region:
         iso_3166_2: ISO 3166-2
       shipment:

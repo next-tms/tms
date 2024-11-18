@@ -46,6 +46,8 @@ class Item < ApplicationRecord
   has_many :shipment_items, dependent: :destroy
   has_many :shipments, through: :shipment_items
 
+  validate :validate_declared_freight_class, if: -> { new_record? && declared_freight_class.blank? }
+
   validates :desc, :quantity, :weight, presence: true
   validates :nmfc, allow_blank: true, format: { with: /\d{4,5}(-\d{1,2})?/, message: 'is not in the correct format' }
   validates :quantity, :weight, numericality: { only_integer: true, greater_than: 0 }
@@ -162,9 +164,9 @@ class Item < ApplicationRecord
 
   def api_freight_class(use_declared_freight_class:)
     if use_declared_freight_class
-      (declared_freight_class.presence || calculated_freight_class)
+      declared_freight_class.presence || calculated_freight_class
     else
-      (calculated_freight_class.presence || declared_freight_class)
+      calculated_freight_class.presence || declared_freight_class
     end
   end
 
@@ -220,8 +222,22 @@ class Item < ApplicationRecord
 
   private
 
-  # Prettify
   def prettify_desc
     self.desc = desc.titleize if (desc == desc.downcase) || (desc == desc.upcase)
+  end
+
+  def validate_declared_freight_class
+    dimension_attributes = %i[l h w]
+
+    missing_dimension_attributes = dimension_attributes.select { |attribute| public_send(attribute).blank? }
+    return if missing_dimension_attributes.empty?
+
+    missing_dimension_attribute_names = missing_dimension_attributes
+                                        .map { |attribute| human_attribute_name(attribute).downcase }
+    verb = missing_dimension_attribute_names.count > 1 ? 'are' : 'is'
+
+    message = "can't be blank when #{missing_dimension_attribute_names.join(", ")} #{verb} blank"
+
+    errors.add(:declared_freight_class, message)
   end
 end
