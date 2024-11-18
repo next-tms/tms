@@ -46,7 +46,7 @@ class Item < ApplicationRecord
   has_many :shipment_items, dependent: :destroy
   has_many :shipments, through: :shipment_items
 
-  validate :validate_declared_freight_class, if: -> { new_record? && declared_freight_class.blank? }
+  validate :validate_declared_freight_class
 
   validates :desc, :quantity, :weight, presence: true
   validates :nmfc, allow_blank: true, format: { with: /\d{4,5}(-\d{1,2})?/, message: 'is not in the correct format' }
@@ -227,7 +227,10 @@ class Item < ApplicationRecord
   end
 
   def validate_declared_freight_class
+    return if declared_freight_class.present?
+
     dimension_attributes = %i[l h w]
+    return unless dimension_attributes.any? { |attribute| public_send("will_save_change_to_#{attribute}?") }
 
     missing_dimension_attributes = dimension_attributes.select { |attribute| public_send(attribute).blank? }
     return if missing_dimension_attributes.empty?
