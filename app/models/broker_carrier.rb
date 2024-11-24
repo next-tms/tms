@@ -12,12 +12,6 @@
 #   @return [String]
 # @!attribute accounting_notes
 #   @return [String]
-# @!attribute ach_account_number
-#   @return [String]
-# @!attribute ach_bank_name
-#   @return [String]
-# @!attribute ach_routing_number
-#   @return [String]
 # @!attribute create_invoice_on_pickup
 #   @return [Boolean]
 # @!attribute days_to_pay_after_invoice_date
@@ -46,8 +40,6 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute ach_bank_address_id
-#   @return []
 # @!attribute broker_customer_id
 #   @return []
 # @!attribute broker_id
@@ -61,7 +53,6 @@
 #
 # Indexes
 #
-#  index_broker_carriers_on_ach_bank_address_id       (ach_bank_address_id)
 #  index_broker_carriers_on_broker_customer_id        (broker_customer_id)
 #  index_broker_carriers_on_broker_id                 (broker_id)
 #  index_broker_carriers_on_carrier_id                (carrier_id)
@@ -70,7 +61,6 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (ach_bank_address_id => addresses.id)
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
 #  fk_rails_...  (broker_id => brokers.id)
 #  fk_rails_...  (carrier_id => carriers.id)
@@ -120,8 +110,8 @@ class BrokerCarrier < ApplicationRecord
   has_many :pickups, through: :rates
 
   accepts_nested_attributes_for :check_mailing_address
-  accepts_nested_attributes_for :overlength_rules
-  accepts_nested_attributes_for :pricing_rules
+  accepts_nested_attributes_for :overlength_rules, allow_destroy: true
+  accepts_nested_attributes_for :pricing_rules, allow_destroy: true
 
   monetize :quote_padding_cents
 

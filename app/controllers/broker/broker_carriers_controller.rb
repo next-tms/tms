@@ -2,19 +2,7 @@
 
 class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :authenticate_user!
-  before_action :set_broker_carrier, only: %i[
-                                             contacts
-                                             edit
-                                             payment_transactions
-                                             payments
-                                             preferences
-                                             search_terminals
-                                             shipments
-                                             show
-                                             tariff
-                                             terminals
-                                             update
-                                           ]
+  before_action :set_broker_carrier, except: %i[create index]
   before_action :authorize_broker_carrier_access, only: %i[terminals contacts shipments]
 
   def edit
@@ -87,26 +75,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     render(:quickbooks)
   end
 
-  def tariff
-    return if @broker_carrier.carrier.carrier_areas.empty? ||
-              @broker_carrier.pricing_rules.size == @broker_carrier.carrier.carrier_areas.size
-
-    carrier_areas = @broker_carrier
-                    .carrier
-                    .carrier_areas
-                    .where
-                    .not(
-                      id: @broker_carrier.pricing_rules.pluck(:carrier_area_id),
-                    )
-
-    return if carrier_areas.blank?
-
-    carrier_areas.each do |carrier_area|
-      next if @broker_carrier.pricing_rules.where(carrier_area:).present?
-
-      @broker_carrier.pricing_rules.build(carrier_area:, min_pallets: 1)
-    end
-  end
+  def tariff; end
 
   def terminals
     @carrier = @broker_carrier.carrier
@@ -157,6 +126,18 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     FetchShipmentCarrierPODsJob.perform_later(delivered_shipment_ids) if delivered_shipment_ids.present?
 
     redirect_to([:broker, @broker_carrier]) && return
+  end
+
+  def update_tariff
+    @broker_carrier.assign_attributes(tariff_params)
+
+    unless @broker_carrier.save
+      render(:tariff, status: :unprocessable_entity)
+      return
+    end
+
+    flash[:success] = 'Tariff updated'
+    redirect_to(tariff_broker_broker_carrier_path(@broker_carrier))
   end
 
   def contacts
@@ -223,7 +204,9 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def broker_carrier_params
-    params.require(:broker_carrier).permit(
+    params
+    .require(:broker_carrier)
+    .permit(
       :id,
       :account_desc,
       :account,
@@ -251,20 +234,6 @@ class Broker::BrokerCarriersController < Broker::BrokerController
                                           region_id
                                           zip_code
                                         ],
-      overlength_rules_attributes: %i[
-                                     _destroy
-                                     id
-                                     max_length
-                                     min_length
-                                     cost
-                                   ],
-      pricing_rules_attributes: %i[
-                                  id
-                                  carrier_area_id
-                                  cost_per_pallet
-                                  max_pallets
-                                  min_pallets
-                                ],
     )
   end
 
@@ -274,5 +243,15 @@ class Broker::BrokerCarriersController < Broker::BrokerController
       :broker_customer,
       { broker_customer: :customer },
     ]
+  end
+
+  def tariff_params
+    params
+    .require(:broker_carrier)
+    .permit(
+      :id,
+      overlength_rules_attributes: %i[_destroy cost id max_length min_length],
+      pricing_rules_attributes: %i[_destroy id carrier_area_id cost_per_pallet max_pallets min_pallets],
+    )
   end
 end

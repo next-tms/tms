@@ -76,6 +76,8 @@ Rails.application.routes.draw do
         get :tariff
         get :terminals
         get 'terminals/search' => 'broker_carriers#search_terminals', as: :search_terminals
+
+        patch :tariff, action: :update_tariff
       end
     end
 

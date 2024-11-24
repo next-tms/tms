@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_11_025928) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_23_201017) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -160,11 +160,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_11_025928) do
     t.boolean "ignore_bol_requires_tracking_number", default: false
     t.integer "quickbooks_vendor_id"
     t.string "encrypted_api_key"
-    t.string "ach_routing_number"
-    t.string "ach_account_number"
-    t.string "ach_bank_name"
-    t.bigint "ach_bank_address_id"
-    t.index ["ach_bank_address_id"], name: "index_broker_carriers_on_ach_bank_address_id"
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
@@ -263,6 +258,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_11_025928) do
     t.bigint "carrier_id", null: false
     t.bigint "to_area_id", null: false
     t.bigint "from_area_id", null: false
+    t.index ["carrier_id", "from_area_id", "to_area_id"], name: "idx_on_carrier_id_from_area_id_to_area_id_bcd543b955", unique: true
     t.index ["carrier_id"], name: "index_carrier_areas_on_carrier_id"
     t.index ["from_area_id"], name: "index_carrier_areas_on_from_area_id"
     t.index ["to_area_id"], name: "index_carrier_areas_on_to_area_id"
@@ -829,32 +825,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_11_025928) do
     t.index ["updated_by_id"], name: "index_shipments_on_updated_by_id"
   end
 
-  create_table "snapshot_items", force: :cascade do |t|
-    t.bigint "snapshot_id", null: false
-    t.string "item_type", null: false
-    t.bigint "item_id", null: false
-    t.datetime "created_at", null: false
-    t.jsonb "object", null: false
-    t.string "child_group_name"
-    t.index ["item_type", "item_id"], name: "index_snapshot_items_on_item"
-    t.index ["snapshot_id", "item_id", "item_type"], name: "index_snapshot_items_on_snapshot_id_and_item_id_and_item_type", unique: true
-    t.index ["snapshot_id"], name: "index_snapshot_items_on_snapshot_id"
-  end
-
-  create_table "snapshots", force: :cascade do |t|
-    t.string "item_type", null: false
-    t.bigint "item_id", null: false
-    t.string "user_type"
-    t.bigint "user_id"
-    t.datetime "created_at", null: false
-    t.string "identifier"
-    t.jsonb "metadata"
-    t.index ["identifier", "item_id", "item_type"], name: "index_snapshots_on_identifier_and_item_id_and_item_type", unique: true
-    t.index ["identifier"], name: "index_snapshots_on_identifier"
-    t.index ["item_type", "item_id"], name: "index_snapshots_on_item"
-    t.index ["user_type", "user_id"], name: "index_snapshots_on_user"
-  end
-
   create_table "standardized_addresses", force: :cascade do |t|
     t.datetime "google_places_spot_updated_at", precision: nil
     t.datetime "open_street_map_result_updated_at", precision: nil
@@ -1046,7 +1016,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_11_025928) do
   add_foreign_key "broker_accessorials", "accessorials"
   add_foreign_key "broker_accessorials", "broker_customers"
   add_foreign_key "broker_accessorials", "brokers"
-  add_foreign_key "broker_carriers", "addresses", column: "ach_bank_address_id"
   add_foreign_key "broker_carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "broker_carriers", "broker_customers"
   add_foreign_key "broker_carriers", "brokers"

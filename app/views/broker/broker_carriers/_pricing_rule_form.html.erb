@@ -1,6 +1,14 @@
-<p class="col-title">From <%= f.object.carrier_area.from_area.name %> to <%= f.object.carrier_area.to_area.name %></p>
-<div class="pricing-rules-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
-  <%= f.hidden_field :carrier_area_id %>
+<div class="pricing-rules-form-wrapper row gy-2 gx-3 align-items-top mb-4" data-new-record="<%= f.object.new_record? %>">
+  <div class="col col-sm-4">
+    <%= f.select :carrier_area_id,
+                 f.object.broker_carrier.carrier.carrier_areas.collect { |record| [record.humanize, record.id] }.sort,
+                 {
+                   hide_label: true,
+                   include_blank: (CarrierArea.model_name.human if f.object.new_record?),
+                   readonly: f.object.persisted?
+                 }
+    %>
+  </div>
 
   <div class="col col-sm-4">
     <div class="input-group">
@@ -10,6 +18,18 @@
   </div>
 
   <div class="col col-sm-2">
-    <%= f.text_field :cost_per_pallet, prepend: '$', hide_label: true, placeholder: 'Cost per pallet', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
+    <%= f.text_field :cost_per_pallet,
+                     prepend: '$',
+                     hide_label: true,
+                     placeholder: 'Cost per pallet',
+                     data: money_controller_data,
+                     wrapper: false,
+                     autocomplete: 'off'
+    %>
+  </div>
+
+  <div class="col-auto">
+    <%= f.hidden_field :_destroy, wrapper: false %>
+    <%= link_to icon('solid', 'trash', 'Remove'), '#', data: { action: 'nested-form#remove' }, class: 'btn btn-light ms-2' %>
   </div>
 </div>

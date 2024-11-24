@@ -15,9 +15,10 @@
 #
 # Indexes
 #
-#  index_carrier_areas_on_carrier_id    (carrier_id)
-#  index_carrier_areas_on_from_area_id  (from_area_id)
-#  index_carrier_areas_on_to_area_id    (to_area_id)
+#  idx_on_carrier_id_from_area_id_to_area_id_bcd543b955  (carrier_id,from_area_id,to_area_id) UNIQUE
+#  index_carrier_areas_on_carrier_id                     (carrier_id)
+#  index_carrier_areas_on_from_area_id                   (from_area_id)
+#  index_carrier_areas_on_to_area_id                     (to_area_id)
 #
 # Foreign Keys
 #
@@ -30,4 +31,14 @@ class CarrierArea < ApplicationRecord
 
   belongs_to :from_area, class_name: 'Area'
   belongs_to :to_area, class_name: 'Area'
+
+  has_many :pricing_rules, dependent: :destroy
+
+  validates :carrier_id, uniqueness: { scope: %i[from_area_id to_area_id] }
+
+  def humanize
+    return if from_area.blank? || to_area.blank?
+
+    "#{from_area.name} to #{to_area.name}"
+  end
 end
