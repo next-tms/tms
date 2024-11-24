@@ -13,29 +13,7 @@
     %>
   <% else %>
     <%= bootstrap_form_with(model: @broker_carrier, url: tariff_broker_broker_carrier_path(@broker_carrier)) do |f|%>
-      <div class="form-group row">
-        <label class="col-form-label col-sm-2">Overlength Rules</label>
-
-        <div class="col-sm-10">
-          <p>Minimum length and maximum length are inclusive. Leave maximum length blank to mean “anything longer than minimum length”</p>
-
-          <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".overlength-rules-form-wrapper">
-            <template data-nested-form-target="template">
-              <%= f.fields_for :overlength_rules, OverlengthRule.new, child_index: 'NEW_RECORD' do |overlength_rules_form| %>
-                <%= render 'overlength_rule_form', f: overlength_rules_form %>
-              <% end %>
-            </template>
-
-            <%= f.fields_for :overlength_rules do |overlength_rules_form| %>
-              <%= render 'overlength_rule_form', f: overlength_rules_form %>
-            <% end %>
-
-            <div data-nested-form-target="target"></div>
-
-            <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
-          </div>
-        </div>
-      </div>
+      <%= render 'overlength_rules_fields', f: %>
 
       <%= f.form_group do %>
         <%= f.submit class: 'btn btn-primary', value: 'Save' %>
@@ -44,32 +22,8 @@
   <% end %>
 <% else %>
   <%= bootstrap_form_with(model: @broker_carrier, url: tariff_broker_broker_carrier_path(@broker_carrier)) do |f| %>
-    <div class="form-group row">
-      <label class="col-form-label col-sm-2">Pallet Pricing Rules</label>
-
-      <div class="col-sm-10">
-        <p>
-          Minimum pallet count and maximum pallet count are inclusive. Leave maximum pallet count blank to mean “anything more than
-          minimum pallet count”
-        </p>
-
-        <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".pricing-rules-form-wrapper">
-          <template data-nested-form-target="template">
-            <%= f.fields_for :pricing_rules, PricingRule.new(broker_carrier: f.object), child_index: 'NEW_RECORD' do |pricing_rules_form| %>
-              <%= render 'pricing_rule_form', f: pricing_rules_form %>
-            <% end %>
-          </template>
-
-          <%= f.fields_for :pricing_rules do |pricing_rules_form| %>
-            <%= render 'pricing_rule_form', f: pricing_rules_form %>
-          <% end %>
-
-          <div data-nested-form-target="target"></div>
-
-          <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
-        </div>
-      </div>
-    </div>
+    <%= render 'pricing_rules_fields', f: %>
+    <%= render 'overlength_rules_fields', f: %>
 
     <%= f.form_group do %>
       <%= f.submit class: 'btn btn-primary', value: 'Save' %>

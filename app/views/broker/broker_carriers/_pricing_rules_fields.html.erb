@@ -1,0 +1,29 @@
+<div class="form-group row">
+  <label class="col-form-label col-sm-2">Pallet Pricing Rules</label>
+
+  <div class="col-sm-10">
+    <p>
+      Minimum pallet count and maximum pallet count are inclusive. Leave maximum pallet count blank to mean “anything
+      more than minimum pallet count”
+    </p>
+
+    <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".pricing-rules-form-wrapper">
+      <template data-nested-form-target="template">
+        <%= f.fields_for :pricing_rules,
+                         PricingRule.new(broker_carrier: f.object),
+                         child_index: 'NEW_RECORD' do |pricing_rules_form|
+        %>
+          <%= render 'pricing_rule_form', f: pricing_rules_form %>
+        <% end %>
+      </template>
+
+      <%= f.fields_for :pricing_rules do |pricing_rules_form| %>
+        <%= render 'pricing_rule_form', f: pricing_rules_form %>
+      <% end %>
+
+      <div data-nested-form-target="target"></div>
+
+      <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+    </div>
+  </div>
+</div>
