@@ -12,6 +12,12 @@ module DocumentableService
           builder << :pickup_confirmation
           builder << :pro
           builder << :quote_id
+          builder << :receiver_contact_email
+          builder << :receiver_contact_name
+          builder << :receiver_contact_phone
+          builder << :shipper_contact_email
+          builder << :shipper_contact_name
+          builder << :shipper_contact_phone
 
           if record.picked_up?
             builder.reject! { |attribute| scheduling_attributes.include?(attribute) }
