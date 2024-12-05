@@ -33,7 +33,13 @@
       <thead>
         <tr>
           <th>Customer</th>
-          <th>Shipments</th>
+
+          <th>
+            <small class="text-muted">Shipped / Total</small>
+            <br/>
+            Shipments
+          </th>
+
           <th>Costs</th>
           <th>Charges</th>
           <th>Profit</th>
@@ -41,34 +47,50 @@
         </tr>
       </thead>
       <tbody>
-        <% total_cost = Money.new(0) %>
+        <% dispatched_shipments_count = 0 %>
         <% total_charges = Money.new(0) %>
+        <% total_cost = Money.new(0) %>
         <% total_profit = Money.new(0) %>
-        <% total_shipments = 0 %>
+        <% total_shipments_count = 0 %>
+
         <% @broker_customers.each do |broker_customer| %>
           <% profitability_report = broker_customer.profitability_report(@from_date, @to_date) %>
-          <% next unless profitability_report %>
-          <% next if profitability_report[:total_cost] == Money.new(0) and profitability_report[:total_charges] == Money.new(0) %>
-          <% total_cost = total_cost + profitability_report[:total_cost] %>
+          <% next if profitability_report.blank? %>
+          <% next if profitability_report[:total_cost].zero? && profitability_report[:total_charges].zero? %>
+
+          <% dispatched_shipments_count += profitability_report[:dispatched_shipments_count] %>
           <% total_charges = total_charges + profitability_report[:total_charges] %>
+          <% total_cost = total_cost + profitability_report[:total_cost] %>
           <% total_profit = total_profit + profitability_report[:total_profit] %>
-          <% total_shipments = total_shipments + profitability_report[:total_shipments] %>
+          <% total_shipments_count += profitability_report[:total_shipments_count] %>
+
           <tr>
             <td>
-              <%= link_to broker_broker_customer_shipments_path(broker_customer.id, params: { q: { picked_up_at_gteq: @from_date, picked_up_at_lteq: @to_date } }) do %>
-                <%= broker_customer.customer.name %>
-              <% end %>
+              <%= broker_customer.customer.name %>
             </td>
-            <td><%= profitability_report[:total_shipments] %></td>
+
+            <td data-sort=<%= profitability_report[:total_shipments_count] %>>
+              <%= profitability_report[:dispatched_shipments_count] %> /
+              <%= profitability_report[:total_shipments_count] %>
+
+              <div class="float-end">
+                <% percentage = (profitability_report[:dispatched_shipments_count].to_f / profitability_report[:total_shipments_count].to_f) * 100 %>
+                <%= percentage.round %>%
+              </div>
+            </td>
+
             <td data-sort=<%= profitability_report[:total_cost] %>>
               <%= humanized_money_with_symbol profitability_report[:total_cost], no_cents_if_whole: false %>
             </td>
+
             <td data-sort=<%= profitability_report[:total_charges]%>>
               <%= humanized_money_with_symbol profitability_report[:total_charges], no_cents_if_whole: false %>
             </td>
+
             <td data-sort=<%= profitability_report[:total_profit]%>>
               <%= humanized_money_with_symbol profitability_report[:total_profit], no_cents_if_whole: false %>
             </td>
+
             <td>
               <% unless profitability_report[:total_margin].infinite? %>
                 <%= profitability_report[:total_margin]  %>%
@@ -80,7 +102,17 @@
       <tfoot>
         <tr class="bg-light font-weight-bold">
           <td>&nbsp;</td>
-          <td><%= total_shipments %></td>
+
+          <td>
+            <%= dispatched_shipments_count %> /
+            <%= total_shipments_count %>
+
+            <div class="float-end">
+              <% percentage = (dispatched_shipments_count.to_f / total_shipments_count.to_f) * 100 %>
+              <%= percentage.round %>%
+            </div>
+          </td>
+
           <td><%= humanized_money_with_symbol total_cost, no_cents_if_whole: false %></td>
           <td><%= humanized_money_with_symbol total_charges, no_cents_if_whole: false %></td>
           <td><%= humanized_money_with_symbol total_profit, no_cents_if_whole: false %></td>

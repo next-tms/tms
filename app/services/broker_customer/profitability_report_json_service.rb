@@ -14,32 +14,32 @@ class BrokerCustomer::ProfitabilityReportJsonService
   end
 
   def call
-    return if shipments.empty?
+    return if dispatched_shipments.empty?
 
-    total_cost = shipments.active.map(&:total_cost).inject(Money.new(0)) { |sum, x| sum + x }
-    total_charges = shipments.active.map(&:total_charges).inject(Money.new(0)) { |sum, x| sum + x }
+    total_cost = dispatched_shipments.map(&:total_cost).inject(Money.new(0)) { |sum, x| sum + x }
+    total_charges = dispatched_shipments.map(&:total_charges).inject(Money.new(0)) { |sum, x| sum + x }
     total_profit = total_charges - total_cost
     total_margin = ((1 - (total_cost / total_charges)) * 100).round(1)
 
     {
-      total_shipments: shipments.size,
-      total_cost:,
+      dispatched_shipments_count: dispatched_shipments.size,
+      quoted_shipments_count: quoted_shipments.size,
       total_charges:,
+      total_cost:,
+      total_margin:,
       total_profit:,
-      total_margin:
+      total_shipments_count: (dispatched_shipments + quoted_shipments).size
     }
   end
 
   private
 
-  def shipments
-    return broker_customer.shipments if from.blank?
+  def dispatched_shipments
+    @dispatched_shipments ||= broker_customer.shipments.active.where(picked_up_at: from..to)
+  end
 
-    return unless to
-
-    picked_up_at = (from..to)
-
-    broker_customer.shipments.active.where(broker_customer:, picked_up_at:)
+  def quoted_shipments
+    @quoted_shipments ||= broker_customer.shipments.pending_dispatch.where(created_at: from..to)
   end
 
   def tz
