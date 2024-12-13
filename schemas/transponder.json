@@ -6780,9 +6780,13 @@
               "name": "dimensions",
               "description": null,
               "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "DimensionInput",
-                "ofType": null
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "DimensionInput",
+                  "ofType": null
+                }
               },
               "defaultValue": null,
               "isDeprecated": false,
@@ -6866,7 +6870,7 @@
         {
           "kind": "ENUM",
           "name": "Packaging",
-          "description": "See https://github.com/next-tms/freight_kit/blob/v0.1.4/lib/freight_kit/packaging.rb",
+          "description": "See https://github.com/next-tms/freight_kit/blob/v0.1.11/lib/freight_kit/packaging.rb",
           "interfaces": null,
           "possibleTypes": null,
           "fields": null,
@@ -7065,7 +7069,7 @@
           "possibleTypes": null,
           "fields": [
             {
-              "name": "carrier",
+              "name": "fetchCarrier",
               "description": null,
               "type": {
                 "kind": "OBJECT",
@@ -7094,7 +7098,7 @@
               ]
             },
             {
-              "name": "carriers",
+              "name": "fetchCarriers",
               "description": null,
               "type": {
                 "kind": "NON_NULL",
