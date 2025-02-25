@@ -2,7 +2,7 @@
 
 class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :authenticate_user!
-  before_action :set_broker_carrier, except: %i[create index]
+  before_action :set_broker_carrier, except: %i[create index new]
   before_action :authorize_broker_carrier_access, only: %i[terminals contacts shipments]
 
   def edit
