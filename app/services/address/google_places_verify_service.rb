@@ -21,7 +21,7 @@ class Address::GooglePlacesVerifyService
       retry if retries < 3
 
       raise
-    rescue GooglePlaces::RequestDeniedError => e
+    rescue GooglePlaces::RequestDeniedError, Socket::ResolutionError => e
       Honeybadger.notify(e)
 
       return
