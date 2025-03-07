@@ -1,4 +1,4 @@
-FROM ruby:3.3.6-alpine3.20 AS runtime
+FROM ruby:3.3.7-alpine3.20 AS runtime
 
 RUN apk -U upgrade
 RUN apk add --no-cache gcompat git libpq-dev libxml2 libxslt imagemagick nodejs npm shared-mime-info yarn
