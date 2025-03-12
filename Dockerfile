@@ -20,7 +20,8 @@ RUN apk add --no-cache --virtual .gem-installdeps build-base \
                                                   imagemagick-dev \
                                                   imagemagick-libs \
                                                   libxml2-dev \
-                                                  libxslt-dev
+                                                  libxslt-dev \
+                                                  yaml-dev
 
 RUN gem update --system
 RUN gem install bundler -v 2.5.21
