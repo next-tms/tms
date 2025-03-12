@@ -133,7 +133,7 @@ class Shipment::RatesService
 
     private
 
-    def carrier_finds_rate_with_declared_value
+    def carrier_finds_rate_with_declared_value?
       broker_carrier.to_freight_kit_carrier.class.find_rates_with_declared_value?
     end
   end
