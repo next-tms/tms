@@ -122,5 +122,5 @@ gem 'pretender'
 gem 'public_suffix'
 gem 'rss_creator'
 
-gem 'activerecord-session_store'
+gem 'activerecord-session_store', '~> 2.1.0'
 gem 'graphql-client'

@@ -759,7 +759,7 @@ DEPENDENCIES
   StreetAddress!
   action_policy
   action_policy-graphql
-  activerecord-session_store
+  activerecord-session_store (~> 2.1.0)
   annotate (~> 3.2.0)
   audited
   aws-sdk-s3 (~> 1.130.0)
