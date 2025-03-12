@@ -25,6 +25,7 @@ RUN apk add --no-cache --virtual .gem-installdeps build-base \
 RUN gem update --system
 RUN gem install bundler -v 2.5.21
 RUN gem install nokogiri -v 1.16.6 --platform=ruby -- --use-system-libraries
+RUN gem install rdiscount -v 2.2.7 -- --with-cflags="-Wno-single-bit-bitfield-constant-conversion -Wno-incompatible-pointer-types-discards-qualifiers -Wno-deprecated-non-prototype -Wno-parentheses -Wno-implicit-int"
 
 COPY Gemfile /app/Gemfile
 COPY Gemfile.lock /app/Gemfile.lock
@@ -33,10 +34,9 @@ WORKDIR /app
 RUN bundle config set global frozen && \
     bundle config set without 'development test' && \
     bundle config github.com $BUNDLER_GITHUB_OAUTH_KEY && \
-    bundle install --jobs $(nproc) --retry 5 && \
-    rm -rf /usr/local/bundle/cache && \
-    rm -rf /app && \
-    apk del .gem-installdeps
+    bundle install --jobs $(nproc) --retry 5
+
+RUN rm -rf /usr/local/bundle/cache && rm -rf /app && apk del .gem-installdeps
 
 COPY . /app
 
