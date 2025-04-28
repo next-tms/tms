@@ -94,8 +94,8 @@ module TransponderService
       return [] if location.blank?
 
       city = location[:city]
-      region = Region.find_by!(abbreviation: location[:region_abbreviation])
       country = Parser::Country.call(location[:country])
+      region = country.regions.find_by(abbreviation: location[:region_abbreviation]) if country.present?
 
       [city, region, country]
     end
