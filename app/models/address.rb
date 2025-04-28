@@ -115,7 +115,12 @@ class Address < ApplicationRecord
     str << "#{ref}#{seperator}" if ref.present?
     str << "#{street}#{seperator}" if street.present?
     str << "#{street2}#{seperator}" if street2.present?
-    str << "#{city}, #{region.abbreviation} #{zip_code}".sub(',  ', '')
+
+    str << if region.present?
+             "#{city}, #{region.abbreviation} #{zip_code}".sub(',  ', '')
+           else
+             "#{city}, #{zip_code}".sub(',  ', '')
+           end
     str
   end
 
@@ -268,10 +273,10 @@ class Address < ApplicationRecord
       errors.add(:ref, "cannot start with “#{matched_prefix}”")
     end
   end
-  
+
   def validate_street
     return if country.valid_street?(street)
-    
+
     errors.add(:street, "is not valid for #{country.name}")
   end
 
@@ -282,7 +287,7 @@ class Address < ApplicationRecord
       value = public_send(attribute)
       next if value.blank?
 
-      matched_prefix = value.match(/\A#{Regexp.escape('C/O')}/i)
+      matched_prefix = value.match(/\A#{Regexp.escape("C/O")}/i)
       errors.add(attribute, "cannot contain “#{matched_prefix}”") if matched_prefix.present?
 
       ['Re:', 'Ref:', 'Release'].each do |prefix|
