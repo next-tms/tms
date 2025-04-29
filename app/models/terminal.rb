@@ -28,6 +28,16 @@
 #  fk_rails_...  (carrier_id => carriers.id)
 #
 class Terminal < ApplicationRecord
+  class << self
+    def ransackable_associations(auth_object = nil)
+      ['address', 'carrier']
+    end
+
+    def ransackable_attributes(auth_object = nil)
+      ['phone']
+    end
+  end
+
   belongs_to :address
   belongs_to :carrier
 

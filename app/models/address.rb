@@ -64,7 +64,7 @@
 class Address < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['city', 'zip_code']
+      ['city', 'street', 'street2', 'zip_code']
     end
 
     def ransackable_associations(auth_object = nil)

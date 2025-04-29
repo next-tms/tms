@@ -30,7 +30,7 @@
 class Region < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['abbreviation', 'iso31662']
+      ['abbreviation', 'iso31662', 'name']
     end
 
     def ransackable_associations(auth_object = nil)
