@@ -83,7 +83,7 @@ module TransponderService
         user = contact.user
 
         if user
-          DocumentNotification
+          DocumentNotifier
           .with(
             from_user: nil,
             to_contact: contact,

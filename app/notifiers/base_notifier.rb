@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-class NotificationBase < Noticed::Base
-  deliver_by :database
+class BaseNotifier < Noticed::Event
   deliver_by :email,
              mailer: :mailer_class,
              method: :mailer_method,

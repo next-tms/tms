@@ -7,7 +7,8 @@ class DispatchShipmentPickupJob < ApplicationJob
     success = TransponderService::CreatePickup.call(pickup)
     return unless success
 
-    notification = PickupNotification.with(pickup:, pickup_action_type: :pickup_service_dispatched)
-    notification.deliver_later(pickup.shipment.users_to_notify)
+    PickupNotifier
+    .with(pickup:, pickup_action_type: :pickup_service_dispatched)
+    .deliver(pickup.shipment.users_to_notify)
   end
 end

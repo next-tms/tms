@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 # To deliver this notification:
 #
-# DocumentNotification.with(post: @post).deliver_later(current_user)
-# DocumentNotification.with(post: @post).deliver(current_user)
+# DocumentNotifier.with(post: @post).deliver(current_user)
 
-class DocumentNotification < NotificationBase
-  param :shipment, :document_type, :contact
+class DocumentNotifier < BaseNotifier
+  required_params :shipment, :document_type, :contact
 
   def mailer_class
     ContactMailer

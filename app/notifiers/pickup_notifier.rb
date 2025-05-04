@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 # To deliver this notification:
 #
-# PickupNotification.with(post: @post).deliver_later(current_user)
-# PickupNotification.with(post: @post).deliver(current_user)
+# PickupNotifier.with(post: @post).deliver(current_user)
 
-class PickupNotification < NotificationBase
-  param :pickup, :pickup_action_type
+class PickupNotifier < BaseNotifier
+  required_params :pickup, :pickup_action_type
 
   def mailer_class
     UserMailer

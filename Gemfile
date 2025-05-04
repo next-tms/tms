@@ -117,7 +117,7 @@ gem 'pagy'
 gem 'ransack', '~> 4.1.1'
 
 gem 'audited'
-gem 'noticed'
+gem 'noticed', '~> 2.6.1'
 gem 'pretender'
 gem 'public_suffix'
 gem 'rss_creator'

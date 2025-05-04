@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 # To deliver this notification:
 #
-# ShipmentNotification.with(post: @post).deliver_later(current_user)
-# ShipmentNotification.with(post: @post).deliver(current_user)
+# ShipmentNotifier.with(post: @post).deliver(current_user)
 
-class ShipmentNotification < NotificationBase
-  param :shipment, :attribute_changed
+class ShipmentNotifier < BaseNotifier
+  required_params :shipment, :attribute_changed
 
   def mailer_class
     UserMailer
@@ -23,8 +24,15 @@ class ShipmentNotification < NotificationBase
   end
 
   def url
-    return broker_shipment_path(params[:shipment]) if %i[canceled_at new_shipment].include?(params[:attribute_changed].to_sym)
-    return broker_shipment_path(params[:shipment], attr: params[:attribute_changed]) if %i[dispatcher_id].include?(params[:attribute_changed].to_sym)
+    return broker_shipment_path(params[:shipment]) if %i[
+                                                        canceled_at
+                                                         new_shipment
+                                                      ].include?(params[:attribute_changed].to_sym)
+
+    return broker_shipment_path(
+      params[:shipment],
+                                attr: params[:attribute_changed],
+    ) if %i[dispatcher_id].include?(params[:attribute_changed].to_sym)
 
     transit_broker_shipment_path(params[:shipment], attr: params[:attribute_changed])
   end
