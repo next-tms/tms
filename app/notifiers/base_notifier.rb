@@ -14,7 +14,7 @@ class BaseNotifier < Noticed::Event
     params[:email_delivery_error].present?
   end
 
-  def should_receive_email_notification?
+  def should_receive_email_notification?(recipient)
     blacklist = recipient.email_notifications_blacklist || []
 
     recipient.receive_email_notifications? &&
