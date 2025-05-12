@@ -105,6 +105,28 @@
 #
 class User < ApplicationRecord
   class << self
+    def notification_types
+      [
+        'document:broker_bol',
+        'document:broker_dispatch_sheet',
+        'document:broker_quote',
+        'document:carrier_bol',
+        'document:carrier_pod',
+        'pickup:pickup_service_dispatched',
+        'shipment:booked_at',
+        'shipment:canceled_at',
+        'shipment:delivered_at',
+        'shipment:delivery_appointment_at',
+        'shipment:delivery_appointment_on',
+        'shipment:delivery_eta_on',
+        'shipment:departed_origin_terminal_at',
+        'shipment:dispatcher_id',
+        'shipment:new_shipment',
+        'shipment:out_for_delivery_at',
+        'shipment:picked_up_at',
+      ]
+    end
+
     def with_any_role(*roles)
       joins(:contact).where(contact: Contact.with_any_role(*roles))
     end
