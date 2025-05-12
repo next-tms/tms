@@ -20,7 +20,7 @@ class BaseNotifier < Noticed::Event
 
     recipient.receive_email_notifications? &&
       (recipient.receive_read_notifications_by_email? || notification.unread?) &&
-      blacklist.exclude?(notification.notification_type)
+      blacklist.exclude?(notification_type)
   end
 
   def raw_content
