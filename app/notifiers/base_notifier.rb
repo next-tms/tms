@@ -14,12 +14,13 @@ class BaseNotifier < Noticed::Event
     params[:email_delivery_error].present?
   end
 
-  def should_receive_email_notification?(recipient)
+  def should_receive_email_notification?(notification)
+    recipient = notification.recipient
     blacklist = recipient.email_notifications_blacklist || []
 
     recipient.receive_email_notifications? &&
-      (recipient.receive_read_notifications_by_email? || unread?) &&
-      blacklist.exclude?(notification_type)
+      (recipient.receive_read_notifications_by_email? || notification.unread?) &&
+      blacklist.exclude?(notification.notification_type)
   end
 
   def raw_content
