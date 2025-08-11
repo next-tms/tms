@@ -197,6 +197,15 @@ class User < ApplicationRecord
     super && !deactivated
   end
 
+  def build_contact
+    new_contact = companyable.contacts.find_or_initialize_by(email: email.downcase)
+    return if new_contact.persisted?
+
+    new_contact.assign_attributes(companyable:, first_name:, last_name:)
+
+    self.contact = new_contact
+  end
+
   def country_code
     return if companyable.blank?
 
@@ -310,15 +319,6 @@ class User < ApplicationRecord
   end
 
   private
-
-  def build_contact
-    new_contact = companyable.contacts.find_or_initialize_by(email: email.downcase)
-    return if new_contact.persisted?
-
-    new_contact.assign_attributes(companyable:, first_name:, last_name:)
-
-    self.contact = new_contact
-  end
 
   def reassign_problems
     return unless saved_change_to_deactivated && deactivated?
