@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 ruby '3.3.7'
 
-gem 'rails', '~> 7.1.0'
+gem 'rails', '~> 7.2.0'
 gem 'sprockets-rails', '~> 3.4.2'
 
 gem 'pg', '~> 1.4.6'
@@ -38,7 +38,7 @@ end
 
 group :development do
   gem 'annotate', '~> 3.2.0'
-  gem 'bullet', '~> 7.1.6'
+  gem 'bullet', '~> 7.2'
   gem 'graphiql-rails', '~> 1.9'
   gem 'letter_opener'
   gem 'listen', '>= 3.0.5', '< 3.10'
@@ -68,9 +68,9 @@ gem 'font-awesome-sass', '~> 6.3.0'
 gem 'aws-sdk-s3', '~> 1.130.0', group: :production
 gem 'image_processing', '~> 1.12.2'
 
-gem 'devise', '~> 4.9.2'
-gem 'devise_invitable', '~> 2.0.9'
-gem 'devise-pwned_password', '~> 0.1.12'
+gem 'devise', '~> 5.0'
+gem 'devise_invitable', '~> 2.0'
+gem 'devise-pwned_password', '~> 0.2'
 
 gem 'freight_kit-next', git: 'https://github.com/next-tms/freight_kit-next', tag: 'v0.1.30'
 gem 'place_kit', '~> 0.0.1'
