@@ -69,14 +69,7 @@ class Users::InvitationsController < Devise::InvitationsController
 
   def invite_resource
     super do |user|
-      unless user.contact.persisted?
-        user.contact.assign_attributes(
-          companyable: user.companyable,
-          email: user.email,
-          first_name: user.first_name,
-          last_name: user.last_name
-        )
-      end
+      user.build_contact
 
       user.broker_id = current_user.broker_id
       user.time_zone_name = current_user.broker.time_zone_name

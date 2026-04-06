@@ -9,14 +9,14 @@ RSpec.describe(Broker::UsersController) do
 
   before { sign_in(current_user) }
 
-  describe 'GET show' do
+  describe 'GET #show' do
     before { get(:show, params: { id: user.id }) }
 
-    it { expect(response.code).to(eq('200')) }
+    it { expect(response).to(have_http_status(:ok)) }
     it { expect(assigns(:user)).to(eq(user)) }
   end
 
-  describe 'PATCH update' do
+  describe 'PATCH #update' do
     let(:params) do
       {
         id: user.id,
