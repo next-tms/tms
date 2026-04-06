@@ -1,4 +1,10 @@
 version: 2
+registries:
+  github-registry:
+    type: git
+    url: https://github.com
+    username: "${{ secrets.BUNDLER_GITHUB_USERNAME }}"
+    password: "${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}"
 updates:
   - package-ecosystem: bundler
     directory: /
@@ -8,10 +14,13 @@ updates:
     registries:
       - github-registry
     insecure-external-code-execution: allow
-
-registries:
-  github-registry:
-    type: git
-    url: https://github.com
-    username: "${{ secrets.BUNDLER_GITHUB_USERNAME }}"
-    password: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
