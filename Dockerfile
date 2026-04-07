@@ -30,7 +30,6 @@ COPY Gemfile.lock /app/Gemfile.lock
 WORKDIR /app
 
 RUN gem install bundler -v $(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1 | tr -d '[:space:]')
-RUN gem install rdiscount -v 2.2.7 -- --with-cflags="-Wno-single-bit-bitfield-constant-conversion -Wno-incompatible-pointer-types-discards-qualifiers -Wno-deprecated-non-prototype -Wno-parentheses -Wno-implicit-int"
 RUN bundle config set global frozen && \
     bundle config set without 'development test' && \
     bundle config github.com $BUNDLER_GITHUB_OAUTH_KEY && \
