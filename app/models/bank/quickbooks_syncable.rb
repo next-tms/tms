@@ -48,7 +48,7 @@ module Bank::QuickbooksSyncable
     end
 
     def quickbooks_account_name
-      parts = [name]
+      parts = [ name ]
       parts << account_number[..3] unless account_number.blank?
 
       parts.join(' ').gsub(':', ' -').gsub('"', '').squish[..99]

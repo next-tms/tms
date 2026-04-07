@@ -30,7 +30,7 @@ module Queries
 
     Types::QueryType.class_eval do
       def shipment_by_load_id(load_id:)
-        Shipment.find_by(load_id: load_id)
+        Shipment.find_by(load_id:)
       end
 
       def shipment_by_broker_carrier(broker_carrier_id:)

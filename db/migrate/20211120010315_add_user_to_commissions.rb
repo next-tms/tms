@@ -12,7 +12,7 @@ class AddUserToCommissions < ActiveRecord::Migration[6.1]
                 end
       next if user_id.blank?
 
-      commission.update_columns(user_id: user_id)
+      commission.update_columns(user_id:)
     end
 
     change_column_null :commissions, :user_id, false
@@ -34,7 +34,7 @@ class AddUserToCommissions < ActiveRecord::Migration[6.1]
                                      end
       next if broker_customer_sales_rep_id.blank?
 
-      commission.update_columns(broker_customer_sales_rep_id: broker_customer_sales_rep_id)
+      commission.update_columns(broker_customer_sales_rep_id:)
     end
 
     change_column_null :commissions, :broker_customer_sales_rep_id, false

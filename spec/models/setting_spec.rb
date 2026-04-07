@@ -21,7 +21,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe(Discussion, type: :model) do
+RSpec.describe(Setting) do
   describe '#validate_value' do
     context 'when kind == :boolean' do
       before { allow(record).to(receive(:kind).and_return(:boolean)) }
@@ -60,7 +60,7 @@ RSpec.describe(Discussion, type: :model) do
     context 'when kind == :hostname' do
       before { allow(record).to(receive(:kind).and_return(:hostname)) }
 
-      let(:record) { build(:setting, value: Faker::Internet.domain_name(subdomain: [true, false].sample)) }
+      let(:record) { build(:setting, value: Faker::Internet.domain_name(subdomain: [ true, false ].sample)) }
 
       it { expect(record).to(be_valid) }
 

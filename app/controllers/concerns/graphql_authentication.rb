@@ -23,15 +23,15 @@ module GraphQLAuthentication
     return [] unless token =~ /Bearer (.+)/
 
     jwt = Regexp.last_match(1)
-    decoded_jwt = ::JwtManagerService.decode(jwt: jwt)
+    decoded_jwt = ::JwtManagerService.decode(jwt:)
     jwt_error = decoded_jwt.error_message
     id = decoded_jwt.payload&.fetch('id', nil)
-    user = User.find_by(id: id)
+    user = User.find_by(id:)
 
-    [jwt_error, user]
+    [ jwt_error, user ]
   end
 
   def render_unauthorized_error_response(error)
-    render(json: { error: error }, status: :unauthorized)
+    render(json: { error: }, status: :unauthorized)
   end
 end

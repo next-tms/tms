@@ -8,30 +8,34 @@ RSpec.describe(Shipment::DuplicateService) do
   let!(:item) { create(:item) }
 
   describe '#call' do
-    subject { described_class.new(shipment:).call }
+    subject(:call) { described_class.new(shipment:).call }
 
     before do
       shipment.shipment_items.create(item:)
       shipment.shipment_broker_accessorials.create(broker_accessorial:)
     end
 
-    it 'creates new shipment' do
-      expect { subject }.to(change(Shipment, :count).by(1))
-    end
+    it { expect { call }.to(change(Shipment, :count).by(1)) }
 
-    it 'duplicates shipper and receiver address, items and broker accessorials' do
-      new_shipment = subject
-      except_attrs = ['id', 'created_at', 'updated_at']
-
+    it 'duplicates shipper and receiver address' do
+      new_shipment = call
       expect(shipment.receiver_address.pretty('')).to(eq(new_shipment.receiver_address.pretty('')))
       expect(shipment.shipper_address.pretty('')).to(eq(new_shipment.shipper_address.pretty('')))
+    end
 
+    it 'duplicates items' do
+      new_shipment = call
+      except_attrs = [ 'id', 'created_at', 'updated_at' ]
       item.attributes.each do |k, v|
         next if except_attrs.include?(k)
 
         expect(new_shipment.items.first.send(k)).to(eq(v))
       end
+    end
 
+    it 'duplicates broker accessorials' do
+      new_shipment = call
+      except_attrs = [ 'id', 'created_at', 'updated_at' ]
       broker_accessorial.attributes.each do |k, _v|
         next if except_attrs.include?(k)
 
@@ -40,8 +44,7 @@ RSpec.describe(Shipment::DuplicateService) do
     end
 
     it 'stores nil on nullable attrs' do
-      new_shipment = subject
-
+      new_shipment = call
       described_class::NULLABLE_ATTRS.each do |attr|
         expect(new_shipment.send(attr)).to(be_nil)
       end

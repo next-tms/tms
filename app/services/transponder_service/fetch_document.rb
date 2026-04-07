@@ -55,9 +55,9 @@ module TransponderService
       content_type = transponder_document[:content_type]
       io = StringIO.new(Base64.decode64(transponder_document[:data_base64]))
 
-      basename = [shipment.load_id, document_type.to_s.upcase, '(Carrier)'].join(' ')
+      basename = [ shipment.load_id, document_type.to_s.upcase, '(Carrier)' ].join(' ')
       ext = Rack::Mime::MIME_TYPES.invert[content_type]
-      filename = [basename, ext].join('.')
+      filename = [ basename, ext ].join('.')
 
       blob = ActiveStorage::Blob.create_and_upload!(io:, filename:, content_type:)
       attachment.attach(blob)

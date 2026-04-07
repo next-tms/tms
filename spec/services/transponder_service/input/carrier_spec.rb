@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe(TransponderService::Input::Carrier) do
   let(:account) { Faker::Alphanumeric.alphanumeric(number: 10, min_alpha: 3, min_numeric: 3).upcase }
-  let(:api_credentials) { [Faker::Internet.username, Faker::Internet.password] }
+  let(:api_credentials) { [ Faker::Internet.username, Faker::Internet.password ] }
   let(:encrypted_api_key) { Faker::Internet.password }
   let(:encrypted_proxy_url) { Faker::Internet.url }
-  let(:website_credentials) { [Faker::Internet.username, Faker::Internet.password] }
+  let(:website_credentials) { [ Faker::Internet.username, Faker::Internet.password ] }
 
   let(:carrier) { create(:carrier, encrypted_proxy_url:) }
 

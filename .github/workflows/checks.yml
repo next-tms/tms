@@ -36,7 +36,7 @@ jobs:
           gem install bundler
           bundle config github.com "${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}"
           bundle install --jobs 4 --retry 3
-      - run: bundle exec rubocop --only Lint/Syntax
+      - run: bundle exec rubocop
   tests:
     name: Tests
     runs-on: ubuntu-latest

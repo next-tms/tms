@@ -52,7 +52,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
     @payment_transaction.broker = current_user.broker
 
     if payment_transaction_params[:csv].blank?
-      redirect_to([:broker, @payment_transaction]) and return if @payment_transaction.save
+      redirect_to([ :broker, @payment_transaction ]) and return if @payment_transaction.save
 
       render(:new) and return
     else
@@ -114,7 +114,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
     [
       :broker_carrier,
       :shipment,
-      { broker_carrier: %i[broker_customer carrier] },
+      { broker_carrier: %i[broker_customer carrier] }
     ]
   end
 

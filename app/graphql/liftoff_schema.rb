@@ -4,6 +4,9 @@ class LiftoffSchema < GraphQL::Schema
   mutation(Types::MutationType)
   query(Types::QueryType)
 
+  max_complexity 200
+  max_depth 10
+
   # For batch-loading (see https://graphql-ruby.org/dataloader/overview.html)
   use GraphQL::Dataloader
 
@@ -15,24 +18,15 @@ class LiftoffSchema < GraphQL::Schema
 
   class << self
     # Union and Interface Resolution
-    def resolve_type(abstract_type, obj, ctx)
-      # TODO: Implement this method
-      # to return the correct GraphQL object type for `obj`
-      raise(GraphQL::RequiredImplementationMissingError)
-    end
+    # TODO: Implement this method to return the correct GraphQL object type for `obj`
+    def resolve_type(abstract_type, obj, ctx) = raise(GraphQL::RequiredImplementationMissingError)
 
     # Relay-style Object Identification:
 
     # Return a string UUID for `object`
-    def id_from_object(object, type_definition, query_ctx)
-      # For example, use Rails' GlobalID library (https://github.com/rails/globalid):
-      object.to_gid_param
-    end
+    def id_from_object(object, type_definition, query_ctx) = object.to_gid_param
 
     # Given a string UUID, find the object
-    def object_from_id(global_id, query_ctx)
-      # For example, use Rails' GlobalID library (https://github.com/rails/globalid):
-      GlobalID.find(global_id)
-    end
+    def object_from_id(global_id, query_ctx) = GlobalID.find(global_id)
   end
 end

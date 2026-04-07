@@ -48,7 +48,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
   def required_includes
     [
       :shipment,
-      { shipment: { broker_customer: :customer } },
+      { shipment: { broker_customer: :customer } }
     ]
   end
 end

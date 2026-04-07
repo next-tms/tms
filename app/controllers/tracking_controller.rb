@@ -25,7 +25,7 @@ class TrackingController < ApplicationController
   private
 
   def rss
-    desc = ["Tracking events for Load #{@shipment.load_id} (#{@website.broker.name})"]
+    desc = [ "Tracking events for Load #{@shipment.load_id} (#{@website.broker.name})" ]
     desc << "\n\nNotes:\n#{@shipment.public_notes}" if @shipment.public_notes.present?
 
     rss = RSScreator.new

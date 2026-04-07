@@ -65,7 +65,7 @@
 class Rate < ApplicationRecord
   include HasAPI
 
-  enum source: { api: 'api', pricing_rule: 'pricing_rule' }
+  enum :source, { api: 'api', pricing_rule: 'pricing_rule' }
 
   before_save :set_expires_at, if: -> { new_record? }
   before_save :set_incomplete, if: -> { new_record? }

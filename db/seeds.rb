@@ -3,14 +3,9 @@
 def load_yaml(table)
   YAML.safe_load(
     File.open(
-      File.join(
-        Rails.root,
-        'db',
-        'seed',
-        "#{table}.yaml"
-      )
+      Rails.root.join('db', 'seed', "#{table}.yaml")
     ),
-    permitted_classes: [NilClass, Symbol]
+    permitted_classes: [ NilClass, Symbol ]
   )&.with_indifferent_access&.dig(table)
 end
 
@@ -27,9 +22,9 @@ def import_seeds(tables)
 
       database_entry.assign_attributes(entry)
       if database_entry.save
-        puts "[  OK  ] Save `#{model.name} id=#{database_entry.id} #{key.to_s}=#{val}`"
+        puts "[  OK  ] Save `#{model.name} id=#{database_entry.id} #{key}=#{val}`"
       else
-        str = "[ FAIL ] Save `#{model.name} id=nil #{key.to_s}=#{val}`".dup
+        str = "[ FAIL ] Save `#{model.name} id=nil #{key}=#{val}`".dup
         str << "\n#{database_entry.errors.full_messages.join("\n")}"
         raise str
       end

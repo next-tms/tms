@@ -18,7 +18,7 @@ module TransponderService
                        'Transponder',
                        method.to_s.camelize,
                        operation.to_s.camelize,
-                       'DETAILS',
+                       'DETAILS'
                      ]
                      .join('::')
                      .constantize
@@ -45,7 +45,7 @@ module TransponderService
 
       object = data_object.is_a?(Hash) ? data_object : { value: data_object }
 
-      object.merge({ errors: errors }).deep_transform_keys { |key| key.to_s.snakecase.to_sym }
+      object.merge({ errors: }).deep_transform_keys { |key| key.to_s.snakecase.to_sym }
     end
   end
 
@@ -56,6 +56,6 @@ module TransponderService
                      Net::OpenTimeout,
                      Net::ReadTimeout,
                      OpenSSL::SSL::SSLError,
-                     RuntimeError,
+                     RuntimeError
                    ].freeze
 end

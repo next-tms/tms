@@ -24,8 +24,7 @@ shared_examples_for 'discussable_topic' do
   describe '#build_discussable_topic' do
     context 'when not discussion.present?' do
       before do
-        allow(record).to(receive(:build_discussable_topic?).and_return(true))
-        allow(record).to(receive(:discussion).and_return(nil))
+        allow(record).to(receive_messages(build_discussable_topic?: true, discussion: nil))
       end
 
       it "doesn't set #discussion" do
@@ -52,7 +51,7 @@ shared_examples_for 'discussable_topic' do
         record.resolvable.build_discussion if described_class == Problem
       end
 
-      it { expect(record.send(:build_discussion_topic)).to(be_kind_of(DiscussionTopic)) }
+      it { expect(record.send(:build_discussion_topic)).to(be_a(DiscussionTopic)) }
 
       it 'sets #discussion' do
         record.send(:build_discussion_topic)

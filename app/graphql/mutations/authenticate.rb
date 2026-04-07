@@ -19,7 +19,7 @@ module Mutations
 
       expiration = 8.hours.from_now.getutc.to_i
       payload = { id: user.id, exp: expiration }
-      token = ::JwtManagerService.encode(payload: payload).jwt
+      token = ::JwtManagerService.encode(payload:).jwt
 
       { user:, token: }
     end

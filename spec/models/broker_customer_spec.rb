@@ -81,6 +81,6 @@
 #
 require 'rails_helper'
 
-RSpec.describe(BrokerCustomer, type: :model) do
+RSpec.describe(BrokerCustomer) do
   it_behaves_like 'companyable'
 end

@@ -111,13 +111,13 @@ module ShipmentsHelper
   PREPENDED_TABLE_DATA = [
                            display_name: 'Load',
                            column_name: :load_id,
-                           partial: 'broker/shipments/show_many_td_load_id',
+                           partial: 'broker/shipments/show_many_td_load_id'
                          ]
 
   APPENDED_TABLE_DATA = [
                           display_name: 'Dispatcher',
                           column_name: :dispatcher_full_name,
-                          wrap: true,
+                          wrap: true
                         ]
 
   def shipment_table_row_class(shipment)
@@ -151,7 +151,7 @@ module ShipmentsHelper
   end
 
   def charges_confirmed_note(shipment)
-    audit = shipment.audits.where('audited_changes @> ?', { 'charges_confirmed' => [false, true] }.to_json).first
+    audit = shipment.audits.where('audited_changes @> ?', { 'charges_confirmed' => [ false, true ] }.to_json).first
     changed_by = audit.user
 
     "Shipment Charges Confirmed by #{changed_by.full_name} at #{pretty_date(

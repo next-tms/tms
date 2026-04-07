@@ -63,7 +63,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe(Receivable, type: :model) do
+RSpec.describe(Receivable) do
   it_behaves_like 'discussable'
 
   describe '#missing_carrier_bol?' do
@@ -78,19 +78,19 @@ RSpec.describe(Receivable, type: :model) do
     context 'when broker_customer.blank?' do
       let(:shipment) { create(:shipment, broker_customer: nil) }
 
-      it { expect(result).to(eq(false)) }
+      it { expect(result).to(be(false)) }
     end
 
     context 'when broker_customer.requires_carrier_bol_on_receivables?' do
       let(:broker_customer) { create(:broker_customer, requires_carrier_bol_on_receivables: true) }
 
-      it { expect(result).to(eq(true)) }
+      it { expect(result).to(be(true)) }
     end
 
     context 'when not broker_customer.requires_carrier_bol_on_receivables?' do
       let(:broker_customer) { create(:broker_customer, requires_carrier_bol_on_receivables: false) }
 
-      it { expect(result).to(eq(false)) }
+      it { expect(result).to(be(false)) }
     end
   end
 
@@ -106,19 +106,19 @@ RSpec.describe(Receivable, type: :model) do
     context 'when broker_customer.blank?' do
       let(:shipment) { create(:shipment, broker_customer: nil) }
 
-      it { expect(result).to(eq(false)) }
+      it { expect(result).to(be(false)) }
     end
 
     context 'when broker_customer.requires_carrier_pod_on_receivables?' do
       let(:broker_customer) { create(:broker_customer, requires_carrier_pod_on_receivables: true) }
 
-      it { expect(result).to(eq(true)) }
+      it { expect(result).to(be(true)) }
     end
 
     context 'when not broker_customer.requires_carrier_pod_on_receivables?' do
       let(:broker_customer) { create(:broker_customer, requires_carrier_pod_on_receivables: false) }
 
-      it { expect(result).to(eq(false)) }
+      it { expect(result).to(be(false)) }
     end
   end
 end

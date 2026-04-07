@@ -87,7 +87,7 @@ class CreateRegions < ActiveRecord::Migration[6.1]
     countries_and_regions.each do |country_and_regions|
       country = Country.find_by_alpha2_code(country_and_regions[0].to_s)
       country_and_regions[1].each do |region|
-        Region.create(abbreviation: region.first[0].to_s, country: country, name: region.first[1])
+        Region.create(abbreviation: region.first[0].to_s, country:, name: region.first[1])
       end
     end
   end

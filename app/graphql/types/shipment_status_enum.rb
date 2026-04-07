@@ -11,6 +11,6 @@ class Types::ShipmentStatusEnum < Types::BaseEnum
            'pending_departure',
            'booked',
            'canceled',
-           'delivered',
+           'delivered'
          ]
 end

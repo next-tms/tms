@@ -36,7 +36,7 @@ module TransponderService
         private
 
         def tz_by_city_and_region(city, region)
-          record = [StandardizedAddress, TrackingEvent]
+          record = [ StandardizedAddress, TrackingEvent ]
                    .map do |model|
             model.where(
               city:,

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Shipment::RatesService
-  SERVICE_CLASSES = [FromPricingRules, FromTransponderService]
+  SERVICE_CLASSES = [ FromPricingRules, FromTransponderService ]
 
   class << self
     def call(*args, **kwargs)

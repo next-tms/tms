@@ -6,7 +6,7 @@ module FreightKitAPIClient
       WATIR_EXCEPTIONS = [
                            Watir::Exception::UnknownObjectException,
                            Watir::Exception::NoValueFoundException,
-                           Watir::Wait::TimeoutError,
+                           Watir::Wait::TimeoutError
                          ].freeze
 
       def initialize(broker_carrier:)

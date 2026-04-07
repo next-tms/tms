@@ -8,7 +8,7 @@ class Broker::ClaimsController < Broker::BrokerController
   def create
     @claim = Claim.new(claim_params)
 
-    redirect_to([:broker, @claim]) and return if @claim.save
+    redirect_to([ :broker, @claim ]) and return if @claim.save
 
     render(:new)
   end

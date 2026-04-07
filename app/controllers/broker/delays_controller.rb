@@ -13,7 +13,7 @@ class Broker::DelaysController < Broker::BrokerController
   def create
     @delay = Delay.new(delay_params)
     if @delay.save
-      redirect_to [:broker, @delay]
+      redirect_to [ :broker, @delay ]
     else
       render :new
     end

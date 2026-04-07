@@ -123,7 +123,7 @@ class User < ApplicationRecord
         'shipment:dispatcher_id',
         'shipment:new_shipment',
         'shipment:out_for_delivery_at',
-        'shipment:picked_up_at',
+        'shipment:picked_up_at'
       ]
     end
 
@@ -136,7 +136,7 @@ class User < ApplicationRecord
     end
 
     def ransackable_attributes(auth_object = nil)
-      ['companyable_type', 'email', 'first_name', 'invitation_accepted_at', 'last_name', 'last_sign_in_at']
+      [ 'companyable_type', 'email', 'first_name', 'invitation_accepted_at', 'last_name', 'last_sign_in_at' ]
     end
 
     def ransackable_associations(auth_object = nil)
@@ -269,7 +269,7 @@ class User < ApplicationRecord
 
     return companyable.users if role?(:root)
 
-    scope = roles - [Role.find_by(name: 'sales_rep')]
+    scope = roles - [ Role.find_by(name: 'sales_rep') ]
     User.where(id: UserRole.where(role: scope).where(user: companyable.users).pluck(:user_id))
   end
 
@@ -329,7 +329,7 @@ class User < ApplicationRecord
   def reassign_shipments
     return unless saved_change_to_deactivated && deactivated?
 
-    Shipment.active.where(delivered_at: [nil, ''], dispatcher: self).find_each do |shipment|
+    Shipment.active.where(delivered_at: [ nil, '' ], dispatcher: self).find_each do |shipment|
       shipment.dispatcher = nil
       shipment.assign_dispatcher
       shipment.save

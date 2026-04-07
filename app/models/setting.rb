@@ -34,7 +34,7 @@ class Setting < ApplicationRecord
     end
 
     def ransackable_attributes(auth_object = nil)
-      ['key', 'value']
+      [ 'key', 'value' ]
     end
 
     def ransackable_associations(auth_object = nil)
@@ -90,7 +90,7 @@ class Setting < ApplicationRecord
   end
 
   def value=(new_value)
-    return super unless [true, false, 'true', 'false'].include?(new_value)
+    return super unless [ true, false, 'true', 'false' ].include?(new_value)
 
     if new_value.is_a?(String)
       return self.value = new_value == 'true' ? BOOLEAN_VALUES[:true] : BOOLEAN_VALUES[:false]
@@ -133,7 +133,7 @@ class Setting < ApplicationRecord
         return errors.add(:value, 'must be a URI')
       end
 
-      return if [uri.scheme, uri.host].all?(&:present?)
+      return if [ uri.scheme, uri.host ].all?(&:present?)
 
       errors.add(:value, 'must be a URI')
     end

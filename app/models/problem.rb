@@ -59,7 +59,7 @@ class Problem < ApplicationRecord
     end
 
     def ransackable_attributes(auth_object = nil)
-      ['problematic_rule_code']
+      [ 'problematic_rule_code' ]
     end
 
     def ransackable_associations(auth_object = nil)

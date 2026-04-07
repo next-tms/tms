@@ -103,7 +103,7 @@ class StandardizedAddress < ApplicationRecord
   def restaurant?
     return unless types
 
-    !!types.intersect?(['food', 'meal takeaway', 'restaurant'])
+    !!types.intersect?([ 'food', 'meal takeaway', 'restaurant' ])
   end
 
   def blank_to_nil(obj)
@@ -195,7 +195,7 @@ class StandardizedAddress < ApplicationRecord
     streets_formatted = "#{street || ""} #{street2 || ""}".downcase
 
     # Removed "aero", "aviation" as they can lead to incorrect type
-    next_types << 'airport' if ['aircraft', 'avionic', 'hangar'].any? { |word| streets_formatted.include?(word) }
+    next_types << 'airport' if [ 'aircraft', 'avionic', 'hangar' ].any? { |word| streets_formatted.include?(word) }
 
     yaml = YAML.load_file(Rails.root.join('config/postal_codes.yml').to_s)
     military_postal_codes = yaml['MILITARY'].inject([]) { |arr, postal_code| arr << postal_code.to_s }
@@ -215,7 +215,7 @@ class StandardizedAddress < ApplicationRecord
     types = google_places_spot.types if google_places_spot.present?
     if smarty_streets_result.present?
       types << smarty_streets_result.dig('metadata', 'rdi')
-      types -= ['street_address', 'premise']
+      types -= [ 'street_address', 'premise' ]
     end
 
     begin
@@ -224,8 +224,8 @@ class StandardizedAddress < ApplicationRecord
       types = []
     end
 
-    types = types - ['subpremise'] + ['apartment'] if types.include?(['residential', 'subpremise'])
-    types -= ['establishment', 'premise']
+    types = types - [ 'subpremise' ] + [ 'apartment' ] if types.include?([ 'residential', 'subpremise' ])
+    types -= [ 'establishment', 'premise' ]
 
     (next_types + types).sort.uniq
   end

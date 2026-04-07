@@ -12,8 +12,8 @@ module ProblematicService
       end
 
       def rules
-        Dir[Rails.root.join('app', 'services', 'problematic_service', 'rule', model.name.snakecase, '*.rb')].map do |fn|
-          ['ProblematicService', 'Rule', model.name, File.basename(fn)[..-4].camelcase]
+        Rails.root.glob("app/services/problematic_service/rule/#{model.name.snakecase}/*.rb").map do |fn|
+          [ 'ProblematicService', 'Rule', model.name, File.basename(fn)[..-4].camelcase ]
           .join('::')
           .constantize
           .new(self)

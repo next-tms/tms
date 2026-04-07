@@ -23,7 +23,7 @@ class Broker::ContactsController < Broker::BrokerController
 
     render(:new) && return unless @contact.save
 
-    redirect_to([:broker, @contact])
+    redirect_to([ :broker, @contact ])
   end
 
   def update
@@ -31,7 +31,7 @@ class Broker::ContactsController < Broker::BrokerController
       flash[:error] = 'Unable to update contact'
       render(:edit)
     else
-      redirect_to([:broker, @contact])
+      redirect_to([ :broker, @contact ])
     end
   end
 

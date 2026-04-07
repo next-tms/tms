@@ -34,12 +34,12 @@ class BrokerCustomer::CarrierChargeCalculatorService
   end
 
   def map_upcharge_rules(packaging_id:, quantity:)
-    upcharge_rules.where(packaging_id: packaging_id)
+    upcharge_rules.where(packaging_id:)
                   .where('min <= ?', quantity)
                   .where('max >= ?', quantity)
                   .or(
                     upcharge_rules
-                    .where(packaging_id: packaging_id)
+                    .where(packaging_id:)
                     .where('min <= ?', quantity)
                     .where(max: nil),
                   )
@@ -55,14 +55,14 @@ class BrokerCustomer::CarrierChargeCalculatorService
 
     carrier_charges += carrier_cost * (default_upcharge_percentage.to_f / 100)
 
-    return carrier_charges
+    carrier_charges
   end
 
   def matched_percentage
     @matched_percentage ||= begin
       upcharges = shipment.items.pluck(:packaging_id).map do |packaging_id|
         quantity = shipment.items.where(packaging_id:).sum(:quantity)
-        map_upcharge_rules(packaging_id: packaging_id, quantity: quantity)
+        map_upcharge_rules(packaging_id:, quantity:)
       end.flatten
 
       return unless upcharges.present?
@@ -74,7 +74,7 @@ class BrokerCustomer::CarrierChargeCalculatorService
   def shipments_have_matching_upcharge_rule?
     shipment.items.pluck(:packaging_id).map do |packaging_id|
       quantity = shipment.items.where(packaging_id:).sum(:quantity)
-      map_upcharge_rules(packaging_id: packaging_id, quantity: quantity).present?
+      map_upcharge_rules(packaging_id:, quantity:).present?
     end.all?(true)
   end
 end

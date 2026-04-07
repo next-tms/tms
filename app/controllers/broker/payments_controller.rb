@@ -55,8 +55,8 @@ class Broker::PaymentsController < Broker::BrokerController
                            .where('due_on <= ?', cutoff_date.to_date)
 
     @payment = Payment.new(
-      broker_carrier: broker_carrier,
-      payment_transactions: payment_transactions,
+      broker_carrier:,
+      payment_transactions:,
       due_on: cutoff_date,
       broker: current_user.broker,
     )
@@ -126,7 +126,7 @@ class Broker::PaymentsController < Broker::BrokerController
     [
       :broker_carrier,
       :payment_transactions,
-      { broker_carrier: %i[broker_customer carrier] },
+      { broker_carrier: %i[broker_customer carrier] }
     ]
   end
 end

@@ -38,7 +38,7 @@ class BumpNoticedFromV1ToV2 < ActiveRecord::Migration[7.1]
                                      seen_at: notification.read_at,
                                      created_at: notification.created_at,
                                      updated_at: notification.updated_at
-                                   },
+                                   }
                                  ]
       record = params.delete('user') || params.delete('account')
 

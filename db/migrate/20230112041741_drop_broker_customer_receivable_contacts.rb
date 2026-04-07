@@ -19,8 +19,8 @@ class DropBrokerCustomerReceivableContacts < ActiveRecord::Migration[7.0]
       t.boolean('primary')
       t.datetime('created_at', null: false)
       t.datetime('updated_at', null: false)
-      t.index(['broker_customer_id'], name: 'index_broker_customer_receivable_contacts_on_broker_customer_id')
-      t.index(['contact_id'], name: 'index_broker_customer_receivable_contacts_on_contact_id')
+      t.index([ 'broker_customer_id' ], name: 'index_broker_customer_receivable_contacts_on_broker_customer_id')
+      t.index([ 'contact_id' ], name: 'index_broker_customer_receivable_contacts_on_contact_id')
     end
 
     say('populate(:broker_customer_receivable_contacts)')

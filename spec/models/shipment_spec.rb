@@ -197,7 +197,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe(Shipment, type: :model) do
+RSpec.describe(Shipment) do
   it_behaves_like 'discussable'
   it_behaves_like 'documentable'
 
@@ -212,7 +212,6 @@ RSpec.describe(Shipment, type: :model) do
 
     it { is_expected.to(have_many(:accessorials).through(:shipment_accessorials)) }
     it { is_expected.to(have_many(:commissions)) }
-    it { is_expected.to(have_many(:items).through(:shipment_items)) }
     it { is_expected.to(have_many(:items).through(:shipment_items)) }
     it { is_expected.to(have_many(:payment_transactions)) }
     it { is_expected.to(have_many(:payments).through(:payment_transactions)) }
@@ -240,7 +239,7 @@ RSpec.describe(Shipment, type: :model) do
       let(:shipment) { create(:shipment) }
 
       it 'creates an audit record' do
-        receiver_names = [shipment.receiver_name, Faker::Company.name]
+        receiver_names = [ shipment.receiver_name, Faker::Company.name ]
 
         expect { shipment.update(receiver_name: receiver_names[1]) }.to(change { shipment.audits.count }.by(1))
         audit = shipment.reload.audits.last
@@ -274,12 +273,12 @@ RSpec.describe(Shipment, type: :model) do
   describe '#picked_up?' do
     let(:shipment) { create(:shipment, picked_up_at: Time.current) }
 
-    it { expect(shipment.picked_up?).to(eq(true)) }
+    it { expect(shipment.picked_up?).to(be(true)) }
 
     context 'when not picked_up_at.present?' do
       let(:shipment) { create(:shipment, picked_up_at: nil) }
 
-      it { expect(shipment.picked_up?).to(eq(false)) }
+      it { expect(shipment.picked_up?).to(be(false)) }
     end
   end
 
@@ -320,17 +319,13 @@ RSpec.describe(Shipment, type: :model) do
     end
 
     context 'when item density(rounded: false) is blank' do
-      before do
-        expect_any_instance_of(Item).to(receive(:density).with(rounded: false).and_return(nil))
-      end
+      before { allow_any_instance_of(Item).to(receive(:density).with(rounded: false).and_return(nil)) }
 
       it { expect(shipment.total_density(rounded: false)).to(be_nil) }
     end
 
     context 'when item density(rounded: false) is present' do
-      before do
-        expect_any_instance_of(Item).to(receive(:density).twice.with(rounded: false).and_return(100))
-      end
+      before { allow_any_instance_of(Item).to(receive(:density).with(rounded: false).and_return(100)) }
 
       it { expect(shipment.total_density(rounded: false)).to(eq(100)) }
     end
@@ -345,17 +340,13 @@ RSpec.describe(Shipment, type: :model) do
     end
 
     context 'when item cubic_ft(rounded: false) is blank' do
-      before do
-        expect_any_instance_of(Item).to(receive(:cubic_ft).with(rounded: false).and_return(nil))
-      end
+      before { allow_any_instance_of(Item).to(receive(:cubic_ft).with(rounded: false).and_return(nil)) }
 
       it { expect(shipment.total_cubic_ft(rounded: false)).to(be_nil) }
     end
 
     context 'when item cubic_ft(rounded: false) is present' do
-      before do
-        expect_any_instance_of(Item).to(receive(:cubic_ft).twice.with(rounded: false).and_return(100))
-      end
+      before { allow_any_instance_of(Item).to(receive(:cubic_ft).with(rounded: false).and_return(100)) }
 
       it { expect(shipment.total_cubic_ft(rounded: false)).to(eq(100)) }
     end

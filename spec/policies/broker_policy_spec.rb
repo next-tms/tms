@@ -13,10 +13,10 @@ RSpec.describe(BrokerPolicy) do
 
   let(:shipment) { build(:shipment) }
 
-  let(:policy) { described_class.new(shipment, user: user) }
+  let(:policy) { described_class.new(shipment, user:) }
 
   before do
-    create(:intuit_account, broker: broker)
+    create(:intuit_account, broker:)
   end
 
   describe '#show?' do
@@ -25,13 +25,13 @@ RSpec.describe(BrokerPolicy) do
     context "when user and record's broker is the same" do
       before { shipment.broker = broker }
 
-      it { is_expected.to(eq(true)) }
+      it { is_expected.to(be(true)) }
     end
 
     context "when user and record's broker is not the same" do
       before { shipment.broker = create(:broker) }
 
-      it { is_expected.to(eq(false)) }
+      it { is_expected.to(be(false)) }
     end
   end
 end

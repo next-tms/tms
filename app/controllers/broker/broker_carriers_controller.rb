@@ -39,7 +39,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @broker_carrier.ignore_bol_requires_tracking_number =
       current_user.broker.ignore_broker_carrier_bol_requires_tracking_number?
 
-    redirect_to([:broker, @broker_carrier]) && return if @broker_carrier.save
+    redirect_to([ :broker, @broker_carrier ]) && return if @broker_carrier.save
 
     render(:new)
   end
@@ -106,16 +106,16 @@ class Broker::BrokerCarriersController < Broker::BrokerController
       render(:edit) && return
     end
 
-    redirect_to([:broker, @broker_carrier]) && return unless @broker_carrier.api_configured?
+    redirect_to([ :broker, @broker_carrier ]) && return unless @broker_carrier.api_configured?
 
     update_documents = @broker_carrier.saved_change_to_account? ||
                        @broker_carrier.saved_change_to_username? ||
                        @broker_carrier.saved_change_to_password?
 
-    redirect_to([:broker, @broker_carrier]) && return unless update_documents
+    redirect_to([ :broker, @broker_carrier ]) && return unless update_documents
 
     shipments = @broker_carrier.shipments.where('created_at > ?', 90.days.ago)
-    redirect_to([:broker, @broker_carrier]) && return if shipments.blank?
+    redirect_to([ :broker, @broker_carrier ]) && return if shipments.blank?
 
     TrackShipmentsJob.perform_later(shipments.pluck(:id))
 
@@ -125,7 +125,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     delivered_shipment_ids = shipments.delivered.pluck(:id)
     FetchShipmentCarrierPODsJob.perform_later(delivered_shipment_ids) if delivered_shipment_ids.present?
 
-    redirect_to([:broker, @broker_carrier]) && return
+    redirect_to([ :broker, @broker_carrier ]) && return
   end
 
   def update_tariff
@@ -241,7 +241,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     [
       :carrier,
       :broker_customer,
-      { broker_customer: :customer },
+      { broker_customer: :customer }
     ]
   end
 

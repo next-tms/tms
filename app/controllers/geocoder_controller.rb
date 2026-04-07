@@ -12,7 +12,7 @@ class GeocoderController < ApplicationController
       matched_location = locations.find { |loc| loc.data.dig('address', 'country') == selected_country }
     rescue TypeError => e
       # TODO: Watch for Honeybadger errors. Cannot replicate issue on development.
-      Honeybadger.notify(e, locations: locations)
+      Honeybadger.notify(e, locations:)
       render json: { error: 'No Location Found' } and return
     end
 
@@ -25,10 +25,10 @@ class GeocoderController < ApplicationController
 
   def fetch_address_by_broker_customer
     broker_customer = BrokerCustomer.find(params[:broker_customer_id])
-    render json: { error: "No BrokerCustomer Found" } and return if broker_customer.blank?
+    render json: { error: 'No BrokerCustomer Found' } and return if broker_customer.blank?
 
     address = broker_customer.primary_pickup_address
-    render json: { error: "No Address Found" } and return if address.blank?
+    render json: { error: 'No Address Found' } and return if address.blank?
 
     if address.standardized_address_id.blank?
       address.find_or_build_standardized_address && address.save
@@ -48,7 +48,7 @@ class GeocoderController < ApplicationController
     standardized_address = Address::FindOrCreateViaSmartyStreetsService.new(
       **address_params.to_h.deep_symbolize_keys
     ).call
-    render json: { error: "No Address Found" } and return unless standardized_address
+    render json: { error: 'No Address Found' } and return unless standardized_address
 
     render json: { standardized_address_id: standardized_address.id }
   end

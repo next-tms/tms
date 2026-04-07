@@ -88,7 +88,7 @@ class UserMailer < ApplicationMailer
       from: from(shipment),
       reply_to: reply_to(shipment),
       to: recipient,
-      subject: [who_performed(@shipment), @subject].join(' '),
+      subject: [ who_performed(@shipment), @subject ].join(' '),
     )
   end
 

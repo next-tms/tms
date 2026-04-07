@@ -4,71 +4,57 @@ require 'rails_helper'
 
 RSpec.describe(Shipment::ResetRatesService) do
   let(:shipment) { create(:shipment) }
-  let!(:rate) { create(:rate, shipment: shipment, shipment_fingerprint: '123') }
-  let!(:other_rate) { create(:rate, shipment: shipment) }
+  let!(:rate) { create(:rate, shipment:, shipment_fingerprint: '123') }
+  let!(:other_rate) { create(:rate, shipment:) }
 
   describe '#call' do
-    context 'when force_reset params is true' do
-      subject { described_class.new(shipment, force_reset: true).call }
+    context 'when force_reset' do
+      subject(:call) { described_class.new(shipment, force_reset: true).call }
 
-      context 'and shipment#applied_rate is blank?' do
-        it 'destroy rates' do
-          expect { subject }.to(change(Rate, :count).from(2).to(0))
-        end
+      context 'when shipment#applied_rate is blank?' do
+        it { expect { call }.to(change(Rate, :count).from(2).to(0)) }
       end
 
-      context 'and shipment#applied_rate is present' do
+      context 'when shipment#applied_rate is present' do
         before { shipment.update(applied_rate: other_rate) }
 
-        it 'destroy rates except applied rate' do
-          expect { subject }.to(change(Rate, :count).from(2).to(1))
-
+        it 'destroys rates except applied rate' do
+          expect { call }.to(change(Rate, :count).from(2).to(1))
           expect(other_rate).to(be_persisted)
         end
       end
     end
 
-    context 'when force_reset params if false' do
-      subject { described_class.new(shipment).call }
+    context 'when not force_reset' do
+      subject(:call) { described_class.new(shipment).call }
 
-      context "and shipment first rate's fingerprint is equal to shipment#fingerprint " do
-        it 'does not destroy rates' do
-          expect(shipment).to(receive(:fingerprint).and_return(rate.shipment_fingerprint))
+      context "when shipment first rate's fingerprint equals shipment#fingerprint" do
+        before { allow(shipment).to(receive(:fingerprint).and_return(rate.shipment_fingerprint)) }
 
-          expect { subject }.not_to(change(Rate, :count))
-        end
+        it { expect { call }.not_to(change(Rate, :count)) }
       end
 
-      context 'and shipment#calculated_freight_classes and shipment#declared_freight_classes are blank ' do
-        it 'does not destroy rates' do
-          expect(shipment).to(receive(:fingerprint).and_return('Other Fingerprint'))
-          expect(shipment).to(receive(:calculated_freight_classes).and_return([nil]))
-          expect(shipment).to(receive(:declared_freight_classes).and_return([]))
+      context 'when shipment#calculated_freight_classes and shipment#declared_freight_classes are blank' do
+        before { allow(shipment).to receive_messages(fingerprint: 'Other Fingerprint', calculated_freight_classes: [ nil ], declared_freight_classes: []) }
 
-          expect { subject }.not_to(change(Rate, :count))
-        end
+        it { expect { call }.not_to(change(Rate, :count)) }
       end
 
-      context 'and rates are destroyable' do
-        context 'and shipment#applied_rate is blank?' do
-          before do
-            expect(shipment).to(receive(:fingerprint).and_return('Other Fingerprint'))
-          end
+      context 'when rates are destroyable' do
+        context 'when shipment#applied_rate is blank?' do
+          before { allow(shipment).to(receive(:fingerprint).and_return('Other Fingerprint')) }
 
-          it 'destroy rates' do
-            expect { subject }.to(change(Rate, :count).from(2).to(0))
-          end
+          it { expect { call }.to(change(Rate, :count).from(2).to(0)) }
         end
 
-        context 'and shipment#applied_rate is present' do
+        context 'when shipment#applied_rate is present' do
           before do
             shipment.update(applied_rate: other_rate)
-            expect(shipment).to(receive(:fingerprint).and_return('Other Fingerprint'))
+            allow(shipment).to(receive(:fingerprint).and_return('Other Fingerprint'))
           end
 
-          it 'destroy rates except applied rate' do
-            expect { subject }.to(change(Rate, :count).from(2).to(1))
-
+          it 'destroys rates except applied rate' do
+            expect { call }.to(change(Rate, :count).from(2).to(1))
             expect(other_rate).to(be_persisted)
           end
         end

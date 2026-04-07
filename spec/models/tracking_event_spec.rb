@@ -63,7 +63,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe(TrackingEvent, type: :model) do
+RSpec.describe(TrackingEvent) do
   it_behaves_like 'discussable_topic'
 
   describe '#build_discussable_topic?' do

@@ -60,7 +60,7 @@ module FreightKitAPIClient
       end
 
       def website_credentials
-        return if [broker_carrier.website_username, broker_carrier.website_password].any?(&:blank?)
+        return if [ broker_carrier.website_username, broker_carrier.website_password ].any?(&:blank?)
 
         {
           type: :website,

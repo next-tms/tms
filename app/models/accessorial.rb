@@ -38,7 +38,7 @@ class Accessorial < ApplicationRecord
   end
 
   def self.combined_accessorial_freight_kit_codes(shipment:)
-    combined_accessorials(shipment:).where.not(freight_kit_code: [nil, '']).map do |accessorial|
+    combined_accessorials(shipment:).where.not(freight_kit_code: [ nil, '' ]).map do |accessorial|
       accessorial.freight_kit_code.to_sym
     end
   end
@@ -49,11 +49,11 @@ class Accessorial < ApplicationRecord
     Broker.all.find_each do |broker|
       BrokerAccessorial.create(
         accessorial: self,
-        broker: broker,
+        broker:,
         broker_only: false,
-        code: code,
-        fee: fee,
-        name: name,
+        code:,
+        fee:,
+        name:,
       )
     end
   end

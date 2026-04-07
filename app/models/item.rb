@@ -34,10 +34,10 @@
 #   @return [Integer]
 #
 class Item < ApplicationRecord
-  FREIGHT_CLASSES = [55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400]
+  FREIGHT_CLASSES = [ 55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400 ]
 
   scope :packaging, lambda { |packaging|
-    where(packaging: packaging)
+    where(packaging:)
   }
 
   belongs_to :packaging
@@ -54,7 +54,7 @@ class Item < ApplicationRecord
 
   # Set Packaging based on names (for API)
   def packaging_name=(name)
-    self.packaging = Packaging.find_by(name: name)
+    self.packaging = Packaging.find_by(name:)
   end
 
   def packaging_name
@@ -71,12 +71,12 @@ class Item < ApplicationRecord
   end
 
   def pallet_or_crate?
-    ['crate', 'drum', 'pallet', 'tote'].include?(packaging.name)
+    [ 'crate', 'drum', 'pallet', 'tote' ].include?(packaging.name)
   end
 
   def short_side
     if l && w && h
-      return [l, w].min
+      return [ l, w ].min
     end
 
     nil
@@ -84,14 +84,14 @@ class Item < ApplicationRecord
 
   def long_side
     if l && w && h
-      return [l, w].max
+      return [ l, w ].max
     end
 
     nil
   end
 
   def cubic_ft(rounded:)
-    return unless [l, w, h].all?(&:present?)
+    return unless [ l, w, h ].all?(&:present?)
 
     length_ft = Measured::Length.new(l, :in).convert_to(:ft).value
     width_ft = Measured::Length.new(w, :in).convert_to(:ft).value
@@ -104,7 +104,7 @@ class Item < ApplicationRecord
   end
 
   def density(rounded:)
-    return unless [l, w, h, quantity].all?(&:present?)
+    return unless [ l, w, h, quantity ].all?(&:present?)
 
     value = (weight.to_f / quantity) / cubic_ft(rounded: false)
     return value unless rounded
@@ -130,16 +130,16 @@ class Item < ApplicationRecord
     return 60 if density > 30
 
     density_table = [
-                      [1, 2, 300],
-                      [2, 4, 250],
-                      [4, 6, 175],
-                      [6, 8, 125],
-                      [8, 10, 100],
-                      [10, 12, 92.5],
-                      [12, 15, 85],
-                      [15, 22.5, 70],
-                      [22.5, 30, 65],
-                      [30, 35, 60],
+                      [ 1, 2, 300 ],
+                      [ 2, 4, 250 ],
+                      [ 4, 6, 175 ],
+                      [ 6, 8, 125 ],
+                      [ 8, 10, 100 ],
+                      [ 10, 12, 92.5 ],
+                      [ 12, 15, 85 ],
+                      [ 15, 22.5, 70 ],
+                      [ 22.5, 30, 65 ],
+                      [ 30, 35, 60 ]
                     ]
     density_table.each do |density_row|
       return density_row[2] if (density >= density_row[0]) && (density < density_row[1])
@@ -179,11 +179,11 @@ class Item < ApplicationRecord
         height: h
       },
       packaging.freight_kit_type&.to_sym,
-      declared_freight_class: api_freight_class(use_declared_freight_class: use_declared_freight_class),
+      declared_freight_class: api_freight_class(use_declared_freight_class:),
       description: desc,
       hazmat: hazmat?,
       nmfc: nmfc.presence,
-      quantity: quantity,
+      quantity:,
       units: :imperial,
     )
   end
@@ -210,7 +210,7 @@ class Item < ApplicationRecord
         description: desc,
         hazmat: hazmat?,
         nmfc: nmfc&.to_s,
-        quantity: quantity,
+        quantity:,
         units: :imperial
       },
       weight: {

@@ -4,7 +4,7 @@ module Types
   class RateType < Types::BaseObject
     description 'GraphQL Object for Rate Model'
 
-    field :breakdown, [Types::RateBreakdownType], null: true
+    field :breakdown, [ Types::RateBreakdownType ], null: true
     field :carrier_name, String, null: true
     field :cost_cents, String, null: false
     field :cost_currency, String, null: false

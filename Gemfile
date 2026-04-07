@@ -20,20 +20,26 @@ gem 'tzinfo-data'
 gem 'bootsnap', '>= 1.4.2', require: false
 
 group :development, :test do
+  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  gem 'rubocop-rails-omakase', require: false
+
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'dotenv-rails', '~> 3.1.2'
+
   gem 'factory_bot_rails'
   gem 'faker', '~> 3.2.0'
+
   gem 'pry'
-  gem 'rails-controller-testing', '~> 1.0.5'
+  gem 'webmock', '~> 3.18.1'
+
   gem 'rspec-rails', '~> 6.1.3'
+  gem 'rails-controller-testing'
+
   gem 'rubocop-graphql', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', require: false
-  gem 'rubocop-shopify', '~> 2.15.1', require: false
-  gem 'shoulda-matchers', '5.3.0'
-  gem 'webmock', '~> 3.18.1'
+  gem 'rubocop-rspec_rails', require: false
 end
 
 group :development do
@@ -51,6 +57,7 @@ end
 group :test do
   gem 'capybara', '>= 3.35.3'
   gem 'selenium-webdriver'
+  gem 'shoulda-matchers', '5.3.0'
   gem 'webdrivers'
   gem 'timecop'
 end

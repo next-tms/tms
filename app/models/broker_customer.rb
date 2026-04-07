@@ -78,7 +78,7 @@ class BrokerCustomer < ApplicationRecord
     end
 
     def ransackable_associations(auth_object = nil)
-      ['customer']
+      [ 'customer' ]
     end
   end
 
@@ -110,7 +110,7 @@ class BrokerCustomer < ApplicationRecord
   belongs_to :receivables_contact, class_name: 'Contact', dependent: :destroy
   accepts_nested_attributes_for :receivables_contact, allow_destroy: false
 
-  enum preferred_broker_carriers_kind: { blacklist: 'blacklist', whitelist: 'whitelist' }
+  enum :preferred_broker_carriers_kind, { blacklist: 'blacklist', whitelist: 'whitelist' }
 
   has_many :broker_customer_sales_reps, dependent: :destroy
   has_many :sales_reps, through: :broker_customer_sales_reps, source: 'user'
@@ -142,7 +142,7 @@ class BrokerCustomer < ApplicationRecord
 
   has_many :users, as: :companyable, dependent: :destroy
 
-  enum receivables_schedule: {
+  enum :receivables_schedule, {
     daily: 'daily',
     immediately: 'immediately',
     monthly: 'monthly',
@@ -165,14 +165,14 @@ class BrokerCustomer < ApplicationRecord
                           .broker_accessorials
                           .where(broker_customer: nil)
                           .where
-                          .not(code: [broker_customer_accessorials.map(&:code)])
+                          .not(code: [ broker_customer_accessorials.map(&:code) ])
 
     @eligible_broker_accessorials = broker_customer_accessorials.or(broker_accessorials).order(:name)
   end
 
   # @return [BrokerCarrier::ActiveRecord_Relation]
   def eligible_broker_carriers(user_type = :customer)
-    scope = BrokerCarrier.where(broker_customer: [nil, self])
+    scope = BrokerCarrier.where(broker_customer: [ nil, self ])
 
     # @note Always prefer customer-sepcific accounts
     if broker_carriers.any?

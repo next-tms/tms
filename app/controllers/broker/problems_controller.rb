@@ -22,7 +22,7 @@ class Broker::ProblemsController < Broker::BrokerController
     @problem.created_by = current_user
 
     if @problem.save
-      redirect_to([:broker, @problem])
+      redirect_to([ :broker, @problem ])
     else
       render(:edit)
     end

@@ -20,8 +20,8 @@
 FactoryBot.define do
   factory :event do
     name { Faker::Verb.past_participle.snakecase }
-    public_by_default { [true, false].sample }
-    
+    public_by_default { [ true, false ].sample }
+
     after(:build) { |record| record.active_shipping_code = record.name }
   end
 end

@@ -45,6 +45,6 @@ class Customer::ReceivablesController < Customer::CustomerController
   end
 
   def required_includes
-    [:shipment, { broker_customer: :customer }]
+    [ :shipment, { broker_customer: :customer } ]
   end
 end

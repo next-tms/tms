@@ -16,7 +16,7 @@
 class Customer < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['name']
+      [ 'name' ]
     end
 
     def ransackable_associations(auth_object = nil)

@@ -4,7 +4,7 @@ module TransponderService
   module Input
     class Package < Base
       def initialize(object, declared_freight_classes:)
-        if [true, false].exclude?(declared_freight_classes)
+        if [ true, false ].exclude?(declared_freight_classes)
           raise ArgumentError, 'declared_freight_classes must be one of: true, false'
         end
 

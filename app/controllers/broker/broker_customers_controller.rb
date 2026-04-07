@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class Broker::BrokerCustomersController < Broker::BrokerController
-  ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE = ['show', 'shipments', 'update'].freeze
-  ALLOWED_ACCESS_FOR_DISPATCHER = ['show', 'shipments'].freeze
-  ALLOWED_ACCESS_FOR_SALES_REP = ['contacts'].freeze
+  ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE = [ 'show', 'shipments', 'update' ].freeze
+  ALLOWED_ACCESS_FOR_DISPATCHER = [ 'show', 'shipments' ].freeze
+  ALLOWED_ACCESS_FOR_SALES_REP = [ 'contacts' ].freeze
 
   before_action :set_broker_customer, only: %i[
                                               broker_carriers
@@ -34,7 +34,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
            [
              :broker_customer,
              { broker_customer: :customer },
-             :carrier,
+             :carrier
            ],
          ).ransack(params[:q], auth_object: current_user)
 
@@ -85,12 +85,12 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer.customer = Customer.new
     @broker_customer.office_address = Address.new
     @broker_customer.primary_pickup_address = Address.new
-    @broker_customer.sales_reps = [current_user]
+    @broker_customer.sales_reps = [ current_user ]
     @broker_customer.build_receivables_contact
   end
 
   def preferences
-    unauthorized unless current_user.any_role?(['accounts_recevable', 'root']) ||
+    unauthorized unless current_user.any_role?([ 'accounts_recevable', 'root' ]) ||
                         current_user.sales_rep_for?(@broker_customer)
   end
 
@@ -208,7 +208,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
     render(:edit) && return unless @broker_customer.save
 
-    redirect_to([:broker, @broker_customer, @customer_contact])
+    redirect_to([ :broker, @broker_customer, @customer_contact ])
   end
 
   def update_pricing
@@ -285,7 +285,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                                         :label,
                                         :email,
                                         :_destroy,
-                                        { contact_attributes: %i[id first_name last_name email] },
+                                        { contact_attributes: %i[id first_name last_name email] }
                                       ],
       upcharge_rules_attributes: %i[_destroy id max min packaging_id upcharge upcharge_percentage],
     )

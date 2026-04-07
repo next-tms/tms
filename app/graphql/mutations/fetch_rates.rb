@@ -8,7 +8,7 @@ module Mutations
     argument :declared_freight_classes, Boolean, required: false
     argument :shipment_load_id, ID, required: true
 
-    field :rates, [Types::RateType], null: true
+    field :rates, [ Types::RateType ], null: true
     field :shipment, Types::ShipmentType, null: false
 
     def resolve(shipment_load_id:, broker_carrier_id: nil, declared_freight_classes: false)
@@ -45,9 +45,9 @@ module Mutations
 
       Shipment::RatesService
       .new(
-        broker_carrier: broker_carrier,
-        shipment: shipment,
-        declared_freight_classes: declared_freight_classes,
+        broker_carrier:,
+        shipment:,
+        declared_freight_classes:,
         save_new_rates: true,
       )
       .call

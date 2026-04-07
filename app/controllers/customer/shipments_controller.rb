@@ -20,7 +20,7 @@ class Customer::ShipmentsController < Customer::CustomerController
       return
     end
 
-    redirect_to([:customer, @shipment])
+    redirect_to([ :customer, @shipment ])
   end
 
   def unbook
@@ -30,7 +30,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.booked_at = nil
     @shipment.save
 
-    redirect_to([:customer, @shipment])
+    redirect_to([ :customer, @shipment ])
   end
 
   def documents; end
@@ -72,7 +72,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def booked
-    shipments = Shipment.where(broker_customer: [current_user.companyable]).active.booked.order(:booked_at)
+    shipments = Shipment.where(broker_customer: [ current_user.companyable ]).active.booked.order(:booked_at)
     @pagy, @shipments = pagy(shipments)
   end
 
@@ -89,7 +89,7 @@ class Customer::ShipmentsController < Customer::CustomerController
         location = if current_user.companyable.can_quote?
                      quote_customer_shipment_path(@shipment)
                    else
-                     [:customer, @shipment]
+                     [ :customer, @shipment ]
                    end
 
         format.html { redirect_to(location) }
@@ -218,7 +218,7 @@ class Customer::ShipmentsController < Customer::CustomerController
       { shipper_address: :region },
       { receiver_address: :region },
       :shipment_items,
-      :items,
+      :items
     ]
   end
 

@@ -206,12 +206,12 @@ class Shipment < ApplicationRecord
         'receiver_name',
         'shipper_contact_name',
         'shipper_name',
-        'tracking_carrier_pro',
+        'tracking_carrier_pro'
       ]
     end
 
     def ransackable_associations(auth_object = nil)
-      ['broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address']
+      [ 'broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address' ]
     end
   end
 
@@ -399,7 +399,7 @@ class Shipment < ApplicationRecord
         accessorial_id:
         [
           Accessorial.find_by(freight_kit_code: 'appointment_delivery').id,
-          Accessorial.find_by(freight_kit_code: 'residential_delivery').id,
+          Accessorial.find_by(freight_kit_code: 'residential_delivery').id
         ],
       ).pluck(:id),
     )
@@ -412,13 +412,13 @@ class Shipment < ApplicationRecord
     .where(delivery_appointment_at: nil)
   }
 
-  scope :missing_pro, -> { active.pending_delivery.where(pro: ['', nil]) }
+  scope :missing_pro, -> { active.pending_delivery.where(pro: [ '', nil ]) }
 
   scope :missing_cost, -> { active.where.not(id: pending_quotation).where(carrier_cost_cents: 0) }
 
   scope :missing_charge, -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
 
-  scope :missing_delivery_eta_on, -> { where(delivery_eta_on: ['', nil]) }
+  scope :missing_delivery_eta_on, -> { where(delivery_eta_on: [ '', nil ]) }
 
   scope :not_missing_delivery_eta_on, -> { where.not(id: missing_delivery_eta_on) }
 
@@ -569,7 +569,7 @@ class Shipment < ApplicationRecord
   def palletized_items
     return @palletized_items if @palletized_items
 
-    unpalletized_packagings = Packaging.where(name: ['carton', 'pieces', 'truckload'])
+    unpalletized_packagings = Packaging.where(name: [ 'carton', 'pieces', 'truckload' ])
     @palletized_items = items.where.not(packaging: unpalletized_packagings)
   end
 
@@ -739,7 +739,7 @@ class Shipment < ApplicationRecord
   end
 
   def incomplete?
-    [shipper_address, receiver_address].map(&:full_address?).any?(false) || [shipper_name, receiver_name].any?(&:blank?)
+    [ shipper_address, receiver_address ].map(&:full_address?).any?(false) || [ shipper_name, receiver_name ].any?(&:blank?)
   end
 
   def whodunnit(column)
@@ -778,7 +778,7 @@ class Shipment < ApplicationRecord
 
     longest_l = items.max_by(&:l).l
     longest_w = items.max_by(&:w).w
-    @longest_dimension = [longest_l, longest_w].max
+    @longest_dimension = [ longest_l, longest_w ].max
   end
 
   # Return Item for each physical item with `quantity = 1`
@@ -869,7 +869,7 @@ class Shipment < ApplicationRecord
       if updated_by.receive_notifications_from_self?
         user_ids << updated_by.id
       else
-        user_ids -= [updated_by.id]
+        user_ids -= [ updated_by.id ]
       end
     end
 
@@ -879,7 +879,7 @@ class Shipment < ApplicationRecord
   private
 
   def build_commissions
-    return unless broker_customer.present? && [total_charges_cents, total_cost_cents].all?(&:positive?)
+    return unless broker_customer.present? && [ total_charges_cents, total_cost_cents ].all?(&:positive?)
 
     return if %i[broker_customer_id total_charges_cents total_cost_cents]
               .map { |attribute| public_send("will_save_change_to_#{attribute}?") }
@@ -908,7 +908,7 @@ class Shipment < ApplicationRecord
   end
 
   def sanitize_addresses_street
-    [[:receiver_name, receiver_address], [:shipper_name, shipper_address]].each do |set|
+    [ [ :receiver_name, receiver_address ], [ :shipper_name, shipper_address ] ].each do |set|
       attribute = set[0]
       address = set[1]
 
@@ -953,7 +953,7 @@ class Shipment < ApplicationRecord
       when 'verbal' then errors.add(attribute, 'cannot be “verbal”')
       end
 
-      ['bol', 'pro', 'Ref:', 'P/O', 'PO', 'P/U', 'S/O', 'SO', '#'].each do |prefix|
+      [ 'bol', 'pro', 'Ref:', 'P/O', 'PO', 'P/U', 'S/O', 'SO', '#' ].each do |prefix|
         matched_prefix = value.match(/\A#{Regexp.escape(prefix)}/i)
         next if matched_prefix.blank?
 

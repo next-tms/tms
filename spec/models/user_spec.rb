@@ -105,7 +105,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe(User, type: :model) do
+RSpec.describe(User) do
   it_behaves_like 'has_companyable'
 
   describe 'relationships' do
@@ -156,7 +156,7 @@ RSpec.describe(User, type: :model) do
   describe '#type' do
     let(:record) { build(:user) }
 
-    it { expect(record.type).to(eq(nil)) }
+    it { expect(record.type).to(be_nil) }
 
     context 'when companyable is a Broker' do
       let(:broker) { create(:broker) }

@@ -33,11 +33,11 @@ module Queries
       end
 
       def broker_carrier_by_broker(broker_id:)
-        BrokerCarrier.where(broker_id: broker_id)
+        BrokerCarrier.where(broker_id:)
       end
 
       def broker_carrier_by_broker_customer(broker_customer_id:)
-        BrokerCarrier.where(broker_customer_id: broker_customer_id)
+        BrokerCarrier.where(broker_customer_id:)
       end
     end
   end

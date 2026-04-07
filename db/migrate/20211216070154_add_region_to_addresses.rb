@@ -48,7 +48,7 @@ class AddRegionToAddresses < ActiveRecord::Migration[6.1]
   def down
     say 'Populate addresses.state'
     Region.all.includes(:country).find_each do |region|
-      Address.where(country: region.country, region: region).update_all(state: region.abbreviation)
+      Address.where(country: region.country, region:).update_all(state: region.abbreviation)
     end
 
     remove_column :addresses, :region_id

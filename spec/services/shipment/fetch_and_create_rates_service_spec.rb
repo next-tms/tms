@@ -16,7 +16,7 @@ RSpec.describe(Shipment::FetchAndCreateRatesService) do
             broker_carrier:,
             declared_freight_classes: false,
             shipment_fingerprint:,
-            shipment: shipment,
+            shipment:,
           )
           .and_return(rate),
         )
@@ -25,13 +25,13 @@ RSpec.describe(Shipment::FetchAndCreateRatesService) do
         .to(
           receive(:valid_broker_carriers_for_quotation)
           .with(user_type)
-          .and_return([broker_carrier]),
+          .and_return([ broker_carrier ]),
         )
       end
 
       it { expect(subject.rates_declared_freight_classes_true).to(eq([])) }
-      it { expect(subject.rates_declared_freight_classes_false).to(eq([rate])) }
-      it { expect(subject.populate_rate_jobs_on_queue).to(eq(false)) }
+      it { expect(subject.rates_declared_freight_classes_false).to(eq([ rate ])) }
+      it { expect(subject.populate_rate_jobs_on_queue).to(be(false)) }
     end
 
     context 'when shipment has existing rates and has no rates for other broker carriers' do
@@ -40,8 +40,8 @@ RSpec.describe(Shipment::FetchAndCreateRatesService) do
       let!(:rate) do
         create(
           :rate,
-          shipment: shipment,
-          broker_carrier: broker_carrier,
+          shipment:,
+          broker_carrier:,
           declared_freight_classes: false,
           shipment_fingerprint: shipment.fingerprint,
         )
@@ -52,13 +52,13 @@ RSpec.describe(Shipment::FetchAndCreateRatesService) do
         .to(
           receive(:valid_broker_carriers_for_quotation)
           .with(user_type)
-          .and_return([broker_carrier, broker_carrier2]),
+          .and_return([ broker_carrier, broker_carrier2 ]),
         )
       end
 
       it { expect(subject.rates_declared_freight_classes_true).to(eq([])) }
-      it { expect(subject.rates_declared_freight_classes_false).to(eq([rate])) }
-      it { expect(subject.populate_rate_jobs_on_queue).to(eq(true)) }
+      it { expect(subject.rates_declared_freight_classes_false).to(eq([ rate ])) }
+      it { expect(subject.populate_rate_jobs_on_queue).to(be(true)) }
     end
   end
 

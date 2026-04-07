@@ -59,16 +59,16 @@ class Suppression < ApplicationRecord
   validates :suppressible_type, presence: true
 
   private
-  
+
   def set_ignored_at
     return unless will_save_change_to_ignored_by_id?
 
     self.ignored_at = ignored_by.present? ? Time.current : nil
   end
-  
+
   def set_suppressible_type
     return unless suppressor.present?
-    
+
     self.suppressible_type = suppressor.suppressible_type
   end
 end

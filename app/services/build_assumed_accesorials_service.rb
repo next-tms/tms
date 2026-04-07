@@ -19,13 +19,13 @@ class BuildAssumedAccesorialsService
   # Prefix e.g PAIR for Shipper (P = Pickup) and DAIR for Receiver (D = Delivery)
   def call
     accessorials = []
-    [['D', receiver_name], ['P', shipper_name]].each do |prefix, name|
+    [ [ 'D', receiver_name ], [ 'P', shipper_name ] ].each do |prefix, name|
       if name.present? && %w[airport hangar].any? { |word| name.downcase.include?(word) }
         accessorials << Accessorial.find_by_code(prefix + 'AIR') # Airports
       end
     end
 
-    [['D', receiver_address], ['P', shipper_address]].each do |prefix, address|
+    [ [ 'D', receiver_address ], [ 'P', shipper_address ] ].each do |prefix, address|
       # Airports
       accessorials << Accessorial.find_by_code(prefix + 'AIR') if address.types.present? && (address.types.include? 'airport')
       # Military bases

@@ -63,7 +63,7 @@ class Broker::UsersController < Broker::BrokerController
       :phone,
       contact_attributes: [
                             :id,
-                            contact_roles_attributes: %i[_destroy id role],
+                            contact_roles_attributes: %i[_destroy id role]
                           ],
     )
   end

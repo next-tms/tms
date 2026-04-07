@@ -10,7 +10,7 @@ class PopulateContactsFromUsers < ActiveRecord::Migration[6.1]
         first_name: user.first_name,
         last_name: user.last_name
       )
-    
+
       user.update_columns(contact_id: contact.id)
     end
   end

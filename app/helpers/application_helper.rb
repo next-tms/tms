@@ -160,7 +160,7 @@ module ApplicationHelper
   end
 
   def valid_classes
-    @valid_classes ||= [55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400]
+    @valid_classes ||= [ 55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400 ]
   end
 
   def generate_qr(text)

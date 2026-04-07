@@ -68,6 +68,6 @@
 #
 require 'rails_helper'
 
-RSpec.describe(BrokerCarrier, type: :model) do
+RSpec.describe(BrokerCarrier) do
   it_behaves_like 'companyable'
 end

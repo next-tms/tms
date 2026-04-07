@@ -22,11 +22,11 @@
 class Country < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['alpha2_code', 'alpha3_code', 'un_code']
+      [ 'alpha2_code', 'alpha3_code', 'un_code' ]
     end
 
     def ransackable_associations(auth_object = nil)
-      ['regions']
+      [ 'regions' ]
     end
   end
 

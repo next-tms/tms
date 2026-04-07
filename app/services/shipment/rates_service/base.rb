@@ -13,11 +13,11 @@ class Shipment::RatesService
         raise ArgumentError, 'shipment must be a Shipment'
       end
 
-      if [true, false].none?(declared_freight_classes)
+      if [ true, false ].none?(declared_freight_classes)
         raise ArgumentError, 'declared_freight_classes must be one of true, false'
       end
 
-      if [true, false].none?(save)
+      if [ true, false ].none?(save)
         raise ArgumentError, 'save must be one of true, false'
       end
 
@@ -43,7 +43,7 @@ class Shipment::RatesService
         broker_carrier:,
         broker_customer: shipment.broker_customer,
         shipment_fingerprint: shipment.fingerprint,
-        shipment: shipment,
+        shipment:,
         source:,
         declared_freight_classes:,
       )

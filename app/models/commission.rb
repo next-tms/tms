@@ -34,11 +34,11 @@
 class Commission < ApplicationRecord
   class << self
     def ransackable_associations(auth_object = nil)
-      ['shipment', 'user']
+      [ 'shipment', 'user' ]
     end
 
     def ransackable_attributes(auth_object = nil)
-      ['amount_cents', 'amount_currency', 'paid', 'shipment_id', 'updated_at', 'user_id']
+      [ 'amount_cents', 'amount_currency', 'paid', 'shipment_id', 'updated_at', 'user_id' ]
     end
   end
 

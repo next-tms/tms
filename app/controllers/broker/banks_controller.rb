@@ -6,7 +6,7 @@ class Broker::BanksController < Broker::BrokerController
   before_action :require_accounts_payable
 
   def activity
-    @display_paid = ['0', nil].include?(params.dig(:q, :paid_on_null))
+    @display_paid = [ '0', nil ].include?(params.dig(:q, :paid_on_null))
 
     @q = @bank
          .payments
@@ -16,7 +16,7 @@ class Broker::BanksController < Broker::BrokerController
            {
              broker_carrier: [
                                :carrier,
-                               { broker_customer: :customer },
+                               { broker_customer: :customer }
                              ]
            },
          )
@@ -39,7 +39,7 @@ class Broker::BanksController < Broker::BrokerController
     @bank = Bank.new(bank_params)
     @bank.broker = current_user.broker
     if @bank.save
-      redirect_to([:broker, @bank])
+      redirect_to([ :broker, @bank ])
     else
       render(:new)
     end

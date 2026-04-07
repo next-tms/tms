@@ -2,7 +2,8 @@
 
 class RestructureProblemProblemType < ActiveRecord::Migration[7.0]
   def up
-    add_column :problems, :problematic_rule_code, :string, index: true
+    add_column :problems, :problematic_rule_code, :string
+add_index :problems, :problematic_rule_code
 
     say 'populate(:problems, :problematic_rule_code)'
     problematic_rule_codes = ProblemType

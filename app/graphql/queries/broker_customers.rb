@@ -25,7 +25,7 @@ module Queries
       end
 
       def broker_customer_by_customer(customer_id:)
-        BrokerCustomer.where(customer_id: customer_id)
+        BrokerCustomer.where(customer_id:)
       end
     end
   end

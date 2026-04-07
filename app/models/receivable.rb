@@ -63,11 +63,11 @@ class Receivable < ApplicationRecord
     delegate :build_from_shipment, to: :new
 
     def ransackable_attributes(auth_object = nil)
-      ['balance_cents', 'due_by', 'invoiced', 'sent_at', 'total_cents', 'paid_at']
+      [ 'balance_cents', 'due_by', 'invoiced', 'sent_at', 'total_cents', 'paid_at' ]
     end
 
     def ransackable_associations(auth_object = nil)
-      ['authorized_by', 'broker_customer', 'shipment']
+      [ 'authorized_by', 'broker_customer', 'shipment' ]
     end
   end
 
@@ -144,7 +144,7 @@ class Receivable < ApplicationRecord
     receivable_items.build(
       charge: shipment.carrier_charge,
       description: shipment.items.map do |item|
-        dimensions = [item.l, item.w, item.h].all?(&:present?) ? "#{item.l}x#{item.w}x#{item.h}" : ''
+        dimensions = [ item.l, item.w, item.h ].all?(&:present?) ? "#{item.l}x#{item.w}x#{item.h}" : ''
 
         <<~DESC.squish
           #{item.quantity}
@@ -178,7 +178,7 @@ class Receivable < ApplicationRecord
                          User.with_role('accounts_receivable').broker.pluck(:contact_id)
 
     customer_contact_ids = if broker_customer.present?
-                             [broker_customer.receivables_contact.id] +
+                             [ broker_customer.receivables_contact.id ] +
                                broker_customer.users.with_role('accounting').pluck(:contact_id) +
                                broker_customer.users.with_role('accounts_payable').pluck(:contact_id)
                            else
@@ -186,7 +186,7 @@ class Receivable < ApplicationRecord
                            end
 
     # Fallback
-    broker_contact_ids = [User.with_role('root').broker.pluck(:contact_id)] if broker_contact_ids.empty?
+    broker_contact_ids = [ User.with_role('root').broker.pluck(:contact_id) ] if broker_contact_ids.empty?
 
     ids = broker_contact_ids + customer_contact_ids
     Contact.where(id: ids)
@@ -242,7 +242,7 @@ class Receivable < ApplicationRecord
     end
 
     if broker_customer.requires_carrier_bol_on_receivables? && broker_customer.requires_carrier_pod_on_receivables?
-      documents_attached = [shipment.carrier_bol.attached?, shipment.carrier_pod.attached?]
+      documents_attached = [ shipment.carrier_bol.attached?, shipment.carrier_pod.attached? ]
 
       return documents_attached.any?(true) if shipment.broker_carrier&.carrier&.consider_bol_and_pod_documents_same?
 
@@ -276,7 +276,7 @@ class Receivable < ApplicationRecord
   private
 
   def problematic_shipment_later
-    ProblematicJob.perform_later([shipment.id], type: 'Shipment')
+    ProblematicJob.perform_later([ shipment.id ], type: 'Shipment')
   end
 
   def set_authorized_at

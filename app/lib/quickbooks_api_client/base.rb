@@ -2,8 +2,8 @@
 
 module QuickbooksAPIClient
   class Base
-    BACKOFF_EXCEPTIONS = [Quickbooks::TooManyRequests, Quickbooks::ServiceUnavailable].freeze
-    HTTP_TIMEOUT_CODES = [429, 504].freeze
+    BACKOFF_EXCEPTIONS = [ Quickbooks::TooManyRequests, Quickbooks::ServiceUnavailable ].freeze
+    HTTP_TIMEOUT_CODES = [ 429, 504 ].freeze
     RETRY_MAX_WAIT_SECONDS = 30
 
     attr_accessor :service

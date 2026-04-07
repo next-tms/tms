@@ -42,7 +42,7 @@
 class Carrier < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['name', 'scac']
+      [ 'name', 'scac' ]
     end
 
     def ransackable_associations(auth_object = nil)

@@ -36,10 +36,10 @@ class Shipment::FetchAndCreateRatesService
 
       broker_carriers.each do |broker_carrier|
         rate = Rate.find_by(
-          broker_carrier: broker_carrier,
+          broker_carrier:,
           declared_freight_classes:,
           shipment_fingerprint:,
-          shipment: shipment,
+          shipment:,
         )
 
         if rate.present?
@@ -73,7 +73,7 @@ class Shipment::FetchAndCreateRatesService
 
   # @return [Array<Boolean>]
   def declared_freight_classes
-    return [false] if shipment.calculated_freight_classes.sort == shipment.declared_freight_classes.sort
+    return [ false ] if shipment.calculated_freight_classes.sort == shipment.declared_freight_classes.sort
 
     if user_type == :broker
       return [].tap do |builder|
@@ -82,7 +82,7 @@ class Shipment::FetchAndCreateRatesService
              end
     end
 
-    [!@shipment.broker_customer.always_show_quotes_based_on_calculated_classes?]
+    [ !@shipment.broker_customer.always_show_quotes_based_on_calculated_classes? ]
   end
 
   private

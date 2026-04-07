@@ -2,7 +2,8 @@
 
 class AddKindToBanks < ActiveRecord::Migration[7.0]
   def up
-    add_column :banks, :kind, :string, index: true
+    add_column :banks, :kind, :string
+add_index :banks, :kind
 
     say 'populate(:banks, :kind)'
     Bank.where(type_id: BankType.where('name ILIKE ?', '%checking%').ids).update_all(kind: :checking)

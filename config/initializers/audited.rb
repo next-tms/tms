@@ -1,3 +1,3 @@
-require "audited"
+require 'audited'
 
 Audited::Railtie.initializers.each(&:run)

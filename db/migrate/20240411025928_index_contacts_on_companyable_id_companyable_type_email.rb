@@ -31,7 +31,7 @@ class IndexContactsOnCompanyableIdCompanyableTypeEmail < ActiveRecord::Migration
 
         contact.public_send("#{attribute}=", value) if value.present?
       end
-      
+
       BrokerCustomer.where(receivables_contact_id: other_contacts.ids).update_all(receivables_contact_id: contact.id)
       User.where(contact_id: other_contacts.ids).update_all(contact_id: contact.id)
 

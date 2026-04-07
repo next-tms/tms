@@ -8,7 +8,7 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-if ['development', 'test'].include?(ENV['RAILS_ENV'])
+if [ 'development', 'test' ].include?(ENV['RAILS_ENV'])
   Dotenv::Rails.load
 end
 
@@ -20,7 +20,7 @@ module Liftoff
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: ['assets', 'tasks'])
+    config.autoload_lib(ignore: [ 'assets', 'tasks' ])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -53,7 +53,7 @@ module Liftoff
                                                                JSON::ParserError,
                                                                StandardError,
                                                                Symbol,
-                                                               Timezone::Zone,
+                                                               Timezone::Zone
                                                         ]
     config.active_record.encryption.hash_digest_class = OpenSSL::Digest::SHA1
     config.active_record.encryption.support_sha1_for_non_deterministic_encryption = true

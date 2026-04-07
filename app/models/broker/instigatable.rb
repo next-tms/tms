@@ -8,7 +8,7 @@ module Broker::Instigatable
       requires_charges_confirmed_on_receivables: {
         problematic_rule_code: 'missing_charges_confirmed',
         problematic_type: 'Shipment',
-        suppressible_type: 'Receivable',
+        suppressible_type: 'Receivable'
       }
     }.freeze
   end

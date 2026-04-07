@@ -35,7 +35,7 @@
 
 require 'rails_helper'
 
-RSpec.describe(Contact, type: :model) do
+RSpec.describe(Contact) do
   describe 'relationships' do
     it { is_expected.to(have_many(:contact_roles)) }
     it { is_expected.to(have_many(:document_preferences)) }

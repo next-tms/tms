@@ -3,7 +3,7 @@
 module TransponderService
   module Input
     class Contact < Base
-      VALID_RECORD_CLASSES = [::Broker, ::Contact, ::Shipment, ::User]
+      VALID_RECORD_CLASSES = [ ::Broker, ::Contact, ::Shipment, ::User ]
       VALID_ATTRIBUTE_PREFIXES = %i[shipper receiver]
 
       attr_reader :object, :attribute_prefix

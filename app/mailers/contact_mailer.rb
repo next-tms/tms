@@ -124,7 +124,7 @@ class ContactMailer < ApplicationMailer
       cc:,
       reply_to: from_user.blank? ? nil : pretty_email(from_user),
       to: pretty_email(to_contact),
-      subject: subject,
+      subject:,
     )
   end
 

@@ -30,11 +30,11 @@
 class Region < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['abbreviation', 'iso31662', 'name']
+      [ 'abbreviation', 'iso31662', 'name' ]
     end
 
     def ransackable_associations(auth_object = nil)
-      ['country']
+      [ 'country' ]
     end
   end
 
@@ -61,7 +61,7 @@ class Region < ApplicationRecord
   end
 
   def iso31662_belongs_to_country
-    return unless [country, iso31662].all?(&:present?) && !iso31662.start_with?("#{country.alpha2_code}_")
+    return unless [ country, iso31662 ].all?(&:present?) && !iso31662.start_with?("#{country.alpha2_code}_")
 
     errors.add(:iso31662, "doesn't belong to #{country.name}")
   end

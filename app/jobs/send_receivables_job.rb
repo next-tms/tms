@@ -47,7 +47,7 @@ class SendReceivablesJob < ApplicationJob
           paths << DownloadAttachmentService.call(receivable.shipment.carrier_pod).path
         end
 
-        load_ids = [receivable.shipment.load_id]
+        load_ids = [ receivable.shipment.load_id ]
         pdf = PDFService.merge(*paths)
         pdf_filename = ActiveStorage::Filename.new("#{receivable.shipment.load_id} Invoice.pdf").sanitized
 

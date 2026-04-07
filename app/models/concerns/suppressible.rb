@@ -16,10 +16,10 @@ module Suppressible
 
     def suppressible!
       return unless suppressions.any?
-      
+
       suppressions.find_each { |suppression| errors.add(:base, suppression.describe) }
     end
-    
+
     def suppressions
       @suppressions ||= Suppression.where(problematic: suppressed_by_problematic, suppressible_type: self.class.name)
     end

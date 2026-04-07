@@ -114,7 +114,7 @@ module QuickbooksAPIClient
     end
 
     def build_line_item_description(payment_transaction)
-      parts = ["#{payment_transaction.broker.name} Load #{payment_transaction.shipment.load_id}"]
+      parts = [ "#{payment_transaction.broker.name} Load #{payment_transaction.shipment.load_id}" ]
 
       unless payment_transaction.shipment.pro.blank?
         parts << "#{payment_transaction.broker_carrier.name} Pro #{payment_transaction.shipment.pro}"

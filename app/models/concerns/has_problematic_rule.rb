@@ -5,7 +5,7 @@ module HasProblematicRule
 
   included do
     validates :problematic_rule_code, presence: true
-  
+
     validate :validate_problematic_rule_code
 
     def problematic_rule
@@ -22,12 +22,12 @@ module HasProblematicRule
       return unless new_record? &&
                     problematic_rule_code.present? &&
                     problematic_type.present?
-                    
+
       return if problematic_type
                .constantize
                .problematic_rule_codes
                .any?(problematic_rule_code.to_sym)
-  
+
       errors.add(
         :problematic_rule_code,
         "must be one of #{problematic_type.constantize.problematic_rule_codes.join(', ')}, got #{problematic_rule_code}"

@@ -14,20 +14,20 @@ class Address::FindOrCreateViaSmartyStreetsService
     region = Region.find(region_id)
     address_key = build_address_key(region)
 
-    standardized_address = StandardizedAddress.where("lower(key) LIKE ?", "%#{address_key.downcase}%")&.first
+    standardized_address = StandardizedAddress.where('lower(key) LIKE ?', "%#{address_key.downcase}%")&.first
     return standardized_address if standardized_address.present?
 
-    verified_address_data = Address::SmartyStreetsVerifyService.new(address_key: address_key).call
+    verified_address_data = Address::SmartyStreetsVerifyService.new(address_key:).call
     return unless verified_address_data
 
     new_standardized_address = StandardizedAddress.new(
       smarty_streets_result_cached: verified_address_data,
       smarty_streets_result_updated_at: Time.current,
-      street: street,
-      street2: street2,
-      city: city,
+      street:,
+      street2:,
+      city:,
       postal_code: zip_code,
-      region: region,
+      region:,
       country: region.country,
       key: address_key,
     )

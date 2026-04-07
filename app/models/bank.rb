@@ -28,7 +28,7 @@
 class Bank < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['name']
+      [ 'name' ]
     end
 
     def ransackable_associations(auth_object = nil)
@@ -40,7 +40,7 @@ class Bank < ApplicationRecord
 
   belongs_to :broker
 
-  enum kind: { checking: 'checking', credit_card: 'credit_card' }
+  enum :kind, { checking: 'checking', credit_card: 'credit_card' }
 
   has_many :payments
 

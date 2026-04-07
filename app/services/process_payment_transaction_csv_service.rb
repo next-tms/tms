@@ -96,7 +96,7 @@ class ProcessPaymentTransactionCsvService
   end
 
   def build_success_message(saved_payment_transactions_count)
-    message_parts = ['Invoice'.pluralize(saved_payment_transactions_count)]
+    message_parts = [ 'Invoice'.pluralize(saved_payment_transactions_count) ]
     message_parts << "(#{saved_payment_transactions_count} found altogether)" if saved_payment_transactions_count > 1
     message_parts += [
       'will be assigned',

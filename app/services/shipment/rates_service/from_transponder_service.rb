@@ -10,7 +10,7 @@ class Shipment::RatesService
       if !ignore_value? && shipment.value.positive? && !carrier_finds_rate_with_declared_value?
         rate = build_rate(:api)
 
-        rate.api_errors = [{ message: "#{Shipment.model_name.human} #{Shipment.human_attribute_name(:value).downcase} not supported" }]
+        rate.api_errors = [ { message: "#{Shipment.model_name.human} #{Shipment.human_attribute_name(:value).downcase} not supported" } ]
 
         @rates << rate
         rate.save! if save?
@@ -91,7 +91,7 @@ class Shipment::RatesService
         currency = transponder_rate.dig(:total_cost, :currency)
         fractional = transponder_rate.dig(:total_cost, :fractional)
 
-        if [currency, fractional].all?(&:present?)
+        if [ currency, fractional ].all?(&:present?)
           cost = Money.new(fractional, currency)
         else
           @rates << rate

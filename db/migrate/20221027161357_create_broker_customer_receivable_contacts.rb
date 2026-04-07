@@ -12,7 +12,7 @@ class CreateBrokerCustomerReceivableContacts < ActiveRecord::Migration[7.0]
       next if broker_customer.receivables_contact_id.blank?
 
       BrokerCustomerReceivableContact.create(
-        broker_customer: broker_customer,
+        broker_customer:,
         contact_id: broker_customer.receivables_contact_id,
         primary: true
       )

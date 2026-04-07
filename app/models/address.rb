@@ -64,11 +64,11 @@
 class Address < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['city', 'street', 'street2', 'zip_code']
+      [ 'city', 'street', 'street2', 'zip_code' ]
     end
 
     def ransackable_associations(auth_object = nil)
-      ['country', 'region']
+      [ 'country', 'region' ]
     end
   end
 
@@ -266,7 +266,7 @@ class Address < ApplicationRecord
     when 'verbal' then errors.add(ref, "cannot be “#{value}”")
     end
 
-    ['C/O', 'P/O', 'P/U', 'Ref:', 'S/O', '#'].each do |prefix|
+    [ 'C/O', 'P/O', 'P/U', 'Ref:', 'S/O', '#' ].each do |prefix|
       matched_prefix = ref.match(/\A#{Regexp.escape(prefix)}/i)
       next if matched_prefix.blank?
 
@@ -290,7 +290,7 @@ class Address < ApplicationRecord
       matched_prefix = value.match(/\A#{Regexp.escape("C/O")}/i)
       errors.add(attribute, "cannot contain “#{matched_prefix}”") if matched_prefix.present?
 
-      ['Re:', 'Ref:', 'Release'].each do |prefix|
+      [ 'Re:', 'Ref:', 'Release' ].each do |prefix|
         matched_prefix = value.match(/\A#{Regexp.escape(prefix)}/i)
         next if matched_prefix.blank?
 

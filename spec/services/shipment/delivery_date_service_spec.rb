@@ -5,25 +5,20 @@ require 'rails_helper'
 RSpec.describe(Shipment::DeliveryDateService) do
   let!(:shipment) { create(:shipment) }
 
-  before do
-    Timecop.freeze(Time.zone.now)
-  end
-
-  after do
-    Timecop.return
-  end
+  before { Timecop.freeze(Time.zone.now) }
+  after { Timecop.return }
 
   shared_examples_for 'shipment delivery date' do
     context 'when receiver_address is blank' do
       before { shipment.update(receiver_address: nil) }
 
-      it { expect(subject).to(be_nil) }
+      it { is_expected.to(be_nil) }
     end
 
     context 'when receiver_address#time_zone is blank' do
-      before { expect_any_instance_of(Address).to(receive(:time_zone).and_return(nil)) }
+      before { allow_any_instance_of(Address).to(receive(:time_zone).and_return(nil)) }
 
-      it { expect(subject).to(be_nil) }
+      it { is_expected.to(be_nil) }
     end
 
     %i[promised_delivery_by delivery_appointment_at].each do |shipment_datetime|
@@ -34,7 +29,7 @@ RSpec.describe(Shipment::DeliveryDateService) do
                     delivery_appointment_at
                     delivery_appointment_on
                     delivery_eta_on
-                  ] - [shipment_datetime]
+                  ] - [ shipment_datetime ]
           dates.map { |date| { date => nil } }.reduce({}, :merge)
         end
 
@@ -43,9 +38,7 @@ RSpec.describe(Shipment::DeliveryDateService) do
           shipment.update!(**nullable_dates)
         end
 
-        it "returns ##{shipment_datetime}" do
-          expect(subject).to(eq(shipment.reload.send(shipment_datetime)))
-        end
+        it { is_expected.to(eq(shipment.reload.send(shipment_datetime))) }
       end
     end
 
@@ -57,7 +50,7 @@ RSpec.describe(Shipment::DeliveryDateService) do
                     delivery_appointment_at
                     delivery_appointment_on
                     delivery_eta_on
-                  ] - [shipment_date]
+                  ] - [ shipment_date ]
           dates.map { |date| { date => nil } }.reduce({}, :merge)
         end
 
@@ -66,20 +59,17 @@ RSpec.describe(Shipment::DeliveryDateService) do
           shipment.update!(**nullable_dates)
         end
 
-        context 'and delivery hours is present' do
+        context 'when delivery hours is present' do
           it "returns ##{shipment_date} converted to datetime based on receiver address timezone" do
             timezone = shipment.receiver_address.time_zone
             formatted_offset = Time.current.in_time_zone(timezone).formatted_offset
-
             expected_datetime = Time.zone.parse("#{shipment.send(shipment_date)} #{delivery_hours} #{formatted_offset}")
             expect(subject).to(eq(expected_datetime))
           end
         end
 
-        context 'and delivery hours is null' do
-          before do
-            shipment.update(delivery_hours_end_at: nil, delivery_hours_start_at: nil)
-          end
+        context 'when delivery hours is null' do
+          before { shipment.update(delivery_hours_end_at: nil, delivery_hours_start_at: nil) }
 
           it 'returns converted datetime with interval' do
             timezone = shipment.receiver_address.time_zone
@@ -88,28 +78,17 @@ RSpec.describe(Shipment::DeliveryDateService) do
         end
       end
 
-      context 'and dates are null' do
-        before do
-          shipment.update(
-            promised_delivery_by: nil,
-            delivery_appointment_at: nil,
-            delivery_appointment_on: nil,
-            delivery_eta_on: nil,
-          )
+      context 'when dates are null' do
+        before { shipment.update(promised_delivery_by: nil, delivery_appointment_at: nil, delivery_appointment_on: nil, delivery_eta_on: nil) }
+
+        context 'when pickup date is null' do
+          before { allow(shipment).to(receive(pickup_date_attr).and_return(nil)) }
+
+          it { is_expected.to(be_nil) }
         end
 
-        context 'and pickup date is null' do
-          before do
-            expect(shipment).to(receive(pickup_date_attr).and_return(nil))
-          end
-
-          it { expect(subject).to(be_nil) }
-        end
-
-        context 'and pickup dates are present' do
-          before do
-            expect(shipment).to(receive(pickup_date_attr).twice.and_return(Time.zone.now.change(nsec: 0)))
-          end
+        context 'when pickup dates are present' do
+          before { allow(shipment).to(receive(pickup_date_attr).twice.and_return(Time.zone.now.change(nsec: 0))) }
 
           it 'returns pickup date + 5 business days with interval' do
             timezone = shipment.receiver_address.time_zone

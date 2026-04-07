@@ -41,7 +41,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe(Carrier, type: :model) do
+RSpec.describe(Carrier) do
   describe 'relationships' do
     it { is_expected.to(have_many(:broker_carriers)) }
     it { is_expected.to(have_many(:carrier_areas)) }

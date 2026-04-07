@@ -58,11 +58,11 @@
 class PaymentTransaction < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      ['id', 'legacy_load_id', 'notes']
+      [ 'id', 'legacy_load_id', 'notes' ]
     end
 
     def ransackable_associations(auth_object = nil)
-      ['shipment']
+      [ 'shipment' ]
     end
   end
 
@@ -98,7 +98,7 @@ class PaymentTransaction < ApplicationRecord
   def duplicates
     return [] if shipment.blank?
 
-    broker_carrier.payment_transactions.where(shipment:) - [self]
+    broker_carrier.payment_transactions.where(shipment:) - [ self ]
   end
 
   def paid?
@@ -106,7 +106,7 @@ class PaymentTransaction < ApplicationRecord
   end
 
   def shipment_load_id=(load_id)
-    self.shipment = Shipment.find_by(load_id: load_id)
+    self.shipment = Shipment.find_by(load_id:)
   end
 
   def shipment_load_id

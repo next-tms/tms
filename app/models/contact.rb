@@ -35,11 +35,11 @@
 class Contact < ApplicationRecord
   class << self
     def ransackable_associations(auth_object = nil)
-      ['companyable', 'contact_roles', 'user']
+      [ 'companyable', 'contact_roles', 'user' ]
     end
 
     def ransackable_attributes(auth_object = nil)
-      ['comments', 'email', 'first_name', 'job_title', 'label', 'last_name']
+      [ 'comments', 'email', 'first_name', 'job_title', 'label', 'last_name' ]
     end
 
     def with_any_role(*roles)
@@ -96,14 +96,14 @@ class Contact < ApplicationRecord
 
   # @return [String, nil]
   def full_name
-    return if [first_name, last_name].all?(&:blank?)
+    return if [ first_name, last_name ].all?(&:blank?)
 
     "#{first_name} #{last_name}"
   end
 
   # @return [String]
   def label
-    [full_name, super, job_title].compact_blank&.first || ''
+    [ full_name, super, job_title ].compact_blank&.first || ''
   end
 
   # @param role [Symbol]
@@ -148,7 +148,7 @@ class Contact < ApplicationRecord
   end
 
   def validate_first_name_and_last_name
-    return if [first_name, last_name].all?(&:present?) || label.present?
+    return if [ first_name, last_name ].all?(&:present?) || label.present?
 
     errors.add(:label, 'required when name is blank')
   end

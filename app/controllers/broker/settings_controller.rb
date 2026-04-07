@@ -14,7 +14,7 @@ class Broker::SettingsController < Broker::BrokerController
   def create
     @setting = Setting.new(setting_params)
 
-    redirect_to([:broker, @setting]) && return if @setting.save
+    redirect_to([ :broker, @setting ]) && return if @setting.save
 
     render(:new)
   end

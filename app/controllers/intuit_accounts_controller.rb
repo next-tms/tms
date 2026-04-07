@@ -58,7 +58,7 @@ class IntuitAccountsController < ApplicationController
                authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
                site: 'https://appcenter.intuit.com/connect/oauth2',
                token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
-             },
+             }
            ]
 
     OAuth2::Client.new(*args)

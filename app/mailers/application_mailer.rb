@@ -12,7 +12,7 @@ class ApplicationMailer < ActionMailer::Base
 
     # Store Error Class and Msg when email failed and triggered by Notification class
 
-    error_msg = "#{error.class.to_s} | #{error.to_s}"
+    error_msg = "#{error.class} | #{error}"
 
     params[:record].params[:email_delivery_error] = error_msg
     params[:record].save

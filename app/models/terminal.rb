@@ -30,11 +30,11 @@
 class Terminal < ApplicationRecord
   class << self
     def ransackable_associations(auth_object = nil)
-      ['address', 'carrier']
+      [ 'address', 'carrier' ]
     end
 
     def ransackable_attributes(auth_object = nil)
-      ['phone']
+      [ 'phone' ]
     end
   end
 

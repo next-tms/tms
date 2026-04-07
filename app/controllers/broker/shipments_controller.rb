@@ -53,7 +53,7 @@ class Broker::ShipmentsController < Broker::BrokerController
       return
     end
 
-    redirect_to([:broker, @shipment])
+    redirect_to([ :broker, @shipment ])
   end
 
   def book_modal
@@ -70,7 +70,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.booked_at = nil
     @shipment.save
 
-    redirect_to([:broker, @shipment])
+    redirect_to([ :broker, @shipment ])
   end
 
   def index
@@ -82,7 +82,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { shipper_address: :standardized_address },
              :tracking_carrier,
              { broker_carrier: :carrier },
-             { broker_customer: :customer },
+             { broker_customer: :customer }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -154,7 +154,7 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     respond_to do |format|
       if @shipment.save
-        location = [:broker, @shipment]
+        location = [ :broker, @shipment ]
 
         format.html { redirect_to(location) }
         format.json { render(:show, status: :created, location:) }
@@ -243,7 +243,7 @@ class Broker::ShipmentsController < Broker::BrokerController
       ids += @shipment.broker_carrier.contacts.where(companyable: @shipment.broker_carrier).ids
     end
 
-    if ['broker_dispatch_sheet', 'carrier_quote'].none?(params[:shipment_method]) &&
+    if [ 'broker_dispatch_sheet', 'carrier_quote' ].none?(params[:shipment_method]) &&
        @shipment.broker_customer.present?
       ids += @shipment.broker_customer.contacts.where(companyable: @shipment.broker_customer).ids
     end
@@ -296,7 +296,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { shipper_address: %i[region standardized_address] },
              { receiver_address: %i[region standardized_address] },
              :tracking_carrier,
-             { broker_customer: :customer },
+             { broker_customer: :customer }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -316,7 +316,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              :receiver_address,
              :shipper_address,
              :tracking_carrier,
-             { broker_customer: :customer },
+             { broker_customer: :customer }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -336,7 +336,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              :receiver_address,
              :shipper_address,
              :tracking_carrier,
-             { broker_customer: :customer },
+             { broker_customer: :customer }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -353,13 +353,13 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              :items,
-             { receiver_address: [:region] },
+             { receiver_address: [ :region ] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
              {
                broker_carrier: :carrier,
                broker_customer: :customer
-             },
+             }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -376,13 +376,13 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              :items,
-             { receiver_address: [:region] },
+             { receiver_address: [ :region ] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
              {
                broker_carrier: :carrier,
                broker_customer: :customer
-             },
+             }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -402,7 +402,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              { receiver_address: %i[region standardized_address] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
-             { broker_customer: :customer },
+             { broker_customer: :customer }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -419,12 +419,12 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              :items,
-             { receiver_address: [:region] },
+             { receiver_address: [ :region ] },
              { shipper_address: %i[region standardized_address] },
              {
                broker_carrier: :carrier,
                broker_customer: :customer
-             },
+             }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -443,7 +443,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              :receiver_address,
              :shipper_address,
              :tracking_carrier,
-             { broker_customer: :customer },
+             { broker_customer: :customer }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -460,13 +460,13 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              :items,
-             { receiver_address: [:region] },
+             { receiver_address: [ :region ] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
              {
                broker_carrier: :carrier,
                broker_customer: :customer
-             },
+             }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -488,13 +488,13 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              :items,
-             { receiver_address: [:region] },
+             { receiver_address: [ :region ] },
              { shipper_address: %i[region standardized_address] },
              :tracking_carrier,
              {
                broker_carrier: :carrier,
                broker_customer: :customer
-             },
+             }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -511,13 +511,13 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              :items,
-             { shipper_address: [:region] },
+             { shipper_address: [ :region ] },
              { receiver_address: %i[region standardized_address] },
              :tracking_carrier,
              {
                broker_carrier: :carrier,
                broker_customer: :customer
-             },
+             }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -537,7 +537,7 @@ class Broker::ShipmentsController < Broker::BrokerController
              :shipper_address,
              :tracking_carrier,
              { broker_carrier: :carrier },
-             { broker_customer: :customer },
+             { broker_customer: :customer }
            ],
          )
          .ransack(params[:q], auth_object: current_user)
@@ -768,7 +768,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                                     :event_id,
                                     :public,
                                     :region_id,
-                                    { address_attributes: %i[id street street2 city region_id zip_code] },
+                                    { address_attributes: %i[id street street2 city region_id zip_code] }
                                   ],
     )
   end
