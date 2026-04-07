@@ -116,8 +116,6 @@ GEM
     audited (5.8.0)
       activerecord (>= 5.2, < 8.2)
       activesupport (>= 5.2, < 8.2)
-    autoprefixer-rails (10.4.19.0)
-      execjs (~> 2)
     aws-eventstream (1.2.0)
     aws-partitions (1.786.0)
     aws-sdk-core (3.178.0)
@@ -142,9 +140,6 @@ GEM
     bindex (0.8.1)
     bootsnap (1.18.3)
       msgpack (~> 1.2)
-    bootstrap (5.3.3)
-      autoprefixer-rails (>= 9.1.0)
-      popper_js (>= 2.11.8, < 3)
     bootstrap_form (5.4.0)
       actionpack (>= 6.1)
       activemodel (>= 6.1)
@@ -199,7 +194,6 @@ GEM
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
-    execjs (2.9.1)
     factory_bot (6.4.6)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.4.3)
@@ -400,7 +394,6 @@ GEM
     place_kit (0.0.4)
       activesupport (>= 6.0.0, < 8.1)
       fastcsv (~> 0.0.6)
-    popper_js (2.11.8)
     postmark (1.23.0)
       json
     postmark-rails (0.22.1)
@@ -706,7 +699,6 @@ DEPENDENCIES
   barby
   bcrypt (~> 3.1)
   bootsnap (>= 1.4.2)
-  bootstrap (~> 5.3.3)
   bootstrap_form (~> 5.4.0)
   bullet (~> 7.2)
   business_time

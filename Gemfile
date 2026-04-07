@@ -62,7 +62,6 @@ group :test do
   gem 'timecop'
 end
 
-gem 'bootstrap', '~> 5.3.3'
 gem 'bootstrap_form', '~> 5.4.0'
 gem 'dartsass-rails'
 
