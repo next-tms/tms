@@ -59,7 +59,7 @@ class Suppressor < ApplicationRecord
   private
 
   def update_problematic_records_later
-    problematic_records = instigator.public_send(problematic_type.pluralize.snakecase.to_sym)
+    problematic_records = instigator.public_send(problematic_type.pluralize.underscore.to_sym)
 
     return unless problematic_records.any?
 

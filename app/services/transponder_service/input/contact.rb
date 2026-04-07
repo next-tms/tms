@@ -25,7 +25,7 @@ module TransponderService
       end
 
       def build
-        send("build_from_#{object.class.to_s.snakecase}")
+        send("build_from_#{object.class.to_s.underscore}")
       end
 
       private

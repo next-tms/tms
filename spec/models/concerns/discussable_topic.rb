@@ -4,7 +4,7 @@ require 'rails_helper'
 require 'spec_helper'
 
 shared_examples_for 'discussable_topic' do
-  let(:record) { build(described_class.name.snakecase.to_sym) }
+  let(:record) { build(described_class.name.underscore.to_sym) }
 
   describe 'relationships' do
     it { expect(record).to(have_many(:comments).through(:discussion_topic)) }

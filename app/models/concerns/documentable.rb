@@ -21,9 +21,9 @@ module Documentable
         :documents,
         target: broadcast_target(document_type, namespace),
         html: ApplicationController.render(
-          partial: "#{namespace}/#{self.class.name.snakecase.pluralize}/documents/#{document_type}",
+          partial: "#{namespace}/#{self.class.name.underscore.pluralize}/documents/#{document_type}",
           locals: {
-            self.class.name.snakecase.to_sym => self,
+            self.class.name.underscore.to_sym => self,
             this_dom_id: dom_id(self)
           },
         ).html_safe,

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 shared_examples_for 'documentable' do
-  let(:record) { create(described_class.to_s.snakecase.to_sym) }
+  let(:record) { create(described_class.to_s.underscore.to_sym) }
 
   describe 'DOCUMENTABLE_TYPES' do
     it { expect(described_class::DOCUMENTABLE_TYPES).to(be_a(Array)) }

@@ -16,7 +16,7 @@ module DocumentableService
       raise ArgumentError, "record must be a #{model}" unless record.is_a?(model)
       raise ArgumentError, 'record must be #documentable?' unless record.try(:documentable?)
 
-      document_type = self.class.to_s.demodulize.snakecase.to_sym
+      document_type = self.class.to_s.demodulize.underscore.to_sym
 
       raise "Unknown document_type \"#{document_type}\"" if model::DOCUMENTABLE_TYPES.exclude?(document_type)
 

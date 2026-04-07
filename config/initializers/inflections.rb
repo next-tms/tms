@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Be sure to restart your server when you modify this file.
 
 # Add new inflection rules using the following format. Inflections
@@ -24,9 +22,9 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym('LTL')
   inflect.acronym('NMFC')
   inflect.acronym('PDF')
+  inflect.acronym('PODs') # must come before "POD"
+  inflect.acronym('POD') # must come before "PO"
   inflect.acronym('PO')
-  inflect.acronym('POD')
-  inflect.acronym('PODs')
   inflect.acronym('SO')
   inflect.acronym('ZIP')
 end

@@ -41,9 +41,10 @@
 #
 FactoryBot.define do
   factory :carrier do
+    sequence(:name) { |number| "#{Faker::Company.name} #{number}" }
+    sequence(:scac) { |number| format('%04d', number % 10000) }
+
     check_mailing_address_id { create(:address) }
     mc_number { Faker::Number.number.to_s[..5] }
-    name { Faker::Company.name }
-    scac { Faker::Alphanumeric.alpha[..3].upcase }
   end
 end

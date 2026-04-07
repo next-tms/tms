@@ -12,7 +12,7 @@ module ProblematicService
       end
 
       def rules
-        Rails.root.glob("app/services/problematic_service/rule/#{model.name.snakecase}/*.rb").map do |fn|
+        Rails.root.glob("app/services/problematic_service/rule/#{model.name.underscore}/*.rb").map do |fn|
           [ 'ProblematicService', 'Rule', model.name, File.basename(fn)[..-4].camelcase ]
           .join('::')
           .constantize

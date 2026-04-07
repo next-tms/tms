@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module ProblematicService
   class Rule
     class << self
@@ -30,21 +28,10 @@ module ProblematicService
         all.select { |rule| rule.roles.intersect?(roles) }
       end
 
-      def code
-        name.demodulize.snakecase
-      end
-
-      def humanized
-        raise NotImplementedError
-      end
-
-      def model
-        ancestors[1].name.demodulize.constantize
-      end
-
-      def roles
-        self::ROLES
-      end
+      def code = name.demodulize.underscore
+      def humanized = raise NotImplementedError
+      def model = ancestors[1].name.demodulize.constantize
+      def roles = self::ROLES
     end
 
     attr_reader :processor, :record
@@ -83,35 +70,19 @@ module ProblematicService
     end
 
     # @todo Deprecate
-    def code
-      self.class.code
-    end
+    def code = self.class.code
 
     # @todo Deprecate
-    def humanized
-      self.class.humanized
-    end
+    def humanized = self.class.humanized
 
-    def problematic?
-      raise NotImplementedError
-    end
-
-    def resolvable?
-      raise NotImplementedError
-    end
+    def problematic? = raise NotImplementedError
+    def resolvable? = raise NotImplementedError
 
     # @todo Deprecate
-    def roles
-      self.class.roles
-    end
+    def roles = self.class.roles
 
-    def suppressor_instigators
-      []
-    end
-
-    def suppressor_suppressible_types
-      []
-    end
+    def suppressor_instigators = []
+    def suppressor_suppressible_types = []
 
     def suppressors
       return Suppressor.none if suppressor_instigators.empty? || suppressor_suppressible_types.empty?

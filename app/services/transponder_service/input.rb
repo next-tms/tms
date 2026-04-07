@@ -15,7 +15,7 @@ module TransponderService
       end
 
       def input(object)
-        class_name = MAPPING[object.class.to_s.demodulize.snakecase.to_sym].to_s.camelize
+        class_name = MAPPING[object.class.to_s.demodulize.underscore.to_sym].to_s.camelize
 
         [ 'TransponderService', 'Input', class_name ].join('::').constantize
       end

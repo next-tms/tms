@@ -274,5 +274,6 @@ FactoryBot.define do
     end
 
     before(:build) { Shipment.skip_callback(:create, :after, :notify_of_new_shipment) }
+    after(:build) { Shipment.set_callback(:create, :after, :notify_of_new_shipment) }
   end
 end
