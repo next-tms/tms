@@ -40,3 +40,6 @@ config/initializers/01_development_env.rb
 
 .env
 /config/credentials/*.key
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

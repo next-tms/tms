@@ -10,7 +10,11 @@
 
 @import "turbo_overrides";
 
-@import "font-awesome";
+$fa-font-path: 'fontawesome';
+@import "fontawesome-free/fontawesome";
+@import "fontawesome-free/solid";
+@import "fontawesome-free/regular";
+@import "fontawesome-free/brands";
 
 @import "sortable";
 @import "page_loader";
