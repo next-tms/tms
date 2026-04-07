@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddRoleToProblemTypes < ActiveRecord::Migration[7.0]
   def up
     add_reference :problem_types, :role, null: true, foreign_key: true

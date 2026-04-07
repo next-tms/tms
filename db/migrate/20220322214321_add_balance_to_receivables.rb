@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddBalanceToReceivables < ActiveRecord::Migration[7.0]
   def up
     add_monetize :receivables, :balance, index: true

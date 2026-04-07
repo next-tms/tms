@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CreateReceivablesJob < ApplicationJob
   def perform
     Shipment.receivable.reload.find_each do |shipment|

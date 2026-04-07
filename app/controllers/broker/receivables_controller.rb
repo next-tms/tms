@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::ReceivablesController < Broker::BrokerController
   before_action :set_receivable, only: %i[destroy edit rebuild show update]
   before_action :authenticate_user!

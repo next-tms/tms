@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module GraphQLClient
   class Transponder::Fragment::Location
     DETAILS = GraphQLClient::Transponder::Client.parse(<<-GRAPHQL)

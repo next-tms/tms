@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TrackingController < ApplicationController
   before_action :set_load_id
 

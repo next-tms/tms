@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module HasAPI
   class ErrorParser
     class << self

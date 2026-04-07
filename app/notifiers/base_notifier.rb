@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class BaseNotifier < Noticed::Event
   deliver_by :email,
              mailer: :mailer_class,

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DeviseCustomMailer < Devise::Mailer
   def invitation_instructions(record, token, opts = {})
     robot_email = if record.broker?

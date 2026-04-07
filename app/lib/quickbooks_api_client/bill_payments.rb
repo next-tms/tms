@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module QuickbooksAPIClient
   class BillPayments < Base
     def create(payment)

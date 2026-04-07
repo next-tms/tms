@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # To deliver this notification:
 #
 # PickupNotifier.with(post: @post).deliver(current_user)

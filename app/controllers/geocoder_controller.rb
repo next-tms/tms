@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class GeocoderController < ApplicationController
   def fetch_details_by_zip_code
     locations = Geocoder.search(params[:postal_code])

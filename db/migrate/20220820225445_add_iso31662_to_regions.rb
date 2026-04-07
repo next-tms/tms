@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddIso31662ToRegions < ActiveRecord::Migration[7.0]
   def up
     add_column :regions, :iso31662, :string

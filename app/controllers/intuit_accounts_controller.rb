@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class IntuitAccountsController < ApplicationController
   def authenticate
     redirect_uri = oauth_callback_intuit_account_url_with_host

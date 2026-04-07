@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Types
   class UserType < Types::BaseObject
     description 'GraphQL Object for User Model'

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class PopulateSuppressors < ActiveRecord::Migration[7.0]
   def up
     say 'populate(:suppressors)'

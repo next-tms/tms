@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ContactMailer < ApplicationMailer
   default from: 'Next TMS <robot@tms.next-tms.com>'
 

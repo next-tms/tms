@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # @deprecated Moved to BrokerCustomer#receivables_contact
 # == Schema Information
 #

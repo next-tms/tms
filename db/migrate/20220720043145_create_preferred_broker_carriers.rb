@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CreatePreferredBrokerCarriers < ActiveRecord::Migration[7.0]
   def change
     create_table :preferred_broker_carriers do |t|

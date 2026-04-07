@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # TODO: Reject remote connections
 # require 'webmock/rspec'
 # WebMock.disable_net_connect!(allow_localhost: true)

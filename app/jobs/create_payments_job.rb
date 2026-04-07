@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CreatePaymentsJob < ApplicationJob
   def perform
     now = DateTime.current

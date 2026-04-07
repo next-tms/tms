@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Types
   class AddressType < Types::BaseObjectWithTimestamp
     description 'GraphQL Object for Address Model'

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Types
   class RateBreakdownType < Types::BaseObject
     description 'GraphQL Object for presenting Rate Breakdowns'

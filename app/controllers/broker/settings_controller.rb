@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::SettingsController < Broker::BrokerController
   before_action do
     authenticate_user!

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Types::Iso31662Type < Types::BaseEnum
   description 'ISO 3166-2 code with hyphens between each division (e.g. US_CA)'
 

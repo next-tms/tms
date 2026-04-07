@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CreatePaymentJob < ApplicationJob
   def perform(broker_carrier:, payment_transaction_ids:)
     broker = broker_carrier.broker

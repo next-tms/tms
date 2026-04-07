@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class FetchBrokerCarrierQuickbooksVendorIdsJob < ApplicationJob
   def perform(broker:)
     return unless broker.intuit_account&.connected?

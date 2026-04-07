@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class FetchShipmentProsJob < ApplicationJob
   def perform
     shipments = Shipment

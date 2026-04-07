@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class WelcomeController < ApplicationController
   def index
     redirect_to(stored_location_for(:user) || after_sign_in_path) and return if user_signed_in?

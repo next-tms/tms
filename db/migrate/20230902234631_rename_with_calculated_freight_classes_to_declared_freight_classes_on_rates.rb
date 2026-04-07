@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RenameWithCalculatedFreightClassesToDeclaredFreightClassesOnRates < ActiveRecord::Migration[7.0]
   def up
     add_column(:rates, :declared_freight_classes, :boolean)

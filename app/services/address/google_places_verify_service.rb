@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Provides access to broker's Stripe API
 class Address::GooglePlacesVerifyService
   attr_reader :address_key, :street

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddRequiresShipmentDeliveryBeforeReceivableToBrokerCustomer < ActiveRecord::Migration[7.0]
   def up
     add_column :broker_customers, :requires_shipment_delivery_before_receivable, :boolean, default: true

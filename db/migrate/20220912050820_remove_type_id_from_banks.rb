@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemoveTypeIdFromBanks < ActiveRecord::Migration[7.0]
   def up
     remove_column :banks, :type_id, :bigint, null: false

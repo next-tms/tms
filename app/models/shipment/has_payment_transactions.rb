@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Shipment::HasPaymentTransactions
   extend ActiveSupport::Concern
 

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::DelaysController < Broker::BrokerController
   before_action :set_delay, only: %i[edit show update]
   before_action :authenticate_user!

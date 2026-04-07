@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Provides access to broker's Stripe API
 class Shipment::DuplicateService
   attr_reader :shipment

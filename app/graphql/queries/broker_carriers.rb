@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Queries
   class BrokerCarriers < Types::BaseObject
     description 'Queries for fetching broker carriers'

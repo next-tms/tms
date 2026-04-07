@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ApplicationRecord < ActiveRecord::Base
   class << self
     # @note For grouped_collection_select in forms

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TrackShipmentsPendingPickupJob < ApplicationJob
   def perform
     shipment_ids = Shipment.active.pending_pickup.where.not(pro: nil).ids

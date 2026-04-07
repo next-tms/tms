@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Types
   class CarrierType < Types::BaseObject
     description 'GraphQL Object for Carrier Model'

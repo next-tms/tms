@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Types
   class AddressInputObject < Types::BaseInputObject
     description 'GraphQL Input Object for Address Arguments'

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Bank::QuickbooksSyncable
   extend ActiveSupport::Concern
 

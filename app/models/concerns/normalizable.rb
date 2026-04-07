@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Normalizable
   extend ActiveSupport::Concern
 

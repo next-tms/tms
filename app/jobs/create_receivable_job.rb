@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CreateReceivableJob < ApplicationJob
   discard_on ActiveRecord::RecordNotUnique
 

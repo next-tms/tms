@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddSentAtToReceivables < ActiveRecord::Migration[7.0]
   def up
     add_column :receivables, :sent_at, :datetime

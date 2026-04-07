@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::BanksController < Broker::BrokerController
   before_action :set_bank, only: %i[activity show edit update]
   before_action :authenticate_user!

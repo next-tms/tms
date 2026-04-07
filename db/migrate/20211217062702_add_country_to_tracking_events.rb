@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddCountryToTrackingEvents < ActiveRecord::Migration[6.1]
   def up
     add_reference :tracking_events, :country, null: true, foreign_key: true

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ResetBrokerCarriersCounters < ActiveRecord::Migration[6.1]
   def up
     BrokerCarrier.all.find_each do |broker_carrier|

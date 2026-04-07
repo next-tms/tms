@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class MigrateBrokerCarrierContactsToContacts < ActiveRecord::Migration[6.1]
   def up
     BrokerCarrierContact.all.find_each do |broker_carrier_contact|

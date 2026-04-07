@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class FetchShipmentCarrierPODsJob < ApplicationJob
   def perform(shipment_ids = nil)
     shipments = if shipment_ids.blank?

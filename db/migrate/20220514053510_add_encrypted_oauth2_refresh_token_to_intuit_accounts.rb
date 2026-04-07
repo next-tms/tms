@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddEncryptedOauth2RefreshTokenToIntuitAccounts < ActiveRecord::Migration[7.0]
   def up
     add_column :intuit_accounts, :encrypted_oauth2_refresh_token, :string

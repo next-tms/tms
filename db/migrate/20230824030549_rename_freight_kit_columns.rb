@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RenameFreightKitColumns < ActiveRecord::Migration[7.0]
   def change
     rename_column(:accessorials, :interstellar_code, :freight_kit_code)

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ProcessPaymentTransactionCsvService
   attr_accessor :csv, :broker_carrier, :current_user, :message, :status, :payment_transactions
 

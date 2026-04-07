@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module ProblematicService
   class Rule::Shipment::MissingCustomerReference < Rule::Shipment
     ROLES = %i[accounts_receivable dispatch root].freeze

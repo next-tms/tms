@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CreateShipmentProblemsJob < ApplicationJob
   def perform
     Broker.all.find_each do |broker|

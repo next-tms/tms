@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddOfficeAddressToBrokerCustomer < ActiveRecord::Migration[7.0]
   def up
     add_reference :broker_customers, :office_address, foreign_key: { to_table: :addresses }

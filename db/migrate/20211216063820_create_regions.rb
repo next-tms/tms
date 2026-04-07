@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CreateRegions < ActiveRecord::Migration[6.1]
   def up
     create_table :regions do |t|

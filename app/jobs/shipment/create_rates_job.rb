@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Shipment::CreateRatesJob < ApplicationJob
   queue_as :high_priority
 

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class PopulateResolveableOnProblems < ActiveRecord::Migration[7.0]
   def up
     Problem.all.find_each do |problem|

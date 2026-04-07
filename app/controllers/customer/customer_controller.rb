@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Customer::CustomerController < ApplicationController
   before_action :restrict_to_customer_users
 

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::BrokerCustomersController < Broker::BrokerController
   ALLOWED_ACCESS_FOR_ACCOUNTS_RECEIVABLE = [ 'show', 'shipments', 'update' ].freeze
   ALLOWED_ACCESS_FOR_DISPATCHER = [ 'show', 'shipments' ].freeze

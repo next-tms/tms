@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::UsersController < Broker::BrokerController
   before_action :authenticate_user!
   before_action -> { require_role('root') }, except: %i[impersonate stop_impersonating]

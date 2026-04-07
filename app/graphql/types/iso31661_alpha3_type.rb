@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Types::Iso31661Alpha3Type < Types::BaseEnum
   description 'GraphQL Enum for accepted Iso Alpa 3 codes'
 

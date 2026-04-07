@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class NormalizeStandardizedAddresses < ActiveRecord::Migration[7.1]
   ATTRIBUTES = %i[city postal_code street street2]
 

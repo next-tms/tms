@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RemovePickedUpFromShipments < ActiveRecord::Migration[7.0]
   def up
     remove_column(:shipments, :picked_up, :boolean)

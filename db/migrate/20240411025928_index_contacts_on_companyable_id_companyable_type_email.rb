@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class IndexContactsOnCompanyableIdCompanyableTypeEmail < ActiveRecord::Migration[7.1]
   def up
     say('deduplicate(:contacts, :companyable_id, :companyable_type, :email)')

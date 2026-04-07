@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Types
   class CountryType < Types::BaseObjectWithTimestamp
     description 'GraphQL Object for presenting Country Object'

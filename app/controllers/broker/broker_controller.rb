@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::BrokerController < ApplicationController
   before_action :restrict_to_broker_users
   before_action :set_broker

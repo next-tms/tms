@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::BrokerAccessorialsController < Broker::BrokerController
   before_action :set_broker_accessorial, only: %i[show edit update]
   before_action :authenticate_user!

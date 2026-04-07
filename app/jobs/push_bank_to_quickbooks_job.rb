@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class PushBankToQuickbooksJob < ApplicationJob
   def perform(bank)
     return !!bank.update_quickbooks_account unless bank.quickbooks_account.blank?

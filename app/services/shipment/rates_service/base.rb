@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Shipment::RatesService
   class Base
     attr_reader :broker_carrier, :declared_freight_classes, :rates, :shipment

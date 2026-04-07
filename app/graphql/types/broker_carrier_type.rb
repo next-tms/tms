@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Types
   class BrokerCarrierType < Types::BaseObject
     description 'GraphQL Object for Broker Carrier Model'

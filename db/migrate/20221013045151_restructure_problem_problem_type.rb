@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RestructureProblemProblemType < ActiveRecord::Migration[7.0]
   def up
     add_column :problems, :problematic_rule_code, :string

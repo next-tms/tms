@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module QuickbooksAPIClient
   class Base
     BACKOFF_EXCEPTIONS = [ Quickbooks::TooManyRequests, Quickbooks::ServiceUnavailable ].freeze

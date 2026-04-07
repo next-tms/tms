@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::ProblemsController < Broker::BrokerController
   before_action :set_problem, only: %i[edit show update]
   before_action :set_scoped_problems, only: %i[index resolved suppressive team yours]

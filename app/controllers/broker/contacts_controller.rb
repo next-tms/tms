@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::ContactsController < Broker::BrokerController
   before_action :authenticate_user!
   before_action :set_contact, only: %i[edit show update]

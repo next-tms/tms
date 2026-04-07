@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Mutations
   class Authenticate < BaseMutation
     description 'Authenticate User for GraphQL Access'

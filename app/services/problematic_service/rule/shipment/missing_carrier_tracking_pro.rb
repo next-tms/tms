@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module ProblematicService
   class Rule::Shipment::MissingCarrierTrackingPro < Rule::Shipment
     ROLES = %i[dispatch root].freeze

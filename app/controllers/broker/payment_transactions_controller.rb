@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::PaymentTransactionsController < Broker::BrokerController
   before_action :set_payment_transaction, only: %i[destroy edit show update]
   before_action :authenticate_user!

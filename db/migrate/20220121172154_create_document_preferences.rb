@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class CreateDocumentPreferences < ActiveRecord::Migration[7.0]
   def change
     create_table :document_preferences do |t|

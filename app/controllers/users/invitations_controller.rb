@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Users::InvitationsController < Devise::InvitationsController
   def create
     self.resource = invite_resource

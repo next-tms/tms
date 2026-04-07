@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddUniquenessConstraintToFromAreaToAreaOnCarrierAreas < ActiveRecord::Migration[7.1]
   def up
     say('deduplicate(:carrier_areas, :from_area, :to_area)')

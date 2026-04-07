@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module PDFService
   class Renderer
     class << self

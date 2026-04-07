@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Mutations
   class FetchRates < BaseMutation
     description 'Fetch Shipment Rates'

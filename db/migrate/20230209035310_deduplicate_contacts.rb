@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DeduplicateContacts < ActiveRecord::Migration[7.0]
   def up
     say('deduplicate(:contacts)')

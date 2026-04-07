@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DropCarrierContacts < ActiveRecord::Migration[7.0]
   def up
     drop_table :carrier_contacts

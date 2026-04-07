@@ -211,15 +211,16 @@ GEM
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-gzip (1.0.0)
-      faraday (>= 1.0)
-      zlib (~> 2.1)
-    faraday-multipart (1.0.4)
-      multipart-post (~> 2)
+    faraday-gzip (3.1.0)
+      faraday (>= 2.0, < 3)
+      zlib (~> 3.0)
+    faraday-multipart (1.2.0)
+      multipart-post (~> 2.0)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
     fastcsv (0.0.8)
       csv
+    ffi (1.17.0)
     ffi (1.17.0-aarch64-linux-musl)
     ffi (1.17.0-arm64-darwin)
     ffi (1.17.0-x86_64-linux-gnu)
@@ -336,6 +337,7 @@ GEM
     mini_exiftool (2.10.2)
     mini_magick (4.12.0)
     mini_mime (1.1.5)
+    mini_portile2 (2.8.9)
     minitest (6.0.3)
       drb (~> 2.0)
       prism (~> 1.5)
@@ -369,6 +371,9 @@ GEM
       net-protocol
     nio4r (2.7.3)
     nkf (0.2.0)
+    nokogiri (1.18.10)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.18.10-aarch64-linux-musl)
       racc (~> 1.4)
     nokogiri (1.18.10-arm64-darwin)
@@ -439,11 +444,11 @@ GEM
     puma (6.4.2)
       nio4r (~> 2.0)
     pwned (2.4.1)
-    quickbooks-ruby (2.0.3)
+    quickbooks-ruby (2.0.7)
       activemodel (> 4.0)
       faraday (< 3.0)
-      faraday-gzip (~> 1.0)
-      faraday-multipart (~> 1.0)
+      faraday-gzip (>= 1.0)
+      faraday-multipart (~> 1.0, >= 1.0.4)
       multipart-post
       net-http-persistent
       nokogiri
@@ -700,7 +705,7 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.7.2)
-    zlib (2.1.1)
+    zlib (3.2.3)
 
 PLATFORMS
   aarch64-linux-musl

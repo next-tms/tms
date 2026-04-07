@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module EnumI18nHelper
   # Returns an array of the possible key/i18n values for the enum
   # Example usage:

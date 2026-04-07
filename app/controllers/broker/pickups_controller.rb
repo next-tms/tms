@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::PickupsController < Broker::BrokerController
   before_action :authenticate_user!
 

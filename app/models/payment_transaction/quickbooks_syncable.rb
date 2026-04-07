@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module PaymentTransaction::QuickbooksSyncable
   extend ActiveSupport::Concern
 

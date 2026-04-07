@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class UpdateReceivablesFromQuickbooksJob < ApplicationJob
   def perform
     IntuitAccount.all.each do |intuit_account|

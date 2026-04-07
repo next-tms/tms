@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class BumpNoticedFromV1ToV2 < ActiveRecord::Migration[7.1]
   class TempNotification < ApplicationRecord
     self.inheritance_column = nil

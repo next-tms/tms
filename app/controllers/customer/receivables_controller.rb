@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Customer::ReceivablesController < Customer::CustomerController
   before_action :set_receivable, only: %i[show]
   before_action :authenticate_user!

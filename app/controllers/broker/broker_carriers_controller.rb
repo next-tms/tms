@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :authenticate_user!
   before_action :set_broker_carrier, except: %i[create index new]

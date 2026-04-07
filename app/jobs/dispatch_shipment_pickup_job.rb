@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DispatchShipmentPickupJob < ApplicationJob
   queue_as :high_priority
 

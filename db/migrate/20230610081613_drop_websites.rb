@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DropWebsites < ActiveRecord::Migration[7.0]
   def change
     drop_table('websites', force: :cascade) do |t|

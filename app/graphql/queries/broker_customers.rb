@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Queries
   class BrokerCustomers < Types::BaseObject
     description 'Queries for fetching broker customers'

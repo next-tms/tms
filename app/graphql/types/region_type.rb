@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Types
   class RegionType < Types::BaseObjectWithTimestamp
     description 'GraphQL Object for Region Model'

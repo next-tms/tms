@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class QrCodeService
   class << self
     def tracking_data_uri(shipment)

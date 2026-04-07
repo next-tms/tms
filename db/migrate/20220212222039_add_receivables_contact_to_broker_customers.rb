@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddReceivablesContactToBrokerCustomers < ActiveRecord::Migration[7.0]
   def up
     add_reference :broker_customers, :receivables_contact, null: true, foreign_key: { to_table: :contacts }

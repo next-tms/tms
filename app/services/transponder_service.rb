@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module TransponderService
   class << self
     def mutate(operation, broker_carrier, object, **kwargs)

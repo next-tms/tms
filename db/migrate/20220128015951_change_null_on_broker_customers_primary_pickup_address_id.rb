@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ChangeNullOnBrokerCustomersPrimaryPickupAddressId < ActiveRecord::Migration[7.0]
   def up
     say 'populate(:broker_customers, :primary_pickup_address_id)'

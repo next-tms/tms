@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddRegionToLocations < ActiveRecord::Migration[7.0]
   def up
     add_reference :locations, :region, null: true, foreign_key: true

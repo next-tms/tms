@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module BrokerCarrier::QuickbooksSyncable
   extend ActiveSupport::Concern
 

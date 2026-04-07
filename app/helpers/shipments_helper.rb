@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module ShipmentsHelper
   TABLE_DATA = {
     broker_carrier: {

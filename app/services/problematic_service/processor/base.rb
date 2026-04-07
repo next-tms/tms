@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module ProblematicService
   class Processor::Base
     class << self

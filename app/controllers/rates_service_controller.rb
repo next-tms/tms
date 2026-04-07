@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RatesServiceController < ApplicationController
   # TODO: Deprecate After Regression Testing
   before_action :set_broker_carrier

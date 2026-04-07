@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class BrokerCustomer::ProfitabilityReportJsonService
   attr_reader :broker_customer, :from, :to
 

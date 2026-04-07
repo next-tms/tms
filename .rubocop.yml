@@ -53,6 +53,9 @@ Style/FileRead:
   Enabled: true
 Style/FileWrite:
   Enabled: true
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: never
 Style/HashSyntax:
   EnforcedShorthandSyntax: always
 Style/StringLiterals:

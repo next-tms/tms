@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class FreightKitSnitchService
   def self.snitch(error:, record:, request:, response:)
     return false if error.is_a?(FreightKit::Error) && Rails.env.production?

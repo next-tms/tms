@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module QuickbooksAPIClient
   class Customers < Base
     def create(broker_customer)

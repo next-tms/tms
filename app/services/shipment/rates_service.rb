@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Shipment::RatesService
   SERVICE_CLASSES = [ FromPricingRules, FromTransponderService ]
 

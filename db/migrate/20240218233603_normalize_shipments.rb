@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class NormalizeShipments < ActiveRecord::Migration[7.1]
   ATTRIBUTES = %i[
                  bol

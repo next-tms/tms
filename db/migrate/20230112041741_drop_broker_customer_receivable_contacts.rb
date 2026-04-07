@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DropBrokerCustomerReceivableContacts < ActiveRecord::Migration[7.0]
   def up
     say('populate(:broker_customers, :receivables_contact_id)')

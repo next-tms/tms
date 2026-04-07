@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module DocumentableService
   class Shipment::CreateBrokerLabelJob < ApplicationJob
     queue_as :high_priority

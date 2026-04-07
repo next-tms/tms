@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Types
   class ShipmentType < Types::BaseObjectWithTimestamp
     description 'GraphQL Object for Shipment Model'

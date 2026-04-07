@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Mutations
   class AddressCreate < BaseMutation
     description 'Creates a new address'

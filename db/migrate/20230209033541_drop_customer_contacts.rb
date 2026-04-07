@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DropCustomerContacts < ActiveRecord::Migration[7.0]
   def change
     drop_table('customer_contacts', force: :cascade) do |t|

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # frozen_inputing_literal: true
 
 module Shipment::Fingerprintable

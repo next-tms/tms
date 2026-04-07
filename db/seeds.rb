@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 def load_yaml(table)
   YAML.safe_load(
     File.open(

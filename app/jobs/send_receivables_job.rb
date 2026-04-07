@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class SendReceivablesJob < ApplicationJob
   def perform
     broker_customers = BrokerCustomer.distinct.where(id: Receivable.unsent.joins(:shipment).pluck(:broker_customer_id))
