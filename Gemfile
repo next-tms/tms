@@ -118,7 +118,6 @@ gem 'audited'
 gem 'noticed', '~> 2.6.1'
 gem 'pretender'
 gem 'public_suffix'
-gem 'rss_creator'
 
 gem 'activerecord-session_store', '~> 2.1.0'
 gem 'graphql-client'

@@ -1,7 +1,3 @@
-<% content_for(:alt_links) do %>
-  <link rel="alternate" type="application/rss+xml" title="RSS" href="<%= tracking_path(load_id: @shipment.load_id) %>" />
-<% end %>
-
 <div class="page-header mb-4">
   <h1>Load <%= @shipment.load_id %></h1>
   <ul class="list-unstyled list-inline lead">
