@@ -14,9 +14,13 @@ gem 'importmap-rails', '~> 2.0.1'
 gem 'stimulus-rails', '~> 1.1.1'
 gem 'turbo-rails', '~> 1.4.0'
 
-gem 'redis', '~> 4.8'
-
 gem 'tzinfo-data'
+
+# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+gem 'solid_cache'
+gem 'solid_queue'
+gem 'solid_cable'
+
 gem 'bootsnap', '>= 1.4.2', require: false
 
 group :development, :test do
@@ -83,9 +87,6 @@ gem 'freight_kit-next', git: 'https://github.com/next-tms/freight_kit-next', tag
 gem 'place_kit', '~> 0.0.1'
 
 gem 'honeybadger', '~> 5.13'
-
-gem 'sidekiq', '~> 7.2.4'
-gem 'sidekiq-scheduler', '~> 5.0.3'
 
 gem 'barby'
 gem 'business_time'
