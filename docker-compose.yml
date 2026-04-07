@@ -1,0 +1,76 @@
+services:
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    environment:
+      CABLE_DATABASE_URL: postgres://liftoff:liftoff@db:5433/liftoff_cable
+      CACHE_DATABASE_URL: postgres://liftoff:liftoff@db:5433/liftoff_cache
+      DATABASE_URL: postgres://liftoff:liftoff@db:5433/liftoff
+      FORCE_SSL: false
+      PORT: 8000
+      QUEUE_DATABASE_URL: postgres://liftoff:liftoff@db:5433/liftoff_queue
+      RACK_ENV: production
+      RAILS_ENV: production
+      RAILS_LOG_LEVEL: debug
+    labels:
+      - "traefik.enable=true"
+      # h2c
+      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.routers.app.rule=Host(`localhost`) && !PathPrefix(`/cable`)"
+      - "traefik.http.routers.app.service=app"
+      - "traefik.http.services.app.loadbalancer.server.port=8000"
+      - "traefik.http.services.app.loadbalancer.server.scheme=h2c"
+      # HTTP/1.1
+      - "traefik.http.routers.app-cable.entrypoints=web"
+      - "traefik.http.routers.app-cable.rule=Host(`localhost`) && PathPrefix(`/cable`)"
+      - "traefik.http.routers.app-cable.service=app-cable"
+      - "traefik.http.services.app-cable.loadbalancer.server.port=8000"
+      - "traefik.http.services.app-cable.loadbalancer.server.scheme=http"
+  db:
+    command: >
+      sh -c "
+      docker-entrypoint.sh postgres &
+      for database in liftoff liftoff_cable liftoff_cache liftoff_queue; do
+        echo 'Creating database if not exists: $database' && \
+        PGPASSWORD=liftoff psql -U liftoff -d postgres -c \"
+        DO \$\$
+        BEGIN
+          IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '$database') THEN
+            CREATE DATABASE $database;
+          END IF;
+        END \$\$;
+        \";
+      done;
+      wait
+      "
+    environment:
+      PGPORT: 5433
+      POSTGRES_PASSWORD: liftoff
+      POSTGRES_USER: liftoff
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U liftoff -p 5433"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+    image: postgres:18.1-alpine3.23
+    volumes:
+      - ./data/postgres:/var/lib/postgresql
+  web:
+    command:
+      - "--entrypoints.web.address=:80"
+      - "--log.level=DEBUG"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker=true"
+    depends_on:
+      - app
+    image: traefik:v3.6
+    labels:
+      - "traefik.enable=true"
+    ports:
+      - "3000:80"
+    volumes:
+      - ${DOCKER_SOCKET_PATH:-$HOME/.colima/docker.sock}:/var/run/docker.sock:ro
