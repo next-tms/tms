@@ -100,7 +100,7 @@ gem 'devise_invitable', '~> 2.0'
 gem 'devise-pwned_password', '~> 0.2'
 
 gem 'freight_kit-next', git: 'https://github.com/next-tms/freight_kit-next', tag: 'v0.1.33'
-gem 'place_kit', '~> 0.0.1'
+gem 'place_kit', '~> 0.0.5'
 
 gem 'honeybadger', '~> 5.13'
 

@@ -413,8 +413,8 @@ GEM
       activesupport (>= 3.0)
       phony (>= 2.18.12)
     pkg-config (1.6.5)
-    place_kit (0.0.4)
-      activesupport (>= 6.0.0, < 8.1)
+    place_kit (0.0.5)
+      activesupport (>= 6.0.0, < 8.1.4)
       fastcsv (~> 0.0.6)
     postmark (1.23.0)
       json
@@ -759,7 +759,7 @@ DEPENDENCIES
   pagy
   pg (~> 1.6)
   phony_rails
-  place_kit (~> 0.0.1)
+  place_kit (~> 0.0.5)
   postmark-rails
   prawn (~> 2.5.0)
   prawn-labels (~> 1.2.6)
