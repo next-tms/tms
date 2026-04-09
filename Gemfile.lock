@@ -7,12 +7,12 @@ GIT
 
 GIT
   remote: https://github.com/next-tms/freight_kit-next
-  revision: 73f1b0a2d1bcace290a41eef1a13cc8a4d5d7ed6
-  tag: v0.1.33
+  revision: 1aeb8eaa472fe1540a1c32dff034b5bd64605613
+  tag: v0.1.34
   specs:
-    freight_kit-next (0.1.33)
-      freight_kit (~> 0.1.13)
-      rmagick (>= 4.2.5, < 5.5.0)
+    freight_kit-next (0.1.34)
+      freight_kit (~> 0.1.14)
+      rmagick (>= 4.2.5, < 6.4.0)
 
 GEM
   remote: https://rubygems.org/
@@ -225,10 +225,11 @@ GEM
     ffi (1.17.0-arm64-darwin)
     ffi (1.17.0-x86_64-linux-gnu)
     ffi (1.17.0-x86_64-linux-musl)
-    freight_kit (0.1.13)
+    freight_kit (0.1.14)
       active_utils (>= 3.3.1, < 3.7.0)
       activemodel (>= 4.2, < 8.1.4)
       activesupport (>= 4.2, < 8.1.4)
+      benchmark (~> 0.5.0)
       business_time (~> 0.13.0)
       httparty (~> 0.10)
       measured (>= 2.0, < 3.2.2)
