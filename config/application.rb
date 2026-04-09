@@ -11,7 +11,7 @@ Dotenv::Rails.load if [ 'development', 'test' ].include?(ENV['RAILS_ENV'])
 module Liftoff
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.0
+    config.load_defaults 8.1
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -30,6 +30,8 @@ module Liftoff
 
     config.action_mailer.default_url_options = { host: ENV.fetch('DOMAIN', 'localhost:3000') }
 
+    config.active_record.encryption.hash_digest_class = OpenSSL::Digest::SHA1
+    config.active_record.encryption.support_sha1_for_non_deterministic_encryption = true
     config.active_record.yaml_column_permitted_classes = [
                                                                ActiveSupport::TimeWithZone,
                                                                Array,
@@ -51,7 +53,5 @@ module Liftoff
                                                                Symbol,
                                                                Timezone::Zone
                                                         ]
-    config.active_record.encryption.hash_digest_class = OpenSSL::Digest::SHA1
-    config.active_record.encryption.support_sha1_for_non_deterministic_encryption = true
   end
 end
