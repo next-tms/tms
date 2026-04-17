@@ -391,7 +391,7 @@ GEM
       racc (~> 1.4)
     nori (2.7.1)
       bigdecimal
-    noticed (2.6.1)
+    noticed (3.0.0)
       rails (>= 6.1.0)
     oauth2 (2.0.9)
       faraday (>= 0.17.3, < 3.0)
@@ -763,7 +763,7 @@ DEPENDENCIES
   mainstreet (~> 0.3.0)
   matrix
   money-rails (~> 1.15.0)
-  noticed (~> 2.6.1)
+  noticed (~> 3.0.0)
   open_street_map (~> 1.2.1)
   pagy
   pg (~> 1.1)
