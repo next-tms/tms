@@ -10,40 +10,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
-  enable_extension "plpgsql"
 
   create_table "accessorials", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "code"
-    t.string "freight_kit_code"
+    t.datetime "created_at", null: false
     t.boolean "fee", default: false
+    t.string "freight_kit_code"
+    t.string "name"
+    t.datetime "updated_at", null: false
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
     t.datetime "created_at", precision: nil, null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.string "service_name", null: false
     t.bigint "byte_size", null: false
     t.string "checksum"
+    t.string "content_type"
     t.datetime "created_at", precision: nil, null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -54,53 +54,53 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "addresses", force: :cascade do |t|
-    t.string "street"
-    t.string "street2"
     t.string "city"
-    t.string "zip_code"
+    t.integer "country_id", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.text "google_places_spot_cached"
+    t.datetime "google_places_spot_updated_at", precision: nil
     t.decimal "latitude", precision: 15, scale: 10
     t.decimal "longitude", precision: 15, scale: 10
-    t.text "verification_info"
-    t.text "original_attributes"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.string "ref"
-    t.text "google_places_spot_cached"
-    t.integer "country_id", null: false
     t.text "open_street_map_result_cached"
-    t.datetime "google_places_spot_updated_at", precision: nil
-    t.datetime "smarty_streets_result_updated_at", precision: nil
     t.datetime "open_street_map_result_updated_at", precision: nil
+    t.text "original_attributes"
+    t.string "ref"
     t.bigint "region_id"
+    t.datetime "smarty_streets_result_updated_at", precision: nil
     t.bigint "standardized_address_id"
+    t.string "street"
+    t.string "street2"
     t.string "time_zone_name"
+    t.datetime "updated_at", precision: nil, null: false
+    t.text "verification_info"
+    t.string "zip_code"
     t.index ["country_id"], name: "index_addresses_on_country_id"
     t.index ["region_id"], name: "index_addresses_on_region_id"
     t.index ["standardized_address_id"], name: "index_addresses_on_standardized_address_id"
   end
 
   create_table "areas", force: :cascade do |t|
-    t.string "name"
     t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_areas_on_name"
   end
 
   create_table "audits", force: :cascade do |t|
-    t.integer "auditable_id"
-    t.string "auditable_type"
+    t.string "action"
     t.integer "associated_id"
     t.string "associated_type"
+    t.integer "auditable_id"
+    t.string "auditable_type"
+    t.jsonb "audited_changes"
+    t.string "comment"
+    t.datetime "created_at"
+    t.string "remote_address"
+    t.string "request_uuid"
     t.integer "user_id"
     t.string "user_type"
     t.string "username"
-    t.string "action"
-    t.jsonb "audited_changes"
     t.integer "version", default: 0
-    t.string "comment"
-    t.string "remote_address"
-    t.string "request_uuid"
-    t.datetime "created_at"
     t.index ["associated_type", "associated_id"], name: "associated_index"
     t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
     t.index ["created_at"], name: "index_audits_on_created_at"
@@ -109,57 +109,57 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "banks", force: :cascade do |t|
-    t.bigint "broker_id", null: false
     t.string "account_number"
+    t.bigint "broker_id", null: false
+    t.string "kind", null: false
     t.string "name"
     t.integer "quickbooks_account_id"
-    t.string "kind", null: false
     t.index ["broker_id"], name: "index_banks_on_broker_id"
   end
 
   create_table "broker_accessorials", force: :cascade do |t|
-    t.bigint "broker_id", null: false
     t.bigint "accessorial_id"
-    t.string "name"
-    t.float "cost"
-    t.float "upcharge"
-    t.float "upcharge_percent"
-    t.integer "upcharge_cents", default: 0, null: false
-    t.string "upcharge_currency", default: "USD", null: false
+    t.bigint "broker_customer_id"
+    t.bigint "broker_id", null: false
     t.boolean "broker_only", default: true
     t.string "code"
+    t.float "cost"
+    t.boolean "fee", default: false
     t.integer "flat_charge_cents", default: 0, null: false
     t.string "flat_charge_currency", default: "USD", null: false
-    t.bigint "broker_customer_id"
-    t.boolean "fee", default: false
+    t.string "name"
+    t.float "upcharge"
+    t.integer "upcharge_cents", default: 0, null: false
+    t.string "upcharge_currency", default: "USD", null: false
+    t.float "upcharge_percent"
     t.index ["accessorial_id"], name: "index_broker_accessorials_on_accessorial_id"
     t.index ["broker_customer_id"], name: "index_broker_accessorials_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_accessorials_on_broker_id"
   end
 
   create_table "broker_carriers", id: :serial, force: :cascade do |t|
-    t.integer "carrier_id"
-    t.integer "broker_id"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
     t.string "account"
-    t.string "username"
-    t.string "password"
     t.string "account_desc"
-    t.text "default_bol_notes"
-    t.bigint "check_mailing_address_id"
+    t.text "accounting_notes"
     t.bigint "broker_customer_id"
-    t.integer "days_to_pay_after_invoice_date", default: 30
+    t.integer "broker_id"
+    t.integer "carrier_id"
+    t.bigint "check_mailing_address_id"
     t.boolean "create_invoice_on_pickup"
+    t.datetime "created_at", precision: nil, null: false
+    t.integer "days_to_pay_after_invoice_date", default: 30
+    t.text "default_bol_notes"
+    t.string "encrypted_api_key"
+    t.boolean "ignore_bol_requires_tracking_number", default: false
+    t.string "password"
+    t.integer "quickbooks_vendor_id"
     t.integer "quote_padding_cents", default: 0, null: false
     t.string "quote_padding_currency", default: "USD", null: false
-    t.text "accounting_notes"
-    t.string "website_username"
-    t.string "website_password"
     t.integer "shipments_count"
-    t.boolean "ignore_bol_requires_tracking_number", default: false
-    t.integer "quickbooks_vendor_id"
-    t.string "encrypted_api_key"
+    t.datetime "updated_at", precision: nil, null: false
+    t.string "username"
+    t.string "website_password"
+    t.string "website_username"
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
     t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
@@ -177,54 +177,54 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "broker_customer_dispatchers", force: :cascade do |t|
-    t.bigint "user_id", null: false
     t.bigint "broker_customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["broker_customer_id"], name: "index_broker_customer_dispatchers_on_broker_customer_id"
     t.index ["user_id"], name: "index_broker_customer_dispatchers_on_user_id"
   end
 
   create_table "broker_customer_sales_reps", force: :cascade do |t|
-    t.bigint "user_id", null: false
     t.bigint "broker_customer_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.integer "commission_flat_cents", default: 0, null: false
     t.string "commission_flat_currency", default: "USD", null: false
     t.decimal "commission_percent", default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["broker_customer_id"], name: "index_broker_customer_sales_reps_on_broker_customer_id"
     t.index ["user_id"], name: "index_broker_customer_sales_reps_on_user_id"
   end
 
   create_table "broker_customers", force: :cascade do |t|
-    t.bigint "customer_id"
+    t.boolean "always_show_quotes_based_on_calculated_classes", default: true
     t.bigint "broker_id"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.text "shipment_string_patterns"
-    t.text "default_bol_notes"
     t.boolean "can_quote", default: false
+    t.datetime "created_at", precision: nil, null: false
+    t.bigint "customer_id"
+    t.text "default_bol_notes"
     t.integer "default_upcharge_cents", default: 0, null: false
     t.string "default_upcharge_currency", default: "USD", null: false
     t.float "default_upcharge_percentage", default: 0.0
-    t.boolean "always_show_quotes_based_on_calculated_classes", default: true
-    t.bigint "primary_pickup_address_id", null: false
-    t.text "valid_freight_classes"
     t.boolean "enable_auto_freight_class", default: true
-    t.text "internal_notes"
-    t.boolean "requires_carrier_bol_on_receivables", default: true
-    t.boolean "requires_carrier_pod_on_receivables", default: true
     t.boolean "ignore_value_on_api_quotes", default: false
+    t.text "internal_notes"
     t.bigint "office_address_id", null: false
+    t.string "preferred_broker_carriers_kind"
+    t.bigint "primary_pickup_address_id", null: false
     t.string "quickbooks_customer_id"
     t.bigint "receivables_contact_id"
     t.string "receivables_schedule", default: "immediately"
-    t.boolean "requires_shipment_delivery_before_receivable", default: true
-    t.string "preferred_broker_carriers_kind"
+    t.boolean "requires_carrier_bol_on_receivables", default: true
+    t.boolean "requires_carrier_pod_on_receivables", default: true
     t.boolean "requires_charges_confirmed_on_receivables", default: false
     t.boolean "requires_customer_reference_number_on_receivables", default: false
+    t.boolean "requires_shipment_delivery_before_receivable", default: true
     t.boolean "requires_shipment_shipper_reference_on_receivables", default: false
+    t.text "shipment_string_patterns"
+    t.datetime "updated_at", precision: nil, null: false
+    t.text "valid_freight_classes"
     t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["office_address_id"], name: "index_broker_customers_on_office_address_id"
@@ -235,29 +235,29 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "brokers", id: :serial, force: :cascade do |t|
-    t.string "name"
     t.bigint "address_id"
-    t.string "phone"
-    t.string "customer_service_email"
-    t.integer "first_load_id"
-    t.text "default_bol_notes"
-    t.string "robot_email"
-    t.string "time_zone_name", null: false
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.boolean "automatically_authorize_receivables", default: false
     t.boolean "automatically_update_shipment_tracking_based_on_carrier_apis", default: true
+    t.string "customer_service_email"
+    t.text "default_bol_notes"
+    t.integer "first_load_id"
     t.boolean "ignore_broker_carrier_bol_requires_tracking_number", default: false
+    t.string "name"
+    t.string "phone"
     t.boolean "requires_charges_confirmed_on_receivables", default: false
+    t.string "robot_email"
     t.string "theme_primary_color", default: "#0d6efd"
     t.string "theme_sidebar_background_color", default: "#E2F8FF"
     t.string "theme_sidebar_text_color", default: "rgba(0, 0, 0, 0.95)"
+    t.string "time_zone_name", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["address_id"], name: "index_brokers_on_address_id"
   end
 
   create_table "carrier_areas", force: :cascade do |t|
     t.bigint "carrier_id", null: false
-    t.bigint "to_area_id", null: false
     t.bigint "from_area_id", null: false
+    t.bigint "to_area_id", null: false
     t.index ["carrier_id", "from_area_id", "to_area_id"], name: "idx_on_carrier_id_from_area_id_to_area_id_bcd543b955", unique: true
     t.index ["carrier_id"], name: "index_carrier_areas_on_carrier_id"
     t.index ["from_area_id"], name: "index_carrier_areas_on_from_area_id"
@@ -265,16 +265,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "carriers", id: :serial, force: :cascade do |t|
+    t.boolean "acts_as_broker", default: false
+    t.bigint "broker_billing_address_id"
+    t.bigint "check_mailing_address_id"
+    t.boolean "consider_bol_and_pod_documents_same", default: false
+    t.string "encrypted_api_key"
+    t.string "encrypted_proxy_url"
+    t.boolean "has_traceable_pickup_confirmation", default: false
+    t.integer "mc_number"
     t.string "name"
     t.string "scac"
-    t.boolean "acts_as_broker", default: false
-    t.bigint "check_mailing_address_id"
-    t.boolean "has_traceable_pickup_confirmation", default: false
-    t.bigint "broker_billing_address_id"
-    t.string "encrypted_api_key"
-    t.integer "mc_number"
-    t.boolean "consider_bol_and_pod_documents_same", default: false
-    t.string "encrypted_proxy_url"
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
     t.index ["name"], name: "index_carriers_on_name", unique: true
@@ -282,49 +282,49 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "claim_items", force: :cascade do |t|
-    t.bigint "claim_id", null: false
-    t.string "payee_type", null: false
-    t.bigint "payee_id", null: false
     t.integer "balance_cents", default: 0, null: false
     t.string "balance_currency", default: "USD", null: false
+    t.bigint "claim_id", null: false
+    t.datetime "created_at", null: false
+    t.text "notes"
+    t.bigint "payee_id", null: false
+    t.string "payee_type", null: false
     t.integer "total_cents", default: 0, null: false
     t.string "total_currency", default: "USD", null: false
-    t.text "notes"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["claim_id"], name: "index_claim_items_on_claim_id"
     t.index ["payee_type", "payee_id"], name: "index_claim_items_on_payee"
   end
 
   create_table "claims", force: :cascade do |t|
-    t.bigint "shipment_id", null: false
-    t.date "due_on"
     t.integer "balance_cents", default: 0, null: false
     t.string "balance_currency", default: "USD", null: false
+    t.datetime "created_at", null: false
+    t.date "due_on"
+    t.bigint "shipment_id", null: false
     t.integer "total_cents", default: 0, null: false
     t.string "total_currency", default: "USD", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["due_on"], name: "index_claims_on_due_on"
     t.index ["shipment_id"], name: "index_claims_on_shipment_id"
   end
 
   create_table "comments", force: :cascade do |t|
-    t.bigint "contact_id", null: false
-    t.bigint "discussion_topic_id", null: false
     t.text "body"
+    t.bigint "contact_id", null: false
     t.datetime "created_at", null: false
+    t.bigint "discussion_topic_id", null: false
     t.datetime "updated_at", null: false
     t.index ["contact_id"], name: "index_comments_on_contact_id"
     t.index ["discussion_topic_id"], name: "index_comments_on_discussion_topic_id"
   end
 
   create_table "commissions", force: :cascade do |t|
-    t.boolean "paid", default: false
     t.integer "amount_cents", default: 0, null: false
     t.string "amount_currency", default: "USD", null: false
-    t.bigint "shipment_id", null: false
     t.datetime "created_at", null: false
+    t.boolean "paid", default: false
+    t.bigint "shipment_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["shipment_id"], name: "index_commissions_on_shipment_id"
@@ -333,8 +333,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
 
   create_table "contact_roles", force: :cascade do |t|
     t.bigint "contact_id", null: false
-    t.string "role", null: false
     t.datetime "created_at", null: false
+    t.string "role", null: false
     t.datetime "updated_at", null: false
     t.index ["contact_id", "role"], name: "index_contact_roles_on_contact_id_and_role", unique: true
     t.index ["contact_id"], name: "index_contact_roles_on_contact_id"
@@ -342,16 +342,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "contacts", force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
-    t.string "job_title"
-    t.string "email"
-    t.string "work_phone"
-    t.string "mobile_phone"
-    t.string "label"
     t.text "comments"
-    t.string "companyable_type"
     t.bigint "companyable_id", null: false
+    t.string "companyable_type"
+    t.string "email"
+    t.string "first_name"
+    t.string "job_title"
+    t.string "label"
+    t.string "last_name"
+    t.string "mobile_phone"
+    t.string "work_phone"
     t.index ["companyable_id", "companyable_type", "email"], name: "idx_on_companyable_id_companyable_type_email_1de3a153e6", unique: true
     t.index ["companyable_type", "companyable_id"], name: "index_contacts_on_companyable"
   end
@@ -359,9 +359,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   create_table "countries", force: :cascade do |t|
     t.string "alpha2_code"
     t.string "alpha3_code"
+    t.datetime "created_at", null: false
     t.string "name"
     t.integer "un_code"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
@@ -371,11 +371,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "discussion_topics", force: :cascade do |t|
-    t.bigint "discussion_id", null: false
-    t.string "topic_type", null: false
-    t.bigint "topic_id", null: false
     t.string "contact_scope", null: false
     t.datetime "created_at", null: false
+    t.bigint "discussion_id", null: false
+    t.bigint "topic_id", null: false
+    t.string "topic_type", null: false
     t.datetime "updated_at", null: false
     t.index ["contact_scope"], name: "index_discussion_topics_on_contact_scope"
     t.index ["discussion_id"], name: "index_discussion_topics_on_discussion_id"
@@ -383,9 +383,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "discussions", force: :cascade do |t|
-    t.string "subject_type", null: false
-    t.bigint "subject_id", null: false
     t.datetime "created_at", null: false
+    t.bigint "subject_id", null: false
+    t.string "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["subject_type", "subject_id"], name: "index_discussions_on_subject"
   end
@@ -394,8 +394,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
     t.bigint "broker_customer_id"
     t.bigint "broker_id", null: false
     t.bigint "contact_id", null: false
-    t.string "kind"
     t.datetime "created_at", null: false
+    t.string "kind"
     t.datetime "updated_at", null: false
     t.index ["broker_customer_id"], name: "index_document_preferences_on_broker_customer_id"
     t.index ["broker_id"], name: "index_document_preferences_on_broker_id"
@@ -404,78 +404,78 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "active_shipping_code"
+    t.datetime "created_at", null: false
+    t.string "name"
     t.boolean "public_by_default", default: true, null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "intuit_accounts", force: :cascade do |t|
-    t.datetime "oauth2_access_token_expires_at"
-    t.datetime "oauth2_refresh_token_expires_at"
     t.bigint "broker_id"
-    t.text "realm_id"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "encrypted_oauth2_access_token"
     t.string "encrypted_oauth2_refresh_token"
+    t.datetime "oauth2_access_token_expires_at"
+    t.datetime "oauth2_refresh_token_expires_at"
+    t.text "realm_id"
+    t.datetime "updated_at", null: false
     t.index ["broker_id"], name: "index_intuit_accounts_on_broker_id"
   end
 
   create_table "items", force: :cascade do |t|
-    t.integer "l"
-    t.integer "w"
-    t.integer "h"
-    t.string "nmfc"
-    t.boolean "hazmat"
-    t.boolean "refrigerated"
-    t.string "desc"
-    t.integer "packaging_id"
-    t.integer "weight"
-    t.integer "quantity"
-    t.float "declared_freight_class"
     t.datetime "created_at", null: false
+    t.float "declared_freight_class"
+    t.string "desc"
+    t.integer "h"
+    t.boolean "hazmat"
+    t.integer "l"
+    t.string "nmfc"
+    t.integer "packaging_id"
+    t.integer "quantity"
+    t.boolean "refrigerated"
     t.datetime "updated_at", null: false
+    t.integer "w"
+    t.integer "weight"
   end
 
   create_table "location_areas", force: :cascade do |t|
     t.bigint "area_id", null: false
-    t.bigint "location_id", null: false
     t.datetime "created_at", null: false
+    t.bigint "location_id", null: false
     t.datetime "updated_at", null: false
     t.index ["area_id"], name: "index_location_areas_on_area_id"
     t.index ["location_id"], name: "index_location_areas_on_location_id"
   end
 
   create_table "locations", force: :cascade do |t|
-    t.string "zip_code"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.bigint "region_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "zip_code"
     t.index ["region_id"], name: "index_locations_on_region_id"
     t.index ["zip_code"], name: "index_locations_on_zip_code"
   end
 
   create_table "noticed_events", force: :cascade do |t|
-    t.string "type"
-    t.string "record_type"
-    t.bigint "record_id"
-    t.jsonb "params"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.integer "notifications_count"
+    t.jsonb "params"
+    t.bigint "record_id"
+    t.string "record_type"
+    t.string "type"
+    t.datetime "updated_at", null: false
     t.index ["record_type", "record_id"], name: "index_noticed_events_on_record"
   end
 
   create_table "noticed_notifications", force: :cascade do |t|
-    t.string "type"
-    t.bigint "event_id", null: false
-    t.string "recipient_type", null: false
-    t.bigint "recipient_id", null: false
-    t.datetime "read_at", precision: nil
-    t.datetime "seen_at", precision: nil
     t.datetime "created_at", null: false
+    t.bigint "event_id", null: false
+    t.datetime "read_at", precision: nil
+    t.bigint "recipient_id", null: false
+    t.string "recipient_type", null: false
+    t.datetime "seen_at", precision: nil
+    t.string "type"
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
@@ -483,66 +483,66 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
 
   create_table "overlength_rules", force: :cascade do |t|
     t.bigint "broker_carrier_id", null: false
-    t.integer "min_length"
-    t.integer "max_length"
     t.integer "cost_cents", default: 0, null: false
     t.string "cost_currency", default: "USD", null: false
+    t.integer "max_length"
+    t.integer "min_length"
     t.index ["broker_carrier_id"], name: "index_overlength_rules_on_broker_carrier_id"
   end
 
   create_table "packagings", force: :cascade do |t|
-    t.string "name"
     t.string "freight_kit_type"
+    t.string "name"
     t.index ["freight_kit_type"], name: "index_packagings_on_freight_kit_type"
   end
 
   create_table "payment_methods", force: :cascade do |t|
-    t.string "name"
     t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
   end
 
   create_table "payment_transactions", force: :cascade do |t|
-    t.bigint "shipment_id"
-    t.string "pro"
+    t.boolean "additional_charge"
     t.integer "balance_cents", default: 0, null: false
     t.string "balance_currency", default: "USD", null: false
-    t.integer "paid_cents", default: 0, null: false
-    t.string "paid_currency", default: "USD", null: false
-    t.text "notes"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "payment_id"
-    t.boolean "additional_charge"
-    t.date "due_on"
     t.bigint "broker_carrier_id"
     t.bigint "broker_id", null: false
+    t.datetime "created_at", null: false
     t.bigint "created_by_id"
+    t.date "due_on"
     t.string "invoice"
     t.string "legacy_load_id"
+    t.text "notes"
+    t.integer "paid_cents", default: 0, null: false
+    t.string "paid_currency", default: "USD", null: false
+    t.bigint "payment_id"
+    t.string "pro"
     t.integer "quickbooks_bill_id"
+    t.bigint "shipment_id"
+    t.datetime "updated_at", null: false
     t.index ["broker_carrier_id"], name: "index_payment_transactions_on_broker_carrier_id"
     t.index ["payment_id"], name: "index_payment_transactions_on_payment_id"
     t.index ["shipment_id"], name: "index_payment_transactions_on_shipment_id"
   end
 
   create_table "payments", force: :cascade do |t|
+    t.datetime "approved_at", precision: nil
+    t.bigint "approved_by_id"
+    t.bigint "bank_id"
     t.bigint "broker_carrier_id", null: false
+    t.bigint "broker_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id"
+    t.date "due_on"
     t.string "method"
     t.string "method_reference"
-    t.bigint "created_by_id"
-    t.bigint "approved_by_id"
-    t.datetime "approved_at", precision: nil
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.date "due_on"
-    t.date "paid_on"
-    t.bigint "broker_id", null: false
     t.integer "paid_cents", default: 0, null: false
     t.string "paid_currency", default: "USD", null: false
-    t.bigint "bank_id"
+    t.date "paid_on"
     t.bigint "payment_method_id"
     t.integer "quickbooks_bill_payment_id"
+    t.datetime "updated_at", null: false
     t.index ["approved_by_id"], name: "index_payments_on_approved_by_id"
     t.index ["bank_id"], name: "index_payments_on_bank_id"
     t.index ["broker_carrier_id"], name: "index_payments_on_broker_carrier_id"
@@ -551,19 +551,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "pickups", force: :cascade do |t|
-    t.datetime "confirmed_at", precision: nil
-    t.datetime "requested_at", precision: nil
-    t.bigint "rate_id", null: false
-    t.bigint "shipment_id", null: false
-    t.bigint "updated_by_id"
-    t.string "pickup_confirmation"
-    t.string "pro"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "dispatcher_id"
+    t.jsonb "api_errors", default: "[]", null: false
     t.text "api_request"
     t.text "api_response"
-    t.jsonb "api_errors", default: "[]", null: false
+    t.datetime "confirmed_at", precision: nil
+    t.datetime "created_at", null: false
+    t.bigint "dispatcher_id"
+    t.string "pickup_confirmation"
+    t.string "pro"
+    t.bigint "rate_id", null: false
+    t.datetime "requested_at", precision: nil
+    t.bigint "shipment_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "updated_by_id"
     t.index ["dispatcher_id"], name: "index_pickups_on_dispatcher_id"
     t.index ["rate_id"], name: "index_pickups_on_rate_id"
     t.index ["shipment_id"], name: "index_pickups_on_shipment_id"
@@ -571,8 +571,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "preferred_broker_carriers", force: :cascade do |t|
-    t.bigint "broker_customer_id", null: false
     t.bigint "broker_carrier_id", null: false
+    t.bigint "broker_customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["broker_carrier_id"], name: "index_preferred_broker_carriers_on_broker_carrier_id"
@@ -580,13 +580,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "pricing_rules", force: :cascade do |t|
-    t.bigint "carrier_area_id", null: false
     t.bigint "broker_carrier_id", null: false
+    t.bigint "carrier_area_id", null: false
     t.integer "cost_per_pallet_cents", default: 0, null: false
     t.string "cost_per_pallet_currency", default: "USD", null: false
+    t.datetime "created_at", null: false
     t.integer "max_pallets"
     t.integer "min_pallets"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["broker_carrier_id"], name: "index_pricing_rules_on_broker_carrier_id"
     t.index ["carrier_area_id"], name: "index_pricing_rules_on_carrier_area_id"
@@ -595,17 +595,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "problems", force: :cascade do |t|
-    t.datetime "resolved_at"
     t.bigint "assigned_to_id", null: false
-    t.bigint "resolved_by_id"
-    t.string "title"
     t.text "body"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "resolvable_type"
-    t.bigint "resolvable_id"
     t.string "problematic_rule_code", null: false
+    t.bigint "resolvable_id"
+    t.string "resolvable_type"
+    t.datetime "resolved_at"
+    t.bigint "resolved_by_id"
     t.integer "suppressions_count"
+    t.string "title"
+    t.datetime "updated_at", null: false
     t.index ["assigned_to_id"], name: "index_problems_on_assigned_to_id"
     t.index ["body"], name: "index_problems_on_body"
     t.index ["resolvable_type", "resolvable_id"], name: "index_problems_on_resolvable"
@@ -615,36 +615,36 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "rate_accessorials", force: :cascade do |t|
-    t.bigint "rate_id", null: false
     t.bigint "accessorial_id", null: false
     t.datetime "created_at", null: false
+    t.bigint "rate_id", null: false
     t.datetime "updated_at", null: false
     t.index ["accessorial_id"], name: "index_rate_accessorials_on_accessorial_id"
     t.index ["rate_id"], name: "index_rate_accessorials_on_rate_id"
   end
 
   create_table "rates", force: :cascade do |t|
-    t.bigint "broker_carrier_id", null: false
-    t.bigint "tracking_carrier_id"
-    t.bigint "broker_customer_id"
-    t.bigint "shipment_id", null: false
-    t.integer "cost_cents", default: 0, null: false
-    t.string "cost_currency", default: "USD", null: false
-    t.datetime "expires_at", precision: nil
-    t.string "reference"
+    t.jsonb "api_errors", default: "[]", null: false
     t.text "api_request"
     t.text "api_response"
-    t.integer "transit_days"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "incomplete"
-    t.string "shipment_fingerprint"
-    t.string "uid"
-    t.string "freight_kit_service_type"
     t.json "breakdown"
-    t.string "source"
+    t.bigint "broker_carrier_id", null: false
+    t.bigint "broker_customer_id"
+    t.integer "cost_cents", default: 0, null: false
+    t.string "cost_currency", default: "USD", null: false
+    t.datetime "created_at", null: false
     t.boolean "declared_freight_classes", null: false
-    t.jsonb "api_errors", default: "[]", null: false
+    t.datetime "expires_at", precision: nil
+    t.string "freight_kit_service_type"
+    t.boolean "incomplete"
+    t.string "reference"
+    t.string "shipment_fingerprint"
+    t.bigint "shipment_id", null: false
+    t.string "source"
+    t.bigint "tracking_carrier_id"
+    t.integer "transit_days"
+    t.string "uid"
+    t.datetime "updated_at", null: false
     t.index ["broker_carrier_id"], name: "index_rates_on_broker_carrier_id"
     t.index ["broker_customer_id"], name: "index_rates_on_broker_customer_id"
     t.index ["freight_kit_service_type"], name: "index_rates_on_freight_kit_service_type"
@@ -655,31 +655,31 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   create_table "receivable_items", force: :cascade do |t|
     t.integer "charge_cents", default: 0, null: false
     t.string "charge_currency", default: "USD", null: false
-    t.bigint "receivable_id", null: false
-    t.text "description"
     t.datetime "created_at", null: false
+    t.text "description"
+    t.bigint "receivable_id", null: false
     t.datetime "updated_at", null: false
     t.index ["receivable_id"], name: "index_receivable_items_on_receivable_id"
   end
 
   create_table "receivables", force: :cascade do |t|
-    t.boolean "invoiced", default: false
     t.datetime "authorized_at", precision: nil
-    t.datetime "due_by", precision: nil
-    t.datetime "paid_at", precision: nil
     t.bigint "authorized_by_id"
-    t.bigint "created_by_id"
-    t.bigint "shipment_id", null: false
-    t.bigint "updated_by_id"
+    t.integer "balance_cents", default: 0, null: false
+    t.string "balance_currency", default: "USD", null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "total_cents", default: 0, null: false
-    t.string "total_currency", default: "USD", null: false
+    t.bigint "created_by_id"
+    t.datetime "due_by", precision: nil
+    t.boolean "invoiced", default: false
+    t.datetime "paid_at", precision: nil
     t.string "quickbooks_invoice_id"
     t.datetime "sent_at"
     t.bigint "sent_by_id"
-    t.integer "balance_cents", default: 0, null: false
-    t.string "balance_currency", default: "USD", null: false
+    t.bigint "shipment_id", null: false
+    t.integer "total_cents", default: 0, null: false
+    t.string "total_currency", default: "USD", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "updated_by_id"
     t.index ["authorized_at"], name: "index_receivables_on_authorized_at"
     t.index ["authorized_by_id"], name: "index_receivables_on_authorized_by_id"
     t.index ["created_by_id"], name: "index_receivables_on_created_by_id"
@@ -692,139 +692,140 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "regions", force: :cascade do |t|
-    t.bigint "country_id", null: false
-    t.string "name", null: false
     t.string "abbreviation", null: false
+    t.bigint "country_id", null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "iso31662", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
     t.index ["abbreviation"], name: "index_regions_on_abbreviation"
     t.index ["country_id"], name: "index_regions_on_country_id"
     t.index ["name"], name: "index_regions_on_name"
   end
 
   create_table "sessions", force: :cascade do |t|
-    t.string "session_id", null: false
-    t.text "data"
     t.datetime "created_at", null: false
+    t.text "data"
+    t.string "session_id", null: false
     t.datetime "updated_at", null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
   create_table "settings", force: :cascade do |t|
-    t.string "key"
-    t.string "value"
     t.datetime "created_at", null: false
+    t.string "key"
     t.datetime "updated_at", null: false
+    t.string "value"
     t.index ["key"], name: "index_settings_on_key"
   end
 
   create_table "shipment_accessorials", force: :cascade do |t|
-    t.bigint "shipment_id", null: false
     t.bigint "accessorial_id", null: false
+    t.bigint "shipment_id", null: false
     t.index ["accessorial_id"], name: "index_shipment_accessorials_on_accessorial_id"
     t.index ["shipment_id"], name: "index_shipment_accessorials_on_shipment_id"
   end
 
   create_table "shipment_broker_accessorials", force: :cascade do |t|
-    t.bigint "shipment_id", null: false
     t.bigint "broker_accessorial_id", null: false
-    t.integer "cost_cents", default: 0, null: false
-    t.string "cost_currency", default: "USD", null: false
     t.integer "charge_cents", default: 0, null: false
     t.string "charge_currency", default: "USD", null: false
+    t.integer "cost_cents", default: 0, null: false
+    t.string "cost_currency", default: "USD", null: false
+    t.bigint "shipment_id", null: false
     t.index ["broker_accessorial_id"], name: "index_shipment_broker_accessorials_on_broker_accessorial_id"
     t.index ["shipment_id"], name: "index_shipment_broker_accessorials_on_shipment_id"
   end
 
   create_table "shipment_items", force: :cascade do |t|
-    t.bigint "shipment_id"
     t.bigint "item_id"
+    t.bigint "shipment_id"
     t.index ["item_id"], name: "index_shipment_items_on_item_id"
     t.index ["shipment_id"], name: "index_shipment_items_on_shipment_id"
   end
 
   create_table "shipments", id: :serial, force: :cascade do |t|
-    t.integer "broker_id"
+    t.bigint "applied_rate_id"
+    t.string "bol"
+    t.text "bol_notes"
+    t.datetime "booked_at", precision: nil
+    t.text "broker_and_broker_customer_notes"
     t.integer "broker_carrier_id"
-    t.string "shipper_name"
-    t.string "shipper_reference"
+    t.bigint "broker_customer_id"
+    t.integer "broker_id"
+    t.text "broker_notes"
+    t.datetime "canceled_at", precision: nil
+    t.integer "carrier_charge_cents", default: 0, null: false
+    t.string "carrier_charge_currency", default: "USD", null: false
+    t.integer "carrier_cost_cents", default: 0, null: false
+    t.string "carrier_cost_currency", default: "USD", null: false
+    t.boolean "charges_confirmed", default: false
+    t.datetime "created_at", precision: nil
+    t.bigint "created_by_id"
+    t.text "customer_notes"
     t.string "customer_reference"
-    t.string "pro"
-    t.string "pickup_confirmation"
-    t.integer "priority"
-    t.time "shipper_unavailable_at"
-    t.time "receiver_available_at"
-    t.time "receiver_unavailable_at"
+    t.datetime "delivered_at", precision: nil
+    t.datetime "delivery_appointment_at", precision: nil
+    t.date "delivery_appointment_on"
+    t.date "delivery_eta_on"
+    t.string "delivery_hours_end_at"
+    t.string "delivery_hours_start_at"
+    t.datetime "departed_origin_terminal_at", precision: nil
+    t.datetime "dispatched_at", precision: nil
+    t.bigint "dispatcher_id", null: false
+    t.string "fingerprint"
+    t.boolean "lift_gate_delivery"
+    t.boolean "lift_gate_pickup"
     t.integer "load"
-    t.string "receiver_name"
-    t.string "shipper_contact_name"
-    t.string "shipper_contact_phone"
-    t.string "shipper_contact_email"
+    t.integer "load_id"
+    t.date "lost_on"
+    t.boolean "notify"
+    t.datetime "out_for_delivery_at", precision: nil
+    t.date "pending_appointment_since"
+    t.datetime "picked_up_at", precision: nil
+    t.string "pickup_confirmation"
+    t.datetime "pickup_driver_assigned_at", precision: nil
+    t.string "pickup_eta_at"
+    t.string "pickup_hours_end_at"
+    t.string "pickup_hours_start_at"
+    t.date "pickup_on"
+    t.integer "priority"
+    t.string "pro"
+    t.datetime "promised_delivery_by", precision: nil
+    t.text "public_notes"
+    t.string "quote_id"
+    t.boolean "quote_only", default: false
+    t.datetime "quoted_delivery_by", precision: nil
+    t.bigint "receiver_address_id"
+    t.time "receiver_available_at"
+    t.string "receiver_contact_email"
     t.string "receiver_contact_name"
     t.string "receiver_contact_phone"
-    t.string "receiver_contact_email"
-    t.string "shipper_bol"
+    t.string "receiver_name"
+    t.time "receiver_unavailable_at"
     t.bigint "shipper_address_id"
-    t.bigint "receiver_address_id"
-    t.string "bol"
-    t.date "pickup_on"
-    t.boolean "lift_gate_delivery"
-    t.boolean "notify"
-    t.boolean "lift_gate_pickup"
-    t.datetime "delivered_at", precision: nil
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.date "delivery_eta_on"
+    t.datetime "shipper_available_at", precision: nil
+    t.string "shipper_bol"
+    t.string "shipper_contact_email"
+    t.string "shipper_contact_name"
+    t.string "shipper_contact_phone"
+    t.string "shipper_name"
+    t.string "shipper_reference"
+    t.time "shipper_unavailable_at"
+    t.string "status", null: false
     t.integer "total_charges_cents", default: 0, null: false
     t.string "total_charges_currency", default: "USD", null: false
     t.integer "total_cost_cents", default: 0, null: false
     t.string "total_cost_currency", default: "USD", null: false
-    t.string "quote_id"
-    t.datetime "picked_up_at", precision: nil
-    t.datetime "dispatched_at", precision: nil
-    t.datetime "shipper_available_at", precision: nil
-    t.datetime "out_for_delivery_at", precision: nil
-    t.integer "load_id"
+    t.bigint "tracking_carrier_id"
+    t.string "tracking_carrier_pickup_confirmation"
+    t.string "tracking_carrier_pro"
+    t.boolean "truckload", default: false
+    t.datetime "updated_at", precision: nil
+    t.bigint "updated_by_id"
     t.integer "value_cents", default: 0, null: false
     t.string "value_currency", default: "USD", null: false
-    t.text "bol_notes"
-    t.integer "carrier_cost_cents", default: 0, null: false
-    t.string "carrier_cost_currency", default: "USD", null: false
-    t.text "broker_notes"
-    t.text "customer_notes"
-    t.integer "carrier_charge_cents", default: 0, null: false
-    t.string "carrier_charge_currency", default: "USD", null: false
-    t.datetime "canceled_at", precision: nil
-    t.bigint "broker_customer_id"
-    t.bigint "updated_by_id"
-    t.datetime "quoted_delivery_by", precision: nil
-    t.datetime "promised_delivery_by", precision: nil
-    t.boolean "truckload", default: false
-    t.date "pending_appointment_since"
-    t.datetime "delivery_appointment_at", precision: nil
-    t.date "delivery_appointment_on"
-    t.bigint "tracking_carrier_id"
-    t.string "tracking_carrier_pro"
-    t.string "tracking_carrier_pickup_confirmation"
-    t.string "pickup_hours_start_at"
-    t.string "pickup_hours_end_at"
-    t.string "delivery_hours_start_at"
-    t.string "delivery_hours_end_at"
-    t.bigint "applied_rate_id"
-    t.string "pickup_eta_at"
-    t.datetime "pickup_driver_assigned_at", precision: nil
-    t.datetime "departed_origin_terminal_at", precision: nil
-    t.boolean "quote_only", default: false
-    t.date "lost_on"
-    t.datetime "booked_at", precision: nil
-    t.text "public_notes"
-    t.bigint "created_by_id"
-    t.bigint "dispatcher_id", null: false
-    t.text "broker_and_broker_customer_notes"
-    t.boolean "charges_confirmed", default: false
-    t.string "fingerprint"
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
     t.index ["broker_customer_id"], name: "index_shipments_on_broker_customer_id"
     t.index ["broker_id", "load_id"], name: "index_shipments_on_broker_id_and_load_id", unique: true
@@ -833,30 +834,31 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
     t.index ["dispatcher_id"], name: "index_shipments_on_dispatcher_id"
     t.index ["receiver_address_id"], name: "index_shipments_on_receiver_address_id"
     t.index ["shipper_address_id"], name: "index_shipments_on_shipper_address_id"
+    t.index ["status"], name: "index_shipments_on_status"
     t.index ["tracking_carrier_id"], name: "index_shipments_on_tracking_carrier_id"
     t.index ["updated_by_id"], name: "index_shipments_on_updated_by_id"
   end
 
   create_table "standardized_addresses", force: :cascade do |t|
-    t.datetime "google_places_spot_updated_at", precision: nil
-    t.datetime "open_street_map_result_updated_at", precision: nil
-    t.datetime "smarty_streets_result_updated_at", precision: nil
     t.integer "addresses_count"
-    t.bigint "country_id", null: false
-    t.bigint "region_id", null: false
     t.string "city"
+    t.bigint "country_id", null: false
+    t.datetime "created_at", null: false
+    t.text "google_places_spot_cached"
+    t.datetime "google_places_spot_updated_at", precision: nil
     t.string "key"
     t.string "latitude"
     t.string "longitude"
+    t.text "open_street_map_result_cached"
+    t.datetime "open_street_map_result_updated_at", precision: nil
     t.string "postal_code"
+    t.bigint "region_id", null: false
+    t.text "smarty_streets_result_cached"
+    t.datetime "smarty_streets_result_updated_at", precision: nil
     t.string "street"
     t.string "street2"
-    t.text "google_places_spot_cached"
-    t.text "open_street_map_result_cached"
-    t.text "smarty_streets_result_cached"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "time_zone_name", null: false
+    t.datetime "updated_at", null: false
     t.index ["country_id"], name: "index_standardized_addresses_on_country_id"
     t.index ["key"], name: "index_standardized_addresses_on_key"
     t.index ["region_id"], name: "index_standardized_addresses_on_region_id"
@@ -864,8 +866,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
 
   create_table "stripe_accounts", force: :cascade do |t|
     t.bigint "broker_id", null: false
-    t.string "encrypted_account_id"
     t.datetime "created_at", null: false
+    t.string "encrypted_account_id"
     t.datetime "updated_at", null: false
     t.index ["broker_id"], name: "index_stripe_accounts_on_broker_id"
   end
@@ -873,9 +875,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   create_table "subscriptions", force: :cascade do |t|
     t.datetime "canceled_at"
     t.bigint "contact_id", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
     t.datetime "created_at", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.datetime "updated_at", null: false
     t.index ["canceled_at"], name: "index_subscriptions_on_canceled_at"
     t.index ["contact_id", "record_id", "record_type"], name: "index_subscriptions_on_contact_id_and_record_id_and_record_type", unique: true
@@ -884,16 +886,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "suppressions", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.datetime "ignored_at"
     t.bigint "ignored_by_id"
-    t.string "instigator_type", null: false
     t.bigint "instigator_id", null: false
+    t.string "instigator_type", null: false
     t.bigint "problem_id", null: false
-    t.string "problematic_type", null: false
     t.bigint "problematic_id", null: false
-    t.bigint "suppressor_id", null: false
+    t.string "problematic_type", null: false
     t.string "suppressible_type", null: false
-    t.datetime "created_at", null: false
+    t.bigint "suppressor_id", null: false
     t.datetime "updated_at", null: false
     t.index ["ignored_by_id"], name: "index_suppressions_on_ignored_by_id"
     t.index ["instigator_type", "instigator_id"], name: "index_suppressions_on_instigator"
@@ -904,12 +906,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   end
 
   create_table "suppressors", force: :cascade do |t|
-    t.string "instigator_type", null: false
+    t.datetime "created_at", null: false
     t.bigint "instigator_id", null: false
+    t.string "instigator_type", null: false
     t.string "problematic_rule_code", null: false
     t.string "problematic_type", null: false
     t.string "suppressible_type", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["instigator_type", "instigator_id"], name: "index_suppressors_on_instigator"
     t.index ["problematic_rule_code"], name: "index_suppressors_on_problematic_rule_code"
@@ -920,31 +922,31 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
   create_table "terminals", force: :cascade do |t|
     t.bigint "address_id", null: false
     t.bigint "carrier_id", null: false
-    t.string "phone"
     t.datetime "created_at", null: false
+    t.string "phone"
     t.datetime "updated_at", null: false
     t.index ["address_id"], name: "index_terminals_on_address_id"
     t.index ["carrier_id"], name: "index_terminals_on_carrier_id"
   end
 
   create_table "tracking_events", force: :cascade do |t|
-    t.bigint "shipment_id", null: false
     t.bigint "address_id"
-    t.bigint "event_id", null: false
-    t.boolean "public", default: true
-    t.datetime "at", precision: nil
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "terminal_id"
-    t.string "city"
-    t.string "country_alpha2", limit: 2
-    t.string "freight_kit_carrier_fingerprint"
-    t.bigint "user_id"
-    t.bigint "country_id"
-    t.bigint "region_id"
-    t.string "time_zone_name"
     t.text "api_request"
     t.text "api_response"
+    t.datetime "at", precision: nil
+    t.string "city"
+    t.string "country_alpha2", limit: 2
+    t.bigint "country_id"
+    t.datetime "created_at", null: false
+    t.bigint "event_id", null: false
+    t.string "freight_kit_carrier_fingerprint"
+    t.boolean "public", default: true
+    t.bigint "region_id"
+    t.bigint "shipment_id", null: false
+    t.bigint "terminal_id"
+    t.string "time_zone_name"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["address_id"], name: "index_tracking_events_on_address_id"
     t.index ["country_id"], name: "index_tracking_events_on_country_id"
     t.index ["event_id"], name: "index_tracking_events_on_event_id"
@@ -956,59 +958,59 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_04_181955) do
 
   create_table "upcharge_rules", force: :cascade do |t|
     t.bigint "broker_customer_id", null: false
-    t.bigint "packaging_id", null: false
+    t.datetime "created_at", null: false
     t.integer "max"
     t.integer "min"
+    t.bigint "packaging_id", null: false
     t.integer "upcharge_cents", default: 0, null: false
     t.string "upcharge_currency", default: "USD", null: false
     t.float "upcharge_percentage", default: 0.0
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["broker_customer_id"], name: "index_upcharge_rules_on_broker_customer_id"
     t.index ["packaging_id"], name: "index_upcharge_rules_on_packaging_id"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at", precision: nil
-    t.datetime "remember_created_at", precision: nil
-    t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at", precision: nil
-    t.datetime "last_sign_in_at", precision: nil
-    t.inet "current_sign_in_ip"
-    t.inet "last_sign_in_ip"
+    t.integer "broker_id"
+    t.bigint "companyable_id", null: false
+    t.string "companyable_type", null: false
+    t.datetime "confirmation_sent_at", precision: nil
     t.string "confirmation_token"
     t.datetime "confirmed_at", precision: nil
-    t.datetime "confirmation_sent_at", precision: nil
-    t.string "unconfirmed_email"
-    t.integer "failed_attempts", default: 0, null: false
-    t.string "unlock_token"
-    t.datetime "locked_at", precision: nil
-    t.string "first_name"
+    t.bigint "contact_id"
     t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.integer "broker_id"
-    t.string "phone"
-    t.boolean "receive_sms_notifications"
+    t.datetime "current_sign_in_at", precision: nil
+    t.inet "current_sign_in_ip"
+    t.boolean "deactivated", default: false
+    t.string "email", default: "", null: false
+    t.text "email_notifications_blacklist"
+    t.string "encrypted_password", default: "", null: false
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "first_name"
+    t.datetime "invitation_accepted_at", precision: nil
+    t.datetime "invitation_created_at", precision: nil
+    t.integer "invitation_limit"
+    t.datetime "invitation_sent_at", precision: nil
+    t.string "invitation_token"
+    t.integer "invitations_count", default: 0
+    t.bigint "invited_by_id"
     t.string "last_name"
+    t.datetime "last_sign_in_at", precision: nil
+    t.inet "last_sign_in_ip"
+    t.datetime "locked_at", precision: nil
+    t.string "phone"
     t.boolean "receive_email_notifications", default: true
     t.boolean "receive_notifications_from_self", default: true
-    t.bigint "contact_id"
-    t.string "invitation_token"
-    t.datetime "invitation_created_at", precision: nil
-    t.datetime "invitation_sent_at", precision: nil
-    t.datetime "invitation_accepted_at", precision: nil
-    t.integer "invitation_limit"
-    t.bigint "invited_by_id"
-    t.integer "invitations_count", default: 0
-    t.boolean "deactivated", default: false
-    t.string "time_zone_name", null: false
     t.boolean "receive_read_notifications_by_email", default: false
-    t.text "email_notifications_blacklist"
-    t.string "companyable_type", null: false
-    t.bigint "companyable_id", null: false
+    t.boolean "receive_sms_notifications"
+    t.datetime "remember_created_at", precision: nil
+    t.datetime "reset_password_sent_at", precision: nil
+    t.string "reset_password_token"
+    t.integer "sign_in_count", default: 0, null: false
+    t.string "time_zone_name", null: false
+    t.string "unconfirmed_email"
+    t.string "unlock_token"
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["companyable_type", "companyable_id"], name: "index_users_on_companyable"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"

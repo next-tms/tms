@@ -87,6 +87,20 @@ en:
         sources:
           api: API
           pricing_rule: Tariff
+      shipment:
+        statuses:
+          booked: Booked
+          booked_quoted: "Booked, Quoted"
+          canceled: Canceled
+          delivered: Delivered
+          delivery_scheduled: Delivery Scheduled
+          dispatched: Dispatched
+          in_transit: In Transit
+          new_shipment: New
+          out_for_delivery: Out for Delivery
+          pending_delivery_appointment: Pending Delivery Appointment
+          pickup_scheduled: Pickup Scheduled
+          quoted: Quoted
   bootstrap_form:
     labels:
       shipment:

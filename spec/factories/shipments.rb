@@ -193,6 +193,8 @@
 #
 FactoryBot.define do
   factory :shipment do
+    sequence(:load_id)
+
     applied_rate_id { }
     bol { Faker::Number.number }
     bol_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
@@ -219,7 +221,6 @@ FactoryBot.define do
     dispatched_at { 2.weeks.ago }
     lift_gate_delivery { false }
     lift_gate_pickup { false }
-    load_id { 1 }
     lost_on { 5.minutes.ago }
     notify { [ true, false ].sample }
     out_for_delivery_at { 1.week.ago }

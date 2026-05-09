@@ -65,7 +65,7 @@
           <% end %>
 
           <td class="lead">
-            <%= @shipment.status %>
+            <%= @shipment.late? ? "Late, #{enum_l(@shipment, :status)}" : enum_l(@shipment, :status) %>
           </td>
 
           <% unless @shipment.broker_carrier.blank? %>

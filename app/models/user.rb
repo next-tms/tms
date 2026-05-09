@@ -327,7 +327,7 @@ class User < ApplicationRecord
   def reassign_shipments
     return unless saved_change_to_deactivated && deactivated?
 
-    Shipment.active.where(delivered_at: [ nil, '' ], dispatcher: self).find_each do |shipment|
+    shipments_as_dispatcher.not_canceled.not_delivered.find_each do |shipment|
       shipment.dispatcher = nil
       shipment.assign_dispatcher
       shipment.save

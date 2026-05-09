@@ -39,11 +39,7 @@
       <tbody>
         <tr>
           <td class="lead">
-            <% if @shipment.status.include?('—') %>
-              <%= @shipment.status.split('—').last.strip %>
-            <% else %>
-              <%= @shipment.status %>
-            <% end %>
+            <%= enum_l(@shipment, :status) %>
           </td>
 
           <% unless @shipment.broker_carrier.blank? %>

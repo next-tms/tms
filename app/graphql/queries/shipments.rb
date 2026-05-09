@@ -27,9 +27,7 @@ module Queries
           end
 
     Types::QueryType.class_eval do
-      def shipment_by_load_id(load_id:)
-        Shipment.find_by(load_id:)
-      end
+      def shipment_by_load_id(load_id:) = Shipment.find_by(load_id:)
 
       def shipment_by_broker_carrier(broker_carrier_id:)
         broker_carrier = BrokerCarrier.find(broker_carrier_id)
@@ -38,9 +36,7 @@ module Queries
         broker_carrier.shipments
       end
 
-      def shipment_by_status(status:)
-        Shipment.send(status.to_sym)
-      end
+      def shipment_by_status(status:) = Shipment.public_send(status)
     end
   end
 end

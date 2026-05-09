@@ -199,28 +199,6 @@ RSpec.describe(Shipment) do
   it_behaves_like 'discussable'
   it_behaves_like 'documentable'
 
-  describe 'relationships' do
-    it { is_expected.to(belong_to(:applied_rate).required(false)) }
-    it { is_expected.to(belong_to(:broker_carrier).required(false)) }
-    it { is_expected.to(belong_to(:broker)) }
-    it { is_expected.to(belong_to(:dispatcher)) }
-    it { is_expected.to(belong_to(:receiver_address)) }
-    it { is_expected.to(belong_to(:shipper_address)) }
-    it { is_expected.to(belong_to(:tracking_carrier).required(false)) }
-
-    it { is_expected.to(have_many(:accessorials).through(:shipment_accessorials)) }
-    it { is_expected.to(have_many(:commissions)) }
-    it { is_expected.to(have_many(:items).through(:shipment_items)) }
-    it { is_expected.to(have_many(:payment_transactions)) }
-    it { is_expected.to(have_many(:payments).through(:payment_transactions)) }
-    it { is_expected.to(have_many(:pickups)) }
-    it { is_expected.to(have_many(:problems)) }
-    it { is_expected.to(have_many(:rates)) }
-    it { is_expected.to(have_many(:shipment_accessorials)) }
-    it { is_expected.to(have_many(:shipment_items)) }
-    it { is_expected.to(have_many(:tracking_events)) }
-  end
-
   describe 'audits' do
     context 'when shipment is created' do
       let(:shipment) { build(:shipment) }
@@ -248,6 +226,28 @@ RSpec.describe(Shipment) do
     end
   end
 
+  describe 'relationships' do
+    it { is_expected.to(belong_to(:applied_rate).required(false)) }
+    it { is_expected.to(belong_to(:broker_carrier).required(false)) }
+    it { is_expected.to(belong_to(:broker)) }
+    it { is_expected.to(belong_to(:dispatcher)) }
+    it { is_expected.to(belong_to(:receiver_address)) }
+    it { is_expected.to(belong_to(:shipper_address)) }
+    it { is_expected.to(belong_to(:tracking_carrier).required(false)) }
+
+    it { is_expected.to(have_many(:accessorials).through(:shipment_accessorials)) }
+    it { is_expected.to(have_many(:commissions)) }
+    it { is_expected.to(have_many(:items).through(:shipment_items)) }
+    it { is_expected.to(have_many(:payment_transactions)) }
+    it { is_expected.to(have_many(:payments).through(:payment_transactions)) }
+    it { is_expected.to(have_many(:pickups)) }
+    it { is_expected.to(have_many(:problems)) }
+    it { is_expected.to(have_many(:rates)) }
+    it { is_expected.to(have_many(:shipment_accessorials)) }
+    it { is_expected.to(have_many(:shipment_items)) }
+    it { is_expected.to(have_many(:tracking_events)) }
+  end
+
   describe '#assign_dispatcher' do
     let!(:broker) { create(:broker) }
     let(:user) do
@@ -263,73 +263,273 @@ RSpec.describe(Shipment) do
       record
     end
 
-    it 'assigns a dispatcher' do
-      expect { shipment.save }.to(change(shipment, :dispatcher).from(nil).to(user))
+    it { expect { shipment.save }.to(change(shipment, :dispatcher).from(nil).to(user)) }
+  end
+
+  describe '#late?' do
+    subject { shipment.late? }
+
+    let(:shipment) do
+      build(
+        :shipment,
+        delivered_at: nil,
+        delivery_appointment_at: nil,
+        delivery_appointment_on: nil,
+        delivery_eta_on: nil,
+        picked_up_at: nil,
+        pickup_confirmation: nil,
+        pickup_hours_end_at: nil,
+        pickup_on: nil,
+        promised_delivery_by: nil,
+      )
+    end
+
+    context 'when delivered_at is present' do
+      before { shipment.delivered_at = 1.hour.ago }
+
+      it { is_expected.to(be(false)) }
+    end
+
+    context 'when picked_up_at is present' do
+      before { shipment.picked_up_at = 5.days.ago }
+
+      context 'when delivery_appointment_at is in the past' do
+        before { shipment.delivery_appointment_at = 1.hour.ago }
+
+        it { is_expected.to(be(true)) }
+      end
+
+      context 'when delivery_appointment_at is in the future' do
+        before { shipment.delivery_appointment_at = 1.day.from_now }
+
+        it { is_expected.to(be_falsy) }
+      end
+
+      context 'when delivery_appointment_on is yesterday' do
+        before { shipment.delivery_appointment_on = 1.day.ago.to_date }
+
+        it { is_expected.to(be(true)) }
+      end
+
+      context 'when delivery_appointment_on is today' do
+        before { shipment.delivery_appointment_on = Date.current }
+
+        it { is_expected.to(be_falsy) }
+      end
+
+      context 'when delivery_eta_on is yesterday' do
+        before { shipment.delivery_eta_on = 1.day.ago.to_date }
+
+        it { is_expected.to(be(true)) }
+      end
+
+      context 'when delivery_eta_on is today' do
+        before { shipment.delivery_eta_on = Date.current }
+
+        it { is_expected.to(be_falsy) }
+      end
+
+      context 'when promised_delivery_by is in the past' do
+        before { shipment.promised_delivery_by = 2.days.ago }
+
+        it { is_expected.to(be_truthy) }
+      end
+
+      context 'when promised_delivery_by is in the future' do
+        before { shipment.promised_delivery_by = 2.days.from_now }
+
+        it { is_expected.to(be_falsy) }
+      end
+
+      context 'when no delivery dates are set' do
+        it { is_expected.to(be_falsy) }
+      end
+    end
+
+    context 'when not yet picked up' do
+      context 'when pickup_by is in the past' do
+        before { allow(shipment).to(receive(:pickup_by).and_return(1.hour.ago)) }
+
+        it { is_expected.to(be_truthy) }
+      end
+
+      context 'when pickup_by is in the future' do
+        before { allow(shipment).to(receive(:pickup_by).and_return(1.hour.from_now)) }
+
+        it { is_expected.to(be_falsy) }
+      end
+
+      context 'when pickup_by is nil' do
+        it { is_expected.to(be_falsy) }
+      end
     end
   end
 
   describe '#picked_up?' do
-    let(:shipment) { create(:shipment, picked_up_at: Time.current) }
+    subject { shipment.picked_up? }
 
-    it { expect(shipment.picked_up?).to(be(true)) }
+    let(:shipment) { create(:shipment, picked_up_at: Faker::Time.backward) }
 
-    context 'when not picked_up_at.present?' do
+    it { is_expected.to(be(true)) }
+
+    context 'when picked_up_at is nil' do
       let(:shipment) { create(:shipment, picked_up_at: nil) }
 
-      it { expect(shipment.picked_up?).to(be(false)) }
+      it { is_expected.to(be(false)) }
     end
   end
 
-  describe '#total_weight' do
+  describe '#status' do
+    subject { shipment.tap { |record| record.send(:set_status) }.status }
+
     let(:shipment) do
-      record = create(:shipment)
-      record.items << create(:item, weight: 100)
-      record.items << create(:item, weight: 100)
-      record.save
-      record
+      build(
+        :shipment,
+        booked_at: nil,
+        canceled_at: nil,
+        delivered_at: nil,
+        delivery_appointment_at: nil,
+        delivery_appointment_on: nil,
+        delivery_eta_on: nil,
+        dispatched_at: nil,
+        out_for_delivery_at: nil,
+        pending_appointment_since: nil,
+        picked_up_at: nil,
+        pickup_confirmation: nil,
+        pickup_hours_end_at: nil,
+        pickup_on: nil,
+        promised_delivery_by: nil,
+        total_charges_cents: nil,
+      )
     end
 
-    it 'returns sum of all items weight' do
-      expect(shipment.total_weight).to(eq(200))
-    end
-  end
-
-  describe '#total_pieces' do
-    let(:shipment) do
-      record = create(:shipment)
-      record.items << create(:item, quantity: 5)
-      record.items << create(:item, quantity: 5)
-      record.save
-      record
+    context 'when no status fields are set' do
+      it { is_expected.to(eq('new_shipment')) }
     end
 
-    it 'returns sum of all items quantity' do
-      expect(shipment.total_pieces).to(eq(10))
-    end
-  end
+    context 'when booked_at' do
+      before { shipment.booked_at = 1.day.ago }
 
-  describe '#total_density' do
-    let(:shipment) do
-      record = create(:shipment)
-      record.items << create(:item, quantity: 5)
-      record.save
-      record
+      it { is_expected.to(eq('booked')) }
     end
 
-    context 'when item density(rounded: false) is blank' do
-      before { allow_any_instance_of(Item).to(receive(:density).with(rounded: false).and_return(nil)) }
+    context 'when total_charges' do
+      before { shipment.total_charges_cents = 500 }
 
-      it { expect(shipment.total_density(rounded: false)).to(be_nil) }
+      it { is_expected.to(eq('quoted')) }
     end
 
-    context 'when item density(rounded: false) is present' do
-      before { allow_any_instance_of(Item).to(receive(:density).with(rounded: false).and_return(100)) }
+    context 'when booked_at and total_charges' do
+      before do
+        shipment.booked_at = 1.day.ago
+        shipment.total_charges_cents = 500
+      end
 
-      it { expect(shipment.total_density(rounded: false)).to(eq(100)) }
+      it { is_expected.to(eq('booked_quoted')) }
+    end
+
+    context 'when dispatched_at' do
+      before { shipment.dispatched_at = 1.day.ago }
+
+      it { is_expected.to(eq('dispatched')) }
+    end
+
+    context 'when pickup_confirmation and pickup_by' do
+      before do
+        shipment.pickup_confirmation = 'CONF123'
+        shipment.pickup_on = 2.days.from_now.to_date
+        shipment.pickup_hours_end_at = '17:00'
+      end
+
+      it { is_expected.to(eq('pickup_scheduled')) }
+    end
+
+    context 'when picked_up_at' do
+      before { shipment.picked_up_at = 1.day.ago }
+
+      it { is_expected.to(eq('in_transit')) }
+    end
+
+    context 'when pending_appointment_since' do
+      before do
+        shipment.picked_up_at = 5.days.ago
+        shipment.pending_appointment_since = 3.days.ago.to_date
+      end
+
+      it { is_expected.to(eq('pending_delivery_appointment')) }
+    end
+
+    context 'when delivery_appointment_at' do
+      before do
+        shipment.picked_up_at = 2.days.ago
+        shipment.delivery_appointment_at = 1.day.from_now
+      end
+
+      it { is_expected.to(eq('delivery_scheduled')) }
+    end
+
+    context 'when delivery_appointment_on' do
+      before do
+        shipment.picked_up_at = 2.days.ago
+        shipment.delivery_appointment_on = 1.day.from_now.to_date
+      end
+
+      it { is_expected.to(eq('delivery_scheduled')) }
+    end
+
+    context 'when out_for_delivery_at' do
+      before do
+        shipment.picked_up_at = 2.days.ago
+        shipment.out_for_delivery_at = 1.hour.ago
+      end
+
+      it { is_expected.to(eq('out_for_delivery')) }
+    end
+
+    context 'when delivered_at' do
+      before { shipment.delivered_at = 1.hour.ago }
+
+      it { is_expected.to(eq('delivered')) }
+    end
+
+    context 'when canceled_at' do
+      before { shipment.canceled_at = 1.hour.ago }
+
+      it { is_expected.to(eq('canceled')) }
+    end
+
+    context 'when canceled_at, delivered_at' do
+      before do
+        shipment.canceled_at = 1.hour.ago
+        shipment.delivered_at = 2.hours.ago
+      end
+
+      it { is_expected.to(eq('canceled')) }
+    end
+
+    context 'when late?' do
+      before do
+        shipment.delivery_eta_on = 2.days.ago.to_date
+        shipment.picked_up_at = 5.days.ago
+      end
+
+      it { is_expected.to(eq('in_transit')) }
+    end
+
+    context 'when late?, not delivered_at' do
+      before do
+        shipment.delivered_at = 1.hour.ago
+        shipment.delivery_eta_on = 2.days.ago.to_date
+        shipment.picked_up_at = 5.days.ago
+      end
+
+      it { is_expected.to(eq('delivered')) }
     end
   end
 
   describe '#total_cubic_ft' do
+    subject { shipment.total_cubic_ft(rounded: false) }
+
     let(:shipment) do
       record = create(:shipment)
       record.items << create(:item, quantity: 5)
@@ -340,13 +540,64 @@ RSpec.describe(Shipment) do
     context 'when item cubic_ft(rounded: false) is blank' do
       before { allow_any_instance_of(Item).to(receive(:cubic_ft).with(rounded: false).and_return(nil)) }
 
-      it { expect(shipment.total_cubic_ft(rounded: false)).to(be_nil) }
+      it { is_expected.to(be_nil) }
     end
 
     context 'when item cubic_ft(rounded: false) is present' do
       before { allow_any_instance_of(Item).to(receive(:cubic_ft).with(rounded: false).and_return(100)) }
 
-      it { expect(shipment.total_cubic_ft(rounded: false)).to(eq(100)) }
+      it { is_expected.to(eq(100)) }
     end
+  end
+
+  describe '#total_density' do
+    subject { shipment.total_density(rounded: false) }
+
+    let(:shipment) do
+      record = create(:shipment)
+      record.items << create(:item, quantity: 5)
+      record.save
+      record
+    end
+
+    context 'when item density(rounded: false) is blank' do
+      before { allow_any_instance_of(Item).to(receive(:density).with(rounded: false).and_return(nil)) }
+
+      it { is_expected.to(be_nil) }
+    end
+
+    context 'when item density(rounded: false) is present' do
+      before { allow_any_instance_of(Item).to(receive(:density).with(rounded: false).and_return(100)) }
+
+      it { is_expected.to(eq(100)) }
+    end
+  end
+
+  describe '#total_pieces' do
+    subject { shipment.total_pieces }
+
+    let(:shipment) do
+      record = create(:shipment)
+      record.items << create(:item, quantity: 5)
+      record.items << create(:item, quantity: 5)
+      record.save
+      record
+    end
+
+    it { is_expected.to(eq(10)) }
+  end
+
+  describe '#total_weight' do
+    subject { shipment.total_weight }
+
+    let(:shipment) do
+      record = create(:shipment)
+      record.items << create(:item, weight: 100)
+      record.items << create(:item, weight: 100)
+      record.save
+      record
+    end
+
+    it { is_expected.to(eq(200)) }
   end
 end
