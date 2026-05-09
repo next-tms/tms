@@ -11,7 +11,8 @@ ENV XCADDY_GO_BUILD_FLAGS='-trimpath -ldflags "-s -w -extldflags -static" -tags 
 RUN /go/bin/xcaddy build v$CADDY_VERSION --with github.com/ueffel/caddy-brotli
 
 FROM ruby:4.0.3-alpine3.23 AS base
-RUN apk add --no-cache -U ca-certificates gcompat imagemagick jemalloc libpq-dev libxml2 libxslt shared-mime-info
+RUN apk add --no-cache -U ca-certificates gcompat imagemagick jemalloc libpq-dev libxml2 libxslt shared-mime-info && \
+    update-ca-certificates
 
 ENV BUNDLE_WITHOUT="development:test"
 ENV BUNDLER_FORCE_PLATFORM=true
