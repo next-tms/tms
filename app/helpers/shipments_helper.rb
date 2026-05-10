@@ -87,7 +87,8 @@ module ShipmentsHelper
     },
     status: {
       display_name: 'Status',
-      column_name: :status
+      column_name: :status,
+      enum: true
     },
     size: {
       display_name: 'Size',

@@ -32,6 +32,8 @@
                   <td>
                     <%= humanized_money_with_symbol shipment.send(table_data[:column_name]), no_cents_if_whole: false %>
                   </td>
+                <% elsif table_data[:enum] %>
+                  <td class="text-nowrap"><%= enum_l(shipment, table_data[:column_name]) %></td>
                 <% elsif table_data[:link] %>
                   <td>
                     <%= link_to shipment.send(table_data[:column_name]),
