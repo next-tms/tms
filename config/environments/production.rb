@@ -92,9 +92,7 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :postmark
   config.action_mailer.postmark_settings = { api_token: ENV.fetch('POSTMARK_API_TOKEN') }
 
-  if ENV['BUILD_ENV'].present?
-    config.active_record.encryption.primary_key = 'build'
-    config.active_record.encryption.deterministic_key = 'build'
-    config.active_record.encryption.key_derivation_salt = 'build'
-  end
+  config.active_record.encryption.primary_key = ENV['ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY']
+  config.active_record.encryption.deterministic_key = ENV['ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY']
+  config.active_record.encryption.key_derivation_salt = ENV['ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT']
 end
