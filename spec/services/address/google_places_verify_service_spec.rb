@@ -5,7 +5,11 @@ RSpec.describe(Address::GooglePlacesVerifyService) do
   let(:street) { '4011 Lana Tier' }
   let(:mock_address_service) { instance_double(GooglePlaces::Client) }
 
-  before { allow(ENV).to receive(:fetch).with('GOOGLE_API_KEY').and_return('mock_api_key') }
+  before do
+    allow(ENV).to receive(:[]).and_call_original
+    allow(ENV).to receive(:[]).with('GOOGLE_API_KEY').and_return('mock_api_key')
+    allow(ENV).to receive(:fetch).with('GOOGLE_API_KEY').and_return('mock_api_key')
+  end
 
   describe '#call' do
     subject(:call) { described_class.new(address_key:, street:).call }

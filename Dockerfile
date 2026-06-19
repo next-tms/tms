@@ -22,7 +22,6 @@ ENV RAILS_ENV=production
 ENV RUBY_YJIT_ENABLE=1
 
 FROM base AS build
-ARG BUNDLER_GITHUB_OAUTH_KEY
 RUN apk add --no-cache --virtual .gem-installdeps build-base \
                                                   git \
                                                   imagemagick-dev \
@@ -39,7 +38,6 @@ WORKDIR /app
 
 RUN gem update --system && gem install bundler -v $(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1 | tr -d '[:space:]')
 RUN bundle config set --global frozen 1 && \
-    bundle config set --global github.com $BUNDLER_GITHUB_OAUTH_KEY && \
     bundle install -j $(nproc) --retry 5
 
 COPY --exclude=.git/ . /app

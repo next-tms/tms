@@ -195,11 +195,11 @@ class User < ApplicationRecord
     super && !deactivated
   end
 
-  def build_contact
+  def build_contact(attributes = {})
     new_contact = companyable.contacts.find_or_initialize_by(email: email.downcase)
     return if new_contact.persisted?
 
-    new_contact.assign_attributes(companyable:, first_name:, last_name:)
+    new_contact.assign_attributes(attributes.to_h.merge(companyable:, first_name:, last_name:))
 
     self.contact = new_contact
   end

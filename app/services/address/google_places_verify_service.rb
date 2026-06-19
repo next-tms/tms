@@ -8,6 +8,8 @@ class Address::GooglePlacesVerifyService
   end
 
   def call
+    return if ENV['GOOGLE_API_KEY'].blank?
+
     Rails.logger.info('Calling Google Places API')
 
     begin

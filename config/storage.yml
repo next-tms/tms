@@ -9,8 +9,8 @@ local:
 amazon:
   service: CustomS3
   access_key_id: <%= ENV.fetch('AWS_ACCESS_KEY_ID') %>
-  bucket: <%= ENV.fetch('AWS_BUCKET') %>
-  endpoint: <%= ENV.fetch('AWS_ENDPOINT') %>
+  bucket: <%= ENV.fetch('BUCKET_NAME') %>
+  endpoint: <%= ENV.fetch('AWS_ENDPOINT_URL_S3') %>
   public: true
   region: <%= ENV.fetch('AWS_REGION') %>
   secret_access_key: <%= ENV.fetch('AWS_SECRET_ACCESS_KEY') %>

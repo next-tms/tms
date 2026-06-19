@@ -56,13 +56,13 @@ class Setting < ApplicationRecord
 
   audited
 
-  phony_normalize :phone_number, default_country_code: 'US', if: -> { kind == :phone }
+  phony_normalize :value, default_country_code: 'US', if: :phone?
 
   validate :validate_value
 
   validates :key, uniqueness: true
 
-  validates_plausible_phone :phone_number, presence: true, if: -> { kind == :phone }
+  validates_plausible_phone :value, presence: true, if: :phone?
 
   def help
     return if key.blank?
@@ -80,6 +80,8 @@ class Setting < ApplicationRecord
 
     entry[:kind]
   end
+
+  def phone? = kind == :phone
 
   def value
     return super unless BOOLEAN_VALUES.values.include?(super)

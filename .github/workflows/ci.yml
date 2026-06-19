@@ -67,11 +67,11 @@ jobs:
     env:
       RAILS_ENV: test
       AWS_ACCESS_KEY_ID: fake-access-key-id-for-build-env
-      AWS_BUCKET: fake-bucket-for-build-env
       AWS_CDN_HOST: fake-cdn-host-for-build-env
-      AWS_ENDPOINT: https://fake-endpoint-for-build-env
+      AWS_ENDPOINT_URL_S3: https://fake-endpoint-for-build-env
       AWS_REGION: fake-region-for-build-env
       AWS_SECRET_ACCESS_KEY: fake-secret-access-key-for-build-env
+      BUCKET_NAME: fake-bucket-for-build-env
       GEONAMES_USERNAME: fake-username-for-build-env
       POSTMARK_API_TOKEN: fake-api-token-for-build-env
       SECRET_KEY_BASE: fake-secret-key-base-for-build-env

@@ -1,4 +1,14 @@
 class Users::InvitationsController < Devise::InvitationsController
+  def new
+    self.resource = resource_class
+                    .new(
+                      companyable_type: params[:companyable_type].presence || 'Broker',
+                      companyable_id: params[:companyable_id].presence || current_user.broker_id
+                    )
+
+    render :new
+  end
+
   def create
     self.resource = invite_resource
 

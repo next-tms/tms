@@ -1,6 +1,6 @@
 <div class="user-role-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
   <div class="col-auto">
-    <%= f.select :role, ContactRole.all.collect(&:role).uniq.map { |r| [r.to_s.humanize, r] }, { label: 'Role', hide_label: true, wrapper: false }, class: 'form-select' %>
+    <%= f.select :role, ContactRole.roles.values.sort.map { |role| [role.humanize, role] }, { label: 'Role', hide_label: true, wrapper: false }, class: 'form-select' %>
   </div>
 
   <div class="col-auto">
