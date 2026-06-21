@@ -434,6 +434,7 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
+    pstore (0.2.1)
     psych (5.3.1)
       date
       stringio
@@ -764,6 +765,7 @@ DEPENDENCIES
   prawn-labels (~> 1.2.6)
   pretender
   propshaft
+  pstore
   public_suffix
   puma (>= 5.0)
   quickbooks-ruby (~> 2.0)

@@ -134,9 +134,12 @@ gem 'htmlentities'
 gem 'phony_rails'
 
 gem 'gotenberg-ruby', '~> 1.0.11'
+gem 'pstore' # explicitly for gotenberg-ruby
+
 gem 'prawn', '~> 2.5.0'
 gem 'prawn-labels', '~> 1.2.6', require: 'prawn/labels'
 gem 'matrix' # explicitly for prawn
+
 gem 'rqrcode'
 
 gem 'pagy'
