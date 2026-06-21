@@ -5,11 +5,9 @@
 class DocumentNotifier < BaseNotifier
   required_params :shipment, :document_type, :contact
 
-  def mailer_class
-    ContactMailer
-  end
+  def mailer_class(_notification = nil) = ContactMailer
 
-  def mailer_params
+  def mailer_params(_notification = nil)
     {
       from_user: params[:from_user],
       to_contact: params[:contact],
@@ -18,21 +16,9 @@ class DocumentNotifier < BaseNotifier
     }
   end
 
-  def notification_type
-    "document:#{params[:document_type]}"
-  end
-
-  def mailer_method
-    :from_notification
-  end
-
-  def url
-    documents_broker_shipment_path(params[:shipment], attr: params[:document_type])
-  end
-
-  def message
-    "#{humanized_document_type} for Load ##{params[:shipment].load_id} is available"
-  end
+  def notification_type = "document:#{params[:document_type]}"
+  def mailer_method(_notification = nil) = :from_notification
+  def message = "#{humanized_document_type} for Load ##{params[:shipment].load_id} is available"
 
   def humanized_document_type
     case params[:document_type].to_sym
@@ -44,7 +30,6 @@ class DocumentNotifier < BaseNotifier
     end
   end
 
-  def notification_subject
-    "Your #{humanized_document_type} is attached for the following shipment (Load ##{params[:shipment].load_id})"
-  end
+  def notification_subject = "Your #{humanized_document_type} is attached for the following shipment (Load ##{params[:shipment].load_id})"
+  def url = documents_broker_shipment_path(params[:shipment], attr: params[:document_type])
 end

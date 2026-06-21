@@ -5,35 +5,10 @@
 class ShipmentNotifier < BaseNotifier
   required_params :shipment, :attribute_changed
 
-  def mailer_class
-    UserMailer
-  end
-
-  def mailer_params
-    { shipment: params[:shipment] }
-  end
-
-  def mailer_method
-    params[:attribute_changed]
-  end
-
-  def notification_type
-    "shipment:#{params[:attribute_changed]}"
-  end
-
-  def url
-    return broker_shipment_path(params[:shipment]) if %i[
-                                                        canceled_at
-                                                         new_shipment
-                                                      ].include?(params[:attribute_changed].to_sym)
-
-    return broker_shipment_path(
-      params[:shipment],
-                                attr: params[:attribute_changed],
-    ) if %i[dispatcher_id].include?(params[:attribute_changed].to_sym)
-
-    transit_broker_shipment_path(params[:shipment], attr: params[:attribute_changed])
-  end
+  def mailer_class(_notification = nil) = UserMailer
+  def mailer_params(_notification = nil) = { shipment: params[:shipment] }
+  def mailer_method(_notification = nil) = params[:attribute_changed]
+  def notification_type = "shipment:#{params[:attribute_changed]}"
 
   def message
     shipment = params[:shipment].reload
@@ -61,7 +36,17 @@ class ShipmentNotifier < BaseNotifier
     end
   end
 
-  def notification_subject
-    message
+  def notification_subject = message
+
+  def url
+    if %i[canceled_at new_shipment].include?(params[:attribute_changed].to_sym)
+      return broker_shipment_path(params[:shipment])
+    end
+
+    if %i[dispatcher_id].include?(params[:attribute_changed].to_sym)
+      return broker_shipment_path(params[:shipment], attr: params[:attribute_changed])
+    end
+
+    transit_broker_shipment_path(params[:shipment], attr: params[:attribute_changed])
   end
 end
