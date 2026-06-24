@@ -13,7 +13,7 @@ module Concurrency
     budget = [ (memory - 512.megabytes) / 384.megabytes, 1 ].max
     ENV.fetch('WEB_CONCURRENCY') { [ cpus, budget ].min }.to_i
   end
-  alias web_workers job_workers
 
+  def web_workers = job_workers
   def worker_threads = ENV.fetch('JOB_CONCURRENCY') { max_threads }.to_i
 end
