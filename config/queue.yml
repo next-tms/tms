@@ -3,7 +3,7 @@ default: &default
     - polling_interval: 1
       batch_size: 500
   workers:
-    - queues: "high_priority,mailers,default"
+    - queues: [ default, high_priority, mailers ]
       threads: <%= Concurrency.worker_threads %>
       polling_interval: 0.1
 
