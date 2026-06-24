@@ -1,4 +1,5 @@
 require_relative 'boot'
+require_relative 'concurrency'
 
 require 'rails/all'
 

@@ -25,8 +25,12 @@
 # Any libraries that use a connection pool or another resource pool should
 # be configured to provide at least as many connections as the number of
 # threads. This includes Active Record's `pool` parameter in `database.yml`.
-threads_count = ENV.fetch('RAILS_MAX_THREADS', 3)
+require_relative 'concurrency'
+
+threads_count = Concurrency.max_threads
 threads threads_count, threads_count
+
+workers Concurrency.web_workers
 
 if ENV['PUMA_SOCKET']
   bind "unix://#{ENV.fetch('PUMA_SOCKET')}"

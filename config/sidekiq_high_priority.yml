@@ -1,4 +1,0 @@
-:concurrency: <%= ENV.fetch("SIDEKIQ_HIGH_PRIORITY_CONCURRENCY") { 2 } %>
-:queues:
-  - ['high_priority', 2]
-  - ['mailers', 1]
