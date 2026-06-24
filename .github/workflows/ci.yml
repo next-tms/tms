@@ -90,7 +90,7 @@ jobs:
         env:
           BUNDLE_GITHUB__COM: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
       - name: Cache Bootsnap
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           key: bootsnap-${{ runner.os }}-${{ hashFiles('Gemfile.lock', 'app/**/*.rb', 'lib/**/*.rb') }}
           path: tmp/cache
