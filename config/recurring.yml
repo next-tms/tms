@@ -13,3 +13,43 @@ production:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
     schedule: every hour at minute 12
+
+  cancel_shipments:
+    class: CancelShipmentsJob
+    schedule: "30 * * * *"
+  create_payments:
+    class: CreatePaymentsJob
+    schedule: "15 */2 * * *"
+  create_receivables:
+    class: CreateReceivablesJob
+    schedule: "10 */2 * * *"
+  fetch_carrier_bols:
+    class: FetchShipmentCarrierBOLsJob
+    schedule: "0 */4 * * *"
+  fetch_carrier_pods:
+    class: FetchShipmentCarrierPODsJob
+    schedule: "30 */4 * * *"
+  fetch_receivable_invoices:
+    class: FetchReceivableInvoicesJob
+    schedule: "50 * * * *"
+  fetch_shipment_pros:
+    class: FetchShipmentProsJob
+    schedule: "*/15 * * * *"
+  push_receivables_to_quickbooks:
+    class: PushReceivablesToQuickbooksJob
+    schedule: "0 * * * *"
+  track_shipments_pending_delivery:
+    class: TrackShipmentsPendingDeliveryJob
+    schedule: "*/30 * * * *"
+  track_shipments_pending_departure:
+    class: TrackShipmentsPendingDepartureJob
+    schedule: "15 */4 * * *"
+  track_shipments_pending_pickups:
+    class: TrackShipmentsPendingPickupJob
+    schedule: "*/15 * * * *"
+  send_receivables:
+    class: SendReceivablesJob
+    schedule: "45 */2 * * *"
+  update_receivables_from_quickbooks_job:
+    class: UpdateReceivablesFromQuickbooksJob
+    schedule: "40 */2 * * *"

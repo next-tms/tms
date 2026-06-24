@@ -17,7 +17,7 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= Concurrency.max_threads %>
+  pool: <%= Concurrency.db_pool %>
 
 development:
   primary:
