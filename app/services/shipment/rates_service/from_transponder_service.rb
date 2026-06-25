@@ -25,14 +25,14 @@ class Shipment::RatesService
                      declared_freight_classes:,
                    )
       rescue StandardError => e
-        Rails.env.development? ? raise(e) : Honeybadger.notify(e)
+        Rails.env.development? ? raise(e) : Sentry.capture_exception(e)
 
         return rates
       end
 
       if response.blank?
         error = StandardError.new("response was blank (BrokerCarrier id=#{broker_carrier.id}, Shipment id=#{shipment.id})")
-        Rails.env.development? ? raise(error) : Honeybadger.notify(error)
+        Rails.env.development? ? raise(error) : Sentry.capture_exception(error)
 
         return rates
       end

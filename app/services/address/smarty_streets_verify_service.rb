@@ -15,7 +15,7 @@ class Address::SmartyStreetsVerifyService
     error_key, error_data = address_data
     return unless error_key == 'errors'
 
-    Honeybadger.notify(error_message: error_data.first['message'])
+    Sentry.capture_message(error_data.first['message'])
     nil
   end
 end

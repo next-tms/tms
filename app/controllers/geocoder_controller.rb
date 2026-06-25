@@ -9,8 +9,8 @@ class GeocoderController < ApplicationController
     begin
       matched_location = locations.find { |loc| loc.data.dig('address', 'country') == selected_country }
     rescue TypeError => e
-      # TODO: Watch for Honeybadger errors. Cannot replicate issue on development.
-      Honeybadger.notify(e, locations:)
+      # TODO: Watch for Sentry errors. Cannot replicate issue on development.
+      Sentry.capture_exception(e, extra: { locations: })
       render json: { error: 'No Location Found' } and return
     end
 

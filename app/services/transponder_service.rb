@@ -27,7 +27,7 @@ module TransponderService
     rescue *API_EXCEPTIONS => e
       raise e if Rails.env.development?
 
-      Honeybadger.notify(e)
+      Sentry.capture_exception(e)
 
       nil
     end

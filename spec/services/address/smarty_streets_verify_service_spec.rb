@@ -21,13 +21,13 @@ RSpec.describe(Address::SmartyStreetsVerifyService) do
     context 'when address is invalid' do
       let(:mock_data) { Struct.new(:data).new([ 'errors', [ { 'message' => 'Invalid Address' } ] ]) }
 
-      before { allow(Honeybadger).to receive(:notify) }
+      before { allow(Sentry).to receive(:capture_message) }
 
       it { is_expected.to be_nil }
 
-      it 'notifies Honeybadger' do
+      it 'notifies Sentry' do
         call
-        expect(Honeybadger).to have_received(:notify).with(error_message: 'Invalid Address')
+        expect(Sentry).to have_received(:capture_message).with('Invalid Address')
       end
     end
   end

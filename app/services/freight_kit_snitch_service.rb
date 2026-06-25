@@ -8,7 +8,7 @@ class FreightKitSnitchService
               "response: #{response}"
 
     if Rails.env.production?
-      Honeybadger.notify(error:, error_message: message)
+      Sentry.capture_exception(error, extra: { error_message: message })
 
       return true
     end

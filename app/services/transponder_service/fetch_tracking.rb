@@ -67,9 +67,9 @@ module TransponderService
       )
     end
 
-    # Notify Honeybadger only once per day to prevent their spam notice every 30 minutes
+    # Notify Sentry only once per day to prevent a spam notice every 30 minutes
     # @return [Boolean]
-    def log_invalid_data_to_honeybadger(shipment_event:, attr_name:)
+    def log_invalid_data_to_sentry(shipment_event:, attr_name:)
       cache_key = "#{id}_shipment_event_invalid_#{attr_name}"
       notified_today = Rails.cache.read(cache_key)
 
@@ -83,7 +83,7 @@ module TransponderService
         #{shipment_event}
       MESSAGE
 
-      Honeybadger.notify(message)
+      Sentry.capture_message(message)
 
       true
     end
@@ -102,7 +102,7 @@ module TransponderService
       city, region, country = parse_location(shipment_event[:location])
 
       if [ city, region, country ].any?(&:blank?)
-        log_invalid_data_to_honeybadger(shipment_event:, attr_name: 'location')
+        log_invalid_data_to_sentry(shipment_event:, attr_name: 'location')
 
         return
       end
@@ -110,7 +110,7 @@ module TransponderService
       at = Parser::DateTime.call(shipment_event[:date_time])
 
       if at.blank?
-        log_invalid_data_to_honeybadger(shipment_event:, attr_name: 'date_time')
+        log_invalid_data_to_sentry(shipment_event:, attr_name: 'date_time')
 
         return
       end

@@ -22,7 +22,7 @@ class Address::GooglePlacesVerifyService
 
       raise
     rescue GooglePlaces::RequestDeniedError => e
-      Honeybadger.notify(e)
+      Sentry.capture_exception(e)
 
       return
     end

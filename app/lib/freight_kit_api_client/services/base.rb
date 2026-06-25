@@ -27,9 +27,9 @@ module FreightKitAPIClient
 
         Rails.cache.write(cache_key, 'notified', expires_in: 1.hour)
 
-        # Notify only once per hour to prevent spam notice in Honeybadger
+        # Notify only once per hour to prevent spam notices in Sentry
         # Watir Errors usually occurs due to BrokerCarrier's Web Page's Downtime
-        Honeybadger.notify(
+        Sentry.capture_message(
           "#{error.message} -> BrokerCarrier ID=#{broker_carrier.id} | " \
           "Name=#{broker_carrier.carrier&.name} (#{broker_carrier.carrier&.scac})",
         )

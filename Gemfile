@@ -104,7 +104,8 @@ gem 'devise-pwned_password', '~> 0.2'
 gem 'freight_kit', '~> 0.1.16'
 gem 'place_kit', '~> 0.0.5'
 
-gem 'honeybadger', '~> 5.13'
+gem 'sentry-rails', '~> 6.6'
+gem 'sentry-ruby', '~> 6.6'
 
 gem 'barby'
 gem 'business_time'

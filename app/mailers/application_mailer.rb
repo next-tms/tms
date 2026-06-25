@@ -2,12 +2,12 @@ class ApplicationMailer < ActionMailer::Base
   default from: 'Next TMS <robot@tms.next-tms.com>'
   layout 'mailer'
 
-  rescue_from Postmark::InactiveRecipientError, with: :notify_honeybadger_and_store_error_msg
+  rescue_from Postmark::InactiveRecipientError, with: :notify_sentry_and_store_error_msg
   # https://github.com/ActiveCampaign/postmark-rails/wiki/Error-Handling#actionmailer-5
 
-  def notify_honeybadger_and_store_error_msg(error)
+  def notify_sentry_and_store_error_msg(error)
     # Notify once, But prevent ActionMailer from retrying te job
-    Honeybadger.notify(error)
+    Sentry.capture_exception(error)
     return unless params[:record]
 
     # Store Error Class and Msg when email failed and triggered by Notification class
