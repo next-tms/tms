@@ -141,7 +141,7 @@ class PaymentTransaction < ApplicationRecord
     return if accounting_bill.blank?
 
     method = persisted? ? :update_columns : :assign_attributes
-    send(method, balance_cents: (accounting_bill.balance.to_f * 100).to_i, total_cents: (accounting_bill.total.to_f * 100).to_i)
+    send(method, balance_cents: accounting_bill.balance.cents, total_cents: accounting_bill.total.cents)
     send(method, paid_at: DateTime.current) if accounting_bill.balance.zero?
 
     reload if persisted?

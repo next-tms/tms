@@ -11,7 +11,7 @@ class Broker::BanksController < Broker::BrokerController
              .banks
              .order(:name, :account_number)
 
-    @accounts = Accounting::Accounting::Account.order(:name)
+    @accounts = Accounting.record_class(:account).order(:name)
   end
 
   def activity
@@ -91,7 +91,7 @@ class Broker::BanksController < Broker::BrokerController
       redirect_to(accounting_broker_banks_path) && return
     end
 
-    @accounts = Accounting::Accounting::Account.order(:name)
+    @accounts = Accounting.record_class(:account).order(:name)
 
     render(:accounting)
   end

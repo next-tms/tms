@@ -1,6 +1,6 @@
 class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :authenticate_user!
-  before_action :set_broker_carrier, except: %i[create index new]
+  before_action :set_broker_carrier, except: %i[accounting create index new update_accounting]
   before_action :authorize_broker_carrier_access, only: %i[terminals contacts shipments]
 
   def accounting
@@ -12,7 +12,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
                        .includes(required_includes)
                        .order('carriers.name')
 
-    @vendors = Accounting::Accounting::Vendor.order(:display_name)
+    @vendors = Accounting.record_class(:vendor).order(:display_name)
   end
 
   def edit

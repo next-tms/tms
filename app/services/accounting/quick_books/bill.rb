@@ -5,7 +5,7 @@ module Accounting
 
       class << self
         def attributes_from(bill)
-          { balance: bill.balance, document_number: bill.doc_number, total: bill.total }
+          { balance: Accounting.money(bill.balance), document_number: bill.doc_number, total: Accounting.money(bill.total) }
         end
 
         def connection = @connection ||= DocumentConnection.new(self)

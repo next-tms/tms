@@ -24,9 +24,7 @@ class ApplicationController < ActionController::Base
     unauthorized if current_user&.role?(role)
   end
 
-  def unauthorized
-    render(layout: false, file: 'public/401.html', status: :unauthorized)
-  end
+  def unauthorized = render(layout: false, file: 'public/404.html', status: :not_found)
 
   protected
 

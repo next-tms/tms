@@ -34,7 +34,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                         .includes(required_includes)
                         .order('customers.name')
 
-    @customers = Accounting::Accounting::Customer.order(:display_name)
+    @customers = Accounting.record_class(:customer).order(:display_name)
   end
 
   def broker_carriers

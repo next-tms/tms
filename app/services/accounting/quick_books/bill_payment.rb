@@ -5,7 +5,7 @@ module Accounting
         def attributes_from(bill_payment)
           {
             document_number: bill_payment.doc_number,
-            total: bill_payment.total,
+            total: Accounting.money(bill_payment.total),
             transaction_date: bill_payment.txn_date
           }
         end
@@ -18,7 +18,7 @@ module Accounting
           model.line_items = []
           model.doc_number = bill_payment.document_number
           model.private_note = bill_payment.private_note
-          model.total = bill_payment.total
+          model.total = bill_payment.total&.amount
           model.vendor_id = bill_payment.vendor_id
           assign_payment(model, bill_payment)
 

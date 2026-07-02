@@ -297,9 +297,9 @@ class Receivable < ApplicationRecord
     return if accounting_invoice.blank?
 
     now = Time.current
-    update_columns(balance_cents: (accounting_invoice.balance.to_f * 100).to_i)
+    update_columns(balance_cents: accounting_invoice.balance.cents)
     update_columns(paid_at: now) if accounting_invoice.balance.zero?
-    update_columns(total_cents: (accounting_invoice.total.to_f * 100).to_i)
+    update_columns(total_cents: accounting_invoice.total.cents)
     update_columns(sent_at: now) if !sent? && (accounting_invoice.balance.zero? || accounting_invoice.email_status == 'EmailSent')
 
     reload

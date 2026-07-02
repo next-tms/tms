@@ -44,7 +44,7 @@ module Payment::Accounting
       line_items: accounting_bill_payment_line_items,
       pay_type: bank.credit_card? ? :credit_card : :check,
       private_note: accounting_bill_payment_private_note,
-      total: payment_transactions.sum(:paid_cents).to_f / 100,
+      total: Money.new(payment_transactions.sum(:paid_cents)),
       vendor_id: broker_carrier.accounting_vendor_id,
     )
   end

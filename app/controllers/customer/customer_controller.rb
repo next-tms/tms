@@ -4,11 +4,10 @@ class Customer::CustomerController < ApplicationController
   private
 
   def restrict_to_customer_users
-    unless current_user&.customer?
-      store_location_for(:user, request.fullpath) if request.get?
+    return if current_user&.customer?
+    return unauthorized if current_user
 
-      flash[:error] = 'Not authorized'
-      redirect_to root_path and return
-    end
+    store_location_for(:user, request.fullpath) if request.get?
+    redirect_to(root_path)
   end
 end

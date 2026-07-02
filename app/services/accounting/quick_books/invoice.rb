@@ -4,12 +4,12 @@ module Accounting
       class << self
         def attributes_from(invoice)
           {
-            balance: invoice.balance,
+            balance: Accounting.money(invoice.balance),
             created_at: invoice.meta_data&.create_time,
             customer_id: invoice.customer_ref&.value,
             document_number: invoice.doc_number,
             email_status: invoice.email_status,
-            total: invoice.total
+            total: Accounting.money(invoice.total)
           }
         end
 
