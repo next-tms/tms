@@ -1,7 +1,5 @@
 module Accounting
   class Base
-    include ActiveModel::Model
-
     class << self
       delegate :find, :find_by, :find_by!, :first, :sort_by, :where, to: :all
 
@@ -13,7 +11,17 @@ module Accounting
         define_method(name) { self[name] }
         define_method(:"#{name}=") { |value| @attributes[name] = value }
       end
+
+      def order(*attributes)
+        collection = all
+
+        attributes.each { |attribute| collection = collection.sort_by(&attribute.to_proc) }
+
+        collection
+      end
     end
+
+    include ActiveModel::Model
 
     attr_reader :id
 
@@ -34,14 +42,6 @@ module Accounting
     def attributes = @attributes
     def destroy = self.class.connection.destroy(self)
     def loaded? = @loaded
-
-    def order(*attributes)
-      collection = all
-
-      attributes.each { |attribute| collection = collection.sort_by(&attribute.to_proc) }
-
-      collection
-    end
 
     def persisted? = id.present?
 
