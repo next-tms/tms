@@ -2,6 +2,7 @@ module Types
   class BrokerCustomerType < Types::BaseObject
     description 'GraphQL Object for Broker Customer Model'
 
+    field :accounting_customer_id, String
     field :always_show_quotes_based_on_calculated_classes, Boolean
     field :broker, Types::BrokerType
     field :can_quote, Boolean
@@ -17,7 +18,6 @@ module Types
     field :office_address_id, Integer, null: false
     field :preferred_broker_carriers_kind, String
     field :primary_pickup_address_id, Integer, null: false
-    field :quickbooks_customer_id, String
     field :receivables_contact_id, Integer, null: false
     field :receivables_schedule, String
     field :requires_carrier_bol_on_receivables, Boolean

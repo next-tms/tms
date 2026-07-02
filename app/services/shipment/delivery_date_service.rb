@@ -65,7 +65,7 @@ end
 
 # def delivery_from
 #   tz = receiver_address&.time_zone
-#   return nil if tz.blank?
+#   return if tz.blank?
 
 #   from = promised_delivery_by.presence || delivery_appointment_at.presence || delivery_appointment_on.presence || delivery_eta_on.presence
 #   return from if from.present? && !from.is_a?(Date)
@@ -84,7 +84,7 @@ end
 
 # def delivery_by
 #   tz = receiver_address&.time_zone
-#   return nil if tz.blank?
+#   return if tz.blank?
 
 #   by = promised_delivery_by.presence || delivery_appointment_at.presence || delivery_appointment_on.presence || delivery_eta_on.presence
 #   return by if by.present? && !by.is_a?(Date)

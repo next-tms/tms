@@ -234,13 +234,13 @@ class Address < ApplicationRecord
     self.zip_code = standardized_address.postal_code || zip_code
   end
 
-  def to_quickbooks_physical_address
-    Quickbooks::Model::PhysicalAddress.new(
+  def to_accounting_address
+    Accounting::Address.new(
+      city:,
       line1: street,
       line2: street2,
-      city:,
-      country_sub_division_code: region.abbreviation,
       postal_code: zip_code,
+      region: region.abbreviation,
     )
   end
 

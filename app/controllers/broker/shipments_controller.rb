@@ -39,6 +39,13 @@ class Broker::ShipmentsController < Broker::BrokerController
                         tracking_events
                       ]
 
+  def accounting
+    authorize!(@shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy)
+
+    @payment_transactions_q = @shipment.payment_transactions.ransack(params[:q], auth_object: current_user)
+    @receivables_q = @shipment.receivables.ransack(params[:q], auth_object: current_user)
+  end
+
   def book
     @shipment.update!(
       booked_at: Time.current,
@@ -542,13 +549,6 @@ class Broker::ShipmentsController < Broker::BrokerController
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
     @pagy, @shipments = pagy(@q.result)
-  end
-
-  def accounting
-    authorize!(@shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy)
-
-    @payment_transactions_q = @shipment.payment_transactions.ransack(params[:q], auth_object: current_user)
-    @receivables_q = @shipment.receivables.ransack(params[:q], auth_object: current_user)
   end
 
   def claims

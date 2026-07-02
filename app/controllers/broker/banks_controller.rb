@@ -3,6 +3,17 @@ class Broker::BanksController < Broker::BrokerController
   before_action :authenticate_user!
   before_action :require_accounts_payable
 
+  def accounting
+    authorize!(current_user, to: :root_show?, with: AccountingPolicy)
+
+    @banks = current_user
+             .broker
+             .banks
+             .order(:name, :account_number)
+
+    @accounts = Accounting::Accounting::Account.order(:name)
+  end
+
   def activity
     @display_paid = [ '0', nil ].include?(params.dig(:q, :paid_on_null))
 
@@ -69,37 +80,20 @@ class Broker::BanksController < Broker::BrokerController
     render(:edit)
   end
 
-  def quickbooks
-    authorize!(current_user, to: :root_show?, with: QuickbooksPolicy)
-
-    @banks = current_user
-             .broker
-             .banks
-             .order(:name, :account_number)
-
-    @accounts = QuickbooksAPIClient::Accounts
-                .new(broker: current_user.broker)
-                .find_all
-                .sort_by(&:name)
-  end
-
-  def update_quickbooks
-    authorize!(current_user, to: :root_show?, with: QuickbooksPolicy)
+  def update_accounting
+    authorize!(current_user, to: :root_show?, with: AccountingPolicy)
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
 
     if broker.save
-      flash[:success] = 'QuickBooks accounts updated'
-      redirect_to(quickbooks_broker_banks_path) && return
+      flash[:success] = 'Accounting accounts updated'
+      redirect_to(accounting_broker_banks_path) && return
     end
 
-    @accounts = QuickbooksAPIClient::Accounts
-                .new(broker: current_user.broker)
-                .find_all
-                .sort_by(&:name)
+    @accounts = Accounting::Accounting::Account.order(:name)
 
-    render(:quickbooks)
+    render(:accounting)
   end
 
   private
@@ -124,14 +118,14 @@ class Broker::BanksController < Broker::BrokerController
       :id,
       :account_number,
       :name,
-      :quickbooks_account_id,
+      :accounting_account_id,
     )
   end
 
   def broker_params
     params.require(:broker).permit(
       :id,
-      banks_attributes: %i[id kind quickbooks_account_id],
+      banks_attributes: %i[id kind accounting_account_id],
     )
   end
 end

@@ -39,7 +39,7 @@ class Suppressor < ApplicationRecord
   validates :suppressible_type, inclusion: { in: %w[Receivable] }, presence: true
 
   def describe
-    return nil unless valid?
+    return unless valid?
 
     instigator_name = begin
       instigator.name.presence || instigator.class.model_name.human

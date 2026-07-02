@@ -3,6 +3,18 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   before_action :set_broker_carrier, except: %i[create index new]
   before_action :authorize_broker_carrier_access, only: %i[terminals contacts shipments]
 
+  def accounting
+    authorize!(current_user, to: :accounts_payable_show?, with: AccountingPolicy)
+
+    @broker_carriers = current_user
+                       .broker
+                       .broker_carriers
+                       .includes(required_includes)
+                       .order('carriers.name')
+
+    @vendors = Accounting::Accounting::Vendor.order(:display_name)
+  end
+
   def edit
     @broker_carrier.check_mailing_address = Address.new if @broker_carrier.check_mailing_address.blank?
   end
@@ -44,33 +56,18 @@ class Broker::BrokerCarriersController < Broker::BrokerController
 
   def preferences; end
 
-  def quickbooks
-    authorize!(current_user, to: :accounts_payable_show?, with: QuickbooksPolicy)
-
-    @broker_carriers = current_user
-                       .broker
-                       .broker_carriers
-                       .includes(required_includes)
-                       .order('carriers.name')
-
-    @vendors = QuickbooksAPIClient::Vendors
-               .new(broker: current_user.broker)
-               .find_all
-               .sort_by(&:display_name)
-  end
-
-  def update_quickbooks
-    authorize!(current_user, to: :accounts_payable_show?, with: QuickbooksPolicy)
+  def update_accounting
+    authorize!(current_user, to: :accounts_payable_show?, with: AccountingPolicy)
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
 
     if broker.save
-      flash[:success] = 'QuickBooks vendors updated'
-      redirect_to(quickbooks_broker_broker_carriers_path) && return
+      flash[:success] = 'Accounting vendors updated'
+      redirect_to(accounting_broker_broker_carriers_path) && return
     end
 
-    render(:quickbooks)
+    render(:accounting)
   end
 
   def tariff; end
@@ -197,7 +194,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def broker_params
     params.require(:broker).permit(
       :id,
-      broker_carriers_attributes: %i[id quickbooks_vendor_id],
+      broker_carriers_attributes: %i[id accounting_vendor_id],
     )
   end
 

@@ -1,0 +1,5 @@
+ENV['AWS_S3_BUCKET'] ||= 'test'
+ENV['AWS_REGION'] ||= 'us-east-1'
+ENV['AWS_ACCESS_KEY_ID'] ||= 'test'
+ENV['AWS_SECRET_ACCESS_KEY'] ||= 'test'
+ENV['AWS_ENDPOINT_URL_S3'] ||= 'http://localhost'

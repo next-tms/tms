@@ -67,5 +67,6 @@
 require 'rails_helper'
 
 RSpec.describe(BrokerCarrier) do
+  it_behaves_like 'accounting_syncable', resource: :vendor, record: 'Accounting::QuickBooks::Vendor'
   it_behaves_like 'companyable'
 end

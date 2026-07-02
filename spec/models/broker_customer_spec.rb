@@ -80,5 +80,6 @@
 require 'rails_helper'
 
 RSpec.describe(BrokerCustomer) do
+  it_behaves_like 'accounting_syncable', resource: :customer, record: 'Accounting::QuickBooks::Customer'
   it_behaves_like 'companyable'
 end

@@ -81,9 +81,9 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
 
   def show
     begin
-      @payment_transaction.update_from_quickbooks_bill if @payment_transaction.quickbooks_bill_id.present?
-    rescue StandardError
-      # Rescuing everything to prevent UI problems
+      @payment_transaction.update_from_accounting_bill if @payment_transaction.accounting_bill_id.present?
+    rescue StandardError => exception
+      Sentry.capture_exception(exception)
     end
 
     # TODO: Remove this requirement from view

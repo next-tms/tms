@@ -18,10 +18,10 @@
       <tbody>
         <tr>
           <td>
-            <%= link_to 'Intuit QuickBooks', broker_settings_company_intuit_path, target: '_blank' %>
+            <%= link_to 'Accounting', broker_settings_company_accounting_path, target: '_blank' %>
           </td>
           <td>
-            <% if current_user.broker.intuit_account&.connected? %>
+            <% if Accounting.connected? %>
               ✓
             <% end %>
           </td>

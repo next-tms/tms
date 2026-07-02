@@ -35,8 +35,8 @@ production:
   fetch_shipment_pros:
     class: FetchShipmentProsJob
     schedule: "*/15 * * * *"
-  push_receivables_to_quickbooks:
-    class: PushReceivablesToQuickbooksJob
+  push_receivables_to_accounting:
+    class: PushReceivablesToAccountingJob
     schedule: "0 * * * *"
   track_shipments_pending_delivery:
     class: TrackShipmentsPendingDeliveryJob
@@ -50,6 +50,6 @@ production:
   send_receivables:
     class: SendReceivablesJob
     schedule: "45 */2 * * *"
-  update_receivables_from_quickbooks_job:
-    class: UpdateReceivablesFromQuickbooksJob
+  update_receivables_from_accounting_job:
+    class: UpdateReceivablesFromAccountingJob
     schedule: "40 */2 * * *"

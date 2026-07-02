@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_01_000010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
 
   create_table "accessorials", force: :cascade do |t|
@@ -109,10 +110,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
 
   create_table "banks", force: :cascade do |t|
     t.string "account_number"
+    t.integer "accounting_account_id"
     t.bigint "broker_id", null: false
     t.string "kind", null: false
     t.string "name"
-    t.integer "quickbooks_account_id"
     t.index ["broker_id"], name: "index_banks_on_broker_id"
   end
 
@@ -140,6 +141,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
     t.string "account"
     t.string "account_desc"
     t.text "accounting_notes"
+    t.integer "accounting_vendor_id"
     t.bigint "broker_customer_id"
     t.integer "broker_id"
     t.integer "carrier_id"
@@ -151,7 +153,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
     t.string "encrypted_api_key"
     t.boolean "ignore_bol_requires_tracking_number", default: false
     t.string "password"
-    t.integer "quickbooks_vendor_id"
     t.integer "quote_padding_cents", default: 0, null: false
     t.string "quote_padding_currency", default: "USD", null: false
     t.integer "shipments_count"
@@ -197,6 +198,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
   end
 
   create_table "broker_customers", force: :cascade do |t|
+    t.string "accounting_customer_id"
     t.boolean "always_show_quotes_based_on_calculated_classes", default: true
     t.bigint "broker_id"
     t.boolean "can_quote", default: false
@@ -212,7 +214,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
     t.bigint "office_address_id", null: false
     t.string "preferred_broker_carriers_kind"
     t.bigint "primary_pickup_address_id", null: false
-    t.string "quickbooks_customer_id"
     t.bigint "receivables_contact_id"
     t.string "receivables_schedule", default: "immediately"
     t.boolean "requires_carrier_bol_on_receivables", default: true
@@ -410,16 +411,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "intuit_accounts", force: :cascade do |t|
-    t.bigint "broker_id"
+  create_table "integration_mappings", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "encrypted_oauth2_access_token"
-    t.string "encrypted_oauth2_refresh_token"
-    t.datetime "oauth2_access_token_expires_at"
-    t.datetime "oauth2_refresh_token_expires_at"
-    t.text "realm_id"
+    t.string "external_id", null: false
+    t.bigint "integration_id", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["broker_id"], name: "index_intuit_accounts_on_broker_id"
+    t.index ["integration_id"], name: "index_integration_mappings_on_integration_id"
+    t.index ["record_type", "record_id", "integration_id"], name: "index_integration_mappings_uniqueness", unique: true
+  end
+
+  create_table "integrations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.jsonb "credentials", null: false
+    t.string "kind", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["kind", "name"], name: "index_integrations_on_kind_and_name", unique: true
   end
 
   create_table "items", force: :cascade do |t|
@@ -502,6 +511,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
   end
 
   create_table "payment_transactions", force: :cascade do |t|
+    t.integer "accounting_bill_id"
     t.boolean "additional_charge"
     t.integer "balance_cents", default: 0, null: false
     t.string "balance_currency", default: "USD", null: false
@@ -517,7 +527,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
     t.string "paid_currency", default: "USD", null: false
     t.bigint "payment_id"
     t.string "pro"
-    t.integer "quickbooks_bill_id"
     t.bigint "shipment_id"
     t.datetime "updated_at", null: false
     t.index ["broker_carrier_id"], name: "index_payment_transactions_on_broker_carrier_id"
@@ -526,6 +535,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
   end
 
   create_table "payments", force: :cascade do |t|
+    t.integer "accounting_bill_payment_id"
     t.datetime "approved_at", precision: nil
     t.bigint "approved_by_id"
     t.bigint "bank_id"
@@ -540,7 +550,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
     t.string "paid_currency", default: "USD", null: false
     t.date "paid_on"
     t.bigint "payment_method_id"
-    t.integer "quickbooks_bill_payment_id"
     t.datetime "updated_at", null: false
     t.index ["approved_by_id"], name: "index_payments_on_approved_by_id"
     t.index ["bank_id"], name: "index_payments_on_bank_id"
@@ -662,6 +671,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
   end
 
   create_table "receivables", force: :cascade do |t|
+    t.string "accounting_invoice_id"
     t.datetime "authorized_at", precision: nil
     t.bigint "authorized_by_id"
     t.integer "balance_cents", default: 0, null: false
@@ -671,7 +681,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
     t.datetime "due_by", precision: nil
     t.boolean "invoiced", default: false
     t.datetime "paid_at", precision: nil
-    t.string "quickbooks_invoice_id"
     t.datetime "sent_at"
     t.bigint "sent_by_id"
     t.bigint "shipment_id", null: false
@@ -1059,6 +1068,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_111007) do
   add_foreign_key "document_preferences", "broker_customers"
   add_foreign_key "document_preferences", "brokers"
   add_foreign_key "document_preferences", "contacts"
+  add_foreign_key "integration_mappings", "integrations"
   add_foreign_key "location_areas", "areas"
   add_foreign_key "location_areas", "locations"
   add_foreign_key "locations", "regions"

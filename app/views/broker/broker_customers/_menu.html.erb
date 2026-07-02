@@ -5,7 +5,7 @@
     <%= link_to 'Profitability', broker_customers_profitability_report_path, class: 'nav-link broker-customers-profitability-report' %>
   <% end %>
 
-  <% if current_user.broker.intuit_account.present? && current_user.any_role?(:accounts_payable) %>
-    <%= link_to 'QuickBooks', quickbooks_broker_broker_customers_path, class: 'nav-link broker-customers-quickbooks' %>
+  <% if Accounting.connected? && current_user.any_role?(:accounts_payable) %>
+    <%= link_to 'Accounting', accounting_broker_broker_customers_path, class: 'nav-link broker-customers-accounting' %>
   <% end %>
 </nav>

@@ -1,0 +1,11 @@
+<p>Hello <%= @user.first_name %>,</p>
+
+<p>While setting up the connection to Accounting the following customers were not found:</p>
+
+<ul>
+  <% @broker_customers.each do |broker_customer| %>
+    <li><%= broker_customer.customer.name %></li>
+  <% end %>
+</ul>
+
+<p>Ensure each name is identical in Accounting and Next TMS to prevent creating duplicate customers when receivables are pushed.</p>

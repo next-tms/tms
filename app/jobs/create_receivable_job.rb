@@ -16,7 +16,7 @@ class CreateReceivableJob < ApplicationJob
 
       receivable.update(authorized_at: DateTime.current)
 
-      PushReceivableToQuickbooksJob.perform_later(receivable:) if shipment.broker.intuit_account&.connected?
+      PushReceivableToAccountingJob.perform_later(receivable:) if Accounting.connected?
     end
   end
 end

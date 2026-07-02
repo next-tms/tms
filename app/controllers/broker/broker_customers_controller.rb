@@ -25,6 +25,18 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   before_action :validate_user_role!, only: %i[update show contacts shipments]
   before_action :allow_sales_rep_or_accounts_receivable!, only: %i[edit edit_pricing]
 
+  def accounting
+    authorize!(current_user, to: :accounts_receivable_show?, with: AccountingPolicy)
+
+    @broker_customers = current_user
+                        .broker
+                        .broker_customers
+                        .includes(required_includes)
+                        .order('customers.name')
+
+    @customers = Accounting::Accounting::Customer.order(:display_name)
+  end
+
   def broker_carriers
     @q = @broker_customer
          .broker_carriers
@@ -125,21 +137,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
                end
   end
 
-  def quickbooks
-    authorize!(current_user, to: :accounts_receivable_show?, with: QuickbooksPolicy)
-
-    @broker_customers = current_user
-                        .broker
-                        .broker_customers
-                        .includes(required_includes)
-                        .order('customers.name')
-
-    @customers = QuickbooksAPIClient::Customers
-                 .new(broker: current_user.broker)
-                 .find_all
-                 .sort_by(&:display_name)
-  end
-
   def receivables
     unauthorized unless current_user.role?(:accounts_receivable)
 
@@ -185,18 +182,18 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     end
   end
 
-  def update_quickbooks
-    authorize!(current_user, to: :accounts_receivable_show?, with: QuickbooksPolicy)
+  def update_accounting
+    authorize!(current_user, to: :accounts_receivable_show?, with: AccountingPolicy)
 
     broker = current_user.broker
     broker.assign_attributes(broker_params)
 
     if broker.save
-      flash[:success] = 'QuickBooks customers updated'
-      redirect_to(quickbooks_broker_broker_customers_path) && return
+      flash[:success] = 'Accounting customers updated'
+      redirect_to(accounting_broker_broker_customers_path) && return
     end
 
-    render(:quickbooks)
+    render(:accounting)
   end
 
   def update
@@ -244,7 +241,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def broker_params
     params.require(:broker).permit(
       :id,
-      broker_customers_attributes: %i[id quickbooks_customer_id],
+      broker_customers_attributes: %i[id accounting_customer_id],
     )
   end
 

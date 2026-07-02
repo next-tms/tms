@@ -85,8 +85,8 @@ class Broker::ReceivablesController < Broker::BrokerController
     @receivable.sent_by = current_user if receivable_params[:sent_at].present?
 
     if @receivable.save
-      if current_user.broker.intuit_account&.connected?
-        PushReceivableToQuickbooksJob.perform_now(receivable: @receivable)
+      if Accounting.connected?
+        PushReceivableToAccountingJob.perform_now(receivable: @receivable)
       end
 
       redirect_to(broker_receivable_path(@receivable)) and return
@@ -97,8 +97,8 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def show
-    #    if current_user.broker.intuit_account&.connected? && @receivable.authorized_by_id.blank?
-    #      @receivable.quickbooks_invoice
+    #    if Accounting.connected? && @receivable.authorized_by_id.blank?
+    #      @receivable.accounting_invoice
     #    end
   end
 

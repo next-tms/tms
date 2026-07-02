@@ -26,7 +26,7 @@
 #   @return []
 # @!attribute created_by_id
 #   @return []
-# @!attribute quickbooks_invoice_id
+# @!attribute accounting_invoice_id
 #   @return [String]
 # @!attribute sent_by_id
 #   @return []
@@ -69,10 +69,17 @@ class Receivable < ApplicationRecord
     end
   end
 
-  include Receivable::QuickbooksSyncable
-
+  include AccountingSyncable
   include Discussable
   include Suppressible
+
+  accounting_syncs :invoice,
+                   match: -> { { document_number: shipment.load_id.to_s } },
+                   prepare: lambda { |invoice|
+                     broker_customer.create_accounting_customer if broker_customer.accounting_customer_id.blank?
+                     invoice.customer_id = broker_customer.accounting_customer_id
+                   },
+                   columns: -> { { invoiced: true } }
 
   audited
 
@@ -191,7 +198,7 @@ class Receivable < ApplicationRecord
   end
 
   def fetch_invoice
-    quickbooks_invoice_pdf if broker.intuit_account&.connected?
+    accounting_invoice_pdf if Accounting.connected?
   end
 
   # @note For Suppressible
@@ -200,7 +207,7 @@ class Receivable < ApplicationRecord
   end
 
   def update_from_api
-    update_from_quickbooks_invoice if broker.intuit_account&.connected?
+    update_from_accounting_invoice if Accounting.connected?
   end
 
   def missing_carrier_bol?
@@ -271,18 +278,128 @@ class Receivable < ApplicationRecord
     sent_at.present?
   end
 
+  def accounting_invoice_pdf
+    return unless Accounting.connected? && accounting_invoice.present?
+
+    data = accounting_invoice.pdf
+    data = (sleep(10) || accounting_invoice.pdf) if data&.include?('errorCode=')
+    return if data.blank?
+
+    filename = "#{shipment.load_id} Invoice.pdf"
+    path = File.join(Dir.tmpdir, filename)
+    File.binwrite(path, data)
+
+    invoice.attach(ActiveStorage::Blob.create_and_upload!(io: File.open(path), filename:, content_type: 'application/pdf'))
+    shipment.problematic!
+  end
+
+  def update_from_accounting_invoice
+    return if accounting_invoice.blank?
+
+    now = Time.current
+    update_columns(balance_cents: (accounting_invoice.balance.to_f * 100).to_i)
+    update_columns(paid_at: now) if accounting_invoice.balance.zero?
+    update_columns(total_cents: (accounting_invoice.total.to_f * 100).to_i)
+    update_columns(sent_at: now) if !sent? && (accounting_invoice.balance.zero? || accounting_invoice.email_status == 'EmailSent')
+
+    reload
+  end
+
+  def to_accounting_invoice
+    time_zone = ActiveSupport::TimeZone.new(Setting.value!(:time_zone_name))
+
+    Accounting::Invoice
+    .new(
+      billing_address: accounting_billing_address,
+      billing_email_address: broker_customer.receivables_contact.email,
+      document_number: shipment.load_id.to_s,
+      due_date: due_by.in_time_zone(time_zone).to_date,
+      line_items: accounting_invoice_line_items,
+      ship_date: shipment.picked_up_at.in_time_zone(time_zone).to_date,
+      shipping_address: accounting_shipping_address,
+      shipping_method: accounting_shipping_method,
+      tracking_number: shipment.load_id,
+      transaction_date: Time.current.in_time_zone(time_zone),
+    )
+  end
+
   private
+
+  def accounting_billing_address
+    address = broker_customer.office_address.to_accounting_address
+    address.line2 = address.line1
+    address.line1 = broker_customer.customer.name
+    address
+  end
+
+  def accounting_invoice_line_items
+    line_items = []
+
+    references = []
+    references << "Shipper Ref: #{shipment.shipper_reference}" if shipment.shipper_reference.present?
+    references << "PO Ref: #{shipment.customer_reference}" if shipment.customer_reference.present?
+
+    if references.present?
+      line_items << Accounting::LineItem.new(description: references.join("\n"))
+    end
+
+    unless broker_customer.office_address.proper(', ') == shipment.shipper_address.proper(', ')
+      description = <<~PICKUP.strip
+        Pickup from:
+
+        #{shipment.shipper_name}
+        #{shipment.shipper_address.proper("\n")}
+      PICKUP
+
+      line_items << Accounting::LineItem.new(description:)
+    end
+
+    receivable_items.each do |receivable_item|
+      amount = receivable_item.charge_cents.to_f / 100
+
+      line_items << Accounting::LineItem
+                    .new(
+                      amount:,
+                      description: receivable_item.description,
+                      kind: :sales,
+                      quantity: 1,
+                      unit_price: amount,
+                    )
+    end
+
+    line_items
+  end
+
+  def accounting_shipping_address
+    address = shipment.receiver_address.to_accounting_address
+    address.line2 = address.line1
+    address.line1 = shipment.receiver_name
+    address
+  end
+
+  def accounting_shipping_method
+    carrier =
+      if shipment.broker_carrier.blank?
+        nil
+      elsif shipment.broker_carrier.carrier.acts_as_broker
+        shipment.tracking_carrier.presence || shipment.broker_carrier.carrier
+      else
+        shipment.broker_carrier.carrier
+      end
+
+    carrier&.name
+  end
 
   def problematic_shipment_later
     ProblematicJob.perform_later([ shipment.id ], type: 'Shipment')
   end
 
   def set_authorized_at
-    unless authorized_at.blank? && broker_customer.broker.intuit_account&.connected? && quickbooks_invoice.present?
+    unless authorized_at.blank? && Accounting.connected? && accounting_invoice.present?
       return
     end
 
-    self.authorized_at = quickbooks_invoice.meta_data.create_time
+    self.authorized_at = accounting_invoice.created_at
   end
 
   def set_balance_and_total
@@ -302,7 +419,7 @@ class Receivable < ApplicationRecord
   def set_invoiced
     return if invoiced?
 
-    self.invoiced = IntuitAccount.connected? && quickbooks_invoice.present?
+    self.invoiced = Accounting.connected? && accounting_invoice.present?
   end
 
   def set_sent_at

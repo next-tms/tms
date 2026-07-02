@@ -27,6 +27,7 @@
 #
 #  fk_rails_...  (address_id => addresses.id)
 #
+# @deprecated
 class Broker < ApplicationRecord
   class << self
     def companyable_order
@@ -66,7 +67,6 @@ class Broker < ApplicationRecord
   has_many :rates, through: :shipments
   has_many :receivables, through: :shipments
 
-  has_one :intuit_account
   has_one :stripe_account
 
   phony_normalize :phone, default_country_code: 'US'

@@ -46,7 +46,7 @@
 #   @return [Integer]
 # @!attribute check_mailing_address_id
 #   @return []
-# @!attribute quickbooks_vendor_id
+# @!attribute accounting_vendor_id
 #   @return [Integer]
 #
 # Indexes
@@ -79,8 +79,10 @@ class BrokerCarrier < ApplicationRecord
     end
   end
 
-  include BrokerCarrier::QuickbooksSyncable
+  include AccountingSyncable
   include Companyable
+
+  accounting_syncs :vendor, match: -> { { name: carrier.name } }
 
   audited
 
@@ -140,6 +142,14 @@ class BrokerCarrier < ApplicationRecord
     "#{carrier.name} - #{broker_customer.customer.name}"
   end
   alias_method :name, :broker_customer_specific_name
+
+  def to_accounting_vendor
+    Accounting::Vendor.new(
+      billing_address: check_mailing_address&.to_accounting_address,
+      company_name: carrier.name,
+      display_name: carrier.name,
+    )
+  end
 
   def to_freight_kit_carrier
     @to_freight_kit_carrier ||= FreightKitAPIClient::Services::BuildAPIClient.call(broker_carrier: self)

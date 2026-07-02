@@ -13,10 +13,6 @@ RSpec.describe(BrokerPolicy) do
 
   let(:policy) { described_class.new(shipment, user:) }
 
-  before do
-    create(:intuit_account, broker:)
-  end
-
   describe '#show?' do
     subject { policy.apply(:show?) }
 

@@ -21,6 +21,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym('GraphQL')
   inflect.acronym('LTL')
   inflect.acronym('NMFC')
+  inflect.acronym('OAuth2')
   inflect.acronym('PDF')
   inflect.acronym('PODs') # must come before "POD"
   inflect.acronym('POD') # must come before "PO"

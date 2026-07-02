@@ -1,0 +1,48 @@
+<% provide :title, 'Accounting' %>
+
+<%= render 'header' %>
+<h2><%= yield :title %></h2>
+
+<p class="col-title">Customer Mapping</p>
+
+<div class="row">
+  <div class="col-auto">
+    <%= bootstrap_form_with model: current_user.broker,
+                            url: accounting_broker_broker_customers_path,
+                            method: :patch do |f| %>
+      <%= f.alert_message "Unable to update mappings:" %>
+
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <th>Customer</th>
+            <th>Accounting Customer</th>
+          </thead>
+
+          <tbody>
+            <%= f.fields_for :broker_customers, @broker_customers do |broker_customer_form| %>
+              <tr>
+                <td><%= broker_customer_form.object.customer.name %></td>
+
+                <td>
+                  <%= broker_customer_form.hidden_field :id %>
+                  <%= broker_customer_form.select :accounting_customer_id,
+                                                 @customers.collect { |customer| [ customer.display_name, customer.id ] },
+                                                 {
+                                                   hide_label: true,
+                                                   include_blank: 'None — Automatically Create When Needed',
+                                                   class: 'form-select'
+                                                 } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= f.form_group do %>
+        <%= f.submit class: 'btn btn-primary', data: { turbo: false }, value: 'Save' %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

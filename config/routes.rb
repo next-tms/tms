@@ -30,8 +30,9 @@ Rails.application.routes.draw do
   post 'fetch_address_by_broker_customer', to: 'geocoder#fetch_address_by_broker_customer'
   post 'validate_address', to: 'geocoder#validate_address'
 
-  get 'gateway/accounts/intuit/authenticate', as: :authenticate_intuit_account, to: 'intuit_accounts#authenticate'
-  get 'gateway/accounts/intuit/oauth-callback', as: :oauth_callback_intuit_account, to: 'intuit_accounts#oauth_callback'
+  # NOTE: the '/intuit/oauth-callback' path is the redirect URI registered in the Intuit developer app; keep it stable.
+  get 'gateway/accounts/intuit/authenticate', as: :connect_accounting, to: 'accounting_connections#connect'
+  get 'gateway/accounts/intuit/oauth-callback', as: :oauth_callback_accounting, to: 'accounting_connections#callback'
 
   resources :notifications, only: %i[show index]
 
@@ -44,12 +45,12 @@ Rails.application.routes.draw do
     match 'settings/company', to: 'broker#update', via: %i[patch put post]
     resources :broker_accessorials, path: 'settings/company/accessorials'
 
-    get 'settings/company/intuit', to: 'intuit_account#show'
+    get 'settings/company/accounting', to: 'accounting#show'
 
     resources :broker_customers, path: 'customers' do
       collection do
-        get :quickbooks
-        patch :quickbooks, to: 'broker_customers#update_quickbooks'
+        get :accounting
+        patch :accounting, to: 'broker_customers#update_accounting'
       end
 
       # TODO: Tidy this up
@@ -69,8 +70,8 @@ Rails.application.routes.draw do
 
     resources :broker_carriers, path: 'carriers' do
       collection do
-        get :quickbooks
-        patch :quickbooks, to: 'broker_carriers#update_quickbooks'
+        get :accounting
+        patch :accounting, to: 'broker_carriers#update_accounting'
       end
 
       member do
@@ -95,8 +96,8 @@ Rails.application.routes.draw do
 
     resources :banks, except: %i[destroy], path: 'bank-accounts' do
       collection do
-        get :quickbooks
-        patch :quickbooks, to: 'banks#update_quickbooks'
+        get :accounting
+        patch :accounting, to: 'banks#update_accounting'
       end
 
       member { get 'activity', to: 'banks#activity' }

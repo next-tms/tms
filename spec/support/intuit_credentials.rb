@@ -1,0 +1,2 @@
+ENV['INTUIT_CLIENT_ID'] ||= 'test'
+ENV['INTUIT_CLIENT_SECRET'] ||= 'test'

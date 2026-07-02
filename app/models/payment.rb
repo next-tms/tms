@@ -63,7 +63,7 @@ class Payment < ApplicationRecord
     end
   end
 
-  include Payment::QuickbooksSyncable
+  include Payment::Accounting
 
   audited
 

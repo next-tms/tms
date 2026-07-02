@@ -5,6 +5,7 @@ module Types
     field :account, String
     field :account_desc, String
     field :accounting_notes, String
+    field :accounting_vendor_id, Integer
     field :broker, Types::BrokerType
     field :broker_customer, Types::BrokerCustomerType
     field :carrier, Types::CarrierType
@@ -14,7 +15,6 @@ module Types
     field :default_bol_notes, String
     field :id, ID, null: false
     field :ignore_bol_requires_tracking_number, Boolean
-    field :quickbooks_vendor_id, Integer
     field :quote_padding_cents, Integer, null: false
     field :quote_padding_currency, String, null: false
     field :shipments_count, Integer

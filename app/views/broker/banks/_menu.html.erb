@@ -1,7 +1,7 @@
 <nav class="nav border-top pt-4 mb-0">
   <%= link_to 'All', broker_banks_path, class: 'nav-link banks-index' %>
 
-  <% if current_user.broker.intuit_account.present? && current_user.role?(:root) %>
-    <%= link_to 'QuickBooks', quickbooks_broker_banks_path, class: 'nav-link banks-quickbooks' %>
+  <% if Accounting.connected? && current_user.role?(:root) %>
+    <%= link_to 'Accounting', accounting_broker_banks_path, class: 'nav-link banks-accounting' %>
   <% end %>
 </nav>

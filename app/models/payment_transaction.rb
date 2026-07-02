@@ -64,7 +64,16 @@ class PaymentTransaction < ApplicationRecord
     end
   end
 
-  include PaymentTransaction::QuickbooksSyncable
+  include AccountingSyncable
+
+  accounting_syncs :bill,
+                   match: -> { { document_number: shipment.load_id.to_s } },
+                   prepare: lambda { |bill|
+                     broker_carrier.create_accounting_vendor if broker_carrier.accounting_vendor_id.blank?
+                     bill.vendor_id = broker_carrier.accounting_vendor_id
+                   }
+
+  after_commit :push_to_accounting
 
   audited
 
@@ -118,7 +127,55 @@ class PaymentTransaction < ApplicationRecord
     balance - shipment.carrier_cost
   end
 
+  def to_accounting_bill
+    Accounting::Bill.new(
+      document_number: shipment.load_id.to_s,
+      due_date: due_on,
+      line_items: [ accounting_bill_line_item ],
+      mailing_address: accounting_bill_mailing_address,
+      private_note: notes,
+    )
+  end
+
+  def update_from_accounting_bill
+    return if accounting_bill.blank?
+
+    method = persisted? ? :update_columns : :assign_attributes
+    send(method, balance_cents: (accounting_bill.balance.to_f * 100).to_i, total_cents: (accounting_bill.total.to_f * 100).to_i)
+    send(method, paid_at: DateTime.current) if accounting_bill.balance.zero?
+
+    reload if persisted?
+  end
+
+  def update_from_accounting_bill_later = !!FetchPaymentTransactionAccountingBillJob.perform_later(self)
+
   private
+
+  def accounting_bill_description
+    parts = [ "#{Setting.value!(:name)} Load #{shipment.load_id}" ]
+    parts << "#{broker_carrier.name} Pro #{shipment.pro}" if shipment.pro.present?
+
+    "Shipping (#{parts.join(' / ')})"
+  end
+
+  def accounting_bill_line_item
+    Accounting::LineItem.new(amount: paid_cents.to_f / 100, description: accounting_bill_description, kind: :account_based_expense)
+  end
+
+  def accounting_bill_mailing_address
+    address = broker_carrier.check_mailing_address&.to_accounting_address
+    return if address.nil?
+
+    address.line2 = address.line1
+    address.line1 = broker_carrier.carrier.name
+    address
+  end
+
+  def push_to_accounting
+    return false unless Accounting.connected?
+
+    !!PushPaymentTransactionToAccountingJob.perform_later(self)
+  end
 
   def set_broker
     return if broker_carrier.blank? || broker.present?

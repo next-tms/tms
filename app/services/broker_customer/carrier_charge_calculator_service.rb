@@ -46,7 +46,7 @@ class BrokerCustomer::CarrierChargeCalculatorService
   end
 
   def default_pricing
-    return nil unless default_upcharge.positive? || default_upcharge_percentage.positive?
+    return unless default_upcharge.positive? || default_upcharge_percentage.positive?
 
     carrier_charges = carrier_cost
 
@@ -83,9 +83,9 @@ end
 ### Previous Logic
 
 # def carrier_charge_calculator(carrier_cost:, shipment:)
-#   return nil unless carrier_cost&.positive?
+#   return unless carrier_cost&.positive?
 
-#   return nil if default_upcharge.blank? && upcharge_rules.blank?
+#   return if default_upcharge.blank? && upcharge_rules.blank?
 
 #   if upcharge_rules.blank? && default_upcharge.present? && default_upcharge.positive?
 #     return (carrier_cost + default_upcharge)
@@ -119,7 +119,7 @@ end
 
 #   # Apply default default pricing
 #   unless matched
-#     return nil unless (matched && default_upcharge.positive?) || default_upcharge_percentage.positive?
+#     return unless (matched && default_upcharge.positive?) || default_upcharge_percentage.positive?
 
 #     carrier_charges = carrier_cost
 

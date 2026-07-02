@@ -42,7 +42,7 @@
 #   @return []
 # @!attribute primary_pickup_address_id
 #   @return []
-# @!attribute quickbooks_customer_id
+# @!attribute accounting_customer_id
 #   @return [String]
 # @!attribute receivables_contact_id
 #   @return []
@@ -81,14 +81,16 @@ class BrokerCustomer < ApplicationRecord
   end
 
   include ::Instigatable
+  include AccountingSyncable
   include BrokerCustomer::Instigatable
-  include BrokerCustomer::QuickbooksSyncable
   include Companyable
 
   after_commit :problematic_shipments_later
 
-  before_update :update_quickbooks_invoices, if: :receivables_contact_id_changed?
+  before_update :update_accounting_invoices, if: :receivables_contact_id_changed?
   before_validation :set_receivables_contact_companyable, if: -> { receivables_contact&.new_record? }
+
+  accounting_syncs :customer, match: -> { { name: customer.name } }
 
   audited
 
@@ -201,69 +203,19 @@ class BrokerCustomer < ApplicationRecord
     BrokerCustomer::ProfitabilityReportJsonService.new(broker_customer: self, from_date:, to_date:).call
   end
 
-  def create_quickbooks_customer
-    return false unless broker.intuit_account&.connected?
-
-    return update_quickbooks_customer if quickbooks_customer.present?
-
-    result = QuickbooksAPIClient::Customers.new(broker:).create(self)
-    return false if result.blank?
-
-    update!(quickbooks_customer_id: result.id)
-    @quickbooks_customer = result
-
-    true
-  end
-
-  def update_quickbooks_customer
-    return false unless broker.intuit_account&.connected?
-
-    if quickbooks_customer_id.blank? && quickbooks_customer.present?
-      update!(quickbooks_customer_id: quickbooks_customer.id)
-    end
-
-    return create_quickbooks_customer if quickbooks_customer.blank?
-
-    result = QuickbooksAPIClient::Customers.new(broker:).update(self)
-    return false if result.blank?
-
-    @quickbooks_customer = result
-
-    true
-  end
-
-  def quickbooks_customer
-    return unless broker.intuit_account&.connected?
-    return @quickbooks_customer if @quickbooks_customer.present?
-
-    result = nil
-
-    if quickbooks_customer_id.present?
-      result = QuickbooksAPIClient::Customers.new(broker:).find(quickbooks_customer_id)
-    end
-    return @quickbooks_customer = result if result.present?
-
-    customers = QuickbooksAPIClient::Customers.new(broker:)
-    result = customers.find_by_name(customer.name) # rubocop:disable Rails/DynamicFindBy
-    return if result.blank?
-
-    update_columns(quickbooks_customer_id: result.id)
-    @quickbooks_customer = result
-  end
-
-  def to_quickbooks_customer
-    Quickbooks::Model::Customer.new(
-      billing_address: office_address.to_quickbooks_physical_address,
+  def to_accounting_customer
+    Accounting::Customer.new(
+      billing_address: office_address.to_accounting_address,
       company_name: customer.name,
       display_name: customer.name,
-      shipping_address: primary_pickup_address&.to_quickbooks_physical_address,
+      shipping_address: primary_pickup_address&.to_accounting_address,
     )
   end
 
-  def update_quickbooks_invoices
+  def update_accounting_invoices
     return if receivables.unpaid.none?
 
-    receivables.unpaid.each(&:update_quickbooks_invoice)
+    receivables.unpaid.each(&:update_accounting_invoice)
   end
 
   private

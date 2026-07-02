@@ -1,0 +1,18 @@
+<% provide :title, 'Accounting' %>
+
+<div class="page-header">
+  <h1>Settings</h1>
+  <p class="lead"><%= yield :title %></p>
+</div>
+
+<% if Accounting.connected? %>
+  <div class="alert alert-info">
+    <p>Connected to <%= Accounting.integration.kind.titleize %></p>
+  </div>
+<% else %>
+  <div class="alert alert-warning">
+    <p>No accounting integration is connected</p>
+  </div>
+
+  <%= link_to 'Connect', connect_accounting_path, class: 'btn btn-primary' %>
+<% end %>

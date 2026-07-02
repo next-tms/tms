@@ -12,7 +12,7 @@
 #   @return [String]
 # @!attribute broker_id
 #   @return []
-# @!attribute quickbooks_account_id
+# @!attribute accounting_account_id
 #   @return [Integer]
 #
 # Indexes
@@ -34,7 +34,11 @@ class Bank < ApplicationRecord
     end
   end
 
-  include Bank::QuickbooksSyncable
+  include AccountingSyncable
+
+  accounting_syncs :account, match: -> { { name: to_accounting_account.name } }
+
+  after_commit :push_to_accounting
 
   belongs_to :broker
 
@@ -51,4 +55,16 @@ class Bank < ApplicationRecord
   def applicable_payment_method
     PaymentMethod.all.find { |p| p.enumerable_value == kind }
   end
+
+  def to_accounting_account
+    Accounting::Account.new(
+      account_number:,
+      name: [ name, account_number.presence&.first(4) ].compact.join(' '),
+      sub_type: credit_card? ? :credit_card : :checking,
+    )
+  end
+
+  private
+
+  def push_to_accounting = Accounting.connected? && !!PushBankToAccountingJob.perform_later(self)
 end
