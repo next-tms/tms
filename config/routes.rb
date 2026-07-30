@@ -30,9 +30,10 @@ Rails.application.routes.draw do
   post 'fetch_address_by_broker_customer', to: 'geocoder#fetch_address_by_broker_customer'
   post 'validate_address', to: 'geocoder#validate_address'
 
-  # NOTE: the '/intuit/oauth-callback' path is the redirect URI registered in the Intuit developer app; keep it stable.
-  get 'gateway/accounts/intuit/authenticate', as: :connect_accounting, to: 'accounting_connections#connect'
-  get 'gateway/accounts/intuit/oauth-callback', as: :oauth_callback_accounting, to: 'accounting_connections#callback'
+  AccountingConnectionsController::PROVIDERS.each do |kind, slug|
+    get "gateway/accounts/#{slug}/authenticate", as: :"connect_#{kind}_accounting", to: 'accounting_connections#connect', defaults: { kind: }
+    get "gateway/accounts/#{slug}/oauth-callback", as: :"oauth_callback_#{kind}_accounting", to: 'accounting_connections#callback', defaults: { kind: }
+  end
 
   resources :notifications, only: %i[show index]
 
