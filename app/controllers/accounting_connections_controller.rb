@@ -1,5 +1,5 @@
 class AccountingConnectionsController < ApplicationController
-  PROVIDERS = { 'quickbooks' => 'intuit', 'wave' => 'wave' }.freeze
+  PROVIDERS = { 'quickbooks' => 'intuit' }.freeze
 
   def callback
     raise ActionController::RoutingError, 'Invalid state' unless valid_nonce?

@@ -14,5 +14,7 @@
     <p>No accounting integration is connected</p>
   </div>
 
-  <%= link_to 'Connect', connect_accounting_path, class: 'btn btn-primary' %>
+  <% AccountingConnectionsController::PROVIDERS.each_key do |kind| %>
+    <%= link_to "Connect #{kind.titleize}", send("connect_#{kind}_accounting_path"), class: 'btn btn-primary' %>
+  <% end %>
 <% end %>
