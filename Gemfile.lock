@@ -98,6 +98,9 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
+    activesupport-cache-zstd_compressor (0.2.0)
+      activesupport (>= 7.1)
+      zstd-ruby (>= 1.5.6.6, < 3)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
     akami (1.3.3)
@@ -711,6 +714,7 @@ GEM
       nokogiri (~> 1.8)
     zeitwerk (2.7.2)
     zlib (3.2.3)
+    zstd-ruby (2.0.6)
 
 PLATFORMS
   aarch64-linux-musl
@@ -723,6 +727,7 @@ DEPENDENCIES
   action_policy
   action_policy-graphql
   activerecord-session_store (~> 2.1.0)
+  activesupport-cache-zstd_compressor
   annotaterb
   audited
   aws-sdk-s3 (~> 1.130)

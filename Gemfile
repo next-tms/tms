@@ -152,4 +152,5 @@ gem 'pretender'
 gem 'public_suffix'
 
 gem 'activerecord-session_store', '~> 2.1.0'
+gem 'activesupport-cache-zstd_compressor'
 gem 'graphql-client'
