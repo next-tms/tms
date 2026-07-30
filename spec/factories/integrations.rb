@@ -10,5 +10,17 @@ FactoryBot.define do
 
     kind { :quickbooks }
     name { Faker::Company.name }
+
+    trait(:wave) do
+      credentials do
+        {
+          access_token: Faker::Internet.username,
+          business_id: Faker::Alphanumeric.alphanumeric(number: 36),
+          refresh_token: Faker::Internet.username
+        }
+      end
+
+      kind { :wave }
+    end
   end
 end

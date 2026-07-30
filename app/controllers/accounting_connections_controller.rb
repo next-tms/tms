@@ -1,5 +1,5 @@
 class AccountingConnectionsController < ApplicationController
-  PROVIDERS = { 'quickbooks' => 'intuit' }.freeze
+  PROVIDERS = { 'quickbooks' => 'intuit', 'wave' => 'wave' }.freeze
 
   def callback
     raise ActionController::RoutingError, 'Invalid state' unless valid_nonce?
@@ -46,7 +46,11 @@ class AccountingConnectionsController < ApplicationController
     "#{ENV.fetch('INTEGRATIONS_RELAY_URL', 'https://flight.next-tms.com/oauth/callback')}/#{provider}"
   end
 
-  def state = "#{ENV.fetch('FLIGHT_APP_ID')}.#{session[:accounting_oauth_nonce]}"
+  def state
+    return session[:accounting_oauth_nonce] if Rails.env.development?
+
+    "#{ENV.fetch('FLIGHT_APP_ID')}.#{session[:accounting_oauth_nonce]}"
+  end
 
   def valid_nonce?
     (nonce = session.delete(:accounting_oauth_nonce)).present? && ActiveSupport::SecurityUtils.secure_compare(params[:state].to_s.split('.', 2).last.to_s, nonce)

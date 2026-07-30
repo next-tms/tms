@@ -172,7 +172,7 @@ class PaymentTransaction < ApplicationRecord
   end
 
   def push_to_accounting
-    return false unless Accounting.connected?
+    return false unless Accounting.connected? && Accounting.supports?(:bill)
 
     !!PushPaymentTransactionToAccountingJob.perform_later(self)
   end

@@ -1,0 +1,12 @@
+{
+  "data": {
+    "business": {
+      "vendors": {
+        "pageInfo": { "totalPages": 1 },
+        "edges": [
+          { "node": { "id": "9", "name": "Carrier Co", "address": null } }
+        ]
+      }
+    }
+  }
+}

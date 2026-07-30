@@ -1,0 +1,9 @@
+{
+  "data": {
+    "productCreate": {
+      "didSucceed": true,
+      "inputErrors": null,
+      "product": { "id": "prod-new" }
+    }
+  }
+}

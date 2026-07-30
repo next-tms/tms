@@ -6,7 +6,7 @@ module Payment::Accounting
   end
 
   def create_accounting_bill_payment
-    return unless Accounting.connected? && paid?
+    return unless Accounting.connected? && Accounting.supports?(:bill_payment) && paid?
     return update_accounting_bill_payment if accounting_bill_payment.present?
 
     result = Accounting.record_class(:bill_payment).create(to_accounting_bill_payment.attributes)
@@ -17,7 +17,7 @@ module Payment::Accounting
   end
 
   def destroy_accounting_bill_payment
-    return unless Accounting.connected?
+    return unless Accounting.connected? && Accounting.supports?(:bill_payment)
     return false if accounting_bill_payment.blank?
 
     accounting_bill_payment.destroy
@@ -26,7 +26,7 @@ module Payment::Accounting
   end
 
   def accounting_bill_payment
-    return unless Accounting.connected?
+    return unless Accounting.connected? && Accounting.supports?(:bill_payment)
     return @accounting_bill_payment if @accounting_bill_payment.present?
     return if accounting_bill_payment_id.blank?
 
@@ -58,7 +58,7 @@ module Payment::Accounting
 
   def update_accounting_bill_payment
     return destroy_accounting_bill_payment unless paid?
-    return unless Accounting.connected?
+    return unless Accounting.connected? && Accounting.supports?(:bill_payment)
     return create_accounting_bill_payment if accounting_bill_payment.blank?
 
     @accounting_bill_payment = Accounting.record_class(:bill_payment).new(accounting_bill_payment_id, **to_accounting_bill_payment.attributes).save
@@ -85,6 +85,6 @@ module Payment::Accounting
   end
 
   def push_to_accounting
-    PushPaymentToAccountingJob.perform_now(self) if Accounting.connected?
+    PushPaymentToAccountingJob.perform_now(self) if Accounting.connected? && Accounting.supports?(:bill_payment)
   end
 end

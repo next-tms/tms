@@ -4,7 +4,7 @@ module AccountingSyncable
   class_methods do
     def accounting_syncs(resource, match:, builder: :"to_accounting_#{resource}", id_column: :"accounting_#{resource}_id", prepare: nil, columns: nil)
       define_method(:"accounting_#{resource}") do
-        return unless Accounting.connected?
+        return unless Accounting.connected? && Accounting.supports?(resource)
 
         memo = (@accounting_records ||= {})
         return memo[resource] if memo[resource].present?
@@ -21,7 +21,7 @@ module AccountingSyncable
       end
 
       define_method(:"create_accounting_#{resource}") do
-        return unless Accounting.connected?
+        return unless Accounting.connected? && Accounting.supports?(resource)
         return public_send(:"update_accounting_#{resource}") if public_send(:"accounting_#{resource}").present?
 
         memo = (@accounting_records ||= {})
@@ -35,7 +35,7 @@ module AccountingSyncable
       end
 
       define_method(:"update_accounting_#{resource}") do
-        return unless Accounting.connected?
+        return unless Accounting.connected? && Accounting.supports?(resource)
         return public_send(:"create_accounting_#{resource}") if public_send(:"accounting_#{resource}").blank?
 
         memo = (@accounting_records ||= {})

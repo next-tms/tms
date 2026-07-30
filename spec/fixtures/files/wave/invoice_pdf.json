@@ -1,0 +1,9 @@
+{
+  "data": {
+    "business": {
+      "invoice": {
+        "pdfUrl": "https://accounting.waveapps.example/inv-1.pdf"
+      }
+    }
+  }
+}

@@ -66,5 +66,5 @@ class Bank < ApplicationRecord
 
   private
 
-  def push_to_accounting = Accounting.connected? && !!PushBankToAccountingJob.perform_later(self)
+  def push_to_accounting = Accounting.connected? && Accounting.supports?(:account) && !!PushBankToAccountingJob.perform_later(self)
 end

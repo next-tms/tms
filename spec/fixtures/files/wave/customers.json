@@ -1,0 +1,13 @@
+{
+  "data": {
+    "business": {
+      "customers": {
+        "pageInfo": { "totalPages": 1 },
+        "edges": [
+          { "node": { "id": "1", "name": "Acme", "address": null } },
+          { "node": { "id": "2", "name": "Beta", "address": null } }
+        ]
+      }
+    }
+  }
+}

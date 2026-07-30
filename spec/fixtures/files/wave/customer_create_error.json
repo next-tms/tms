@@ -1,0 +1,11 @@
+{
+  "data": {
+    "customerCreate": {
+      "didSucceed": false,
+      "inputErrors": [
+        { "code": "NOT_UNIQUE", "message": "is taken", "path": [ "name" ] }
+      ],
+      "customer": null
+    }
+  }
+}

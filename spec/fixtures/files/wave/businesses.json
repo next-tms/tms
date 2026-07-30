@@ -1,0 +1,9 @@
+{
+  "data": {
+    "businesses": {
+      "edges": [
+        { "node": { "id": "business-1" } }
+      ]
+    }
+  }
+}

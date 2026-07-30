@@ -1,0 +1,9 @@
+{
+  "data": {
+    "customerCreate": {
+      "didSucceed": true,
+      "inputErrors": null,
+      "customer": { "id": "1", "name": "Acme", "address": null }
+    }
+  }
+}

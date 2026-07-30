@@ -16,7 +16,18 @@ module Accounting
       end
     end
 
-    def record_class(resource) = integration.service.class.module_parent.const_get(resource.to_s.camelize)
+    def record_class(resource)
+      integration.service.class.module_parent.const_get(resource.to_s.camelize, false)
+    rescue NameError
+      raise UnsupportedResource, resource.to_s
+    end
+
+    def supports?(resource)
+      record_class(resource)
+      true
+    rescue UnsupportedResource
+      false
+    end
   end
 
   KINDS = %i[quickbooks wave].freeze

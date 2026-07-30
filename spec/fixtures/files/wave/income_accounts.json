@@ -1,0 +1,12 @@
+{
+  "data": {
+    "business": {
+      "accounts": {
+        "edges": [
+          { "node": { "id": "acct-uncat", "subtype": { "value": "UNCATEGORIZED_INCOME" } } },
+          { "node": { "id": "acct-income", "subtype": { "value": "INCOME" } } }
+        ]
+      }
+    }
+  }
+}

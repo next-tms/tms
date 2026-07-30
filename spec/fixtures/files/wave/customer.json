@@ -1,0 +1,16 @@
+{
+  "data": {
+    "business": {
+      "customer": {
+        "id": "1",
+        "name": "Acme",
+        "address": {
+          "addressLine1": "1 A St",
+          "addressLine2": null,
+          "city": "Reno",
+          "postalCode": "89501"
+        }
+      }
+    }
+  }
+}

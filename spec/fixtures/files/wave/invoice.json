@@ -1,0 +1,15 @@
+{
+  "data": {
+    "business": {
+      "invoice": {
+        "id": "inv-1",
+        "createdAt": "2026-07-30T00:00:00Z",
+        "status": "SAVED",
+        "invoiceNumber": "1001",
+        "customer": { "id": "cust-1" },
+        "amountDue": { "minorUnitValue": "123456" },
+        "total": { "minorUnitValue": "123456" }
+      }
+    }
+  }
+}
