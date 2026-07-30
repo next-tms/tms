@@ -29,7 +29,7 @@ module TransponderService
 
       Sentry.capture_exception(e)
 
-      nil
+      { errors: [e.message] }
     end
 
     def parse_response(response, operation)
