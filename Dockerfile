@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.19
 
-FROM golang:1.26.4-alpine3.23 AS caddy
+FROM golang:1.26.5-alpine3.23 AS caddy
 ARG CADDY_VERSION=2.11.2
 
 RUN apk -U upgrade
