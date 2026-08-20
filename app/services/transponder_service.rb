@@ -29,7 +29,7 @@ module TransponderService
 
       Sentry.capture_exception(e)
 
-      { errors: [e.message] }
+      { errors: [ e.message ] }
     end
 
     def parse_response(response, operation)
@@ -48,12 +48,7 @@ module TransponderService
   end
 
   API_EXCEPTIONS = [
-                     EOFError,
-                     Errno::ECONNREFUSED,
-                     Errno::ECONNRESET,
-                     Net::OpenTimeout,
-                     Net::ReadTimeout,
-                     OpenSSL::SSL::SSLError,
+                     GraphQL::Client::Error,
                      RuntimeError
                    ].freeze
 end

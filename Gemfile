@@ -153,4 +153,9 @@ gem 'public_suffix'
 
 gem 'activerecord-session_store', '~> 2.1.0'
 gem 'activesupport-cache-zstd_compressor'
+
 gem 'graphql-client'
+
+gem 'brotli', '~> 0.5'
+gem 'httpx', '~> 1.5'
+gem 'zstd-ruby', '~> 2.0'

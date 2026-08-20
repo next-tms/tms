@@ -143,6 +143,7 @@ GEM
       activemodel (>= 6.1)
     brakeman (8.0.4)
       racc
+    brotli (0.8.0)
     builder (3.3.0)
     bullet (8.1.0)
       activesupport (>= 3.0.0)
@@ -278,6 +279,7 @@ GEM
     hashdiff (1.2.1)
     hashie (5.0.0)
     htmlentities (4.3.4)
+    http-2 (1.2.1)
     httparty (0.24.2)
       csv
       mini_mime (>= 1.0.0)
@@ -287,6 +289,8 @@ GEM
       mutex_m
       nkf
       rack (>= 2.0, < 4)
+    httpx (1.8.1)
+      http-2 (>= 1.2.0)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     image_processing (1.12.2)
@@ -736,6 +740,7 @@ DEPENDENCIES
   bootsnap
   bootstrap_form (~> 5.4.0)
   brakeman
+  brotli (~> 0.5)
   bullet (~> 8.1.0)
   bundler-audit
   business_time
@@ -757,6 +762,7 @@ DEPENDENCIES
   graphql-client
   htmlentities
   httparty
+  httpx (~> 1.5)
   image_processing (~> 1.2)
   importmap-rails
   letter_opener
@@ -809,6 +815,7 @@ DEPENDENCIES
   web-console
   webdrivers
   webmock (~> 3.18.1)
+  zstd-ruby (~> 2.0)
 
 BUNDLED WITH
   4.0.10
