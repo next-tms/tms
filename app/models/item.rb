@@ -71,6 +71,12 @@ class Item < ApplicationRecord
     [ 'crate', 'drum', 'pallet', 'tote' ].include?(packaging.name)
   end
 
+  def summary
+    dimensions = [ l, w, h ].all?(&:present?) ? "#{l}x#{w}x#{h}" : '<Unspecified Dimensions>'
+
+    "#{quantity} #{packaging&.name} #{desc} #{dimensions} Class #{display_freight_class}".squish
+  end
+
   def short_side
     if l && w && h
       return [ l, w ].min
