@@ -1,16 +1,15 @@
 require 'rails_helper'
 
 shared_examples_for 'authorized_attributable_policy' do
-  let(:companyable) { nil }
   let(:authorizable) { create(:user, companyable:) }
-
-  let(:record) { create(described_class.name.delete_suffix('Policy').underscore.to_sym) }
+  let(:companyable) { nil }
   let(:policy) { described_class.new(record, authorizable:) }
+  let(:record) { create(described_class.name.delete_suffix('Policy').underscore.to_sym) }
 
   context 'when broker?' do
     let(:companyable) { create(:broker) }
 
-    described_class::BROKER_ATTRIBUTES.each do |attribute|
+    (described_class::BROKER_ATTRIBUTES + described_class::BROKER_METHODS).each do |attribute|
       describe "#{attribute}_attribute?" do
         subject { policy.apply("#{attribute}_attribute?".to_sym) }
 
@@ -18,7 +17,7 @@ shared_examples_for 'authorized_attributable_policy' do
       end
     end
 
-    described_class::CUSTOMER_ATTRIBUTES.each do |attribute|
+    (described_class::CUSTOMER_ATTRIBUTES + described_class::CUSTOMER_METHODS).each do |attribute|
       describe "#{attribute}_attribute?" do
         subject { policy.apply("#{attribute}_attribute?".to_sym) }
 
@@ -30,7 +29,7 @@ shared_examples_for 'authorized_attributable_policy' do
   context 'when customer?' do
     let(:companyable) { create(:broker_customer) }
 
-    described_class::BROKER_ATTRIBUTES.each do |attribute|
+    (described_class::BROKER_ATTRIBUTES + described_class::BROKER_METHODS).each do |attribute|
       describe "#{attribute}_attribute?" do
         subject { policy.apply("#{attribute}_attribute?".to_sym) }
 
@@ -38,7 +37,7 @@ shared_examples_for 'authorized_attributable_policy' do
       end
     end
 
-    described_class::CUSTOMER_ATTRIBUTES.each do |attribute|
+    (described_class::CUSTOMER_ATTRIBUTES + described_class::CUSTOMER_METHODS).each do |attribute|
       describe "#{attribute}_attribute?" do
         subject { policy.apply("#{attribute}_attribute?".to_sym) }
 

@@ -67,6 +67,7 @@ RSpec.describe(Receivable) do
 
   describe '.ransackable_attributes' do
     it { expect(described_class.ransackable_attributes(create(:broker_user))).to(include('balance_cents', 'total_cents')) }
+    it { expect(described_class.ransackable_attributes(create(:broker_user))).not_to(include('balance', 'total')) }
   end
 
   describe '#missing_carrier_bol?' do
