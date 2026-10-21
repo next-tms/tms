@@ -242,6 +242,26 @@ RSpec.describe(Shipment) do
     it { is_expected.to(have_many(:tracking_events)) }
   end
 
+  describe '.ransackable_associations' do
+    subject { described_class.ransackable_associations(authorizable) }
+
+    let(:authorizable) { nil }
+
+    it { is_expected.to(eq([ 'broker_customer', 'receiver_address', 'shipper_address' ])) }
+
+    context 'when authorizable.broker?' do
+      let(:authorizable) { create(:broker_user) }
+
+      it { is_expected.to(eq([ 'broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address', 'tracking_carrier' ])) }
+    end
+
+    context 'when authorizable.customer?' do
+      let(:authorizable) { create(:customer_user) }
+
+      it { is_expected.to(eq([ 'broker_customer', 'receiver_address', 'shipper_address' ])) }
+    end
+  end
+
   describe '#assign_dispatcher' do
     let(:user) do
       record = build(:broker_user)

@@ -192,14 +192,11 @@ class Shipment < ApplicationRecord
   class << self
     def last_load_id = maximum(:load_id) || Setting.first_load_id.to_i
 
-    def ransackable_associations(auth_object = nil)
-      [
-        'broker_carrier',
-        'broker_customer',
-        'receiver_address',
-        'shipper_address',
-        'tracking_carrier'
-      ]
+    def ransackable_associations(authorizable = nil)
+      associations = [ 'broker_customer', 'receiver_address', 'shipper_address' ]
+      return associations unless authorizable&.broker?
+
+      (associations + [ 'broker_carrier', 'tracking_carrier' ]).sort
     end
   end
 
