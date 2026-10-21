@@ -218,6 +218,7 @@ class Shipment < ApplicationRecord
   include Normalizable
   include Problematic
 
+  include Shipment::Exportable
   include Shipment::Fingerprintable
   include Shipment::HasPaymentTransactions
   include Shipment::HasReceivables

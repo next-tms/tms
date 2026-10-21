@@ -191,6 +191,8 @@
 require 'rails_helper'
 
 RSpec.describe(Shipment) do
+  before { create(:setting, key: 'time_zone_name', value: 'America/Los_Angeles') }
+
   it_behaves_like 'authorized_attributable'
   it_behaves_like 'discussable'
   it_behaves_like 'documentable'

@@ -1,8 +1,11 @@
 class ShipmentPolicy < ApplicationPolicy
   BROKER_ATTRIBUTES = %i[broker_notes carrier_cost carrier_cost_cents carrier_cost_currency tracking_carrier_pro]
+  BROKER_METHODS = %i[total_cost]
   CUSTOMER_ATTRIBUTES = %i[
+                          bol
                           bol_notes
                           created_at
+                          customer_reference
                           delivered_at
                           load_id
                           picked_up_at
@@ -11,8 +14,27 @@ class ShipmentPolicy < ApplicationPolicy
                           receiver_name
                           shipper_contact_name
                           shipper_name
+                          shipper_reference
+                          status
                           updated_at
                         ]
+  CUSTOMER_METHODS = %i[
+                       accessorial_list
+                       average_density
+                       calculated_freight_class_list
+                       carrier_name
+                       delivery_date
+                       freight_class_list
+                       item_description_list
+                       item_summaries
+                       loose_pieces_count
+                       palletized_count
+                       pickup_date
+                       receiver_state
+                       shipper_state
+                       total_charges
+                       total_item_weight
+                     ]
 
   include AuthorizedAttributablePolicy
 

@@ -39,22 +39,36 @@ en:
       region:
         iso_3166_2: ISO 3166-2
       shipment:
+        accessorial_list: Accessorials
+        average_density: Average Density
         bol: "BOL #"
         broker_bol: Bill of Lading
         broker_carrier: Carrier
         broker_dispatch_sheet: Dispatch Sheet
         broker_quote: Quote
+        calculated_freight_class_list: Calculated Freight Class(es)
         carrier_bol: Scanned Bill of Lading
+        carrier_name: Carrier
         carrier_pod: Proof of Delivery
         customer_reference: "PO #"
+        delivery_date: Delivery Date
+        freight_class_list: Freight Class(es)
+        item_description_list: Item Descriptions
+        item_summaries: Items
+        loose_pieces_count: Loose Pieces Count
+        palletized_count: Palletized/Crated Count
         pickup_confirmation: "PU #"
+        pickup_date: Pickup Date
         pro: "PRO #"
         quote_id: "Quote #"
+        receiver_state: Destination State
         shipper_reference: "SO #"
+        shipper_state: Origin State
         total_charges: Charge
         total_charges_cents: Charge
         total_cost: Carrier Cost
         total_cost_cents: Carrier Cost
+        total_item_weight: Total Weight (lbs)
       user:
         company_sgid: Company
     models:
