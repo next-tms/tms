@@ -27,6 +27,12 @@
         <%= link_to icon('solid', 'handshake', 'Customers'), broker_broker_customers_path, class: 'broker-customers' %>
       </li>
     <% end %>
+
+    <% if ReportPolicy.new(Report, authorizable: current_user).apply(:index?) %>
+      <li class="mb-2 p-2">
+        <%= link_to icon('solid', 'file-csv', 'Reports'), broker_reports_path, class: 'reports' %>
+      </li>
+    <% end %>
   </ul>
 
   <ul class="list-unstyled mt-4">

@@ -1,0 +1,13 @@
+<div class="mb-3 row">
+  <%= label_tag :from, 'From', class: 'col-form-label col-sm-2' %>
+  <div class="col-sm-10">
+    <%= text_field_tag :from, @from.iso8601, autocomplete: 'off', class: 'form-control', data: flatpickr_data({ flatpickr_max_date: @today.iso8601 }) %>
+  </div>
+</div>
+
+<div class="mb-3 row">
+  <%= label_tag :to, 'To', class: 'col-form-label col-sm-2' %>
+  <div class="col-sm-10">
+    <%= text_field_tag :to, @to.iso8601, autocomplete: 'off', class: 'form-control', data: flatpickr_data({ flatpickr_max_date: @today.iso8601 }) %>
+  </div>
+</div>

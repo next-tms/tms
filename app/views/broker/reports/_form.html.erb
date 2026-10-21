@@ -1,0 +1,75 @@
+<% record_class = @report.record_class %>
+
+<%= bootstrap_form_with(model: [ :broker, @report ], layout: :horizontal) do |f| %>
+  <%= f.alert_message 'Unable to save report:' %>
+
+  <%= f.hidden_field :record_type %>
+  <%= f.form_group :record_type, label: { text: 'Records' } do %>
+    <p class="form-control-plaintext"><%= report_record_name(record_class) %></p>
+  <% end %>
+
+  <%= f.text_field :name, autofocus: true %>
+
+  <%= f.collection_check_boxes :columns,
+                               @columns,
+                               :itself,
+                               ->(column) { report_column_label(record_class, column, @customer_columns) },
+                               label: 'Columns'
+  %>
+
+  <%= f.select :date_attribute,
+               @date_attributes.map { |date_attribute| [ record_class.human_attribute_name(date_attribute), date_attribute ] },
+               help: 'Asks for a date range when you run the report',
+               include_blank: 'None',
+               label: 'Date'
+  %>
+
+  <%= f.form_group :filters, label: { text: 'Filters' } do %>
+    <% if @report.filters.empty? %>
+      <p class="form-control-plaintext text-muted">None</p>
+    <% end %>
+
+    <% @report.filters.each do |key, value| %>
+      <% label = report_filter_label(record_class, key) %>
+      <div class="mb-2">
+        <% case value %>
+        <% when true, 'true' %>
+          <div class="form-check">
+            <%= hidden_field_tag "report[filters][#{key}]", '', id: nil %>
+            <%= check_box_tag "report[filters][#{key}]", 'true', true, class: 'form-check-input', id: "report_filters_#{key}" %>
+            <%= label_tag "report_filters_#{key}", label, class: 'form-check-label' %>
+          </div>
+        <% when Array %>
+          <div class="small text-muted"><%= label %></div>
+          <%= hidden_field_tag "report[filters][#{key}][]", '', id: nil %>
+          <% value.each do |item| %>
+            <div class="form-check form-check-inline">
+              <%= check_box_tag "report[filters][#{key}][]", item, true, class: 'form-check-input', id: "report_filters_#{key}_#{item.to_s.parameterize}" %>
+              <%= label_tag "report_filters_#{key}_#{item.to_s.parameterize}", item, class: 'form-check-label' %>
+            </div>
+          <% end %>
+        <% when Hash %>
+          <div class="small text-muted"><%= label %></div>
+          <span class="form-control-plaintext"><%= report_filter_value(value) %></span>
+          <%= query_hidden_fields({ key => value }, 'report[filters]') %>
+        <% else %>
+          <%= label_tag "report_filters_#{key}", label, class: 'form-label small text-muted mb-0' %>
+          <%= text_field_tag "report[filters][#{key}]", value, class: 'form-control', id: "report_filters_#{key}" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <small class="form-text text-muted">Clear or uncheck a filter to remove it</small>
+  <% end %>
+
+  <% if @report.date_range? %>
+    <%= render 'date_range' %>
+  <% end %>
+
+  <%= f.form_group do %>
+    <%= f.submit 'Preview', class: 'btn btn-secondary', name: 'preview' %>
+    <%= f.submit 'Save', class: 'btn btn-primary' %>
+  <% end %>
+<% end %>
+
+<%= render 'preview', exporter: @preview if @preview %>

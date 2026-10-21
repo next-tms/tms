@@ -1,0 +1,28 @@
+<h3 class="mt-4">Preview</h3>
+<p class="text-muted">First <%= Broker::ReportsController::PREVIEW_LIMIT %> <%= report_record_name(@report.record_class).downcase %></p>
+
+<% rows = exporter.rows %>
+<% if rows.empty? %>
+  <p>No <%= report_record_name(@report.record_class).downcase %> match.</p>
+<% else %>
+  <div class="table-responsive">
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <% exporter.headers.each do |header| %>
+            <th class="text-nowrap"><%= header %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.each do |row| %>
+          <tr>
+            <% row.each do |value| %>
+              <td style="white-space: pre-line"><%= value %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

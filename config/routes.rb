@@ -147,6 +147,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :reports
+
     resources :settings
 
     get 'shipments/booked', to: 'shipments#booked'

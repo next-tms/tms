@@ -1,0 +1,51 @@
+<% provide :title, @report.name %>
+
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1><%= @report.name %></h1>
+    <% if @report.preset? %>
+      <p class="lead"><%= @report.description %></p>
+    <% end %>
+  </div>
+
+  <div>
+    <%= link_to 'Duplicate', new_broker_report_path(duplicate: @report.to_param), class: 'btn btn-outline-secondary' %>
+    <% if !@report.preset? && allowed_to?(:edit?, @report) %>
+      <%= link_to 'Edit', edit_broker_report_path(@report), class: 'btn btn-outline-secondary' %>
+    <% end %>
+  </div>
+</div>
+
+<% internal_columns = report_internal_columns(@report, @customer_columns) %>
+<% if internal_columns.any? %>
+  <div class="alert alert-warning">
+    This report includes internal columns that customers must not see:
+    <%= internal_columns.map { |column| ExporterService.column_header(@report.record_class, column) }.to_sentence %>.
+  </div>
+<% end %>
+
+<%= form_with(url: broker_report_path(@report), method: :get, data: { turbo: false }) do %>
+  <% if @report.date_range? %>
+    <%= render 'date_range' %>
+  <% end %>
+
+  <div class="mb-3 row">
+    <div class="<%= @report.date_range? ? 'col-sm-10 offset-sm-2' : 'col' %>">
+      <% if @report.date_range? %>
+        <%= submit_tag 'Preview', class: 'btn btn-secondary', name: nil %>
+      <% end %>
+      <%= button_tag icon('solid', 'download', 'Download CSV'),
+                     class: 'btn btn-primary',
+                     formaction: broker_report_path(@report, format: :csv),
+                     name: nil
+      %>
+      <%= button_tag 'Download YAML',
+                     class: 'btn btn-outline-secondary',
+                     formaction: broker_report_path(@report, format: :yaml),
+                     name: nil
+      %>
+    </div>
+  </div>
+<% end %>
+
+<%= render 'preview', exporter: @preview %>
