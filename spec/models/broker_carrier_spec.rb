@@ -69,10 +69,20 @@ RSpec.describe(BrokerCarrier) do
   it_behaves_like 'authorized_attributable'
   it_behaves_like 'companyable'
 
+  describe '.authorized_attributes' do
+    it { expect(described_class.authorized_attributes(create(:broker_user))).to(include('account', 'name', 'quote_padding', 'shipments_count')) }
+    it { expect(described_class.authorized_attributes(create(:customer_user))).to(eq([ 'name' ])) }
+  end
+
   describe '.encrypted_attributes' do
     it { expect(described_class.encrypted_attributes).to(include(:encrypted_ach_account_number)) }
     it { expect(described_class.encrypted_attributes).to(include(:encrypted_ach_bank_name)) }
     it { expect(described_class.encrypted_attributes).to(include(:encrypted_ach_routing_number)) }
+  end
+
+  describe '.ransackable_attributes' do
+    it { expect(described_class.ransackable_attributes(create(:broker_user))).to(include('account', 'shipments_count')) }
+    it { expect(described_class.ransackable_attributes(create(:customer_user))).to(be_empty) }
   end
 
   describe '#ach?' do

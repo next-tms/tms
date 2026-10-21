@@ -53,6 +53,7 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem 'rubocop-rails-omakase', require: false
 
+  gem 'bullet', '~> 8.1.0'
   gem 'dotenv-rails', '~> 3.1.2'
 
   gem 'rspec-rails', '~> 6.1.3'
@@ -67,7 +68,6 @@ group :development do
   gem 'web-console'
 
   gem 'annotaterb'
-  gem 'bullet', '~> 8.1.0'
   gem 'graphiql-rails', '~> 1.9'
   gem 'letter_opener'
   gem 'listen', '>= 3.0.5', '< 3.10'

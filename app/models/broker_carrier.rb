@@ -66,9 +66,8 @@ class BrokerCarrier < ApplicationRecord
       joins(:carrier).order('carriers.name')
     end
 
+    def method_preloads = { name: [ :carrier, { broker_customer: :customer } ] }
     def ransackable_associations(auth_object = nil) = [ 'broker_customer', 'carrier' ]
-    def ransackable_broker_attributes(auth_object = nil) = [ 'name', 'shipments_count' ]
-    def ransackable_customer_attributes(auth_object = nil) = [ 'name', 'shipments_count' ]
   end
 
   include AccountingSyncable
