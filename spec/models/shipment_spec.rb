@@ -536,6 +536,36 @@ RSpec.describe(Shipment) do
     end
   end
 
+  describe '#total_broker_accessorial_charge' do
+    subject { shipment.total_broker_accessorial_charge }
+
+    let(:shipment) { create(:shipment, :with_broker_accessorials) }
+
+    it { is_expected.to(eq(Money.new(1))) }
+
+    context 'without broker accessorials' do
+      let(:shipment) { create(:shipment) }
+
+      it { is_expected.to(eq(Money.new(0))) }
+    end
+  end
+
+  describe '#total_broker_accessorial_cost' do
+    subject { shipment.total_broker_accessorial_cost }
+
+    let(:shipment) { create(:shipment, :with_broker_accessorials) }
+
+    it { is_expected.to(eq(Money.new(0))) }
+  end
+
+  describe '#total_charges' do
+    subject { shipment.total_charges }
+
+    let(:shipment) { create(:shipment, :with_broker_accessorials, carrier_charge_cents: 1_000) }
+
+    it { is_expected.to(eq(Money.new(1_001))) }
+  end
+
   describe '#total_cubic_ft' do
     subject { shipment.total_cubic_ft(rounded: false) }
 

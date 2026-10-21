@@ -29,18 +29,20 @@
 #
 class ShipmentBrokerAccessorial < ApplicationRecord
   belongs_to :broker_accessorial
+  belongs_to :shipment
 
   monetize :cost_cents, allow_nil: true
   monetize :charge_cents, allow_nil: true
 
-  before_create :calculate_default_charge
+  after_initialize :calculate_default_charge, if: -> { new_record? && broker_accessorial }
+  before_validation :calculate_default_charge, if: :broker_accessorial, on: :create
 
   attr_accessor :suggested
 
   private
 
   def calculate_default_charge
-    cost = self.cost || Money.new(0)
+    self.cost = Money.new(0, broker_accessorial.upcharge_currency) if cost.blank? || cost.zero?
     charge = cost
     if !broker_accessorial.upcharge_percent.blank? && (broker_accessorial.upcharge_percent > 0)
       charge += (cost * (0.01 * broker_accessorial.upcharge_percent))

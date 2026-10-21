@@ -190,6 +190,10 @@
 #
 FactoryBot.define do
   factory :shipment do
+    transient do
+      currency { Money.default_currency.iso_code }
+    end
+
     sequence(:load_id)
 
     applied_rate_id { }
@@ -201,9 +205,9 @@ FactoryBot.define do
     broker_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     canceled_at { nil }
     carrier_charge_cents { 1 }
-    carrier_charge_currency { Faker::Currency.code }
+    carrier_charge_currency { currency }
     carrier_cost_cents { 1 }
-    carrier_cost_currency { Faker::Currency.code }
+    carrier_cost_currency { currency }
     created_by_id { }
     customer_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     customer_reference { Faker::Number.number }
@@ -252,12 +256,12 @@ FactoryBot.define do
     shipper_reference { Faker::Number.number }
     shipper_unavailable_at { 13.days.ago }
     total_charges_cents { Faker::Number.between(from: 100, to: 5_000).ceil }
-    total_charges_currency { Faker::Currency.code }
+    total_charges_currency { currency }
     total_cost_cents { Faker::Number.between(from: 100, to: 5_000).ceil }
-    total_cost_currency { Faker::Currency.code }
+    total_cost_currency { currency }
     truckload { [ true, false ].sample }
     value_cents { Faker::Number.between(from: 100, to: 5_000).ceil }
-    value_currency { Faker::Currency.code }
+    value_currency { currency }
 
     after(:build) do |record|
       user = build(:broker_user)
@@ -270,5 +274,23 @@ FactoryBot.define do
 
     before(:build) { Shipment.skip_callback(:create, :after, :notify_of_new_shipment) }
     after(:build) { Shipment.set_callback(:create, :after, :notify_of_new_shipment) }
+
+    trait :with_broker_accessorials do
+      broker_accessorials do
+        [
+          association(
+            :broker_accessorial,
+            broker: broker_customer.broker,
+            broker_customer:,
+            flat_charge_currency: currency,
+            upcharge_currency: currency,
+          )
+        ]
+      end
+    end
+
+    trait :with_items do
+      items { [ association(:item, shipment: instance, strategy: :build) ] }
+    end
   end
 end

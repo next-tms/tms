@@ -19,7 +19,7 @@
 #
 FactoryBot.define do
   factory :accessorial do
-    name { 'MyString' }
+    sequence(:name) { |number| "Accessorial #{number}" }
     code { 'MyString' }
     freight_kit_code { 'MyString' }
     fee { false }

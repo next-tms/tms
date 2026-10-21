@@ -495,15 +495,11 @@ class Shipment < ApplicationRecord
   end
 
   def total_broker_accessorial_charge
-    return 0 if shipment_broker_accessorials.blank?
-
-    shipment_broker_accessorials.map(&:charge).inject(0) { |sum, x| sum + (x.nil? ? Money.new(0) : x) }
+    shipment_broker_accessorials.filter_map(&:charge).sum(Money.new(0, carrier_charge_currency))
   end
 
   def total_broker_accessorial_cost
-    return 0 if shipment_broker_accessorials.blank?
-
-    shipment_broker_accessorials.map(&:cost).inject(0) { |sum, x| sum + (x.nil? ? Money.new(0) : x) }
+    shipment_broker_accessorials.filter_map(&:cost).sum(Money.new(0, carrier_cost_currency))
   end
 
   def profit
