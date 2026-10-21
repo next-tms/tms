@@ -203,6 +203,25 @@ class Shipment < ApplicationRecord
   DOCUMENTABLE_TYPES = %i[broker_bol broker_label broker_dispatch_sheet broker_quote]
   DOWNCASEABLE_ATTRIBUTES = %i[receiver_contact_email shipper_contact_email]
   REFERENCE_ATTRIBUTES = %i[bol customer_reference pickup_confirmation pro quote_id shipper_reference]
+  SEARCH_ATTRIBUTES = %w[
+                        bol_notes
+                        broker_carrier_carrier_name
+                        broker_carrier_carrier_scac
+                        broker_customer_customer_name
+                        broker_notes
+                        load_id
+                        pro
+                        receiver_address_city
+                        receiver_address_zip_code
+                        receiver_contact_name
+                        receiver_name
+                        shipper_address_city
+                        shipper_address_zip_code
+                        shipper_contact_name
+                        shipper_name
+                        tracking_carrier_pro
+                      ]
+  SEARCH_PREDICATE = :"#{SEARCH_ATTRIBUTES.join('_or_')}_cont"
   SQUISHABLE_ATTRIBUTES = REFERENCE_ATTRIBUTES + %i[
                                                    receiver_name
                                                    receiver_contact_email

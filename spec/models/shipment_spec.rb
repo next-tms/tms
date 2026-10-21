@@ -244,6 +244,15 @@ RSpec.describe(Shipment) do
     it { is_expected.to(have_many(:tracking_events)) }
   end
 
+  describe '::SEARCH_PREDICATE' do
+    subject(:search) { described_class.ransack({ described_class::SEARCH_PREDICATE => shipment.shipper_name }, auth_object:) }
+
+    let(:auth_object) { create(:broker_user) }
+    let(:shipment) { create(:shipment) }
+
+    it { expect(search.result).to(include(shipment)) }
+  end
+
   describe '.ransackable_associations' do
     subject { described_class.ransackable_associations(authorizable) }
 
