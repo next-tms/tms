@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.19
 
-FROM golang:1.27.2-alpine3.23 AS caddy
+FROM golang:1.27.2-alpine3.24 AS caddy
 ARG CADDY_VERSION=2.11.2
 
 RUN apk -U upgrade
@@ -10,7 +10,7 @@ WORKDIR /src
 ENV XCADDY_GO_BUILD_FLAGS='-trimpath -ldflags "-s -w -extldflags -static" -tags "osusergo,netgo"'
 RUN /go/bin/xcaddy build v$CADDY_VERSION --with github.com/ueffel/caddy-brotli
 
-FROM ruby:4.0.7-alpine3.23 AS base
+FROM ruby:4.0.7-alpine3.24 AS base
 RUN apk add --no-cache -U ca-certificates gcompat imagemagick jemalloc libpq-dev libxml2 libxslt shared-mime-info && \
     update-ca-certificates
 
