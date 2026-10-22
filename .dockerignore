@@ -42,3 +42,18 @@
 /app/assets/builds/*
 !/app/assets/builds/.keep
 /public/assets
+
+# Ignore AI agent files.
+**/AGENTS.md
+**/CLAUDE.local.md
+**/CLAUDE.md
+**/GEMINI.md
+/.aider*
+/.claude/
+/.codex/
+/.cursor/
+/.cursorrules
+/.gemini/
+/.github/copilot-instructions.md
+/.mcp.json
+/codex/
