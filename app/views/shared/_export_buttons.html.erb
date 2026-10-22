@@ -25,6 +25,13 @@
         </div>
 
         <div class="modal-footer">
+          <% if allowed_to?(:new?, Report) %>
+            <%= hidden_field_tag :record_type, export_record_class.name, id: nil %>
+            <% export_scopes.each do |scope| %>
+              <%= hidden_field_tag 'scopes[]', scope, id: nil %>
+            <% end %>
+            <%= button_tag 'Create Report', type: 'submit', class: 'btn btn-outline-secondary me-auto', formaction: new_broker_report_path, name: nil %>
+          <% end %>
           <%= button_tag 'Export YAML', type: 'submit', class: 'btn btn-outline-secondary', formaction: url_for(format: :yaml), name: nil %>
           <%= button_tag 'Export CSV', type: 'submit', class: 'btn btn-primary', name: nil %>
         </div>

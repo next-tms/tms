@@ -5,6 +5,7 @@ RSpec.describe(ExportableController) do
 
   controller(ApplicationController) do
     def index = respond_with_export(BrokerCarrier.where(broker: current_user.broker))
+    def new = respond_with_export(Shipment.where(broker: current_user.broker), scopes: %i[active pending_pickup])
     def show = head(:ok)
 
     private
@@ -27,14 +28,20 @@ RSpec.describe(ExportableController) do
       before { get(:index) }
 
       it { is_expected.to(be_exportable) }
-      it { is_expected.to(have_attributes(export_record_class: BrokerCarrier)) }
+      it { is_expected.to(have_attributes(export_record_class: BrokerCarrier, export_scopes: [])) }
+    end
+
+    context 'with an action that responds with an export with scopes' do
+      before { get(:new) }
+
+      it { is_expected.to(have_attributes(export_record_class: Shipment, export_scopes: [ 'active', 'pending_pickup' ])) }
     end
 
     context 'with an action that does not respond with an export' do
       before { get(:show, params: { id: 1 }) }
 
       it { is_expected.not_to(be_exportable) }
-      it { is_expected.to(have_attributes(export_record_class: nil)) }
+      it { is_expected.to(have_attributes(export_record_class: nil, export_scopes: [])) }
     end
   end
 
