@@ -6,6 +6,7 @@
 	}
 	auto_https off
 	admin off
+	order coraza_waf first
 }
 
 :{$PORT} {
@@ -17,6 +18,11 @@
 	}
 	header -Server
 	header -Via
+
+	@scanner_probes path *.action *.ashx *.asmx *.asp *.aspx *.axd *.cfc *.cfm *.cgi *.dll *.do *.jsp *.jspx *.phar *.php *.php3 *.php4 *.php5 *.php7 *.phtml *.pl *.shtml /adminer* /phpmyadmin* /wp-* /xmlrpc*
+	handle @scanner_probes {
+		abort
+	}
 
 	@assets path /assets/* /favicon.ico /robots.txt
 	handle @assets {
@@ -33,9 +39,21 @@
 		format json
 	}
 
-	reverse_proxy unix//{env.PUMA_SOCKET} {
-		transport http {
-			versions 1.1
+	handle {
+		coraza_waf {
+			load_owasp_crs
+			directives `
+				Include @coraza.conf-recommended
+				Include @crs-setup.conf.example
+				Include @owasp_crs/*.conf
+				SecRuleEngine DetectionOnly
+			`
+		}
+
+		reverse_proxy unix//{env.PUMA_SOCKET} {
+			transport http {
+				versions 1.1
+			}
 		}
 	}
 }
