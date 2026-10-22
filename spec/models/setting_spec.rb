@@ -137,4 +137,11 @@ RSpec.describe(Setting) do
       end
     end
   end
+
+  describe 'db/seed/settings.yaml' do
+    let(:entries) { YAML.safe_load_file(Rails.root.join('db/seed/settings.yaml')).fetch('settings') }
+
+    it { expect(entries.map { |entry| described_class.new(entry) }).to(all(be_valid)) }
+    it { expect(entries.pluck('key')).to(include('theme_primary_color', 'theme_sidebar_background_color', 'theme_sidebar_text_color')) }
+  end
 end

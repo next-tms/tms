@@ -18,7 +18,7 @@ class AccountingConnectionsController < ApplicationController
       return
     end
 
-    redirect_to(Setting.value!(:website_homepage), allow_other_host: true)
+    redirect_to(homepage, allow_other_host: true)
   end
 
   def connect

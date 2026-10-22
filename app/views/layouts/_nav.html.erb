@@ -1,16 +1,14 @@
 <nav class="navbar navbar-expand sticky-top">
   <div class="container-fluid">
-    <% url = user_signed_in? ? root_path : Setting.value!(:website_homepage) %>
+    <% url = user_signed_in? ? root_path : homepage %>
 
     <% name = Setting.value!(:name) %>
     <% data = Setting.value(:website_logo_image_data) %>
-    <% cache(data) do %>
-      <%= link_to url, class: 'navbar-brand bg-black rounded p-2' do %>
-        <% if data.present? %>
-          <%= image_tag(data, alt: name, class: 'navbar-brand-logo') %>
-        <% else %>
-          <%= Setting.value!(:name) %>
-        <% end %>
+    <%= link_to url, class: 'navbar-brand bg-black rounded p-2' do %>
+      <% if data.present? %>
+        <%= image_tag(data, alt: name, class: 'navbar-brand-logo') %>
+      <% else %>
+        <%= name %>
       <% end %>
     <% end %>
 

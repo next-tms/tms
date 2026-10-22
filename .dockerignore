@@ -10,8 +10,13 @@
 /config/master.key
 /config/credentials/*.key
 
+# Ignore Docker Compose data.
+/data/
+
 # Ignore all environment files.
+/.docker-compose.env
 /.env*
+/.transponder.env
 !/.env.example
 
 # Ignore all logfiles and tempfiles.

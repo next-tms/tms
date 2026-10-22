@@ -19,4 +19,16 @@ RSpec.describe(ShipmentsHelper) do
     it { is_expected.to(start_with('Shipment Charges Confirmed by &lt;b&gt;Jane&lt;/b&gt; Doe at <time ')) }
     it { is_expected.to(include('datetime="2026-07-14T10:00:00-07:00" data-controller="time"')) }
   end
+
+  describe '#website_homepage_host' do
+    subject { helper.website_homepage_host }
+
+    it { is_expected.to(be_nil) }
+
+    context 'when website_homepage is set' do
+      before { create(:setting, key: 'website_homepage', value: 'https://example.com/about') }
+
+      it { is_expected.to(eq('example.com')) }
+    end
+  end
 end

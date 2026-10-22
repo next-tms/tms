@@ -38,6 +38,7 @@ WORKDIR /app
 
 RUN gem update --system && gem install bundler -v $(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1 | tr -d '[:space:]')
 RUN bundle config set --global frozen 1 && \
+    bundle config set --global build.zstd-ruby --with-cflags=-D_GNU_SOURCE && \
     bundle install -j $(nproc) --retry 5
 
 COPY --exclude=.git/ . /app

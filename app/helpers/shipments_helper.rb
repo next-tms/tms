@@ -155,6 +155,13 @@ module ShipmentsHelper
     safe_join([ "Shipment Charges Confirmed by #{changed_by.full_name} at ", time(audit.created_at) ])
   end
 
+  def website_homepage_host
+    homepage = Setting.value(:website_homepage)
+    return if homepage.blank?
+
+    URI.parse(homepage).host
+  end
+
   def requires_charges_confirmed_note(shipment)
     requires_by = shipment.broker.name if shipment.broker.requires_charges_confirmed_on_receivables
     requires_by = shipment.broker_customer.customer.name if shipment.broker_customer&.requires_charges_confirmed_on_receivables
