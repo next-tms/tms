@@ -4,7 +4,7 @@ FROM golang:1.27.2-alpine3.24 AS caddy
 ARG CADDY_VERSION=2.11.2
 
 RUN apk -U upgrade
-RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.5
+RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.7
 
 WORKDIR /src
 ENV XCADDY_GO_BUILD_FLAGS='-trimpath -ldflags "-s -w -extldflags -static" -tags "osusergo,netgo"'
