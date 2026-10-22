@@ -237,7 +237,7 @@ FactoryBot.define do
     promised_delivery_by { 1.week.ago }
     public_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     quote_id { Faker::Number.number }
-    quote_only { [ true, false ].sample }
+    quote_only { false }
     quoted_delivery_by { 1.week.ago }
     receiver_address { create(:address) }
     receiver_available_at { 2.weeks.ago }
