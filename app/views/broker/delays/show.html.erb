@@ -160,42 +160,42 @@
         <tbody>
           <% unless @shipment.delivered_at.blank? or @shipment.broker_carrier.blank? %>
             <tr>
-              <td><%= pretty_date @shipment.delivered_at, @shipment.receiver_address.time_zone %></td>
+              <td><%= time(@shipment.delivered_at, @shipment.receiver_address.time_zone) %></td>
               <td><%= real_carrier(@shipment).name %> delivered freight in <%= pluralize @shipment.delivered_in_days, 'day' %></td>
             </tr>
           <% end %>
           <% unless @shipment.out_for_delivery_at.blank? %>
             <tr>
-              <td><%= pretty_date @shipment.out_for_delivery_at, @shipment.receiver_address.time_zone %></td>
+              <td><%= time(@shipment.out_for_delivery_at, @shipment.receiver_address.time_zone) %></td>
               <td>Out for delivery</td>
             </tr>
           <% end %>
           <% if not @shipment.delivery_appointment_at.blank? or not @shipment.delivery_appointment_on.blank? %>
             <tr>
               <td>&nbsp;</td>
-              <td>Delivery appointment scheduled for <%= pretty_date (@shipment.delivery_appointment_at.blank? ? @shipment.delivery_appointment_on : @shipment.delivery_appointment_at), @shipment.receiver_address.time_zone %></td>
+              <td>Delivery appointment scheduled for <%= time(@shipment.delivery_appointment_at || @shipment.delivery_appointment_on, @shipment.receiver_address.time_zone) %></td>
             </tr>
           <% end %>
           <% unless @shipment.pending_appointment_since.blank? %>
             <tr>
-              <td><%= pretty_date @shipment.pending_appointment_since, @shipment.receiver_address.time_zone %></td>
+              <td><%= time(@shipment.pending_appointment_since, @shipment.receiver_address.time_zone) %></td>
               <td>Appointment pending</td>
             </tr>
           <% end %>
           <% unless @shipment.picked_up_at.blank? or @shipment.broker_carrier.blank? %>
             <tr>
-              <td><%= pretty_date @shipment.picked_up_at, @shipment.shipper_address.time_zone %></td>
+              <td><%= time(@shipment.picked_up_at, @shipment.shipper_address.time_zone) %></td>
               <td><%= real_carrier(@shipment).name %> picked up freight</td>
             </tr>
           <% end %>
           <% unless @shipment.dispatched_at.blank? %>
             <tr>
-              <td><%= pretty_date @shipment.dispatched_at, @shipment.shipper_address.time_zone %></td>
+              <td><%= time(@shipment.dispatched_at, @shipment.shipper_address.time_zone) %></td>
               <td>Pickup scheduled</td>
             </tr>
           <% end %>
           <tr>
-            <td><%= pretty_date @shipment.created_at.in_time_zone(current_user.time_zone.name), current_user.time_zone %></td>
+            <td><%= time(@shipment.created_at) %></td>
             <td>Shipment entered</td>
           </tr>
         </tbody>

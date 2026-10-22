@@ -10,7 +10,7 @@
     <p>
       <%= @problem.resolved_by&.full_name || 'robot' %>
       closed this at
-      <%= pretty_date(@problem.resolved_at, current_user.time_zone) %>
+      <%= time(@problem.resolved_at) %>
     </p>
   </div>
 <% else %>

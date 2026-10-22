@@ -12,6 +12,8 @@ RSpec.describe(Users::InvitationsController) do
   describe 'POST #create' do
     subject(:invite) { post(:create, params:) }
 
+    before { create(:setting, key: 'time_zone_name', value: 'America/Chicago') }
+
     context 'when inviting a broker user' do
       let(:params) do
         {
@@ -29,6 +31,7 @@ RSpec.describe(Users::InvitationsController) do
 
       it { expect(response).to(redirect_to(broker_users_path)) }
       it { expect(User.last.email).to(eq(params.dig(:user, :email))) }
+      it { expect(User.last.time_zone_name).to(eq('America/Chicago')) }
       it { expect(ActionMailer::Base.deliveries).not_to(be_empty) }
     end
 
@@ -50,6 +53,7 @@ RSpec.describe(Users::InvitationsController) do
 
       it { expect(response).to(redirect_to(broker_users_path)) }
       it { expect(User.last.email).to(eq(params.dig(:user, :email))) }
+      it { expect(User.last.time_zone_name).to(eq(broker_customer.office_address.time_zone_name)) }
       it { expect(ActionMailer::Base.deliveries).not_to(be_empty) }
     end
 

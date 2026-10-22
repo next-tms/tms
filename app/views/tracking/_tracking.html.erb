@@ -23,14 +23,14 @@
     <tbody>
       <% if shipment.tracking_events.includes(:event).where(event: Event.find_by_active_shipping_code('delivered')).blank? && !shipment.delivered_at.blank? && !shipment.broker_carrier.blank? %>
         <tr>
-          <td><%= pretty_date shipment.delivered_at, shipment.receiver_address.time_zone %>
+          <td><%= time(shipment.delivered_at, shipment.receiver_address.time_zone) %>
           <td><%= shipment.receiver_address.locality %></td>
           <td>Delivered</td>
         </tr>
       <% end %>
       <% if shipment.tracking_events.includes(:event).where(event: Event.find_by_active_shipping_code('out_for_delivery')).blank? && !shipment.out_for_delivery_at.blank? %>
         <tr>
-          <td><%= pretty_date shipment.out_for_delivery_at, shipment.receiver_address.time_zone %>
+          <td><%= time(shipment.out_for_delivery_at, shipment.receiver_address.time_zone) %>
           <td><%= shipment.receiver_address.locality %></td>
           <td>Out for delivery</td>
         </tr>
@@ -39,7 +39,7 @@
         <tr>
           <td></td>
           <td></td>
-          <td>Delivery appointment scheduled for <%= pretty_date (shipment.delivery_appointment_at.blank? ? shipment.delivery_appointment_on : shipment.delivery_appointment_at), shipment.receiver_address.time_zone %></td>
+          <td>Delivery appointment scheduled for <%= time(shipment.delivery_appointment_at || shipment.delivery_appointment_on, shipment.receiver_address.time_zone) %></td>
         </tr>
       <% elsif shipment.out_for_delivery_at.blank? && shipment.delivered_at.blank? && !shipment.delivery_eta_on.blank? %>
         <tr>
@@ -59,7 +59,7 @@
        <% shipment.tracking_events.includes(:event).order(at: :desc).each do |tracking_event| %>
          <% next if !tracking_event.public? && !current_user.broker_customer.blank? %>
          <tr>
-          <td><%= pretty_date tracking_event.at, tracking_event.time_zone %></td>
+          <td><%= time(tracking_event.at, tracking_event.time_zone) %></td>
           <td>
             <% if defined?(search_terminals_links) && search_terminals_links %>
               <%= link_to tracking_event.pretty_location, search_terminals_broker_broker_carrier_path(shipment.broker_carrier, city: tracking_event.city, state: tracking_event.region.abbreviation) %>
@@ -73,7 +73,7 @@
       <% end %>
       <% if shipment.tracking_events.includes(:event).where(event: Event.find_by_active_shipping_code('picked_up')).blank? && !shipment.picked_up_at.blank? && !shipment.broker_carrier.blank? %>
         <tr>
-          <td><%= pretty_date shipment.picked_up_at, shipment.shipper_address.time_zone %>
+          <td><%= time(shipment.picked_up_at, shipment.shipper_address.time_zone) %>
           <td><%= shipment.shipper_address.locality %></td>
           <td>Freight picked up</td>
         </tr>
@@ -87,23 +87,23 @@
           </tr>
         <% end %>
         <tr>
-          <td><%= pretty_date shipment.dispatched_at, shipment.shipper_address.time_zone %></td>
+          <td><%= time(shipment.dispatched_at, shipment.shipper_address.time_zone) %></td>
           <td></td>
           <td>
-            Pickup scheduled for <%= pretty_date shipment.pickup_on, shipment.shipper_address.time_zone %>
+            Pickup scheduled for <%= time(shipment.pickup_on, shipment.shipper_address.time_zone) %>
             <% unless shipment.pickup_hours_start_at.blank? or shipment.pickup_hours_end_at.blank? %>
               between <%= shipment.pickup_hours_start_at %> and <%= shipment.pickup_hours_end_at %> <small><%= shipment.shipper_address.time_zone.tzinfo.abbr %></small>
             <% end %>
           </td>
         </tr>
         <tr>
-          <td><%= pretty_date shipment.dispatched_at, shipment.shipper_address.time_zone %></td>
+          <td><%= time(shipment.dispatched_at, shipment.shipper_address.time_zone) %></td>
           <td></td>
           <td>Dispatched</td>
         </tr>
       <% end %>
       <tr>
-        <td><%= pretty_date shipment.created_at, (shipment.created_by&.time_zone || shipment.shipper_address.time_zone) %></td>
+        <td><%= time(shipment.created_at) %></td>
         <td></td>
         <td>
           <% unless @shipment.created_by.blank? %>

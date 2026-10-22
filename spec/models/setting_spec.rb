@@ -20,6 +20,20 @@
 require 'rails_helper'
 
 RSpec.describe(Setting) do
+  describe '.time_zone' do
+    subject(:time_zone) { described_class.time_zone }
+
+    before { create(:setting, key: 'time_zone_name', value: 'America/Chicago') }
+
+    it { is_expected.to(eq(ActiveSupport::TimeZone.new('America/Chicago'))) }
+  end
+
+  describe '#kind' do
+    subject(:kind) { build(:setting, key: 'time_zone_name').kind }
+
+    it { is_expected.to(eq(:time_zone)) }
+  end
+
   describe '#validate_value' do
     context 'when kind == :boolean' do
       before { allow(record).to(receive(:kind).and_return(:boolean)) }

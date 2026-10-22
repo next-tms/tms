@@ -118,6 +118,52 @@ RSpec.describe(User) do
     it { is_expected.to(validate_presence_of(:time_zone_name)) }
   end
 
+  describe '#validate_time_zone_name' do
+    let(:record) { build(:broker_user, time_zone_name:) }
+    let(:time_zone_name) { 'America/Denver' }
+
+    before { record.valid? }
+
+    it { expect(record.errors).not_to(include(:time_zone_name)) }
+
+    context 'when time_zone_name does not resolve' do
+      let(:time_zone_name) { 'not-a-zone' }
+
+      it { expect(record.errors).to(include(:time_zone_name)) }
+    end
+  end
+
+  describe '#set_time_zone_name' do
+    let(:companyable) { create(:broker) }
+    let(:record) { build(:user, companyable:, time_zone_name:) }
+    let(:time_zone_name) { nil }
+
+    before do
+      create(:setting, key: 'time_zone_name', value: 'America/Chicago')
+      record.valid?
+    end
+
+    it { expect(record.time_zone_name).to(eq('America/Chicago')) }
+
+    context 'when companyable is a BrokerCustomer' do
+      let(:companyable) { create(:broker_customer, office_address: create(:address, time_zone_name: 'America/Denver')) }
+
+      it { expect(record.time_zone_name).to(eq('America/Denver')) }
+
+      context 'when the office address time_zone_name is blank' do
+        let(:companyable) { create(:broker_customer, office_address: create(:address, time_zone_name: nil)) }
+
+        it { expect(record.time_zone_name).to(eq('America/Los_Angeles')) }
+      end
+    end
+
+    context 'when time_zone_name is present' do
+      let(:time_zone_name) { 'America/New_York' }
+
+      it { expect(record.time_zone_name).to(eq('America/New_York')) }
+    end
+  end
+
   describe '#label' do
     let(:record) { build(:user, first_name: 'John', last_name: 'Doe') }
 

@@ -14,7 +14,7 @@ module ShipmentsHelper
       display_name: 'Entered',
       column_name: :created_at,
       timezone_column: 'shipper_address',
-      date_format: :pretty_date
+      date_format: :time
     },
     delivered_at: {
       display_name: 'Delivered',
@@ -152,10 +152,7 @@ module ShipmentsHelper
     audit = shipment.audits.where('audited_changes @> ?', { 'charges_confirmed' => [ false, true ] }.to_json).first
     changed_by = audit.user
 
-    "Shipment Charges Confirmed by #{changed_by.full_name} at #{pretty_date(
-      audit.created_at,
-      current_user.time_zone,
-    )}".html_safe
+    safe_join([ "Shipment Charges Confirmed by #{changed_by.full_name} at ", time(audit.created_at) ])
   end
 
   def requires_charges_confirmed_note(shipment)

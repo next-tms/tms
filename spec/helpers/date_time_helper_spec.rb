@@ -121,6 +121,76 @@ RSpec.describe(DateTimeHelper) do
     end
   end
 
+  describe('#time') do
+    subject(:time_tag_html) { helper.time(datetime, time_zone) }
+
+    let(:datetime) { Time.utc(2026, 7, 14, 17) }
+    let(:time_zone) { ActiveSupport::TimeZone.new('America/Los_Angeles') }
+
+    before { Timecop.freeze(Time.utc(2026, 1, 14)) }
+    after { Timecop.return }
+
+    it do
+      expect(time_tag_html).to(
+        eq(
+          '<time datetime="2026-07-14T10:00:00-07:00" data-controller="time" ' \
+          'data-time-time-zone-value="America/Los_Angeles">2026-07-14T10:00:00-07:00</time>',
+        ),
+      )
+    end
+
+    context 'when datetime is blank' do
+      let(:datetime) { nil }
+
+      it { is_expected.to(be_nil) }
+    end
+
+    context 'when datetime is a Date' do
+      let(:datetime) { Date.new(2026, 7, 14) }
+
+      it { is_expected.to(include('datetime="2026-07-14T00:00:00-07:00"')) }
+    end
+
+    context 'when time_zone is omitted' do
+      subject(:time_tag_html) { helper.time(datetime) }
+
+      let(:current_user) { nil }
+
+      before do
+        allow(helper).to(receive(:current_user).and_return(current_user))
+        create(:setting, key: 'time_zone_name', value: 'America/New_York')
+      end
+
+      it do
+        expect(time_tag_html).to(
+          eq(
+            '<time datetime="2026-07-14T13:00:00-04:00" data-controller="time" ' \
+            'data-time-time-zone-value="America/New_York">2026-07-14T13:00:00-04:00</time>',
+          ),
+        )
+      end
+
+      context 'when time_zone is nil' do
+        subject(:time_tag_html) { helper.time(datetime, nil) }
+
+        it { is_expected.to(include('data-time-time-zone-value="America/New_York"')) }
+      end
+
+      context 'when current_user is present' do
+        let(:current_user) { build(:user, time_zone_name: 'America/Denver') }
+
+        it { is_expected.to(include('datetime="2026-07-14T11:00:00-06:00"')) }
+        it { is_expected.to(include('data-time-time-zone-value="America/Denver">2026-07-14T11:00:00-06:00</time>')) }
+      end
+    end
+
+    context 'when time_zone is not an ActiveSupport::TimeZone' do
+      let(:time_zone) { 'America/Los_Angeles' }
+
+      it { expect { time_tag_html }.to(raise_error(ArgumentError)) }
+    end
+  end
+
   describe('#time_zone_abbreviation') do
     subject(:result) { helper.time_zone_abbreviation(time_zone, at:) }
 
@@ -152,6 +222,27 @@ RSpec.describe(DateTimeHelper) do
       let(:time_zone) { 'PDT' }
 
       it { expect { result }.to(raise_error(ArgumentError)) }
+    end
+  end
+
+  describe('#time_zone_options') do
+    subject(:options) { helper.time_zone_options(time_zone_name) }
+
+    let(:time_zone_name) { 'America/Denver' }
+
+    it { is_expected.to(include([ '(GMT-07:00) Mountain Time (US & Canada)', 'America/Denver' ])) }
+    it { expect(options.map(&:last)).to(eq(options.map(&:last).uniq)) }
+
+    context 'when time_zone_name is not in the list' do
+      let(:time_zone_name) { 'America/Boise' }
+
+      it { expect(options.first).to(eq([ 'America/Boise', 'America/Boise' ])) }
+    end
+
+    context 'when time_zone_name is blank' do
+      let(:time_zone_name) { nil }
+
+      it { expect(options.map(&:last)).not_to(include(nil)) }
     end
   end
 end

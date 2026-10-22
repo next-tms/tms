@@ -25,6 +25,10 @@
                         help: 'International (with leading +) or US format',
                         autocomplete: 'tel'
       %>
+      <%= f.select :time_zone_name,
+                   time_zone_options(f.object.time_zone_name),
+                   { label: 'Time zone', help: 'Times are shown in this zone' }
+      %>
 
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
         <p>Currently awaiting confirmation for: <%= resource.unconfirmed_email %></p>

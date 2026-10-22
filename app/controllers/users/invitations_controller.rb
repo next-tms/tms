@@ -12,7 +12,6 @@ class Users::InvitationsController < Devise::InvitationsController
   def create
     self.resource = invite_resource
 
-    resource.update(time_zone_name: current_user.broker.time_zone_name)
     resource_invited = resource.errors.empty?
 
     yield resource if block_given?
@@ -80,7 +79,6 @@ class Users::InvitationsController < Devise::InvitationsController
       user.build_contact
 
       user.broker_id = current_user.broker_id
-      user.time_zone_name = current_user.broker.time_zone_name
     end
   end
 end

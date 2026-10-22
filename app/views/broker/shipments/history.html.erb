@@ -16,9 +16,7 @@
       <% @audits.each do |audit| %>
         <tr>
           <td>
-            <span>
-              <%= long_date audit.created_at, current_user.time_zone %>
-            </span>
+            <%= time(audit.created_at) %>
           </td>
           <td>
            <%= audit.user&.full_name || 'Robot' %>

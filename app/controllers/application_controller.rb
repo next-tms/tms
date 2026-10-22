@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :sign_out_deactivated_user
 
+  etag { [ Broker.all, current_user, Setting.all ] }
+
   protect_from_forgery with: :exception
 
   rescue_from ActionPolicy::Unauthorized, with: :unauthorized
@@ -82,6 +84,7 @@ class ApplicationController < ActionController::Base
               receive_notifications_from_self
               receive_read_notifications_by_email
               receive_sms_notifications
+              time_zone_name
             ],
     )
 

@@ -63,10 +63,10 @@
                 %>
               </td>
 
-              <td class="text-nowrap"><%= pretty_date(problem.created_at, current_user.time_zone) %></td>
+              <td class="text-nowrap"><%= time(problem.created_at) %></td>
 
               <% if action_name == 'resolved' %>
-                <td class="text-nowrap"><%= pretty_date(problem.resolved_at, current_user.time_zone) %></td>
+                <td class="text-nowrap"><%= time(problem.resolved_at) %></td>
               <% end %>
 
               <td><%= problem.problematic_rule.with(problem.resolvable).humanized.downcase %></td>

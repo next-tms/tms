@@ -20,7 +20,7 @@
   kind: :email
   required: true
 - key: time_zone_name
-  kind: time_zone
+  kind: :time_zone
   required: true
 - key: website_desc
   kind: :string

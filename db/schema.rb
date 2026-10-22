@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_30_162110) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -238,6 +238,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_30_162110) do
     t.bigint "address_id"
     t.boolean "automatically_authorize_receivables", default: false
     t.boolean "automatically_update_shipment_tracking_based_on_carrier_apis", default: true
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "customer_service_email"
     t.text "default_bol_notes"
     t.integer "first_load_id"
@@ -250,6 +251,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_30_162110) do
     t.string "theme_sidebar_background_color", default: "#E2F8FF"
     t.string "theme_sidebar_text_color", default: "rgba(0, 0, 0, 0.95)"
     t.string "time_zone_name", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["address_id"], name: "index_brokers_on_address_id"
   end

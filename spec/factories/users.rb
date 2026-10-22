@@ -130,7 +130,7 @@ FactoryBot.define do
     remember_created_at { '2022-06-29 23:58:27' }
     reset_password_sent_at { '2022-06-29 23:58:27' }
     sign_in_count { 1 }
-    time_zone_name { 'MyString' }
+    time_zone_name { 'America/Los_Angeles' }
     unconfirmed_email { 'MyString' }
     updated_at { '2022-06-29 23:58:27' }
 

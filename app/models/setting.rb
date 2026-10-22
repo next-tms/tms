@@ -48,6 +48,8 @@ class Setting < ApplicationRecord
     def value!(key)
       find_by!(key: key.to_s).value
     end
+
+    def time_zone = ActiveSupport::TimeZone.new(value!(:time_zone_name))
   end
 
   BOOLEAN_VALUES = { false: 'boolean:false', true: 'boolean:true' }.freeze

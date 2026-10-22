@@ -150,7 +150,7 @@ class User < ApplicationRecord
   after_save :update_contact
 
   before_validation :build_contact, if: -> { companyable.present? && contact.blank? && email.present? }
-  before_validation :set_time_zone_name
+  before_validation :set_time_zone_name, if: -> { new_record? && companyable.present? && time_zone_name.blank? }
 
   belongs_to :contact
 
@@ -164,6 +164,8 @@ class User < ApplicationRecord
          :timeoutable,
          :trackable,
          :validatable
+
+  before_invitation_created :set_time_zone_name, if: -> { new_record? && companyable.present? && time_zone_name.blank? }
 
   has_many :broker_customer_sales_reps
   has_many :commissions
@@ -187,6 +189,7 @@ class User < ApplicationRecord
   scope :active, -> { where.not(deactivated: true) }
   scope :dispatchers, -> { broker.with_role(:dispatch) }
 
+  validate :validate_time_zone_name, if: -> { time_zone_name.present? && time_zone_name_changed? }
   validates :time_zone_name, presence: true
 
   accepts_nested_attributes_for :contact, allow_destroy: true, reject_if: :all_blank
@@ -340,11 +343,7 @@ class User < ApplicationRecord
     invite!(invited_by)
   end
 
-  def set_time_zone_name
-    return unless companyable.present? && time_zone_name.blank?
-
-    self.time_zone_name = broker? ? companyable.time_zone_name : companyable.broker.time_zone_name
-  end
+  def set_time_zone_name = self.time_zone_name = customer? ? companyable.office_address.time_zone.tzinfo.name : Setting.value!(:time_zone_name)
 
   def update_contact
     %i[companyable_id companyable_type first_name last_name].each do |attribute|
@@ -357,6 +356,10 @@ class User < ApplicationRecord
     end
 
     contact.save! if contact.changed?
+  end
+
+  def validate_time_zone_name
+    errors.add(:time_zone_name, :invalid) if time_zone.blank?
   end
 
   protected

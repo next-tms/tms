@@ -89,12 +89,33 @@ module DateTimeHelper
     date.in_time_zone(time_zone).strftime('%m/%d/%y').html_safe
   end
 
+  def time(datetime, time_zone = nil)
+    return if datetime.blank?
+
+    time_zone ||= current_user&.time_zone || Setting.time_zone
+
+    unless time_zone.is_a?(ActiveSupport::TimeZone)
+      raise ArgumentError, "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+    end
+
+    zoned_datetime = datetime.in_time_zone(time_zone)
+
+    time_tag zoned_datetime, zoned_datetime.iso8601, data: { controller: 'time', time_time_zone_value: time_zone.tzinfo.name }
+  end
+
   def time_zone_abbreviation(time_zone, at: Time.current)
     unless time_zone.is_a?(ActiveSupport::TimeZone)
       raise ArgumentError, 'time_zone must be an ActiveSupport::TimeZone'
     end
 
     at.in_time_zone(time_zone).zone
+  end
+
+  def time_zone_options(time_zone_name)
+    options = ActiveSupport::TimeZone.all.uniq { |time_zone| time_zone.tzinfo.name }.map { |time_zone| [ time_zone.to_s, time_zone.tzinfo.name ] }
+    return options if time_zone_name.blank? || options.any? { |_label, value| value == time_zone_name }
+
+    [ [ time_zone_name, time_zone_name ], *options ]
   end
 
   private
