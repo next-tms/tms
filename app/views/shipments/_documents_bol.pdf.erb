@@ -74,8 +74,9 @@
             <li><%= shipment.shipper_contact_email %></li>
           <% end %>
         </ul>
-        <p>
-          <% unless shipment.pickup_on.blank? %>
+
+        <% if shipment.pickup_on.present? %>
+          <p>
             <strong>
               Pickup
               <% if shipment.accessorials.map(&:freight_kit_code).include?('appointment_pickup') %>
@@ -86,12 +87,10 @@
               :
             </strong>
             <br>
-            <%= pretty_date shipment.pickup_on, shipment.shipper_address.time_zone %>
-            <% if not shipment.pickup_hours_start_at.blank? and not shipment.pickup_hours_end_at.blank? %>
-              <%= shipment.pickup_hours_start_at %> - <%= shipment.pickup_hours_end_at %>
-            <% end %>
-          <% end %>
-        </p>
+            <%= long_date(shipment.pickup_on, shipment.shipper_address.time_zone) %>
+            <%= hours_range(shipment.pickup_on, shipment.pickup_hours_start_at, shipment.pickup_hours_end_at, shipment.shipper_address.time_zone) %>
+          </p>
+        <% end %>
       </td>
       <td>
         <h3>Consignee</h3>
@@ -112,7 +111,7 @@
           <% end %>
         </ul>
         <p>
-          <% if not shipment.delivery_appointment_at.blank? %>
+          <% if shipment.delivery_appointment_at.present? %>
             <strong>
               Delivery
               <% if shipment.accessorials.map(&:freight_kit_code).include?('appointment_delivery') %>
@@ -125,10 +124,10 @@
             <br>
             <%= pretty_date shipment.delivery_appointment_at, shipment.shipper_address.time_zone %>
           <% else %>
-            <% unless shipment.delivery_hours_start_at.blank? or shipment.delivery_hours_end_at.blank? %>
+            <% if shipment.delivery_hours_start_at.present? && shipment.delivery_hours_end_at.present? %>
               <strong>Delivery Hours:</strong>
               <br>
-              <%= shipment.delivery_hours_start_at %> - <%= shipment.delivery_hours_end_at %></strong>
+              <%= hours_range(shipment.delivery_appointment_on || shipment.delivery_eta_on, shipment.delivery_hours_start_at, shipment.delivery_hours_end_at, shipment.receiver_address.time_zone) %>
             <% end %>
           <% end %>
         </p>

@@ -1,6 +1,6 @@
 class UserMailer < ApplicationMailer
   default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
-  helper :application
+  helper :application, :date_time
 
   before_action :set_shipment, except: %i[send_welcome pickup_service_dispatched]
 

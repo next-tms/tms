@@ -6,44 +6,6 @@ module ApplicationHelper
     { action: 'blur->money#handle', controller: 'money', 'money-target': 'input' }
   end
 
-  def flatpickr_data(options = {})
-    if options[:override].blank?
-      {
-        controller: 'flatpickr',
-        flatpickr_date_format: 'Y-m-d'
-      }.deep_merge(options)
-    else
-      {
-        controller: 'flatpickr'
-      }.deep_merge(options[:override])
-    end
-  end
-
-  def flatpickr_datetime_data(_datetime, time_zone)
-    if time_zone.blank?
-      return flatpickr_data.deep_merge(
-        flatpickr_alt_input: true,
-        flatpickr_alt_format: 'Y-m-d h:i K',
-        flatpickr_enable_time: true,
-        flatpickr_date_format: 'Y-m-dTH:i:00-00:00',
-      )
-    end
-
-    unless time_zone.is_a?(ActiveSupport::TimeZone)
-      message = "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
-      raise ArgumentError, message
-    end
-
-    formatted_offset = time_zone.formatted_offset
-
-    flatpickr_data.deep_merge(
-      flatpickr_alt_input: true,
-      flatpickr_alt_format: 'Y-m-d h:i K',
-      flatpickr_enable_time: true,
-      flatpickr_date_format: "Y-m-dTH:i:00#{formatted_offset}",
-    )
-  end
-
   def icon(style, name, text = nil, html_options = {})
     if text.is_a?(Hash)
       html_options = text
@@ -76,64 +38,6 @@ module ApplicationHelper
     return '0%' if args == args.reject(&:blank?)
 
     super
-  end
-
-  def pretty_date(date, time_zone)
-    return if date.blank? || time_zone.blank?
-
-    unless time_zone.is_a?(ActiveSupport::TimeZone)
-      message = "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
-      raise ArgumentError, message
-    end
-
-    if date.year == Time.current.year
-      return date
-             .in_time_zone(time_zone.name)
-             .strftime("%m/%d %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>")
-             .html_safe
-    end
-
-    date
-    .in_time_zone(time_zone.name)
-    .strftime("%m/%d/%y %a %l:%M %p <small>#{time_zone.tzinfo.abbr}</small>")
-    .html_safe
-  end
-
-  def short_date(date, time_zone)
-    return if date.blank? || time_zone.blank?
-
-    unless time_zone.is_a?(ActiveSupport::TimeZone)
-      raise ArgumentError,
-            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
-    end
-
-    if date.year == Time.current.year
-      date.in_time_zone(time_zone).strftime('%m/%d').html_safe
-    else
-      date.in_time_zone(time_zone).strftime('%m/%d/%y').html_safe
-    end
-  end
-
-  def long_date(date, time_zone)
-    return if date.blank? || time_zone.blank?
-
-    unless time_zone.is_a?(ActiveSupport::TimeZone)
-      raise ArgumentError,
-            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
-    end
-
-    date.in_time_zone(time_zone.name).strftime('%m/%d/%y').html_safe
-  end
-
-  def maybe_in_time_zone(datetime:, time_zone:)
-    return '' if datetime.blank? || time_zone.blank?
-
-    unless time_zone.is_a?(ActiveSupport::TimeZone)
-      raise ArgumentError,
-            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
-    end
-
-    datetime ? datetime.in_time_zone(time_zone.name).to_s[0..-10] : ''
   end
 
   def pluralize_with_delimiter(count, singular, plural = nil)

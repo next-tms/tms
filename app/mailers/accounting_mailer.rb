@@ -1,6 +1,6 @@
 class AccountingMailer < ApplicationMailer
   default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
-  helper :application
+  helper :application, :date_time
 
   def unknown_customers(broker_customers:)
     broker = broker_customers.first.broker
