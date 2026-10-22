@@ -12,6 +12,14 @@
 # Configure Using Gemfile
 # gem "pg"
 #
+<%
+  git = Rails.root.join(".git")
+  suffix =
+    if git.file? && git.read.match?(%r{/worktrees/[^/]+$})
+      name = Rails.root.basename.to_s.downcase.gsub(/[^a-z0-9_]/, "_")
+      "_#{name[0, 30]}_#{Digest::SHA256.hexdigest(Rails.root.to_s)[0, 6]}"
+    end
+%>
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -22,17 +30,17 @@ default: &default
 development:
   primary:
     <<: *default
-    database: liftoff_development
+    database: liftoff_development<%= suffix %>
 
   cable:
     <<: *default
-    database: liftoff_cable_development
+    database: liftoff_cable_development<%= suffix %>
     migrations_paths: db/cable_migrate
     schema_dump: cable_schema.rb
 
   cache:
     <<: *default
-    database: liftoff_cache_development
+    database: liftoff_cache_development<%= suffix %>
     migrations_paths: db/cache_migrate
     schema_dump: cache_schema.rb
 
@@ -69,14 +77,14 @@ development:
 test:
   primary:
     <<: *default
-    database: liftoff_test
+    database: liftoff_test<%= suffix %>
     host: <%= ENV.fetch("PGHOST", "localhost") %>
     password: <%= ENV["CI"] ? "postgres" : "" %>
     username: <%= ENV["CI"] ? "postgres" : ENV.fetch("USER", "postgres") %>
 
   cable:
     <<: *default
-    database: liftoff_cable_test
+    database: liftoff_cable_test<%= suffix %>
     host: <%= ENV.fetch("PGHOST", "localhost") %>
     migrations_paths: db/cable_migrate
     password: <%= ENV["CI"] ? "postgres" : "" %>
@@ -85,7 +93,7 @@ test:
 
   cache:
     <<: *default
-    database: liftoff_cache_test
+    database: liftoff_cache_test<%= suffix %>
     host: <%= ENV.fetch("PGHOST", "localhost") %>
     migrations_paths: db/cache_migrate
     password: <%= ENV["CI"] ? "postgres" : "" %>
