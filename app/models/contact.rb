@@ -124,7 +124,7 @@ class Contact < ApplicationRecord
   def role?(role)
     return true if roles.any?(:root)
 
-    return true if customer? && role == 'accounts_payable' && companyable.receivables_contact == self
+    return true if customer? && role.to_s == 'accounts_payable' && companyable.receivables_contact == self
 
     (roles + %i[broker customer]).include?(role.to_sym)
   end

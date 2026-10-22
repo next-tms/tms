@@ -40,16 +40,24 @@ RSpec.describe(Contact) do
   end
 
   describe '#role?' do
+    subject { contact.role?(role) }
+
     let(:broker_customer) { create(:broker_customer) }
-    let(:record) { create(:contact, companyable: broker_customer) }
+    let(:contact) { create(:contact, companyable: broker_customer) }
+    let(:role) { 'accounts_payable' }
 
-    it { expect(record.role?(:customer)).to(be(true)) }
-    it { expect(record.role?(:accounts_payable)).to(be(false)) }
+    it { is_expected.to(be(false)) }
 
-    context 'when record is the receivables contact of its BrokerCustomer' do
-      before { allow(broker_customer).to(receive(:receivables_contact).and_return(record)) }
+    context 'when the receivables contact' do
+      let(:contact) { create(:contact, broker_customer_as_receivables_contact: broker_customer, companyable: broker_customer) }
 
-      it { expect(record.role?('accounts_payable')).to(be(true)) }
+      it { is_expected.to(be(true)) }
+
+      context 'with a symbol' do
+        let(:role) { :accounts_payable }
+
+        it { is_expected.to(be(true)) }
+      end
     end
   end
 
