@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.19
 
 FROM golang:1.27.2-alpine3.24 AS caddy
-ARG CADDY_VERSION=2.11.2
+ARG CADDY_VERSION=2.11.7
 
 RUN apk -U upgrade
 RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.7
