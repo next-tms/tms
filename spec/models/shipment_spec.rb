@@ -273,6 +273,59 @@ RSpec.describe(Shipment) do
     end
   end
 
+  describe '.broker_customers_of' do
+    let(:broker_customer_sales_rep) { create(:broker_customer_sales_rep, broker_customer: shipment.broker_customer) }
+    let(:shipment) { create(:shipment) }
+    let(:user) { broker_customer_sales_rep.user }
+
+    before { create(:shipment, broker: shipment.broker) }
+
+    it { expect(described_class.broker_customers_of(user.id)).to(contain_exactly(shipment)) }
+    it { expect(described_class.broker_customers_of(0)).to(be_empty) }
+  end
+
+  describe '.dispatched_by' do
+    let(:dispatcher) { shipment.dispatcher }
+    let(:shipment) { create(:shipment) }
+
+    before { create(:shipment) }
+
+    it { expect(described_class.dispatched_by(dispatcher.id)).to(contain_exactly(shipment)) }
+    it { expect(described_class.ransack({ dispatched_by: dispatcher.id }, auth_object: dispatcher).result).to(contain_exactly(shipment)) }
+  end
+
+  describe '.pending_quotation_or_canceled_recently' do
+    subject { described_class.pending_quotation_or_canceled_recently }
+
+    let!(:canceled_recently) { create(:shipment, canceled_at: 1.hour.ago) }
+    let!(:pending_quotation) { create(:shipment, broker_carrier: nil) }
+
+    before { create(:shipment, canceled_at: 2.days.ago) }
+
+    it { is_expected.to(contain_exactly(canceled_recently, pending_quotation)) }
+  end
+
+  describe '.ransackable_scopes' do
+    subject { described_class.ransackable_scopes(authorizable) }
+
+    let(:authorizable) { nil }
+
+    it { is_expected.to(eq([])) }
+
+    context 'when authorizable.broker?' do
+      let(:authorizable) { create(:broker_user) }
+
+      it { is_expected.to(eq(described_class::RANSACKABLE_SCOPES)) }
+      it { is_expected.to(all(satisfy { |scope| described_class.respond_to?(scope) })) }
+    end
+
+    context 'when authorizable.customer?' do
+      let(:authorizable) { create(:customer_user) }
+
+      it { is_expected.to(eq([])) }
+    end
+  end
+
   describe '#assign_dispatcher' do
     let(:user) do
       record = build(:broker_user)

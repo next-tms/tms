@@ -198,10 +198,30 @@ class Shipment < ApplicationRecord
 
       (associations + [ 'broker_carrier', 'tracking_carrier' ]).sort
     end
+
+    def ransackable_scopes(authorizable = nil) = authorizable&.broker? ? RANSACKABLE_SCOPES : []
+    def ransackable_scopes_skip_sanitize_args = %w[broker_customers_of dispatched_by]
   end
 
   DOCUMENTABLE_TYPES = %i[broker_bol broker_label broker_dispatch_sheet broker_quote]
   DOWNCASEABLE_ATTRIBUTES = %i[receiver_contact_email shipper_contact_email]
+  RANSACKABLE_SCOPES = %w[
+                         active
+                         booked
+                         broker_customers_of
+                         delivered
+                         dispatched_by
+                         missing_delivery_appointment
+                         missing_pricing
+                         missing_pro
+                         pending_delivery
+                         pending_departure
+                         pending_dispatch
+                         pending_found
+                         pending_pickup
+                         pending_quotation
+                         pending_quotation_or_canceled_recently
+                       ].freeze
   REFERENCE_ATTRIBUTES = %i[bol customer_reference pickup_confirmation pro quote_id shipper_reference]
   SEARCH_ATTRIBUTES = %w[
                         bol_notes
@@ -385,7 +405,9 @@ class Shipment < ApplicationRecord
 
   scope :active,                        -> { not_canceled } # TODO: Remove, use :not_canceled
   scope :booked,                        -> { active.where.not(booked_at: nil).where(dispatched_at: nil) }
+  scope :broker_customers_of,           ->(user_id) { where(broker_customer: User.find_by(id: user_id)&.broker_customers || BrokerCustomer.none) }
   scope :canceled_recently,             -> { where('canceled_at > ?', 1.day.ago) }
+  scope :dispatched_by,                 ->(dispatcher_id) { where(dispatcher_id:) }
   scope :late,                          -> { where(id: late_per_promised_delivery_by).or(where(id: late_per_delivery_eta_on)).distinct }
   scope :late_per_delivery_eta_on,      -> { not_delivered.where('delivery_eta_on < ?', Date.current) }
   scope :late_per_promised_delivery_by, -> { not_delivered.where('promised_delivery_by < ?', Date.current) }
@@ -423,6 +445,7 @@ class Shipment < ApplicationRecord
   scope :pending_found,                 -> { active.pending_delivery.where.not(lost_on: nil) }
   scope :pending_pickup,                -> { active.where.not(dispatched_at: nil).where(picked_up_at: nil) }
   scope :pending_quotation,             -> { where(broker_carrier: nil, canceled_at: nil).or(where(broker_carrier: nil).where(id: canceled_recently)) }
+  scope :pending_quotation_or_canceled_recently, -> { active.pending_quotation.or(canceled_recently) }
 
   validates :load_id, presence: true, uniqueness: true
 
