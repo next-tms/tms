@@ -9,7 +9,7 @@ RSpec.describe(Shipment::DuplicateService) do
     subject(:call) { described_class.new(shipment:).call }
 
     before do
-      shipment.shipment_items.create(item:)
+      shipment.items << item
       shipment.shipment_broker_accessorials.create(broker_accessorial:)
     end
 
@@ -23,7 +23,7 @@ RSpec.describe(Shipment::DuplicateService) do
 
     it 'duplicates items' do
       new_shipment = call
-      except_attrs = [ 'id', 'created_at', 'updated_at' ]
+      except_attrs = [ 'id', 'created_at', 'updated_at', 'shipment_id' ]
       item.attributes.each do |k, v|
         next if except_attrs.include?(k)
 

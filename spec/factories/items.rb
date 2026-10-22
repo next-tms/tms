@@ -34,6 +34,7 @@
 FactoryBot.define do
   factory :item do
     association :packaging
+    association :shipment
 
     declared_freight_class { [ nil, Item::FREIGHT_CLASSES.sample ].sample }
     desc { Faker::Lorem.words.map(&:upcase_first).join(' ') }

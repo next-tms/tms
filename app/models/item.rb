@@ -38,17 +38,18 @@ class Item < ApplicationRecord
     where(packaging:)
   }
 
-  belongs_to :packaging
-  accepts_nested_attributes_for :packaging, allow_destroy: true, reject_if: :all_blank
+  audited associated_with: :shipment
 
-  has_many :shipment_items, dependent: :destroy
-  has_many :shipments, through: :shipment_items
+  belongs_to :packaging
+  belongs_to :shipment
 
   validate :validate_declared_freight_class
 
   validates :desc, :quantity, :weight, presence: true
   validates :nmfc, allow_blank: true, format: { with: /\d{4,5}(-\d{1,2})?/, message: 'is not in the correct format' }
   validates :quantity, :weight, numericality: { only_integer: true, greater_than: 0 }
+
+  accepts_nested_attributes_for :packaging, allow_destroy: true, reject_if: :all_blank
 
   # Set Packaging based on names (for API)
   def packaging_name=(name)

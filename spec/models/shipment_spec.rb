@@ -237,14 +237,13 @@ RSpec.describe(Shipment) do
 
     it { is_expected.to(have_many(:accessorials).through(:shipment_accessorials)) }
     it { is_expected.to(have_many(:commissions)) }
-    it { is_expected.to(have_many(:items).through(:shipment_items)) }
+    it { is_expected.to(have_many(:items)) }
     it { is_expected.to(have_many(:payment_transactions)) }
     it { is_expected.to(have_many(:payments).through(:payment_transactions)) }
     it { is_expected.to(have_many(:pickups)) }
     it { is_expected.to(have_many(:problems)) }
     it { is_expected.to(have_many(:rates)) }
     it { is_expected.to(have_many(:shipment_accessorials)) }
-    it { is_expected.to(have_many(:shipment_items)) }
     it { is_expected.to(have_many(:tracking_events)) }
   end
 
@@ -264,6 +263,22 @@ RSpec.describe(Shipment) do
     end
 
     it { expect { shipment.save }.to(change(shipment, :dispatcher).from(nil).to(user)) }
+  end
+
+  describe '#fingerprint' do
+    let(:shipment) { create(:shipment) }
+
+    before { create(:item, shipment:) }
+
+    it 'ignores item shipment_id' do
+      fresh_shipment = described_class.find(shipment.id)
+      fingerprint = fresh_shipment.send(:set_fingerprint)
+      expect(fresh_shipment.flattened_items).to(be_present)
+
+      fresh_shipment.flattened_items.each { |item| item.shipment_id = shipment.id + 1 }
+
+      expect(fresh_shipment.send(:set_fingerprint)).to(eq(fingerprint))
+    end
   end
 
   describe '#late?' do

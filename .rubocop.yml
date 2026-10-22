@@ -29,6 +29,7 @@ Rails/CreateTableWithTimestamps:
   Enabled: true
   Exclude:
     - 'db/migrate/{2016,2017,2018,2019,2020,2021,2022,2023}*.rb'
+    - 'db/migrate/20260730162110_drop_shipment_items.rb'
 Rails/RootJoinChain:
   Enabled: true
 Rails/RootPathnameMethods:

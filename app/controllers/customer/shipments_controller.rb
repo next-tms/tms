@@ -215,7 +215,6 @@ class Customer::ShipmentsController < Customer::CustomerController
     [
       { shipper_address: :region },
       { receiver_address: :region },
-      :shipment_items,
       :items
     ]
   end

@@ -13,7 +13,7 @@
       </tr>
     </thead>
     <tbody>
-      <% @audits.order(created_at: :desc).each_with_index do |audit, index| %>
+      <% @audits.each do |audit| %>
         <tr>
           <td>
             <span>
@@ -24,12 +24,21 @@
            <%= audit.user&.full_name || 'Robot' %>
           </td>
           <td>
-            <% if audit.action == 'create' %>
+            <% if audit.auditable_type == 'Shipment' && audit.action == 'create' %>
               Initial Version
-            <% else %>
+            <% elsif audit.action.in?(%w[create destroy]) %>
+              Item <%= audit.action == 'create' ? 'added' : 'removed' %>
               <ul class="list-unstyled">
-                <% audit.audited_changes.each do |change| %>
-                  <% field, changes = change %>
+                <% audit.audited_changes.each do |field, value| %>
+                  <li><%= field.split('_').map(&:capitalize).join(' ') %>: <strong>"<%= value %>"</strong></li>
+                <% end %>
+              </ul>
+            <% else %>
+              <% if audit.auditable_type == 'Item' %>
+                Item updated
+              <% end %>
+              <ul class="list-unstyled">
+                <% audit.audited_changes.each do |field, changes| %>
                   <li><%= field.split('_').map(&:capitalize).join(' ') %> changed from
                     <strong>"<%= changes.first %>"</strong> to
                     <strong>"<%= changes.last %>"</strong>

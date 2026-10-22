@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_01_000010) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_30_162110) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -442,9 +442,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_000010) do
     t.integer "packaging_id"
     t.integer "quantity"
     t.boolean "refrigerated"
+    t.bigint "shipment_id", null: false
     t.datetime "updated_at", null: false
     t.integer "w"
     t.integer "weight"
+    t.index ["shipment_id"], name: "index_items_on_shipment_id"
   end
 
   create_table "location_areas", force: :cascade do |t|
@@ -744,13 +746,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_000010) do
     t.bigint "shipment_id", null: false
     t.index ["broker_accessorial_id"], name: "index_shipment_broker_accessorials_on_broker_accessorial_id"
     t.index ["shipment_id"], name: "index_shipment_broker_accessorials_on_shipment_id"
-  end
-
-  create_table "shipment_items", force: :cascade do |t|
-    t.bigint "item_id"
-    t.bigint "shipment_id"
-    t.index ["item_id"], name: "index_shipment_items_on_item_id"
-    t.index ["shipment_id"], name: "index_shipment_items_on_shipment_id"
   end
 
   create_table "shipments", id: :serial, force: :cascade do |t|
@@ -1069,6 +1064,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_000010) do
   add_foreign_key "document_preferences", "brokers"
   add_foreign_key "document_preferences", "contacts"
   add_foreign_key "integration_mappings", "integrations"
+  add_foreign_key "items", "shipments"
   add_foreign_key "location_areas", "areas"
   add_foreign_key "location_areas", "locations"
   add_foreign_key "locations", "regions"
@@ -1111,8 +1107,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_000010) do
   add_foreign_key "shipment_accessorials", "shipments"
   add_foreign_key "shipment_broker_accessorials", "broker_accessorials"
   add_foreign_key "shipment_broker_accessorials", "shipments"
-  add_foreign_key "shipment_items", "items"
-  add_foreign_key "shipment_items", "shipments"
   add_foreign_key "shipments", "addresses", column: "receiver_address_id"
   add_foreign_key "shipments", "addresses", column: "shipper_address_id"
   add_foreign_key "shipments", "broker_customers"

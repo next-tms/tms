@@ -617,7 +617,9 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def history
-    @audits = @shipment.audits
+    @audits = @shipment.own_and_associated_audits.includes(:user)
+
+    stale?(@shipment)
   end
 
   private

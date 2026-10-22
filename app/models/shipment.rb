@@ -246,6 +246,8 @@ class Shipment < ApplicationRecord
 
   belongs_to :dispatcher, class_name: 'User'
 
+  has_associated_audits
+
   has_many :claims
   has_many :commissions, dependent: :destroy
 
@@ -260,8 +262,7 @@ class Shipment < ApplicationRecord
   belongs_to :created_by, class_name: 'User', optional: true
   belongs_to :updated_by, class_name: 'User', optional: true
 
-  has_many :shipment_items, dependent: :destroy
-  has_many :items, through: :shipment_items
+  has_many :items, dependent: :destroy
   accepts_nested_attributes_for :items, allow_destroy: true, reject_if: :all_blank
 
   has_many :shipment_accessorials, dependent: :destroy

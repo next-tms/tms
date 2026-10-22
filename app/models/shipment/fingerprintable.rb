@@ -18,10 +18,7 @@ module Shipment::Fingerprintable
 
     if flattened_items.present?
       flattened_items.each do |flattened_item|
-        parts << flattened_item
-                 .attributes
-                 .except('created_at', 'updated_at')
-                 .to_s
+        parts << flattened_item.attributes.except('created_at', 'shipment_id', 'updated_at').to_s
       end
     end
 
