@@ -143,8 +143,6 @@ class Broker::ReportsController < Broker::BrokerController
   def set_form_options
     return if @report.record_class.blank?
 
-    @columns = ExporterService.available_columns(@report.record_class, current_user)
-    @customer_columns = ExporterService.customer_columns(@report.record_class)
     @date_attributes = @report.date_attributes(current_user)
   end
 

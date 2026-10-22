@@ -1,15 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe(ReportsHelper) do
-  let(:customer_columns) { [ 'load_id' ] }
   let(:user) { create(:broker_user) }
 
   before { without_partial_double_verification { allow(helper).to(receive(:current_user).and_return(user)) } }
-
-  describe '#report_column_label' do
-    it { expect(helper.report_column_label(Shipment, 'load_id', customer_columns)).to(eq('Load')) }
-    it { expect(helper.report_column_label(Shipment, 'total_cost', customer_columns)).to(include('Carrier Cost', 'Internal')) }
-  end
 
   describe '#report_filter_label' do
     it { expect(helper.report_filter_label(Shipment, 's')).to(eq('Sort')) }
@@ -28,9 +22,9 @@ RSpec.describe(ReportsHelper) do
   end
 
   describe '#report_internal_columns' do
-    let(:report) { build(:report, columns: [ 'load_id', 'total_cost' ]) }
+    let(:report) { build(:report, columns: [ 'load_id', 'total_cost', 'broker_carrier.broker_customer.name' ]) }
 
-    it { expect(helper.report_internal_columns(report, customer_columns)).to(eq([ 'total_cost' ])) }
+    it { expect(helper.report_internal_columns(report)).to(eq([ 'total_cost', 'broker_carrier.broker_customer.name' ])) }
   end
 
   describe '#report_record_name' do

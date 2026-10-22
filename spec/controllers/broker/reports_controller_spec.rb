@@ -87,7 +87,7 @@ RSpec.describe(Broker::ReportsController) do
       let(:params) { { record_type: 'Contact' } }
 
       it { expect(assigns(:report).columns).to(eq(ExporterService.default_columns(Contact, user))) }
-      it { expect(assigns(:columns)).to(eq(ExporterService.available_columns(Contact, user))) }
+      it { expect(assigns(:date_attributes)).to(eq(assigns(:report).date_attributes(user))) }
       it { expect(assigns(:report).filters).to(eq({})) }
     end
 

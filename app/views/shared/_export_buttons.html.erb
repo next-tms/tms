@@ -16,12 +16,7 @@
         </div>
 
         <div class="modal-body">
-          <% ExporterService.available_columns(export_record_class, current_user).each do |column| %>
-            <div class="form-check">
-              <%= check_box_tag 'columns[]', column, default_columns.include?(column), id: "export-column-#{column.parameterize}", class: 'form-check-input' %>
-              <%= label_tag "export-column-#{column.parameterize}", ExporterService.column_header(export_record_class, column), class: 'form-check-label' %>
-            </div>
-          <% end %>
+          <%= render 'shared/export_columns', association: nil, name: 'columns[]', record_class: export_record_class, selected: default_columns %>
         </div>
 
         <div class="modal-footer">

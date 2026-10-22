@@ -3,8 +3,6 @@ require 'rails_helper'
 RSpec.describe(Report::Preset) do
   subject(:preset) { described_class.find('freight-report') }
 
-  let(:customer_columns) { ExporterService.customer_columns(Shipment) }
-
   describe '.all' do
     it { expect(described_class.all.map(&:key)).to(eq([ 'customer-report', 'freight-report' ])) }
   end
@@ -23,7 +21,7 @@ RSpec.describe(Report::Preset) do
     context "when #{key}" do
       subject(:preset) { described_class.find(key) }
 
-      it { expect(preset.columns - customer_columns).to(be_empty) }
+      it { expect(preset.columns).to(all(satisfy { |column| ExporterService.customer_column?(Shipment, column) })) }
       it { expect(preset.columns).not_to(include('total_cost')) }
       it { expect(preset.description).to(be_present) }
     end

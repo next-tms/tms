@@ -12,7 +12,6 @@ RSpec.describe('broker/reports/show') do
   before do
     create(:setting, key: 'time_zone_name', value: 'America/Los_Angeles')
     shipments
-    assign(:customer_columns, ExporterService.customer_columns(report.record_class))
     assign(:from, from)
     assign(:preview, report.exporter(user, from:, to:))
     assign(:report, report)

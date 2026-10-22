@@ -10,12 +10,16 @@
 
   <%= f.text_field :name, autofocus: true %>
 
-  <%= f.collection_check_boxes :columns,
-                               @columns,
-                               :itself,
-                               ->(column) { report_column_label(record_class, column, @customer_columns) },
-                               label: 'Columns'
-  %>
+  <%= f.form_group :columns, label: { text: 'Columns' } do %>
+    <%= hidden_field_tag 'report[columns][]', '', id: nil %>
+    <%= render 'shared/export_columns',
+               association: nil,
+               mark_internal: true,
+               name: 'report[columns][]',
+               record_class:,
+               selected: @report.columns
+    %>
+  <% end %>
 
   <%= f.select :date_attribute,
                @date_attributes.map { |date_attribute| [ record_class.human_attribute_name(date_attribute), date_attribute ] },

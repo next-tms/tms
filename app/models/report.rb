@@ -24,7 +24,8 @@ class Report < ApplicationRecord
   def validate_columns
     return if created_by.blank? || record_class.blank?
 
-    errors.add(:columns, :inclusion) if (columns - ExporterService.available_columns(record_class, created_by)).any?
+    available = columns.all? { |column| ExporterService.column_available?(record_class, column, created_by) }
+    errors.add(:columns, :inclusion) unless available
   end
 
   def validate_date_attribute

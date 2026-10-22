@@ -11,8 +11,6 @@ RSpec.describe('broker/reports/new') do
 
   before do
     without_partial_double_verification { allow(view).to(receive(:current_user).and_return(user)) }
-    assign(:columns, [ 'load_id', 'total_cost' ])
-    assign(:customer_columns, [ 'load_id' ])
     assign(:date_attributes, [ 'created_at', 'delivered_at' ])
     assign(:from, Date.new(2026, 10, 1))
     assign(:report, report)

@@ -147,6 +147,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resource :export_columns, only: :show
+
     resources :reports
 
     resources :settings

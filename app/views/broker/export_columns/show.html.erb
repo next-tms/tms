@@ -1,0 +1,9 @@
+<%= turbo_frame_tag export_columns_frame_id(@record_class, @association) do %>
+  <%= render 'shared/export_columns',
+             association: @association,
+             mark_internal: @mark_internal,
+             name: @name,
+             record_class: @record_class,
+             selected: []
+  %>
+<% end %>

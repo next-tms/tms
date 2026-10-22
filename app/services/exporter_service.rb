@@ -6,33 +6,77 @@ class ExporterService
     def customer? = true
   end
 
+  MAX_ASSOCIATION_DEPTH = 3
+
   class << self
+    def association_model(record_class, association)
+      association_path(association).reduce(record_class) { |owner, name| owner.reflect_on_association(name).klass }
+    end
+
+    def association_available?(record_class, association, authorizable)
+      path = association_path(association)
+      return false if path.size > MAX_ASSOCIATION_DEPTH
+
+      path.reduce(record_class) do |owner, name|
+        return false unless exportable_associations(owner, authorizable).include?(name)
+
+        owner.reflect_on_association(name).klass
+      end
+
+      true
+    end
+
+    def association_path(association) = association.to_s.split('.')
+
+    def associations_at(record_class, association, authorizable)
+      return [] if association_path(association).size >= MAX_ASSOCIATION_DEPTH
+
+      exportable_associations(association_model(record_class, association), authorizable).map do |name|
+        [ association, name ].compact.join('.')
+      end
+    end
+
     def available_columns(record_class, authorizable)
-      record_class.exportable_attributes(authorizable) + association_columns(record_class, authorizable, :exportable_attributes)
+      columns_at(record_class, nil, authorizable) +
+        associations_at(record_class, nil, authorizable).flat_map { |association| columns_at(record_class, association, authorizable) }
+    end
+
+    def column_available?(record_class, column, authorizable)
+      association, attribute = column_parts(column)
+      return false unless association_available?(record_class, association, authorizable)
+
+      association_model(record_class, association).exportable_attributes(authorizable).include?(attribute)
+    end
+
+    def columns_at(record_class, association, authorizable)
+      association_model(record_class, association).exportable_attributes(authorizable).map do |attribute|
+        [ association, attribute ].compact.join('.')
+      end
     end
 
     def column_header(record_class, column)
       association, attribute = column_parts(column)
-      return record_class.human_attribute_name(attribute) unless association
+      header = association_model(record_class, association).human_attribute_name(attribute)
+      return header unless association
 
-      "#{record_class.reflect_on_association(association).klass.human_attribute_name(attribute)} (#{association.humanize})"
+      "#{header} (#{association_path(association).map(&:humanize).join(' › ')})"
     end
 
     def column_parts(column)
-      association, attribute = column.to_s.split('.', 2)
-      attribute ? [ association, attribute ] : [ nil, association ]
+      *path, attribute = column.to_s.split('.')
+      [ path.join('.').presence, attribute ]
     end
 
-    def customer_columns(record_class) = available_columns(record_class, CustomerAudience.new)
+    def customer_column?(record_class, column) = column_available?(record_class, column, CustomerAudience.new)
 
     def default_columns(record_class, authorizable)
-      record_class.ransackable_attributes(authorizable) + association_columns(record_class, authorizable, :ransackable_attributes)
+      record_class.authorized_attributes(authorizable) + association_columns(record_class, authorizable, :authorized_attributes)
     end
 
     def exportable_associations(record_class, authorizable)
       record_class.ransackable_associations(authorizable).select do |association|
         reflection = record_class.reflect_on_association(association)
-        !reflection.polymorphic? && reflection.klass.try(:authorized_attributable?)
+        !reflection.collection? && !reflection.polymorphic? && reflection.klass.try(:authorized_attributable?)
       end
     end
 
@@ -61,22 +105,23 @@ class ExporterService
     @authorizable = authorizable
     @headers = headers.transform_keys(&:to_s)
     @record_class = records.respond_to?(:klass) ? records.klass : records.first.class
-    @columns = (columns&.map(&:to_s) || self.class.default_columns(@record_class, authorizable)) &
-               self.class.available_columns(@record_class, authorizable)
-    @records = records.respond_to?(:preload) && preloads.any? ? records.preload(*preloads) : records
+    @columns = (columns&.map(&:to_s) || self.class.default_columns(@record_class, authorizable))
+               .uniq
+               .select { |column| self.class.column_available?(@record_class, column, authorizable) }
+    @records = export_records(records)
   end
 
-  def cache_key = "#{records.cache_key}/#{authorizable.cache_key_with_version}/#{Digest::MD5.hexdigest(headers.to_json)}"
+  def cache_key = "#{records.cache_key}/#{authorizable.cache_key_with_version}/#{Digest::MD5.hexdigest([ columns, headers ].to_json)}"
   def cache_key_with_version = "#{cache_key}-#{cache_version}"
-  def cache_version = Digest::MD5.hexdigest(versions.to_json)
+  def cache_version = Digest::MD5.hexdigest([ versions, ordered_ids, time_zone_setting&.cache_key_with_version ].to_json)
 
   def data
     records.map do |record|
       columns.each_with_object({}) do |column, row|
         association, attribute = column_parts(column)
-        value = value_for(record, column)
+        target = association_path(association).reduce(row) { |hash, name| hash[name] ||= {} }
 
-        association ? (row[association] ||= {})[attribute] = value : row[attribute] = value
+        target[attribute] = value_for(record, column)
       end
     end
   end
@@ -84,7 +129,11 @@ class ExporterService
   def headers = columns.map { |column| @headers[column] || self.class.column_header(@record_class, column) }
   def rows = records.map { |record| columns.map { |column| value_for(record, column) } }
 
-  def updated_at = ([ authorizable.updated_at ] + versions.map(&:second)).compact.max
+  def updated_at
+    return unless timestamped?
+
+    ([ authorizable.updated_at, time_zone_setting&.updated_at ] + versions.map(&:second)).compact.max
+  end
 
   def to_csv
     CSV.generate(force_quotes: true) do |csv|
@@ -106,15 +155,20 @@ class ExporterService
     end
   end
 
-  def column_model(association)
-    association ? @record_class.reflect_on_association(association).klass : @record_class
-  end
-
+  def association_path(association) = self.class.association_path(association)
+  def column_model(association) = self.class.association_model(@record_class, association)
   def column_parts(column) = self.class.column_parts(column)
   def csv_value(value) = value.is_a?(String) && value.start_with?(*CSV_FORMULA_PREFIXES) ? "'#{value}" : value
 
+  def export_records(records)
+    return records unless records.respond_to?(:preload)
+
+    scoped = records.eager_loading? ? records.unscope(:preload) : records.unscope(:includes, :preload)
+    preloads.any? ? scoped.preload(*preloads) : scoped
+  end
+
   def format_enum(value, attribute, model)
-    I18n.t("activerecord.enums.#{model.model_name.i18n_key}.#{attribute.pluralize}.#{value}")
+    I18n.t("activerecord.enums.#{model.model_name.i18n_key}.#{attribute.pluralize}.#{value}", default: value.to_s.humanize)
   end
 
   def format_phone(value) = PhonyRails.normalize_number(value, default_country_code: 'US')
@@ -127,40 +181,74 @@ class ExporterService
     value.try(:format).presence || value
   end
 
+  def link_digest(root, primary_key)
+    root_key = "#{root.quoted_table_name}.#{root.primary_key}"
+    "MD5(STRING_AGG(#{root_key}::text || ':' || #{primary_key}::text, ',' ORDER BY #{root_key}, #{primary_key}))"
+  end
+
+  def ordered_ids
+    return [] if unloaded_records.order_values.empty?
+
+    @ordered_ids ||= unloaded_records.distinct(false).pluck(@record_class.primary_key)
+  end
+
+  def path_model(path) = path.reduce(@record_class) { |owner, name| owner.reflect_on_association(name).klass }
+
   def preloads
     columns.group_by { |column| column_parts(column).first }.flat_map do |association, association_columns|
       attributes = association_columns.map { |column| column_parts(column).last }
       model_preloads = column_model(association).exportable_preloads(attributes).flatten
+      next model_preloads unless association
 
-      association ? [ { association.to_sym => model_preloads } ] : model_preloads
+      [ association_path(association).reverse.reduce(model_preloads) { |nested, name| { name.to_sym => nested } } ]
+    end
+  end
+
+  def timestamped?
+    version_models.all? { |model| model.column_names.include?('updated_at') } &&
+      unloaded_records.joins_values.none? &&
+      unloaded_records.left_outer_joins_values.none?
+  end
+
+  def time_zone_setting = @time_zone_setting ||= Setting.find_by(key: 'time_zone_name')
+  def unloaded_records
+    @unloaded_records ||= begin
+      unloaded = records.unscope(:eager_load, :includes, :preload)
+      records.eager_loading? ? unloaded.left_joins(*records.eager_load_values, *records.includes_values) : unloaded
     end
   end
 
   def value_for(record, column)
     association, attribute = column_parts(column)
-    target = association ? record.public_send(association) : record
+    target = association_path(association).reduce(record) { |owner, name| owner&.public_send(name) }
 
     format_value(target&.authorized_attribute!(attribute, authorizable), attribute, column_model(association))
   end
 
-  def version(relation, model)
+  def version(relation, model, root = nil)
     table = model.quoted_table_name
-    count = "COUNT(#{table}.#{model.primary_key})"
-    return relation.pick(Arel.sql(count), Arel.sql("MAX(#{table}.updated_at)")) if model.column_names.include?('updated_at')
+    primary_key = "#{table}.#{model.primary_key}"
+    timestamped = model.column_names.include?('updated_at')
+    selects = [ "COUNT(#{primary_key})", timestamped ? "MAX(#{table}.updated_at)" : 'NULL' ]
+    selects << "MD5(STRING_AGG(#{table}::text, ',' ORDER BY #{primary_key}))" unless timestamped
+    selects << link_digest(root, primary_key) if root
 
-    relation.pick(Arel.sql(count), Arel.sql('NULL'), Arel.sql("MD5(STRING_AGG(#{table}::text, ',' ORDER BY #{table}.#{model.primary_key}))"))
+    relation.pick(*selects.map { |select| Arel.sql(select) }) || [ 0, nil ]
   end
+
+  def version_models = [ @record_class ] + version_paths.map { |path| path_model(path) }
+  def version_paths = association_paths(preloads).uniq
 
   def versions
     @versions ||= begin
-      unloaded_records = records.unscope(:eager_load, :includes, :order, :preload)
-      record_ids = unloaded_records.select(@record_class.primary_key)
+      record_ids = (unloaded_records.limit_value ? unloaded_records.distinct(false) : unloaded_records.unscope(:order)).select(@record_class.primary_key)
 
-      [ version(unloaded_records, @record_class) ] + association_paths(preloads).uniq.map do |path|
-        model = path.reduce(@record_class) { |owner, name| owner.reflect_on_association(name).klass }
+      exported = @record_class.unscoped.where(@record_class.primary_key => record_ids)
+
+      [ version(exported, @record_class) ] + version_paths.map do |path|
         joins = path.reverse.reduce { |nested, name| { name => nested } }
 
-        version(@record_class.unscoped.where(@record_class.primary_key => record_ids).joins(joins), model)
+        version(exported.joins(joins), path_model(path), @record_class)
       end
     end
   end

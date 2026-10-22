@@ -16,7 +16,7 @@
   </div>
 </div>
 
-<% internal_columns = report_internal_columns(@report, @customer_columns) %>
+<% internal_columns = report_internal_columns(@report) %>
 <% if internal_columns.any? %>
   <div class="alert alert-warning">
     This report includes internal columns that customers must not see:

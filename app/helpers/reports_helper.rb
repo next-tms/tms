@@ -1,11 +1,4 @@
 module ReportsHelper
-  def report_column_label(record_class, column, customer_columns)
-    header = ExporterService.column_header(record_class, column)
-    return header if customer_columns.include?(column)
-
-    safe_join([ header, ' ', tag.span('Internal', class: 'badge text-bg-warning') ])
-  end
-
   def report_filter_label(record_class, key)
     return 'Sort' if key == 's'
     return key.humanize if record_class.ransackable_scopes(current_user).include?(key)
@@ -26,6 +19,9 @@ module ReportsHelper
     end
   end
 
-  def report_internal_columns(report, customer_columns) = report.columns - customer_columns
+  def report_internal_columns(report)
+    report.columns.reject { |column| ExporterService.customer_column?(report.record_class, column) }
+  end
+
   def report_record_name(record_class) = record_class.model_name.human(count: :other)
 end
