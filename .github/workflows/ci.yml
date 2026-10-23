@@ -97,6 +97,8 @@ jobs:
           restore-keys: bootsnap-${{ runner.os }}-
       - name: Set up database
         run: bin/rails db:create db:schema:load
+      - name: Build CSS
+        run: bin/rails dartsass:build
       - name: Run tests
         run: bundle exec rspec
 
