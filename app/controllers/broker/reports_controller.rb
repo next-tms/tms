@@ -69,7 +69,9 @@ class Broker::ReportsController < Broker::BrokerController
   def build_report
     @report = @broker.reports.new(created_by: current_user)
     @report.assign_attributes(action_name == 'create' ? report_params : new_report_attributes)
-    @report.columns = ExporterService.default_columns(@report.record_class, current_user) if @report.columns.blank? && @report.record_class
+    if action_name == 'new' && @report.columns.blank? && @report.record_class
+      @report.columns = ExporterService.default_columns(@report.record_class, current_user)
+    end
 
     authorize!(@report)
   end

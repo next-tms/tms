@@ -71,9 +71,15 @@
   <% end %>
 
   <%= f.form_group do %>
-    <%= f.submit 'Preview', class: 'btn btn-secondary', name: 'preview' %>
     <%= f.submit 'Save', class: 'btn btn-primary' %>
+    <%= f.submit 'Preview', class: 'btn btn-secondary', data: { turbo_frame: 'report-preview' }, name: 'preview' %>
   <% end %>
 <% end %>
 
-<%= render 'preview', exporter: @preview if @preview %>
+<%= turbo_frame_tag 'report-preview' do %>
+  <% if @preview %>
+    <%= render 'preview', exporter: @preview %>
+  <% elsif params[:preview] && @report.errors.any? %>
+    <div class="alert alert-danger">Unable to preview: <%= @report.errors.full_messages.to_sentence %></div>
+  <% end %>
+<% end %>

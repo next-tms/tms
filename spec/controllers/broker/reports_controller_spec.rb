@@ -145,6 +145,13 @@ RSpec.describe(Broker::ReportsController) do
       it { is_expected.to(have_http_status(:unprocessable_content)) }
       it { expect(Report.count).to(eq(0)) }
     end
+
+    context 'without columns' do
+      let(:report_params) { { columns: [ '' ], name: 'Empty', record_type: 'Shipment' } }
+
+      it { is_expected.to(have_http_status(:unprocessable_content)) }
+      it { expect(assigns(:report).columns).to(eq([])) }
+    end
   end
 
   describe 'GET #show' do
