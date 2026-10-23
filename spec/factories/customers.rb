@@ -13,6 +13,6 @@
 #
 FactoryBot.define do
   factory :customer do
-    name { Faker::Company.name }
+    sequence(:name) { |number| "#{Faker::Company.name} #{number}" }
   end
 end
