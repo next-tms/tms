@@ -2,7 +2,7 @@
 <% mark_internal = local_assigns.fetch(:mark_internal, false) %>
 
 <% ExporterService.columns_at(record_class, association, current_user).each do |column| %>
-  <% id = "#{name.parameterize(separator: '_')}_#{column.parameterize(separator: '_')}" %>
+  <% id = export_column_id(record_class, name, column) %>
   <div class="form-check">
     <%= check_box_tag name, column, selected.include?(column), class: 'form-check-input', id: %>
     <%= label_tag id, export_column_label(record_class, column, mark_internal:), class: 'form-check-label' %>
@@ -11,18 +11,18 @@
 
 <% ExporterService.associations_at(record_class, association, current_user).each do |child| %>
   <% child_selected = selected.select { |column| column.start_with?("#{child}.") } %>
-  <details class="ms-3 my-1"<%= ' open' if child_selected.any? %>>
-    <summary><%= ExporterService.association_path(child).last.humanize %></summary>
-    <%= turbo_frame_tag "export-columns-#{child.parameterize}",
-                        loading: :lazy,
-                        src: broker_export_columns_path(
-                          association: child,
-                          mark_internal:,
-                          name:,
-                          record_type: record_class.name,
-                          selected: child_selected,
-                        ) do %>
-      <div class="text-muted small ms-3">Loading…</div>
-    <% end %>
+  <details class="my-1"<%= ' open' if child_selected.any? %>>
+    <summary class="fw-semibold"><%= ExporterService.association_path(child).last.humanize %></summary>
+    <div class="border-start ms-1 ps-3">
+      <% if child_selected.any? %>
+        <%= render 'shared/export_columns', association: child, mark_internal:, name:, record_class:, selected: child_selected %>
+      <% else %>
+        <%= turbo_frame_tag export_columns_frame_id(record_class, child),
+                            loading: :lazy,
+                            src: url_for([ :broker, :export_columns, { association: child, mark_internal:, name:, record_type: record_class.name } ]) do %>
+          <div class="text-muted small">Loading…</div>
+        <% end %>
+      <% end %>
+    </div>
   </details>
 <% end %>

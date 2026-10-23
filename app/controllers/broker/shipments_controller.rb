@@ -287,7 +287,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   def missing_delivery_appointment
     @q = current_user
          .shipments
-         .where(broker_customer_id: current_user.broker_customers.ids)
+         .broker_customers_of(current_user.id)
          .missing_delivery_appointment
          .includes(
            [
@@ -301,7 +301,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[missing_delivery_appointment])
+    respond_with_export(@q.result, filters: { broker_customers_of: current_user.id, missing_delivery_appointment: true })
   end
 
   def missing_pricing
@@ -321,7 +321,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[active missing_pricing])
+    respond_with_export(@q.result, filters: { active: true, missing_pricing: true })
   end
 
   def missing_pro
@@ -341,7 +341,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[active missing_pro])
+    respond_with_export(@q.result, filters: { active: true, missing_pro: true })
   end
 
   def booked
@@ -364,7 +364,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'booked_at desc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[active booked])
+    respond_with_export(@q.result, filters: { active: true, booked: true })
   end
 
   def pending_dispatch
@@ -387,7 +387,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[active pending_dispatch])
+    respond_with_export(@q.result, filters: { active: true, pending_dispatch: true })
   end
 
   def pending_delivery
@@ -407,7 +407,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at desc, promised_delivery_by desc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[active pending_delivery])
+    respond_with_export(@q.result, filters: { active: true, pending_delivery: true })
   end
 
   def pending_departure
@@ -429,7 +429,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'picked_up_at asc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[active pending_departure])
+    respond_with_export(@q.result, filters: { active: true, pending_departure: true })
   end
 
   def pending_found
@@ -448,7 +448,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[pending_found])
+    respond_with_export(@q.result, filters: { pending_found: true })
   end
 
   def pending_pickup
@@ -471,19 +471,13 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'pickup_on' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[active pending_pickup])
+    respond_with_export(@q.result, filters: { active: true, pending_pickup: true })
   end
 
   def pending_quotation
     @q = current_user
          .shipments
-         .active
-         .pending_quotation
-         .or(
-           current_user
-           .shipments
-           .canceled_recently,
-         )
+         .pending_quotation_or_canceled_recently
          .includes(
            [
              :items,
@@ -499,7 +493,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
-    respond_with_export(@q.result(distinct: true), scopes: %i[active pending_quotation])
+    respond_with_export(@q.result(distinct: true), filters: { pending_quotation_or_canceled_recently: true })
   end
 
   def delivered
@@ -522,7 +516,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'delivered_at desc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[active delivered])
+    respond_with_export(@q.result, filters: { active: true, delivered: true })
   end
 
   def as_dispatcher
@@ -542,7 +536,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'created_at desc' if @q.sorts.blank?
 
-    respond_with_export(@q.result, scopes: %i[active])
+    respond_with_export(@q.result, filters: { active: true, dispatched_by: current_user.id })
   end
 
   def claims

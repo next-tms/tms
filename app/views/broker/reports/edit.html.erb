@@ -1,7 +1,12 @@
-<% provide :title, "Edit #{@report.name_was}" %>
+<% provide :title, 'Edit' %>
 
-<div class="page-header">
-  <h1>Edit <%= @report.name_was %></h1>
-</div>
+<%= render 'member_header' %>
 
 <%= render 'form' %>
+
+<%= button_to 'Delete',
+              [ :broker, @report ],
+              class: 'btn btn-danger',
+              form: { data: { turbo_confirm: "Delete #{@report.name_was}?" } },
+              method: :delete
+%>

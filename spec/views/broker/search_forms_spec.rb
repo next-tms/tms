@@ -15,7 +15,7 @@ RSpec.describe('broker search forms') do
     describe "#{path}/_search_form" do
       before do
         without_partial_double_verification do
-          allow(view).to(receive_messages(allowed_to?: true, current_user: user, export_record_class: model, export_scopes: [], exportable?: true))
+          allow(view).to(receive_messages(allowed_to?: true, current_user: user, export_filters: {}, export_record_class: model, exportable?: true))
         end
 
         controller.request.path_parameters.merge!(action: 'index', controller: path)

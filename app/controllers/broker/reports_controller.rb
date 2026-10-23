@@ -8,7 +8,7 @@ class Broker::ReportsController < Broker::BrokerController
 
   def create
     return render_preview(:new) if params[:preview]
-    return redirect_to(broker_report_path(@report), notice: "Saved #{@report.name}") if @report.save
+    return redirect_to(saved_report_location, notice: "Saved #{@report.name}") if @report.save
 
     render(:new, status: :unprocessable_content)
   end
@@ -16,12 +16,12 @@ class Broker::ReportsController < Broker::BrokerController
   def destroy
     @report.destroy!
 
-    redirect_to(broker_reports_path, notice: "Deleted #{@report.name}")
+    redirect_to([ :broker, Report ], notice: "Deleted #{@report.name}")
   end
 
   def edit
     respond_to do |format|
-      format.html { fresh_when(etag: [ @report, current_user ]) }
+      format.html { fresh_when(etag: [ @report, @from, @to, @today, viewer_etag ]) }
     end
   end
 
@@ -32,13 +32,13 @@ class Broker::ReportsController < Broker::BrokerController
     @reports = @broker.reports.includes(:created_by).order(:name)
 
     respond_to do |format|
-      format.html { fresh_when(etag: [ @presets, @reports, current_user ]) }
+      format.html { fresh_when(etag: [ @presets, @reports, @reports.map(&:created_by), viewer_etag ]) }
     end
   end
 
   def new
     respond_to do |format|
-      format.html { fresh_when(etag: [ @report.attributes, current_user ]) }
+      format.html { fresh_when(etag: [ @report.attributes, @from, @to, @today, viewer_etag ]) }
     end
   end
 
@@ -49,17 +49,17 @@ class Broker::ReportsController < Broker::BrokerController
       format.csv { send_report(:csv) }
       format.html do
         @preview = preview_exporter
-        fresh_when(etag: [ @report, @preview, @from, @to ], last_modified: @preview.updated_at)
+        fresh_when(etag: [ @report, @preview, @from, @to, @today, viewer_etag ])
       end
       format.yaml { send_report(:yaml) }
     end
   end
 
   def update
-    @report.assign_attributes(report_params)
+    @report.assign_attributes(report_params.except(:record_type))
 
     return render_preview(:edit) if params[:preview]
-    return redirect_to(broker_report_path(@report), notice: "Saved #{@report.name}") if @report.save
+    return redirect_to(saved_report_location, notice: "Saved #{@report.name}") if @report.save
 
     render(:edit, status: :unprocessable_content)
   end
@@ -95,8 +95,7 @@ class Broker::ReportsController < Broker::BrokerController
   end
 
   def export_filters
-    query = params[:q].respond_to?(:to_unsafe_h) ? params[:q].to_unsafe_h : {}
-    query.merge(Array(params[:scopes]).index_with(true))
+    [ params[:q], params[:filters] ].select { |query| query.respond_to?(:to_unsafe_h) }.map(&:to_unsafe_h).reduce({}, :merge)
   end
 
   def new_report_attributes
@@ -107,6 +106,8 @@ class Broker::ReportsController < Broker::BrokerController
 
     { columns:, filters: export_filters, record_type: params[:record_type] }
   end
+
+  def ordered_columns(columns, column_order) = (column_order & columns) + (columns - column_order)
 
   def parse_date(value)
     Date.iso8601(value.to_s)
@@ -125,7 +126,7 @@ class Broker::ReportsController < Broker::BrokerController
   end
 
   def remember_date_range
-    return if @report.preset? || !@report.date_range?
+    return unless @report.date_range? && allowed_to?(:update?, @report)
     return unless parse_date(params[:from]) && parse_date(params[:to])
 
     @report.remember_date_range(@from, @to, @today)
@@ -138,12 +139,20 @@ class Broker::ReportsController < Broker::BrokerController
   end
 
   def report_params
-    params.expect(report: [ :date_attribute, :name, :record_type, { columns: [], filters: {} } ]).with_defaults(filters: {})
+    attributes = params
+                 .expect(report: [ :date_attribute, :name, :record_type, { column_order: [], columns: [], filters: {} } ])
+                 .with_defaults(filters: {})
+    column_order = attributes.delete(:column_order) || []
+    return attributes unless attributes[:columns]
+
+    attributes.merge(columns: ordered_columns(attributes[:columns], column_order))
   end
+
+  def saved_report_location = [ :broker, @report, @report.date_range? ? { from: @from.iso8601, to: @to.iso8601 } : {} ]
 
   def send_report(format)
     exporter = @report.exporter(current_user, from: @from, to: @to)
-    send_data(exporter.public_send(:"to_#{format}"), filename: "#{report_basename}.#{format}") if stale?(exporter)
+    send_data(exporter.public_send(:"to_#{format}"), filename: "#{report_basename}.#{format}") if stale?(etag: exporter)
   end
 
   def set_date_range
@@ -164,4 +173,6 @@ class Broker::ReportsController < Broker::BrokerController
     @report = Report::Preset.find(params[:id]) || @broker.reports.find(params[:id])
     authorize!(@report)
   end
+
+  def viewer_etag = [ current_user, current_user.roles.sort ]
 end

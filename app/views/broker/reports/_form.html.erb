@@ -1,6 +1,6 @@
 <% record_class = @report.record_class %>
 
-<%= bootstrap_form_with(model: [ :broker, @report ], layout: :horizontal) do |f| %>
+<%= bootstrap_form_with(model: [ :broker, @report ], data: { controller: 'date-range' }, layout: :horizontal) do |f| %>
   <%= f.alert_message 'Unable to save report:' %>
 
   <%= f.hidden_field :record_type %>
@@ -12,6 +12,9 @@
 
   <%= f.form_group :columns, label: { text: 'Columns' } do %>
     <%= hidden_field_tag 'report[columns][]', '', id: nil %>
+    <% @report.columns.each do |column| %>
+      <%= hidden_field_tag 'report[column_order][]', column, id: nil %>
+    <% end %>
     <%= render 'shared/export_columns',
                association: nil,
                mark_internal: true,
@@ -23,9 +26,8 @@
 
   <%= f.select :date_attribute,
                @date_attributes.map { |date_attribute| [ record_class.human_attribute_name(date_attribute), date_attribute ] },
-               help: 'Asks for a date range when you run the report',
-               include_blank: 'None',
-               label: 'Date'
+               { help: 'Asks for a date range when you run the report', include_blank: 'None', label: 'Date' },
+               { data: { action: 'date-range#update', date_range_target: 'select' } }
   %>
 
   <%= f.form_group :filters, label: { text: 'Filters' } do %>
@@ -66,7 +68,7 @@
     <small class="form-text text-muted">Clear or uncheck a filter to remove it</small>
   <% end %>
 
-  <% if @report.date_range? %>
+  <%= tag.div class: ('d-none' unless @report.date_range?), data: { date_range_target: 'range' } do %>
     <%= render 'date_range' %>
   <% end %>
 

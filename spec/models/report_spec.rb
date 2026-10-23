@@ -11,7 +11,6 @@ RSpec.describe(Report) do
 
   describe 'validations' do
     it { is_expected.to(be_valid) }
-    it { is_expected.to(validate_inclusion_of(:record_type).in_array(described_class::RECORD_TYPES)) }
     it { is_expected.to(validate_presence_of(:columns)) }
     it { is_expected.to(validate_presence_of(:name)) }
     it { is_expected.to(validate_uniqueness_of(:name)) }
@@ -57,6 +56,48 @@ RSpec.describe(Report) do
 
       it { is_expected.not_to(be_valid) }
     end
+
+    context 'with a record type the creator cannot list' do
+      subject(:report) { build(:report, columns: [ 'due_by' ], record_type: 'Receivable') }
+
+      it { is_expected.not_to(be_valid) }
+
+      context 'when the creator is in accounts receivable' do
+        before { create(:contact_role, contact: report.created_by.contact, role: :accounts_receivable) }
+
+        it { is_expected.to(be_valid) }
+        it { is_expected.to(validate_inclusion_of(:record_type).in_array(described_class::RECORD_TYPES)) }
+      end
+    end
+  end
+
+  describe '.record_types' do
+    subject { Report::Runnable.record_types(user) }
+
+    let(:user) { create(:broker_user) }
+
+    it { is_expected.to(eq(Report::RECORD_TYPES - [ 'Receivable' ])) }
+
+    context 'when in accounts receivable' do
+      before { create(:contact_role, contact: user.contact, role: :accounts_receivable) }
+
+      it { is_expected.to(eq(Report::RECORD_TYPES)) }
+    end
+  end
+
+  describe '.record_type_available?' do
+    let(:user) { create(:broker_user) }
+
+    it { expect(Report::Runnable.record_type_available?('Shipment', user)).to(be(true)) }
+    it { expect(Report::Runnable.record_type_available?('Receivable', user)).to(be(false)) }
+    it { expect(Report::Runnable.record_type_available?('User', user)).to(be(false)) }
+  end
+
+  describe '.blank_filter?' do
+    it { expect(described_class.blank_filter?(false)).to(be(false)) }
+    it { expect(described_class.blank_filter?('')).to(be(true)) }
+    it { expect(described_class.blank_filter?([])).to(be(true)) }
+    it { expect(described_class.blank_filter?(nil)).to(be(true)) }
   end
 
   describe '#columns' do
@@ -128,6 +169,7 @@ RSpec.describe(Report) do
 
     it { expect(report.filters).to(eq({ 'active' => 'true', 'status_in' => [ 'delivered' ] })) }
     it { expect(described_class.new.filters).to(eq({})) }
+    it { expect(build(:report, filters: { invoiced_eq: false, status_in: [ false, nil ] }).filters).to(eq({ 'invoiced_eq' => false, 'status_in' => [ false ] })) }
   end
 
   describe '#headers' do
@@ -221,6 +263,20 @@ RSpec.describe(Report) do
       let(:report) { build(:report, columns: [ 'first_name' ], filters: { 'first_name_eq' => contact.first_name }, record_type: 'Contact') }
 
       it { is_expected.to(eq([ contact ])) }
+    end
+
+    context 'with a record type the user cannot list' do
+      let!(:receivable) { create(:receivable, shipment: first_of_month) }
+      let(:report) { build(:report, broker:, columns: [ 'due_by' ], record_type: 'Receivable') }
+      let(:user) { create(:broker_user, companyable: broker) }
+
+      it { is_expected.to(be_empty) }
+
+      context 'when the user is in accounts receivable' do
+        before { create(:contact_role, contact: user.contact, role: :accounts_receivable) }
+
+        it { is_expected.to(eq([ receivable ])) }
+      end
     end
 
     context 'when the user only sees some customers' do

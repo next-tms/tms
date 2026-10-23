@@ -34,6 +34,18 @@ RSpec.describe(Broker::ReportsController) do
       it { is_expected.to(have_http_status(:not_modified)) }
     end
 
+    context 'when another author is renamed' do
+      let(:report) { create(:report, broker: user.broker) }
+
+      before do
+        request.headers['If-None-Match'] = response.etag
+        report.created_by.update!(first_name: 'Renamed')
+        get(:index)
+      end
+
+      it { is_expected.to(have_http_status(:ok)) }
+    end
+
     context 'without a reporting role' do
       let(:role) { :carrier_relations }
 
@@ -57,6 +69,25 @@ RSpec.describe(Broker::ReportsController) do
       end
 
       it { is_expected.to(have_http_status(:not_modified)) }
+    end
+
+    context 'when fresh on a later day' do
+      before do
+        request.headers['If-None-Match'] = response.etag
+        Timecop.travel(1.day.from_now) { get(:new, params:) }
+      end
+
+      it { is_expected.to(have_http_status(:ok)) }
+    end
+
+    context 'when fresh after a role change' do
+      before do
+        request.headers['If-None-Match'] = response.etag
+        create(:contact_role, contact: user.contact, role: :accounts_receivable)
+        get(:new, params:)
+      end
+
+      it { is_expected.to(have_http_status(:ok)) }
     end
 
     context 'when duplicating a preset' do
@@ -95,17 +126,17 @@ RSpec.describe(Broker::ReportsController) do
       let(:params) do
         {
           columns: [ 'load_id', 'status' ],
+          filters: { active: true, pending_pickup: true },
           q: { Shipment::SEARCH_PREDICATE => 'Acme', s: 'created_at desc' },
-          record_type: 'Shipment',
-          scopes: [ 'active', 'pending_pickup' ]
+          record_type: 'Shipment'
         }
       end
 
       let(:filters) do
         {
           Shipment::SEARCH_PREDICATE.to_s => 'Acme',
-          'active' => true,
-          'pending_pickup' => true,
+          'active' => 'true',
+          'pending_pickup' => 'true',
           's' => 'created_at desc'
         }
       end
@@ -124,6 +155,12 @@ RSpec.describe(Broker::ReportsController) do
     it { is_expected.to(redirect_to(broker_report_path(Report.last))) }
     it { expect(Report.last).to(have_attributes(broker: user.broker, columns: [ 'load_id', 'total_cost' ], created_by: user)) }
     it { expect(Report.last).to(have_attributes(filters: {}, record_type: 'Shipment')) }
+
+    context 'with a date range' do
+      let(:params) { { from: '2026-10-01', report: report_params.merge(date_attribute: 'created_at'), to: '2026-10-15' } }
+
+      it { is_expected.to(redirect_to(broker_report_path(Report.last, from: '2026-10-01', to: '2026-10-15'))) }
+    end
 
     context 'with filters' do
       let(:report_params) { super().merge(filters: { active: 'true', load_id_eq: '7', status_in: [ '', 'delivered' ] }) }
@@ -146,6 +183,19 @@ RSpec.describe(Broker::ReportsController) do
       it { expect(Report.count).to(eq(0)) }
     end
 
+    context 'with a saved column order' do
+      let(:report_params) do
+        {
+          column_order: [ 'status', 'shipper_address.zip_code', 'load_id' ],
+          columns: [ '', 'load_id', 'status', 'total_cost', 'shipper_address.zip_code' ],
+          name: 'Margins',
+          record_type: 'Shipment'
+        }
+      end
+
+      it { expect(Report.last.columns).to(eq([ 'status', 'shipper_address.zip_code', 'load_id', 'total_cost' ])) }
+    end
+
     context 'without columns' do
       let(:report_params) { { columns: [ '' ], name: 'Empty', record_type: 'Shipment' } }
 
@@ -164,6 +214,7 @@ RSpec.describe(Broker::ReportsController) do
     it { expect(assigns(:preview).headers).to(eq(preset.headers.values)) }
     it { expect(assigns(:from)).to(eq(Date.new(2026, 10, 1))) }
     it { expect(assigns(:to)).to(eq(Date.new(2026, 10, 31))) }
+    it { expect(response.headers['Last-Modified']).to(be_nil) }
 
     context 'when fresh' do
       before do
@@ -174,11 +225,31 @@ RSpec.describe(Broker::ReportsController) do
       it { is_expected.to(have_http_status(:not_modified)) }
     end
 
+    context 'when fresh on a later day' do
+      before do
+        request.headers['If-None-Match'] = response.etag
+        Timecop.travel(1.day.from_now) { get(:show, format:, params:) }
+      end
+
+      it { is_expected.to(have_http_status(:ok)) }
+    end
+
+    context 'when fresh after a role change' do
+      before do
+        request.headers['If-None-Match'] = response.etag
+        create(:contact_role, contact: user.contact, role: :accounts_receivable)
+        get(:show, format:, params:)
+      end
+
+      it { is_expected.to(have_http_status(:ok)) }
+    end
+
     context 'when CSV' do
       let(:format) { :csv }
 
       it { expect(response.media_type).to(eq('text/csv')) }
       it { expect(response.headers['Content-Disposition']).to(include('Freight Report 2026-10-01 to 2026-10-31.csv')) }
+      it { expect(response.headers['Last-Modified']).to(be_nil) }
       it { expect(CSV.parse(response.body).first).to(eq(preset.headers.values)) }
 
       context 'when fresh' do
@@ -247,6 +318,15 @@ RSpec.describe(Broker::ReportsController) do
 
       it { expect(report.reload).to(have_attributes(from_days_ago: nil, to_days_ago: nil)) }
     end
+
+    context 'with another user’s dated report' do
+      let(:params) { { from: '2026-10-01', id: report.id, to: '2026-10-31' } }
+      let(:report) { create(:report, broker: user.broker, date_attribute: 'created_at') }
+
+      it { is_expected.to(have_http_status(:ok)) }
+      it { expect(assigns(:from)).to(eq(Date.new(2026, 10, 1))) }
+      it { expect(report.reload).to(have_attributes(from_days_ago: nil, to_days_ago: nil)) }
+    end
   end
 
   describe 'GET #show for another broker' do
@@ -269,6 +349,15 @@ RSpec.describe(Broker::ReportsController) do
       end
 
       it { is_expected.to(have_http_status(:not_modified)) }
+    end
+
+    context 'when fresh on a later day' do
+      before do
+        request.headers['If-None-Match'] = response.etag
+        Timecop.travel(1.day.from_now) { get(:edit, params: { id: }) }
+      end
+
+      it { is_expected.to(have_http_status(:ok)) }
     end
 
     context 'when a preset' do
@@ -305,6 +394,27 @@ RSpec.describe(Broker::ReportsController) do
       let(:report_params) { { name: '' } }
 
       it { is_expected.to(have_http_status(:unprocessable_content)) }
+    end
+
+    context 'with an unchanged selection' do
+      let(:columns) { [ 'status', 'shipper_address.zip_code', 'load_id' ] }
+      let(:report) { create(:report, broker: user.broker, columns:, created_by: user) }
+      let(:report_params) { { column_order: columns, columns: [ '', 'load_id', 'status', 'shipper_address.zip_code' ], name: 'Margins' } }
+
+      it { expect(report.reload.columns).to(eq(columns)) }
+    end
+
+    context 'with a date range' do
+      let(:params) { { from: '2026-10-01', id: report.id, report: report_params.merge(date_attribute: 'created_at'), to: '2026-10-15' } }
+
+      it { is_expected.to(redirect_to(broker_report_path(report, from: '2026-10-01', to: '2026-10-15'))) }
+    end
+
+    context 'with another record type' do
+      let(:report_params) { { name: 'Margins', record_type: 'User' } }
+
+      it { is_expected.to(redirect_to(broker_report_path(report))) }
+      it { expect(report.reload.record_type).to(eq('Shipment')) }
     end
   end
 

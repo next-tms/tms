@@ -15,19 +15,22 @@ RSpec.describe('broker/reports/new') do
     assign(:from, Date.new(2026, 10, 1))
     assign(:report, report)
     assign(:to, Date.new(2026, 10, 31))
+    assign(:today, Date.new(2026, 10, 22))
     render
   end
 
-  it { is_expected.to(include('New Report', Shipment.model_name.human(count: :other), 'Carrier Cost', 'Internal')) }
+  it { is_expected.to(include('Report', Shipment.model_name.human(count: :other), 'Carrier Cost', 'Internal')) }
+  it { is_expected.not_to(include('reports-show')) }
   it { is_expected.to(include('name="preview"', 'value="Save"')) }
   it { is_expected.to(include('<option value="delivered_at">', 'None')) }
-  it { is_expected.not_to(include('value="2026-10-01"')) }
+  it { is_expected.to(include('data-controller="date-range"', 'data-action="date-range#update"', 'data-date-range-target="select"')) }
+  it { is_expected.to(include('<div class="d-none" data-date-range-target="range">', 'value="2026-10-01"')) }
   it { is_expected.not_to(include('First 25')) }
 
   context 'with a date attribute' do
     let(:date_attribute) { 'created_at' }
 
-    it { is_expected.to(include('value="2026-10-01"', 'value="2026-10-31"')) }
+    it { is_expected.to(include('<div data-date-range-target="range">', 'value="2026-10-01"', 'value="2026-10-31"')) }
   end
 
   context 'with filters' do
@@ -42,7 +45,15 @@ RSpec.describe('broker/reports/new') do
     let(:record_type) { nil }
 
     it { is_expected.to(include('What should this report list?')) }
-    it { is_expected.to(include(*Report::RECORD_TYPES.map { |type| ERB::Util.html_escape(new_broker_report_path(record_type: type)) })) }
+    it { is_expected.to(include(*(Report::RECORD_TYPES - [ 'Receivable' ]).map { |type| "href=\"/broker/reports/new?record_type=#{type}\"" })) }
+    it { is_expected.not_to(include('href="/broker/reports/new?record_type=Receivable"')) }
+    it { is_expected.not_to(include('value="Save"')) }
+  end
+
+  context 'with a record type the user cannot list' do
+    let(:record_type) { 'Receivable' }
+
+    it { is_expected.to(include('What should this report list?')) }
     it { is_expected.not_to(include('value="Save"')) }
   end
 end

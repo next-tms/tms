@@ -15,9 +15,12 @@ RSpec.describe('shared/_export_columns') do
   it { is_expected.to(match(/value="load_id"[^>]* checked="checked"/)) }
   it { is_expected.not_to(match(/value="pro"[^>]* checked="checked"/)) }
   it { is_expected.to(include('Carrier Cost', 'Internal')) }
-  it { is_expected.to(include('<details class="ms-3 my-1" open>', 'Broker customer')) }
-  it { is_expected.to(include('<details class="ms-3 my-1">', 'Shipper address')) }
-  it { is_expected.to(include('loading="lazy"', 'selected%5B%5D=broker_customer.office_address.city')) }
+  it { is_expected.to(include('<details class="my-1" open>', 'Broker customer')) }
+  it { is_expected.to(include('<details class="my-1">', 'Shipper address')) }
+  it { is_expected.to(match(/value="broker_customer.office_address.city"[^>]* checked="checked"/)) }
+  it { is_expected.to(include('id="shipment_columns_broker_customer_office_address_city"')) }
+  it { is_expected.to(include('<turbo-frame loading="lazy" id="export-columns-shipment-shipper_address"')) }
+  it { is_expected.not_to(include('export-columns-shipment-broker_customer"', 'selected%5B%5D')) }
 
   context 'with an association' do
     let(:association) { 'broker_customer.office_address' }

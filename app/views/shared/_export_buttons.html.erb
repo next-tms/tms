@@ -1,34 +1,33 @@
 <% if exportable? %>
   <% default_columns = ExporterService.default_columns(export_record_class, current_user) %>
+  <% modal_id = export_modal_id(export_record_class) %>
 
-  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#export-modal">
+  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#<%= modal_id %>">
     <%= icon('solid', 'download', 'Export') %>
   </button>
 
-  <div class="modal fade" id="export-modal" tabindex="-1" aria-labelledby="export-modal-title" aria-hidden="true">
+  <div class="modal fade" id="<%= modal_id %>" tabindex="-1" aria-labelledby="<%= modal_id %>-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
       <%= form_with url: url_for(format: :csv), method: :get, class: 'modal-content', data: { turbo: false } do %>
         <%= export_hidden_fields %>
 
         <div class="modal-header">
-          <h5 class="modal-title" id="export-modal-title">Export <%= export_record_class.model_name.human(count: :other) %></h5>
+          <h5 class="modal-title" id="<%= modal_id %>-title">Export <%= export_record_class.model_name.human(count: :other) %></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body">
+          <%= hidden_field_tag 'columns[]', '', id: nil %>
           <%= render 'shared/export_columns', association: nil, name: 'columns[]', record_class: export_record_class, selected: default_columns %>
         </div>
 
         <div class="modal-footer">
           <% if allowed_to?(:new?, Report) %>
             <%= hidden_field_tag :record_type, export_record_class.name, id: nil %>
-            <% export_scopes.each do |scope| %>
-              <%= hidden_field_tag 'scopes[]', scope, id: nil %>
-            <% end %>
-            <%= button_tag 'Create Report', type: 'submit', class: 'btn btn-outline-secondary me-auto', formaction: new_broker_report_path, name: nil %>
+            <%= query_hidden_fields(export_filters, 'filters') %>
+            <%= button_tag 'Create Report', class: 'btn btn-secondary me-auto', formaction: url_for([ :new, :broker, :report ]), name: nil %>
           <% end %>
-          <%= button_tag 'Export YAML', type: 'submit', class: 'btn btn-outline-secondary', formaction: url_for(format: :yaml), name: nil %>
-          <%= button_tag 'Export CSV', type: 'submit', class: 'btn btn-primary', name: nil %>
+          <%= render 'shared/format_buttons', label: 'Export' %>
         </div>
       <% end %>
     </div>

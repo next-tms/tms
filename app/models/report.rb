@@ -1,4 +1,6 @@
 class Report < ApplicationRecord
+  def self.blank_filter?(value) = value != false && value.blank?
+
   include Report::Runnable
 
   belongs_to :created_by, class_name: 'User'
@@ -6,7 +8,11 @@ class Report < ApplicationRecord
   normalizes :columns, apply_to_nil: true, with: ->(columns) { Array(columns).compact_blank.map(&:to_s) }
   normalizes :date_attribute, with: ->(date_attribute) { date_attribute.presence }
   normalizes :filters, apply_to_nil: true, with: lambda { |filters|
-    filters.to_h.stringify_keys.transform_values { |value| value.is_a?(Array) ? value.compact_blank : value }.compact_blank
+    filters
+      .to_h
+      .stringify_keys
+      .transform_values { |value| value.is_a?(Array) ? value.reject { |item| blank_filter?(item) } : value }
+      .reject { |_key, value| blank_filter?(value) }
   }
 
   validates :columns, presence: true
@@ -15,6 +21,7 @@ class Report < ApplicationRecord
   validate :validate_columns
   validate :validate_date_attribute
   validate :validate_filters
+  validate :validate_record_type
 
   def headers = {}
   def preset? = false
@@ -42,5 +49,11 @@ class Report < ApplicationRecord
     record_class.ransack(filters, auth_object: created_by)
   rescue ArgumentError
     errors.add(:filters, :invalid)
+  end
+
+  def validate_record_type
+    return if created_by.blank? || record_class.blank?
+
+    errors.add(:record_type, :inclusion) unless Report::Runnable.record_type_available?(record_type, created_by)
   end
 end

@@ -1,0 +1,11 @@
+<div class="page-header p-4 mb-4">
+  <h1 class="mb-6"><%= @report.persisted? ? @report.try(:name_was) || @report.name : 'Report' %></h1>
+
+  <% if @report.preset? %>
+    <p class="lead"><%= @report.description %></p>
+  <% end %>
+
+  <% if @report.persisted? %>
+    <%= render 'member_menu' %>
+  <% end %>
+</div>

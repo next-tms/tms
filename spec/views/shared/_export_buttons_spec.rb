@@ -17,7 +17,7 @@ RSpec.describe('shared/_export_buttons') do
           allowed_to?: allowed,
           current_user: user,
           export_record_class:,
-          export_scopes: [ 'active', 'pending_pickup' ],
+          export_filters: { 'active' => true, 'dispatched_by' => 7 },
           exportable?: export_record_class.present?,
         ),
       )
@@ -26,9 +26,11 @@ RSpec.describe('shared/_export_buttons') do
     render(partial: 'shared/export_buttons')
   end
 
-  it { is_expected.to(include('Create Report', "formaction=\"#{new_broker_report_path}\"")) }
+  it { is_expected.to(include('class="btn btn-secondary me-auto" formaction="/broker/reports/new">Create Report')) }
+  it { is_expected.not_to(include('btn-outline')) }
+  it { is_expected.to(match(/type="hidden" name="columns\[\]" value=""/)) }
   it { is_expected.to(include('name="record_type" value="Contact"')) }
-  it { is_expected.to(include('name="scopes[]" value="active"', 'name="scopes[]" value="pending_pickup"')) }
+  it { is_expected.to(include('name="filters[active]" value="true"', 'name="filters[dispatched_by]" value="7"')) }
 
   context 'when not allowed to create reports' do
     let(:allowed) { false }
@@ -37,7 +39,7 @@ RSpec.describe('shared/_export_buttons') do
     it { is_expected.to(include('Export CSV')) }
   end
 
-  it { is_expected.to(include('data-bs-target="#export-modal"', 'id="export-modal"')) }
+  it { is_expected.to(include('data-bs-target="#export-modal-contact"', 'id="export-modal-contact"', 'id="export-modal-contact-title"')) }
   it { is_expected.to(include('Export CSV', 'Export YAML')) }
   it { is_expected.to(include('action="/broker/contacts.csv"', 'formaction="/broker/contacts.yaml"')) }
   it { is_expected.to(include('name="q[first_name_or_last_name_cont]" value="Jimmy"')) }

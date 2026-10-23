@@ -6,7 +6,7 @@ RSpec.describe(Broker::ExportColumnsController) do
   render_views
 
   let(:association) { 'broker_customer' }
-  let(:params) { { association:, name: 'columns[]', record_type: 'Shipment', selected: [ 'broker_customer.name' ] } }
+  let(:params) { { association:, name: 'columns[]', record_type: 'Shipment' } }
   let(:user) { create(:root_broker_user) }
 
   before do
@@ -15,9 +15,10 @@ RSpec.describe(Broker::ExportColumnsController) do
   end
 
   it { is_expected.to(have_http_status(:ok)) }
-  it { expect(response.body).to(include('<turbo-frame id="export-columns-broker_customer">')) }
-  it { expect(response.body).to(include('name="columns[]"', 'value="broker_customer.name"', 'checked="checked"')) }
-  it { expect(response.body).to(include('export-columns-broker_customer-office_address')) }
+  it { expect(response.body).to(include('<turbo-frame id="export-columns-shipment-broker_customer">')) }
+  it { expect(response.body).to(include('name="columns[]"', 'value="broker_customer.name"', 'id="shipment_columns_broker_customer_name"')) }
+  it { expect(response.body).to(include('export-columns-shipment-broker_customer-office_address')) }
+  it { expect(response.body).not_to(include('checked')) }
   it { expect(response.body).not_to(include('badge')) }
 
   context 'when fresh' do
@@ -53,6 +54,20 @@ RSpec.describe(Broker::ExportColumnsController) do
     let(:params) { super().merge(record_type: 'User') }
 
     it { is_expected.to(have_http_status(:not_found)) }
+  end
+
+  context 'with a record type the user cannot list' do
+    let(:association) { 'shipment' }
+    let(:params) { super().merge(record_type: 'Receivable') }
+    let(:user) { create(:broker_user) }
+
+    it { is_expected.to(have_http_status(:not_found)) }
+
+    context 'when the user is in accounts receivable' do
+      let(:user) { create(:broker_user).tap { |user| create(:contact_role, contact: user.contact, role: :accounts_receivable) } }
+
+      it { is_expected.to(have_http_status(:ok)) }
+    end
   end
 
   context 'when a customer user' do

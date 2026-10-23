@@ -49,6 +49,53 @@ RSpec.describe(Broker::ShipmentsController) do
     end
   end
 
+  describe 'export filters' do
+    before do
+      create(:shipment, broker: user.broker, broker_carrier: nil)
+      create(:shipment, broker: user.broker, canceled_at: 1.hour.ago)
+      create(:shipment, broker: user.broker).update!(dispatcher: user)
+    end
+
+    shared_examples 'report filter parity' do
+      %i[
+        as_dispatcher
+        booked
+        delivered
+        missing_delivery_appointment
+        missing_pricing
+        missing_pro
+        pending_delivery
+        pending_departure
+        pending_dispatch
+        pending_found
+        pending_pickup
+        pending_quotation
+      ].each do |action|
+        it "lists the same shipments from a report as from ##{action}" do
+          get(action)
+          report = Report.new(filters: controller.send(:export_filters), record_type: 'Shipment')
+
+          expect(report.records(user).map(&:id)).to(match_array(assigns(:shipments).map(&:id)))
+        end
+      end
+    end
+
+    it_behaves_like 'report filter parity'
+
+    context 'when in accounts receivable with assigned customers' do
+      let(:broker_customer) { create(:broker_customer, broker: user.broker) }
+      let(:user) { create(:broker_user) }
+
+      before do
+        create(:broker_customer_sales_rep, broker_customer:, user:)
+        create(:contact_role, contact: user.contact, role: :accounts_receivable)
+        create(:shipment, broker: user.broker, broker_customer:)
+      end
+
+      it_behaves_like 'report filter parity'
+    end
+  end
+
   describe 'GET #history' do
     let!(:item) { create(:item, shipment:) }
     let!(:older_setting) { create(:setting, key: 'name', updated_at: Time.utc(2025, 1, 1), value: 'Liftoff') }

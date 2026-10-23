@@ -13,7 +13,7 @@
               <% if @q.present? %>
                 <th class="text-nowrap"> <%= sort_link @q, table_data[:column_name], table_data[:display_name] %></th>
               <% else %>
-                <th> <%= table_data[:display_name] %> </th>
+                <th class="text-nowrap"><%= table_data[:display_name] %></th>
               <% end %>
             <% end %>
           </tr>

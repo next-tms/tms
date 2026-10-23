@@ -56,6 +56,7 @@ class Report::Preset
   class << self
     def all = DEFINITIONS.keys.map { |key| new(key) }
     def find(key) = (new(key) if DEFINITIONS.key?(key))
+    def model_name = Report.model_name
     def policy_class = ReportPolicy
   end
 
@@ -72,11 +73,14 @@ class Report::Preset
   def filters = definition[:filters]
   def from_days_ago = nil
   def headers = definition[:headers]
+  def model_name = self.class.model_name
   def name = definition[:name]
+  def persisted? = true
   def preset? = true
   def record_type = 'Shipment'
-  def to_days_ago = nil
 
+  def to_days_ago = nil
+  def to_model = self
   def to_param = key
 
   private

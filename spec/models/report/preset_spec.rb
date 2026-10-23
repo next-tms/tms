@@ -110,7 +110,29 @@ RSpec.describe(Report::Preset) do
     it { expect(preset.record_type).to(eq('Shipment')) }
   end
 
+  describe '.model_name' do
+    it { expect(described_class.model_name).to(eq(Report.model_name)) }
+  end
+
+  describe '#model_name' do
+    it { expect(preset.model_name).to(eq(Report.model_name)) }
+  end
+
+  describe '#persisted?' do
+    it { expect(preset.persisted?).to(be(true)) }
+  end
+
+  describe '#to_model' do
+    it { expect(preset.to_model).to(be(preset)) }
+  end
+
   describe '#to_param' do
     it { expect(preset.to_param).to(eq('freight-report')) }
+  end
+
+  describe 'polymorphic routes' do
+    include Rails.application.routes.url_helpers
+
+    it { expect(polymorphic_path([ :broker, preset ])).to(eq('/broker/reports/freight-report')) }
   end
 end

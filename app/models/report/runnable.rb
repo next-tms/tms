@@ -7,7 +7,15 @@ module Report::Runnable
     'Shipment' => ->(authorizable) { authorizable.shipments }
   }.freeze
 
+  RECORD_TYPE_ROLES = { 'Receivable' => %i[accounts_receivable] }.freeze
   RECORD_TYPES = BASE_SCOPES.keys.freeze
+
+  def self.record_types(authorizable) = RECORD_TYPES.select { |record_type| record_type_available?(record_type, authorizable) }
+
+  def self.record_type_available?(record_type, authorizable)
+    roles = RECORD_TYPE_ROLES[record_type]
+    RECORD_TYPES.include?(record_type) && (roles.nil? || authorizable.any_role?(*roles))
+  end
 
   def date_attributes(authorizable)
     date_columns = record_class.columns.select { |column| column.type.in?(%i[date datetime]) }.map(&:name)
@@ -29,6 +37,8 @@ module Report::Runnable
   def record_class = (record_type.constantize if RECORD_TYPES.include?(record_type))
 
   def records(authorizable, from: nil, to: nil)
+    return record_class.none unless Report::Runnable.record_type_available?(record_type, authorizable)
+
     scope = BASE_SCOPES.fetch(record_type).call(authorizable)
 
     if date_range? && from && to

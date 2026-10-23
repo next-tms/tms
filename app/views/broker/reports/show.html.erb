@@ -1,20 +1,6 @@
 <% provide :title, @report.name %>
 
-<div class="page-header d-flex align-items-center justify-content-between">
-  <div>
-    <h1><%= @report.name %></h1>
-    <% if @report.preset? %>
-      <p class="lead"><%= @report.description %></p>
-    <% end %>
-  </div>
-
-  <div>
-    <%= link_to 'Duplicate', new_broker_report_path(duplicate: @report.to_param), class: 'btn btn-outline-secondary' %>
-    <% if !@report.preset? && allowed_to?(:edit?, @report) %>
-      <%= link_to 'Edit', edit_broker_report_path(@report), class: 'btn btn-outline-secondary' %>
-    <% end %>
-  </div>
-</div>
+<%= render 'member_header' %>
 
 <% internal_columns = report_internal_columns(@report) %>
 <% if internal_columns.any? %>
@@ -24,7 +10,7 @@
   </div>
 <% end %>
 
-<%= form_with(url: broker_report_path(@report), method: :get, data: { turbo: false }) do %>
+<%= form_with(url: [ :broker, @report ], method: :get, data: { turbo: false }) do %>
   <% if @report.date_range? %>
     <%= render 'date_range' %>
   <% end %>
@@ -34,16 +20,7 @@
       <% if @report.date_range? %>
         <%= submit_tag 'Preview', class: 'btn btn-secondary', name: nil %>
       <% end %>
-      <%= button_tag icon('solid', 'download', 'Download CSV'),
-                     class: 'btn btn-primary',
-                     formaction: broker_report_path(@report, format: :csv),
-                     name: nil
-      %>
-      <%= button_tag 'Download YAML',
-                     class: 'btn btn-outline-secondary',
-                     formaction: broker_report_path(@report, format: :yaml),
-                     name: nil
-      %>
+      <%= render 'shared/format_buttons', label: 'Download', target: [ :broker, @report ] %>
     </div>
   </div>
 <% end %>

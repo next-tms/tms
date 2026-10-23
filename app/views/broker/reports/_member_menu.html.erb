@@ -1,0 +1,7 @@
+<nav class="nav border-top pt-4 mb-0">
+  <%= link_to 'Overview', [ :broker, @report ], class: 'nav-link reports-show' %>
+  <% if !@report.preset? && allowed_to?(:edit?, @report) %>
+    <%= link_to 'Edit', [ :edit, :broker, @report ], class: 'nav-link reports-edit' %>
+  <% end %>
+  <%= link_to 'Duplicate', [ :new, :broker, :report, { duplicate: @report.to_param } ], class: 'nav-link' %>
+</nav>
