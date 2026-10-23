@@ -43,11 +43,13 @@ class Broker::ReportsController < Broker::BrokerController
   end
 
   def show
+    remember_date_range
+
     respond_to do |format|
       format.csv { send_report(:csv) }
       format.html do
         @preview = preview_exporter
-        fresh_when(etag: [ @report, @preview ], last_modified: @preview.updated_at)
+        fresh_when(etag: [ @report, @preview, @from, @to ], last_modified: @preview.updated_at)
       end
       format.yaml { send_report(:yaml) }
     end
@@ -77,8 +79,10 @@ class Broker::ReportsController < Broker::BrokerController
       columns: source.columns,
       date_attribute: source.date_attribute,
       filters: source.filters,
+      from_days_ago: source.from_days_ago,
       name: "#{source.name} (Copy)",
-      record_type: source.record_type
+      record_type: source.record_type,
+      to_days_ago: source.to_days_ago
     }
   end
 
@@ -118,6 +122,13 @@ class Broker::ReportsController < Broker::BrokerController
     render(template, status: @preview ? :ok : :unprocessable_content)
   end
 
+  def remember_date_range
+    return if @report.preset? || !@report.date_range?
+    return unless parse_date(params[:from]) && parse_date(params[:to])
+
+    @report.remember_date_range(@from, @to, @today)
+  end
+
   def report_basename
     return "#{@report.name} #{@from.iso8601} to #{@to.iso8601}" if @report.date_range?
 
@@ -134,10 +145,11 @@ class Broker::ReportsController < Broker::BrokerController
   end
 
   def set_date_range
-    today = ActiveSupport::TimeZone.new(Setting.value!(:time_zone_name)).today
+    @today = ActiveSupport::TimeZone.new(Setting.value!(:time_zone_name)).today
+    default_from, default_to = @report.default_date_range(@today)
 
-    @from = parse_date(params[:from]) || today.beginning_of_month
-    @to = parse_date(params[:to]) || today
+    @from = parse_date(params[:from]) || default_from
+    @to = parse_date(params[:to]) || default_to
   end
 
   def set_form_options

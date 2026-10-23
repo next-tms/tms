@@ -6,8 +6,10 @@ class CreateReports < ActiveRecord::Migration[8.1]
       t.jsonb :columns, default: [], null: false
       t.string :date_attribute
       t.jsonb :filters, default: {}, null: false
+      t.integer :from_days_ago
       t.string :name, index: { unique: true }, null: false
       t.string :record_type, null: false
+      t.integer :to_days_ago
 
       t.timestamps
     end

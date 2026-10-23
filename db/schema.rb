@@ -668,8 +668,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_050147) do
     t.integer "created_by_id", null: false
     t.string "date_attribute"
     t.jsonb "filters", default: {}, null: false
+    t.integer "from_days_ago"
     t.string "name", null: false
     t.string "record_type", null: false
+    t.integer "to_days_ago"
     t.datetime "updated_at", null: false
     t.index ["created_by_id"], name: "index_reports_on_created_by_id"
     t.index ["name"], name: "index_reports_on_name", unique: true

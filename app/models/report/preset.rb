@@ -70,10 +70,12 @@ class Report::Preset
   def date_attribute = 'created_at'
   def description = definition[:description]
   def filters = definition[:filters]
+  def from_days_ago = nil
   def headers = definition[:headers]
   def name = definition[:name]
   def preset? = true
   def record_type = 'Shipment'
+  def to_days_ago = nil
 
   def to_param = key
 

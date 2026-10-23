@@ -19,6 +19,8 @@ class Report < ApplicationRecord
   def headers = {}
   def preset? = false
 
+  def remember_date_range(from, to, today) = update(from_days_ago: (today - from).to_i, to_days_ago: (today - to).to_i)
+
   private
 
   def validate_columns

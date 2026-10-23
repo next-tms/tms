@@ -76,6 +76,36 @@ RSpec.describe(Report) do
     it { expect(report.date_attributes(user)).not_to(include('load_id')) }
   end
 
+  describe '#default_date_range' do
+    let(:today) { Date.new(2026, 10, 29) }
+
+    it { expect(report.default_date_range(today)).to(eq([ Date.new(2026, 10, 1), today ])) }
+
+    context 'with a remembered range' do
+      subject(:report) { build(:report, from_days_ago: 10, to_days_ago: 6) }
+
+      it { expect(report.default_date_range(today)).to(eq([ Date.new(2026, 10, 19), Date.new(2026, 10, 23) ])) }
+    end
+  end
+
+  describe '#remember_date_range' do
+    subject(:report) { create(:report) }
+
+    let(:today) { Date.new(2026, 10, 22) }
+
+    before { report.remember_date_range(Date.new(2026, 10, 12), Date.new(2026, 10, 16), today) }
+
+    it { expect(report.reload).to(have_attributes(from_days_ago: 10, to_days_ago: 6)) }
+    it { expect(report.reload.default_date_range(Date.new(2026, 10, 29))).to(eq([ Date.new(2026, 10, 19), Date.new(2026, 10, 23) ])) }
+    it { expect { report.remember_date_range(Date.new(2026, 10, 12), Date.new(2026, 10, 16), today) }.not_to(change { report.reload.updated_at }) }
+
+    context 'when the report is invalid' do
+      before { report.columns = [ 'destroy' ] }
+
+      it { expect(report.remember_date_range(Date.new(2026, 10, 1), today, today)).to(be(false)) }
+    end
+  end
+
   describe '#date_range?' do
     it { expect(report.date_range?).to(be(false)) }
     it { expect(build(:report, date_attribute: 'created_at').date_range?).to(be(true)) }

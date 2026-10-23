@@ -83,6 +83,12 @@ RSpec.describe(Report::Preset) do
     end
   end
 
+  describe '#default_date_range' do
+    let(:today) { Date.new(2026, 10, 29) }
+
+    it { expect(preset.default_date_range(today)).to(eq([ Date.new(2026, 10, 1), today ])) }
+  end
+
   describe '#filters' do
     it { expect(preset.filters).to(eq({})) }
     it { expect(described_class.find('customer-report').filters).to(eq({ 'status_in' => [ 'delivered' ] })) }

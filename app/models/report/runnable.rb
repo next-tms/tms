@@ -16,6 +16,12 @@ module Report::Runnable
 
   def date_range? = date_attribute.present?
 
+  def default_date_range(today)
+    return [ today.beginning_of_month, today ] if from_days_ago.nil? || to_days_ago.nil?
+
+    [ today - from_days_ago, today - to_days_ago ]
+  end
+
   def exporter(authorizable, from: nil, to: nil, limit: nil)
     ExporterService.new(records(authorizable, from:, to:).limit(limit), authorizable:, columns:, headers:)
   end

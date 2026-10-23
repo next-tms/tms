@@ -210,6 +210,36 @@ RSpec.describe(Broker::ReportsController) do
       it { expect(assigns(:report)).to(eq(report)) }
       it { expect(assigns(:preview).columns).to(eq(report.columns)) }
     end
+
+    context 'with a dated report' do
+      let(:params) { { from: from.iso8601, id: report.id, to: to.iso8601 } }
+      let(:from) { today - 10 }
+      let(:report) { create(:report, broker: user.broker, created_by: user, date_attribute: 'created_at') }
+      let(:to) { today - 6 }
+      let(:today) { Time.current.in_time_zone('America/Los_Angeles').to_date }
+
+      it { expect(report.reload).to(have_attributes(from_days_ago: 10, to_days_ago: 6)) }
+
+      context 'when run again without dates' do
+        before { get(:show, params: { id: report.id }) }
+
+        it { expect(assigns(:from)).to(eq(from)) }
+        it { expect(assigns(:to)).to(eq(to)) }
+      end
+
+      context 'without dates' do
+        let(:params) { { id: report.id } }
+
+        it { expect(report.reload).to(have_attributes(from_days_ago: nil, to_days_ago: nil)) }
+        it { expect(assigns(:from)).to(eq(today.beginning_of_month)) }
+      end
+    end
+
+    context 'with an undated report' do
+      let(:params) { { from: '2026-10-01', id: report.id, to: '2026-10-31' } }
+
+      it { expect(report.reload).to(have_attributes(from_days_ago: nil, to_days_ago: nil)) }
+    end
   end
 
   describe 'GET #show for another broker' do
