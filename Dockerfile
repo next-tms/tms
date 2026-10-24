@@ -12,7 +12,7 @@ RUN /go/bin/xcaddy build v$CADDY_VERSION \
     --with github.com/ueffel/caddy-brotli \
     --with github.com/corazawaf/coraza-caddy/v2@v2.6.2
 
-FROM ruby:4.0.7-alpine3.24 AS base
+FROM ruby:4.0.9-alpine3.24 AS base
 RUN apk add --no-cache -U ca-certificates gcompat imagemagick jemalloc libpq-dev libxml2 libxslt shared-mime-info && \
     update-ca-certificates
 
