@@ -38,6 +38,9 @@ en:
         carrier_area_id: Lane
       region:
         iso_3166_2: ISO 3166-2
+      report:
+        broker_customer_id: Customer
+        date_attribute: Date
       shipment:
         accessorial_list: Accessorials
         average_density: Average Density
@@ -99,6 +102,9 @@ en:
       receivable:
         one: Receivable
         other: Receivables
+      report:
+        one: Report
+        other: Reports
       shipment:
         one: Load
         other: Loads

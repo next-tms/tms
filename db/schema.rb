@@ -662,6 +662,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_050147) do
     t.index ["updated_by_id"], name: "index_receivables_on_updated_by_id"
   end
 
+  create_table "reports", force: :cascade do |t|
+    t.jsonb "columns", default: [], null: false
+    t.datetime "created_at", null: false
+    t.integer "created_by_id", null: false
+    t.string "date_attribute"
+    t.jsonb "filters", default: {}, null: false
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_reports_on_created_by_id"
+    t.index ["name"], name: "index_reports_on_name", unique: true
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "data"
@@ -1034,6 +1047,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_050147) do
   add_foreign_key "receivables", "users", column: "created_by_id"
   add_foreign_key "receivables", "users", column: "sent_by_id"
   add_foreign_key "receivables", "users", column: "updated_by_id"
+  add_foreign_key "reports", "users", column: "created_by_id"
   add_foreign_key "shipment_accessorials", "accessorials"
   add_foreign_key "shipment_accessorials", "shipments"
   add_foreign_key "shipment_broker_accessorials", "broker_accessorials"
