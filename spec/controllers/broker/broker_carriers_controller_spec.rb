@@ -106,7 +106,7 @@ RSpec.describe(Broker::BrokerCarriersController) do
 
 
   describe 'GET #index' do
-    let(:broker_carrier) { create(:broker_carrier, broker: current_user.broker) }
+    let(:broker_carrier) { create(:broker_carrier) }
 
     before do
       broker_carrier

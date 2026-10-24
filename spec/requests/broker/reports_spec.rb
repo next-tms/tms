@@ -97,7 +97,7 @@ RSpec.describe('Broker reports') do
   end
 
   describe 'PATCH /broker/reports/:id' do
-    let(:report) { create(:report, broker: user.broker, created_by: user, filters: { 'active' => true }) }
+    let(:report) { create(:report, created_by: user, filters: { 'active' => true }) }
 
     before { patch("/broker/reports/#{report.id}", params: { commit: 'Save', from: '2026-10-01', report: report_params.except(:filters), to: '2026-10-15' }) }
 
@@ -106,7 +106,7 @@ RSpec.describe('Broker reports') do
   end
 
   describe 'GET /broker/reports/:id' do
-    let(:report) { create(:report, broker: user.broker, created_by: user, date_attribute: 'created_at') }
+    let(:report) { create(:report, created_by: user, date_attribute: 'created_at') }
 
     before { get("/broker/reports/#{report.id}") }
 

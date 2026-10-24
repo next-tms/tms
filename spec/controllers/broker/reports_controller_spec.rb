@@ -4,7 +4,7 @@ RSpec.describe(Broker::ReportsController) do
   subject { response }
 
   let(:preset) { Report::Preset.find('freight-report') }
-  let(:report) { create(:report, broker: user.broker, created_by: user) }
+  let(:report) { create(:report, created_by: user) }
   let(:report_params) { { columns: [ 'load_id', 'total_cost' ], name: 'Margins', record_type: 'Shipment' } }
   let(:role) { :dispatch }
   let(:user) { create(:broker_user) }
@@ -35,7 +35,7 @@ RSpec.describe(Broker::ReportsController) do
     end
 
     context 'when another author is renamed' do
-      let(:report) { create(:report, broker: user.broker) }
+      let(:report) { create(:report) }
 
       before do
         request.headers['If-None-Match'] = response.etag
@@ -101,17 +101,11 @@ RSpec.describe(Broker::ReportsController) do
 
     context 'when duplicating a saved report' do
       let(:params) { { duplicate: report.id } }
-      let(:report) { create(:report, broker: user.broker, columns: [ 'first_name' ], filters: { 'first_name_cont' => 'Jim' }, record_type: 'Contact') }
+      let(:report) { create(:report, columns: [ 'first_name' ], filters: { 'first_name_cont' => 'Jim' }, record_type: 'Contact') }
 
       it { expect(assigns(:report)).to(have_attributes(columns: [ 'first_name' ], filters: { 'first_name_cont' => 'Jim' }, record_type: 'Contact')) }
       it { expect(assigns(:report).name).to(eq("#{report.name} (Copy)")) }
       it { expect(assigns(:report)).to(be_new_record) }
-    end
-
-    context 'when duplicating another broker’s report' do
-      let(:params) { { duplicate: create(:report).id } }
-
-      it { expect(assigns(:report).record_class).to(be_nil) }
     end
 
     context 'with a record type' do
@@ -153,7 +147,7 @@ RSpec.describe(Broker::ReportsController) do
     let(:params) { { report: report_params } }
 
     it { is_expected.to(redirect_to(broker_report_path(Report.last))) }
-    it { expect(Report.last).to(have_attributes(broker: user.broker, columns: [ 'load_id', 'total_cost' ], created_by: user)) }
+    it { expect(Report.last).to(have_attributes(columns: [ 'load_id', 'total_cost' ], created_by: user)) }
     it { expect(Report.last).to(have_attributes(filters: {}, record_type: 'Shipment')) }
 
     context 'with a date range' do
@@ -292,7 +286,7 @@ RSpec.describe(Broker::ReportsController) do
     context 'with a dated report' do
       let(:params) { { from: from.iso8601, id: report.id, to: to.iso8601 } }
       let(:from) { today - 10 }
-      let(:report) { create(:report, broker: user.broker, created_by: user, date_attribute: 'created_at') }
+      let(:report) { create(:report, created_by: user, date_attribute: 'created_at') }
       let(:to) { today - 6 }
       let(:today) { Time.current.in_time_zone('America/Los_Angeles').to_date }
 
@@ -321,18 +315,12 @@ RSpec.describe(Broker::ReportsController) do
 
     context 'with another user’s dated report' do
       let(:params) { { from: '2026-10-01', id: report.id, to: '2026-10-31' } }
-      let(:report) { create(:report, broker: user.broker, date_attribute: 'created_at') }
+      let(:report) { create(:report, date_attribute: 'created_at') }
 
       it { is_expected.to(have_http_status(:ok)) }
       it { expect(assigns(:from)).to(eq(Date.new(2026, 10, 1))) }
       it { expect(report.reload).to(have_attributes(from_days_ago: nil, to_days_ago: nil)) }
     end
-  end
-
-  describe 'GET #show for another broker' do
-    let(:other_report) { create(:report) }
-
-    it { expect { get(:show, params: { id: other_report.id }) }.to(raise_error(ActiveRecord::RecordNotFound)) }
   end
 
   describe 'GET #edit' do
@@ -367,7 +355,7 @@ RSpec.describe(Broker::ReportsController) do
     end
 
     context 'when another user' do
-      let(:report) { create(:report, broker: user.broker) }
+      let(:report) { create(:report) }
 
       it { is_expected.to(have_http_status(:not_found)) }
     end
@@ -377,7 +365,7 @@ RSpec.describe(Broker::ReportsController) do
     before { patch(:update, params:) }
 
     let(:params) { { id: report.id, report: report_params } }
-    let(:report) { create(:report, broker: user.broker, created_by: user, filters: { 'active' => true }) }
+    let(:report) { create(:report, created_by: user, filters: { 'active' => true }) }
 
     it { is_expected.to(redirect_to(broker_report_path(report))) }
     it { expect(report.reload.name).to(eq('Margins')) }
@@ -398,7 +386,7 @@ RSpec.describe(Broker::ReportsController) do
 
     context 'with an unchanged selection' do
       let(:columns) { [ 'status', 'shipper_address.zip_code', 'load_id' ] }
-      let(:report) { create(:report, broker: user.broker, columns:, created_by: user) }
+      let(:report) { create(:report, columns:, created_by: user) }
       let(:report_params) { { column_order: columns, columns: [ '', 'load_id', 'status', 'shipper_address.zip_code' ], name: 'Margins' } }
 
       it { expect(report.reload.columns).to(eq(columns)) }

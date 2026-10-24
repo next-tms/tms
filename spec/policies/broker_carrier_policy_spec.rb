@@ -35,7 +35,7 @@ RSpec.describe(BrokerCarrierPolicy) do
   end
 
   context 'when broker?' do
-    let(:authorizable) { create(:user, companyable: record.broker) }
+    let(:authorizable) { create(:broker_user) }
 
     it_behaves_like 'non-manage access'
     it_behaves_like 'view access'

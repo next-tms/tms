@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe(Broker::ContactsController) do
   subject { response }
 
-  let(:contact) { create(:contact, companyable: user.broker) }
+  let(:contact) { create(:contact, companyable: nil) }
   let(:user) { create(:root_broker_user) }
 
   before do

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe(ExporterService) do
   subject(:exporter) { described_class.new(records, authorizable:, columns:, headers:) }
 
-  let(:authorizable) { create(:broker_user, companyable: shipment.broker) }
+  let(:authorizable) { create(:broker_user) }
   let(:broker_carrier) { create(:broker_carrier) }
   let(:charge) { Money.new(12_345).format }
   let(:columns) { [ 'load_id', 'status', 'total_charges', 'total_cost', 'shipper_address.zip_code' ] }
@@ -196,7 +196,7 @@ RSpec.describe(ExporterService) do
 
     context 'with a limited relation of records without timestamps' do
       let(:columns) { [ 'first_name' ] }
-      let(:contacts) { create_list(:contact, 2, companyable: shipment.broker) }
+      let(:contacts) { create_list(:contact, 2, companyable: nil) }
       let(:records) { Contact.where(id: contacts.map(&:id)).order(:id).limit(1) }
 
       it { expect { contacts.last.update!(first_name: 'Excluded') }.not_to(change(&cache_version)) }
@@ -324,9 +324,9 @@ RSpec.describe(ExporterService) do
     end
 
     context 'when a column is a phone number' do
-      let(:authorizable) { create(:broker_user, companyable: contact.companyable) }
+      let(:authorizable) { create(:broker_user) }
       let(:columns) { [ 'work_phone' ] }
-      let(:contact) { create(:contact, companyable: create(:broker), work_phone:) }
+      let(:contact) { create(:contact, companyable: nil, work_phone:) }
       let(:records) { Contact.where(id: contact.id) }
       let(:work_phone) { '(555) 123-4567' }
 
@@ -341,15 +341,15 @@ RSpec.describe(ExporterService) do
 
     context 'with every available column', :bullet do
       let(:columns) { described_class.available_columns(Shipment, authorizable) }
-      let(:records) { Shipment.where(broker: shipment.broker) }
+      let(:records) { Shipment.all }
 
-      before { create_list(:shipment, 2, :with_broker_accessorials, :with_items, broker: shipment.broker, broker_carrier:) }
+      before { create_list(:shipment, 2, :with_broker_accessorials, :with_items, broker_carrier:) }
 
       it { expect { exporter.rows }.not_to(raise_error) }
     end
 
     context 'with every nested column', :bullet do
-      let(:records) { Shipment.where(broker: shipment.broker) }
+      let(:records) { Shipment.all }
 
       let(:columns) do
         associations = [ nil ]
@@ -363,7 +363,7 @@ RSpec.describe(ExporterService) do
         nested_columns
       end
 
-      before { create_list(:shipment, 2, :with_broker_accessorials, :with_items, broker: shipment.broker, broker_carrier:) }
+      before { create_list(:shipment, 2, :with_broker_accessorials, :with_items, broker_carrier:) }
 
       it { expect(exporter.columns).to(include('broker_carrier.broker_customer.office_address.city')) }
       it { expect { exporter.rows }.not_to(raise_error) }
@@ -405,7 +405,7 @@ RSpec.describe(ExporterService) do
 
     context 'with records that have no timestamps' do
       let(:columns) { [ 'first_name' ] }
-      let(:records) { Contact.where(id: create(:contact, companyable: shipment.broker).id) }
+      let(:records) { Contact.where(id: create(:contact, companyable: nil).id) }
 
       it { is_expected.to(be_nil) }
     end

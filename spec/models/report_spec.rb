@@ -267,8 +267,8 @@ RSpec.describe(Report) do
 
     context 'with a record type the user cannot list' do
       let!(:receivable) { create(:receivable, shipment: first_of_month) }
-      let(:report) { build(:report, broker:, columns: [ 'due_by' ], record_type: 'Receivable') }
-      let(:user) { create(:broker_user, companyable: broker) }
+      let(:report) { build(:report, columns: [ 'due_by' ], record_type: 'Receivable') }
+      let(:user) { create(:broker_user) }
 
       it { is_expected.to(be_empty) }
 

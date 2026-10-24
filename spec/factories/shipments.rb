@@ -280,7 +280,6 @@ FactoryBot.define do
         [
           association(
             :broker_accessorial,
-            broker: broker_customer.broker,
             broker_customer:,
             flat_charge_currency: currency,
             upcharge_currency: currency,

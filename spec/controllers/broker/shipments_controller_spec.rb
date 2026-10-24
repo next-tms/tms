@@ -51,9 +51,9 @@ RSpec.describe(Broker::ShipmentsController) do
 
   describe 'export filters' do
     before do
-      create(:shipment, broker: user.broker, broker_carrier: nil)
-      create(:shipment, broker: user.broker, canceled_at: 1.hour.ago)
-      create(:shipment, broker: user.broker).update!(dispatcher: user)
+      create(:shipment, broker_carrier: nil)
+      create(:shipment, canceled_at: 1.hour.ago)
+      create(:shipment).update!(dispatcher: user)
     end
 
     shared_examples 'report filter parity' do
@@ -83,13 +83,13 @@ RSpec.describe(Broker::ShipmentsController) do
     it_behaves_like 'report filter parity'
 
     context 'when in accounts receivable with assigned customers' do
-      let(:broker_customer) { create(:broker_customer, broker: user.broker) }
+      let(:broker_customer) { create(:broker_customer) }
       let(:user) { create(:broker_user) }
 
       before do
         create(:broker_customer_sales_rep, broker_customer:, user:)
         create(:contact_role, contact: user.contact, role: :accounts_receivable)
-        create(:shipment, broker: user.broker, broker_customer:)
+        create(:shipment, broker_customer:)
       end
 
       it_behaves_like 'report filter parity'

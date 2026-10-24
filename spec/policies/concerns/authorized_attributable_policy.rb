@@ -7,8 +7,6 @@ shared_examples_for 'authorized_attributable_policy' do
   let(:record) { create(described_class.name.delete_suffix('Policy').underscore.to_sym) }
 
   context 'when broker?' do
-    let(:companyable) { create(:broker) }
-
     (described_class::BROKER_ATTRIBUTES + described_class::BROKER_METHODS).each do |attribute|
       describe "#{attribute}_attribute?" do
         subject { policy.apply("#{attribute}_attribute?".to_sym) }

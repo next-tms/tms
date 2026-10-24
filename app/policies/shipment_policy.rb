@@ -58,10 +58,7 @@ class ShipmentPolicy < ApplicationPolicy
 
   private
 
-  def broker_party?
-    record.broker == authorizable.companyable &&
-      (any_role?(:dispatch, :root, :sales_rep_for_all_broker_customers) || record.dispatcher == authorizable)
-  end
+  def broker_party? = any_role?(:dispatch, :root, :sales_rep_for_all_broker_customers) || record.dispatcher == authorizable
 
   def record_customer? = customer? && record.broker_customer == authorizable.companyable
 end

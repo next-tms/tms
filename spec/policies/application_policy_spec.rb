@@ -61,6 +61,7 @@ RSpec.describe(ApplicationPolicy) do
     it { is_expected.to(be(false)) }
 
     context 'when the owner' do
+      let(:authorizable) { create(:customer_user) }
       let(:record) { authorizable.companyable }
 
       it { is_expected.to(be(true)) }
@@ -80,13 +81,15 @@ RSpec.describe(ApplicationPolicy) do
     it { is_expected.to(be(false)) }
 
     context 'when the record is the companyable' do
+      let(:authorizable) { create(:customer_user) }
       let(:record) { authorizable.companyable }
 
       it { is_expected.to(be(true)) }
     end
 
     context 'when the record belongs to the companyable' do
-      let(:record) { Struct.new(:broker).new(authorizable.companyable) }
+      let(:authorizable) { create(:customer_user) }
+      let(:record) { Struct.new(:broker_customer).new(authorizable.companyable) }
 
       it { is_expected.to(be(true)) }
     end

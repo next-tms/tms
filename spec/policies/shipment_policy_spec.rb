@@ -77,7 +77,7 @@ RSpec.describe(ShipmentPolicy) do
   end
 
   context 'when broker?' do
-    let(:authorizable) { create(:user, companyable: record.broker) }
+    let(:authorizable) { create(:broker_user) }
 
     it_behaves_like 'non-manage access'
     it_behaves_like 'non-party access'
@@ -118,24 +118,6 @@ RSpec.describe(ShipmentPolicy) do
       it_behaves_like 'party access'
     end
 
-    context 'when another broker' do
-      let(:authorizable) { create(:user, companyable: create(:broker)) }
-
-      context 'when any_role?(:sales_rep_for_all_broker_customers)' do
-        let(:contact_roles) { %i[sales_rep_for_all_broker_customers] }
-
-        it_behaves_like 'non-manage access'
-        it_behaves_like 'non-party access'
-      end
-
-      context 'when any_role?(:root)' do
-        let(:contact_roles) { %i[root] }
-
-        it_behaves_like 'non-manage access'
-        it_behaves_like 'non-party access'
-      end
-    end
-
     context 'when record.dispatcher == authorizable' do
       before { record.update!(dispatcher: authorizable) }
 
@@ -145,7 +127,7 @@ RSpec.describe(ShipmentPolicy) do
   end
 
   context 'when record is nil' do
-    let(:authorizable) { create(:user, companyable: create(:broker)) }
+    let(:authorizable) { create(:broker_user) }
     let(:record) { nil }
 
     it_behaves_like 'no view access'

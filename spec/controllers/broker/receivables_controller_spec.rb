@@ -25,7 +25,7 @@ RSpec.describe(Broker::ReceivablesController) do
 
     context 'when sorted by total' do
       let!(:receivables) do
-        [ 200, 100 ].map { |total_cents| create(:receivable, shipment: create(:shipment, broker: user.broker), total_cents:) }
+        [ 200, 100 ].map { |total_cents| create(:receivable, shipment: create(:shipment), total_cents:) }
       end
 
       before { get(:index, params: { q: { s: 'total_cents asc' } }) }

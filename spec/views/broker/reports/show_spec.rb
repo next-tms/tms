@@ -30,19 +30,19 @@ RSpec.describe('broker/reports/show') do
   it { is_expected.not_to(include('internal columns')) }
 
   context 'with shipments' do
-    let(:shipments) { [ create(:shipment, broker: user.broker, created_at: Time.utc(2026, 10, 15)) ] }
+    let(:shipments) { [ create(:shipment, created_at: Time.utc(2026, 10, 15)) ] }
 
     it { is_expected.to(include(*report.headers.values, shipments.first.load_id.to_s)) }
   end
 
   context 'with internal columns' do
-    let(:report) { create(:report, broker: user.broker, columns: [ 'load_id', 'total_cost' ]) }
+    let(:report) { create(:report, columns: [ 'load_id', 'total_cost' ]) }
 
     it { is_expected.to(include('internal columns', 'Carrier Cost', "href=\"/broker/reports/#{report.id}/edit\"", "duplicate=#{report.id}")) }
   end
 
   context 'without a date attribute' do
-    let(:report) { create(:report, broker: user.broker, record_type: 'Contact', columns: [ 'first_name' ]) }
+    let(:report) { create(:report, record_type: 'Contact', columns: [ 'first_name' ]) }
 
     it { is_expected.not_to(include('name="from"', 'name="to"', 'value="Preview"')) }
     it { is_expected.to(include(Contact.human_attribute_name(:first_name), user.contact.first_name)) }

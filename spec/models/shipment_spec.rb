@@ -278,7 +278,7 @@ RSpec.describe(Shipment) do
     let(:shipment) { create(:shipment) }
     let(:user) { broker_customer_sales_rep.user }
 
-    before { create(:shipment, broker: shipment.broker) }
+    before { create(:shipment) }
 
     it { expect(described_class.broker_customers_of(user.id)).to(contain_exactly(shipment)) }
     it { expect(described_class.broker_customers_of(0)).to(be_empty) }

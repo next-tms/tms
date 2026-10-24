@@ -7,5 +7,5 @@ class ReportPolicy < ApplicationPolicy
   def new? = create?
   def show? = view?
   def update? = manage?
-  def view? = index? && (record.preset? || record.broker == authorizable.companyable)
+  def view? = index?
 end

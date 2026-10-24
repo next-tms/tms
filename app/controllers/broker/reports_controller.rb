@@ -29,7 +29,7 @@ class Broker::ReportsController < Broker::BrokerController
     authorize!(Report)
 
     @presets = Report::Preset.all
-    @reports = @broker.reports.includes(:created_by).order(:name)
+    @reports = Report.includes(:created_by).order(:name)
 
     respond_to do |format|
       format.html { fresh_when(etag: [ @presets, @reports, @reports.map(&:created_by), viewer_etag ]) }
@@ -67,7 +67,7 @@ class Broker::ReportsController < Broker::BrokerController
   private
 
   def build_report
-    @report = @broker.reports.new(created_by: current_user)
+    @report = Report.new(created_by: current_user)
     @report.assign_attributes(action_name == 'create' ? report_params : new_report_attributes)
     if action_name == 'new' && @report.columns.blank? && @report.record_class
       @report.columns = ExporterService.default_columns(@report.record_class, current_user)
@@ -91,7 +91,7 @@ class Broker::ReportsController < Broker::BrokerController
   def duplicate_source
     return if params[:duplicate].blank?
 
-    Report::Preset.find(params[:duplicate]) || @broker.reports.find_by(id: params[:duplicate])
+    Report::Preset.find(params[:duplicate]) || Report.find_by(id: params[:duplicate])
   end
 
   def export_filters
@@ -170,7 +170,7 @@ class Broker::ReportsController < Broker::BrokerController
   end
 
   def set_report
-    @report = Report::Preset.find(params[:id]) || @broker.reports.find(params[:id])
+    @report = Report::Preset.find(params[:id]) || Report.find(params[:id])
     authorize!(@report)
   end
 

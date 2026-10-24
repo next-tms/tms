@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(ReportPolicy) do
-  let(:authorizable) { create(:broker_user, companyable: report.broker) }
+  let(:authorizable) { create(:broker_user) }
   let(:contact_roles) { %i[dispatch] }
   let(:policy) { described_class.new(record, authorizable:) }
   let(:record) { report }
@@ -52,13 +52,6 @@ RSpec.describe(ReportPolicy) do
     let(:contact_roles) { %i[carrier_relations] }
 
     it_behaves_like 'denied', :create?, :index?, :show?
-  end
-
-  context 'when another broker' do
-    let(:authorizable) { create(:broker_user) }
-
-    it_behaves_like 'allowed', :index?
-    it_behaves_like 'denied', :destroy?, :edit?, :show?, :update?
   end
 
   context 'when a customer' do

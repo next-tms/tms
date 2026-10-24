@@ -34,14 +34,13 @@ class ApplicationPolicy
   end
 
   def any_role?(*roles) = authorizable.any_role?(*roles)
-  def broker? = authorizable.companyable.broker?
-  def carrier? = authorizable.companyable.carrier?
-  def customer? = authorizable.companyable.customer?
+  def broker? = authorizable.broker?
+  def carrier? = authorizable.carrier?
+  def customer? = authorizable.customer?
   def manage? = admin? || owner? || party?
 
   def owner?
-    record == authorizable.companyable ||
-      record.try(authorizable.companyable.model_name.singular.to_s.to_sym) == authorizable.companyable ||
+    companyable_owner? ||
       record.try(:created_by) == authorizable ||
       record.try(:user) == authorizable
   end
@@ -53,4 +52,12 @@ class ApplicationPolicy
   end
 
   def view? = party?
+
+  private
+
+  def companyable_owner?
+    return false if broker?
+
+    record == authorizable.companyable || record.try(authorizable.companyable.model_name.singular.to_sym) == authorizable.companyable
+  end
 end

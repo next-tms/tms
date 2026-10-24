@@ -4,8 +4,8 @@ RSpec.describe(ExportableController) do
   subject { response }
 
   controller(ApplicationController) do
-    def index = respond_with_export(BrokerCarrier.where(broker: current_user.broker))
-    def new = respond_with_export(Shipment.where(broker: current_user.broker), filters: { active: true, pending_pickup: true })
+    def index = respond_with_export(BrokerCarrier.all)
+    def new = respond_with_export(Shipment.all, filters: { active: true, pending_pickup: true })
     def show = head(:ok)
 
     private
@@ -13,7 +13,7 @@ RSpec.describe(ExportableController) do
     def default_render = head(:no_content)
   end
 
-  let(:broker_carrier) { create(:broker_carrier, broker: user.broker) }
+  let(:broker_carrier) { create(:broker_carrier) }
   let(:plural_model_name) { BrokerCarrier.model_name.human(count: :other) }
   let(:user) { create(:root_broker_user) }
 

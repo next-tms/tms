@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe(Broker::BrokerCustomersController) do
   subject { response }
 
-  let(:broker_customer) { create(:broker_customer, broker: current_user.broker) }
+  let(:broker_customer) { create(:broker_customer) }
   let(:current_user) { create(:root_broker_user) }
 
   before do
@@ -48,7 +48,7 @@ RSpec.describe(Broker::BrokerCustomersController) do
       it { expect(response.body).to(include(Address.human_attribute_name(:street))) }
 
       context 'with ransack filter' do
-        let(:other_broker_customer) { create(:broker_customer, broker: current_user.broker) }
+        let(:other_broker_customer) { create(:broker_customer) }
 
         before do
           other_broker_customer
