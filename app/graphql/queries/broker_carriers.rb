@@ -9,14 +9,6 @@ module Queries
             argument :id, ID, required: true
           end
 
-    field :broker_carrier_by_broker,
-          Types::BrokerCarrierConnectionType,
-          connection: true,
-          description: 'Fetch Broker Carrier By Broker',
-          null: true do
-            argument :broker_id, ID, required: true
-          end
-
     field :broker_carrier_by_broker_customer,
           Types::BrokerCarrierConnectionType,
           connection: true,
@@ -28,10 +20,6 @@ module Queries
     Types::QueryType.class_eval do
       def broker_carrier(id:)
         BrokerCarrier.find(id)
-      end
-
-      def broker_carrier_by_broker(broker_id:)
-        BrokerCarrier.where(broker_id:)
       end
 
       def broker_carrier_by_broker_customer(broker_customer_id:)

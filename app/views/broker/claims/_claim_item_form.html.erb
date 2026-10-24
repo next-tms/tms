@@ -4,8 +4,7 @@
     <%= f.hidden_field :id %>
 
     <%= f.select :payee_id,
-                  current_user
-                  .broker.broker_carriers
+                  BrokerCarrier
                   .includes(:carrier)
                   .collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }
                   .sort,

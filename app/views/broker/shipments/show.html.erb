@@ -78,7 +78,7 @@
 <% end %>
 
 <% if !@shipment.charges_confirmed &&
-      (@shipment.broker.requires_charges_confirmed_on_receivables || @shipment.broker_customer&.requires_charges_confirmed_on_receivables) %>
+      (Setting.requires_charges_confirmed_on_receivables || @shipment.broker_customer&.requires_charges_confirmed_on_receivables) %>
   <div class="alert alert-warning">
     <%= requires_charges_confirmed_note(@shipment) %>
   </div>
@@ -357,7 +357,7 @@
 <% end %>
 
 <p class="col-title">BOL Instructions</p>
-<%= simple_format @shipment.broker.default_bol_notes %>
+<%= simple_format Setting.default_bol_notes %>
 <%= simple_format @shipment.broker_carrier.default_bol_notes unless @shipment.broker_carrier.blank? %>
 <%= simple_format @shipment.broker_customer.default_bol_notes unless @shipment.broker_customer.blank? %>
 <%= simple_format @shipment.bol_notes %>

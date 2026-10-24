@@ -12,13 +12,7 @@
 #   @return [Time]
 # @!attribute broker_and_broker_customer_notes
 #   @return [String]
-# @!attribute broker_bol_shipment_fingerprint
-#   @return [String]
-# @!attribute broker_dispatch_sheet_shipment_fingerprint
-#   @return [String]
 # @!attribute broker_notes
-#   @return [String]
-# @!attribute broker_quote_shipment_fingerprint
 #   @return [String]
 # @!attribute canceled_at
 #   @return [Time]
@@ -52,6 +46,8 @@
 #   @return [Time]
 # @!attribute dispatched_at
 #   @return [Time]
+# @!attribute fingerprint
+#   @return [String]
 # @!attribute lift_gate_delivery
 #   @return [Boolean]
 # @!attribute lift_gate_pickup
@@ -66,8 +62,6 @@
 #   @return [Time]
 # @!attribute pending_appointment_since
 #   @return [Date]
-# @!attribute picked_up
-#   @return [Boolean]
 # @!attribute picked_up_at
 #   @return [Time]
 # @!attribute pickup_confirmation
@@ -122,6 +116,8 @@
 #   @return [String]
 # @!attribute shipper_unavailable_at
 #   @return [Time]
+# @!attribute status
+#   @return [String]
 # @!attribute total_charges_cents
 #   @return [Integer]
 # @!attribute total_charges_currency
@@ -150,8 +146,6 @@
 #   @return [Integer]
 # @!attribute broker_customer_id
 #   @return []
-# @!attribute broker_id
-#   @return [Integer]
 # @!attribute created_by_id
 #   @return []
 # @!attribute dispatcher_id
@@ -171,16 +165,17 @@
 #
 # Indexes
 #
-#  index_shipments_on_applied_rate_id        (applied_rate_id)
-#  index_shipments_on_broker_customer_id     (broker_customer_id)
-#  index_shipments_on_broker_id_and_load_id  (broker_id,load_id) UNIQUE
-#  index_shipments_on_broker_notes           (broker_notes)
-#  index_shipments_on_created_by_id          (created_by_id)
-#  index_shipments_on_dispatcher_id          (dispatcher_id)
-#  index_shipments_on_receiver_address_id    (receiver_address_id)
-#  index_shipments_on_shipper_address_id     (shipper_address_id)
-#  index_shipments_on_tracking_carrier_id    (tracking_carrier_id)
-#  index_shipments_on_updated_by_id          (updated_by_id)
+#  index_shipments_on_applied_rate_id      (applied_rate_id)
+#  index_shipments_on_broker_customer_id   (broker_customer_id)
+#  index_shipments_on_broker_notes         (broker_notes)
+#  index_shipments_on_created_by_id        (created_by_id)
+#  index_shipments_on_dispatcher_id        (dispatcher_id)
+#  index_shipments_on_load_id              (load_id) UNIQUE
+#  index_shipments_on_receiver_address_id  (receiver_address_id)
+#  index_shipments_on_shipper_address_id   (shipper_address_id)
+#  index_shipments_on_status               (status)
+#  index_shipments_on_tracking_carrier_id  (tracking_carrier_id)
+#  index_shipments_on_updated_by_id        (updated_by_id)
 #
 # Foreign Keys
 #
@@ -229,7 +224,6 @@ RSpec.describe(Shipment) do
   describe 'relationships' do
     it { is_expected.to(belong_to(:applied_rate).required(false)) }
     it { is_expected.to(belong_to(:broker_carrier).required(false)) }
-    it { is_expected.to(belong_to(:broker)) }
     it { is_expected.to(belong_to(:dispatcher)) }
     it { is_expected.to(belong_to(:receiver_address)) }
     it { is_expected.to(belong_to(:shipper_address)) }
@@ -248,16 +242,15 @@ RSpec.describe(Shipment) do
   end
 
   describe '#assign_dispatcher' do
-    let!(:broker) { create(:broker) }
     let(:user) do
-      record = build(:user, companyable: broker)
+      record = build(:broker_user)
       record.save!
       record.add_role(:dispatch)
 
       record
     end
     let(:shipment) do
-      record = build(:shipment, broker:)
+      record = build(:shipment)
       record.dispatcher = nil
       record
     end
@@ -614,5 +607,62 @@ RSpec.describe(Shipment) do
     end
 
     it { is_expected.to(eq(200)) }
+  end
+
+  describe '.last_load_id' do
+    before { create(:setting, key: 'first_load_id', value: '1000') }
+
+    it { expect(described_class.last_load_id).to(eq(1000)) }
+
+    context 'when shipments exist' do
+      before { create(:shipment, load_id: 1234) }
+
+      it { expect(described_class.last_load_id).to(eq(1234)) }
+    end
+
+    context 'when first_load_id is missing' do
+      before { Setting.find_by(key: 'first_load_id').destroy! }
+
+      it { expect(described_class.last_load_id).to(eq(0)) }
+    end
+  end
+
+  describe '#eligible_discussable_contacts' do
+    let(:record) { create(:shipment, broker_customer: nil, updated_by: nil) }
+
+    it { expect(record.eligible_discussable_contacts).to(include(record.dispatcher.contact)) }
+  end
+
+  describe '#requires_charges_confirmed_on_receivables?' do
+    let(:record) { build(:shipment) }
+
+    before { record.broker_customer.requires_charges_confirmed_on_receivables = false }
+
+    it { expect(record).not_to(be_requires_charges_confirmed_on_receivables) }
+
+    context 'when the requires_charges_confirmed_on_receivables setting is true' do
+      before { create(:setting, key: 'requires_charges_confirmed_on_receivables', value: true) }
+
+      it { expect(record).to(be_requires_charges_confirmed_on_receivables) }
+    end
+  end
+
+  describe '#users_to_notify' do
+    let(:record) { create(:shipment, updated_by: nil) }
+    let!(:dispatcher) { create(:broker_user).tap { |user| user.add_role(:dispatch) } }
+
+    before { create(:customer_user).tap { |user| user.add_role(:dispatch) } }
+
+    it { expect(record.users_to_notify).to(include(dispatcher)) }
+    it { expect(record.users_to_notify).to(all(be_broker)) }
+  end
+
+  describe '#valid_broker_carriers_for_quotation' do
+    let(:record) { build(:shipment, broker_customer: nil) }
+    let!(:broker_carrier) { create(:broker_carrier, broker_customer: nil) }
+
+    before { allow(BrokerCarrier).to(receive(:blanket).and_return(BrokerCarrier.where(id: broker_carrier.id))) }
+
+    it { expect { record.valid_broker_carriers_for_quotation }.not_to(raise_error) }
   end
 end

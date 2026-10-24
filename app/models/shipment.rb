@@ -10,13 +10,9 @@
 #   @return [String]
 # @!attribute booked_at
 #   @return [Time]
-# @!attribute broker_bol_shipment_fingerprint
-#   @return [String]
-# @!attribute broker_dispatch_sheet_shipment_fingerprint
+# @!attribute broker_and_broker_customer_notes
 #   @return [String]
 # @!attribute broker_notes
-#   @return [String]
-# @!attribute broker_quote_shipment_fingerprint
 #   @return [String]
 # @!attribute canceled_at
 #   @return [Time]
@@ -28,6 +24,8 @@
 #   @return [Integer]
 # @!attribute carrier_cost_currency
 #   @return [String]
+# @!attribute charges_confirmed
+#   @return [Boolean]
 # @!attribute customer_notes
 #   @return [String]
 # @!attribute customer_reference
@@ -48,6 +46,8 @@
 #   @return [Time]
 # @!attribute dispatched_at
 #   @return [Time]
+# @!attribute fingerprint
+#   @return [String]
 # @!attribute lift_gate_delivery
 #   @return [Boolean]
 # @!attribute lift_gate_pickup
@@ -146,8 +146,6 @@
 #   @return [Integer]
 # @!attribute broker_customer_id
 #   @return []
-# @!attribute broker_id
-#   @return [Integer]
 # @!attribute created_by_id
 #   @return []
 # @!attribute dispatcher_id
@@ -167,16 +165,17 @@
 #
 # Indexes
 #
-#  index_shipments_on_applied_rate_id        (applied_rate_id)
-#  index_shipments_on_broker_customer_id     (broker_customer_id)
-#  index_shipments_on_broker_id_and_load_id  (broker_id,load_id) UNIQUE
-#  index_shipments_on_broker_notes           (broker_notes)
-#  index_shipments_on_created_by_id          (created_by_id)
-#  index_shipments_on_dispatcher_id          (dispatcher_id)
-#  index_shipments_on_receiver_address_id    (receiver_address_id)
-#  index_shipments_on_shipper_address_id     (shipper_address_id)
-#  index_shipments_on_tracking_carrier_id    (tracking_carrier_id)
-#  index_shipments_on_updated_by_id          (updated_by_id)
+#  index_shipments_on_applied_rate_id      (applied_rate_id)
+#  index_shipments_on_broker_customer_id   (broker_customer_id)
+#  index_shipments_on_broker_notes         (broker_notes)
+#  index_shipments_on_created_by_id        (created_by_id)
+#  index_shipments_on_dispatcher_id        (dispatcher_id)
+#  index_shipments_on_load_id              (load_id) UNIQUE
+#  index_shipments_on_receiver_address_id  (receiver_address_id)
+#  index_shipments_on_shipper_address_id   (shipper_address_id)
+#  index_shipments_on_status               (status)
+#  index_shipments_on_tracking_carrier_id  (tracking_carrier_id)
+#  index_shipments_on_updated_by_id        (updated_by_id)
 #
 # Foreign Keys
 #
@@ -191,6 +190,8 @@
 #
 class Shipment < ApplicationRecord
   class << self
+    def last_load_id = maximum(:load_id) || Setting.first_load_id.to_i
+
     def ransackable_attributes(auth_object = nil)
       [
         'bol_notes',
@@ -241,7 +242,6 @@ class Shipment < ApplicationRecord
 
   audited
 
-  belongs_to :broker
   belongs_to :broker_carrier, counter_cache: true, optional: true
 
   belongs_to :dispatcher, class_name: 'User'
@@ -332,7 +332,6 @@ class Shipment < ApplicationRecord
   before_save :set_total_cost
   before_save :build_commissions
 
-  before_validation :set_broker # before set_dispatcher
   before_validation :set_dispatcher
 
   before_validation :set_status
@@ -418,7 +417,7 @@ class Shipment < ApplicationRecord
   scope :pending_pickup,                -> { active.where.not(dispatched_at: nil).where(picked_up_at: nil) }
   scope :pending_quotation,             -> { where(broker_carrier: nil, canceled_at: nil).or(where(broker_carrier: nil).where(id: canceled_recently)) }
 
-  validates :load_id, presence: true, uniqueness: { scope: :broker }
+  validates :load_id, presence: true, uniqueness: true
 
   validate :validate_future_pickup_by, if: -> { dispatch_pickup }
   validate :validate_reference_attributes
@@ -495,10 +494,8 @@ class Shipment < ApplicationRecord
           end
     ids << updated_by.contact_id if updated_by.present?
 
-    return if broker.nil?
-
     # Fallback
-    ids = broker.users.with_role('root').pluck(:contact_id) if ids.empty?
+    ids = User.broker.with_role('root').pluck(:contact_id) if ids.empty?
 
     Contact.where(id: ids)
   end
@@ -621,7 +618,7 @@ class Shipment < ApplicationRecord
     codes.each do |code|
       broker_accessorial = broker_customer.broker_accessorials.where(code:)
       if broker_accessorial.blank?
-        broker_accessorial = broker_customer.broker.broker_accessorials.where(code:)
+        broker_accessorial = BrokerAccessorial.where(code:)
         broker_accessorials << broker_accessorial.first if broker_accessorial.present?
       else
         broker_accessorials << broker_accessorial.first
@@ -669,7 +666,7 @@ class Shipment < ApplicationRecord
     suggested_accessorials.each do |suggested_accessorial|
       broker_accessorial = broker_customer.broker_accessorials.where(code: suggested_accessorial.code)
       if broker_accessorial.blank?
-        broker_accessorial = broker_customer.broker.broker_accessorials.where(code: suggested_accessorial.code)
+        broker_accessorial = BrokerAccessorial.where(code: suggested_accessorial.code)
         @suggested_broker_accessorials << broker_accessorial.first if broker_accessorial.present?
       else
         @suggested_broker_accessorials << broker_accessorial.first
@@ -771,14 +768,14 @@ class Shipment < ApplicationRecord
   def valid_broker_carriers_for_quotation(user_type = :customer)
     broker_carrier_ids = []
     broker_carrier_ids += if broker_customer.blank?
-                            broker.broker_carriers.blanket.api_configured.ids
+                            BrokerCarrier.blanket.api_configured.ids
                           else
                             broker_customer.eligible_broker_carriers(user_type).api_configured.ids
                           end
 
     broker_carrier_ids += if broker_customer.blank?
                             PricingRule
-                            .where(broker_carrier: broker.broker_carriers.blanket.api_unconfigured.ids)
+                            .where(broker_carrier: BrokerCarrier.blanket.api_unconfigured.ids)
                             .pluck(:broker_carrier_id)
                           else
                             PricingRule
@@ -790,7 +787,7 @@ class Shipment < ApplicationRecord
   end
 
   def requires_charges_confirmed_on_receivables?
-    broker_customer&.requires_charges_confirmed_on_receivables || broker.requires_charges_confirmed_on_receivables
+    broker_customer&.requires_charges_confirmed_on_receivables || Setting.requires_charges_confirmed_on_receivables
   end
 
   def undocumentable_reasons
@@ -812,10 +809,10 @@ class Shipment < ApplicationRecord
 
   def users_to_notify
     user_ids = (broker_customer&.sales_reps&.ids || []) +
-               (broker.users.broker.with_role('dispatch')&.ids || []) +
-               (broker.users.broker.with_role('root')&.ids || [])
+               (User.broker.with_role('dispatch')&.ids || []) +
+               (User.broker.with_role('root')&.ids || [])
 
-    user_ids -= broker.users.broker.with_role('notifications:-dispatch')&.ids || []
+    user_ids -= User.broker.with_role('notifications:-dispatch')&.ids || []
 
     if updated_by.present?
       if updated_by.receive_notifications_from_self?
@@ -875,14 +872,10 @@ class Shipment < ApplicationRecord
     end
   end
 
-  def set_broker
-    self.broker ||= broker_customer&.broker || broker_carrier&.broker || Broker.first
-  end
-
   def set_dispatcher
-    return if broker.blank? || (dispatcher.present? && dispatcher.broker == broker)
+    return if dispatcher&.broker?
 
-    preferred_dispatchers = broker_customer&.dispatchers.presence || broker.users.active.dispatchers
+    preferred_dispatchers = broker_customer&.dispatchers.presence || User.active.dispatchers
 
     self.dispatcher = preferred_dispatchers.order(Arel.sql('RANDOM()')).take
   end

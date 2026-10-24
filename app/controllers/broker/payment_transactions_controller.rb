@@ -4,12 +4,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
   before_action :require_accounts_payable
 
   def due
-    @q = current_user
-         .broker
-         .payment_transactions
-         .due
-         .includes(required_includes)
-         .ransack(params[:q], auth_object: current_user)
+    @q = PaymentTransaction.due.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_on asc' if @q.sorts.blank?
     @pagy, @payment_transactions = pagy(@q.result(distinct: true))
   end
@@ -26,7 +21,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
   end
 
   def import_sample_csv
-    now = DateTime.current.in_time_zone(current_user.broker.time_zone).to_date
+    now = DateTime.current.in_time_zone(Setting.time_zone).to_date
     due = now + 2.weeks
 
     csv = <<~CSV
@@ -38,7 +33,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
   end
 
   def index
-    @payment_transactions = current_user.broker.payment_transactions.unpaid.order(:due_on)
+    @payment_transactions = PaymentTransaction.unpaid.order(:due_on)
   end
 
   def new
@@ -47,7 +42,6 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
 
   def create
     @payment_transaction = PaymentTransaction.new(payment_transaction_params.except(:csv))
-    @payment_transaction.broker = current_user.broker
 
     if payment_transaction_params[:csv].blank?
       redirect_to([ :broker, @payment_transaction ]) and return if @payment_transaction.save
@@ -67,12 +61,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
   end
 
   def paid
-    @q = current_user
-         .broker
-         .payment_transactions
-         .paid
-         .includes(required_includes)
-         .ransack(params[:q], auth_object: current_user)
+    @q = PaymentTransaction.paid.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'paid_on desc' if @q.sorts.blank?
     @pagy, @payment_transactions = pagy(@q.result(distinct: true))
   end

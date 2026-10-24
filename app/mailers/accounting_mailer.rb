@@ -3,9 +3,7 @@ class AccountingMailer < ApplicationMailer
   helper :application, :date_time
 
   def unknown_customers(broker_customers:)
-    broker = broker_customers.first.broker
-    users = User.active.where(id: broker.users.broker.with_role('accounts-receivable').ids +
-                                  broker.users.broker.with_role('root').ids)
+    users = User.active.where(id: User.broker.with_role('accounts-receivable').ids + User.broker.with_role('root').ids)
 
     @broker_customers = broker_customers.includes(:customer).order('customers.name')
 

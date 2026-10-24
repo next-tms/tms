@@ -4,10 +4,10 @@
 <%= render 'broker/users/member_header' %>
 
 <% case params[:companyable_type] %>
-<% when 'Broker' %>
+<% when nil, '' %>
   <div class="alert alert-warning">
     <p class="lead">Inviting staff</p>
-    <p>You’re inviting staff to participate in the internal operations of <%= current_user.broker.name %>.</p>
+    <p>You’re inviting staff to participate in the internal operations of <%= Setting.value!(:name) %>.</p>
   </div>
 <% when 'BrokerCustomer' %>
   <div class="alert alert-info">
@@ -57,7 +57,7 @@
           </div>
         <% end %>
 
-        <% if params[:companyable_type] == 'Broker' %>
+        <% if params[:companyable_type].blank? %>
           <div class="form-group row">
             <label class="col-form-label col-sm-2">Permissions</label>
             <div class="col-sm-10">

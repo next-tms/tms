@@ -1,5 +1,3 @@
 class BrokerPolicy < ActionPolicy::Base
-  def show?
-    user.broker == record.broker
-  end
+  def show? = user.broker?
 end

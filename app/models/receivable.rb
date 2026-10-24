@@ -102,7 +102,6 @@ class Receivable < ApplicationRecord
 
   has_many :receivable_items, autosave: true, dependent: :destroy
 
-  has_one :broker, through: :shipment
 
   has_one_attached :invoice
 
@@ -141,7 +140,7 @@ class Receivable < ApplicationRecord
 
   # @todo Move to Shipment#create_receivable
   def build_from_shipment(shipment)
-    due_by = (Time.current + 30.days).in_time_zone(shipment.broker.time_zone).end_of_day
+    due_by = (Time.current + 30.days).in_time_zone(Setting.time_zone).end_of_day
     assign_attributes(due_by:, shipment:)
 
     receivable_items.map(&:mark_for_destruction) if receivable_items.present?
@@ -233,7 +232,7 @@ class Receivable < ApplicationRecord
     return false if shipment.requires_charges_confirmed_on_receivables? && !shipment.charges_confirmed?
 
     unless broker_customer.receivables_schedule == 'immediately'
-      now = Time.current.in_time_zone(broker_customer.broker.time_zone)
+      now = Time.current.in_time_zone(Setting.time_zone)
 
       # Always send batches between 9 PM - 12 AM
       return false if now.hour < 21
@@ -306,7 +305,7 @@ class Receivable < ApplicationRecord
   end
 
   def to_accounting_invoice
-    time_zone = ActiveSupport::TimeZone.new(Setting.value!(:time_zone_name))
+    time_zone = ActiveSupport::TimeZone.new(Setting.time_zone_name!)
 
     Accounting::Invoice
     .new(

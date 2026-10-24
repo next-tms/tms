@@ -35,7 +35,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
   end
 
   def set_broker_customer_sales_rep
-    @broker_customer_sales_rep = current_user.broker.users.find(params[:id])
+    @broker_customer_sales_rep = User.broker.find(params[:id])
   end
 
   def set_user_params

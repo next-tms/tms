@@ -8,8 +8,8 @@ class AccountingConnectionsController < ApplicationController
 
     integration.service.connect!(code: params[:code], realm_id: params[:realmId], redirect_uri:)
 
-    FetchBrokerCustomerAccountingCustomerIdsJob.perform_later(broker:)
-    FetchBrokerCarrierAccountingVendorIdsJob.perform_later(broker:)
+    FetchBrokerCustomerAccountingCustomerIdsJob.perform_later
+    FetchBrokerCarrierAccountingVendorIdsJob.perform_later
 
     flash[:success] = 'Connected'
 
@@ -33,7 +33,6 @@ class AccountingConnectionsController < ApplicationController
 
   private
 
-  def broker = current_user.broker
   def callback_url_helper = :"oauth_callback_#{kind}_accounting_url"
   def integration = @integration ||= Integration.where(kind:).first_or_initialize(name: 'default')
   def kind = params[:kind].presence || 'quickbooks'

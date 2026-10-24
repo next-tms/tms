@@ -1,6 +1,6 @@
 <tr id="<%= this_dom_id %>_broker_quote">
   <% if shipment.broker_quote.attached? %>
-    <td><%= shipment.broker.name %></td>
+    <td><%= Setting.value!(:name) %></td>
     <td>Quote</td>
     <td>
       <%= link_to icon('solid', 'eye', 'View'), rails_blob_path(shipment.broker_quote, disposition: 'preview'), target: '_blank' %>

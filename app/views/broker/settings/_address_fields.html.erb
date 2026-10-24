@@ -1,0 +1,14 @@
+<div class="form-group form-row">
+  <label class="col-form-label col-sm-2">Address</label>
+
+  <div class="col-sm-10" data-controller="address">
+    <%= f.fields_for :address do |address_form| %>
+      <%= address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
+      <%= address_form.text_field :street2, hide_label: true %>
+      <%= address_form.text_field :city, hide_label: true, placeholder: 'City' %>
+      <%= address_form.select :region_id, Array(address_form.object.region).map { |region| [region.name, region.id] }, { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
+      <%= address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
+      <%= address_form.select :country_id, Country.joins(:broker_countries).distinct.order(:name).map { |country| [country.name, country.id] }, { hide_label: true }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+    <% end %>
+  </div>
+</div>

@@ -32,8 +32,12 @@ RSpec.describe(Broker::BanksController) do
   end
 
   describe 'PATCH #update_accounting' do
-    before { patch(:update_accounting, params: { broker: { id: current_user.broker.id } }) }
+    let(:bank) { create(:bank) }
+
+    before { patch(:update_accounting, params: { accounting: { banks: { bank.id => { accounting_account_id: '42' } } } }) }
 
     it { is_expected.to(redirect_to(accounting_broker_banks_path)) }
+    it { expect(bank.reload.accounting_account_id).to(eq(42)) }
+    it { expect(flash[:success]).to(eq('Accounting accounts updated')) }
   end
 end

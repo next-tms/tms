@@ -9,9 +9,7 @@
   <div class="col col-md-8">
     <%= bootstrap_form_with(url: broker_payments_path, local: true, layout: :horizontal) do |f| %>
       <%= f.select :broker_carrier_id,
-              current_user
-              .broker
-              .broker_carriers
+              BrokerCarrier
               .includes(:carrier)
               .collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }
               .sort,

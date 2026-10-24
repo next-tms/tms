@@ -28,11 +28,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def accounting
     authorize!(current_user, to: :accounts_receivable_show?, with: AccountingPolicy)
 
-    @broker_customers = current_user
-                        .broker
-                        .broker_customers
-                        .includes(required_includes)
-                        .order('customers.name')
+    @broker_customers = BrokerCustomer.includes(required_includes).order('customers.name')
 
     @customers = Accounting.record_class(:customer).order(:display_name)
   end
@@ -60,7 +56,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
   def create
     @broker_customer = BrokerCustomer.new(broker_customer_params)
-    @broker_customer.broker = current_user.broker
 
     # @broker_customer.sales_reps = [current_user]
 
@@ -91,7 +86,6 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
   def new
     @broker_customer = BrokerCustomer.new
-    @broker_customer.broker = current_user.broker
     @broker_customer.customer = Customer.new
     @broker_customer.office_address = Address.new
     @broker_customer.primary_pickup_address = Address.new
@@ -109,13 +103,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   # Used by Stimulus autofill_shipper
   def primary_pickup_address
     respond_to do |format|
-      format.json do
-        if @broker_customer.broker == current_user.broker
-          render(json: { primary_pickup_address: @broker_customer.primary_pickup_address })
-        else
-          head(:unauthorized)
-        end
-      end
+      format.json { render(json: { primary_pickup_address: @broker_customer.primary_pickup_address }) }
     end
   end
 
@@ -124,7 +112,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
     @broker_customers = BrokerCustomer.includes(:customer).order('customers.name ASC')
 
-    @tz = ActiveSupport::TimeZone.new(Setting.value!(:time_zone_name))
+    @tz = ActiveSupport::TimeZone.new(Setting.time_zone_name!)
     @from_date = if params[:from_date].present?
                    @tz.parse(params[:from_date]).to_date
                  else
@@ -168,32 +156,24 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   end
 
   def show
-    if @broker_customer.broker == current_user.broker
-      @shipments = @broker_customer.shipments.order(load_id: :desc).limit(25)
+    @shipments = @broker_customer.shipments.order(load_id: :desc).limit(25)
 
-      respond_to do |format|
-        format.html
-        format.json do
-          render(json: { primary_pickup_address: @broker_customer.primary_pickup_address })
-        end
-      end
-    else
-      render(file: 'public/401', layout: false, status: :unauthorized)
+    respond_to do |format|
+      format.html
+      format.json { render(json: { primary_pickup_address: @broker_customer.primary_pickup_address }) }
     end
   end
 
   def update_accounting
     authorize!(current_user, to: :accounts_receivable_show?, with: AccountingPolicy)
 
-    broker = current_user.broker
-    broker.assign_attributes(broker_params)
-
-    if broker.save
+    if BrokerCustomer.update(accounting_params.keys, accounting_params.values).all?(&:valid?)
       flash[:success] = 'Accounting customers updated'
-      redirect_to(accounting_broker_broker_customers_path) && return
+    else
+      flash[:error] = 'Unable to update accounting customers'
     end
 
-    render(:accounting)
+    redirect_to(accounting_broker_broker_customers_path)
   end
 
   def update
@@ -238,12 +218,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
     @broker_customer = BrokerCustomer.find(params[:id])
   end
 
-  def broker_params
-    params.require(:broker).permit(
-      :id,
-      broker_customers_attributes: %i[id accounting_customer_id],
-    )
-  end
+  def accounting_params = params.require(:accounting).permit(broker_customers: %i[accounting_customer_id]).require(:broker_customers)
 
   def broker_customer_params
     params.require(:broker_customer).permit(

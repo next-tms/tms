@@ -3,7 +3,7 @@ class Broker::BrokerAccessorialsController < Broker::BrokerController
   before_action :authenticate_user!
 
   def index
-    @broker_accessorials = current_user.broker.broker_accessorials.order(:name)
+    @broker_accessorials = BrokerAccessorial.order(:name)
   end
 
   #  def new

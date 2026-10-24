@@ -1,10 +1,6 @@
 class DeviseCustomMailer < Devise::Mailer
   def invitation_instructions(record, token, opts = {})
-    robot_email = if record.broker?
-                    record.companyable.robot_email
-                  elsif record.customer?
-                    record.companyable.broker.robot_email
-                  end
+    robot_email = Setting.robot_email!
 
     opts[:cc] = record.invited_by&.email.presence
     opts[:from] = robot_email

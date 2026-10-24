@@ -28,7 +28,6 @@
 #  fk_rails_...  (shipment_id => shipments.id)
 #
 class ShipmentBrokerAccessorial < ApplicationRecord
-  belongs_to :broker, required: false
   belongs_to :broker_accessorial
 
   monetize :cost_cents, allow_nil: true

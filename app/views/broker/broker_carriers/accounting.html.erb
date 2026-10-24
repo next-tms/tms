@@ -7,11 +7,7 @@
 
 <div class="row">
   <div class="col-auto">
-    <%= bootstrap_form_with model: current_user.broker,
-                            url: accounting_broker_broker_carriers_path,
-                            method: :patch do |f| %>
-      <%= f.alert_message "Unable to update mappings:" %>
-
+    <%= bootstrap_form_with scope: :accounting, url: accounting_broker_broker_carriers_path, method: :patch do |f| %>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
@@ -20,12 +16,12 @@
           </thead>
 
           <tbody>
-            <%= f.fields_for :broker_carriers, @broker_carriers do |broker_carrier_form| %>
+            <% @broker_carriers.each do |broker_carrier| %>
+              <%= f.fields_for 'broker_carriers[]', broker_carrier do |broker_carrier_form| %>
               <tr>
                 <td><%= broker_carrier_form.object.carrier.name %></td>
 
                 <td>
-                  <%= broker_carrier_form.hidden_field :id %>
                   <%= broker_carrier_form.select :accounting_vendor_id,
                                                  @vendors.collect { |vendor| [ vendor.display_name, vendor.id ] },
                                                  {
@@ -35,6 +31,7 @@
                                                  } %>
                 </td>
               </tr>
+              <% end %>
             <% end %>
           </tbody>
         </table>

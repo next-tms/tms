@@ -22,9 +22,21 @@
 #   @return [Boolean]
 # @!attribute internal_notes
 #   @return [String]
+# @!attribute preferred_broker_carriers_kind
+#   @return [String]
+# @!attribute receivables_schedule
+#   @return [String]
 # @!attribute requires_carrier_bol_on_receivables
 #   @return [Boolean]
 # @!attribute requires_carrier_pod_on_receivables
+#   @return [Boolean]
+# @!attribute requires_charges_confirmed_on_receivables
+#   @return [Boolean]
+# @!attribute requires_customer_reference_number_on_receivables
+#   @return [Boolean]
+# @!attribute requires_shipment_delivery_before_receivable
+#   @return [Boolean]
+# @!attribute requires_shipment_shipper_reference_on_receivables
 #   @return [Boolean]
 # @!attribute shipment_string_patterns
 #   @return [String]
@@ -34,22 +46,19 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute broker_id
-#   @return []
+# @!attribute accounting_customer_id
+#   @return [String]
 # @!attribute customer_id
 #   @return []
 # @!attribute office_address_id
 #   @return []
 # @!attribute primary_pickup_address_id
 #   @return []
-# @!attribute accounting_customer_id
-#   @return [String]
 # @!attribute receivables_contact_id
 #   @return []
 #
 # Indexes
 #
-#  index_broker_customers_on_broker_id                            (broker_id)
 #  index_broker_customers_on_customer_id                          (customer_id)
 #  index_broker_customers_on_office_address_id                    (office_address_id)
 #  index_broker_customers_on_primary_pickup_address_id            (primary_pickup_address_id)
@@ -59,7 +68,6 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (broker_id => brokers.id)
 #  fk_rails_...  (customer_id => customers.id)
 #  fk_rails_...  (office_address_id => addresses.id)
 #  fk_rails_...  (primary_pickup_address_id => addresses.id)
@@ -94,7 +102,6 @@ class BrokerCustomer < ApplicationRecord
 
   audited
 
-  belongs_to :broker
 
   belongs_to :office_address, class_name: 'Address', dependent: :destroy
   accepts_nested_attributes_for :office_address, allow_destroy: true
@@ -161,11 +168,7 @@ class BrokerCustomer < ApplicationRecord
     return @eligible_broker_accessorials if @eligible_broker_accessorials
 
     broker_customer_accessorials = broker_accessorials
-    broker_accessorials = broker
-                          .broker_accessorials
-                          .where(broker_customer: nil)
-                          .where
-                          .not(code: [ broker_customer_accessorials.map(&:code) ])
+    broker_accessorials = BrokerAccessorial.where(broker_customer: nil).where.not(code: [ broker_customer_accessorials.map(&:code) ])
 
     @eligible_broker_accessorials = broker_customer_accessorials.or(broker_accessorials).order(:name)
   end

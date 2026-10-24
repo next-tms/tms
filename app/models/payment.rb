@@ -22,13 +22,13 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
+# @!attribute accounting_bill_payment_id
+#   @return [Integer]
 # @!attribute approved_by_id
 #   @return []
 # @!attribute bank_id
 #   @return []
 # @!attribute broker_carrier_id
-#   @return []
-# @!attribute broker_id
 #   @return []
 # @!attribute created_by_id
 #   @return []
@@ -48,7 +48,6 @@
 #  fk_rails_...  (approved_by_id => users.id)
 #  fk_rails_...  (bank_id => banks.id)
 #  fk_rails_...  (broker_carrier_id => broker_carriers.id)
-#  fk_rails_...  (broker_id => brokers.id)
 #  fk_rails_...  (created_by_id => users.id)
 #  fk_rails_...  (payment_method_id => payment_methods.id)
 #
@@ -69,7 +68,6 @@ class Payment < ApplicationRecord
 
   belongs_to :approved_by, class_name: 'User', optional: true
   belongs_to :bank, optional: true
-  belongs_to :broker
   belongs_to :broker_carrier
   belongs_to :created_by, class_name: 'User', optional: true
   belongs_to :payment_method, optional: true
@@ -102,7 +100,7 @@ class Payment < ApplicationRecord
   end
 
   def overdue?
-    due? && due_on < broker.time_zone.now.to_date
+    due? && due_on < Setting.time_zone.now.to_date
   end
 
   def paid

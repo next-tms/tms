@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -111,16 +111,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   create_table "banks", force: :cascade do |t|
     t.string "account_number"
     t.integer "accounting_account_id"
-    t.bigint "broker_id", null: false
     t.string "kind", null: false
     t.string "name"
-    t.index ["broker_id"], name: "index_banks_on_broker_id"
   end
 
   create_table "broker_accessorials", force: :cascade do |t|
     t.bigint "accessorial_id"
     t.bigint "broker_customer_id"
-    t.bigint "broker_id", null: false
     t.boolean "broker_only", default: true
     t.string "code"
     t.float "cost"
@@ -134,7 +131,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
     t.float "upcharge_percent"
     t.index ["accessorial_id"], name: "index_broker_accessorials_on_accessorial_id"
     t.index ["broker_customer_id"], name: "index_broker_accessorials_on_broker_customer_id"
-    t.index ["broker_id"], name: "index_broker_accessorials_on_broker_id"
   end
 
   create_table "broker_carriers", id: :serial, force: :cascade do |t|
@@ -143,7 +139,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
     t.text "accounting_notes"
     t.integer "accounting_vendor_id"
     t.bigint "broker_customer_id"
-    t.integer "broker_id"
     t.integer "carrier_id"
     t.bigint "check_mailing_address_id"
     t.boolean "create_invoice_on_pickup"
@@ -161,18 +156,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
     t.string "website_password"
     t.string "website_username"
     t.index ["broker_customer_id"], name: "index_broker_carriers_on_broker_customer_id"
-    t.index ["broker_id"], name: "index_broker_carriers_on_broker_id"
     t.index ["carrier_id"], name: "index_broker_carriers_on_carrier_id"
     t.index ["check_mailing_address_id"], name: "index_broker_carriers_on_check_mailing_address_id"
     t.index ["shipments_count"], name: "index_broker_carriers_on_shipments_count"
   end
 
   create_table "broker_countries", force: :cascade do |t|
-    t.bigint "broker_id"
     t.bigint "country_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["broker_id"], name: "index_broker_countries_on_broker_id"
     t.index ["country_id"], name: "index_broker_countries_on_country_id"
   end
 
@@ -200,7 +192,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   create_table "broker_customers", force: :cascade do |t|
     t.string "accounting_customer_id"
     t.boolean "always_show_quotes_based_on_calculated_classes", default: true
-    t.bigint "broker_id"
     t.boolean "can_quote", default: false
     t.datetime "created_at", precision: nil, null: false
     t.bigint "customer_id"
@@ -225,35 +216,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
     t.text "shipment_string_patterns"
     t.datetime "updated_at", precision: nil, null: false
     t.text "valid_freight_classes"
-    t.index ["broker_id"], name: "index_broker_customers_on_broker_id"
     t.index ["customer_id"], name: "index_broker_customers_on_customer_id"
     t.index ["office_address_id"], name: "index_broker_customers_on_office_address_id"
     t.index ["primary_pickup_address_id"], name: "index_broker_customers_on_primary_pickup_address_id"
     t.index ["receivables_contact_id"], name: "index_broker_customers_on_receivables_contact_id"
     t.index ["requires_carrier_bol_on_receivables"], name: "index_broker_customers_on_requires_carrier_bol_on_receivables"
     t.index ["requires_carrier_pod_on_receivables"], name: "index_broker_customers_on_requires_carrier_pod_on_receivables"
-  end
-
-  create_table "brokers", id: :serial, force: :cascade do |t|
-    t.bigint "address_id"
-    t.boolean "automatically_authorize_receivables", default: false
-    t.boolean "automatically_update_shipment_tracking_based_on_carrier_apis", default: true
-    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "customer_service_email"
-    t.text "default_bol_notes"
-    t.integer "first_load_id"
-    t.boolean "ignore_broker_carrier_bol_requires_tracking_number", default: false
-    t.string "name"
-    t.string "phone"
-    t.boolean "requires_charges_confirmed_on_receivables", default: false
-    t.string "robot_email"
-    t.string "theme_primary_color", default: "#0d6efd"
-    t.string "theme_sidebar_background_color", default: "#E2F8FF"
-    t.string "theme_sidebar_text_color", default: "rgba(0, 0, 0, 0.95)"
-    t.string "time_zone_name", null: false
-    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["address_id"], name: "index_brokers_on_address_id"
   end
 
   create_table "carrier_areas", force: :cascade do |t|
@@ -345,7 +313,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
 
   create_table "contacts", force: :cascade do |t|
     t.text "comments"
-    t.bigint "companyable_id", null: false
+    t.bigint "companyable_id"
     t.string "companyable_type"
     t.string "email"
     t.string "first_name"
@@ -356,6 +324,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
     t.string "work_phone"
     t.index ["companyable_id", "companyable_type", "email"], name: "idx_on_companyable_id_companyable_type_email_1de3a153e6", unique: true
     t.index ["companyable_type", "companyable_id"], name: "index_contacts_on_companyable"
+    t.index ["email"], name: "index_contacts_on_email", unique: true, where: "((companyable_id IS NULL) AND (companyable_type IS NULL) AND (email IS NOT NULL))"
   end
 
   create_table "countries", force: :cascade do |t|
@@ -394,13 +363,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
 
   create_table "document_preferences", force: :cascade do |t|
     t.bigint "broker_customer_id"
-    t.bigint "broker_id", null: false
     t.bigint "contact_id", null: false
     t.datetime "created_at", null: false
     t.string "kind"
     t.datetime "updated_at", null: false
     t.index ["broker_customer_id"], name: "index_document_preferences_on_broker_customer_id"
-    t.index ["broker_id"], name: "index_document_preferences_on_broker_id"
     t.index ["contact_id"], name: "index_document_preferences_on_contact_id"
     t.index ["kind"], name: "index_document_preferences_on_kind"
   end
@@ -520,7 +487,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
     t.integer "balance_cents", default: 0, null: false
     t.string "balance_currency", default: "USD", null: false
     t.bigint "broker_carrier_id"
-    t.bigint "broker_id", null: false
     t.datetime "created_at", null: false
     t.bigint "created_by_id"
     t.date "due_on"
@@ -544,7 +510,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
     t.bigint "approved_by_id"
     t.bigint "bank_id"
     t.bigint "broker_carrier_id", null: false
-    t.bigint "broker_id", null: false
     t.datetime "created_at", null: false
     t.bigint "created_by_id"
     t.date "due_on"
@@ -758,7 +723,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
     t.text "broker_and_broker_customer_notes"
     t.integer "broker_carrier_id"
     t.bigint "broker_customer_id"
-    t.integer "broker_id"
     t.text "broker_notes"
     t.datetime "canceled_at", precision: nil
     t.integer "carrier_charge_cents", default: 0, null: false
@@ -833,10 +797,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
     t.string "value_currency", default: "USD", null: false
     t.index ["applied_rate_id"], name: "index_shipments_on_applied_rate_id"
     t.index ["broker_customer_id"], name: "index_shipments_on_broker_customer_id"
-    t.index ["broker_id", "load_id"], name: "index_shipments_on_broker_id_and_load_id", unique: true
     t.index ["broker_notes"], name: "index_shipments_on_broker_notes"
     t.index ["created_by_id"], name: "index_shipments_on_created_by_id"
     t.index ["dispatcher_id"], name: "index_shipments_on_dispatcher_id"
+    t.index ["load_id"], name: "index_shipments_on_load_id", unique: true
     t.index ["receiver_address_id"], name: "index_shipments_on_receiver_address_id"
     t.index ["shipper_address_id"], name: "index_shipments_on_shipper_address_id"
     t.index ["status"], name: "index_shipments_on_status"
@@ -870,11 +834,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   end
 
   create_table "stripe_accounts", force: :cascade do |t|
-    t.bigint "broker_id", null: false
     t.datetime "created_at", null: false
     t.string "encrypted_account_id"
     t.datetime "updated_at", null: false
-    t.index ["broker_id"], name: "index_stripe_accounts_on_broker_id"
   end
 
   create_table "subscriptions", force: :cascade do |t|
@@ -976,9 +938,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
-    t.integer "broker_id"
-    t.bigint "companyable_id", null: false
-    t.string "companyable_type", null: false
+    t.bigint "companyable_id"
+    t.string "companyable_type"
     t.datetime "confirmation_sent_at", precision: nil
     t.string "confirmation_token"
     t.datetime "confirmed_at", precision: nil
@@ -1031,13 +992,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   add_foreign_key "addresses", "countries"
   add_foreign_key "addresses", "regions"
   add_foreign_key "addresses", "standardized_addresses"
-  add_foreign_key "banks", "brokers"
   add_foreign_key "broker_accessorials", "accessorials"
   add_foreign_key "broker_accessorials", "broker_customers"
-  add_foreign_key "broker_accessorials", "brokers"
   add_foreign_key "broker_carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "broker_carriers", "broker_customers"
-  add_foreign_key "broker_carriers", "brokers"
   add_foreign_key "broker_carriers", "carriers"
   add_foreign_key "broker_countries", "countries"
   add_foreign_key "broker_customer_dispatchers", "broker_customers"
@@ -1046,10 +1004,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   add_foreign_key "broker_customer_sales_reps", "users"
   add_foreign_key "broker_customers", "addresses", column: "office_address_id"
   add_foreign_key "broker_customers", "addresses", column: "primary_pickup_address_id"
-  add_foreign_key "broker_customers", "brokers"
   add_foreign_key "broker_customers", "contacts", column: "receivables_contact_id"
   add_foreign_key "broker_customers", "customers"
-  add_foreign_key "brokers", "addresses"
   add_foreign_key "carrier_areas", "areas", column: "from_area_id"
   add_foreign_key "carrier_areas", "areas", column: "to_area_id"
   add_foreign_key "carrier_areas", "carriers"
@@ -1063,7 +1019,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   add_foreign_key "commissions", "users"
   add_foreign_key "contact_roles", "contacts"
   add_foreign_key "document_preferences", "broker_customers"
-  add_foreign_key "document_preferences", "brokers"
   add_foreign_key "document_preferences", "contacts"
   add_foreign_key "integration_mappings", "integrations"
   add_foreign_key "items", "shipments"
@@ -1072,13 +1027,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   add_foreign_key "locations", "regions"
   add_foreign_key "overlength_rules", "broker_carriers"
   add_foreign_key "payment_transactions", "broker_carriers"
-  add_foreign_key "payment_transactions", "brokers"
   add_foreign_key "payment_transactions", "payments"
   add_foreign_key "payment_transactions", "shipments"
   add_foreign_key "payment_transactions", "users", column: "created_by_id"
   add_foreign_key "payments", "banks"
   add_foreign_key "payments", "broker_carriers"
-  add_foreign_key "payments", "brokers"
   add_foreign_key "payments", "payment_methods"
   add_foreign_key "payments", "users", column: "approved_by_id"
   add_foreign_key "payments", "users", column: "created_by_id"
@@ -1119,7 +1072,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_000000) do
   add_foreign_key "shipments", "users", column: "updated_by_id"
   add_foreign_key "standardized_addresses", "countries"
   add_foreign_key "standardized_addresses", "regions"
-  add_foreign_key "stripe_accounts", "brokers"
   add_foreign_key "subscriptions", "contacts"
   add_foreign_key "suppressions", "problems"
   add_foreign_key "suppressions", "suppressors"

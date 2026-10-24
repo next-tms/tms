@@ -26,7 +26,7 @@
   <% else %>
     <%= render 'layouts/message',
         classes: 'alert-info',
-        title: "#{current_user.broker.name} set these charges",
+        title: "#{Setting.value!(:name)} set these charges",
         message: <<~MESSAGE
           #{@total_charges_updated_by.full_name} last updated the total charges to
           #{humanized_money_with_symbol(@shipment.total_charges, no_cents_if_whole: false)}.

@@ -1,7 +1,7 @@
 module TransponderService
   module Input
     class Contact < Base
-      VALID_RECORD_CLASSES = [ ::Broker, ::Contact, ::Shipment, ::User ]
+      VALID_RECORD_CLASSES = [ ::Contact, ::Setting, ::Shipment, ::User ]
       VALID_ATTRIBUTE_PREFIXES = %i[shipper receiver]
 
       attr_reader :object, :attribute_prefix
@@ -28,12 +28,12 @@ module TransponderService
 
       private
 
-      def build_from_broker
+      def build_from_setting
         {
           company_name: Setting.value!(:name),
-          email: Setting.value!(:customer_service_email),
+          email: Setting.customer_service_email!,
           name: Setting.value!(:name),
-          phone: Setting.value!(:phone)
+          phone: Setting.phone!
         }.compact
       end
 
@@ -41,7 +41,7 @@ module TransponderService
         contact ||= object
 
         {
-          company_name: contact.companyable.name,
+          company_name: contact.companyable&.name || Setting.value(:name),
           email: contact.email,
           name: contact.full_name,
           phone: contact.work_phone.presence || contact.mobile_phone
@@ -66,7 +66,7 @@ module TransponderService
       def build_from_user(user = nil)
         user ||= object
 
-        build_from_broker.merge(build_from_contact(user.contact)).compact
+        build_from_setting.merge(build_from_contact(user.contact)).compact
       end
     end
   end

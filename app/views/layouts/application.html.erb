@@ -3,7 +3,7 @@
     <title><%= yield :title %> — <%= Setting.value!(:name) %></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="<%= Setting.value(:website_desc) %>"/>
+    <meta name="description" content="<%= Setting.website_desc %>"/>
 
     <% if !yield(:no_cache).blank? || !flash.blank? %>
       <meta name="turbo-cache-control" content="no-cache"/>
@@ -60,7 +60,7 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col-auto">
-              You are impersonating <%= current_user.full_name %> from <%= current_user.companyable.name %>.
+              You are impersonating <%= current_user.full_name %> from <%= current_user.companyable&.name || Setting.value(:name) %>.
             </div>
 
             <div class="col text-md-end">

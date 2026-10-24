@@ -27,8 +27,8 @@ class Broker::ClaimsController < Broker::BrokerController
 
   def new
     @claim = Claim.new
-    @claim.due_on = 90.days.from_now.in_time_zone(current_user.broker.time_zone).to_date
-    @claim.shipment = current_user.broker.shipments.find_by(id: params[:shipment_id])
+    @claim.due_on = 90.days.from_now.in_time_zone(Setting.time_zone).to_date
+    @claim.shipment = Shipment.find_by(id: params[:shipment_id])
 
     @claim.claim_items.build(payee: @claim.shipment.broker_carrier, total: @claim.shipment.total_charges)
 

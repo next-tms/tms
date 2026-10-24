@@ -1,7 +1,0 @@
-<div class="nested-fields form-inline form-row mb-2">
-  <%= f.hidden_field :_destroy %>
-  <%= f.select :country_id, Country.all.order(:name).collect { |country| [country.name, country.id] }, { hide_label: true }, class: 'form-select me-2', wrapper: false %>
-  <div class="col">
-    <%= link_to icon('solid', 'trash'), '#', class: 'remove-fields btn btn-light' %>
-  </div>
-</div>

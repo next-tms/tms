@@ -1,4 +1,4 @@
-<% provide :signature, @shipment.broker.name %>
+<% provide :signature, Setting.value!(:name) %>
 
 <p><%= @shipment.broker_customer&.customer.blank? ? 'Load' : "#{@shipment.broker_customer.customer.name} load" %> <%= @shipment.load_id %> has an updated ETA <% unless @shipment.broker_carrier.blank? %> from <%= @shipment.broker_carrier.carrier.name %><% end %>.</p>
 

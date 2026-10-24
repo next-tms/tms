@@ -116,7 +116,6 @@ class Broker::ShipmentsController < Broker::BrokerController
                         current_user.broker_customers.first
                       end
 
-    @shipment.broker = Broker.first
     @shipment.broker_customer = broker_customer
     @shipment.dispatcher = current_user if current_user.role?(:dispatch) && !current_user.role?(:root)
     @shipment.receiver_address = Address.new
@@ -140,10 +139,9 @@ class Broker::ShipmentsController < Broker::BrokerController
       @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
       @shipment.lock! # Avoid race condition on Shipment#load_id
 
-      @shipment.broker = current_user.broker
       @shipment.created_by = current_user
       @shipment.dispatcher ||= current_user if current_user.dispatcher_for?(@shipment)
-      @shipment.load_id = Broker.first.last_load_id + 1
+      @shipment.load_id = Shipment.last_load_id + 1
       @shipment.updated_by = current_user
 
       if !@shipment.quote_only? && shipment_params[:accessorials_has_been_suggested].blank?
@@ -242,7 +240,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   def documents; end
 
   def send_document
-    ids = @shipment.broker.contacts.ids
+    ids = Contact.broker.ids
 
     if params[:shipment_method] != 'broker_quote' && @shipment.broker_carrier.present?
       ids += @shipment.broker_carrier.contacts.where(companyable: @shipment.broker_carrier).ids
@@ -275,16 +273,12 @@ class Broker::ShipmentsController < Broker::BrokerController
       unauthorized
     end
 
-    if current_user.broker == @shipment.broker
-      if @shipment.destroy
-        flash[:notice] = 'Shipment deleted'
-      else
-        flash[:danger] = 'Error deleting shipment'
-        redirect_back(fallback_location: shipment_path(@shipment))
-        return
-      end
+    if @shipment.destroy
+      flash[:notice] = 'Shipment deleted'
     else
-      flash[:danger] = '403 Unauthorized'
+      flash[:danger] = 'Error deleting shipment'
+      redirect_back(fallback_location: shipment_path(@shipment))
+      return
     end
 
     redirect_to(shipments_path)

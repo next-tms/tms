@@ -23,7 +23,6 @@ class Customer < ApplicationRecord
   end
 
   has_many :broker_customers
-  has_many :brokers, through: :broker_customers
 
   has_many :shipments
 

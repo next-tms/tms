@@ -4,14 +4,14 @@
       <tr>
         <td>
           <%= image_tag QrCodeService.tracking_data_uri(shipment), class: 'float-start' %>
-          <h1><%= shipment.broker.name %></h1>
-          <address><%= shipment.broker.address.pretty(', ').gsub('Apt', 'Ste').html_safe %></address>
+          <h1><%= Setting.value!(:name) %></h1>
+          <address><%= Setting.mailing_address!.pretty(', ').gsub('Apt', 'Ste').html_safe %></address>
           <ul class="list-unstyled list-inline">
             <% if (host = website_homepage_host) %>
               <li><%= host %></li>
             <% end %>
-            <li><%= shipment.broker.phone.phony_formatted %></li>
-            <li><%= shipment.broker.customer_service_email %></li>
+            <li><%= Setting.phone&.phony_formatted %></li>
+            <li><%= Setting.customer_service_email! %></li>
           </ul>
         </td>
 
@@ -103,9 +103,9 @@
               <br>
               <%= shipment.broker_carrier.carrier.broker_billing_address.pretty('<br>').gsub('Apt', 'Ste').html_safe %>
             <% else %>
-              <%= shipment.broker.name %>
+              <%= Setting.value!(:name) %>
               <br>
-              <%= shipment.broker.address.pretty('<br>').gsub('Apt', 'Ste').html_safe %>
+              <%= Setting.mailing_address!.pretty('<br>').gsub('Apt', 'Ste').html_safe %>
             <% end %>
           </address>
           <p>

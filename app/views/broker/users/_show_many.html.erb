@@ -27,7 +27,7 @@
             <tr class="<% if user.deactivated? %>table-danger<% end %>">
               <td class="text-nowrap"><%= link_to user.full_name, broker_user_path(user), target: '_top' %></td>
               <% if controller_name == 'users' %>
-                <td><%= user.companyable.model_name.human %></td>
+                <td><%= user.companyable&.model_name&.human || 'Staff' %></td>
                 <td><% unless user.deactivated? %>✓<% end %></td>
               <% end %>
               <% if controller_name != 'broker_customers' %>

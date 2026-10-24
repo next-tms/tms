@@ -22,10 +22,10 @@
 
   <% if @shipment.booked_at.present? %>
     <% action = @shipment.whodunnit('total_charges_cents')&.broker? ? 'For more information about pricing' : 'To make changes' %>
-    <% who = @shipment.dispatcher&.full_name || current_user.broker.name %>
+    <% who = @shipment.dispatcher&.full_name || Setting.value!(:name) %>
     <%= render 'layouts/message',
         classes: 'alert-info',
-        title: "Contact #{current_user.broker.name}",
+        title: "Contact #{Setting.value!(:name)}",
         message: "#{action}, please contact #{who}."
     %>
   <% else %>

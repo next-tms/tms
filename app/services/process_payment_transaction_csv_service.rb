@@ -20,8 +20,8 @@ class ProcessPaymentTransactionCsvService
         return self
       end
 
-      due_on = parse_date(row['due']) unless row['due'].blank?
-      due_on ||= parse_date(row['date']) unless row['date'].blank?
+      due_on = parse_date(row['due'], :due) unless row['due'].blank?
+      due_on ||= parse_date(row['date'], :date) unless row['date'].blank?
 
       if due_on.blank?
         @message = "Unable to extract dates (\"date\") from row: #{row}, dates must be in the format YYYY-MM-DD"
@@ -35,11 +35,7 @@ class ProcessPaymentTransactionCsvService
 
       next if balance_cents.blank? || due_on.blank? || pro.blank?
 
-      payment_transaction = PaymentTransaction
-                            .where(broker: current_user.broker)
-                            .where(broker_carrier:)
-                            .where(pro:)
-                            &.first
+      payment_transaction = PaymentTransaction.find_by(broker_carrier:, pro:)
       payment_transaction = nil if payment_transaction&.payment&.paid?
 
       if payment_transaction.blank?

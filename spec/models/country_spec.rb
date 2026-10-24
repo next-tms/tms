@@ -80,4 +80,15 @@ RSpec.describe(Country) do
       it { expect(record.valid_street?("O'Keefe Blvd")).to(be(true)) }
     end
   end
+
+  describe '.serviced' do
+    let!(:serviced_country) { create(:country) }
+
+    before do
+      create(:country)
+      BrokerCountry.create!(country: serviced_country)
+    end
+
+    it { expect(described_class.serviced).to(contain_exactly(serviced_country)) }
+  end
 end

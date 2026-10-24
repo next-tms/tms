@@ -26,9 +26,9 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
+# @!attribute accounting_bill_id
+#   @return [Integer]
 # @!attribute broker_carrier_id
-#   @return []
-# @!attribute broker_id
 #   @return []
 # @!attribute created_by_id
 #   @return []
@@ -48,7 +48,6 @@
 # Foreign Keys
 #
 #  fk_rails_...  (broker_carrier_id => broker_carriers.id)
-#  fk_rails_...  (broker_id => brokers.id)
 #  fk_rails_...  (created_by_id => users.id)
 #  fk_rails_...  (payment_id => payments.id)
 #  fk_rails_...  (shipment_id => shipments.id)
@@ -84,7 +83,6 @@ class PaymentTransaction < ApplicationRecord
   belongs_to :payment, optional: true
   belongs_to :shipment, optional: true
 
-  belongs_to :broker
   belongs_to :broker_carrier
 
   monetize :balance_cents
@@ -93,7 +91,6 @@ class PaymentTransaction < ApplicationRecord
   scope :due, -> { includes(:payment).where(payment: { paid_on: nil }).or(includes(:payment).where(payment: nil)) }
   scope :paid, -> { includes(:payment).where.not(payment: { paid_on: nil }) }
 
-  validates :broker, presence: true
   validates :invoice, presence: true
   validates :shipment, presence: true
 
@@ -177,12 +174,6 @@ class PaymentTransaction < ApplicationRecord
     !!PushPaymentTransactionToAccountingJob.perform_later(self)
   end
 
-  def set_broker
-    return if broker_carrier.blank? || broker.present?
-
-    self.broker = broker_carrier.broker
-  end
-
   def set_invoice
     return if invoice.present?
 
@@ -197,7 +188,6 @@ class PaymentTransaction < ApplicationRecord
 
     return if shipment.blank?
 
-    self.broker ||= shipment.broker
     self.broker_carrier = shipment.broker_carrier
     self.invoice = shipment.pro.presence || shipment.load_id if invoice.blank?
     self.paid = balance if shipment.carrier_cost >= balance && !will_save_change_to_paid_cents?

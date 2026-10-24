@@ -1,11 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(ShipmentPolicy) do
-  let(:user) do
-    build(:user).tap do |u|
-      u.companyable = create(:broker)
-    end
-  end
+  let(:user) { build(:broker_user) }
 
   let(:shipment) { build(:shipment) }
 

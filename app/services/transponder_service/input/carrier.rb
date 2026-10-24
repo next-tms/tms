@@ -45,7 +45,9 @@ module TransponderService
       end
 
       def customer_location
-        Location.call(Broker.first.address, contactable: Broker.first)
+        setting = ::Setting.find_by!(key: 'mailing_address')
+
+        Location.call(setting.value, contactable: setting)
       end
 
       # @note :base_url, :browser handled upstream by Transponder

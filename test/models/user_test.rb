@@ -76,8 +76,6 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute broker_id
-#   @return [Integer]
 # @!attribute companyable_id
 #   @return []
 # @!attribute contact_id

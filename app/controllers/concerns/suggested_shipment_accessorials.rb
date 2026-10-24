@@ -4,7 +4,7 @@ module SuggestedShipmentAccessorials
   def build_suggested_broker_accessorials(shipment:)
     broker_accessorials = []
     shipment.assumed_accessorials.each do |assumed_accessorial|
-      broker_accessorials << shipment.broker.broker_accessorials.find_by(accessorial: assumed_accessorial)
+      broker_accessorials << BrokerAccessorial.find_by(accessorial: assumed_accessorial)
     end
 
     return if broker_accessorials.blank?

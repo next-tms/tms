@@ -19,7 +19,7 @@
   <% end %>
 
   <% if current_user.any_role?(:dispatch, :root) || current_user.sales_rep_for?(@shipment.broker_customer) %>
-    <% dispatcher_ids = current_user.broker.users.active.dispatchers.ids %>
+    <% dispatcher_ids = User.active.dispatchers.ids %>
     <% dispatcher_ids << current_user.id %>
     <% dispatcher_ids << @shipment.dispatcher_id unless dispatcher_ids.include?(@shipment.dispatcher_id) %>
 
@@ -43,7 +43,7 @@
       <%= f.email_field :shipper_contact_email, label: 'Email' %>
 
       <div data-autofill-shipper-target="shipperAddress" data-controller="address">
-        <%= render 'shipments/address_form', form: f, address_object: :shipper_address, fallback_address: current_user.broker.address %>
+        <%= render 'shipments/address_form', form: f, address_object: :shipper_address, fallback_address: Setting.mailing_address! %>
       </div>
     </div>
 
@@ -58,7 +58,7 @@
       <%= f.email_field :receiver_contact_email, label: 'Email' %>
 
       <div data-controller="address">
-        <%= render 'shipments/address_form', form: f, address_object: :receiver_address, fallback_address: current_user.broker.address %>
+        <%= render 'shipments/address_form', form: f, address_object: :receiver_address, fallback_address: Setting.mailing_address! %>
       </div>
     </div>
 

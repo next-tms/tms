@@ -12,7 +12,7 @@ class CreateReceivableJob < ApplicationJob
 
       receivable.save
 
-      return unless receivable.broker.automatically_authorize_receivables?
+      return unless Setting.automatically_authorize_receivables
 
       receivable.update(authorized_at: DateTime.current)
 

@@ -97,7 +97,7 @@
 
   <div class="col-sm-6">
     <p class="col-title">BOL Instructions</p>
-    <%= simple_format @shipment.broker.default_bol_notes %>
+    <%= simple_format Setting.default_bol_notes %>
     <%= simple_format@shipment.broker_carrier.default_bol_notes unless @shipment.broker_carrier.blank? %>
     <%= simple_format @shipment.broker_customer.default_bol_notes %>
     <%= simple_format @shipment.bol_notes %>

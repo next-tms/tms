@@ -4,7 +4,6 @@ module Types
 
     field :accounting_customer_id, String
     field :always_show_quotes_based_on_calculated_classes, Boolean
-    field :broker, Types::BrokerType
     field :can_quote, Boolean
     field :customer, Types::CustomerType
     field :default_bol_notes, String

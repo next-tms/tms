@@ -99,4 +99,18 @@ RSpec.describe(TransponderService::Input::Carrier) do
     it { expect(result[:type]).to(eq('website')) }
     it { expect(result[:username]).to(eq(object.website_username)) }
   end
+
+  describe '#customer_location' do
+    let(:address) { create(:address) }
+
+    before do
+      create(:setting, key: 'customer_service_email', value: 'help@acme.test')
+      create(:setting, key: 'mailing_address', value: address.id.to_s)
+      create(:setting, key: 'name', value: 'Acme Freight')
+      create(:setting, key: 'phone', value: '+15035550100')
+    end
+
+    it { expect(service.send(:customer_location)).to(include('address1' => address.street, 'city' => address.city, 'postalCode' => address.zip_code)) }
+    it { expect(service.send(:customer_location)['contact']).to(include('companyName' => 'Acme Freight', 'email' => 'help@acme.test')) }
+  end
 end

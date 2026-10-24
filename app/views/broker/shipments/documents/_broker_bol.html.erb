@@ -1,6 +1,6 @@
 <tr id="<%= this_dom_id %>_broker_bol">
   <% if shipment.broker_bol.attached? %>
-    <td><%= shipment.broker.name %></td>
+    <td><%= Setting.value!(:name) %></td>
     <td>Bill of Lading</td>
     <%= render 'broker/shipments/documents/actions', shipment:, document_type: :broker_bol %>
     <td></td>

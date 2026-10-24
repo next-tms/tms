@@ -3,7 +3,7 @@
 
   <h3>Account</h3>
   <%= f.select :carrier_id, Carrier.all.order(:name).all.order(:name).collect {|c| [ c.name, c.id ] }, { label: 'Carrier', selected: (@broker_carrier.carrier ? @broker_carrier.carrier.id : nil) }, class: 'form-select' %>
-  <%= f.select :broker_customer_id, [['None — Blanket Pricing', nil]] + current_user.broker.broker_customers.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@broker_carrier.broker_customer ? @broker_carrier.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, class: 'form-select' %>
+  <%= f.select :broker_customer_id, [['None — Blanket Pricing', nil]] + BrokerCustomer.includes(:customer).sort_by { |broker_customer| broker_customer.customer.name }.collect { |broker_customer| [ broker_customer.customer.name, broker_customer.id ] }, { label: 'Customer', selected: (@broker_carrier.broker_customer ? @broker_carrier.broker_customer.id : (params[:broker_customer_id] ? params[:broker_customer_id] : nil)) }, class: 'form-select' %>
   <%= f.text_field :account, placeholder: 'Account #', autocomplete: 'off' %>
   <%= f.text_field :account_desc, placeholder: 'Description', autocomplete: 'off' %>
 
@@ -23,9 +23,9 @@
         <%= check_mailing_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
         <%= check_mailing_address_form.text_field :street2, hide_label: true %>
         <%= check_mailing_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
-        <%= check_mailing_address_form.select :region_id, (check_mailing_address_form.object.region_id.blank? ? [[current_user.broker.address.region.name, current_user.broker.address.region.id]] : [[check_mailing_address_form.object.region.abbreviation, check_mailing_address_form.object.region_id]]), { hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
+        <%= check_mailing_address_form.select :region_id, (check_mailing_address_form.object.region_id.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[check_mailing_address_form.object.region.abbreviation, check_mailing_address_form.object.region_id]]), { hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
         <%= check_mailing_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
-        <%= check_mailing_address_form.select :country_id, Country.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, selected: (check_mailing_address_form.object.country_id.blank? ? current_user.broker.address.country_id : check_mailing_address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+        <%= check_mailing_address_form.select :country_id, Country.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, selected: (check_mailing_address_form.object.country_id.blank? ? Setting.mailing_address!.country_id : check_mailing_address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
       <% end %>
     </div>
   </div>

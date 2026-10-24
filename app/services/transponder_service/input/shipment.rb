@@ -50,7 +50,7 @@ module TransponderService
       end
 
       def pickup_at
-        tz = object.shipper_address&.time_zone || Setting.value!('time_zone_name')
+        tz = object.shipper_address&.time_zone || Setting.time_zone_name!
 
         today = Time.current.in_time_zone(tz).beginning_of_day
 

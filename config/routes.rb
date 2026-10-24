@@ -43,7 +43,7 @@ Rails.application.routes.draw do
     get 'customers/:id/shipments' => 'broker_customers#shipments', as: :broker_customer_shipments
 
     get 'settings/company', to: 'broker#settings'
-    match 'settings/company', to: 'broker#update', via: %i[patch put post]
+    resources :broker_countries, only: %i[create destroy], path: 'settings/company/countries'
     resources :broker_accessorials, path: 'settings/company/accessorials'
 
     get 'settings/company/accounting', to: 'accounting#show'

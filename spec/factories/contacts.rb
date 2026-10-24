@@ -32,7 +32,7 @@
 #
 FactoryBot.define do
   factory :contact do
-    association :companyable, factory: %i[broker_carrier broker_customer broker].sample
+    companyable { %i[broker_carrier broker_customer staff].sample.then { |kind| association(kind) unless kind == :staff } }
 
     email { Faker::Internet.email }
     first_name { Faker::Name.first_name }

@@ -9,54 +9,31 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def index
-    @q = current_user.broker.receivables.includes(required_includes).ransack(params[:q], auth_object: current_user)
+    @q = Receivable.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
 
   def authorized
-    @q = current_user
-         .broker
-         .receivables
-         .authorized
-         .not_invoiced
-         .includes(required_includes)
-         .ransack(params[:q], auth_object: current_user)
+    @q = Receivable.authorized.not_invoiced.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
 
   def invoiced
-    @q = current_user
-         .broker
-         .receivables
-         .invoiced
-         .unpaid
-         .includes(required_includes)
-         .ransack(params[:q], auth_object: current_user)
+    @q = Receivable.invoiced.unpaid.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
 
   def paid
-    @q = current_user
-         .broker
-         .receivables
-         .paid
-         .includes([ :shipment, { broker_customer: :customer }, :authorized_by ])
-         .ransack(params[:q], auth_object: current_user)
+    @q = Receivable.paid.includes([ :shipment, { broker_customer: :customer }, :authorized_by ]).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
 
   def unauthorized
-    @q = current_user
-         .broker
-         .receivables
-         .unauthorized
-         .not_invoiced
-         .includes(required_includes)
-         .ransack(params[:q], auth_object: current_user)
+    @q = Receivable.unauthorized.not_invoiced.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
@@ -110,7 +87,7 @@ class Broker::ReceivablesController < Broker::BrokerController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_receivable
-    @receivable = current_user.broker.receivables.find(params[:id])
+    @receivable = Receivable.find(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

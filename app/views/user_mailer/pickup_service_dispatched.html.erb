@@ -1,4 +1,4 @@
-<% provide :signature, @pickup.shipment.broker.name %>
+<% provide :signature, Setting.value!(:name) %>
 
 <p><%= @pickup.shipment.broker_customer&.customer.blank? ? 'Load' : "#{@pickup.shipment.broker_customer.customer.name} load" %> <%= @pickup.shipment.load_id %> has been received <% unless @pickup.shipment.broker_carrier.blank? %> by <%= @pickup.shipment.broker_carrier.carrier.name %><% end %> via API.</p>
 

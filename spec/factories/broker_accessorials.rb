@@ -30,24 +30,19 @@
 #   @return []
 # @!attribute broker_customer_id
 #   @return []
-# @!attribute broker_id
-#   @return []
 #
 # Indexes
 #
 #  index_broker_accessorials_on_accessorial_id      (accessorial_id)
 #  index_broker_accessorials_on_broker_customer_id  (broker_customer_id)
-#  index_broker_accessorials_on_broker_id           (broker_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (accessorial_id => accessorials.id)
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
-#  fk_rails_...  (broker_id => brokers.id)
 #
 FactoryBot.define do
   factory :broker_accessorial do
-    broker { create(:broker) }
     accessorial { create(:accessorial) }
     name { 'MyString' }
     cost { 1.5 }

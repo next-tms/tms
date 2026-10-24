@@ -1,29 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe(BrokerPolicy) do
-  let(:broker) { create(:broker) }
-
-  let(:user) do
-    build(:user).tap do |u|
-      u.companyable = broker
-    end
-  end
-
-  let(:shipment) { build(:shipment) }
-
-  let(:policy) { described_class.new(shipment, user:) }
+  let(:policy) { described_class.new(build(:shipment), user:) }
 
   describe '#show?' do
     subject { policy.apply(:show?) }
 
-    context "when user and record's broker is the same" do
-      before { shipment.broker = broker }
+    context 'when user.broker?' do
+      let(:user) { build(:broker_user) }
 
       it { is_expected.to(be(true)) }
     end
 
-    context "when user and record's broker is not the same" do
-      before { shipment.broker = create(:broker) }
+    context 'when not user.broker?' do
+      let(:user) { build(:customer_user) }
 
       it { is_expected.to(be(false)) }
     end

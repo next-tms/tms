@@ -111,7 +111,7 @@
 
             <% unless current_user&.broker? %>
               <span class="text-muted">
-                <%= @shipment.created_by.companyable.name %>
+                <%= @shipment.created_by.companyable&.name || Setting.value(:name) %>
               </span>
             <% end %>
           <% else %>

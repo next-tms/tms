@@ -41,6 +41,6 @@ class BrokerCustomer::ProfitabilityReportJsonService
   end
 
   def tz
-    @tz ||= ActiveSupport::TimeZone.new(Setting.value!(:time_zone_name))
+    @tz ||= ActiveSupport::TimeZone.new(Setting.time_zone_name!)
   end
 end

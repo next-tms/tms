@@ -1,20 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe(AccountsAndSalesRepPolicy) do
-  let(:broker) { create(:broker) }
-  let(:contact) do
-    c = build(:contact).tap do |u|
-      u.companyable = broker
-    end
-    c.save
-    c
-  end
-
-  let(:user) do
-    build(:user, contact:).tap do |u|
-      u.companyable = broker
-    end
-  end
+  let(:contact) { create(:contact, companyable: nil) }
+  let(:user) { build(:broker_user, contact:) }
 
   let(:shipment) { build(:shipment) }
 

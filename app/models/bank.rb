@@ -10,18 +10,8 @@
 #   @return [String]
 # @!attribute name
 #   @return [String]
-# @!attribute broker_id
-#   @return []
 # @!attribute accounting_account_id
 #   @return [Integer]
-#
-# Indexes
-#
-#  index_banks_on_broker_id  (broker_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (broker_id => brokers.id)
 #
 class Bank < ApplicationRecord
   class << self
@@ -40,7 +30,6 @@ class Bank < ApplicationRecord
 
   after_commit :push_to_accounting
 
-  belongs_to :broker
 
   enum :kind, { checking: 'checking', credit_card: 'credit_card' }
 

@@ -1,8 +1,8 @@
 <footer class="mt-6">
   <div class="container-fluid">
     <% if user_signed_in? && current_user.customer? %>
-      <% customer_service_email = Setting.value(:customer_service_email) %>
-      <% phone = Setting.value(:phone)&.phony_formatted %>
+      <% customer_service_email = Setting.customer_service_email %>
+      <% phone = Setting.phone&.phony_formatted %>
 
       <% if [customer_service_email, phone].any?(&:present?) %>
         <ul class="list-unstyled">

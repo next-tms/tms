@@ -4,7 +4,7 @@
   <div class="form-group row">
     <label class="col-form-label col-sm-2">Carrier</label>
       <div class="col-sm-10">
-        <%= f.select :broker_carrier_id, current_user.broker.broker_carriers.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, selected: (@payment_transaction.broker_carrier ? @payment_transaction.broker_carrier.id : nil) }, class: 'form-select' %>
+        <%= f.select :broker_carrier_id, BrokerCarrier.all.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, selected: (@payment_transaction.broker_carrier ? @payment_transaction.broker_carrier.id : nil) }, class: 'form-select' %>
     </div>
   </div>
 

@@ -6,12 +6,12 @@ class UserMailer < ApplicationMailer
 
   def send_welcome(user)
     @user = user
-    @broker = @user.customer? ? @user.broker_customer.broker : @user.broker
+    @name = Setting.value!(:name)
     mail(
-      from: "#{@broker.name} <#{@broker.robot_email}>",
-      reply_to: "#{@broker.name} <#{@broker.customer_service_email}>",
+      from: "#{@name} <#{Setting.robot_email!}>",
+      reply_to: "#{@name} <#{Setting.customer_service_email!}>",
       to: @user.email,
-      subject: "Welcome to #{@broker.name}"
+      subject: "Welcome to #{@name}"
     )
   end
 
@@ -97,12 +97,12 @@ class UserMailer < ApplicationMailer
   end
 
   def from(shipment)
-    "#{shipment.broker.name} <#{shipment.broker.robot_email}>"
+    "#{Setting.value!(:name)} <#{Setting.robot_email!}>"
   end
 
   def to(shipment, method)
-    user_ids = (shipment.broker_customer&.sales_reps&.ids || []) + shipment.broker.users.with_role('dispatch')&.ids || []
-    user_ids -= shipment.broker.users.with_role('notifications:-dispatch').ids unless method == :new_shipment
+    user_ids = (shipment.broker_customer&.sales_reps&.ids || []) + User.broker.with_role('dispatch')&.ids || []
+    user_ids -= User.broker.with_role('notifications:-dispatch').ids unless method == :new_shipment
 
     users = User.distinct.active.where(id: user_ids)
 
@@ -112,7 +112,7 @@ class UserMailer < ApplicationMailer
   end
 
   def reply_to(shipment)
-    return "Robot <#{shipment.broker.robot_email}>" if shipment.updated_by.blank?
+    return "Robot <#{Setting.robot_email!}>" if shipment.updated_by.blank?
 
     "#{shipment.updated_by.first_name} #{shipment.updated_by.last_name} <#{shipment.updated_by.email}>"
   end

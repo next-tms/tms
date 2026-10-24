@@ -36,7 +36,7 @@ class Shipment::DuplicateService
     new_shipment.shipper_address = shipment.shipper_address.dup
     new_shipment.shipment_broker_accessorials << shipment.shipment_broker_accessorials.collect(&:dup)
     new_shipment.items << shipment.items.collect(&:dup)
-    new_shipment.load_id = shipment.broker.last_load_id + 1
+    new_shipment.load_id = Shipment.last_load_id + 1
 
     # You want a duplicated shipment to have a shipment status of 'New'
     attrs = NULLABLE_ATTRS.map { |attr_name| { attr_name => nil } }

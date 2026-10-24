@@ -38,21 +38,18 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
+# @!attribute accounting_vendor_id
+#   @return [Integer]
 # @!attribute broker_customer_id
 #   @return []
-# @!attribute broker_id
-#   @return [Integer]
 # @!attribute carrier_id
 #   @return [Integer]
 # @!attribute check_mailing_address_id
 #   @return []
-# @!attribute accounting_vendor_id
-#   @return [Integer]
 #
 # Indexes
 #
 #  index_broker_carriers_on_broker_customer_id        (broker_customer_id)
-#  index_broker_carriers_on_broker_id                 (broker_id)
 #  index_broker_carriers_on_carrier_id                (carrier_id)
 #  index_broker_carriers_on_check_mailing_address_id  (check_mailing_address_id)
 #  index_broker_carriers_on_shipments_count           (shipments_count)
@@ -60,7 +57,6 @@
 # Foreign Keys
 #
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
-#  fk_rails_...  (broker_id => brokers.id)
 #  fk_rails_...  (carrier_id => carriers.id)
 #  fk_rails_...  (check_mailing_address_id => addresses.id)
 #
@@ -90,7 +86,6 @@ class BrokerCarrier < ApplicationRecord
   encrypts :encrypted_api_key
 
   belongs_to :carrier
-  belongs_to :broker
   belongs_to :broker_customer, optional: true
 
   belongs_to :check_mailing_address, class_name: 'Address', optional: true

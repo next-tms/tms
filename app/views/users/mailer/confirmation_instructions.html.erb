@@ -39,7 +39,7 @@ body {
     <p><%= link_to 'Confirm My Email', confirmation_url(@resource, confirmation_token: @token), host: ENV.fetch('DOMAIN'), protocol: 'https' %></p>
     <div class="signature">
       <p><em>All the best,</em></p>
-      <p class="title"><%= @resource.broker.name %></p>
+      <p class="title"><%= Setting.value!(:name) %></p>
     </div>
   </body>
 </html>

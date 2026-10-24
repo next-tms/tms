@@ -135,6 +135,7 @@ en:
     customer_service_email: Email address displayed to customers for customer service
     domain: Domain used for Next TMS, e.g. tms.mycompany.com
     ignore_broker_carrier_bol_requires_tracking_number: Allow creating bill of lading when shipment tracking number is missing and the carrier requires it to be present?
+    mailing_address: Mailing address of your company, shown on documents such as bills of lading and quotes
     name: Display name of your company, e.g. My Company
     phone: Customer service phone number in E.164 format, e.g. +1-555-555-5555
     requires_charges_confirmed_on_receivables: Prevent creating receivable until shipment charges are confirmed?

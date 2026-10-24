@@ -6,11 +6,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def accounting
     authorize!(current_user, to: :accounts_payable_show?, with: AccountingPolicy)
 
-    @broker_carriers = current_user
-                       .broker
-                       .broker_carriers
-                       .includes(required_includes)
-                       .order('carriers.name')
+    @broker_carriers = BrokerCarrier.includes(required_includes).order('carriers.name')
 
     @vendors = Accounting.record_class(:vendor).order(:display_name)
   end
@@ -20,34 +16,25 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def index
-    @q = current_user
-         .broker
-         .broker_carriers
-         .includes(required_includes)
-         .ransack(params[:q], auth_object: current_user)
+    @q = BrokerCarrier.includes(required_includes).ransack(params[:q], auth_object: current_user)
 
     @q.sorts = "#{Carrier.table_name.singularize}_name" if @q.sorts.blank?
     @pagy, @broker_carriers = pagy(@q.result)
   end
 
   def show
-    unauthorized && return unless @broker_carrier.broker == current_user.broker
-
     @shipments = @broker_carrier.shipments.order(load_id: :desc).limit(25)
     @carrier_contacts = @broker_carrier.carrier.contacts
   end
 
   def new
     @broker_carrier = BrokerCarrier.new
-    @broker_carrier.broker = current_user.broker
     @broker_carrier.check_mailing_address = Address.new
   end
 
   def create
     @broker_carrier = BrokerCarrier.new(broker_carrier_params)
-    @broker_carrier.broker = current_user.broker
-    @broker_carrier.ignore_bol_requires_tracking_number =
-      current_user.broker.ignore_broker_carrier_bol_requires_tracking_number?
+    @broker_carrier.ignore_bol_requires_tracking_number = Setting.ignore_broker_carrier_bol_requires_tracking_number(false)
 
     redirect_to([ :broker, @broker_carrier ]) && return if @broker_carrier.save
 
@@ -59,15 +46,13 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def update_accounting
     authorize!(current_user, to: :accounts_payable_show?, with: AccountingPolicy)
 
-    broker = current_user.broker
-    broker.assign_attributes(broker_params)
-
-    if broker.save
+    if BrokerCarrier.update(accounting_params.keys, accounting_params.values).all?(&:valid?)
       flash[:success] = 'Accounting vendors updated'
-      redirect_to(accounting_broker_broker_carriers_path) && return
+    else
+      flash[:error] = 'Unable to update accounting vendors'
     end
 
-    render(:accounting)
+    redirect_to(accounting_broker_broker_carriers_path)
   end
 
   def tariff; end
@@ -87,7 +72,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
 
     @terminals = Terminal
                  .includes(:address)
-                 .where(carrier_id: current_user.broker.carriers.ids)
+                 .where(carrier_id: BrokerCarrier.select(:carrier_id))
                  .where('addresses.region_id IN (?)', region_ids)
                  .where('addresses.city ILIKE ?', params[:city])
                  .references(:address)
@@ -191,12 +176,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def broker_params
-    params.require(:broker).permit(
-      :id,
-      broker_carriers_attributes: %i[id accounting_vendor_id],
-    )
-  end
+  def accounting_params = params.require(:accounting).permit(broker_carriers: %i[accounting_vendor_id]).require(:broker_carriers)
 
   def broker_carrier_params
     params
@@ -207,7 +187,6 @@ class Broker::BrokerCarriersController < Broker::BrokerController
       :account,
       :accounting_notes,
       :broker_customer_id,
-      :broker_id,
       :carrier_id,
       :create_invoice_on_pickup,
       :customer_id,

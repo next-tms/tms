@@ -30,7 +30,7 @@ module ApplicationHelper
     end
   end
 
-  def homepage = Setting.value(:website_homepage, root_path)
+  def homepage = Setting.website_homepage(root_path)
 
   def maybe_badge(n, type: '')
     "<span class=\"badge #{type}\">#{n}</span>".html_safe if n.positive?

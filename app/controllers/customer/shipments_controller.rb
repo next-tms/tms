@@ -78,9 +78,8 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.created_by = current_user
     @shipment.updated_by = current_user
-    @shipment.broker = current_user.broker
     @shipment.broker_customer = current_user.companyable
-    @shipment.load_id = current_user.companyable.broker.last_load_id + 1
+    @shipment.load_id = Shipment.last_load_id + 1
 
     respond_to do |format|
       if @shipment.save

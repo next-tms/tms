@@ -51,7 +51,7 @@ module ProblematicService
         return record.reload.problems
       end
 
-      roles_problems = record.problems.by_any_role(*roles).where(assigned_to: record.broker.users)
+      roles_problems = record.problems.by_any_role(*roles).where(assigned_to: User.broker)
 
       if roles_problems.any?
         roles_problems.update_all(resolved_at: nil, resolved_by_id: nil)
@@ -107,7 +107,7 @@ module ProblematicService
                                   record.dispatcher.present? &&
                                   roles.any?(:dispatch)
 
-      users = User.with_any_role(*roles).where(companyable: record.broker)
+      users = User.broker.with_any_role(*roles)
 
       # User with least amount of problems
       assigned_to = users
@@ -121,18 +121,11 @@ module ProblematicService
       return assigned_to if assigned_to.present?
 
       Rails.logger.warn(<<~WARN.squish)
-        Unable to find User with broker=(name: "#{record.broker.name}"),
+        Unable to find User with broker=(name: "#{Setting.value(:name)}"),
                                  role=(name: [#{roles.join(", ")}])
       WARN
 
-      Role
-      .find_by(name: 'root')
-      .users
-      .active
-      .where(companyable: broker)
-      .order(Arel.sql('RANDOM()'))
-      .limit(1)
-      .first
+      Role.find_by(name: 'root').users.active.broker.order(Arel.sql('RANDOM()')).limit(1).first
     end
   end
 end

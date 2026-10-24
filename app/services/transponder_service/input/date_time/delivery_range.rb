@@ -35,7 +35,7 @@ module TransponderService
         end
 
         def tz
-          @tz ||= shipment.receiver_address.time_zone.presence || Setting.value!(:time_zone_name)
+          @tz ||= shipment.receiver_address.time_zone.presence || Setting.time_zone_name!
         end
       end
     end

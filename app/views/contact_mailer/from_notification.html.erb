@@ -1,4 +1,4 @@
-<% provide :signature, @shipment.broker.name %>
+<% provide :signature, Setting.value!(:name) %>
 
 <p>Your <%= @document_type %> is attached for the following shipment (load <%= @shipment.load_id %>):</p>
 

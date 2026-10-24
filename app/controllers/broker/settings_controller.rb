@@ -27,7 +27,7 @@ class Broker::SettingsController < Broker::BrokerController
   end
 
   def new
-    @setting = Setting.new
+    @setting = Setting.new(key: params[:key])
   end
 
   def show; end
@@ -47,6 +47,10 @@ class Broker::SettingsController < Broker::BrokerController
   end
 
   def setting_params
-    params.require(:setting).permit(:key, :value)
+    params.require(:setting).permit(
+      :key,
+      :value,
+      address_attributes: %i[city country_id region_id street street2 zip_code],
+    )
   end
 end

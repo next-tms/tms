@@ -5,7 +5,7 @@ class Broker::ContactsController < Broker::BrokerController
   def edit; end
 
   def index
-    @q = @broker.contacts.includes(:contact).ransack(params[:q], auth_object: current_user)
+    @q = Contact.broker.includes(:contact).ransack(params[:q], auth_object: current_user)
     @q.sorts = "#{"#{Contact.table_name}.first_name"} desc" if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
   end

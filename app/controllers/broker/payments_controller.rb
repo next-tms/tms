@@ -4,7 +4,7 @@ class Broker::PaymentsController < Broker::BrokerController
   before_action :require_accounts_payable
 
   def due
-    @q = Payment.due.includes(required_includes + %i[broker]).ransack(params[:q], auth_object: current_user)
+    @q = Payment.due.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_on asc' if @q.sorts.blank?
     @pagy, @payments = pagy(@q.result(distinct: true))
   end
@@ -25,7 +25,7 @@ class Broker::PaymentsController < Broker::BrokerController
   end
 
   def pay
-    @banks = Bank.where(broker: current_user.broker).order(:name)
+    @banks = Bank.order(:name)
     @payment_methods = PaymentMethod.all.order(:name)
     selected_bank = @payment.bank || @banks.first
 
@@ -52,12 +52,7 @@ class Broker::PaymentsController < Broker::BrokerController
                            .where(payment: nil)
                            .where('due_on <= ?', cutoff_date.to_date)
 
-    @payment = Payment.new(
-      broker_carrier:,
-      payment_transactions:,
-      due_on: cutoff_date,
-      broker: current_user.broker,
-    )
+    @payment = Payment.new(broker_carrier:, due_on: cutoff_date, payment_transactions:)
 
     if @payment.save
       flash[:success] = "Successfully Created new Payment for #{broker_carrier.broker_customer_specific_name}"

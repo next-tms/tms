@@ -3,7 +3,7 @@
     <% url = user_signed_in? ? root_path : homepage %>
 
     <% name = Setting.value!(:name) %>
-    <% data = Setting.value(:website_logo_image_data) %>
+    <% data = Setting.website_logo_image_data %>
     <%= link_to url, class: 'navbar-brand bg-black rounded p-2' do %>
       <% if data.present? %>
         <%= image_tag(data, alt: name, class: 'navbar-brand-logo') %>

@@ -1,7 +1,7 @@
 <tr id="<%= this_dom_id %>_receivables">
   <% if shipment.receivables.any? %>
     <% shipment.receivables.with_invoice.order(:created_at).each do |receivable| %>
-      <td><%= receivable.shipment.broker.name %></td>
+      <td><%= Setting.value!(:name) %></td>
       <td>Invoice</td>
       <td>
         <%= link_to icon('solid', 'eye', 'View'),

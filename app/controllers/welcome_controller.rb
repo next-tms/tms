@@ -8,6 +8,6 @@ class WelcomeController < ApplicationController
   def after_sign_in_path
     return customer_shipments_path if current_user.customer?
 
-    yours_broker_problems_path if current_user.broker
+    yours_broker_problems_path if current_user.broker?
   end
 end

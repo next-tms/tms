@@ -6,10 +6,7 @@ class Broker::BanksController < Broker::BrokerController
   def accounting
     authorize!(current_user, to: :root_show?, with: AccountingPolicy)
 
-    @banks = current_user
-             .broker
-             .banks
-             .order(:name, :account_number)
+    @banks = Bank.order(:name, :account_number)
 
     @accounts = Accounting.supports?(:account) ? Accounting.record_class(:account).order(:name) : []
   end
@@ -46,7 +43,6 @@ class Broker::BanksController < Broker::BrokerController
 
   def create
     @bank = Bank.new(bank_params)
-    @bank.broker = current_user.broker
     if @bank.save
       redirect_to([ :broker, @bank ])
     else
@@ -57,7 +53,7 @@ class Broker::BanksController < Broker::BrokerController
   def edit; end
 
   def index
-    @q = current_user.broker.banks.ransack(params[:q], auth_object: current_user)
+    @q = Bank.ransack(params[:q], auth_object: current_user)
     @q.sorts = 'name asc' if @q.sorts.blank?
 
     @pagy, @banks = pagy(@q.result)
@@ -83,17 +79,13 @@ class Broker::BanksController < Broker::BrokerController
   def update_accounting
     authorize!(current_user, to: :root_show?, with: AccountingPolicy)
 
-    broker = current_user.broker
-    broker.assign_attributes(broker_params)
-
-    if broker.save
+    if Bank.update(accounting_params.keys, accounting_params.values).all?(&:valid?)
       flash[:success] = 'Accounting accounts updated'
-      redirect_to(accounting_broker_banks_path) && return
+    else
+      flash[:error] = 'Unable to update accounting accounts'
     end
 
-    @accounts = Accounting.supports?(:account) ? Accounting.record_class(:account).order(:name) : []
-
-    render(:accounting)
+    redirect_to(accounting_broker_banks_path)
   end
 
   private
@@ -109,7 +101,7 @@ class Broker::BanksController < Broker::BrokerController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_bank
-    @bank = current_user.broker&.banks&.where(id: params[:id])&.first
+    @bank = Bank.find_by(id: params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
@@ -122,10 +114,5 @@ class Broker::BanksController < Broker::BrokerController
     )
   end
 
-  def broker_params
-    params.require(:broker).permit(
-      :id,
-      banks_attributes: %i[id kind accounting_account_id],
-    )
-  end
+  def accounting_params = params.require(:accounting).permit(banks: %i[accounting_account_id kind]).require(:banks)
 end

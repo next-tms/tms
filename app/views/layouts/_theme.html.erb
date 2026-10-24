@@ -1,7 +1,7 @@
 <style>
-  <% theme_primary_color = Setting.value!(:theme_primary_color) %>
-  <% theme_sidebar_background_color = Setting.value!(:theme_sidebar_background_color) %>
-  <% theme_sidebar_text_color = Setting.value!(:theme_sidebar_text_color) %>
+  <% theme_primary_color = Setting.theme_primary_color! %>
+  <% theme_sidebar_background_color = Setting.theme_sidebar_background_color! %>
+  <% theme_sidebar_text_color = Setting.theme_sidebar_text_color! %>
 
   <% key = [theme_primary_color, theme_sidebar_background_color, theme_sidebar_text_color].join %>
 

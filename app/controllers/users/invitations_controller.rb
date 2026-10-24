@@ -1,10 +1,6 @@
 class Users::InvitationsController < Devise::InvitationsController
   def new
-    self.resource = resource_class
-                    .new(
-                      companyable_type: params[:companyable_type].presence || 'Broker',
-                      companyable_id: params[:companyable_id].presence || current_user.broker_id
-                    )
+    self.resource = resource_class.new(companyable_id: params[:companyable_id].presence, companyable_type: params[:companyable_type].presence)
 
     render :new
   end
@@ -75,10 +71,6 @@ class Users::InvitationsController < Devise::InvitationsController
   private
 
   def invite_resource
-    super do |user|
-      user.build_contact
-
-      user.broker_id = current_user.broker_id
-    end
+    super(&:build_contact)
   end
 end

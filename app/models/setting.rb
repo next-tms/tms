@@ -31,6 +31,15 @@ class Setting < ApplicationRecord
       CONFIGURATION.map { |entry| entry[:key] }
     end
 
+    def method_missing(method_name, *arguments)
+      key = method_name.to_s.delete_suffix('!')
+      return super unless keys.include?(key)
+
+      method_name.end_with?('!') ? value!(key, *arguments) : value(key, *arguments)
+    end
+
+    def respond_to_missing?(method_name, include_private = false) = keys.include?(method_name.to_s.delete_suffix('!')) || super
+
     def ransackable_attributes(auth_object = nil)
       [ 'key', 'value' ]
     end
@@ -56,7 +65,14 @@ class Setting < ApplicationRecord
   CONFIGURATION = Psych.load_file(Rails.root.join('config/settings.yml'), symbolize_names: true).freeze
   DOMAIN_REGEX = /\b((xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}\b/
 
+  include ::Instigatable
+  include Setting::Instigatable
+
+  after_save :update_broker_carriers_ignore_bol_requires_tracking_number, if: -> { key == 'ignore_broker_carrier_bol_requires_tracking_number' }
+
   audited
+
+  before_save :save_address, if: :address?
 
   phony_normalize :value, default_country_code: 'US', if: :phone?
 
@@ -65,6 +81,21 @@ class Setting < ApplicationRecord
   validates :key, uniqueness: true
 
   validates_plausible_phone :value, presence: true, if: :phone?
+
+  def address
+    return unless address?
+    return @address if @address && (@address.new_record? || @address.id.to_s == self[:value])
+
+    @address = Address.find_by(id: self[:value]) || Address.new
+  end
+
+  def address? = kind == :address
+
+  def address_attributes=(attributes)
+    return unless address?
+
+    address.assign_attributes(attributes)
+  end
 
   def help
     return if key.blank?
@@ -86,12 +117,18 @@ class Setting < ApplicationRecord
   def phone? = kind == :phone
 
   def value
+    return address if address?
     return super unless BOOLEAN_VALUES.values.include?(super)
 
     BOOLEAN_VALUES[:true] == super
   end
 
   def value=(new_value)
+    if new_value.is_a?(Address)
+      @address = new_value
+      return super(new_value.id&.to_s)
+    end
+
     return super unless [ true, false, 'true', 'false' ].include?(new_value)
 
     if new_value.is_a?(String)
@@ -103,10 +140,29 @@ class Setting < ApplicationRecord
 
   private
 
+  def save_address
+    return unless address.changed?
+
+    self.value = address.tap(&:save!)
+  end
+
+  def update_broker_carriers_ignore_bol_requires_tracking_number
+    return unless saved_change_to_value?
+
+    BrokerCarrier.update_all(ignore_bol_requires_tracking_number: value)
+  end
+
   def validate_value
     return if kind.blank?
 
     case kind
+    when :address
+      if address.changed?
+        address.validate
+        address.errors.each { |error| errors.add(:address, error.full_message) }
+      elsif address.new_record?
+        errors.add(:address, 'must be present')
+      end
     when :boolean
       return if value.is_a?(TrueClass) || value.is_a?(FalseClass)
 

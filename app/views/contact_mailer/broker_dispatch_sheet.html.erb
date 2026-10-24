@@ -1,4 +1,4 @@
-<% provide :signature, @shipment.broker.name %>
+<% provide :signature, Setting.value!(:name) %>
 
 <p>Please find the dispatch sheet attached for the following shipment (load <%= @shipment.load_id %>):</p>
 

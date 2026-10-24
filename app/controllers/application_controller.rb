@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
 
   delegate :homepage, private: true, to: :helpers
 
-  etag { [ Broker.all, current_user, Setting.all ] }
+  etag { [ current_user, Setting.all ] }
 
   protect_from_forgery with: :exception
 
@@ -34,15 +34,6 @@ class ApplicationController < ActionController::Base
 
   def add_floc_opt_out_header
     response.set_header('Permissions-Policy', 'interest-cohort=()')
-  end
-
-  def check_if_website_belongs_to_broker
-    if current_user
-      raise ApplicationController::NotAuthorized if !@website || current_user.broker_id != @website.broker_id
-
-      # User logged into Liftoff directly
-      raise ApplicationController::NotAuthorized unless @website
-    end
   end
 
   def global_controller?

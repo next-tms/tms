@@ -1,9 +1,10 @@
 <%= f.grouped_collection_select :companyable_sgid,
-                                [Broker, BrokerCustomer],
+                                [BrokerCustomer],
                                 :companyable_order,
                                 :human_name,
                                 :to_sgid_s,
                                 :name,
+                                include_blank: 'Staff',
                                 label: 'Company',
                                 selected: f.object.companyable
 %>

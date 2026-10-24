@@ -11,5 +11,5 @@
 <p class="col-title">Value</p>
 
 <div class="font-monospace text-break w-100 p-2 bg-light rounded">
-  <%= @setting.value %>
+  <%= @setting.address? ? @setting.value.pretty(', ') : @setting.value %>
 </div>

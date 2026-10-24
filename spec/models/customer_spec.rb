@@ -16,7 +16,6 @@ require 'rails_helper'
 RSpec.describe(Customer) do
   describe 'relationships' do
     it { is_expected.to(have_many(:broker_customers)) }
-    it { is_expected.to(have_many(:brokers).through(:broker_customers)) }
   end
 
   describe 'validations' do

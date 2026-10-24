@@ -156,14 +156,14 @@ module ShipmentsHelper
   end
 
   def website_homepage_host
-    homepage = Setting.value(:website_homepage)
+    homepage = Setting.website_homepage
     return if homepage.blank?
 
     URI.parse(homepage).host
   end
 
   def requires_charges_confirmed_note(shipment)
-    requires_by = shipment.broker.name if shipment.broker.requires_charges_confirmed_on_receivables
+    requires_by = Setting.value!(:name) if Setting.requires_charges_confirmed_on_receivables
     requires_by = shipment.broker_customer.customer.name if shipment.broker_customer&.requires_charges_confirmed_on_receivables
 
     "Charges are required to be confirmed by #{requires_by} before sending Receivables to the Customer"

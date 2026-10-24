@@ -6,7 +6,6 @@ module Types
     field :account_desc, String
     field :accounting_notes, String
     field :accounting_vendor_id, Integer
-    field :broker, Types::BrokerType
     field :broker_customer, Types::BrokerCustomerType
     field :carrier, Types::CarrierType
     field :check_mailing_address_id, Integer

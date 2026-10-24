@@ -2,7 +2,6 @@ module Types
   class ShipmentType < Types::BaseObjectWithTimestamp
     description 'GraphQL Object for Shipment Model'
 
-    field :broker, Types::BrokerType
     field :broker_carrier, Types::BrokerCarrierType
     field :customer_reference, String
     field :id, ID, null: false

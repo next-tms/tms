@@ -12,6 +12,8 @@
 #   @return [String]
 # @!attribute resolved_at
 #   @return [Time]
+# @!attribute suppressions_count
+#   @return [Integer]
 # @!attribute title
 #   @return [String]
 # @!attribute created_at
@@ -76,7 +78,6 @@ class Problem < ApplicationRecord
 
   has_many :suppressions, dependent: :destroy
 
-  has_one :broker, through: :assigned_to
   has_one :role, through: :problem_type
 
   ransacker :id do

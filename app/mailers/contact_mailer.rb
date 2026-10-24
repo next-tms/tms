@@ -118,7 +118,7 @@ class ContactMailer < ApplicationMailer
     end
 
     mail(
-      from: "#{shipment.broker.name} <#{shipment.broker.robot_email}>",
+      from: "#{Setting.value!(:name)} <#{Setting.robot_email!}>",
       cc:,
       reply_to: from_user.blank? ? nil : pretty_email(from_user),
       to: pretty_email(to_contact),

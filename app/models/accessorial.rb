@@ -44,15 +44,6 @@ class Accessorial < ApplicationRecord
   private
 
   def create_broker_accessorials
-    Broker.all.find_each do |broker|
-      BrokerAccessorial.create(
-        accessorial: self,
-        broker:,
-        broker_only: false,
-        code:,
-        fee:,
-        name:,
-      )
-    end
+    BrokerAccessorial.create(accessorial: self, broker_only: false, code:, fee:, name:)
   end
 end

@@ -12,13 +12,7 @@
 #   @return [Time]
 # @!attribute broker_and_broker_customer_notes
 #   @return [String]
-# @!attribute broker_bol_shipment_fingerprint
-#   @return [String]
-# @!attribute broker_dispatch_sheet_shipment_fingerprint
-#   @return [String]
 # @!attribute broker_notes
-#   @return [String]
-# @!attribute broker_quote_shipment_fingerprint
 #   @return [String]
 # @!attribute canceled_at
 #   @return [Time]
@@ -52,6 +46,8 @@
 #   @return [Time]
 # @!attribute dispatched_at
 #   @return [Time]
+# @!attribute fingerprint
+#   @return [String]
 # @!attribute lift_gate_delivery
 #   @return [Boolean]
 # @!attribute lift_gate_pickup
@@ -120,6 +116,8 @@
 #   @return [String]
 # @!attribute shipper_unavailable_at
 #   @return [Time]
+# @!attribute status
+#   @return [String]
 # @!attribute total_charges_cents
 #   @return [Integer]
 # @!attribute total_charges_currency
@@ -148,8 +146,6 @@
 #   @return [Integer]
 # @!attribute broker_customer_id
 #   @return []
-# @!attribute broker_id
-#   @return [Integer]
 # @!attribute created_by_id
 #   @return []
 # @!attribute dispatcher_id
@@ -169,16 +165,17 @@
 #
 # Indexes
 #
-#  index_shipments_on_applied_rate_id        (applied_rate_id)
-#  index_shipments_on_broker_customer_id     (broker_customer_id)
-#  index_shipments_on_broker_id_and_load_id  (broker_id,load_id) UNIQUE
-#  index_shipments_on_broker_notes           (broker_notes)
-#  index_shipments_on_created_by_id          (created_by_id)
-#  index_shipments_on_dispatcher_id          (dispatcher_id)
-#  index_shipments_on_receiver_address_id    (receiver_address_id)
-#  index_shipments_on_shipper_address_id     (shipper_address_id)
-#  index_shipments_on_tracking_carrier_id    (tracking_carrier_id)
-#  index_shipments_on_updated_by_id          (updated_by_id)
+#  index_shipments_on_applied_rate_id      (applied_rate_id)
+#  index_shipments_on_broker_customer_id   (broker_customer_id)
+#  index_shipments_on_broker_notes         (broker_notes)
+#  index_shipments_on_created_by_id        (created_by_id)
+#  index_shipments_on_dispatcher_id        (dispatcher_id)
+#  index_shipments_on_load_id              (load_id) UNIQUE
+#  index_shipments_on_receiver_address_id  (receiver_address_id)
+#  index_shipments_on_shipper_address_id   (shipper_address_id)
+#  index_shipments_on_status               (status)
+#  index_shipments_on_tracking_carrier_id  (tracking_carrier_id)
+#  index_shipments_on_updated_by_id        (updated_by_id)
 #
 # Foreign Keys
 #
@@ -199,7 +196,6 @@ FactoryBot.define do
     bol { Faker::Number.number }
     bol_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     booked_at { 2.weeks.ago }
-    broker { create(:broker) }
     broker_carrier_id { 1 }
     broker_customer { create(:broker_customer) }
     broker_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
@@ -264,8 +260,8 @@ FactoryBot.define do
     value_currency { Faker::Currency.code }
 
     after(:build) do |record|
-      user = build(:user, companyable: record.broker)
-      user.contact = build(:contact, companyable: record.broker)
+      user = build(:broker_user)
+      user.contact = build(:contact, companyable: nil)
       user.contact.add_role(:dispatch)
 
       record.discussion = record.build_discussion

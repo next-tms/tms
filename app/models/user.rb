@@ -76,8 +76,6 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute broker_id
-#   @return [Integer]
 # @!attribute companyable_id
 #   @return []
 # @!attribute contact_id
@@ -149,8 +147,8 @@ class User < ApplicationRecord
   after_save :send_invitation
   after_save :update_contact
 
-  before_validation :build_contact, if: -> { companyable.present? && contact.blank? && email.present? }
-  before_validation :set_time_zone_name, if: -> { new_record? && companyable.present? && time_zone_name.blank? }
+  before_validation :build_contact, if: -> { contact.blank? && email.present? }
+  before_validation :set_time_zone_name, if: -> { new_record? && time_zone_name.blank? }
 
   belongs_to :contact
 
@@ -165,7 +163,7 @@ class User < ApplicationRecord
          :trackable,
          :validatable
 
-  before_invitation_created :set_time_zone_name, if: -> { new_record? && companyable.present? && time_zone_name.blank? }
+  before_invitation_created :set_time_zone_name, if: -> { new_record? && time_zone_name.blank? }
 
   has_many :broker_customer_sales_reps
   has_many :commissions
@@ -199,7 +197,7 @@ class User < ApplicationRecord
   end
 
   def build_contact(attributes = {})
-    new_contact = companyable.contacts.find_or_initialize_by(email: email.downcase)
+    new_contact = Contact.find_or_initialize_by(companyable:, email: email.downcase)
     return if new_contact.persisted?
 
     new_contact.assign_attributes(attributes.to_h.merge(companyable:, first_name:, last_name:))
@@ -208,14 +206,9 @@ class User < ApplicationRecord
   end
 
   def country_code
-    return if companyable.blank?
+    address = broker? ? Setting.mailing_address : companyable.try(:office_address)
 
-    address = case companyable
-              when Broker then companyable.address&.country&.alpha2_code
-              when BrokerCustomer then companyable.office_address&.country&.alpha2_code
-              end
-
-    address.presence || 'US'
+    address&.country&.alpha2_code.presence || 'US'
   end
 
   def full_name
@@ -229,7 +222,7 @@ class User < ApplicationRecord
   def broker_customers
     return BrokerCustomer.none unless broker?
 
-    return companyable.broker_customers if any_role?(:dispatch, :sales_rep_for_all_broker_customers)
+    return BrokerCustomer.all if any_role?(:dispatch, :sales_rep_for_all_broker_customers)
 
     super
   end
@@ -268,10 +261,10 @@ class User < ApplicationRecord
   def coworkers
     return unless broker?
 
-    return companyable.users if role?(:root)
+    return User.broker if role?(:root)
 
     scope = roles - [ Role.find_by(name: 'sales_rep') ]
-    User.where(id: UserRole.where(role: scope).where(user: companyable.users).pluck(:user_id))
+    User.where(id: UserRole.where(role: scope).where(user: User.broker).pluck(:user_id))
   end
 
   def shipments
@@ -283,7 +276,7 @@ class User < ApplicationRecord
       :root,
       :sales_rep_for_all_broker_customers,
     )
-    return companyable.shipments if !sales_rep_only? && all_shipments
+    return Shipment.all if !sales_rep_only? && all_shipments
 
     broker_customer_ids = sales_rep_for_broker_customers&.ids
 
@@ -297,8 +290,6 @@ class User < ApplicationRecord
   end
 
   def type
-    return if companyable.blank?
-
     return :broker if broker?
 
     :customer if customer?
@@ -343,14 +334,14 @@ class User < ApplicationRecord
     invite!(invited_by)
   end
 
-  def set_time_zone_name = self.time_zone_name = customer? ? companyable.office_address.time_zone.tzinfo.name : Setting.value!(:time_zone_name)
+  def set_time_zone_name = self.time_zone_name = customer? ? companyable.office_address.time_zone.tzinfo.name : Setting.time_zone_name
 
   def update_contact
     %i[companyable_id companyable_type first_name last_name].each do |attribute|
       next unless public_send("saved_change_to_#{attribute}?")
 
       value = public_send(attribute)
-      next if value.blank?
+      next if value.blank? && %i[first_name last_name].include?(attribute)
 
       contact.public_send("#{attribute}=", value)
     end

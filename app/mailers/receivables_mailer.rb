@@ -10,7 +10,7 @@ class ReceivablesMailer < ApplicationMailer
     }
 
     bcc = []
-    broker_customer.broker.users.broker.active.find_each do |user|
+    User.broker.active.find_each do |user|
       bcc << user.email if user.role?(:accounts_receivable)
     end
 
@@ -21,8 +21,8 @@ class ReceivablesMailer < ApplicationMailer
     # end.compact
 
     mail(
-      from: "#{broker_customer.broker.name} <#{broker_customer.broker.robot_email}>",
-      reply_to: broker_customer.broker.customer_service_email,
+      from: "#{Setting.value!(:name)} <#{Setting.robot_email!}>",
+      reply_to: Setting.customer_service_email!,
       to: pretty_email(broker_customer.receivables_contact),
       bcc:,
       subject: load_ids.size > 1 ? 'Batch Invoices' : "Invoice #{load_ids[0]}",

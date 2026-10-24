@@ -46,22 +46,19 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute broker_id
-#   @return []
+# @!attribute accounting_customer_id
+#   @return [String]
 # @!attribute customer_id
 #   @return []
 # @!attribute office_address_id
 #   @return []
 # @!attribute primary_pickup_address_id
 #   @return []
-# @!attribute quickbooks_customer_id
-#   @return [String]
 # @!attribute receivables_contact_id
 #   @return []
 #
 # Indexes
 #
-#  index_broker_customers_on_broker_id                            (broker_id)
 #  index_broker_customers_on_customer_id                          (customer_id)
 #  index_broker_customers_on_office_address_id                    (office_address_id)
 #  index_broker_customers_on_primary_pickup_address_id            (primary_pickup_address_id)
@@ -71,7 +68,6 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (broker_id => brokers.id)
 #  fk_rails_...  (customer_id => customers.id)
 #  fk_rails_...  (office_address_id => addresses.id)
 #  fk_rails_...  (primary_pickup_address_id => addresses.id)
@@ -82,4 +78,15 @@ require 'rails_helper'
 RSpec.describe(BrokerCustomer) do
   it_behaves_like 'accounting_syncable', resource: :customer, record: 'Accounting::QuickBooks::Customer'
   it_behaves_like 'companyable'
+
+  describe '#eligible_broker_accessorials' do
+    let(:record) { create(:broker_customer) }
+
+    let!(:blanket_accessorial) { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'LFT') }
+    let!(:customer_accessorial) { create(:broker_accessorial, accessorial: nil, broker_customer: record, code: 'RES') }
+
+    before { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'RES') }
+
+    it { expect(record.eligible_broker_accessorials).to(contain_exactly(blanket_accessorial, customer_accessorial)) }
+  end
 end

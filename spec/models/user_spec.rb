@@ -76,8 +76,6 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute broker_id
-#   @return [Integer]
 # @!attribute companyable_id
 #   @return []
 # @!attribute contact_id
@@ -110,7 +108,7 @@ RSpec.describe(User) do
     it { is_expected.to(have_many(:commissions)) }
     it { is_expected.to(have_many(:problems)) }
 
-    it { is_expected.to(belong_to(:companyable)) }
+    it { is_expected.to(belong_to(:companyable).optional) }
     it { is_expected.to(belong_to(:contact)) }
   end
 
@@ -134,7 +132,7 @@ RSpec.describe(User) do
   end
 
   describe '#set_time_zone_name' do
-    let(:companyable) { create(:broker) }
+    let(:companyable) { nil }
     let(:record) { build(:user, companyable:, time_zone_name:) }
     let(:time_zone_name) { nil }
 
@@ -172,7 +170,7 @@ RSpec.describe(User) do
 
   describe '#dispatcher_for?' do
     let(:user) do
-      record = build(:user, companyable: create(:broker))
+      record = build(:broker_user)
       record.save! && record
     end
     let(:shipment) { create(:shipment) }
@@ -182,10 +180,7 @@ RSpec.describe(User) do
     end
 
     context "when user is the shipment's dispatcher" do
-      before do
-        user.update(companyable: shipment.broker)
-        shipment.update(dispatcher: user)
-      end
+      before { shipment.update(dispatcher: user) }
 
       it { expect(user).to(be_dispatcher_for(shipment)) }
     end
@@ -200,15 +195,7 @@ RSpec.describe(User) do
   describe '#type' do
     let(:record) { build(:user) }
 
-    it { expect(record.type).to(be_nil) }
-
-    context 'when companyable is a Broker' do
-      let(:broker) { create(:broker) }
-
-      before { record.companyable = broker }
-
-      it { expect(record.type).to(eq(:broker)) }
-    end
+    it { expect(record.type).to(eq(:broker)) }
 
     context 'when companyable is a BrokerCustomer' do
       let(:broker_customer) { create(:broker_customer) }
@@ -217,5 +204,88 @@ RSpec.describe(User) do
 
       it { expect(record.type).to(eq(:customer)) }
     end
+  end
+
+  describe '#build_contact' do
+    subject(:contact) { record.tap(&:build_contact).contact }
+
+    let(:record) { build(:broker_user, contact: nil, email: 'Staff@Example.com') }
+
+    it { is_expected.to(have_attributes(companyable: nil, email: 'staff@example.com')) }
+
+    context 'when a staff contact already exists with the email' do
+      before { create(:contact, companyable: nil, email: 'staff@example.com') }
+
+      it { is_expected.to(be_nil) }
+    end
+  end
+
+  describe '#broker_customers' do
+    let!(:broker_customer) { create(:broker_customer) }
+    let(:record) { create(:broker_user) }
+
+    before { record.add_role(:dispatch) }
+
+    it { expect(record.broker_customers).to(include(broker_customer)) }
+
+    context 'when customer?' do
+      let(:record) { create(:customer_user) }
+
+      it { expect(record.broker_customers).to(be_empty) }
+    end
+  end
+
+  describe '#country_code' do
+    let(:record) { build(:broker_user) }
+
+    it { expect(record.country_code).to(eq('US')) }
+
+    context 'when the mailing_address setting is in Canada' do
+      let(:address) { create(:address).tap { |address| address.region.country.update!(alpha2_code: 'CA') } }
+
+      before { create(:setting, key: 'mailing_address', value: address.id.to_s) }
+
+      it { expect(record.country_code).to(eq('CA')) }
+    end
+
+    context 'when customer?' do
+      let(:record) { build(:customer_user) }
+
+      before { record.companyable.office_address.country.update!(alpha2_code: 'MX') }
+
+      it { expect(record.country_code).to(eq('MX')) }
+    end
+  end
+
+  describe '#coworkers' do
+    let!(:coworker) { create(:broker_user) }
+    let(:record) { create(:broker_user) }
+
+    before { record.add_role(:root) }
+
+    it { expect(record.coworkers).to(include(coworker, record)) }
+
+    context 'when customer?' do
+      let(:record) { create(:customer_user) }
+
+      it { expect(record.coworkers).to(be_nil) }
+    end
+  end
+
+  describe '#shipments' do
+    let!(:shipment) { create(:shipment) }
+    let(:record) { create(:broker_user) }
+
+    before { record.add_role(:root) }
+
+    it { expect(record.shipments).to(include(shipment)) }
+  end
+
+  describe '#update_contact' do
+    let(:record) { create(:customer_user) }
+
+    before { record.update!(companyable: nil) }
+
+    it { expect(record.contact.reload.companyable).to(be_nil) }
   end
 end

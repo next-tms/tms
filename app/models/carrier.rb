@@ -15,7 +15,7 @@
 # @!attribute has_traceable_pickup_confirmation
 #   @return [Boolean]
 # @!attribute mc_number
-#   @return [String]
+#   @return [Integer]
 # @!attribute name
 #   @return [String]
 # @!attribute scac
@@ -61,7 +61,6 @@ class Carrier < ApplicationRecord
   encrypts :encrypted_proxy_url
 
   has_many :broker_carriers
-  has_many :brokers, through: :broker_customers
 
   has_many :carrier_areas
   has_many :areas, through: :carrier_areas

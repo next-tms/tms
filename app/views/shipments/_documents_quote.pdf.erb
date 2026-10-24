@@ -3,14 +3,14 @@
     <thead>
       <tr>
         <td>
-          <h1><%= shipment.broker.name %></h1>
-          <address><%= shipment.broker.address.pretty(', ').gsub('Apt', 'Ste').html_safe %></address>
+          <h1><%= Setting.value!(:name) %></h1>
+          <address><%= Setting.mailing_address!.pretty(', ').gsub('Apt', 'Ste').html_safe %></address>
           <ul class="list-unstyled list-inline">
             <% if (host = website_homepage_host) %>
               <li><%= host %></li>
             <% end %>
-            <li><%= shipment.broker.phone.phony_formatted %></li>
-            <li><%= shipment.broker.customer_service_email %></li>
+            <li><%= Setting.phone&.phony_formatted %></li>
+            <li><%= Setting.customer_service_email! %></li>
           </ul>
         <td class="text-end">
           <h2>Quote</h2>

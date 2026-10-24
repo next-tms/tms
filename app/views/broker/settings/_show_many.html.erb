@@ -18,7 +18,7 @@
               </td>
 
               <td class="font-monospace text-truncate" style="max-width: 25rem;">
-                <%= setting.value %>
+                <%= setting.address? ? setting.value.pretty(', ') : setting.value %>
               </td>
             </tr>
           <% end %>

@@ -4,7 +4,7 @@ RSpec.describe(Broker::ShipmentsController) do
   subject { response }
 
   let(:current_user) { create(:root_broker_user).tap { |user| user.add_role(:dispatch) } }
-  let(:shipment) { create(:shipment, broker: current_user.companyable) }
+  let(:shipment) { create(:shipment) }
 
   before { sign_in(current_user) }
 
@@ -50,15 +50,6 @@ RSpec.describe(Broker::ShipmentsController) do
       context 'when a Setting was destroyed' do
         before do
           older_setting.destroy!
-          get(:history, params: { load_id: shipment.load_id })
-        end
-
-        it { is_expected.to(have_http_status(:ok)) }
-      end
-
-      context 'when the Broker changed' do
-        before do
-          current_user.companyable.touch(time: 1.minute.from_now)
           get(:history, params: { load_id: shipment.load_id })
         end
 

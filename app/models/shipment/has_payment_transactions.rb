@@ -10,7 +10,6 @@ module Shipment::HasPaymentTransactions
       payment_transactions.create(
         balance: total_cost,
         broker_carrier:,
-        broker:,
         due_on: Date.current + broker_carrier.days_to_pay_after_invoice_date.days,
         paid: total_cost,
         pro:

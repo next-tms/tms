@@ -11,7 +11,7 @@ module ProblematicService
     end
 
     def resolvable?
-      today = Time.current.in_time_zone(record.receiver_address&.time_zone.presence || record.broker.time_zone).to_date
+      today = Time.current.in_time_zone(record.receiver_address&.time_zone.presence || Setting.time_zone).to_date
 
       record.delivered_at.present? ||
         record.booked_at.blank? ||

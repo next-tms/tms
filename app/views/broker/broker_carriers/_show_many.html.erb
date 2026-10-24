@@ -16,7 +16,7 @@
             <tr>
               <td><%= link_to broker_carrier.carrier.name, broker_broker_carrier_path(broker_carrier), target: '_top' %></td>
               <td>
-                <%= current_user.broker.name %>
+                <%= Setting.value!(:name) %>
                 <% unless broker_carrier.broker_customer.blank? %>
                   <span class="text-muted"> / <%= broker_carrier.broker_customer.customer.name %></span>
                 <% end %>

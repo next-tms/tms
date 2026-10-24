@@ -22,7 +22,7 @@
                        label: 'Paid On',
                        autocomplete: 'off',
                        data: flatpickr_data,
-                       value: DateTime.current.in_time_zone(current_user.broker.time_zone).to_date
+                       value: DateTime.current.in_time_zone(Setting.time_zone).to_date
       %>
       <div class="form-group">
         <%= f.submit class: 'btn btn-primary mt-4', value: 'Pay' %>

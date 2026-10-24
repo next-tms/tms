@@ -1,12 +1,10 @@
 class FetchBrokerCarrierAccountingVendorIdsJob < ApplicationJob
-  def perform(broker:)
+  # @note Jobs enqueued before Broker removal carry a Broker GlobalID that can no longer load
+  rescue_from(ActiveJob::DeserializationError) { self.class.perform_later }
+
+  def perform
     return unless Accounting.connected?
 
-    broker_carriers = broker
-                      .broker_carriers
-                      .where(accounting_vendor_id: nil)
-                      .includes(:carrier)
-
-    broker_carriers.find_each.each(&:accounting_vendor)
+    BrokerCarrier.where(accounting_vendor_id: nil).includes(:carrier).find_each.each(&:accounting_vendor)
   end
 end

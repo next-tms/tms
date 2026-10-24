@@ -29,8 +29,9 @@ class Country < ApplicationRecord
   end
 
   has_many :broker_countries
-  has_many :brokers, through: :broker_countries
   has_many :regions
+
+  scope :serviced, -> { where(id: BrokerCountry.select(:country_id)) }
 
   validates :alpha2_code, presence: true
   validates :alpha3_code, presence: true

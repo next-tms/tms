@@ -76,8 +76,6 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute broker_id
-#   @return [Integer]
 # @!attribute companyable_id
 #   @return []
 # @!attribute contact_id
@@ -106,7 +104,7 @@ FactoryBot.define do
     confirmation_sent_at { '2022-06-29 23:58:27' }
     confirmation_token { Faker::Number.number(digits: 10) }
     confirmed_at { '2022-06-29 23:58:27' }
-    contact
+    contact { association(:contact, companyable:) }
     current_sign_in_at { '2022-06-29 23:58:27' }
     current_sign_in_ip { '' }
     deactivated { false }
@@ -135,7 +133,7 @@ FactoryBot.define do
     updated_at { '2022-06-29 23:58:27' }
 
     factory :broker_user do
-      association :companyable, factory: :broker
+      companyable { nil }
 
       factory :root_broker_user do
         after(:create) do |record|
