@@ -119,19 +119,18 @@ RSpec.describe(Setting) do
 
   describe '#address_attributes=' do
     let(:record) { build(:setting, key: 'mailing_address', value: nil) }
-    let(:region) { create(:region) }
 
     before do
       record.address_attributes = {
         city: 'Portland',
-        country_id: region.country_id,
-        region_id: region.id,
+        country_alpha2: 'US',
+        region_iso31662: 'US-CA',
         street: '123 Main St',
         zip_code: '97201'
       }
     end
 
-    it { expect(record.address).to(have_attributes(city: 'Portland', region_id: region.id, street: '123 Main St', zip_code: '97201')) }
+    it { expect(record.address).to(have_attributes(city: 'Portland', region_iso31662: 'US-CA', street: '123 Main St', zip_code: '97201')) }
 
     context 'when saved' do
       before { record.save! }

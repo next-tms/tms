@@ -23,9 +23,9 @@
         <%= check_mailing_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
         <%= check_mailing_address_form.text_field :street2, hide_label: true %>
         <%= check_mailing_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
-        <%= check_mailing_address_form.select :region_id, (check_mailing_address_form.object.region_id.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[check_mailing_address_form.object.region.abbreviation, check_mailing_address_form.object.region_id]]), { hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
+        <%= check_mailing_address_form.select :region_iso31662, (check_mailing_address_form.object.region_iso31662.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[check_mailing_address_form.object.region.abbreviation, check_mailing_address_form.object.region_iso31662]]), { hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
         <%= check_mailing_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
-        <%= check_mailing_address_form.select :country_id, Country.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, selected: (check_mailing_address_form.object.country_id.blank? ? Setting.mailing_address!.country_id : check_mailing_address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+        <%= check_mailing_address_form.select :country_alpha2, country_options(Transponder::ORM::Country.order(:name), check_mailing_address_form.object.country_alpha2), { hide_label: true, selected: (check_mailing_address_form.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : check_mailing_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
       <% end %>
     </div>
   </div>

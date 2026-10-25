@@ -1,4 +1,6 @@
 class ApplicationRecord < ActiveRecord::Base
+  include Transponder::ORM::Associations
+
   class << self
     # @note For grouped_collection_select in forms
     def human_name

@@ -212,8 +212,8 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def default_includes
     [
-      { shipper_address: :region },
-      { receiver_address: :region },
+      :shipper_address,
+      :receiver_address,
       :items
     ]
   end
@@ -284,9 +284,9 @@ class Customer::ShipmentsController < Customer::CustomerController
                                     street
                                     street2
                                     city
-                                    region_id
+                                    region_iso31662
                                     zip_code
-                                    country_id
+                                    country_alpha2
                                     standardized_address_id
                                   ],
       receiver_address_attributes: %i[
@@ -295,9 +295,9 @@ class Customer::ShipmentsController < Customer::CustomerController
                                      street
                                      street2
                                      city
-                                     region_id
+                                     region_iso31662
                                      zip_code
-                                     country_id
+                                     country_alpha2
                                      standardized_address_id
                                    ],
       items_attributes: %i[

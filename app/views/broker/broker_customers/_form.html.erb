@@ -13,9 +13,9 @@
         <%= primary_pickup_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
         <%= primary_pickup_address_form.text_field :street2, hide_label: true %>
         <%= primary_pickup_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
-        <%= primary_pickup_address_form.select :region_id, (primary_pickup_address_form.object.region_id.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[primary_pickup_address_form.object.region.name, primary_pickup_address_form.object.region_id]]), { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
+        <%= primary_pickup_address_form.select :region_iso31662, (primary_pickup_address_form.object.region_iso31662.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[primary_pickup_address_form.object.region.name, primary_pickup_address_form.object.region_iso31662]]), { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
         <%= primary_pickup_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
-        <%= primary_pickup_address_form.select :country_id, Country.serviced.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, selected: (primary_pickup_address_form.object.country_id.blank? ? Setting.mailing_address!.country_id : primary_pickup_address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+        <%= primary_pickup_address_form.select :country_alpha2, country_options(BrokerCountry.countries.order(:name), primary_pickup_address_form.object.country_alpha2), { hide_label: true, selected: (primary_pickup_address_form.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : primary_pickup_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
       <% end %>
     </div>
   </div>
@@ -28,9 +28,9 @@
         <%= office_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
         <%= office_address_form.text_field :street2, hide_label: true %>
         <%= office_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
-        <%= office_address_form.select :region_id, (office_address_form.object.region_id.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[office_address_form.object.region.name, office_address_form.object.region_id]]), { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
+        <%= office_address_form.select :region_iso31662, (office_address_form.object.region_iso31662.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[office_address_form.object.region.name, office_address_form.object.region_iso31662]]), { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
         <%= office_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
-        <%= office_address_form.select :country_id, Country.serviced.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, selected: (office_address_form.object.country_id.blank? ? Setting.mailing_address!.country_id : office_address_form.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+        <%= office_address_form.select :country_alpha2, country_options(BrokerCountry.countries.order(:name), office_address_form.object.country_alpha2), { hide_label: true, selected: (office_address_form.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : office_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
       <% end %>
     </div>
   </div>

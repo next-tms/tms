@@ -50,7 +50,7 @@ class Broker::SettingsController < Broker::BrokerController
     params.require(:setting).permit(
       :key,
       :value,
-      address_attributes: %i[city country_id region_id street street2 zip_code],
+      address_attributes: %i[city country_alpha2 region_iso31662 street street2 zip_code],
     )
   end
 end

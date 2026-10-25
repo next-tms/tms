@@ -1,0 +1,67 @@
+require 'rails_helper'
+
+RSpec.describe(Transponder::ORM::Country) do
+  let(:canada) { described_class.find('CA') }
+  let(:united_states) { described_class.find('US') }
+
+  describe '.all' do
+    it { expect(described_class.all.pluck(:alpha2)).to(eq(%w[CA MX US])) }
+    it { expect(described_class.all).to(equal(described_class.all)) }
+
+    context 'when the collection is older than MEMO_EXPIRES_IN' do
+      let!(:collection) { described_class.all }
+
+      before { Timecop.travel(described_class::MEMO_EXPIRES_IN.from_now + 1.second) }
+      after { Timecop.return }
+
+      it { expect(described_class.all).not_to(equal(collection)) }
+      it { expect(described_class.all).to(equal(described_class.all)) }
+    end
+
+    context 'when Transponder returns errors' do
+      before { stub_transponder_countries({ 'errors' => [ { 'message' => 'Boom' } ] }) }
+
+      it { expect { described_class.all }.to(raise_error(GraphQL::Client::Error, 'Boom')) }
+    end
+  end
+
+  describe '.primary_key' do
+    it { expect(described_class.primary_key).to(eq(:alpha2)) }
+  end
+
+  describe '.reset' do
+    it { expect { described_class.reset }.to(change { described_class.all.object_id }) }
+    it { expect { described_class.reset }.to(change { Transponder::ORM::Region.all.object_id }) }
+  end
+
+  describe '#format_address' do
+    it { expect(united_states.format_address('')).to(be_nil) }
+    it { expect(united_states.format_address('1 Main St, Los Angeles, CA 90001')).to(eq('1 Main St, Los Angeles, CA 90001')) }
+  end
+
+  describe '#initialize' do
+    it { expect(united_states.alpha3).to(eq('USA')) }
+    it { expect(united_states.numeric).to(eq(840)) }
+    it { expect(united_states.regions.pluck(:iso31662)).to(eq(%w[US-CA US-TX US-WY])) }
+    it { expect(united_states.regions.map(&:country)).to(all(equal(united_states))) }
+  end
+
+  describe '#name' do
+    it { expect(united_states.name).to(eq('United States of America')) }
+    it { expect(described_class.new(alpha2: 'ZZ').name).to(eq('ZZ')) }
+  end
+
+  describe '#valid_postal_code?' do
+    it { expect(canada.valid_postal_code?('K1A 0B1')).to(be(true)) }
+    it { expect(canada.valid_postal_code?('90001')).to(be(false)) }
+    it { expect(described_class.find('MX').valid_postal_code?('anything')).to(be(true)) }
+    it { expect(united_states.valid_postal_code?('90001-1234')).to(be(true)) }
+    it { expect(united_states.valid_postal_code?('K1A 0B1')).to(be(false)) }
+  end
+
+  describe '#valid_street?' do
+    it { expect(canada.valid_street?('12-34 Main St')).to(be(true)) }
+    it { expect(united_states.valid_street?('1 Main St')).to(be(true)) }
+    it { expect(united_states.valid_street?('12-34 Main St')).to(be(false)) }
+  end
+end

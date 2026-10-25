@@ -36,21 +36,16 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute country_id
-#   @return []
-# @!attribute region_id
-#   @return []
+# @!attribute country_alpha2
+#   @return [String]
+# @!attribute region_iso31662
+#   @return [String]
 #
 # Indexes
 #
-#  index_standardized_addresses_on_country_id  (country_id)
-#  index_standardized_addresses_on_key         (key)
-#  index_standardized_addresses_on_region_id   (region_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (country_id => countries.id)
-#  fk_rails_...  (region_id => regions.id)
+#  index_standardized_addresses_on_country_alpha2   (country_alpha2)
+#  index_standardized_addresses_on_key              (key)
+#  index_standardized_addresses_on_region_iso31662  (region_iso31662)
 #
 class StandardizedAddress < ApplicationRecord
   DOWNCASEABLE_ATTRIBUTES = []
@@ -66,8 +61,8 @@ class StandardizedAddress < ApplicationRecord
   before_validation :set_coordinates
   before_validation :set_time_zone_name
 
-  belongs_to :country
-  belongs_to :region
+  belongs_to_transponder :country, foreign_key: :country_alpha2
+  belongs_to_transponder :region, foreign_key: :region_iso31662
 
   has_many :addresses, dependent: :nullify
 
@@ -181,10 +176,10 @@ class StandardizedAddress < ApplicationRecord
     end
 
     self.city = smarty_streets_result.dig('components', 'city_name') || city
-    self.region = Region.where(abbreviation: smarty_streets_result.dig(
-      'components',
-      'state_abbreviation',
-    ))&.first || region
+    self.region = Transponder::ORM::Region.find_by(
+      abbreviation: smarty_streets_result.dig('components', 'state_abbreviation'),
+      country:,
+    ) || region
     self.postal_code = smarty_streets_result.dig('components', 'zipcode') || postal_code
   end
 

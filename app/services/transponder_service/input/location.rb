@@ -16,7 +16,7 @@ module TransponderService
           city: object.city,
           contact:,
           country: {
-            alpha3: object.country.alpha3_code
+            alpha3: object.country.alpha3
           },
           postal_code: object.zip_code,
           region_abbreviation: object.region.abbreviation

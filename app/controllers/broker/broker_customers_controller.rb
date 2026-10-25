@@ -246,8 +246,8 @@ class Broker::BrokerCustomersController < Broker::BrokerController
       broker_accessorials_attributes: %i[_destroy id accessorial_id code flat_charge name upcharge upcharge_percent],
       customer_attributes: %i[_destroy id name],
       document_preferences_attributes: %i[_destroy id contact_id kind],
-      office_address_attributes: %i[id street street2 city region_id zip_code country_id],
-      primary_pickup_address_attributes: %i[id street street2 city region_id zip_code country_id],
+      office_address_attributes: %i[id street street2 city region_iso31662 zip_code country_alpha2],
+      primary_pickup_address_attributes: %i[id street street2 city region_iso31662 zip_code country_alpha2],
       receivables_contact_attributes: [
                                         :id,
                                         :first_name,

@@ -1,5 +1,5 @@
 module Types
-  class RegionType < Types::BaseObjectWithTimestamp
+  class RegionType < Types::BaseObject
     description 'GraphQL Object for Region Model'
 
     field :abbreviation, String, null: false

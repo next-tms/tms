@@ -2,18 +2,18 @@ class CountriesController < ApplicationController
   before_action :set_country
 
   def show
-    regions = @country.regions.order(:abbreviation).map { |r| { id: r.id, abbreviation: r.abbreviation, name: r.name } }
-    country = { id: @country.id, alpha2_code: @country.alpha2_code, name: @country.name, regions: }
-
     respond_to do |format|
-      format.json { render json: { country: }.to_json }
+      format.json do
+        expires_in(1.day, public: true)
+        fresh_when(etag: [ @country.name, @regions.map { |region| [ region.iso31662, region.abbreviation, region.name ] } ], public: true)
+      end
     end
   end
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_country
-    @country = Country.find(params[:id])
+    @country = Transponder::ORM::Country.find(params[:id])
+    @regions = @country.regions.order(:abbreviation)
   end
 end

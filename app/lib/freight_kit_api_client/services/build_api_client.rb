@@ -29,7 +29,7 @@ module FreightKitAPIClient
           city: address.city,
           postal_code: address.zip_code,
           province: address.region.abbreviation,
-          country: ActiveUtils::Country.find(address.country.alpha2_code),
+          country: ActiveUtils::Country.find(address.country_alpha2),
         )
       end
 

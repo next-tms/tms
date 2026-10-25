@@ -37,7 +37,7 @@ export default class extends Controller {
                 document.querySelector('input' + shipperAddressQuery + '[city]"]').value = primaryPickupAddress.city
                 document.querySelector('select' + shipperAddressQuery + '[state]"]').selectedIndex = primaryPickupAddress.state
                 document.querySelector('input' + shipperAddressQuery + '[zip_code]"]').selectedIndex = primaryPickupAddress.zip_code
-                document.querySelector('select' + shipperAddressQuery + '[country_id]"]').selectedIndex = primaryPickupAddress.country_id
+                document.querySelector('select' + shipperAddressQuery + '[country_alpha2]"]').value = primaryPickupAddress.country_alpha2
             })
     }
 }

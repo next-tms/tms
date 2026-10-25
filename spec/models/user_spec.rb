@@ -241,7 +241,7 @@ RSpec.describe(User) do
     it { expect(record.country_code).to(eq('US')) }
 
     context 'when the mailing_address setting is in Canada' do
-      let(:address) { create(:address).tap { |address| address.region.country.update!(alpha2_code: 'CA') } }
+      let(:address) { create(:address, country_alpha2: 'CA', region_iso31662: 'CA-ON', zip_code: 'K1A 0B1') }
 
       before { create(:setting, key: 'mailing_address', value: address.id.to_s) }
 
@@ -251,7 +251,7 @@ RSpec.describe(User) do
     context 'when customer?' do
       let(:record) { build(:customer_user) }
 
-      before { record.companyable.office_address.country.update!(alpha2_code: 'MX') }
+      before { record.companyable.office_address.country_alpha2 = 'MX' }
 
       it { expect(record.country_code).to(eq('MX')) }
     end

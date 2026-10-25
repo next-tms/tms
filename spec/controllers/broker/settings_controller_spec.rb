@@ -15,8 +15,7 @@ RSpec.describe(Broker::SettingsController) do
   end
 
   describe 'POST #create' do
-    let(:region) { create(:region) }
-    let(:address_attributes) { { city: 'Portland', country_id: region.country_id, region_id: region.id, street: '123 Main St', zip_code: '97201' } }
+    let(:address_attributes) { { city: 'Portland', country_alpha2: 'US', region_iso31662: 'US-CA', street: '123 Main St', zip_code: '97201' } }
 
     before { post(:create, params: { setting: { address_attributes:, key: 'mailing_address' } }) }
 

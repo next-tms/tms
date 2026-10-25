@@ -39,7 +39,7 @@ export default class extends Controller {
         let zip = this.fieldTargets.find(field => field.id.includes('_zip')).value
         let city = this.fieldTargets.find(field => field.id.includes('_city')).value
 
-        let data = { street: street, city: city, zip_code: zip, region_id: this.regionsTarget.value }
+        let data = { street: street, city: city, zip_code: zip, region_iso31662: this.regionsTarget.value }
 
         fetch('/validate_address', {
             method: 'POST',
@@ -75,9 +75,9 @@ export default class extends Controller {
         }
 
         const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
-        const country_id = this.countryTarget.options[this.countryTarget.selectedIndex].value
+        const country_alpha2 = this.countryTarget.options[this.countryTarget.selectedIndex].value
 
-        const url = '/countries/' + country_id + '.json'
+        const url = '/countries/' + country_alpha2 + '.json'
 
         fetch(url, {
                 credentials: 'include',
@@ -93,11 +93,18 @@ export default class extends Controller {
     }
 
     populateRegions(country) {
-        const selected_value = this.regionsTarget.options[this.regionsTarget.selectedIndex].value
+        const selected_option = this.regionsTarget.options[this.regionsTarget.selectedIndex]
+        const selected_value = selected_option ? selected_option.value : ''
 
         Array.from(this.regionsTarget.options).forEach(function(option) {
             option.remove()
         })
+
+        // Keep a saved region that Transponder no longer returns, so saving the form does not change it
+        if (selected_value.startsWith(country.alpha2 + '-') && !country.regions.some(region => region.id == selected_value)) {
+            selected_option.selected = true
+            this.regionsTarget.add(selected_option)
+        }
 
         country.regions.forEach(function(region) {
             const option = document.createElement('option')
@@ -119,7 +126,7 @@ export default class extends Controller {
         let textField = event.target
         let elementId = textField.id
         let helpText = textField.parentElement.lastElementChild
-        let countrySelect = document.getElementById(elementId.replace('zip_code', "country_id"))
+        let countrySelect = document.getElementById(elementId.replace('zip_code', "country_alpha2"))
         let selectedCountry = countrySelect.options[countrySelect.selectedIndex].innerHTML;
         const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
         var duration = 1000;
@@ -149,7 +156,7 @@ export default class extends Controller {
                     console.log(data)
                     if (data.error == null) {
                         document.getElementById(elementId.replace("zip_code", "city")).value = data.city;
-                        var stateSelect = document.getElementById(elementId.replace("zip_code", "region_id"))
+                        var stateSelect = document.getElementById(elementId.replace("zip_code", "region_iso31662"))
                         Array.from(stateSelect.options).forEach(function(option) {
                             if (option.text ===  data.state) {
                               option.selected = true

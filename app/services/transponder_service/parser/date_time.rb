@@ -38,7 +38,7 @@ module TransponderService
                    .map do |model|
             model.where(
               city:,
-              region:,
+              region_iso31662: region.iso31662,
             ).where.not(time_zone_name: nil).where.not(time_zone_name: '').last
           end
                    .flatten
@@ -48,7 +48,7 @@ module TransponderService
           return record.time_zone if record.present?
 
           client = GooglePlaces::Client.new(ENV.fetch('GOOGLE_API_KEY'))
-          spots = client.spots_by_query("#{city}, #{region.abbreviation}, #{region.country.alpha2_code}")
+          spots = client.spots_by_query("#{city}, #{region.abbreviation}, #{region.country.alpha2}")
 
           return if spots.blank?
 

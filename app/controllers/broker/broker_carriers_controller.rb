@@ -1,4 +1,6 @@
 class Broker::BrokerCarriersController < Broker::BrokerController
+  TERMINALS_FILTER = 'address_region_iso31662_or_address_city_or_address_street_or_address_zip_code_cont'.freeze
+
   before_action :authenticate_user!
   before_action :set_broker_carrier, except: %i[accounting create index new update_accounting]
   before_action :authorize_broker_carrier_access, only: %i[terminals contacts shipments]
@@ -60,20 +62,20 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def terminals
     @carrier = @broker_carrier.carrier
 
-    @q = @carrier.terminals.ransack(params[:q], auth_object: current_user)
+    @q = @carrier.terminals.ransack(terminals_query, auth_object: current_user)
     @pagy, @terminals = pagy(@q.result)
   end
 
   def search_terminals
-    region_ids = Region
-                 .where('name ILIKE ?', params[:state])
-                 .or(Region.where('abbreviation ILIKE ?', params[:state]))
-                 .ids
+    region_iso31662s = Transponder::ORM::Region
+                       .all
+                       .select { |region| [ region.abbreviation, region.name ].any? { |value| value.casecmp?(params[:state].to_s) } }
+                       .map(&:iso31662)
 
     @terminals = Terminal
                  .includes(:address)
                  .where(carrier_id: BrokerCarrier.select(:carrier_id))
-                 .where('addresses.region_id IN (?)', region_ids)
+                 .where(addresses: { region_iso31662: region_iso31662s })
                  .where('addresses.city ILIKE ?', params[:city])
                  .references(:address)
   end
@@ -166,6 +168,16 @@ class Broker::BrokerCarriersController < Broker::BrokerController
 
   private
 
+  # Region names come from Transponder, so a filter that matches a region name also matches terminals in that region
+  def terminals_query
+    query = params[:q]&.to_unsafe_h.to_h
+    filter = query.delete(TERMINALS_FILTER)
+    return query if filter.blank?
+
+    region_iso31662s = Transponder::ORM::Region.all.select { |region| region.name.downcase.include?(filter.downcase) }.map(&:iso31662)
+    query.merge(g: [ { m: 'or', TERMINALS_FILTER => filter, address_region_iso31662_in: region_iso31662s } ])
+  end
+
   def authorize_broker_carrier_access
     authorize!(@broker_carrier, to: :show?, with: BrokerPolicy)
   end
@@ -201,11 +213,11 @@ class Broker::BrokerCarriersController < Broker::BrokerController
       check_mailing_address_attributes: %i[
                                           id
                                           ref
-                                          country_id
+                                          country_alpha2
                                           street
                                           street2
                                           city
-                                          region_id
+                                          region_iso31662
                                           zip_code
                                         ],
     )

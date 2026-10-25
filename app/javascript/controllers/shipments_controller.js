@@ -31,7 +31,7 @@ export default class extends Controller {
                 document.getElementById('shipment_shipper_address_attributes_city').value = data.city
                 document.getElementById('shipment_shipper_address_attributes_zip_code').value = data.zip_code
                 document.getElementById('shipment_shipper_address_attributes_standardized_address_id').value = data.standardized_address_id;
-                var stateSelect = document.getElementById('shipment_shipper_address_attributes_region_id')
+                var stateSelect = document.getElementById('shipment_shipper_address_attributes_region_iso31662')
                 Array.from(stateSelect.options).forEach(function(option) {
                     if (option.text ===  data.state) {
                         option.selected = true
@@ -61,9 +61,9 @@ export default class extends Controller {
         var shipperStreet = document.getElementById('shipment_shipper_address_attributes_street')
         var shipperStreet2 = document.getElementById('shipment_shipper_address_attributes_street2')
         var shipperCity = document.getElementById('shipment_shipper_address_attributes_city')
-        var shipperRegion = document.getElementById('shipment_shipper_address_attributes_region_id')
+        var shipperRegion = document.getElementById('shipment_shipper_address_attributes_region_iso31662')
         var shipperZip = document.getElementById('shipment_shipper_address_attributes_zip_code')
-        var shipperCountry = document.getElementById('shipment_shipper_address_attributes_country_id')
+        var shipperCountry = document.getElementById('shipment_shipper_address_attributes_country_alpha2')
 
         var shipperStreetValue = shipperStreet.value
         var shipperStreet2Value = shipperStreet2.value
@@ -75,9 +75,9 @@ export default class extends Controller {
         var receiverStreet = document.getElementById('shipment_receiver_address_attributes_street')
         var receiverStreet2 = document.getElementById('shipment_receiver_address_attributes_street2')
         var receiverCity = document.getElementById('shipment_receiver_address_attributes_city')
-        var receiverRegion = document.getElementById('shipment_receiver_address_attributes_region_id')
+        var receiverRegion = document.getElementById('shipment_receiver_address_attributes_region_iso31662')
         var receiverZip = document.getElementById('shipment_receiver_address_attributes_zip_code')
-        var receiverCountry = document.getElementById('shipment_receiver_address_attributes_country_id')
+        var receiverCountry = document.getElementById('shipment_receiver_address_attributes_country_alpha2')
 
         var receiverStreetValue = receiverStreet.value
         var receiverStreet2Value = receiverStreet2.value

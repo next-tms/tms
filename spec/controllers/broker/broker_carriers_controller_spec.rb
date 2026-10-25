@@ -31,6 +31,67 @@ RSpec.describe(Broker::BrokerCarriersController) do
     end
   end
 
+  describe 'GET #terminals' do
+    let(:broker_carrier) { create(:broker_carrier) }
+    let(:filter) { 'texas' }
+
+    let!(:austin) { Terminal.create!(address: create(:address, city: 'Austin', region_iso31662: 'US-TX'), carrier: broker_carrier.carrier) }
+    let!(:fremont) { Terminal.create!(address: create(:address, city: 'Fremont', region_iso31662: 'US-CA'), carrier: broker_carrier.carrier) }
+
+    before { get(:terminals, params: { id: broker_carrier.id, q: { described_class::TERMINALS_FILTER => filter } }) }
+
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(assigns(:terminals)).to(contain_exactly(austin)) }
+
+    context 'when the filter matches the address text' do
+      let(:filter) { 'fremont' }
+
+      it { expect(assigns(:terminals)).to(contain_exactly(fremont)) }
+    end
+
+    context 'when the filter matches a region code' do
+      let(:filter) { 'US-CA' }
+
+      it { expect(assigns(:terminals)).to(contain_exactly(fremont)) }
+    end
+
+    context 'when the filter is blank' do
+      let(:filter) { '' }
+
+      it { expect(assigns(:terminals)).to(contain_exactly(austin, fremont)) }
+    end
+  end
+
+  describe 'GET #search_terminals' do
+    let(:broker_carrier) { create(:broker_carrier) }
+    let(:state) { 'texas' }
+
+    let!(:terminal) do
+      Terminal.create!(address: create(:address, city: 'Austin', region_iso31662: 'US-TX'), carrier: broker_carrier.carrier)
+    end
+
+    before do
+      Terminal.create!(address: create(:address, city: 'Austin', region_iso31662: 'US-CA'), carrier: broker_carrier.carrier)
+
+      get(:search_terminals, params: { city: 'austin', id: broker_carrier.id, state: })
+    end
+
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(assigns(:terminals)).to(contain_exactly(terminal)) }
+
+    context 'when the state is an abbreviation' do
+      let(:state) { 'tx' }
+
+      it { expect(assigns(:terminals)).to(contain_exactly(terminal)) }
+    end
+
+    context 'when the state is blank' do
+      let(:state) { nil }
+
+      it { expect(assigns(:terminals)).to(be_empty) }
+    end
+  end
+
   describe 'PATCH #update_accounting' do
     let(:broker_carrier) { create(:broker_carrier) }
 

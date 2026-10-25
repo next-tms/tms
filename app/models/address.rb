@@ -40,33 +40,31 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute country_id
-#   @return [Integer]
-# @!attribute region_id
-#   @return []
+# @!attribute country_alpha2
+#   @return [String]
+# @!attribute region_iso31662
+#   @return [String]
 # @!attribute standardized_address_id
 #   @return []
 #
 # Indexes
 #
-#  index_addresses_on_country_id               (country_id)
-#  index_addresses_on_region_id                (region_id)
+#  index_addresses_on_country_alpha2           (country_alpha2)
+#  index_addresses_on_region_iso31662          (region_iso31662)
 #  index_addresses_on_standardized_address_id  (standardized_address_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (country_id => countries.id)
-#  fk_rails_...  (region_id => regions.id)
 #  fk_rails_...  (standardized_address_id => standardized_addresses.id)
 #
 class Address < ApplicationRecord
   class << self
     def ransackable_attributes(auth_object = nil)
-      [ 'city', 'street', 'street2', 'zip_code' ]
+      [ 'city', 'country_alpha2', 'region_iso31662', 'street', 'street2', 'zip_code' ]
     end
 
     def ransackable_associations(auth_object = nil)
-      [ 'country', 'region' ]
+      []
     end
   end
 
@@ -74,8 +72,8 @@ class Address < ApplicationRecord
 
   before_validation :set_country
 
-  belongs_to :country
-  belongs_to :region
+  belongs_to_transponder :country, foreign_key: :country_alpha2
+  belongs_to_transponder :region, foreign_key: :region_iso31662
   belongs_to :standardized_address, counter_cache: true, optional: true
 
   normalizes :city, with: ->(city) do
@@ -180,7 +178,7 @@ class Address < ApplicationRecord
     FreightKit::Location.new(
       address1: street,
       city:,
-      country: ActiveUtils::Country.find(country.alpha2_code),
+      country: ActiveUtils::Country.find(country.alpha2),
       postal_code: zip_code,
       province: region.abbreviation,
     )
@@ -191,7 +189,7 @@ class Address < ApplicationRecord
       address1: street,
       city:,
       country: {
-        alpha3: country.alpha3_code
+        alpha3: country.alpha3
       },
       postalCode: zip_code,
       regionAbbreviation: region.abbreviation
@@ -204,15 +202,15 @@ class Address < ApplicationRecord
     key = region.country.format_address(proper(', '))
     key = proper(', ') if key.blank?
 
-    new_standardized_address = StandardizedAddress.where(country: region.country, key:)&.first
+    new_standardized_address = StandardizedAddress.where(country_alpha2: region.country.alpha2, key:)&.first
 
     new_standardized_address ||= StandardizedAddress.new(
       street:,
       street2:,
       city:,
-      region_id:,
+      region_iso31662:,
       postal_code: zip_code,
-      country_id:,
+      country_alpha2:,
       key:,
     )
 

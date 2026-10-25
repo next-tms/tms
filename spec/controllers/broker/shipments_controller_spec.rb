@@ -67,4 +67,22 @@ RSpec.describe(Broker::ShipmentsController) do
       end
     end
   end
+
+  %i[
+    booked
+    delivered
+    missing_delivery_appointment
+    pending_delivery
+    pending_departure
+    pending_dispatch
+    pending_pickup
+    pending_quotation
+  ].each do |action|
+    describe "GET ##{action}" do
+      before { get(action) }
+
+      it { is_expected.to(have_http_status(:ok)) }
+      it { expect(unknown_includes(Shipment, assigns(:shipments).includes_values)).to(be_empty) }
+    end
+  end
 end

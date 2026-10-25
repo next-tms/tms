@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -55,7 +55,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
 
   create_table "addresses", force: :cascade do |t|
     t.string "city"
-    t.integer "country_id", null: false
+    t.string "country_alpha2", limit: 2, null: false
     t.datetime "created_at", precision: nil, null: false
     t.text "google_places_spot_cached"
     t.datetime "google_places_spot_updated_at", precision: nil
@@ -65,7 +65,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
     t.datetime "open_street_map_result_updated_at", precision: nil
     t.text "original_attributes"
     t.string "ref"
-    t.bigint "region_id"
+    t.string "region_iso31662"
     t.datetime "smarty_streets_result_updated_at", precision: nil
     t.bigint "standardized_address_id"
     t.string "street"
@@ -74,8 +74,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
     t.datetime "updated_at", precision: nil, null: false
     t.text "verification_info"
     t.string "zip_code"
-    t.index ["country_id"], name: "index_addresses_on_country_id"
-    t.index ["region_id"], name: "index_addresses_on_region_id"
+    t.index ["country_alpha2"], name: "index_addresses_on_country_alpha2"
+    t.index ["region_iso31662"], name: "index_addresses_on_region_iso31662"
     t.index ["standardized_address_id"], name: "index_addresses_on_standardized_address_id"
   end
 
@@ -162,10 +162,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
   end
 
   create_table "broker_countries", force: :cascade do |t|
-    t.bigint "country_id", null: false
+    t.string "country_alpha2", limit: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["country_id"], name: "index_broker_countries_on_country_id"
+    t.index ["country_alpha2"], name: "index_broker_countries_on_country_alpha2"
   end
 
   create_table "broker_customer_dispatchers", force: :cascade do |t|
@@ -327,15 +327,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
     t.index ["email"], name: "index_contacts_on_email", unique: true, where: "((companyable_id IS NULL) AND (companyable_type IS NULL) AND (email IS NOT NULL))"
   end
 
-  create_table "countries", force: :cascade do |t|
-    t.string "alpha2_code"
-    t.string "alpha3_code"
-    t.datetime "created_at", null: false
-    t.string "name"
-    t.integer "un_code"
-    t.datetime "updated_at", null: false
-  end
-
   create_table "customers", force: :cascade do |t|
     t.string "name"
     t.index ["name"], name: "index_customers_on_name"
@@ -429,10 +420,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
 
   create_table "locations", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "region_id", null: false
+    t.string "region_iso31662", null: false
     t.datetime "updated_at", null: false
     t.string "zip_code"
-    t.index ["region_id"], name: "index_locations_on_region_id"
+    t.index ["region_iso31662"], name: "index_locations_on_region_iso31662"
     t.index ["zip_code"], name: "index_locations_on_zip_code"
   end
 
@@ -668,18 +659,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
     t.index ["updated_by_id"], name: "index_receivables_on_updated_by_id"
   end
 
-  create_table "regions", force: :cascade do |t|
-    t.string "abbreviation", null: false
-    t.bigint "country_id", null: false
-    t.datetime "created_at", null: false
-    t.string "iso31662", null: false
-    t.string "name", null: false
-    t.datetime "updated_at", null: false
-    t.index ["abbreviation"], name: "index_regions_on_abbreviation"
-    t.index ["country_id"], name: "index_regions_on_country_id"
-    t.index ["name"], name: "index_regions_on_name"
-  end
-
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "data"
@@ -811,7 +790,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
   create_table "standardized_addresses", force: :cascade do |t|
     t.integer "addresses_count"
     t.string "city"
-    t.bigint "country_id", null: false
+    t.string "country_alpha2", limit: 2, null: false
     t.datetime "created_at", null: false
     t.text "google_places_spot_cached"
     t.datetime "google_places_spot_updated_at", precision: nil
@@ -821,16 +800,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
     t.text "open_street_map_result_cached"
     t.datetime "open_street_map_result_updated_at", precision: nil
     t.string "postal_code"
-    t.bigint "region_id", null: false
+    t.string "region_iso31662", null: false
     t.text "smarty_streets_result_cached"
     t.datetime "smarty_streets_result_updated_at", precision: nil
     t.string "street"
     t.string "street2"
     t.string "time_zone_name", null: false
     t.datetime "updated_at", null: false
-    t.index ["country_id"], name: "index_standardized_addresses_on_country_id"
+    t.index ["country_alpha2"], name: "index_standardized_addresses_on_country_alpha2"
     t.index ["key"], name: "index_standardized_addresses_on_key"
-    t.index ["region_id"], name: "index_standardized_addresses_on_region_id"
+    t.index ["region_iso31662"], name: "index_standardized_addresses_on_region_iso31662"
   end
 
   create_table "stripe_accounts", force: :cascade do |t|
@@ -903,21 +882,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
     t.datetime "at", precision: nil
     t.string "city"
     t.string "country_alpha2", limit: 2
-    t.bigint "country_id"
     t.datetime "created_at", null: false
     t.bigint "event_id", null: false
     t.string "freight_kit_carrier_fingerprint"
     t.boolean "public", default: true
-    t.bigint "region_id"
+    t.string "region_iso31662"
     t.bigint "shipment_id", null: false
     t.bigint "terminal_id"
     t.string "time_zone_name"
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["address_id"], name: "index_tracking_events_on_address_id"
-    t.index ["country_id"], name: "index_tracking_events_on_country_id"
+    t.index ["country_alpha2"], name: "index_tracking_events_on_country_alpha2"
     t.index ["event_id"], name: "index_tracking_events_on_event_id"
-    t.index ["region_id"], name: "index_tracking_events_on_region_id"
+    t.index ["region_iso31662"], name: "index_tracking_events_on_region_iso31662"
     t.index ["shipment_id"], name: "index_tracking_events_on_shipment_id"
     t.index ["terminal_id"], name: "index_tracking_events_on_terminal_id"
     t.index ["user_id"], name: "index_tracking_events_on_user_id"
@@ -989,15 +967,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "addresses", "countries"
-  add_foreign_key "addresses", "regions"
   add_foreign_key "addresses", "standardized_addresses"
   add_foreign_key "broker_accessorials", "accessorials"
   add_foreign_key "broker_accessorials", "broker_customers"
   add_foreign_key "broker_carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "broker_carriers", "broker_customers"
   add_foreign_key "broker_carriers", "carriers"
-  add_foreign_key "broker_countries", "countries"
   add_foreign_key "broker_customer_dispatchers", "broker_customers"
   add_foreign_key "broker_customer_dispatchers", "users"
   add_foreign_key "broker_customer_sales_reps", "broker_customers"
@@ -1024,7 +999,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
   add_foreign_key "items", "shipments"
   add_foreign_key "location_areas", "areas"
   add_foreign_key "location_areas", "locations"
-  add_foreign_key "locations", "regions"
   add_foreign_key "overlength_rules", "broker_carriers"
   add_foreign_key "payment_transactions", "broker_carriers"
   add_foreign_key "payment_transactions", "payments"
@@ -1057,7 +1031,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
   add_foreign_key "receivables", "users", column: "created_by_id"
   add_foreign_key "receivables", "users", column: "sent_by_id"
   add_foreign_key "receivables", "users", column: "updated_by_id"
-  add_foreign_key "regions", "countries"
   add_foreign_key "shipment_accessorials", "accessorials"
   add_foreign_key "shipment_accessorials", "shipments"
   add_foreign_key "shipment_broker_accessorials", "broker_accessorials"
@@ -1070,8 +1043,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
   add_foreign_key "shipments", "users", column: "created_by_id"
   add_foreign_key "shipments", "users", column: "dispatcher_id"
   add_foreign_key "shipments", "users", column: "updated_by_id"
-  add_foreign_key "standardized_addresses", "countries"
-  add_foreign_key "standardized_addresses", "regions"
   add_foreign_key "subscriptions", "contacts"
   add_foreign_key "suppressions", "problems"
   add_foreign_key "suppressions", "suppressors"
@@ -1079,9 +1050,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_021756) do
   add_foreign_key "terminals", "addresses"
   add_foreign_key "terminals", "carriers"
   add_foreign_key "tracking_events", "addresses"
-  add_foreign_key "tracking_events", "countries"
   add_foreign_key "tracking_events", "events"
-  add_foreign_key "tracking_events", "regions"
   add_foreign_key "tracking_events", "shipments"
   add_foreign_key "tracking_events", "terminals"
   add_foreign_key "tracking_events", "users"

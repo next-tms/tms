@@ -2,16 +2,16 @@ require 'rails_helper'
 
 RSpec.describe(Address::FindOrCreateViaSmartyStreetsService) do
   let(:address_key) { "4011 Lana Tier, Fremont, CA 94536" }
-  let(:region) { create(:region, name: 'California', abbreviation: 'CA') }
+  let(:region) { Transponder::ORM::Region.find('US-CA') }
   let(:street) { '4011 Lana Tier' }
   let(:city) { 'Fremont' }
   let(:zip_code) { '94536' }
 
   describe '#call' do
-    subject(:call) { described_class.new(street:, city:, zip_code:, region_id: region.id).call }
+    subject(:call) { described_class.new(street:, city:, zip_code:, region_iso31662: region.iso31662).call }
 
     context 'when standardized address record is already present' do
-      let!(:standardized_address) { create(:standardized_address, key: address_key, region:, country: region.country) }
+      let!(:standardized_address) { create(:standardized_address, key: address_key, region_iso31662: region.iso31662) }
 
       it { is_expected.to eq(standardized_address) }
     end

@@ -8,23 +8,28 @@ RSpec.describe(Broker::BrokerCountriesController) do
   before { sign_in(current_user) }
 
   describe 'POST #create' do
-    let(:country) { create(:country) }
-
-    before { post(:create, params: { broker_country: { country_id: country.id } }) }
+    before { post(:create, params: { broker_country: { country_alpha2: 'CA' } }) }
 
     it { is_expected.to(redirect_to(broker_settings_company_path)) }
-    it { expect(BrokerCountry.pluck(:country_id)).to(eq([ country.id ])) }
+    it { expect(BrokerCountry.pluck(:country_alpha2)).to(eq([ 'CA' ])) }
 
     context 'when the country is already serviced' do
-      before { post(:create, params: { broker_country: { country_id: country.id } }) }
+      before { post(:create, params: { broker_country: { country_alpha2: 'CA' } }) }
 
       it { expect(flash[:error]).to(eq('Unable to add country')) }
       it { expect(BrokerCountry.count).to(eq(1)) }
     end
+
+    context 'when the country is not a known code' do
+      before { post(:create, params: { broker_country: { country_alpha2: 'ZZ' } }) }
+
+      it { expect(flash[:error]).to(eq('Unable to add country')) }
+      it { expect(BrokerCountry.pluck(:country_alpha2)).to(eq([ 'CA' ])) }
+    end
   end
 
   describe 'DELETE #destroy' do
-    let(:broker_country) { BrokerCountry.create!(country: create(:country)) }
+    let(:broker_country) { BrokerCountry.create!(country_alpha2: 'CA') }
 
     before { delete(:destroy, params: { id: broker_country.id }) }
 

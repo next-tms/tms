@@ -30,6 +30,6 @@
 </div>
 
 <%= bootstrap_form_with(model: [ :broker, BrokerCountry.new ], layout: :inline) do |f| %>
-  <%= f.select :country_id, Country.where.not(id: BrokerCountry.select(:country_id)).order(:name).map { |country| [ country.name, country.id ] }, { hide_label: true }, class: 'form-select' %>
+  <%= f.select :country_alpha2, @unserviced_countries.map { |country| [ country.name, country.id ] }, { hide_label: true }, class: 'form-select' %>
   <%= f.submit 'Add', class: 'btn btn-primary' %>
 <% end %>

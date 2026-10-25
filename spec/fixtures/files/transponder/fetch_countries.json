@@ -1,0 +1,60 @@
+{
+  "data": {
+    "fetchCountries": [
+      {
+        "alpha2": "CA",
+        "alpha3": "CAN",
+        "name": "Canada",
+        "numeric": 124,
+        "regions": [
+          {
+            "abbreviation": "BC",
+            "iso31662": "CA-BC",
+            "name": "British Columbia"
+          },
+          {
+            "abbreviation": "ON",
+            "iso31662": "CA-ON",
+            "name": "Ontario"
+          }
+        ]
+      },
+      {
+        "alpha2": "MX",
+        "alpha3": "MEX",
+        "name": "Mexico",
+        "numeric": 484,
+        "regions": [
+          {
+            "abbreviation": "AGU",
+            "iso31662": "MX-AGU",
+            "name": "Aguascalientes"
+          }
+        ]
+      },
+      {
+        "alpha2": "US",
+        "alpha3": "USA",
+        "name": "United States of America",
+        "numeric": 840,
+        "regions": [
+          {
+            "abbreviation": "CA",
+            "iso31662": "US-CA",
+            "name": "California"
+          },
+          {
+            "abbreviation": "TX",
+            "iso31662": "US-TX",
+            "name": "Texas"
+          },
+          {
+            "abbreviation": "WY",
+            "iso31662": "US-WY",
+            "name": "Wyoming"
+          }
+        ]
+      }
+    ]
+  }
+}

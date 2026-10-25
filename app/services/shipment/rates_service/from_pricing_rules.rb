@@ -6,12 +6,12 @@ class Shipment::RatesService
       from_locations = Location
                        .where(zip_code: shipment.shipper_address.zip_code)
                        .or(
-                         Location.where(region: shipment.shipper_address.region, zip_code: nil),
+                         Location.where(region_iso31662: shipment.shipper_address.region_iso31662, zip_code: nil),
                        )
       to_locations = Location
                      .where(zip_code: shipment.receiver_address.zip_code)
                      .or(
-                       Location.where(region: shipment.receiver_address.region, zip_code: nil),
+                       Location.where(region_iso31662: shipment.receiver_address.region_iso31662, zip_code: nil),
                      )
 
       return rates unless from_locations.present? && to_locations.present?

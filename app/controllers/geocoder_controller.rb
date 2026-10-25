@@ -54,6 +54,6 @@ class GeocoderController < ApplicationController
   private
 
   def address_params
-    params.require(:geocoder).permit(:street, :city, :zip_code, :region_id)
+    params.require(:geocoder).permit(:street, :city, :zip_code, :region_iso31662)
   end
 end

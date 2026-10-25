@@ -208,7 +208,7 @@ class User < ApplicationRecord
   def country_code
     address = broker? ? Setting.mailing_address : companyable.try(:office_address)
 
-    address&.country&.alpha2_code.presence || 'US'
+    address&.country_alpha2.presence || 'US'
   end
 
   def full_name

@@ -3,8 +3,8 @@
   <%= address_form.text_field :street, data: { address_target: 'field' } %>
   <%= address_form.text_field :street2, label: '&nbsp;'.html_safe %>
   <%= address_form.text_field :city, data: { address_target: 'field' } %>
-  <%= address_form.select :region_id,
-                          (address_form.object.region_id.blank? ? [[fallback_address.region.name, fallback_address.region.id]] : [[address_form.object.region.name, address_form.object.region_id]]),
+  <%= address_form.select :region_iso31662,
+                          (address_form.object.region_iso31662.blank? ? [[fallback_address.region.name, fallback_address.region.id]] : [[address_form.object.region.name, address_form.object.region_iso31662]]),
                           { label: 'State' },
                           data: { 'address-target': 'regions' },
                           class: 'form-select' %>
@@ -14,9 +14,9 @@
                               data: { action: "keyup->address#fillCityAndStateByZipCode", address_target: 'field' },
                               help: "City and State will be filled based from ZIP" %>
 
-  <%= address_form.select :country_id,
-                          Country.order(:name).collect { |c| [c.name, c.id] },
-                          { selected: (address_form.object.country_id.blank? ? fallback_address.country_id : address_form.object.country_id) },
+  <%= address_form.select :country_alpha2,
+                          country_options(Transponder::ORM::Country.order(:name), address_form.object.country_alpha2),
+                          { selected: (address_form.object.country_alpha2.blank? ? fallback_address.country_alpha2 : address_form.object.country_alpha2) },
                           data: { action: 'address#handle', 'address-target': 'country' },
                           class: 'form-select' %>
 

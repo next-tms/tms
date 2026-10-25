@@ -1,17 +1,17 @@
 # Provides access to broker's Stripe API
 class Address::FindOrCreateViaSmartyStreetsService
-  attr_reader :street, :street2, :city, :zip_code, :region_id
+  attr_reader :street, :street2, :city, :zip_code, :region_iso31662
 
-  def initialize(street:, street2: nil, city:, zip_code:, region_id:)
+  def initialize(street:, street2: nil, city:, zip_code:, region_iso31662:)
     @street = street
     @street2 = street2
     @city = city
     @zip_code = zip_code
-    @region_id = region_id
+    @region_iso31662 = region_iso31662
   end
 
   def call
-    region = Region.find(region_id)
+    region = Transponder::ORM::Region.find(region_iso31662)
     address_key = build_address_key(region)
 
     standardized_address = StandardizedAddress.where('lower(key) LIKE ?', "%#{address_key.downcase}%")&.first

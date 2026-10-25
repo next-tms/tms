@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe(Address::OpenStreetMapVerifyService) do
   let(:address_key) { "4011 Lana Tier, Fremont, California, 94536" }
   let(:street) { '4011 Lana Tier' }
-  let(:country) { create(:country) }
+  let(:country) { Transponder::ORM::Country.find('US') }
   let(:mock_address_service) { instance_double(OpenStreetMap::Client) }
   let(:query_string) { "#{address_key}, #{country.name}" }
 

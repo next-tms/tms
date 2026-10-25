@@ -1,0 +1,27 @@
+module Transponder
+  module ORM
+    class Base
+      class << self
+        delegate :find, :find_by, :find_by!, :first, :last, :order, :pluck, :where, to: :all
+
+        def all = raise(NotImplementedError, "#{name} must implement .all")
+        def find_or_initialize_by(**attributes) = find_by(**attributes) || new(**attributes)
+        def model_name = @model_name ||= ActiveModel::Name.new(self)
+        def primary_key = raise(NotImplementedError, "#{name} must implement .primary_key")
+        def reset = @all = nil
+      end
+
+      delegate :model_name, to: :class
+
+      def ==(other) = other.is_a?(self.class) && other.id == id
+      alias_method :eql?, :==
+
+      def hash = [ self.class, id ].hash
+      def id = public_send(self.class.primary_key)
+      def inspect = "#<#{self.class.name} id=#{id}>"
+      def persisted? = true
+      def to_model = self
+      def to_param = id
+    end
+  end
+end

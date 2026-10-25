@@ -8,23 +8,54 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute country_id
-#   @return []
+# @!attribute country_alpha2
+#   @return [String]
 #
 # Indexes
 #
-#  index_broker_countries_on_country_id  (country_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (country_id => countries.id)
+#  index_broker_countries_on_country_alpha2  (country_alpha2)
 #
 require 'rails_helper'
 
 RSpec.describe(BrokerCountry) do
-  describe 'validations' do
-    subject { described_class.new(country: create(:country)) }
+  let(:broker_country) { described_class.new(country_alpha2:) }
+  let(:country_alpha2) { 'CA' }
 
-    it { is_expected.to(validate_uniqueness_of(:country_id)) }
+  describe '.countries' do
+    before do
+      described_class.create!(country_alpha2: 'US')
+      described_class.create!(country_alpha2: 'CA')
+    end
+
+    it { expect(described_class.countries.pluck(:alpha2)).to(contain_exactly('CA', 'US')) }
+  end
+
+  describe '#create_region_areas' do
+    it { expect { described_class.create!(country_alpha2: 'CA') }.to(change(Area, :count).by(2)) }
+    it { expect { described_class.create!(country_alpha2: 'CA') }.to(change { Area.pluck(:name).sort }.to(%w[British\ Columbia,\ CA Ontario,\ CA])) }
+
+    context 'when the region areas exist' do
+      before { Area.find_or_create_by_region!(Transponder::ORM::Region.find('CA-ON')) }
+
+      it { expect { described_class.create!(country_alpha2: 'CA') }.to(change(Area, :count).by(1)) }
+    end
+  end
+
+  describe '#country' do
+    it { expect(broker_country.country).to(equal(Transponder::ORM::Country.find('CA'))) }
+  end
+
+  describe 'validations' do
+    subject { broker_country }
+
+    it { is_expected.to(validate_uniqueness_of(:country_alpha2)) }
+
+    context 'when the country is blank' do
+      let(:country_alpha2) { nil }
+
+      before { broker_country.validate }
+
+      it { expect(broker_country.errors.of_kind?(:country_alpha2, :blank)).to(be(true)) }
+    end
   end
 end

@@ -15,5 +15,5 @@ class Broker::BrokerCountriesController < Broker::BrokerController
 
   private
 
-  def broker_country_params = params.require(:broker_country).permit(:country_id)
+  def broker_country_params = params.require(:broker_country).permit(:country_alpha2)
 end

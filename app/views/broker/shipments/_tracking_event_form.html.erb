@@ -12,11 +12,11 @@
   </div>
 
   <div class="col-auto">
-    <%= f.select :region_id, (f.object.region_id.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[f.object.region.abbreviation, f.object.region_id]]), { hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
+    <%= f.select :region_iso31662, (f.object.region_iso31662.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[f.object.region.abbreviation, f.object.region_iso31662]]), { hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
   </div>
 
   <div class="col-auto">
-    <%= f.select :country_id, Country.order(:name).collect { |c| [c.name, c.id] }, { hide_label: true, selected: (f.object.country_id.blank? ? Setting.mailing_address!.country_id : f.object.country_id) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+    <%= f.select :country_alpha2, country_options(Transponder::ORM::Country.order(:name), f.object.country_alpha2), { hide_label: true, selected: (f.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : f.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
   </div>
 
   <div class="col-auto">

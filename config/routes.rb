@@ -242,7 +242,5 @@ Rails.application.routes.draw do
     get 'search' => 'search#search'
   end
 
-  resources :countries, only: %(show) do
-    member { get 'regions' }
-  end
+  resources :countries, only: %i[show]
 end

@@ -22,12 +22,10 @@
 #   @return [Time]
 # @!attribute address_id
 #   @return []
-# @!attribute country_id
-#   @return []
 # @!attribute event_id
 #   @return []
-# @!attribute region_id
-#   @return []
+# @!attribute region_iso31662
+#   @return [String]
 # @!attribute shipment_id
 #   @return []
 # @!attribute terminal_id
@@ -37,20 +35,18 @@
 #
 # Indexes
 #
-#  index_tracking_events_on_address_id   (address_id)
-#  index_tracking_events_on_country_id   (country_id)
-#  index_tracking_events_on_event_id     (event_id)
-#  index_tracking_events_on_region_id    (region_id)
-#  index_tracking_events_on_shipment_id  (shipment_id)
-#  index_tracking_events_on_terminal_id  (terminal_id)
-#  index_tracking_events_on_user_id      (user_id)
+#  index_tracking_events_on_address_id       (address_id)
+#  index_tracking_events_on_country_alpha2   (country_alpha2)
+#  index_tracking_events_on_event_id         (event_id)
+#  index_tracking_events_on_region_iso31662  (region_iso31662)
+#  index_tracking_events_on_shipment_id      (shipment_id)
+#  index_tracking_events_on_terminal_id      (terminal_id)
+#  index_tracking_events_on_user_id          (user_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (address_id => addresses.id)
-#  fk_rails_...  (country_id => countries.id)
 #  fk_rails_...  (event_id => events.id)
-#  fk_rails_...  (region_id => regions.id)
 #  fk_rails_...  (shipment_id => shipments.id)
 #  fk_rails_...  (terminal_id => terminals.id)
 #  fk_rails_...  (user_id => users.id)
@@ -85,8 +81,8 @@ class TrackingEvent < ApplicationRecord
   belongs_to :address, optional: true
   accepts_nested_attributes_for :address, allow_destroy: false, reject_if: :all_blank
 
-  belongs_to :country
-  belongs_to :region
+  belongs_to_transponder :country, foreign_key: :country_alpha2
+  belongs_to_transponder :region, foreign_key: :region_iso31662
   belongs_to :shipment
   belongs_to :terminal, optional: true
   belongs_to :user, optional: true
@@ -108,8 +104,8 @@ class TrackingEvent < ApplicationRecord
   end
 
   def discussable_topic_description
-    key = [ :discussion_topics, topic.class.name.underscore.to_sym, event.active_shipping_code.to_sym ].join('.')
-    args = { city:, region_abbreviation: region.abbreviation, country_alpha2_code: country.alpha2_code }
+    key = [ :discussion_topics, self.class.name.underscore.to_sym, event.active_shipping_code.to_sym ].join('.')
+    args = { city:, region_abbreviation: region.abbreviation, country_alpha2: country.alpha2 }
 
     I18n.t(key, **args)
   end
