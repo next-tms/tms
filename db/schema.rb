@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_020142) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -222,16 +222,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
     t.index ["receivables_contact_id"], name: "index_broker_customers_on_receivables_contact_id"
     t.index ["requires_carrier_bol_on_receivables"], name: "index_broker_customers_on_requires_carrier_bol_on_receivables"
     t.index ["requires_carrier_pod_on_receivables"], name: "index_broker_customers_on_requires_carrier_pod_on_receivables"
-  end
-
-  create_table "carrier_areas", force: :cascade do |t|
-    t.bigint "carrier_id", null: false
-    t.bigint "from_area_id", null: false
-    t.bigint "to_area_id", null: false
-    t.index ["carrier_id", "from_area_id", "to_area_id"], name: "idx_on_carrier_id_from_area_id_to_area_id_bcd543b955", unique: true
-    t.index ["carrier_id"], name: "index_carrier_areas_on_carrier_id"
-    t.index ["from_area_id"], name: "index_carrier_areas_on_from_area_id"
-    t.index ["to_area_id"], name: "index_carrier_areas_on_to_area_id"
   end
 
   create_table "carriers", id: :serial, force: :cascade do |t|
@@ -549,17 +539,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
 
   create_table "pricing_rules", force: :cascade do |t|
     t.bigint "broker_carrier_id", null: false
-    t.bigint "carrier_area_id", null: false
     t.integer "cost_per_pallet_cents", default: 0, null: false
     t.string "cost_per_pallet_currency", default: "USD", null: false
     t.datetime "created_at", null: false
+    t.bigint "from_area_id", null: false
     t.integer "max_pallets"
     t.integer "min_pallets"
+    t.bigint "to_area_id", null: false
     t.datetime "updated_at", null: false
     t.index ["broker_carrier_id"], name: "index_pricing_rules_on_broker_carrier_id"
-    t.index ["carrier_area_id"], name: "index_pricing_rules_on_carrier_area_id"
+    t.index ["from_area_id"], name: "index_pricing_rules_on_from_area_id"
     t.index ["max_pallets"], name: "index_pricing_rules_on_max_pallets"
     t.index ["min_pallets"], name: "index_pricing_rules_on_min_pallets"
+    t.index ["to_area_id"], name: "index_pricing_rules_on_to_area_id"
   end
 
   create_table "problems", force: :cascade do |t|
@@ -981,9 +973,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
   add_foreign_key "broker_customers", "addresses", column: "primary_pickup_address_id"
   add_foreign_key "broker_customers", "contacts", column: "receivables_contact_id"
   add_foreign_key "broker_customers", "customers"
-  add_foreign_key "carrier_areas", "areas", column: "from_area_id"
-  add_foreign_key "carrier_areas", "areas", column: "to_area_id"
-  add_foreign_key "carrier_areas", "carriers"
   add_foreign_key "carriers", "addresses", column: "broker_billing_address_id"
   add_foreign_key "carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "claim_items", "claims"
@@ -1015,8 +1004,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
   add_foreign_key "pickups", "users", column: "updated_by_id"
   add_foreign_key "preferred_broker_carriers", "broker_carriers"
   add_foreign_key "preferred_broker_carriers", "broker_customers"
+  add_foreign_key "pricing_rules", "areas", column: "from_area_id"
+  add_foreign_key "pricing_rules", "areas", column: "to_area_id"
   add_foreign_key "pricing_rules", "broker_carriers"
-  add_foreign_key "pricing_rules", "carrier_areas"
   add_foreign_key "problems", "users", column: "assigned_to_id"
   add_foreign_key "problems", "users", column: "resolved_by_id"
   add_foreign_key "rate_accessorials", "accessorials"

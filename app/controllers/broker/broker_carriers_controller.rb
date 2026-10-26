@@ -13,9 +13,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @vendors = Accounting.record_class(:vendor).order(:display_name)
   end
 
-  def edit
-    @broker_carrier.check_mailing_address = Address.new if @broker_carrier.check_mailing_address.blank?
-  end
+  def edit = @broker_carrier.check_mailing_address ||= Address.new
 
   def index
     @q = BrokerCarrier.includes(required_includes).ransack(params[:q], auth_object: current_user)
@@ -29,10 +27,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @carrier_contacts = @broker_carrier.carrier.contacts
   end
 
-  def new
-    @broker_carrier = BrokerCarrier.new
-    @broker_carrier.check_mailing_address = Address.new
-  end
+  def new = @broker_carrier = BrokerCarrier.new(check_mailing_address: Address.new)
 
   def create
     @broker_carrier = BrokerCarrier.new(broker_carrier_params)
@@ -178,66 +173,43 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     query.merge(g: [ { m: 'or', TERMINALS_FILTER => filter, address_region_iso31662_in: region_iso31662s } ])
   end
 
-  def authorize_broker_carrier_access
-    authorize!(@broker_carrier, to: :show?, with: BrokerPolicy)
-  end
+  def authorize_broker_carrier_access = authorize!(@broker_carrier, to: :show?, with: BrokerPolicy)
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_broker_carrier
-    @broker_carrier = BrokerCarrier.find(params[:id])
-  end
+  def set_broker_carrier = @broker_carrier = BrokerCarrier.find(params[:id])
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def accounting_params = params.require(:accounting).permit(broker_carriers: %i[accounting_vendor_id]).require(:broker_carriers)
 
-  def broker_carrier_params
-    params
-    .require(:broker_carrier)
-    .permit(
-      :id,
-      :account_desc,
-      :account,
-      :accounting_notes,
-      :broker_customer_id,
-      :carrier_id,
-      :create_invoice_on_pickup,
-      :customer_id,
-      :days_to_pay_after_invoice_date,
-      :default_bol_notes,
-      :encrypted_api_key,
-      :ignore_bol_requires_tracking_number,
-      :password,
-      :username,
-      :website_password,
-      :website_username,
-      check_mailing_address_attributes: %i[
-                                          id
-                                          ref
-                                          country_alpha2
-                                          street
-                                          street2
-                                          city
-                                          region_iso31662
-                                          zip_code
-                                        ],
-    )
-  end
+  def broker_carrier_params = params
+                              .require(:broker_carrier)
+                              .permit(
+                                :id,
+                                :account_desc,
+                                :account,
+                                :accounting_notes,
+                                :broker_customer_id,
+                                :carrier_id,
+                                :create_invoice_on_pickup,
+                                :customer_id,
+                                :days_to_pay_after_invoice_date,
+                                :default_bol_notes,
+                                :encrypted_api_key,
+                                :ignore_bol_requires_tracking_number,
+                                :password,
+                                :username,
+                                :website_password,
+                                :website_username,
+                                check_mailing_address_attributes: %i[id ref country_alpha2 street street2 city region_iso31662 zip_code]
+                              )
 
-  def required_includes
-    [
-      :carrier,
-      :broker_customer,
-      { broker_customer: :customer }
-    ]
-  end
+  def required_includes = [ :carrier, :broker_customer, { broker_customer: :customer } ]
 
-  def tariff_params
-    params
-    .require(:broker_carrier)
-    .permit(
-      :id,
-      overlength_rules_attributes: %i[_destroy cost id max_length min_length],
-      pricing_rules_attributes: %i[_destroy id carrier_area_id cost_per_pallet max_pallets min_pallets],
-    )
-  end
+  def tariff_params = params
+                      .require(:broker_carrier)
+                      .permit(
+                        :id,
+                        overlength_rules_attributes: %i[_destroy cost id max_length min_length],
+                        pricing_rules_attributes: %i[_destroy id cost_per_pallet from_area_id max_pallets min_pallets to_area_id]
+                      )
 end

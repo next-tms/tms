@@ -19,26 +19,28 @@ class Shipment::RatesService
       from_areas = Area.where(id: from_locations.map(&:areas).flatten.map(&:id))
       to_areas = Area.where(id: to_locations.map(&:areas).flatten.map(&:id))
 
-      carrier_areas = broker_carrier.carrier.carrier_areas.where(from_area: from_areas, to_area: to_areas)
+      lanes = broker_carrier
+              .pricing_rules
+              .where(from_area: from_areas, to_area: to_areas)
+              .distinct
+              .pluck(:from_area_id, :to_area_id)
 
-      return rates if carrier_areas.blank?
+      return rates if lanes.blank?
 
       pallet_count = shipment.items.map(&:pallet_or_crate?).count(true)
 
-      carrier_areas.find_each do |carrier_area|
+      lanes.each do |from_area_id, to_area_id|
         pricing_rule = broker_carrier
                        .pricing_rules
-                       .where(carrier_area:)
-                       .where('min_pallets <= ?', pallet_count)
-                       .where('max_pallets >= ?', pallet_count)
+                       .where(from_area_id:, to_area_id:)
+                       .where(max_pallets: pallet_count.., min_pallets: ..pallet_count)
                        .first
 
         if pricing_rule.blank?
           pricing_rule = broker_carrier
                          .pricing_rules
-                         .where(carrier_area:)
-                         .where('min_pallets <= ?', pallet_count)
-                         .where(max_pallets: nil)
+                         .where(from_area_id:, to_area_id:)
+                         .where(max_pallets: nil, min_pallets: ..pallet_count)
                          .first
         end
 

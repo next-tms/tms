@@ -31,8 +31,6 @@ en:
         h: Height
         l: Length
         w: Width
-      pricing_rule:
-        carrier_area_id: Lane
       region:
         iso_3166_2: ISO 3166-2
       shipment:
@@ -67,9 +65,6 @@ en:
       carrier:
         one: Carrier
         other: Carriers
-      carrier_area:
-        one: Lane
-        other: Lanes
       overlength_rule:
         one: Overlength Rule
         many: Overlength Rules

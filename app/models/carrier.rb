@@ -39,13 +39,8 @@
 #
 class Carrier < ApplicationRecord
   class << self
-    def ransackable_attributes(auth_object = nil)
-      [ 'name', 'scac' ]
-    end
-
-    def ransackable_associations(auth_object = nil)
-      []
-    end
+    def ransackable_attributes(auth_object = nil) = [ 'name', 'scac' ]
+    def ransackable_associations(auth_object = nil) = []
   end
 
   include Companyable
@@ -61,9 +56,6 @@ class Carrier < ApplicationRecord
   encrypts :encrypted_proxy_url
 
   has_many :broker_carriers
-
-  has_many :carrier_areas
-  has_many :areas, through: :carrier_areas
 
   has_many :shipments
   has_many :terminals
@@ -85,9 +77,7 @@ class Carrier < ApplicationRecord
   validates :name, uniqueness: true
   validates :mc_number, :scac, uniqueness: { allow_nil: true }
 
-  def bol_requires_tracking_number?
-    !!freight_kit_class&.bol_requires_tracking_number?
-  end
+  def bol_requires_tracking_number? = !!freight_kit_class&.bol_requires_tracking_number?
 
   # Which `BrokerCarrier` columns are required for FreightKit to communicate with the carrier's API.
   # @return <Boolean>
@@ -101,9 +91,7 @@ class Carrier < ApplicationRecord
     columns.flatten.compact
   end
 
-  def create_pickup_implemented?
-    !!freight_kit_class&.create_pickup_implemented?
-  end
+  def create_pickup_implemented? = !!freight_kit_class&.create_pickup_implemented?
 
   def freight_kit_class
     return if scac.blank?
@@ -115,11 +103,7 @@ class Carrier < ApplicationRecord
 
   # Whether the carrier considers `Shipment#pickup_confirmation`, `Shipment#pro` to be the same.
   # @return <Boolean>
-  def pickup_number_is_tracking_number?
-    !!freight_kit_class&.pickup_number_is_tracking_number?
-  end
+  def pickup_number_is_tracking_number? = !!freight_kit_class&.pickup_number_is_tracking_number?
 
-  def required_freight_kit_credentials
-    freight_kit_class&.required_credential_types || []
-  end
+  def required_freight_kit_credentials = freight_kit_class&.required_credential_types || []
 end

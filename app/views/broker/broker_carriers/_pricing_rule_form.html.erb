@@ -1,16 +1,27 @@
 <div class="pricing-rules-form-wrapper row gy-2 gx-3 align-items-top mb-4" data-new-record="<%= f.object.new_record? %>">
-  <div class="col col-sm-4">
-    <%= f.select :carrier_area_id,
-                 f.object.broker_carrier.carrier.carrier_areas.collect { |record| [record.humanize, record.id] }.sort,
+  <div class="col col-sm-3">
+    <%= f.select :from_area_id,
+                 areas,
                  {
                    hide_label: true,
-                   include_blank: (CarrierArea.model_name.human if f.object.new_record?),
+                   include_blank: (PricingRule.human_attribute_name(:from_area) if f.object.new_record?),
                    readonly: f.object.persisted?
                  }
     %>
   </div>
 
-  <div class="col col-sm-4">
+  <div class="col col-sm-3">
+    <%= f.select :to_area_id,
+                 areas,
+                 {
+                   hide_label: true,
+                   include_blank: (PricingRule.human_attribute_name(:to_area) if f.object.new_record?),
+                   readonly: f.object.persisted?
+                 }
+    %>
+  </div>
+
+  <div class="col col-sm-3">
     <div class="input-group">
       <%= f.text_field :min_pallets, placeholder: 'Min', wrapper: false %>
       <%= f.text_field :max_pallets, placeholder: 'Max', wrapper: false %>
