@@ -59,11 +59,7 @@ group :development, :test do
   gem 'rails-controller-testing'
   gem 'webmock', '~> 3.18.1'
 
-  gem 'rubocop-graphql', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-rake', require: false
-  gem 'rubocop-rspec', require: false
-  gem 'rubocop-rspec_rails', require: false
+  gem 'rubocop-next', '~> 1.0.9'
 end
 
 group :development do
