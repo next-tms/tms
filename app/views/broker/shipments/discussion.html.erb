@@ -1,0 +1,5 @@
+<% provide :title, "Discussion — Load #{@shipment.load_id}" %>
+
+<%= render 'member_header' %>
+
+<%= render 'discussions/discussion', discussion: @shipment.discussion %>

@@ -14,6 +14,7 @@ shared_examples_for 'discussable_topic' do
     it { expect(record).to(respond_to(:discussion)) }
 
     it { expect(record).to(respond_to(:build_discussable_topic?)) }
+    it { expect(record).to(respond_to(:contact_scope)) }
     it { expect(record).to(respond_to(:discussable_topic_description)) }
     it { expect(record).to(respond_to(:discussable?)) }
     it { expect(record).to(respond_to(:eligible_discussable_contacts)) }

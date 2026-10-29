@@ -95,6 +95,12 @@ Rails.application.routes.draw do
 
     resources :contacts
 
+    resources :discussions, only: %i[show] do
+      resources :discussion_topics, only: %i[show], path: 'discussion-topics' do
+        resources :comments, only: %i[create]
+      end
+    end
+
     resources :banks, except: %i[destroy], path: 'bank-accounts' do
       collection do
         get :accounting
@@ -179,6 +185,7 @@ Rails.application.routes.draw do
         get :accounting
         get :book
         get :claims
+        get :discussion
         get :documents
         get :history
         get :notes

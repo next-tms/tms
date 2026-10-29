@@ -1,4 +1,4 @@
-class CancelShipmentJob < ApplicationJob
+class Shipment::CancelJob < ApplicationJob
   def perform(shipment)
     shipment.assign_attributes(
       canceled_at: DateTime.current,

@@ -1,0 +1,7 @@
+<% if discussion.present? && discussion.discussion_topics.any? %>
+  <% discussion.discussion_topics.order(created_at: :desc).each do |discussion_topic| %>
+    <%= render 'discussion_topics/discussion_topic', discussion_topic: %>
+  <% end %>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>

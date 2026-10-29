@@ -15,7 +15,7 @@ production:
     schedule: every hour at minute 12
 
   cancel_shipments:
-    class: CancelShipmentsJob
+    class: Shipment::CancelManyJob
     schedule: "30 * * * *"
   create_payments:
     class: CreatePaymentsJob
@@ -38,6 +38,9 @@ production:
   push_receivables_to_accounting:
     class: PushReceivablesToAccountingJob
     schedule: "0 * * * *"
+  resolve_problems:
+    class: Problem::ResolveManyJob
+    schedule: "20 * * * *"
   track_shipments_pending_delivery:
     class: TrackShipmentsPendingDeliveryJob
     schedule: "*/30 * * * *"

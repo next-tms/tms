@@ -27,7 +27,9 @@
 #
 class Comment < ApplicationRecord
   belongs_to :discussion_topic
-  belongs_to :contact
+  belongs_to :contact, optional: true
 
   validates :body, presence: true
+
+  def contact_full_name = contact.blank? ? 'Robot' : contact.full_name
 end

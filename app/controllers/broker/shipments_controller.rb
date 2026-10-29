@@ -9,6 +9,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                         claims
                         create_tracking_event
                         destroy
+                        discussion
                         documents
                         edit
                         edit_tracking_events
@@ -33,10 +34,10 @@ class Broker::ShipmentsController < Broker::BrokerController
                 only: %i[
                         edit_tracking_events
                         quote
-                        update
-                        upload_document
                         show
                         tracking_events
+                        update
+                        upload_document
                       ]
 
   def accounting

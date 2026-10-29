@@ -28,8 +28,15 @@
 require 'rails_helper'
 
 RSpec.describe(Comment) do
+  describe '#contact_full_name' do
+    let(:contact) { build(:contact, first_name: 'Ada', last_name: 'Lovelace') }
+
+    it { expect(described_class.new(contact:).contact_full_name).to(eq('Ada Lovelace')) }
+    it { expect(described_class.new.contact_full_name).to(eq('Robot')) }
+  end
+
   describe 'relationships' do
-    it { is_expected.to(belong_to(:contact)) }
+    it { is_expected.to(belong_to(:contact).optional) }
     it { is_expected.to(belong_to(:discussion_topic)) }
     it { is_expected.to(validate_presence_of(:body).presence) }
   end

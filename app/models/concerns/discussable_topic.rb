@@ -15,18 +15,16 @@ module DiscussableTopic
       record.subscriptions = (discussion.subscriptions.active.map(&:contact) & eligible_discussable_contacts)
                              .select(&:active?)
                              .map { |contact| record.subscriptions.new(contact:) }
+      record.contact_scope = contact_scope
       record.discussion = discussion
 
       self.discussion_topic = record
     end
 
     # @note Meant to be overridden in specific models
-    def build_discussable_topic?
-      raise NotImplementedError
-    end
+    def build_discussable_topic? = raise(NotImplementedError)
 
-    def discussable?
-      discussion_topic.present?
-    end
+    def contact_scope = raise(NotImplementedError)
+    def discussable? = discussion_topic.present?
   end
 end

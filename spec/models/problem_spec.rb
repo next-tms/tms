@@ -44,5 +44,24 @@
 require 'rails_helper'
 
 RSpec.describe(Problem) do
+  describe '#resolve' do
+    let(:problem) { build(:problem, problematic_rule_code: 'missing_picked_up_at') }
+
+    before { allow(ProblematicService::Action::Shipment::MissingPickedUpAt).to(receive(:call).and_return(true)) }
+
+    it { expect(problem.resolve).to(be(true)) }
+    it { expect(build(:problem, problematic_rule_code: 'missing_pro').resolve).to(be_nil) }
+
+    it do
+      problem.resolve
+      expect(ProblematicService::Action::Shipment::MissingPickedUpAt).to(have_received(:call).with(problem))
+    end
+  end
+
+  describe '#resolve?' do
+    it { expect(build(:problem, problematic_rule_code: 'missing_picked_up_at').resolve?).to(be(true)) }
+    it { expect(build(:problem, problematic_rule_code: 'missing_pro').resolve?).to(be(false)) }
+  end
+
   it_behaves_like 'discussable_topic'
 end

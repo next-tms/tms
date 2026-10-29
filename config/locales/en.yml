@@ -70,6 +70,9 @@ en:
       carrier_area:
         one: Lane
         other: Lanes
+      discussion:
+        one: Feed
+        other: Feed
       overlength_rule:
         one: Overlength Rule
         many: Overlength Rules

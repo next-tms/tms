@@ -1,0 +1,12 @@
+<li id="<%= dom_id(comment) %>" class="list-group-item">
+  <div class="row">
+    <div class="col">
+      <span class="text-primary me-2"><%= comment.contact_full_name %></span>
+      <%= simple_format(comment.body) %>
+    </div>
+
+    <div class="col-auto">
+      <%= time(comment.created_at) %>
+    </div>
+  </div>
+</li>

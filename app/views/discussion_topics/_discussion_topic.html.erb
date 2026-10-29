@@ -1,0 +1,26 @@
+<div class="card mb-2">
+  <div class="card-header">
+    <div class="row">
+      <div class="col">
+        <span class="h5"><%= discussion_topic.discussable_topic_description %></span>
+      </div>
+
+      <div class="col-auto">
+        <%= time(discussion_topic.created_at) %>
+      </div>
+    </div>
+
+    <ul class="list-unstyled list-inline mt-2">
+      <% discussion_topic.subscriptions.includes(:contact).order('contacts.first_name ASC').each do |subscription| %>
+        <li class="list-inline-item">
+          <%= icon('solid', 'user-circle', subscription.contact.full_name) %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <ul id="<%= dom_id(discussion_topic, :comments) %>" class="list-group list-group-flush">
+    <%= render partial: 'broker/comments/comment', collection: discussion_topic.comments.includes(:contact).order(created_at: :desc) %>
+    <%= render 'broker/comments/form', comment: Comment.new(discussion_topic:) %>
+  </ul>
+</div>

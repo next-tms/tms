@@ -99,7 +99,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     shipments = @broker_carrier.shipments.where('created_at > ?', 90.days.ago)
     redirect_to([ :broker, @broker_carrier ]) && return if shipments.blank?
 
-    TrackShipmentsJob.perform_later(shipments.pluck(:id))
+    Shipment::TrackManyJob.perform_later(shipments.pluck(:id))
 
     pending_delivery_shipment_ids = shipments.pending_delivery.pluck(:id)
     FetchShipmentCarrierBOLsJob.perform_later(pending_delivery_shipment_ids) if pending_delivery_shipment_ids.present?

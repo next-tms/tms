@@ -45,6 +45,7 @@
     </ul>
 
     <%= link_to 'Plan', edit_broker_shipment_path(@shipment), class: 'nav-link shipments-edit' %>
+    <%= link_to Discussion.model_name.human, [ :discussion, :broker, @shipment ], class: 'nav-link shipments-discussion' %>
 
     <% if current_user.any_role?(:accounts_payable, :accounts_receivable, :dispatch) || current_user.sales_rep_for?(@shipment.broker_customer) %>
       <%= link_to 'Pricing', pricing_broker_shipment_path(@shipment), class: 'nav-link shipments-pricing' %>

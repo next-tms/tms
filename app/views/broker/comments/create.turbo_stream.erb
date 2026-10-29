@@ -1,0 +1,9 @@
+<% if @comment.persisted? %>
+  <%= turbo_stream.prepend dom_id(@discussion_topic, :comments), partial: 'broker/comments/comment', locals: { comment: @comment } %>
+  <%= turbo_stream.replace dom_id(@discussion_topic, :new_comment),
+                           partial: 'broker/comments/form',
+                           locals: { comment: Comment.new(discussion_topic: @discussion_topic) }
+  %>
+<% else %>
+  <%= turbo_stream.replace dom_id(@discussion_topic, :new_comment), partial: 'broker/comments/form', locals: { comment: @comment } %>
+<% end %>

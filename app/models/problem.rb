@@ -45,6 +45,7 @@ class Problem < ApplicationRecord
   class << self
     def by_any_role(*roles)
       records = none
+
       ProblematicService::Rule.by_any_role(*roles).map do |problematic_rule|
         records = records
                   .or(
@@ -58,13 +59,8 @@ class Problem < ApplicationRecord
       records
     end
 
-    def ransackable_attributes(auth_object = nil)
-      [ 'problematic_rule_code' ]
-    end
-
-    def ransackable_associations(auth_object = nil)
-      []
-    end
+    def ransackable_attributes(auth_object = nil) = [ 'problematic_rule_code' ]
+    def ransackable_associations(auth_object = nil) = []
   end
 
   include DiscussableTopic
@@ -80,57 +76,40 @@ class Problem < ApplicationRecord
 
   has_one :role, through: :problem_type
 
-  ransacker :id do
-    Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")
-  end
+  ransacker(:id) { Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')") }
 
   scope :unresolved, -> { where(resolved_at: nil) }
   scope :resolved, -> { where.not(id: unresolved) }
   scope :suppressive, -> { unresolved.where(suppressions_count: (1..)) }
 
-  def build_discussable_topic?
-    true
-  end
-
-  def contact_scope
-    :broker
-  end
+  def build_discussable_topic? = true
+  def contact_scope = :broker
 
   # @note `delegate`, `has_one` both fail in `before_save` callback so it should be a method
-  def discussion
-    resolvable&.discussion
-  end
+  def discussion = resolvable&.discussion
 
-  def discussable_topic_description
-    title
-  end
-
-  def eligible_discussable_contacts
-    Contact.where(id: discussion.subscriptions.active.pluck(:contact_id)).broker
-  end
-
-  def discussion_topic_translation_key
-    problematic_rule_code
-  end
+  def discussable_topic_description = title
+  def eligible_discussable_contacts = Contact.where(id: discussion.subscriptions.active.select(:contact_id)).broker
+  def discussion_topic_translation_key = problematic_rule_code
 
   # @note For HasProblematicRule
-  def problematic_type
-    resolvable.class.name
-  end
+  def problematic_type = resolvable.class.name
 
-  def resolved?
-    resolved_at.present?
-  end
-
-  def suppressive?
-    unresolved? && suppressions.any?
-  end
-
-  def unresolved?
-    !resolved?
-  end
+  def resolve = problematic_service_action_class&.call(self)
+  def resolve? = problematic_service_action_class.present?
+  def resolved? = resolved_at.present?
+  def suppressive? = unresolved? && suppressions.any?
+  def unresolved? = !resolved?
 
   private
+
+  def problematic_service_action_class
+    return unless [ problematic_rule_code, resolvable_type ].all?(&:present?)
+
+    "ProblematicService::Action::#{resolvable_type}::#{problematic_rule_code.camelcase}".constantize
+  rescue NameError
+    nil
+  end
 
   def update_suppressions
     suppressions.destroy_all && return if resolved?

@@ -8,6 +8,13 @@ RSpec.describe(Broker::ShipmentsController) do
 
   before { sign_in(current_user) }
 
+  describe 'GET #discussion' do
+    before { get(:discussion, params: { load_id: shipment.load_id }) }
+
+    it { is_expected.to(have_http_status(:ok)) }
+    it { is_expected.to(render_template(:discussion)) }
+  end
+
   describe 'GET #history' do
     let!(:item) { create(:item, shipment:) }
     let!(:older_setting) { create(:setting, key: 'name', updated_at: Time.utc(2025, 1, 1), value: 'Liftoff') }

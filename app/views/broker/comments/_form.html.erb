@@ -1,0 +1,6 @@
+<li id="<%= dom_id(comment.discussion_topic, :new_comment) %>" class="list-group-item">
+  <%= bootstrap_form_with(model: [ :broker, comment.discussion_topic.discussion, comment.discussion_topic, comment ]) do |form| %>
+    <%= form.text_area :body, hide_label: true, placeholder: 'Write something...' %>
+    <%= form.submit 'Comment' %>
+  <% end %>
+</li>
