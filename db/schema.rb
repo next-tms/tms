@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_29_044432) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -785,6 +785,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
     t.index ["status"], name: "index_shipments_on_status"
     t.index ["tracking_carrier_id"], name: "index_shipments_on_tracking_carrier_id"
     t.index ["updated_by_id"], name: "index_shipments_on_updated_by_id"
+  end
+
+  create_table "snapshot_items", force: :cascade do |t|
+    t.string "child_group_name"
+    t.datetime "created_at", null: false
+    t.bigint "item_id", null: false
+    t.string "item_type", null: false
+    t.jsonb "object", null: false
+    t.bigint "snapshot_id", null: false
+    t.index ["item_type", "item_id"], name: "index_snapshot_items_on_item"
+    t.index ["snapshot_id", "item_id", "item_type"], name: "index_snapshot_items_on_snapshot_id_and_item_id_and_item_type"
+    t.index ["snapshot_id"], name: "index_snapshot_items_on_snapshot_id"
+  end
+
+  create_table "snapshots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "identifier"
+    t.bigint "item_id", null: false
+    t.string "item_type", null: false
+    t.jsonb "metadata"
+    t.bigint "user_id"
+    t.string "user_type"
+    t.index ["identifier", "item_id", "item_type"], name: "index_snapshots_on_identifier_and_item_id_and_item_type", unique: true
+    t.index ["identifier"], name: "index_snapshots_on_identifier"
+    t.index ["item_type", "item_id"], name: "index_snapshots_on_item"
+    t.index ["user_type", "user_id"], name: "index_snapshots_on_user"
   end
 
   create_table "standardized_addresses", force: :cascade do |t|

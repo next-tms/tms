@@ -60,6 +60,9 @@ GEM
       erubi (~> 1.11)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
+    active_snapshot (1.2.2)
+      activerecord (>= 7)
+      railties
     active_utils (3.5.0)
       activesupport (>= 4.2)
       i18n
@@ -742,6 +745,7 @@ DEPENDENCIES
   StreetAddress!
   action_policy
   action_policy-graphql
+  active_snapshot (~> 1.2)
   activerecord-session_store (~> 2.1.0)
   activesupport-cache-zstd_compressor
   annotaterb

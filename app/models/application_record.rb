@@ -1,4 +1,5 @@
 class ApplicationRecord < ActiveRecord::Base
+  include ActiveSnapshot
   include Transponder::ORM::Associations
 
   class << self
