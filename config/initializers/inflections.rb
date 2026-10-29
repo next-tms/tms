@@ -15,6 +15,7 @@
 #   inflect.acronym "RESTful"
 # end
 ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.acronym('ACH')
   inflect.acronym('API')
   inflect.acronym('BOL')
   inflect.acronym('BOLs')

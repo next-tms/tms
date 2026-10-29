@@ -5,6 +5,9 @@ en:
       address:
         ref: Reference
       broker_carrier:
+        encrypted_ach_account_number: "ACH Account #"
+        encrypted_ach_bank_name: ACH Bank Name
+        encrypted_ach_routing_number: "ACH Routing #"
         encrypted_api_key: API Key
         password: Password
         username: Username

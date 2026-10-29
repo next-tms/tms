@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_29_050147) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -145,6 +145,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_195347) do
     t.datetime "created_at", precision: nil, null: false
     t.integer "days_to_pay_after_invoice_date", default: 30
     t.text "default_bol_notes"
+    t.string "encrypted_ach_account_number"
+    t.string "encrypted_ach_bank_name"
+    t.string "encrypted_ach_routing_number"
     t.string "encrypted_api_key"
     t.boolean "ignore_bol_requires_tracking_number", default: false
     t.string "password"

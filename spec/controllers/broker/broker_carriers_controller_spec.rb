@@ -92,6 +92,18 @@ RSpec.describe(Broker::BrokerCarriersController) do
     end
   end
 
+  describe 'PATCH #update' do
+    let(:ach_attributes) do
+      { encrypted_ach_account_number: '1234', encrypted_ach_bank_name: 'First Bank', encrypted_ach_routing_number: '123456789' }
+    end
+    let(:broker_carrier) { create(:broker_carrier) }
+
+    before { patch(:update, params: { broker_carrier: ach_attributes, id: broker_carrier.id }) }
+
+    it { is_expected.to(redirect_to([ :broker, broker_carrier ])) }
+    it { expect(broker_carrier.reload).to(have_attributes(ach_attributes)) }
+  end
+
   describe 'PATCH #update_accounting' do
     let(:broker_carrier) { create(:broker_carrier) }
 

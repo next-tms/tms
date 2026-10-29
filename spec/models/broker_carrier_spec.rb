@@ -63,6 +63,31 @@
 require 'rails_helper'
 
 RSpec.describe(BrokerCarrier) do
+  subject { build(:broker_carrier) }
+
   it_behaves_like 'accounting_syncable', resource: :vendor, record: 'Accounting::QuickBooks::Vendor'
   it_behaves_like 'companyable'
+
+  describe '.encrypted_attributes' do
+    it { expect(described_class.encrypted_attributes).to(include(:encrypted_ach_account_number)) }
+    it { expect(described_class.encrypted_attributes).to(include(:encrypted_ach_bank_name)) }
+    it { expect(described_class.encrypted_attributes).to(include(:encrypted_ach_routing_number)) }
+  end
+
+  describe '#ach?' do
+    it { expect(build(:broker_carrier, encrypted_ach_account_number: '1234', encrypted_ach_routing_number: '123456789')).to(be_ach) }
+    it { expect(build(:broker_carrier, encrypted_ach_account_number: '1234')).not_to(be_ach) }
+    it { expect(build(:broker_carrier, encrypted_ach_routing_number: '123456789')).not_to(be_ach) }
+  end
+
+  describe 'normalizations' do
+    it { expect(described_class.normalize_value_for(:encrypted_ach_account_number, ' 12 34 ')).to(eq('12 34')) }
+    it { expect(described_class.normalize_value_for(:encrypted_ach_bank_name, " First \n Bank ")).to(eq('First Bank')) }
+    it { expect(described_class.normalize_value_for(:encrypted_ach_routing_number, ' 123456789 ')).to(eq('123456789')) }
+  end
+
+  describe 'validations' do
+    it { is_expected.to(allow_values(nil, '', '123456789').for(:encrypted_ach_routing_number)) }
+    it { is_expected.not_to(allow_values('12345678', '1234567890', '12345678a').for(:encrypted_ach_routing_number)) }
+  end
 end

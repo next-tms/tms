@@ -30,6 +30,22 @@
     </div>
   </div>
 
+  <%= f.text_field :encrypted_ach_bank_name, autocomplete: 'off' %>
+  <%= f.text_field :encrypted_ach_routing_number,
+                   autocomplete: 'off',
+                   inputmode: 'numeric',
+                   maxlength: 9,
+                   pattern: '\d{9}',
+                   title: 'Nine digits'
+  %>
+  <%= f.text_field :encrypted_ach_account_number,
+                   autocomplete: 'off',
+                   inputmode: 'numeric',
+                   maxlength: 17,
+                   pattern: '\d{4,17}',
+                   title: '4 to 17 digits'
+  %>
+
   <%= f.text_area :default_bol_notes, label: 'Default BOL Notes', rows: 7 %>
 
   <% if f.object.carrier&.freight_kit_class.present? %>

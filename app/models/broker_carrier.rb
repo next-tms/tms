@@ -82,16 +82,18 @@ class BrokerCarrier < ApplicationRecord
 
   audited
 
-  # API key belonging to customer
-  encrypts :encrypted_api_key
-
-  belongs_to :carrier
   belongs_to :broker_customer, optional: true
-
+  belongs_to :carrier
   belongs_to :check_mailing_address, class_name: 'Address', optional: true
 
   delegate :acts_as_broker?, to: :carrier
+  delegate :pickup_number_is_tracking_number?, to: :carrier
   delegate :scac, to: :carrier
+
+  encrypts :encrypted_ach_account_number
+  encrypts :encrypted_ach_bank_name
+  encrypts :encrypted_ach_routing_number
+  encrypts :encrypted_api_key
 
   has_many :overlength_rules
   has_many :payments
@@ -104,11 +106,9 @@ class BrokerCarrier < ApplicationRecord
 
   has_many :pickups, through: :rates
 
-  accepts_nested_attributes_for :check_mailing_address
-  accepts_nested_attributes_for :overlength_rules, allow_destroy: true
-  accepts_nested_attributes_for :pricing_rules, allow_destroy: true
-
   monetize :quote_padding_cents
+
+  normalizes :encrypted_ach_account_number, :encrypted_ach_bank_name, :encrypted_ach_routing_number, with: ->(value) { value.squish }
 
   scope :api_configured, -> do
     ids = joins(:carrier)
@@ -120,6 +120,14 @@ class BrokerCarrier < ApplicationRecord
   end
   scope :api_unconfigured, -> { where.not(id: api_configured.ids) }
   scope :blanket, -> { where(broker_customer: nil) }
+
+  validates :encrypted_ach_routing_number, allow_blank: true, format: { message: 'must be nine digits', with: /\A\d{9}\z/ }
+
+  accepts_nested_attributes_for :check_mailing_address
+  accepts_nested_attributes_for :overlength_rules, allow_destroy: true
+  accepts_nested_attributes_for :pricing_rules, allow_destroy: true
+
+  def ach? = encrypted_ach_account_number.present? && encrypted_ach_routing_number.present?
 
   def api_configured?
     return false if carrier.broker_carrier_credential_columns.none?
@@ -163,6 +171,4 @@ class BrokerCarrier < ApplicationRecord
 
     FreightKit::Tariff.new(overlength_rules: freight_kit_overlength_rules)
   end
-
-  delegate :pickup_number_is_tracking_number?, to: :carrier
 end
