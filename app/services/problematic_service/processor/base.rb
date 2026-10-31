@@ -1,13 +1,8 @@
 module ProblematicService
   class Processor::Base
     class << self
-      def call(record)
-        Problem.where(id: rules.map { |rule| rule.call(record).ids }.flatten)
-      end
-
-      def model
-        raise NotImplementedError
-      end
+      def call(record) = rules.each { |rule| rule.call(record) }
+      def model = raise NotImplementedError
 
       def rules
         Rails.root.glob("app/services/problematic_service/rule/#{model.name.underscore}/*.rb").map do |fn|

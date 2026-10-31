@@ -43,30 +43,21 @@ module ProblematicService
     def call(record)
       with(record)
 
-      problems = record.problems.where(problematic_rule_code: code, resolvable: record)
+      problems = record.problems.where(problematic_rule_code: code)
 
       if resolvable?
-        problems.unresolved.update_all(resolved_at: Time.current, resolved_by_id: record.updated_by&.id)
-
-        return record.reload.problems
+        problems.unresolved.find_each { |problem| problem.update!(resolved_at: Time.current, resolved_by: record.updated_by) }
+      elsif problems.any?
+        problems.resolved.find_each { |problem| problem.update!(resolved_at: nil, resolved_by: nil) }
+      else
+        Problem
+        .create!(
+          assigned_to: assign,
+          problematic_rule_code: code,
+          resolvable: record,
+          title: humanized(:title),
+        )
       end
-
-      roles_problems = record.problems.by_any_role(*roles).where(assigned_to: User.broker)
-
-      if roles_problems.any?
-        roles_problems.update_all(resolved_at: nil, resolved_by_id: nil)
-
-        return record.reload.problems
-      end
-
-      Problem.create!(
-        assigned_to: assign,
-        problematic_rule_code: code,
-        resolvable: record,
-        title: humanized(:title),
-      )
-
-      record.reload.problems
     end
 
     # @todo Deprecate
@@ -87,7 +78,8 @@ module ProblematicService
     def suppressors
       return Suppressor.none if suppressor_instigators.empty? || suppressor_suppressible_types.empty?
 
-      Suppressor.where(
+      Suppressor
+      .where(
         instigator: suppressor_instigators,
         problematic_rule_code: code,
         suppressible_type: suppressor_suppressible_types,
@@ -121,8 +113,7 @@ module ProblematicService
       return assigned_to if assigned_to.present?
 
       Rails.logger.warn(<<~WARN.squish)
-        Unable to find User with broker=(name: "#{Setting.value(:name)}"),
-                                 role=(name: [#{roles.join(", ")}])
+        Unable to find User with broker=(name: "#{Setting.value(:name)}"), role=(name: [#{roles.join(", ")}])
       WARN
 
       Role.find_by(name: 'root').users.active.broker.order(Arel.sql('RANDOM()')).limit(1).first

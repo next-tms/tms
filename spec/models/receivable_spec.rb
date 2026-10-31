@@ -67,7 +67,7 @@ RSpec.describe(Receivable) do
   describe '#missing_carrier_bol?' do
     let(:broker_customer) { create(:broker_customer) }
     let(:shipment) { create(:shipment, broker_customer:) }
-    let(:record) { create(:receivable, shipment:) }
+    let(:record) { build(:receivable, shipment:) }
 
     let(:result) { record.missing_carrier_bol? }
 
@@ -95,7 +95,7 @@ RSpec.describe(Receivable) do
   describe '#missing_carrier_pod?' do
     let(:broker_customer) { create(:broker_customer) }
     let(:shipment) { create(:shipment, broker_customer:) }
-    let(:record) { create(:receivable, shipment:) }
+    let(:record) { build(:receivable, shipment:) }
 
     let(:result) { record.missing_carrier_pod? }
 
