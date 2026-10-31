@@ -19,6 +19,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym('API')
   inflect.acronym('BOL')
   inflect.acronym('BOLs')
+  inflect.acronym('eBOL')
   inflect.acronym('GraphQL')
   inflect.acronym('HTTP')
   inflect.acronym('LTL')

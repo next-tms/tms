@@ -110,7 +110,30 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def edit; end
 
-  def show; end
+  def show
+    respond_to do |format|
+      format.ebol do
+        response.headers['Content-Disposition'] = ActionDispatch::Http::ContentDisposition.format(
+          disposition: 'attachment',
+          filename: "#{@shipment.load_id}.ebol.json",
+        )
+
+        stale?(
+          [
+            @shipment,
+            *@shipment.broker_accessorials,
+            @shipment.broker_carrier,
+            @shipment.broker_carrier&.carrier,
+            @shipment.broker_customer,
+            *@shipment.items,
+            @shipment.receiver_address,
+            @shipment.shipper_address
+          ].compact,
+        )
+      end
+      format.html
+    end
+  end
 
   def update
     @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
@@ -224,7 +247,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def set_shipment_by_load_id
-    @shipment = Shipment.find_by(load_id: params[:load_id])
+    @shipment = current_user.companyable.shipments.find_by!(load_id: params[:load_id])
   end
 
   def shipment_params

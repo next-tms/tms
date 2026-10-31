@@ -49,4 +49,13 @@
       <li class="navbar-item"><%= link_to 'Tracking', tracking_path(load_id: @shipment.load_id), class: 'nav-link' %></li>
     <% end %>
   <% end %>
+
+  <% unless @shipment.quote_only? %>
+    <a class="nav-link dropdown-toggle" href="#" id="shipment-download-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Download
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="shipment-download-dropdown">
+      <%= link_to 'eBOL', [ :customer, @shipment, { format: :ebol } ], data: { turbo: false }, class: 'dropdown-item' %>
+    </ul>
+  <% end %>
 </nav>

@@ -232,9 +232,28 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def show
-    return unless @shipment.quote_only?
+    respond_to do |format|
+      format.ebol do
+        response.headers['Content-Disposition'] = ActionDispatch::Http::ContentDisposition.format(
+          disposition: 'attachment',
+          filename: "#{@shipment.load_id}.ebol.json",
+        )
 
-    redirect_to(quote_broker_shipment_path(@shipment))
+        stale?(
+          [
+            @shipment,
+            *@shipment.broker_accessorials,
+            @shipment.broker_carrier,
+            @shipment.broker_carrier&.carrier,
+            @shipment.broker_customer,
+            *@shipment.items,
+            @shipment.receiver_address,
+            @shipment.shipper_address
+          ].compact,
+        )
+      end
+      format.html { redirect_to(quote_broker_shipment_path(@shipment)) if @shipment.quote_only? }
+    end
   end
 
   def documents; end
