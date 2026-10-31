@@ -708,7 +708,7 @@ class Shipment < ApplicationRecord
   def total_cubic_ft(rounded:)
     return if items.any? { |item| item.cubic_ft(rounded: false).blank? }
 
-    value = items.sum { |item| item.cubic_ft(rounded: false) }
+    value = items.sum { |item| item.cubic_ft(rounded: false) * item.quantity }
     return value unless rounded
 
     value.ceil

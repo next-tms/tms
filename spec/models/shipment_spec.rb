@@ -554,7 +554,7 @@ RSpec.describe(Shipment) do
     context 'when item cubic_ft(rounded: false) is present' do
       before { allow_any_instance_of(Item).to(receive(:cubic_ft).with(rounded: false).and_return(100)) }
 
-      it { is_expected.to(eq(100)) }
+      it { is_expected.to(eq(500)) }
     end
   end
 
