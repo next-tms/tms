@@ -4,6 +4,10 @@
 #
 # @!attribute id
 #   @return []
+# @!attribute api_request
+#   @return [String]
+# @!attribute api_response
+#   @return [String]
 # @!attribute at
 #   @return [Time]
 # @!attribute city
@@ -14,7 +18,9 @@
 #   @return [String]
 # @!attribute public
 #   @return [Boolean]
-# @!attribute time_zone
+# @!attribute region_iso31662
+#   @return [String]
+# @!attribute time_zone_name
 #   @return [String]
 # @!attribute created_at
 #   @return [Time]
@@ -24,8 +30,6 @@
 #   @return []
 # @!attribute event_id
 #   @return []
-# @!attribute region_iso31662
-#   @return [String]
 # @!attribute shipment_id
 #   @return []
 # @!attribute terminal_id

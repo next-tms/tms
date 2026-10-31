@@ -4,10 +4,14 @@
 #
 # @!attribute id
 #   @return []
+# @!attribute api_errors
+#   @return [Hash]
+# @!attribute api_request
+#   @return [String]
+# @!attribute api_response
+#   @return [String]
 # @!attribute confirmed_at
 #   @return [Time]
-# @!attribute error
-#   @return [String]
 # @!attribute pickup_confirmation
 #   @return [String]
 # @!attribute pro

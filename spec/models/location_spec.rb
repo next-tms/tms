@@ -1,3 +1,23 @@
+# == Schema Information
+#
+# Table name: locations
+#
+# @!attribute id
+#   @return []
+# @!attribute region_iso31662
+#   @return [String]
+# @!attribute zip_code
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+#
+# Indexes
+#
+#  index_locations_on_region_iso31662  (region_iso31662)
+#  index_locations_on_zip_code         (zip_code)
+#
 require 'rails_helper'
 
 RSpec.describe(Location) do

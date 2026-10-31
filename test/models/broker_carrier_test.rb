@@ -16,6 +16,12 @@
 #   @return [Integer]
 # @!attribute default_bol_notes
 #   @return [String]
+# @!attribute encrypted_ach_account_number
+#   @return [String]
+# @!attribute encrypted_ach_bank_name
+#   @return [String]
+# @!attribute encrypted_ach_routing_number
+#   @return [String]
 # @!attribute encrypted_api_key
 #   @return [String]
 # @!attribute ignore_bol_requires_tracking_number

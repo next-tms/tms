@@ -4,6 +4,8 @@
 #
 # @!attribute id
 #   @return []
+# @!attribute api_errors
+#   @return [Hash]
 # @!attribute api_request
 #   @return [String]
 # @!attribute api_response
@@ -14,6 +16,8 @@
 #   @return [Integer]
 # @!attribute cost_currency
 #   @return [String]
+# @!attribute declared_freight_classes
+#   @return [Boolean]
 # @!attribute expires_at
 #   @return [Time]
 # @!attribute freight_kit_service_type
@@ -30,8 +34,6 @@
 #   @return [Integer]
 # @!attribute uid
 #   @return [String]
-# @!attribute declared_freight_classes
-#   @return [Boolean]
 # @!attribute created_at
 #   @return [Time]
 # @!attribute updated_at

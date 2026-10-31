@@ -18,6 +18,8 @@
 #   @return [String]
 # @!attribute public
 #   @return [Boolean]
+# @!attribute region_iso31662
+#   @return [String]
 # @!attribute time_zone_name
 #   @return [String]
 # @!attribute created_at
@@ -28,8 +30,6 @@
 #   @return []
 # @!attribute event_id
 #   @return []
-# @!attribute region_iso31662
-#   @return [String]
 # @!attribute shipment_id
 #   @return []
 # @!attribute terminal_id

@@ -4,10 +4,10 @@
 #
 # @!attribute id
 #   @return []
+# @!attribute declared_freight_class
+#   @return [Float]
 # @!attribute desc
 #   @return [String]
-# @!attribute forced_class
-#   @return [Float]
 # @!attribute h
 #   @return [Integer]
 # @!attribute hazmat
@@ -15,7 +15,7 @@
 # @!attribute l
 #   @return [Integer]
 # @!attribute nmfc
-#   @return [Integer]
+#   @return [String]
 # @!attribute quantity
 #   @return [Integer]
 # @!attribute refrigerated
@@ -30,6 +30,16 @@
 #   @return [Time]
 # @!attribute packaging_id
 #   @return [Integer]
+# @!attribute shipment_id
+#   @return []
+#
+# Indexes
+#
+#  index_items_on_shipment_id  (shipment_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (shipment_id => shipments.id)
 #
 FactoryBot.define do
   factory :item do

@@ -8,6 +8,8 @@
 #   @return [String]
 # @!attribute name
 #   @return [String]
+# @!attribute public_by_default
+#   @return [Boolean]
 # @!attribute created_at
 #   @return [Time]
 # @!attribute updated_at

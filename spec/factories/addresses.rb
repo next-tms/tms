@@ -6,6 +6,8 @@
 #   @return []
 # @!attribute city
 #   @return [String]
+# @!attribute country_alpha2
+#   @return [String]
 # @!attribute google_places_spot_cached
 #   @return [String]
 # @!attribute google_places_spot_updated_at
@@ -21,6 +23,8 @@
 # @!attribute original_attributes
 #   @return [String]
 # @!attribute ref
+#   @return [String]
+# @!attribute region_iso31662
 #   @return [String]
 # @!attribute smarty_streets_result_updated_at
 #   @return [Time]
@@ -38,10 +42,6 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute country_alpha2
-#   @return [String]
-# @!attribute region_iso31662
-#   @return [String]
 # @!attribute standardized_address_id
 #   @return []
 #

@@ -1,3 +1,20 @@
+# == Schema Information
+#
+# Table name: areas
+#
+# @!attribute id
+#   @return []
+# @!attribute name
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+#
+# Indexes
+#
+#  index_areas_on_name  (name)
+#
 require 'rails_helper'
 
 RSpec.describe(Area) do

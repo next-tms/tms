@@ -4,10 +4,10 @@
 #
 # @!attribute id
 #   @return []
-# @!attribute desc
-#   @return [String]
 # @!attribute declared_freight_class
 #   @return [Float]
+# @!attribute desc
+#   @return [String]
 # @!attribute h
 #   @return [Integer]
 # @!attribute hazmat
@@ -15,7 +15,7 @@
 # @!attribute l
 #   @return [Integer]
 # @!attribute nmfc
-#   @return [Integer]
+#   @return [String]
 # @!attribute quantity
 #   @return [Integer]
 # @!attribute refrigerated
@@ -30,6 +30,16 @@
 #   @return [Time]
 # @!attribute packaging_id
 #   @return [Integer]
+# @!attribute shipment_id
+#   @return []
+#
+# Indexes
+#
+#  index_items_on_shipment_id  (shipment_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (shipment_id => shipments.id)
 #
 class Item < ApplicationRecord
   FREIGHT_CLASSES = [ 55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400 ]

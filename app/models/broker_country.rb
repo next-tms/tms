@@ -4,12 +4,12 @@
 #
 # @!attribute id
 #   @return []
+# @!attribute country_alpha2
+#   @return [String]
 # @!attribute created_at
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute country_alpha2
-#   @return [String]
 #
 # Indexes
 #

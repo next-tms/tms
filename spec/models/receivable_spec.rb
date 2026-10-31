@@ -26,12 +26,12 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
+# @!attribute accounting_invoice_id
+#   @return [String]
 # @!attribute authorized_by_id
 #   @return []
 # @!attribute created_by_id
 #   @return []
-# @!attribute quickbooks_invoice_id
-#   @return [String]
 # @!attribute sent_by_id
 #   @return []
 # @!attribute shipment_id

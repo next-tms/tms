@@ -4,14 +4,14 @@
 #
 # @!attribute id
 #   @return []
+# @!attribute region_iso31662
+#   @return [String]
 # @!attribute zip_code
 #   @return [String]
 # @!attribute created_at
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute region_iso31662
-#   @return [String]
 #
 # Indexes
 #

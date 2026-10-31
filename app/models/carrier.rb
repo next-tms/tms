@@ -1,21 +1,33 @@
 # == Schema Information
 #
 # Table name: carriers
-# Database name: primary
 #
-#  id                                  :integer          not null, primary key
-#  acts_as_broker                      :boolean          default(FALSE)
-#  consider_bol_and_pod_documents_same :boolean          default(FALSE)
-#  encrypted_api_key                   :string
-#  encrypted_proxy_url                 :string
-#  has_traceable_pickup_confirmation   :boolean          default(FALSE)
-#  mc_number                           :integer
-#  name                                :string
-#  scac                                :string
-#  created_at                          :datetime         not null
-#  updated_at                          :datetime         not null
-#  broker_billing_address_id           :bigint
-#  check_mailing_address_id            :bigint
+# @!attribute id
+#   @return [Integer]
+# @!attribute acts_as_broker
+#   @return [Boolean]
+# @!attribute consider_bol_and_pod_documents_same
+#   @return [Boolean]
+# @!attribute encrypted_api_key
+#   @return [String]
+# @!attribute encrypted_proxy_url
+#   @return [String]
+# @!attribute has_traceable_pickup_confirmation
+#   @return [Boolean]
+# @!attribute mc_number
+#   @return [Integer]
+# @!attribute name
+#   @return [String]
+# @!attribute scac
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+# @!attribute broker_billing_address_id
+#   @return []
+# @!attribute check_mailing_address_id
+#   @return []
 #
 # Indexes
 #

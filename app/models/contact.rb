@@ -29,6 +29,7 @@
 #
 #  idx_on_companyable_id_companyable_type_email_1de3a153e6  (companyable_id,companyable_type,email) UNIQUE
 #  index_contacts_on_companyable                            (companyable_type,companyable_id)
+#  index_contacts_on_email                                  (email) UNIQUE WHERE ((companyable_id IS NULL) AND (companyable_type IS NULL) AND (email IS NOT NULL))
 #
 class Contact < ApplicationRecord
   class << self

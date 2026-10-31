@@ -6,6 +6,10 @@
 #   @return []
 # @!attribute authorized_at
 #   @return [Time]
+# @!attribute balance_cents
+#   @return [Integer]
+# @!attribute balance_currency
+#   @return [String]
 # @!attribute due_by
 #   @return [Time]
 # @!attribute invoiced
@@ -22,12 +26,12 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
+# @!attribute accounting_invoice_id
+#   @return [String]
 # @!attribute authorized_by_id
 #   @return []
 # @!attribute created_by_id
 #   @return []
-# @!attribute accounting_invoice_id
-#   @return [String]
 # @!attribute sent_by_id
 #   @return []
 # @!attribute shipment_id
