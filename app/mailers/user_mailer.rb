@@ -84,12 +84,7 @@ class UserMailer < ApplicationMailer
   def send_shipment_updated(shipment, method_name)
     recipient = params[:recipient] ? "#{params[:recipient].full_name} <#{params[:recipient].email}>" : to(shipment, method_name)
 
-    mail(
-      from: from(shipment),
-      reply_to: reply_to(shipment),
-      to: recipient,
-      subject: [who_performed(@shipment), @subject].join(' ')
-    )
+    mail(from: from(shipment), reply_to: reply_to(shipment), to: recipient, subject: [who_performed(@shipment), @subject].join(' '))
   end
 
   def set_shipment

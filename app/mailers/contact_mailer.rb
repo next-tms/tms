@@ -4,13 +4,7 @@ class ContactMailer < ApplicationMailer
   def broker_bol(from_user:, to_contact:, shipment:)
     @shipment = shipment
 
-    send_document(
-      document: shipment.broker_bol,
-      document_name: 'Bill of Lading',
-      shipment:,
-      from_user:,
-      to_contact:
-    )
+    send_document(document: shipment.broker_bol, document_name: 'Bill of Lading', shipment:, from_user:, to_contact:)
   end
 
   def broker_dispatch_sheet(from_user:, to_contact:, shipment:)
@@ -19,61 +13,31 @@ class ContactMailer < ApplicationMailer
 
     @shipment = shipment
 
-    send_document(
-      document: shipment.broker_dispatch_sheet,
-      document_name: 'Dispatch Sheet',
-      shipment:,
-      from_user:,
-      to_contact:
-    )
+    send_document(document: shipment.broker_dispatch_sheet, document_name: 'Dispatch Sheet', shipment:, from_user:, to_contact:)
   end
 
   def broker_quote(from_user:, to_contact:, shipment:)
     @shipment = shipment
 
-    send_document(
-      document: shipment.broker_quote,
-      document_name: 'Quote',
-      shipment:,
-      from_user:,
-      to_contact:
-    )
+    send_document(document: shipment.broker_quote, document_name: 'Quote', shipment:, from_user:, to_contact:)
   end
 
   def carrier_bol(from_user:, to_contact:, shipment:)
     @shipment = shipment
 
-    send_document(
-      document: shipment.carrier_bol,
-      document_name: 'Scanned Bill of Lading',
-      shipment:,
-      from_user:,
-      to_contact:
-    )
+    send_document(document: shipment.carrier_bol, document_name: 'Scanned Bill of Lading', shipment:, from_user:, to_contact:)
   end
 
   def carrier_pod(from_user:, to_contact:, shipment:)
     @shipment = shipment
 
-    send_document(
-      document: shipment.carrier_pod,
-      document_name: 'Proof of Delivery',
-      shipment:,
-      from_user:,
-      to_contact:
-    )
+    send_document(document: shipment.carrier_pod, document_name: 'Proof of Delivery', shipment:, from_user:, to_contact:)
   end
 
   def broker_label(from_user:, to_contact:, shipment:)
     @shipment = shipment
 
-    send_document(
-      document: shipment.broker_label,
-      document_name: 'Label',
-      shipment:,
-      from_user:,
-      to_contact:
-    )
+    send_document(document: shipment.broker_label, document_name: 'Label', shipment:, from_user:, to_contact:)
   end
 
   def from_notification
@@ -97,10 +61,7 @@ class ContactMailer < ApplicationMailer
     # Do not send email if document is not yet uploaded and prevent
     # Postmark::InvalidEmailAddressError: Zero-sized attachments not allowed.
 
-    attachments[document.filename.to_s] = {
-      mime_type: document.content_type,
-      content: document.download
-    }
+    attachments[document.filename.to_s] = { mime_type: document.content_type, content: document.download }
 
     # Avoid SendGrid::DuplicatePersonalizationError
     cc = if from_user.is_a?(User)

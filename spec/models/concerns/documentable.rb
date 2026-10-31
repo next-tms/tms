@@ -6,8 +6,6 @@ shared_examples_for 'documentable' do
   describe 'DOCUMENTABLE_TYPES' do
     it { expect(described_class::DOCUMENTABLE_TYPES).to(be_a(Array)) }
 
-    described_class::DOCUMENTABLE_TYPES.each do |document_type|
-      it { expect(record).to(respond_to(document_type)) }
-    end
+    described_class::DOCUMENTABLE_TYPES.each { |document_type| it { expect(record).to(respond_to(document_type)) } }
   end
 end

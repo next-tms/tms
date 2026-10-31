@@ -25,15 +25,7 @@ RSpec.describe(Broker::UsersController) do
   end
 
   describe 'PATCH #update' do
-    let(:params) do
-      {
-        id: user.id,
-        user: {
-          first_name: Faker::Name.first_name,
-          last_name: Faker::Name.last_name
-        }
-      }
-    end
+    let(:params) { { id: user.id, user: { first_name: Faker::Name.first_name, last_name: Faker::Name.last_name } } }
 
     before { patch(:update, params:) }
 

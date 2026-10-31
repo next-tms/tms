@@ -5,29 +5,14 @@ class Customer::SearchController < Customer::CustomerController
   def search
     shipments_by_load = current_user.companyable.shipments.where(load_id: @search)
     shipments_by_bol = current_user.companyable.shipments.where(bol: @search)
-    current_user.companyable.shipments.where(
-      'customer_reference ilike ?',
-      "%#{@search}%"
-    )
+    current_user.companyable.shipments.where('customer_reference ilike ?', "%#{@search}%")
     shipments_by_pro = current_user.companyable.shipments.where('pro ilike ?', "%#{@search}%")
-    shipments_by_shipper_reference = current_user.companyable.shipments.where(
-      'shipper_reference ilike ?',
-      "%#{@search}%"
-    )
-    shipments_by_customer_reference = current_user.companyable.shipments.where(
-      'customer_reference ilike ?',
-      "%#{@search}%"
-    )
+    shipments_by_shipper_reference = current_user.companyable.shipments.where('shipper_reference ilike ?', "%#{@search}%")
+    shipments_by_customer_reference = current_user.companyable.shipments.where('customer_reference ilike ?', "%#{@search}%")
     shipments_by_shipper_name = current_user.companyable.shipments.where('shipper_name ilike ?', "%#{@search}%")
-    shipments_by_shipper_contact_name = current_user.companyable.shipments.where(
-      'shipper_contact_name ilike ?',
-      "%#{@search}%"
-    )
+    shipments_by_shipper_contact_name = current_user.companyable.shipments.where('shipper_contact_name ilike ?', "%#{@search}%")
     shipments_by_receiver_name = current_user.companyable.shipments.where('receiver_name ilike ?', "%#{@search}%")
-    shipments_by_receiver_contact_name = current_user.companyable.shipments.where(
-      'receiver_contact_name ilike ?',
-      "%#{@search}%"
-    )
+    shipments_by_receiver_contact_name = current_user.companyable.shipments.where('receiver_contact_name ilike ?', "%#{@search}%")
 
     address_ids_by_zip_code = Address.where('zip_code ilike ?', "%#{@search}%").map(&:id)
     address_ids_by_city_name = Address.where('city ilike ?', "%#{@search}%").map(&:id)

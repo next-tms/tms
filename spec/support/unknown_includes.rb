@@ -18,6 +18,4 @@ module UnknownIncludes
   end
 end
 
-RSpec.configure do |config|
-  config.include(UnknownIncludes)
-end
+RSpec.configure { |config| config.include(UnknownIncludes) }

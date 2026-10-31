@@ -4,14 +4,9 @@ class RestructureProblemProblemType < ActiveRecord::Migration[7.0]
     add_index :problems, :problematic_rule_code
 
     say 'populate(:problems, :problematic_rule_code)'
-    problematic_rule_codes = ProblemType
-                             .all
-                             .map { |problem_type| { "_#{problem_type.id}": problem_type.code } }
-                             .reduce({}, :merge)
+    problematic_rule_codes = ProblemType.all.map { |problem_type| { "_#{problem_type.id}": problem_type.code } }.reduce({}, :merge)
 
-    Problem.find_each do |problem|
-      problem.update_columns(problematic_rule_code: problematic_rule_codes[:"_#{problem.problem_type_id}"])
-    end
+    Problem.find_each { |problem| problem.update_columns(problematic_rule_code: problematic_rule_codes[:"_#{problem.problem_type_id}"]) }
 
     change_column_null :problems, :problematic_rule_code, false
 

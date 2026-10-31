@@ -3,9 +3,7 @@
 module Shipment::Fingerprintable
   extend ActiveSupport::Concern
 
-  included do
-    before_save :set_fingerprint
-  end
+  included { before_save :set_fingerprint }
 
   def fingerprint
     super.presence || set_fingerprint
@@ -17,9 +15,7 @@ module Shipment::Fingerprintable
     parts = []
 
     if flattened_items.present?
-      flattened_items.each do |flattened_item|
-        parts << flattened_item.attributes.except('created_at', 'shipment_id', 'updated_at').to_s
-      end
+      flattened_items.each { |flattened_item| parts << flattened_item.attributes.except('created_at', 'shipment_id', 'updated_at').to_s }
     end
 
     parts << accessorial_codes.to_json

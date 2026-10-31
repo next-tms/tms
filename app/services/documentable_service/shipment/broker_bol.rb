@@ -22,8 +22,7 @@ module DocumentableService
       end
 
       def pro_number_required?
-        @pro_number_required ||= shipment.broker_carrier.present? &&
-                                 shipment.broker_carrier.bol_requires_tracking_number?
+        @pro_number_required ||= shipment.broker_carrier.present? && shipment.broker_carrier.bol_requires_tracking_number?
       end
 
       def requirements

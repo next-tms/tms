@@ -31,12 +31,7 @@ module Documentable
     broadcast_namespaces(document_type).each do |namespace|
       target = broadcast_target(document_type, namespace)
 
-      broadcast_replace_to(
-        self,
-        :documents,
-        target:,
-        html: ApplicationController.helpers.tag.tr(id: target)
-      )
+      broadcast_replace_to(self, :documents, target:, html: ApplicationController.helpers.tag.tr(id: target))
     end
   end
 
@@ -68,9 +63,7 @@ module Documentable
       next if records.blank?
 
       if association.collection?
-        next unless records.any? do |record|
-                      record.new_record? || record.changes.any? || record.marked_for_destruction?
-                    end
+        next unless records.any? { |record| record.new_record? || record.changes.any? || record.marked_for_destruction? }
 
         changed_associations[association.name] = true
         next

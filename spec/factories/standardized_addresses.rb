@@ -69,16 +69,10 @@ FactoryBot.define do
     smarty_streets_result_cached { 'MyText' }
     time_zone_name { 'America/Los_Angeles' }
 
-    after(:build) do |s|
-      s.class.skip_callback(:validation, :before, :standardize_address, raise: false)
-    end
+    after(:build) { |s| s.class.skip_callback(:validation, :before, :standardize_address, raise: false) }
 
-    after(:build) do |s|
-      s.class.skip_callback(:validation, :before, :set_coordinates, raise: false)
-    end
+    after(:build) { |s| s.class.skip_callback(:validation, :before, :set_coordinates, raise: false) }
 
-    after(:build) do |s|
-      s.class.skip_callback(:validation, :before, :set_time_zone_name, raise: false)
-    end
+    after(:build) { |s| s.class.skip_callback(:validation, :before, :set_time_zone_name, raise: false) }
   end
 end

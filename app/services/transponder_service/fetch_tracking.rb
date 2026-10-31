@@ -8,14 +8,7 @@ module TransponderService
 
     attr_reader :shipment
 
-    delegate :broker_carrier,
-             :id,
-             :pickup_confirmation,
-             :pro,
-             :receiver_address,
-             :shipper_address,
-             :tracking_events,
-             to: :shipment
+    delegate :broker_carrier, :id, :pickup_confirmation, :pro, :receiver_address, :shipper_address, :tracking_events, to: :shipment
 
     def initialize(shipment)
       raise ArgumentError, 'shipment must be a Shipment' unless shipment.is_a?(Shipment)

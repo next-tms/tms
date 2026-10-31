@@ -1,20 +1,11 @@
 class QrCodeService
   class << self
     def tracking_data_uri(shipment)
-      url = Rails.application.routes.url_helpers.tracking_url(
-        load_id: shipment.load_id,
-        host: ENV.fetch('DOMAIN')
-      )
+      url = Rails.application.routes.url_helpers.tracking_url(load_id: shipment.load_id, host: ENV.fetch('DOMAIN'))
 
       qr = RQRCode::QRCode.new(url)
 
-      svg = qr.as_svg(
-        color: '000',
-        shape_rendering: 'crispEdges',
-        module_size: 2,
-        standalone: true,
-        use_path: true
-      )
+      svg = qr.as_svg(color: '000', shape_rendering: 'crispEdges', module_size: 2, standalone: true, use_path: true)
 
       "data:image/svg+xml;base64,#{Base64.encode64(svg).gsub("\n", '')}"
     end

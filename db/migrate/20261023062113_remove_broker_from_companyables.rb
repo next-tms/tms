@@ -13,9 +13,7 @@ class RemoveBrokerFromCompanyables < ActiveRecord::Migration[8.1]
     say('populate(:contacts, :companyable)')
     say('populate(:users, :companyable)')
 
-    COMPANYABLE_MODELS.each do |model|
-      model.where(companyable_type: 'Broker').update_all(companyable_id: nil, companyable_type: nil)
-    end
+    COMPANYABLE_MODELS.each { |model| model.where(companyable_type: 'Broker').update_all(companyable_id: nil, companyable_type: nil) }
   end
 
   def down

@@ -154,14 +154,7 @@ class User < ApplicationRecord
 
   delegate :add_role, :any_role?, :dispatcher?, :role, :role?, :roles, to: :contact
 
-  devise :database_authenticatable,
-         :invitable,
-         :pwned_password,
-         :recoverable,
-         :rememberable,
-         :timeoutable,
-         :trackable,
-         :validatable
+  devise :database_authenticatable, :invitable, :pwned_password, :recoverable, :rememberable, :timeoutable, :trackable, :validatable
 
   before_invitation_created :set_time_zone_name, if: -> { new_record? && time_zone_name.blank? }
 
@@ -243,11 +236,7 @@ class User < ApplicationRecord
   end
 
   def sales_rep_for_broker_customers
-    BrokerCustomer.where(
-      id: BrokerCustomerSalesRep.where(
-        user: self
-      ).select(:broker_customer_id)
-    )
+    BrokerCustomer.where(id: BrokerCustomerSalesRep.where(user: self).select(:broker_customer_id))
   end
 
   def commissions_between(from, to)
@@ -266,12 +255,7 @@ class User < ApplicationRecord
   def shipments
     return companyable.shipments if customer?
 
-    all_shipments = any_role?(
-      :accounts_receivable,
-      :dispatch,
-      :root,
-      :sales_rep_for_all_broker_customers
-    )
+    all_shipments = any_role?(:accounts_receivable, :dispatch, :root, :sales_rep_for_all_broker_customers)
     return Shipment.all if !sales_rep_only? && all_shipments
 
     broker_customer_ids = sales_rep_for_broker_customers&.ids
@@ -295,11 +279,7 @@ class User < ApplicationRecord
     UserTexter.switch_on(self).deliver
 
     client = Twilio::REST::Client.new
-    client.api.account.messages.create(
-      from: '+14243616317',
-      to: phone,
-      url: 'https://tms.next-tms.com/Next%%20TMS.vcf'
-    )
+    client.api.account.messages.create(from: '+14243616317', to: phone, url: 'https://tms.next-tms.com/Next%%20TMS.vcf')
   end
 
   def time_zone

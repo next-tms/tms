@@ -117,10 +117,7 @@ class BrokerCarrier < ApplicationRecord
   normalizes :encrypted_ach_account_number, :encrypted_ach_bank_name, :encrypted_ach_routing_number, with: ->(value) { value.squish }
 
   scope :api_configured, -> do
-    ids = joins(:carrier)
-          .where(carrier: Carrier.freight_kit_api)
-          .select(&:api_configured?)
-          .map(&:id)
+    ids = joins(:carrier).where(carrier: Carrier.freight_kit_api).select(&:api_configured?).map(&:id)
 
     where(id: ids)
   end

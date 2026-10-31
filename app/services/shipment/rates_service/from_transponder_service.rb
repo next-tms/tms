@@ -17,13 +17,7 @@ class Shipment::RatesService
       end
 
       begin
-        response = TransponderService
-                   .query(
-                     :fetch_rates,
-                     broker_carrier,
-                     shipment,
-                     declared_freight_classes:
-                   )
+        response = TransponderService.query(:fetch_rates, broker_carrier, shipment, declared_freight_classes:)
       rescue StandardError => e
         Rails.env.development? ? raise(e) : Sentry.capture_exception(e)
 
@@ -43,11 +37,7 @@ class Shipment::RatesService
         return rates if errors.any? { |error| error[:code] == 'CARRIER_NOT_KNOWN_ERROR' }
 
         rate = build_rate(:api)
-        rate.assign_attributes(
-          api_errors: errors,
-          api_request: response[:request],
-          api_response: response[:response]
-        )
+        rate.assign_attributes(api_errors: errors, api_request: response[:request], api_response: response[:response])
 
         @rates << rate
         rate.save! if save?
@@ -60,11 +50,7 @@ class Shipment::RatesService
       unless transponder_rates.try(:any?)
         rate = build_rate(:api)
 
-        rate.assign_attributes(
-          api_errors: response[:errors],
-          api_request: response[:request],
-          api_response: response[:response]
-        )
+        rate.assign_attributes(api_errors: response[:errors], api_request: response[:request], api_response: response[:response])
 
         @rates << rate
         rate.save! if save?
@@ -72,19 +58,12 @@ class Shipment::RatesService
         return rates
       end
 
-      transponder_rates.map! do |transponder_rate|
-        transponder_rate.deep_transform_keys! do |key|
-          key.to_s.underscore.to_sym
-        end
-      end
+      transponder_rates.map! { |transponder_rate| transponder_rate.deep_transform_keys! { |key| key.to_s.underscore.to_sym } }
 
       transponder_rates.each do |transponder_rate|
         rate = build_rate(:api)
 
-        rate.assign_attributes(
-          api_request: response[:request].try(:to_json),
-          api_response: response[:response].try(:to_json)
-        )
+        rate.assign_attributes(api_request: response[:request].try(:to_json), api_response: response[:response].try(:to_json))
 
         currency = transponder_rate.dig(:total_cost, :currency)
         fractional = transponder_rate.dig(:total_cost, :fractional)

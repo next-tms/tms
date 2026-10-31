@@ -9,12 +9,7 @@ class CreateCountries < ActiveRecord::Migration[6.1]
       t.timestamps
     end
 
-    Country.create(
-      alpha2_code: 'US',
-      alpha3_code: 'USA',
-      un_code: 840,
-      name: 'United States of America'
-    )
+    Country.create(alpha2_code: 'US', alpha3_code: 'USA', un_code: 840, name: 'United States of America')
   end
 
   def down

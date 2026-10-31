@@ -106,21 +106,9 @@ module ShipmentsHelper
     }
   }.freeze
 
-  PREPENDED_TABLE_DATA = [
-    {
-      display_name: 'Load',
-      column_name: :load_id,
-      partial: 'broker/shipments/show_many_td_load_id'
-    }
-  ].freeze
+  PREPENDED_TABLE_DATA = [{ display_name: 'Load', column_name: :load_id, partial: 'broker/shipments/show_many_td_load_id' }].freeze
 
-  APPENDED_TABLE_DATA = [
-    {
-      display_name: 'Dispatcher',
-      column_name: :dispatcher_full_name,
-      wrap: true
-    }
-  ].freeze
+  APPENDED_TABLE_DATA = [{ display_name: 'Dispatcher', column_name: :dispatcher_full_name, wrap: true }].freeze
 
   def shipment_table_row_class(shipment)
     if action_name == 'pending_pickup' && shipment.pickup_on.present?

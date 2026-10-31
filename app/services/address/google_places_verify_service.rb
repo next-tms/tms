@@ -27,8 +27,7 @@ class Address::GooglePlacesVerifyService
       return
     end
 
-    accurate = result.is_a?(GooglePlaces::Spot) &&
-               street.scan(/\d+/).map { |d| result.formatted_address.include?(d) }.all?(true)
+    accurate = result.is_a?(GooglePlaces::Spot) && street.scan(/\d+/).map { |d| result.formatted_address.include?(d) }.all?(true)
 
     return unless accurate
 

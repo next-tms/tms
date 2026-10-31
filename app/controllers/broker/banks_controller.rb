@@ -110,14 +110,7 @@ class Broker::BanksController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def bank_params
-    params.expect(
-      bank: %i[
-        id
-        account_number
-        name
-        accounting_account_id
-      ]
-    )
+    params.expect(bank: %i[id account_number name accounting_account_id])
   end
 
   def accounting_params = params.expect(accounting: { banks: [%i[accounting_account_id kind]] }).require(:banks)

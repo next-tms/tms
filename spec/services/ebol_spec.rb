@@ -186,10 +186,10 @@ RSpec.describe(EBOL) do
         create(:broker_carrier, account: 'ACCT9', carrier:)
       end
 
-      it {
+      it do
         expect(document[:billTo]).to(include(address1: '4 Billing Blvd', city: 'Austin', name: broker_carrier.carrier.name,
                                              stateProvince: 'TX'))
-      }
+      end
 
       it { expect(document[:billTo]).not_to(have_key(:account)) }
     end

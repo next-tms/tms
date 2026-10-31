@@ -1,12 +1,7 @@
 module ApplicationHelper
   include Pagy::Frontend
 
-  FLASH_CLASSES = {
-    'alert' => 'warning',
-    'error' => 'danger',
-    'notice' => 'info',
-    'success' => 'success'
-  }.freeze
+  FLASH_CLASSES = { 'alert' => 'warning', 'error' => 'danger', 'notice' => 'info', 'success' => 'success' }.freeze
 
   # Stimulus
   def money_controller_data

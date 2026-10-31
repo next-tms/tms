@@ -103,13 +103,7 @@ class BrokerCustomer < ApplicationRecord
   delegate :name, to: :customer
 
   enum :preferred_broker_carriers_kind, { blacklist: 'blacklist', whitelist: 'whitelist' }
-  enum :receivables_schedule, {
-    daily: 'daily',
-    immediately: 'immediately',
-    monthly: 'monthly',
-    never: 'never',
-    weekly: 'weekly'
-  }
+  enum :receivables_schedule, { daily: 'daily', immediately: 'immediately', monthly: 'monthly', never: 'never', weekly: 'weekly' }
 
   has_many :broker_accessorials, dependent: :destroy
   has_many :broker_carriers, dependent: :destroy

@@ -5,7 +5,9 @@ RSpec.describe(Transponder::ORM::Associations) do
     Class.new(ApplicationRecord) do
       self.table_name = 'addresses'
 
-      def self.name = 'AssociationsTestRecord'
+      class << self
+        def name = 'AssociationsTestRecord'
+      end
 
       belongs_to_transponder :country, foreign_key: :country_alpha2
       belongs_to_transponder :region, foreign_key: :region_iso31662, optional: true
@@ -62,9 +64,7 @@ RSpec.describe(Transponder::ORM::Associations) do
     end
 
     context 'when an unchanged code is unknown' do
-      let(:record) do
-        model_class.new(country_alpha2:, region_iso31662: 'US-ZZ').tap(&:clear_changes_information)
-      end
+      let(:record) { model_class.new(country_alpha2:, region_iso31662: 'US-ZZ').tap(&:clear_changes_information) }
 
       it { expect(record.errors).to(be_empty) }
     end

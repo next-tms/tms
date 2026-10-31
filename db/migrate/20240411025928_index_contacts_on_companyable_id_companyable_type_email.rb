@@ -20,12 +20,7 @@ class IndexContactsOnCompanyableIdCompanyableTypeEmail < ActiveRecord::Migration
       %i[comments first_name job_title label last_name mobile_phone work_phone].each do |attribute|
         next if contact.public_send(attribute).present?
 
-        value = other_contacts
-                .where
-                .not({ attribute => nil })
-                .pluck(attribute)
-                .compact
-                .first
+        value = other_contacts.where.not({ attribute => nil }).pluck(attribute).compact.first
 
         contact.public_send("#{attribute}=", value) if value.present?
       end

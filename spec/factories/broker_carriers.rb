@@ -66,8 +66,4 @@
 #  fk_rails_...  (carrier_id => carriers.id)
 #  fk_rails_...  (check_mailing_address_id => addresses.id)
 #
-FactoryBot.define do
-  factory :broker_carrier do
-    carrier { create(:carrier) }
-  end
-end
+FactoryBot.define { factory(:broker_carrier) { carrier { create(:carrier) } } }

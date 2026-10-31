@@ -7,11 +7,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   def book
     redirect_to_edit = @shipment.quote_only?
 
-    @shipment.update!(
-      booked_at: Time.current,
-      quote_only: false,
-      updated_by_id: current_user.id
-    )
+    @shipment.update!(booked_at: Time.current, quote_only: false, updated_by_id: current_user.id)
 
     if redirect_to_edit
       redirect_to(edit_customer_shipment_path(@shipment))

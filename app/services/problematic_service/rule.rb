@@ -50,13 +50,7 @@ module ProblematicService
       elsif problems.any?
         problems.resolved.find_each { |problem| problem.update!(resolved_at: nil, resolved_by: nil) }
       else
-        Problem
-          .create!(
-            assigned_to: assign,
-            problematic_rule_code: code,
-            resolvable: record,
-            title: humanized(:title)
-          )
+        Problem.create!(assigned_to: assign, problematic_rule_code: code, resolvable: record, title: humanized(:title))
       end
     end
 
@@ -78,12 +72,7 @@ module ProblematicService
     def suppressors
       return Suppressor.none if suppressor_instigators.empty? || suppressor_suppressible_types.empty?
 
-      Suppressor
-        .where(
-          instigator: suppressor_instigators,
-          problematic_rule_code: code,
-          suppressible_type: suppressor_suppressible_types
-        )
+      Suppressor.where(instigator: suppressor_instigators, problematic_rule_code: code, suppressible_type: suppressor_suppressible_types)
     end
 
     def with(record)
@@ -102,13 +91,7 @@ module ProblematicService
       users = User.broker.with_any_role(*roles)
 
       # User with least amount of problems
-      assigned_to = users
-                    .left_outer_joins(:problems)
-                    .active
-                    .group('users.id')
-                    .order('count(problems.assigned_to_id) ASC')
-                    .limit(1)
-                    .first
+      assigned_to = users.left_outer_joins(:problems).active.group('users.id').order('count(problems.assigned_to_id) ASC').limit(1).first
 
       return assigned_to if assigned_to.present?
 

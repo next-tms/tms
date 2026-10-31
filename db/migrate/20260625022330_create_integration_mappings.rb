@@ -9,9 +9,6 @@ class CreateIntegrationMappings < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :integration_mappings,
-              %i[record_type record_id integration_id],
-              name: 'index_integration_mappings_uniqueness',
-              unique: true
+    add_index :integration_mappings, %i[record_type record_id integration_id], name: 'index_integration_mappings_uniqueness', unique: true
   end
 end

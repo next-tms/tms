@@ -4,22 +4,13 @@ class Customer::ReceivablesController < Customer::CustomerController
   before_action :require_accounts_payable
 
   def index
-    @q = current_user
-         .companyable
-         .receivables
-         .includes(required_includes)
-         .ransack(params[:q], auth_object: current_user)
+    @q = current_user.companyable.receivables.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
 
   def paid
-    @q = current_user
-         .companyable
-         .receivables
-         .paid
-         .includes(required_includes)
-         .ransack(params[:q], auth_object: current_user)
+    @q = current_user.companyable.receivables.paid.includes(required_includes).ransack(params[:q], auth_object: current_user)
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end

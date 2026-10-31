@@ -22,6 +22,16 @@
 #  index_accessorials_on_name  (name) UNIQUE
 #
 class Accessorial < ApplicationRecord
+  class << self
+    def combined_accessorials(shipment:)
+      Accessorial.distinct.where(id: shipment.accessorials.pluck(:id) + shipment.assumed_accessorials.pluck(:id))
+    end
+
+    def combined_accessorial_freight_kit_codes(shipment:)
+      combined_accessorials(shipment:).where.not(freight_kit_code: [nil, '']).map { |accessorial| accessorial.freight_kit_code.to_sym }
+    end
+  end
+
   after_create :create_broker_accessorials
 
   belongs_to :shipment_accessorial, optional: true
@@ -30,20 +40,6 @@ class Accessorial < ApplicationRecord
   scope :service, -> { where.not(id: fee) }
 
   validates :name, presence: true, uniqueness: true
-
-  def self.combined_accessorials(shipment:)
-    Accessorial.distinct
-               .where(
-                 id: shipment.accessorials.pluck(:id) +
-                     shipment.assumed_accessorials.pluck(:id)
-               )
-  end
-
-  def self.combined_accessorial_freight_kit_codes(shipment:)
-    combined_accessorials(shipment:).where.not(freight_kit_code: [nil, '']).map do |accessorial|
-      accessorial.freight_kit_code.to_sym
-    end
-  end
 
   private
 

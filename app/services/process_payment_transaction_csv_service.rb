@@ -38,14 +38,7 @@ class ProcessPaymentTransactionCsvService
       payment_transaction = PaymentTransaction.find_by(broker_carrier:, pro:)
       payment_transaction = nil if payment_transaction&.payment&.paid?
 
-      if payment_transaction.blank?
-        payment_transaction = PaymentTransaction.new(
-          broker_carrier:,
-          created_by: current_user,
-          invoice:,
-          pro:
-        )
-      end
+      payment_transaction = PaymentTransaction.new(broker_carrier:, created_by: current_user, invoice:, pro:) if payment_transaction.blank?
 
       payment_transaction.assign_attributes(balance_cents:, due_on:)
       payment_transactions << payment_transaction
@@ -92,11 +85,7 @@ class ProcessPaymentTransactionCsvService
   def build_success_message(saved_payment_transactions_count)
     message_parts = ['Invoice'.pluralize(saved_payment_transactions_count)]
     message_parts << "(#{saved_payment_transactions_count} found altogether)" if saved_payment_transactions_count > 1
-    message_parts += [
-      'will be assigned',
-      'payable'.pluralize(saved_payment_transactions_count),
-      'shortly'
-    ]
+    message_parts += ['will be assigned', 'payable'.pluralize(saved_payment_transactions_count), 'shortly']
 
     message_parts.join(' ')
   end

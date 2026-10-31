@@ -1,36 +1,8 @@
 module Shipment::HasReceivables
   extend ActiveSupport::Concern
 
-  included do
-    after_save_commit :create_receivable
-
-    has_many :receivables, dependent: :restrict_with_error
-
-    scope :with_carrier_bol, -> {
-      left_joins(:carrier_bol_attachment)
-        .group(:id)
-        .having('COUNT(active_storage_attachments) != 0')
-    }
-
-    scope :with_carrier_pod, -> {
-      left_joins(:carrier_pod_attachment)
-        .group(:id)
-        .having('COUNT(active_storage_attachments) != 0')
-    }
-
-    scope :without_carrier_bol, -> {
-      left_joins(:carrier_bol_attachment)
-        .group(:id)
-        .having('COUNT(active_storage_attachments) = 0')
-    }
-
-    scope :without_carrier_pod, -> {
-      left_joins(:carrier_pod_attachment)
-        .group(:id)
-        .having('COUNT(active_storage_attachments) = 0')
-    }
-
-    def self.receivable
+  class_methods do
+    def receivable
       broker_customer_ids = BrokerCustomer.where.not(receivables_schedule: :never).ids
       only_after = Date.parse('2021-12-01').to_date.in_time_zone('America/Los_Angeles').beginning_of_day
 
@@ -39,6 +11,20 @@ module Shipment::HasReceivables
 
       where(id: shipment_ids).where.not(id: shipments_with_receivables_ids)
     end
+  end
+
+  included do
+    after_save_commit :create_receivable
+
+    has_many :receivables, dependent: :restrict_with_error
+
+    scope :with_carrier_bol, -> { left_joins(:carrier_bol_attachment).group(:id).having('COUNT(active_storage_attachments) != 0') }
+
+    scope :with_carrier_pod, -> { left_joins(:carrier_pod_attachment).group(:id).having('COUNT(active_storage_attachments) != 0') }
+
+    scope :without_carrier_bol, -> { left_joins(:carrier_bol_attachment).group(:id).having('COUNT(active_storage_attachments) = 0') }
+
+    scope :without_carrier_pod, -> { left_joins(:carrier_pod_attachment).group(:id).having('COUNT(active_storage_attachments) = 0') }
 
     def create_receivable
       return unless receivable?

@@ -7,11 +7,7 @@ class Shipment::FetchAndCreateRatesService
   end
 
   attr_accessor :populate_rate_jobs_on_queue
-  attr_reader :rates_declared_freight_classes_false,
-              :rates_declared_freight_classes_true,
-              :shipment,
-              :shipment_fingerprint,
-              :user_type
+  attr_reader :rates_declared_freight_classes_false, :rates_declared_freight_classes_true, :shipment, :shipment_fingerprint, :user_type
 
   def initialize(shipment, shipment_fingerprint:, user_type:)
     raise ArgumentError, 'shipment must be a Shipment' unless shipment.is_a?(Shipment)
@@ -33,12 +29,7 @@ class Shipment::FetchAndCreateRatesService
       broker_carrier_without_rate_ids = []
 
       broker_carriers.each do |broker_carrier|
-        rate = Rate.find_by(
-          broker_carrier:,
-          declared_freight_classes:,
-          shipment_fingerprint:,
-          shipment:
-        )
+        rate = Rate.find_by(broker_carrier:, declared_freight_classes:, shipment_fingerprint:, shipment:)
 
         if rate.present?
           existing_rates << rate
@@ -48,10 +39,7 @@ class Shipment::FetchAndCreateRatesService
         broker_carrier_without_rate_ids << broker_carrier.id
       end
 
-      instance_variable_set(
-        "@rates_declared_freight_classes_#{declared_freight_classes}",
-        existing_rates.uniq.sort_by(&:cost_cents)
-      )
+      instance_variable_set("@rates_declared_freight_classes_#{declared_freight_classes}", existing_rates.uniq.sort_by(&:cost_cents))
 
       next if broker_carrier_without_rate_ids.empty?
 

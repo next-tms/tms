@@ -15,9 +15,7 @@ module Discussable
       record = super
 
       # Attributes from calling model
-      record.subscriptions = eligible_discussable_contacts
-                             .select(&:active?)
-                             .map { |contact| record.subscriptions.new(contact:) }
+      record.subscriptions = eligible_discussable_contacts.select(&:active?).map { |contact| record.subscriptions.new(contact:) }
 
       record
     end

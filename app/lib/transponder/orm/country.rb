@@ -28,9 +28,7 @@ module Transponder
             raise GraphQL::Client::Error, errors.pluck('message').join(', ') if errors.present?
 
             response.original_hash.dig('data', 'fetchCountries').map do |country|
-              country.deep_transform_keys do |key|
-                key.underscore.to_sym
-              end
+              country.deep_transform_keys { |key| key.underscore.to_sym }
             end
           end
         end

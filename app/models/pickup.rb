@@ -88,12 +88,7 @@ class Pickup < ApplicationRecord
   def update_shipment
     return if shipment.blank? || shipment.picked_up_at.present?
 
-    shipment.assign_attributes(
-      applied_rate: rate,
-      dispatched_at: Time.current,
-      pickup_confirmation:,
-      updated_by:
-    )
+    shipment.assign_attributes(applied_rate: rate, dispatched_at: Time.current, pickup_confirmation:, updated_by:)
 
     shipment.pro = pro if saved_change_to_pro?
 

@@ -18,8 +18,7 @@ class Address::OpenStreetMapVerifyService
       accept_language: 'en'
     )&.first
 
-    accurate = result.is_a?(Hash) &&
-               street.scan(/\d+/).map { |d| result['display_name'].include?(d) }.all?(true)
+    accurate = result.is_a?(Hash) && street.scan(/\d+/).map { |d| result['display_name'].include?(d) }.all?(true)
     return unless accurate
 
     result

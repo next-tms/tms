@@ -6,8 +6,6 @@ module Types
     include GraphQL::Types::Relay::HasNodeField
     include GraphQL::Types::Relay::HasNodesField
 
-    multiple_fields Queries::Shipments,
-                    Queries::BrokerCarriers,
-                    Queries::BrokerCustomers
+    multiple_fields Queries::Shipments, Queries::BrokerCarriers, Queries::BrokerCustomers
   end
 end

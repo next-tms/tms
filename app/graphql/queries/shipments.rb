@@ -18,13 +18,9 @@ module Queries
             argument :broker_carrier_id, ID, required: true
           end
 
-    field :shipment_by_status,
-          Types::ShipmentConnectionType,
-          connection: true,
-          description: 'Fetch Shipment By Status',
-          null: true do
-            argument :status, Types::ShipmentStatusEnum, required: true
-          end
+    field :shipment_by_status, Types::ShipmentConnectionType, connection: true, description: 'Fetch Shipment By Status', null: true do
+      argument :status, Types::ShipmentStatusEnum, required: true
+    end
 
     Types::QueryType.class_eval do
       def shipment_by_load_id(load_id:) = Shipment.find_by(load_id:)

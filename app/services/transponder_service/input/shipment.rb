@@ -26,9 +26,7 @@ module TransponderService
       private
 
       def accessorials
-        Accessorial.combined_accessorial_freight_kit_codes(shipment: object).map do |code|
-          { code: code.upcase }
-        end
+        Accessorial.combined_accessorial_freight_kit_codes(shipment: object).map { |code| { code: code.upcase } }
       end
 
       def declared_value

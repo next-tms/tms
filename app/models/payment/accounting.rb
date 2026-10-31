@@ -1,9 +1,7 @@
 module Payment::Accounting
   extend ActiveSupport::Concern
 
-  included do
-    after_commit :push_to_accounting
-  end
+  included { after_commit :push_to_accounting }
 
   def create_accounting_bill_payment
     return unless Accounting.connected? && Accounting.supports?(:bill_payment) && paid?

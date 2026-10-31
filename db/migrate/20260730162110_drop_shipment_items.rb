@@ -11,8 +11,6 @@ class DropShipmentItems < ActiveRecord::Migration[8.1]
     end
 
     say 'populate(:shipment_items)'
-    Item.where.not(shipment_id: nil).find_each do |item|
-      ShipmentItem.create!(shipment_id: item.shipment_id, item_id: item.id)
-    end
+    Item.where.not(shipment_id: nil).find_each { |item| ShipmentItem.create!(shipment_id: item.shipment_id, item_id: item.id) }
   end
 end

@@ -22,12 +22,7 @@ RSpec.describe(Shipment::DeliveryDateService) do
     %i[promised_delivery_by delivery_appointment_at].each do |shipment_datetime|
       context "when #{shipment_datetime} is present" do
         let(:nullable_dates) do
-          dates = %i[
-            promised_delivery_by
-            delivery_appointment_at
-            delivery_appointment_on
-            delivery_eta_on
-          ] - [shipment_datetime]
+          dates = %i[promised_delivery_by delivery_appointment_at delivery_appointment_on delivery_eta_on] - [shipment_datetime]
           dates.map { |date| { date => nil } }.reduce({}, :merge)
         end
 
@@ -43,12 +38,7 @@ RSpec.describe(Shipment::DeliveryDateService) do
     %i[delivery_appointment_on delivery_eta_on].each do |shipment_date|
       context "when #{shipment_date} is present" do
         let(:nullable_dates) do
-          dates = %i[
-            promised_delivery_by
-            delivery_appointment_at
-            delivery_appointment_on
-            delivery_eta_on
-          ] - [shipment_date]
+          dates = %i[promised_delivery_by delivery_appointment_at delivery_appointment_on delivery_eta_on] - [shipment_date]
           dates.map { |date| { date => nil } }.reduce({}, :merge)
         end
 

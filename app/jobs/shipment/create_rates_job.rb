@@ -18,13 +18,7 @@ class Shipment::CreateRatesJob < ApplicationJob
 
     # @note Using RANDOM() order so that one slow request doesn't always slow down following requests
     broker_carriers.order(Arel.sql('RANDOM()')).each do |broker_carrier|
-      rates = Shipment::RatesService
-              .call(
-                broker_carrier,
-                shipment,
-                declared_freight_classes:,
-                save: true
-              )
+      rates = Shipment::RatesService.call(broker_carrier, shipment, declared_freight_classes:, save: true)
 
       partial = ApplicationController.render(partial: 'rates_service/rates', locals: { shipment:, rates:, user_type: })
       data = { html: partial, declared_freight_classes:, cost: rates.map(&:cost_cents).max }

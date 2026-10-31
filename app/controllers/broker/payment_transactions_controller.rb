@@ -45,9 +45,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
 
     if payment_transaction_params[:csv].present?
       csv = payment_transaction_params[:csv].read.gsub(', ', ',')
-      service = ProcessPaymentTransactionCsvService
-                .new(csv:, broker_carrier: @payment_transaction.broker_carrier, current_user:)
-                .call
+      service = ProcessPaymentTransactionCsvService.new(csv:, broker_carrier: @payment_transaction.broker_carrier, current_user:).call
 
       flash[service.status] = service.message
       return render(:import) if service.status == :error
@@ -80,10 +78,7 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
     end
 
     # TODO: Remove this requirement from view
-    @q = PaymentTransaction
-         .where(id: @payment_transaction.id)
-         .includes(:shipment)
-         .ransack({}, auth_object: current_user)
+    @q = PaymentTransaction.where(id: @payment_transaction.id).includes(:shipment).ransack({}, auth_object: current_user)
   end
 
   def update

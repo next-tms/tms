@@ -50,10 +50,7 @@ class Broker::PaymentsController < Broker::BrokerController
   def create
     broker_carrier = BrokerCarrier.find(params[:broker_carrier_id])
     cutoff_date = params[:cutoff_date]
-    payment_transactions = broker_carrier
-                           .payment_transactions
-                           .where(payment: nil)
-                           .where(due_on: ..cutoff_date.to_date)
+    payment_transactions = broker_carrier.payment_transactions.where(payment: nil).where(due_on: ..cutoff_date.to_date)
 
     @payment = Payment.new(broker_carrier:, due_on: cutoff_date, payment_transactions:)
 

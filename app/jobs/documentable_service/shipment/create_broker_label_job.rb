@@ -42,15 +42,9 @@ module DocumentableService
       file = Tempfile.new
 
       Prawn::Labels.types = Rails.root.join('config/prawn-label-types.yml').to_s
-      Prawn::Labels.generate(file.path, labels, type: 'Avery15264') do |pdf, label|
-        pdf.text(label)
-      end
+      Prawn::Labels.generate(file.path, labels, type: 'Avery15264') { |pdf, label| pdf.text(label) }
 
-      blob = ActiveStorage::Blob.create_and_upload!(
-        io: file,
-        filename: "#{shipment.load_id} Labels.pdf",
-        content_type: 'application/pdf'
-      )
+      blob = ActiveStorage::Blob.create_and_upload!(io: file, filename: "#{shipment.load_id} Labels.pdf", content_type: 'application/pdf')
 
       shipment.skip_documentable_callback = true
       shipment.broker_label.attach(blob)

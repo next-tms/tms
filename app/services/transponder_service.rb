@@ -11,15 +11,7 @@ module TransponderService
     private
 
     def commit(method, operation, broker_carrier, object, **)
-      method_class = [
-        'GraphQLClient',
-        'Transponder',
-        method.to_s.camelize,
-        operation.to_s.camelize,
-        'DETAILS'
-      ]
-                     .join('::')
-                     .constantize
+      method_class = ['GraphQLClient', 'Transponder', method.to_s.camelize, operation.to_s.camelize, 'DETAILS'].join('::').constantize
       variables = Query.call(operation.to_s.camelize(:lower), broker_carrier, object, **)
       response = GraphQLClient::Transponder::Client.query(method_class, variables:)
 
@@ -47,8 +39,5 @@ module TransponderService
     end
   end
 
-  API_EXCEPTIONS = [
-    GraphQL::Client::Error,
-    RuntimeError
-  ].freeze
+  API_EXCEPTIONS = [GraphQL::Client::Error, RuntimeError].freeze
 end

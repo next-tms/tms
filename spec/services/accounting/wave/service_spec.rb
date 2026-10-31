@@ -14,10 +14,10 @@ RSpec.describe Accounting::Wave::Service do
 
     it { is_expected.to start_with('https://api.waveapps.com/oauth2/authorize/') }
 
-    it {
+    it do
       expect(query).to include('redirect_uri' => redirect_uri, 'response_type' => 'code', 'scope' => described_class::SCOPE,
                                'state' => 'nonce')
-    }
+    end
   end
 
   describe '#connect!' do
@@ -37,10 +37,10 @@ RSpec.describe Accounting::Wave::Service do
       connect
     end
 
-    it {
+    it do
       expect(integration.reload.credentials.symbolize_keys).to include(access_token: 'access', business_id: 'business-1',
                                                                        refresh_token: 'refresh')
-    }
+    end
 
     it { expect(WebMock).to have_requested(:post, described_class::GRAPHQL_URL).with(headers: { 'Authorization' => 'Bearer access' }) }
   end

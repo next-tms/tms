@@ -17,6 +17,4 @@
 #
 #  index_discussions_on_subject  (subject_type,subject_id)
 #
-FactoryBot.define do
-  factory :discussion
-end
+FactoryBot.define { factory :discussion }

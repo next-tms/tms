@@ -1,9 +1,7 @@
 module ExternalIdentifiable
   extend ActiveSupport::Concern
 
-  included do
-    has_many :integration_mappings, as: :record, dependent: :destroy
-  end
+  included { has_many :integration_mappings, as: :record, dependent: :destroy }
 
   def external_id_for(integration) = integration_mappings.find_by(integration:)&.external_id
 

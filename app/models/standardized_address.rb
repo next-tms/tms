@@ -50,9 +50,7 @@
 #  index_standardized_addresses_on_region_iso31662  (region_iso31662)
 #
 class StandardizedAddress < ApplicationRecord
-  attr_accessor :skip_smarty_streets_result_api_request,
-                :skip_google_places_spot_api_request,
-                :skip_open_street_map_result_api_request
+  attr_accessor :skip_smarty_streets_result_api_request, :skip_google_places_spot_api_request, :skip_open_street_map_result_api_request
 
   before_validation :standardize_address
   before_validation :set_coordinates
@@ -104,8 +102,7 @@ class StandardizedAddress < ApplicationRecord
 
   def names
     @names ||= (
-      Shipment.where(shipper_address: self).pluck(:shipper_name) +
-      Shipment.where(receiver_address: self).pluck(:receiver_name)
+      Shipment.where(shipper_address: self).pluck(:shipper_name) + Shipment.where(receiver_address: self).pluck(:receiver_name)
     ).uniq.compact_blank
   end
 

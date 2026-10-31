@@ -32,8 +32,4 @@
 #
 require 'rails_helper'
 
-RSpec.describe(Claim) do
-  describe 'relationships' do
-    it { is_expected.to(have_many(:claim_items).dependent(:destroy)) }
-  end
-end
+RSpec.describe(Claim) { describe('relationships') { it { is_expected.to(have_many(:claim_items).dependent(:destroy)) } } }

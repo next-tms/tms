@@ -46,13 +46,7 @@ class Problem < ApplicationRecord
     def by_any_role(*roles)
       records = none
       ProblematicService::Rule.by_any_role(*roles).map do |problematic_rule|
-        records = records
-                  .or(
-                    where(
-                      problematic_rule_code: problematic_rule.code,
-                      resolvable_type: problematic_rule.model.name
-                    )
-                  )
+        records = records.or(where(problematic_rule_code: problematic_rule.code, resolvable_type: problematic_rule.model.name))
       end
 
       records

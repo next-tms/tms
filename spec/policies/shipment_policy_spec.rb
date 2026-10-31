@@ -11,17 +11,13 @@ RSpec.describe(ShipmentPolicy) do
     subject { policy.apply(:show?) }
 
     context 'when not accesible_by' do
-      before do
-        allow_any_instance_of(Shipment).to(receive(:accessible_by?).with(user).and_return(false))
-      end
+      before { allow_any_instance_of(Shipment).to(receive(:accessible_by?).with(user).and_return(false)) }
 
       it { is_expected.to(be(false)) }
     end
 
     context 'when accesible_by' do
-      before do
-        allow_any_instance_of(Shipment).to(receive(:accessible_by?).with(user).and_return(true))
-      end
+      before { allow_any_instance_of(Shipment).to(receive(:accessible_by?).with(user).and_return(true)) }
 
       it { is_expected.to(be(true)) }
     end

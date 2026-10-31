@@ -1,9 +1,7 @@
 module Companyable
   extend ActiveSupport::Concern
 
-  included do
-    has_many :contacts, as: :companyable, dependent: :destroy
-  end
+  included { has_many :contacts, as: :companyable, dependent: :destroy }
 
   def carrier?
     is_a?(BrokerCarrier)

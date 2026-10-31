@@ -46,17 +46,6 @@ class Broker::ContactsController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def contact_params
-    params.expect(
-      contact: %i[
-        id
-        companyable_sgid
-        email
-        first_name
-        job_title
-        last_name
-        mobile_phone
-        work_phone
-      ]
-    )
+    params.expect(contact: %i[id companyable_sgid email first_name job_title last_name mobile_phone work_phone])
   end
 end

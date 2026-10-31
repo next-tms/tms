@@ -36,10 +36,7 @@ class FetchBrokerCustomerAccountingCustomerIdsJob < ApplicationJob
 
     return if broker_customer_ids.empty?
 
-    broker_customers = BrokerCustomer
-                       .where(id: broker_customer_ids)
-                       .includes(:customer)
-                       .order('customers.name')
+    broker_customers = BrokerCustomer.where(id: broker_customer_ids).includes(:customer).order('customers.name')
 
     AccountingMailer.unknown_customers(broker_customers:).deliver_now
   end

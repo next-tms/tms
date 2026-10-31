@@ -2,9 +2,7 @@
 class BrokerCustomer::CarrierChargeCalculatorService
   attr_reader :broker_customer, :carrier_cost, :shipment
 
-  delegate :default_upcharge,
-           :default_upcharge_percentage,
-           :upcharge_rules, to: :broker_customer
+  delegate :default_upcharge, :default_upcharge_percentage, :upcharge_rules, to: :broker_customer
 
   def initialize(broker_customer:, carrier_cost:, shipment:)
     @broker_customer = broker_customer

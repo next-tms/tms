@@ -21,9 +21,7 @@ shared_examples_for 'discussable_topic' do
 
   describe '#build_discussable_topic' do
     context 'when not discussion.present?' do
-      before do
-        allow(record).to(receive_messages(build_discussable_topic?: true, discussion: nil))
-      end
+      before { allow(record).to(receive_messages(build_discussable_topic?: true, discussion: nil)) }
 
       it "doesn't set #discussion" do
         record.__send__(:build_discussion_topic)

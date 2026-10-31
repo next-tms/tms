@@ -12,9 +12,7 @@ module DocumentableService
       end
 
       def requirements
-        @requirements ||= super.tap do |builder|
-          builder << :total_charges_cents
-        end
+        @requirements ||= super.tap { |builder| builder << :total_charges_cents }
       end
     end
   end

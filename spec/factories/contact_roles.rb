@@ -23,8 +23,4 @@
 #
 #  fk_rails_...  (contact_id => contacts.id)
 #
-FactoryBot.define do
-  factory :contact_role do
-    role { ContactRole.roles.keys.sample }
-  end
-end
+FactoryBot.define { factory(:contact_role) { role { ContactRole.roles.keys.sample } } }

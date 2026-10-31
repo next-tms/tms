@@ -1,7 +1,5 @@
 class FetchReceivableInvoicesJob < ApplicationJob
   def perform
-    Receivable.without_invoice.find_each do |receivable|
-      FetchReceivableInvoiceJob.perform_later(receivable)
-    end
+    Receivable.without_invoice.find_each { |receivable| FetchReceivableInvoiceJob.perform_later(receivable) }
   end
 end

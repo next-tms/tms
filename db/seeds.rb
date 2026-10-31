@@ -32,10 +32,4 @@ end
 
 # main
 
-import_seeds(
-  [
-    { name: 'events', key: :active_shipping_code },
-    { name: 'packagings', key: :name },
-    { name: 'settings', key: :key }
-  ]
-)
+import_seeds([{ name: 'events', key: :active_shipping_code }, { name: 'packagings', key: :name }, { name: 'settings', key: :key }])

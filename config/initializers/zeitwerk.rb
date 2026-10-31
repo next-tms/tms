@@ -1,3 +1,1 @@
-Rails.autoloaders.each do |autoloader|
-  autoloader.inflector.inflect('ebol' => 'EBOL')
-end
+Rails.autoloaders.each { |autoloader| autoloader.inflector.inflect('ebol' => 'EBOL') }

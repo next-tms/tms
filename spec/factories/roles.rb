@@ -11,8 +11,4 @@
 # @!attribute updated_at
 #   @return [Time]
 #
-FactoryBot.define do
-  factory :role do
-    name { Faker::Job.position.downcase.parameterize }
-  end
-end
+FactoryBot.define { factory(:role) { name { Faker::Job.position.downcase.parameterize } } }

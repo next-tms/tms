@@ -36,9 +36,7 @@
 class UpchargeRule < ApplicationRecord
   audited
 
-  scope :packaging, ->(packaging) {
-    where(packaging:)
-  }
+  scope :packaging, ->(packaging) { where(packaging:) }
 
   belongs_to :broker_customer
   belongs_to :packaging

@@ -12,9 +12,7 @@ module HasAPI
       not_implemented_error: 'API quoting not supported',
       unknown_carrier_error: 'API quoting not supported'
     }.freeze
-    FALLBACK_API_ERROR_CODE_MESSAGES = {
-      not_serviceable_error: "Not serviceable, but carrier didn't explain why"
-    }.freeze
+    FALLBACK_API_ERROR_CODE_MESSAGES = { not_serviceable_error: "Not serviceable, but carrier didn't explain why" }.freeze
 
     attr_reader :record
 

@@ -9,10 +9,7 @@ class AddBalanceToReceivables < ActiveRecord::Migration[7.0]
       end
 
       # We'll correct these values later in a background job
-      receivable.update_columns(
-        balance_cents: receivable.total_cents,
-        balance_currency: receivable.total_currency
-      )
+      receivable.update_columns(balance_cents: receivable.total_cents, balance_currency: receivable.total_currency)
     end
   end
 

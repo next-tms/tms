@@ -24,12 +24,7 @@ module TransponderService
       pickup_confirmation = response[:pickup_number]
 
       if pickup_confirmation.present?
-        pickup.update!(
-          api_request: response[:request],
-          api_response: response[:response],
-          pickup_confirmation:,
-          updated_by: nil
-        )
+        pickup.update!(api_request: response[:request], api_response: response[:response], pickup_confirmation:, updated_by: nil)
       end
 
       return true unless response[:labels].present? && response[:labels].any?

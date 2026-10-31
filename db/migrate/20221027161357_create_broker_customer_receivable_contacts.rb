@@ -11,11 +11,7 @@ class CreateBrokerCustomerReceivableContacts < ActiveRecord::Migration[7.0]
     BrokerCustomer.find_each do |broker_customer|
       next if broker_customer.receivables_contact_id.blank?
 
-      BrokerCustomerReceivableContact.create(
-        broker_customer:,
-        contact_id: broker_customer.receivables_contact_id,
-        primary: true
-      )
+      BrokerCustomerReceivableContact.create(broker_customer:, contact_id: broker_customer.receivables_contact_id, primary: true)
     end
   end
 

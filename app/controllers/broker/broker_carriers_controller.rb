@@ -136,9 +136,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def payment_transactions
     require_role('accounts_payable')
 
-    @q = @broker_carrier
-         .payment_transactions
-         .ransack(params[:q], auth_object: current_user)
+    @q = @broker_carrier.payment_transactions.ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'due_on desc' if @q.sorts.blank?
     @pagy, @payment_transactions = pagy(@q.result)
@@ -147,10 +145,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def payments
     require_role('accounts_payable')
 
-    @q = @broker_carrier
-         .payments
-         .includes(:payment_transactions)
-         .ransack(params[:q], auth_object: current_user)
+    @q = @broker_carrier.payments.includes(:payment_transactions).ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'due_on desc' if @q.sorts.blank?
     @pagy, @payments = pagy(@q.result)

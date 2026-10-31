@@ -32,23 +32,10 @@ module Mutations
     end
 
     def fetch_rates(shipment, broker_carrier, declared_freight_classes)
-      rates = Rate
-              .by_shipment_and_broker_carrier(
-                shipment,
-                shipment.fingerprint,
-                broker_carrier,
-                declared_freight_classes
-              )
+      rates = Rate.by_shipment_and_broker_carrier(shipment, shipment.fingerprint, broker_carrier, declared_freight_classes)
       return rates if rates.any?
 
-      Shipment::RatesService
-        .new(
-          broker_carrier:,
-          shipment:,
-          declared_freight_classes:,
-          save_new_rates: true
-        )
-        .call
+      Shipment::RatesService.new(broker_carrier:, shipment:, declared_freight_classes:, save_new_rates: true).call
     end
   end
 end

@@ -123,17 +123,9 @@ class Receivable < ApplicationRecord
   scope :sent, -> { where.not(sent_at: nil) }
   scope :unsent, -> { where.not(id: sent) }
 
-  scope :with_invoice, -> {
-    left_joins(:invoice_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) != 0')
-  }
+  scope :with_invoice, -> { left_joins(:invoice_attachment).group(:id).having('COUNT(active_storage_attachments) != 0') }
 
-  scope :without_invoice, -> {
-    left_joins(:invoice_attachment)
-      .group(:id)
-      .having('COUNT(active_storage_attachments) = 0')
-  }
+  scope :without_invoice, -> { left_joins(:invoice_attachment).group(:id).having('COUNT(active_storage_attachments) = 0') }
 
   validates :due_by, presence: true
 
@@ -171,10 +163,7 @@ class Receivable < ApplicationRecord
     shipment_broker_accessorials.each do |shipment_broker_accessorial|
       next if shipment_broker_accessorial.broker_accessorial.broker_only?
 
-      receivable_items.build(
-        charge: shipment_broker_accessorial.charge,
-        description: shipment_broker_accessorial.broker_accessorial.name
-      )
+      receivable_items.build(charge: shipment_broker_accessorial.charge, description: shipment_broker_accessorial.broker_accessorial.name)
     end
 
     self.total = receivable_items.reject(&:marked_for_destruction?).sum(&:charge)

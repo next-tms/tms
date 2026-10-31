@@ -229,11 +229,7 @@ Rails.application.routes.draw do
     get 'shipments/pending-pickup', to: 'shipments#pending_pickup'
     get 'shipments/pending-quotation', to: 'shipments#pending_quotation'
     get 'shipments/quote-only' => 'shipments#new_quote_only', as: :quote_only
-    resources :shipments,
-              path: 'shipments',
-              as: :shipments,
-              param: :load_id,
-              only: %i[index new create edit show update] do
+    resources :shipments, path: 'shipments', as: :shipments, param: :load_id, only: %i[index new create edit show update] do
       member { get 'book' => 'shipments#book', as: :book }
       member { get 'documents' => 'shipments#documents', as: :documents }
       member { get 'documents/bol' => 'shipments#documents_bol', as: :bol_document }

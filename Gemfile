@@ -59,7 +59,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 6.1.3'
   gem 'webmock', '~> 3.18.1'
 
-  gem 'rubocop-next', '~> 1.0.10'
+  gem 'rubocop-next', '~> 1.0.11'
 end
 
 group :development do

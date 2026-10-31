@@ -34,12 +34,7 @@ class Shipment::RatesService
                        .first
 
         if pricing_rule.blank?
-          pricing_rule = broker_carrier
-                         .pricing_rules
-                         .where(carrier_area:)
-                         .where(min_pallets: ..pallet_count)
-                         .where(max_pallets: nil)
-                         .first
+          pricing_rule = broker_carrier.pricing_rules.where(carrier_area:).where(min_pallets: ..pallet_count).where(max_pallets: nil).first
         end
 
         next if pricing_rule.blank?

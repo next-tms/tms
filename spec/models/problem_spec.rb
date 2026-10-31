@@ -43,6 +43,4 @@
 #
 require 'rails_helper'
 
-RSpec.describe(Problem) do
-  it_behaves_like 'discussable_topic'
-end
+RSpec.describe(Problem) { it_behaves_like 'discussable_topic' }

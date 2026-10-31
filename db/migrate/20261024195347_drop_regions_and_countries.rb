@@ -64,12 +64,7 @@ class DropRegionsAndCountries < ActiveRecord::Migration[8.1]
     (region_iso31662s.map { |iso31662| iso31662.tr('-', '_') } - Region.pluck(:iso31662)).each do |iso31662|
       alpha2, abbreviation = iso31662.split('_', 2)
 
-      Region.create!(
-        abbreviation:,
-        country_id: Country.find_by!(alpha2_code: alpha2).id,
-        iso31662:,
-        name: iso31662.tr('_', '-')
-      )
+      Region.create!(abbreviation:, country_id: Country.find_by!(alpha2_code: alpha2).id, iso31662:, name: iso31662.tr('_', '-'))
     end
   end
 end

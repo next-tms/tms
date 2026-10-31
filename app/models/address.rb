@@ -156,8 +156,7 @@ class Address < ApplicationRecord
 
   def names
     @names ||= (
-      Shipment.where(shipper_address: self).pluck(:shipper_name) +
-      Shipment.where(receiver_address: self).pluck(:receiver_name)
+      Shipment.where(shipper_address: self).pluck(:shipper_name) + Shipment.where(receiver_address: self).pluck(:receiver_name)
     ).uniq.compact_blank
   end
 
@@ -231,13 +230,7 @@ class Address < ApplicationRecord
   end
 
   def to_accounting_address
-    Accounting::Address.new(
-      city:,
-      line1: street,
-      line2: street2,
-      postal_code: zip_code,
-      region: region.abbreviation
-    )
+    Accounting::Address.new(city:, line1: street, line2: street2, postal_code: zip_code, region: region.abbreviation)
   end
 
   private

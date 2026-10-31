@@ -1,3 +1,1 @@
-Ransack.configure do |config|
-  config.ignore_unknown_conditions = false
-end
+Ransack.configure { |config| config.ignore_unknown_conditions = false }

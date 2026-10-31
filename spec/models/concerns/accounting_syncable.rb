@@ -14,8 +14,7 @@ RSpec.shared_examples('accounting_syncable') do |resource:, record:|
 
   describe "#create_accounting_#{resource}" do
     it 'persists the remote record and stores its external id' do
-      expect { host.public_send(:"create_accounting_#{resource}") }
-        .to change { host.reload.public_send(id_column) }.from(nil)
+      expect { host.public_send(:"create_accounting_#{resource}") }.to change { host.reload.public_send(id_column) }.from(nil)
     end
   end
 
@@ -23,8 +22,7 @@ RSpec.shared_examples('accounting_syncable') do |resource:, record:|
     before { allow(record_class).to receive(:find_by).and_return(remote) }
 
     it 'stores the matched external id' do
-      expect { host.public_send(:"accounting_#{resource}") }
-        .to change { host.reload.public_send(id_column) }.from(nil)
+      expect { host.public_send(:"accounting_#{resource}") }.to change { host.reload.public_send(id_column) }.from(nil)
     end
   end
 end

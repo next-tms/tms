@@ -79,8 +79,6 @@ FactoryBot.define do
     office_address { create(:address) }
     primary_pickup_address { create(:address) }
 
-    after(:build) do |record|
-      record.receivables_contact = build(:contact, companyable: record)
-    end
+    after(:build) { |record| record.receivables_contact = build(:contact, companyable: record) }
   end
 end

@@ -1,12 +1,5 @@
 class BuildAssumedAccesorialsService
-  delegate(*%i[
-             receiver_address
-             receiver_name
-             shipper_address
-             shipper_name
-             items
-             bol_notes
-           ], to: :shipment)
+  delegate(*%i[receiver_address receiver_name shipper_address shipper_name items bol_notes], to: :shipment)
 
   attr_reader :shipment
 

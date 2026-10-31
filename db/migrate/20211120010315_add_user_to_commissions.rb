@@ -23,10 +23,7 @@ class AddUserToCommissions < ActiveRecord::Migration[6.1]
 
     Commission.find_each do |commission|
       broker_customer_sales_rep_id = begin
-        BrokerCustomerSalesRep.where(
-          broker_customer_id: commission.shipment.broker_customer_id,
-          user_id: commission.user_id
-        ).first&.id
+        BrokerCustomerSalesRep.where(broker_customer_id: commission.shipment.broker_customer_id, user_id: commission.user_id).first&.id
       rescue ActiveRecord::RecordNotFound
         nil
       end

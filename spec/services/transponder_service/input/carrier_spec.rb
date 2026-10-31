@@ -13,16 +13,7 @@ RSpec.describe(TransponderService::Input::Carrier) do
     username, password = api_credentials
     website_username, website_password = website_credentials
 
-    create(
-      :broker_carrier,
-      account:,
-      carrier:,
-      encrypted_api_key:,
-      username:,
-      password:,
-      website_username:,
-      website_password:
-    )
+    create(:broker_carrier, account:, carrier:, encrypted_api_key:, username:, password:, website_username:, website_password:)
   end
 
   let(:service) { described_class.new(object) }
@@ -65,9 +56,7 @@ RSpec.describe(TransponderService::Input::Carrier) do
     it { expect(result[:type]).to(eq('api_proxy')) }
 
     context 'when object.carrier.api_key.present?' do
-      let(:carrier) do
-        create(:carrier, encrypted_api_key: Faker::Internet.password, encrypted_proxy_url: Faker::Internet.url)
-      end
+      let(:carrier) { create(:carrier, encrypted_api_key: Faker::Internet.password, encrypted_proxy_url: Faker::Internet.url) }
 
       it { expect(result[:api_key]).to(eq(carrier.encrypted_api_key)) }
     end
@@ -110,10 +99,10 @@ RSpec.describe(TransponderService::Input::Carrier) do
       create(:setting, key: 'phone', value: '+15035550100')
     end
 
-    it {
+    it do
       expect(service.__send__(:customer_location)).to(include('address1' => address.street, 'city' => address.city,
                                                               'postalCode' => address.zip_code))
-    }
+    end
 
     it { expect(service.__send__(:customer_location)['contact']).to(include('companyName' => 'Acme Freight', 'email' => 'help@acme.test')) }
   end

@@ -44,9 +44,7 @@
 class Item < ApplicationRecord
   FREIGHT_CLASSES = [55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400].freeze
 
-  scope :packaging, ->(packaging) {
-    where(packaging:)
-  }
+  scope :packaging, ->(packaging) { where(packaging:) }
 
   audited associated_with: :shipment
 
@@ -240,8 +238,7 @@ class Item < ApplicationRecord
     missing_dimension_attributes = dimension_attributes.select { |attribute| public_send(attribute).blank? }
     return if missing_dimension_attributes.empty?
 
-    missing_dimension_attribute_names = missing_dimension_attributes
-                                        .map { |attribute| human_attribute_name(attribute).downcase }
+    missing_dimension_attribute_names = missing_dimension_attributes.map { |attribute| human_attribute_name(attribute).downcase }
     verb = missing_dimension_attribute_names.count > 1 ? 'are' : 'is'
 
     message = "can't be blank when #{missing_dimension_attribute_names.join(', ')} #{verb} blank"

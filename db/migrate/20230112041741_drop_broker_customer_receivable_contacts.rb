@@ -2,9 +2,7 @@ class DropBrokerCustomerReceivableContacts < ActiveRecord::Migration[7.0]
   def up
     say('populate(:broker_customers, :receivables_contact_id)')
     BrokerCustomerReceivableContact.includes(:broker_customer).find_each do |broker_customer_receivable_contact|
-      broker_customer_receivable_contact
-        .broker_customer
-        .update!(receivables_contact_id: broker_customer_receivable_contact.contact_id)
+      broker_customer_receivable_contact.broker_customer.update!(receivables_contact_id: broker_customer_receivable_contact.contact_id)
     end
 
     drop_table(:broker_customer_receivable_contacts)
@@ -23,11 +21,7 @@ class DropBrokerCustomerReceivableContacts < ActiveRecord::Migration[7.0]
 
     say('populate(:broker_customer_receivable_contacts)')
     BrokerCustomer.find_each do |broker_customer|
-      BrokerCustomerReceivableContact.create!(
-        broker_customer_id: broker_customer,
-        contact_id: receivables_contact_id,
-        primary: true
-      )
+      BrokerCustomerReceivableContact.create!(broker_customer_id: broker_customer, contact_id: receivables_contact_id, primary: true)
     end
   end
 end

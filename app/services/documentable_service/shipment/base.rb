@@ -32,9 +32,7 @@ module DocumentableService
       end
 
       def requirements
-        @requirements ||= super.tap do |builder|
-          builder << :items
-        end
+        @requirements ||= super.tap { |builder| builder << :items }
       end
 
       def scheduling_attributes

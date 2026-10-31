@@ -26,12 +26,7 @@ module TransponderService
     def call
       return false if shipment.pro.blank? || attachment.attached?
 
-      response = TransponderService.query(
-        :fetch_document,
-        shipment.broker_carrier,
-        shipment,
-        document_type:
-      )
+      response = TransponderService.query(:fetch_document, shipment.broker_carrier, shipment, document_type:)
 
       return false if response[:document].blank?
 
@@ -69,26 +64,12 @@ module TransponderService
              when :pod then :carrier_pod
              end
 
-      contacts = Contact
-                 .where(
-                   id: shipment
-                       .broker_customer
-                       .document_preferences
-                       .where(kind: type.to_s)
-                       .pluck(:contact_id)
-                 )
+      contacts = Contact.where(id: shipment.broker_customer.document_preferences.where(kind: type.to_s).pluck(:contact_id))
       contacts.find_each do |contact|
         user = contact.user
 
         if user
-          DocumentNotifier
-            .with(
-              from_user: nil,
-              to_contact: contact,
-              shipment:,
-              document_type: type
-            )
-            .deliver(user)
+          DocumentNotifier.with(from_user: nil, to_contact: contact, shipment:, document_type: type).deliver(user)
 
           next
         end

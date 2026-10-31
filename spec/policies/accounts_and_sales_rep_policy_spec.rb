@@ -30,8 +30,7 @@ RSpec.describe(AccountsAndSalesRepPolicy) do
   describe '#accounts_receivable_and_sales_rep_for_all_show?' do
     subject { policy.apply(:accounts_receivable_and_sales_rep_for_all_show?) }
 
-    context 'when user role is accounts_receivable, sales_rep_for_all_broker_customers and ' \
-            'sales_rep for record' do
+    context 'when user role is accounts_receivable, sales_rep_for_all_broker_customers and sales_rep for record' do
       before do
         contact.contact_roles.create(role: :accounts_receivable)
         contact.contact_roles.create(role: :sales_rep_for_all_broker_customers)

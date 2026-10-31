@@ -50,9 +50,7 @@ module TransponderService
 
       def build_from_shipment
         if attribute_prefix == :shipper
-          return build_from_user(object.dispatcher)
-                 .merge({ company_name: object.shipper_name.presence })
-                 .compact
+          return build_from_user(object.dispatcher).merge({ company_name: object.shipper_name.presence }).compact
         end
 
         {

@@ -4,9 +4,7 @@ module GraphQLAuthentication
   class InvalidCredentials < StandardError
   end
 
-  included do
-    before_action :authenticate!
-  end
+  included { before_action :authenticate! }
 
   def authenticate!
     return if params[:operationName] == 'IntrospectionQuery'

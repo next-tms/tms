@@ -6,14 +6,7 @@ RSpec.describe(DocumentNotifier) do
   let(:notifier) { described_class.new }
   let(:shipment) { build_stubbed(:shipment) }
 
-  before do
-    allow(notifier).to receive(:params).and_return({
-                                                     contact:,
-                                                     document_type: :carrier_bol,
-                                                     from_user:,
-                                                     shipment:
-                                                   })
-  end
+  before { allow(notifier).to receive(:params).and_return({ contact:, document_type: :carrier_bol, from_user:, shipment: }) }
 
   describe '#mailer_class' do
     it { expect(notifier.mailer_class).to eq(ContactMailer) }

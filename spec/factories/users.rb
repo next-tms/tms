@@ -136,9 +136,7 @@ FactoryBot.define do
       companyable { nil }
 
       factory :root_broker_user do
-        after(:create) do |record|
-          record.contact.contact_roles.create!(role: :root)
-        end
+        after(:create) { |record| record.contact.contact_roles.create!(role: :root) }
       end
     end
 

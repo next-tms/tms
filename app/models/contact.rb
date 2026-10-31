@@ -72,10 +72,7 @@ class Contact < ApplicationRecord
   validate :validate_email
   validate :validate_first_name_and_last_name
 
-  validates :email,
-            presence: true,
-            uniqueness: { scope: %i[companyable_id companyable_type] },
-            if: -> { email.present? }
+  validates :email, presence: true, uniqueness: { scope: %i[companyable_id companyable_type] }, if: -> { email.present? }
 
   def any_role?(*any_roles)
     return true if roles.any?(:root)

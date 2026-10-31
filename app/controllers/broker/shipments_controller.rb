@@ -29,15 +29,7 @@ class Broker::ShipmentsController < Broker::BrokerController
                   upload_document
                 ]
   before_action :authenticate_user!
-  before_action :authorize_access_to_shipment,
-                only: %i[
-                  edit_tracking_events
-                  quote
-                  update
-                  upload_document
-                  show
-                  tracking_events
-                ]
+  before_action :authorize_access_to_shipment, only: %i[edit_tracking_events quote update upload_document show tracking_events]
 
   def accounting
     authorize!(@shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy)
@@ -47,11 +39,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def book
-    @shipment.update!(
-      booked_at: Time.current,
-      quote_only: false,
-      updated_by_id: current_user.id
-    )
+    @shipment.update!(booked_at: Time.current, quote_only: false, updated_by_id: current_user.id)
 
     if @shipment.quote_only?
       redirect_to(edit_broker_shipment_path(@shipment))
@@ -639,9 +627,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   def history
     @audits = @shipment.own_and_associated_audits.includes(:user)
 
-    respond_to do |format|
-      format.html { stale?(@shipment) }
-    end
+    respond_to { |format| format.html { stale?(@shipment) } }
   end
 
   private
@@ -656,15 +642,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def tracking_event_params
-    params.expect(
-      tracking_event: [
-        :id,
-        :at,
-        :event_id,
-        :time_zone,
-        { address_attributes: %i[id city region_iso31662 zip_code] }
-      ]
-    )
+    params.expect(tracking_event: [:id, :at, :event_id, :time_zone, { address_attributes: %i[id city region_iso31662 zip_code] }])
   end
 
   def shipment_params

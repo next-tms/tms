@@ -49,8 +49,7 @@ module DateTimeHelper
     return if date.blank? || time_zone.blank?
 
     unless time_zone.is_a?(ActiveSupport::TimeZone)
-      raise ArgumentError,
-            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+      raise ArgumentError, "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
     end
 
     date.in_time_zone(time_zone.name).strftime('%m/%d/%y')
@@ -60,8 +59,7 @@ module DateTimeHelper
     return '' if datetime.blank? || time_zone.blank?
 
     unless time_zone.is_a?(ActiveSupport::TimeZone)
-      raise ArgumentError,
-            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+      raise ArgumentError, "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
     end
 
     datetime ? datetime.in_time_zone(time_zone.name).to_s[0..-10] : ''
@@ -82,8 +80,7 @@ module DateTimeHelper
     return if date.blank? || time_zone.blank?
 
     unless time_zone.is_a?(ActiveSupport::TimeZone)
-      raise ArgumentError,
-            "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
+      raise ArgumentError, "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
     end
 
     date.in_time_zone(time_zone).strftime('%m/%d/%y')

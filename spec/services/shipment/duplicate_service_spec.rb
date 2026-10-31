@@ -43,9 +43,7 @@ RSpec.describe(Shipment::DuplicateService) do
 
     it 'stores nil on nullable attrs' do
       new_shipment = call
-      described_class::NULLABLE_ATTRS.each do |attr|
-        expect(new_shipment.public_send(attr)).to(be_nil)
-      end
+      described_class::NULLABLE_ATTRS.each { |attr| expect(new_shipment.public_send(attr)).to(be_nil) }
     end
   end
 end

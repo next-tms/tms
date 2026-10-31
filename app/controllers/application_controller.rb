@@ -82,10 +82,7 @@ class ApplicationController < ActionController::Base
       ]
     )
 
-    devise_parameter_sanitizer.permit(
-      :accept_invitation,
-      keys: %i[email broker_customer_id first_name last_name phone]
-    )
+    devise_parameter_sanitizer.permit(:accept_invitation, keys: %i[email broker_customer_id first_name last_name phone])
 
     devise_parameter_sanitizer.permit(
       :invite,

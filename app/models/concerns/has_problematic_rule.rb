@@ -21,10 +21,7 @@ module HasProblematicRule
                     problematic_rule_code.present? &&
                     problematic_type.present?
 
-      return if problematic_type
-                .constantize
-                .problematic_rule_codes
-                .any?(problematic_rule_code.to_sym)
+      return if problematic_type.constantize.problematic_rule_codes.any?(problematic_rule_code.to_sym)
 
       errors.add(
         :problematic_rule_code,

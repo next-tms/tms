@@ -19,12 +19,7 @@ RSpec.describe(Shipment::FetchAndCreateRatesService) do
             .and_return(rate)
           )
 
-        allow(shipment)
-          .to(
-            receive(:valid_broker_carriers_for_quotation)
-            .with(user_type)
-            .and_return([broker_carrier])
-          )
+        allow(shipment).to(receive(:valid_broker_carriers_for_quotation).with(user_type).and_return([broker_carrier]))
       end
 
       it { expect(subject.rates_declared_freight_classes_true).to(eq([])) }
@@ -36,22 +31,11 @@ RSpec.describe(Shipment::FetchAndCreateRatesService) do
       let(:broker_carrier) { create(:broker_carrier) }
       let(:broker_carrier2) { create(:broker_carrier) }
       let!(:rate) do
-        create(
-          :rate,
-          shipment:,
-          broker_carrier:,
-          declared_freight_classes: false,
-          shipment_fingerprint: shipment.fingerprint
-        )
+        create(:rate, shipment:, broker_carrier:, declared_freight_classes: false, shipment_fingerprint: shipment.fingerprint)
       end
 
       before do
-        allow(shipment)
-          .to(
-            receive(:valid_broker_carriers_for_quotation)
-            .with(user_type)
-            .and_return([broker_carrier, broker_carrier2])
-          )
+        allow(shipment).to(receive(:valid_broker_carriers_for_quotation).with(user_type).and_return([broker_carrier, broker_carrier2]))
       end
 
       it { expect(subject.rates_declared_freight_classes_true).to(eq([])) }

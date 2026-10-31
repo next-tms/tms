@@ -11,11 +11,7 @@ RSpec.describe(DateTimeHelper) do
     context 'when options' do
       let(:options) { { flatpickr_max_date: Date.new(2024, 2, 14) } }
 
-      it do
-        expect(result).to(
-          eq(controller: 'flatpickr', flatpickr_date_format: 'Y-m-d', flatpickr_max_date: Date.new(2024, 2, 14))
-        )
-      end
+      it { expect(result).to(eq(controller: 'flatpickr', flatpickr_date_format: 'Y-m-d', flatpickr_max_date: Date.new(2024, 2, 14))) }
     end
 
     context 'when options[:override].present?' do

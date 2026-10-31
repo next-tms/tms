@@ -105,9 +105,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
   # Used by Stimulus autofill_shipper
   def primary_pickup_address
-    respond_to do |format|
-      format.json { render(:primary_pickup_address) }
-    end
+    respond_to { |format| format.json { render(:primary_pickup_address) } }
   end
 
   def profitability_report
@@ -131,9 +129,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
   def receivables
     unauthorized unless current_user.role?(:accounts_receivable)
 
-    @q = @broker_customer
-         .receivables
-         .ransack(params[:q], auth_object: current_user)
+    @q = @broker_customer.receivables.ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'created_at desc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)

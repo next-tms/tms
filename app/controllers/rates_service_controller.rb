@@ -5,13 +5,7 @@ class RatesServiceController < ApplicationController
   before_action :set_declared_freight_classes
 
   def fetch
-    @rates = Rate
-             .by_shipment_and_broker_carrier(
-               @shipment,
-               @shipment.fingerprint,
-               @broker_carrier,
-               @declared_freight_classes
-             )
+    @rates = Rate.by_shipment_and_broker_carrier(@shipment, @shipment.fingerprint, @broker_carrier, @declared_freight_classes)
 
     if @rates.empty?
       fetch = Shipment::RatesService
@@ -25,9 +19,7 @@ class RatesServiceController < ApplicationController
       @rates = fetch.to_rates
     end
 
-    respond_to do |format|
-      format.turbo_stream { render }
-    end
+    respond_to { |format| format.turbo_stream { render } }
   end
 
   private

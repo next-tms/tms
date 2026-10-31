@@ -9,10 +9,7 @@ class GraphQLController < ActionController::API
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
-    context = {
-      current_user:,
-      session:
-    }
+    context = { current_user:, session: }
     @result = LiftoffSchema.execute(query, variables:, context:, operation_name:)
   rescue StandardError => e
     raise e unless Rails.env.development?

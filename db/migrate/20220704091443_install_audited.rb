@@ -1,5 +1,5 @@
 class InstallAudited < ActiveRecord::Migration[7.0]
-  def self.up
+  def up
     create_table :audits, force: true do |t|
       t.column :auditable_id, :integer
       t.column :auditable_type, :string
@@ -24,7 +24,7 @@ class InstallAudited < ActiveRecord::Migration[7.0]
     add_index :audits, :created_at
   end
 
-  def self.down
+  def down
     drop_table :audits
   end
 end

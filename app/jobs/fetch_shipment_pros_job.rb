@@ -12,8 +12,6 @@ class FetchShipmentProsJob < ApplicationJob
                   .where(broker_carrier: BrokerCarrier.api_configured)
                 )
 
-    shipments.find_each do |shipment|
-      FetchShipmentProJob.perform_later(shipment)
-    end
+    shipments.find_each { |shipment| FetchShipmentProJob.perform_later(shipment) }
   end
 end

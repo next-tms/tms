@@ -36,10 +36,7 @@ module TransponderService
         def tz_by_city_and_region(city, region)
           record = [StandardizedAddress, TrackingEvent]
                    .map do |model|
-            model.where(
-              city:,
-              region_iso31662: region.iso31662
-            ).where.not(time_zone_name: nil).where.not(time_zone_name: '').last
+            model.where(city:, region_iso31662: region.iso31662).where.not(time_zone_name: nil).where.not(time_zone_name: '').last
           end
                    .flatten
                    .compact_blank

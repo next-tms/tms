@@ -747,13 +747,9 @@ class Shipment < ApplicationRecord
                           end
 
     broker_carrier_ids += if broker_customer.blank?
-                            PricingRule
-                              .where(broker_carrier: BrokerCarrier.blanket.api_unconfigured.select(:id))
-                              .pluck(:broker_carrier_id)
+                            PricingRule.where(broker_carrier: BrokerCarrier.blanket.api_unconfigured.select(:id)).pluck(:broker_carrier_id)
                           else
-                            PricingRule
-                              .where(broker_carrier: broker_customer.eligible_broker_carriers(user_type))
-                              .pluck(:broker_carrier_id)
+                            PricingRule.where(broker_carrier: broker_customer.eligible_broker_carriers(user_type)).pluck(:broker_carrier_id)
                           end
 
     BrokerCarrier.where(id: broker_carrier_ids)
@@ -822,10 +818,7 @@ class Shipment < ApplicationRecord
       amount = profit * (broker_customer_sales_rep.commission_percent.to_f / 100).round(2)
       next if amount.zero?
 
-      commissions.build(
-        user_id: broker_customer_sales_rep.user_id,
-        amount:
-      )
+      commissions.build(user_id: broker_customer_sales_rep.user_id, amount:)
     end
   end
 
@@ -980,10 +973,7 @@ class Shipment < ApplicationRecord
     end
 
     self.carrier_cost = applied_rate.cost
-    self.carrier_charge = broker_customer.carrier_charge_calculator(
-      carrier_cost: applied_rate.cost,
-      shipment: self
-    ) || 0
+    self.carrier_charge = broker_customer.carrier_charge_calculator(carrier_cost: applied_rate.cost, shipment: self) || 0
 
     self.broker_carrier = applied_rate.broker_carrier
     self.tracking_carrier = applied_rate.tracking_carrier
@@ -993,10 +983,7 @@ class Shipment < ApplicationRecord
 
     return unless updated_by.present? && updated_by.companyable.is_a?(BrokerCustomer)
 
-    total_charges = broker_customer.carrier_charge_calculator(
-      carrier_cost: applied_rate.cost,
-      shipment: self
-    )
+    total_charges = broker_customer.carrier_charge_calculator(carrier_cost: applied_rate.cost, shipment: self)
 
     total_charges += broker_accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents) if total_charges.present?
 

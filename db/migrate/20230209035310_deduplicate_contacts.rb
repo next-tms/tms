@@ -8,10 +8,7 @@ class DeduplicateContacts < ActiveRecord::Migration[7.0]
         next
       end
 
-      contacts = contact
-                 .companyable
-                 .contacts
-                 .where(email: contact.email)
+      contacts = contact.companyable.contacts.where(email: contact.email)
 
       if [contact.first_name, contact.last_name].all?(&:present?)
         contacts = contacts

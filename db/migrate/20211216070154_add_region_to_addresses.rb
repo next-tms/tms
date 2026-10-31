@@ -4,9 +4,7 @@ class AddRegionToAddresses < ActiveRecord::Migration[6.1]
 
     say 'Populate addresses.region_id'
     Region.includes(:country).find_each do |region|
-      Address
-        .where('TRIM(state) ILIKE ?', region.abbreviation)
-        .update_all(country_id: region.country.id, region_id: region.id, state: nil)
+      Address.where('TRIM(state) ILIKE ?', region.abbreviation).update_all(country_id: region.country.id, region_id: region.id, state: nil)
     end
 
     usa = Country.find_by(alpha2_code: 'US')

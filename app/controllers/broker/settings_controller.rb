@@ -52,12 +52,6 @@ class Broker::SettingsController < Broker::BrokerController
   end
 
   def setting_params
-    params.expect(
-      setting: [
-        :key,
-        :value,
-        { address_attributes: %i[city country_alpha2 region_iso31662 street street2 zip_code] }
-      ]
-    )
+    params.expect(setting: [:key, :value, { address_attributes: %i[city country_alpha2 region_iso31662 street street2 zip_code] }])
   end
 end

@@ -11,9 +11,7 @@ RSpec.describe(ShipmentsHelper) do
       allow(helper).to(receive(:current_user))
       create(:setting, key: 'time_zone_name', value: 'America/Los_Angeles')
 
-      Timecop.freeze(Time.utc(2026, 7, 14, 17)) do
-        Audited.audit_class.as_user(user) { shipment.update!(charges_confirmed: true) }
-      end
+      Timecop.freeze(Time.utc(2026, 7, 14, 17)) { Audited.audit_class.as_user(user) { shipment.update!(charges_confirmed: true) } }
     end
 
     it { is_expected.to(start_with('Shipment Charges Confirmed by &lt;b&gt;Jane&lt;/b&gt; Doe at <time ')) }

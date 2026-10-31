@@ -4,10 +4,7 @@ class ReceivablesMailer < ApplicationMailer
   def batch(broker_customer:, load_ids:, pdf:, pdf_filename:)
     @load_ids = load_ids.sort
 
-    attachments[pdf_filename] = {
-      mime_type: 'application/pdf',
-      content: pdf
-    }
+    attachments[pdf_filename] = { mime_type: 'application/pdf', content: pdf }
 
     bcc = []
     User.broker.active.find_each do |user|
