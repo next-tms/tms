@@ -15,7 +15,7 @@ module ProblematicService
         record.booked_at.blank? ||
         record.canceled_at.present? ||
         record.delivered_at.present? ||
-        (record.pickup_by.present? && record.pickup_by > Time.current + 8.hours)
+        (record.pickup_by.present? && record.pickup_by > 8.hours.from_now)
     end
   end
 end

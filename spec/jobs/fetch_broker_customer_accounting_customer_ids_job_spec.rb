@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe(FetchBrokerCustomerAccountingCustomerIdsJob) do
   describe '#perform' do
     let(:broker_customer) { create(:broker_customer, accounting_customer_id: nil) }
-    let(:relation) { instance_double(ActiveRecord::Relation, find_each: [ broker_customer ].each) }
+    let(:relation) { instance_double(ActiveRecord::Relation, find_each: [broker_customer].each) }
 
     before do
       allow(Accounting).to(receive(:connected?).and_return(true))
@@ -28,7 +28,7 @@ RSpec.describe(FetchBrokerCustomerAccountingCustomerIdsJob) do
   describe 'legacy Broker arguments' do
     let(:payload) do
       described_class.new.serialize.merge(
-        'arguments' => [ { 'broker' => { '_aj_globalid' => "gid://#{GlobalID.app}/Broker/1" }, '_aj_ruby2_keywords' => [ 'broker' ] } ],
+        'arguments' => [{ 'broker' => { '_aj_globalid' => "gid://#{GlobalID.app}/Broker/1" }, '_aj_ruby2_keywords' => ['broker'] }]
       )
     end
 

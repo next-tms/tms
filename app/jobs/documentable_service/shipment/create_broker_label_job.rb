@@ -9,7 +9,7 @@ module DocumentableService
                         else
                           'Piece'
                         end
-      pro = (shipment.tracking_carrier_pro.presence || shipment.pro)
+      pro = shipment.tracking_carrier_pro.presence || shipment.pro
       pro = if pro.blank?
               "\n"
             else
@@ -49,7 +49,7 @@ module DocumentableService
       blob = ActiveStorage::Blob.create_and_upload!(
         io: file,
         filename: "#{shipment.load_id} Labels.pdf",
-        content_type: 'application/pdf',
+        content_type: 'application/pdf'
       )
 
       shipment.skip_documentable_callback = true

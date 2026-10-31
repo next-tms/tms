@@ -18,10 +18,12 @@ module Mutations
       address.region = region
       address.country = region&.country
 
-      raise GraphQL::ExecutionError.new(
-        'Error creating address',
-        extensions: address.errors.to_hash,
-      ) unless address.save
+      unless address.save
+        raise GraphQL::ExecutionError.new(
+          'Error creating address',
+          extensions: address.errors.to_hash
+        )
+      end
 
       { address: }
     end

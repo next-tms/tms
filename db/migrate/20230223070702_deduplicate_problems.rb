@@ -9,10 +9,10 @@ class DeduplicateProblems < ActiveRecord::Migration[7.0]
       end
 
       Problem
-      .unresolved
-      .where(problematic_rule_code: problem.problematic_rule_code, resolvable: problem.resolvable)
-      .where.not(id: problem.id)
-      .destroy_all
+        .unresolved
+        .where(problematic_rule_code: problem.problematic_rule_code, resolvable: problem.resolvable)
+        .where.not(id: problem.id)
+        .destroy_all
     end
   end
 

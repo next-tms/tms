@@ -1,21 +1,21 @@
 module TransponderService
   module Input
     class << self
-      def call(object, **kwargs)
+      def call(object, **)
         input = input(object)
 
         if input.blank?
           classes = MAPPING.values.keys.map { |key| key.to_s.camelize }
-          raise ArgumentError, "object must be one of: #{classes.join(", ")}"
+          raise ArgumentError, "object must be one of: #{classes.join(', ')}"
         end
 
-        input.call(object, **kwargs)
+        input.call(object, **)
       end
 
       def input(object)
         class_name = MAPPING[object.class.to_s.demodulize.underscore.to_sym].to_s.camelize
 
-        [ 'TransponderService', 'Input', class_name ].join('::').constantize
+        ['TransponderService', 'Input', class_name].join('::').constantize
       end
     end
 
@@ -28,6 +28,6 @@ module TransponderService
       packaging: :packaging,
       shipment: :shipment,
       time: :date_time
-    }
+    }.freeze
   end
 end

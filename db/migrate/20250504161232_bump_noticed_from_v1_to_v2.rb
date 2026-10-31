@@ -17,27 +17,27 @@ class BumpNoticedFromV1ToV2 < ActiveRecord::Migration[7.1]
   def up
     TempNotification.find_each do |notification|
       attributes = notification.attributes.slice('type', 'created_at', 'updated_at')
-      attributes[:type] = "Notifiers::#{attributes["type"].to_s.sub("Notification", "Notifier")}"
+      attributes[:type] = "Notifiers::#{attributes['type'].to_s.sub('Notification', 'Notifier')}"
 
       begin
         params = Noticed::Coder.load(notification.params)
-      rescue
+      rescue StandardError
         next
       end
 
       next if !params.is_a?(Hash) || params['noticed_error']
 
       notifications_attributes = [
-                                   {
-                                     type: "#{attributes[:type].sub("Notification", "Notifier")}::Notification",
-                                     recipient_type: notification.recipient_type,
-                                     recipient_id: notification.recipient_id,
-                                     read_at: notification.read_at,
-                                     seen_at: notification.read_at,
-                                     created_at: notification.created_at,
-                                     updated_at: notification.updated_at
-                                   }
-                                 ]
+        {
+          type: "#{attributes[:type].sub('Notification', 'Notifier')}::Notification",
+          recipient_type: notification.recipient_type,
+          recipient_id: notification.recipient_id,
+          read_at: notification.read_at,
+          seen_at: notification.read_at,
+          created_at: notification.created_at,
+          updated_at: notification.updated_at
+        }
+      ]
       record = params.delete('user') || params.delete('account')
 
       event_attrs = attributes.merge(params:, notifications_attributes:)
@@ -45,7 +45,7 @@ class BumpNoticedFromV1ToV2 < ActiveRecord::Migration[7.1]
 
       begin
         Noticed::Event.create!(event_attrs)
-      rescue => e
+      rescue StandardError => e
         Rails.logger.error("Failed to create event from notification #{notification.id}: #{e}")
       end
     end

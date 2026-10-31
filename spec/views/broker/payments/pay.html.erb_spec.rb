@@ -4,7 +4,9 @@ RSpec.describe('broker/payments/pay') do
   subject { rendered }
 
   let(:broker_carrier) { build(:broker_carrier, **ach_attributes) }
-  let(:ach_attributes) { { encrypted_ach_account_number: '1234', encrypted_ach_bank_name: 'First Bank', encrypted_ach_routing_number: '123456789' } }
+  let(:ach_attributes) do
+    { encrypted_ach_account_number: '1234', encrypted_ach_bank_name: 'First Bank', encrypted_ach_routing_number: '123456789' }
+  end
 
   before do
     create(:setting, key: 'time_zone_name', value: 'America/Los_Angeles')

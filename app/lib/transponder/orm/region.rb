@@ -18,6 +18,8 @@ module Transponder
 
       # Only iso31662 is required, so records that store a code Transponder no longer returns stay readable
       def initialize(iso31662:, abbreviation: nil, country: nil, name: nil)
+        super()
+
         @abbreviation = abbreviation
         @country = country
         @iso31662 = iso31662

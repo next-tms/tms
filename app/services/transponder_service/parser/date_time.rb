@@ -7,7 +7,7 @@ module TransponderService
           return if date_time.blank?
 
           if date_time[:iso8601].present? && date_time[:time_zone].present?
-            return Time.parse(date_time[:iso8601]).in_time_zone(date_time[:time_zone])
+            return Time.zone.parse(date_time[:iso8601]).in_time_zone(date_time[:time_zone])
           end
 
           city = date_time.dig(:location, :city)
@@ -34,11 +34,11 @@ module TransponderService
         private
 
         def tz_by_city_and_region(city, region)
-          record = [ StandardizedAddress, TrackingEvent ]
+          record = [StandardizedAddress, TrackingEvent]
                    .map do |model|
             model.where(
               city:,
-              region_iso31662: region.iso31662,
+              region_iso31662: region.iso31662
             ).where.not(time_zone_name: nil).where.not(time_zone_name: '').last
           end
                    .flatten

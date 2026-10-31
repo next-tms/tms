@@ -5,7 +5,7 @@ class ReplaceRegionIdsWithIso31662 < ActiveRecord::Migration[8.1]
   class StandardizedAddress < ActiveRecord::Base; end
   class TrackingEvent < ActiveRecord::Base; end
 
-  MODELS = [ Address, Location, StandardizedAddress, TrackingEvent ].freeze
+  MODELS = [Address, Location, StandardizedAddress, TrackingEvent].freeze
 
   def up
     MODELS.each { |model| add_column model.table_name, :region_iso31662, :string }

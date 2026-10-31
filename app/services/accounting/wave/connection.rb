@@ -24,7 +24,7 @@ module Accounting
         result = execute(delete_query(mutation), input: { id: record.id }).fetch(mutation)
         raise Error, mutation_error(result) unless result['didSucceed']
 
-        true
+        record
       end
 
       def find(id)
@@ -49,7 +49,9 @@ module Accounting
       def business_id = authenticator.business_id
 
       def delete_query(mutation)
-        "mutation Delete($input: #{mutation.camelize}Input!) { #{mutation}(input: $input) { didSucceed inputErrors { code message path } } }"
+        <<~GQL
+          mutation Delete($input: #{mutation.camelize}Input!) { #{mutation}(input: $input) { didSucceed inputErrors { code message path } } }
+        GQL
       end
 
       def each_node
@@ -69,18 +71,24 @@ module Accounting
       def execute(query, **variables) = authenticator.graphql(query, **variables)
 
       def find_query
-        "query Find($businessId: ID!, $id: ID!) { business(id: $businessId) { #{record_class.node_key}(id: $id) { #{record_class.selection} } } }"
+        <<~GQL
+          query Find($businessId: ID!, $id: ID!) { business(id: $businessId) { #{record_class.node_key}(id: $id) { #{record_class.selection} } } }
+        GQL
       end
 
       def list_page(page, page_size: PAGE_SIZE)
-        arguments = [ 'page: $page', 'pageSize: $pageSize', record_class.list_arguments.presence ].compact.join(', ')
-        query = "query List($businessId: ID!, $page: Int!, $pageSize: Int!) { business(id: $businessId) { #{record_class.collection_key}(#{arguments}) { pageInfo { totalPages } edges { node { #{record_class.selection} } } } } }"
+        arguments = ['page: $page', 'pageSize: $pageSize', record_class.list_arguments.presence].compact.join(', ')
+        query = <<~GQL
+          query List($businessId: ID!, $page: Int!, $pageSize: Int!) { business(id: $businessId) { #{record_class.collection_key}(#{arguments}) { pageInfo { totalPages } edges { node { #{record_class.selection} } } } } }
+        GQL
 
         execute(query, businessId: business_id, page:, pageSize: page_size).dig('business', record_class.collection_key)
       end
 
       def mutate(mutation, input)
-        query = "mutation Mutate($input: #{mutation.camelize}Input!) { #{mutation}(input: $input) { didSucceed inputErrors { code message path } #{record_class.node_key} { #{record_class.selection} } } }"
+        query = <<~GQL
+          mutation Mutate($input: #{mutation.camelize}Input!) { #{mutation}(input: $input) { didSucceed inputErrors { code message path } #{record_class.node_key} { #{record_class.selection} } } }
+        GQL
         result = execute(query, input:).fetch(mutation)
         raise Error, mutation_error(result) unless result['didSucceed']
 
@@ -88,7 +96,7 @@ module Accounting
       end
 
       def mutation_error(result)
-        Array(result['inputErrors']).map { |error| [ error['path']&.join('.'), error['message'] ].compact.join(': ') }.join('; ')
+        Array(result['inputErrors']).map { |error| [error['path']&.join('.'), error['message']].compact.join(': ') }.join('; ')
       end
     end
   end

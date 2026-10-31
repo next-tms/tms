@@ -1,5 +1,5 @@
 class DropDelays < ActiveRecord::Migration[6.0]
-  def change
+  def up
     drop_table :delays
   end
 end

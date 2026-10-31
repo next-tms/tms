@@ -10,13 +10,21 @@ module Accounting
 
         def collection_key = 'customers'
         def connection = @connection ||= Connection.new(self)
-        def create_input(customer, business_id) = { businessId: business_id, name: name_for(customer), address: Wave.address_input(customer.billing_address) }.compact
+
+        def create_input(customer, business_id)
+          { businessId: business_id, name: name_for(customer), address: Wave.address_input(customer.billing_address) }.compact
+        end
+
         def create_mutation = 'customerCreate'
         def delete_mutation = 'customerDelete'
         def list_arguments = 'sort: [NAME_ASC]'
         def match?(node, field, value) = node[field.to_s] == value
         def node_key = 'customer'
-        def patch_input(customer) = { id: customer.id, name: name_for(customer), address: Wave.address_input(customer.billing_address) }.compact
+
+        def patch_input(customer)
+          { id: customer.id, name: name_for(customer), address: Wave.address_input(customer.billing_address) }.compact
+        end
+
         def patch_mutation = 'customerPatch'
         def selection = SELECTION
 

@@ -37,7 +37,7 @@ class Shipment::FetchAndCreateRatesService
           broker_carrier:,
           declared_freight_classes:,
           shipment_fingerprint:,
-          shipment:,
+          shipment:
         )
 
         if rate.present?
@@ -50,7 +50,7 @@ class Shipment::FetchAndCreateRatesService
 
       instance_variable_set(
         "@rates_declared_freight_classes_#{declared_freight_classes}",
-        existing_rates.uniq.sort_by(&:cost_cents),
+        existing_rates.uniq.sort_by(&:cost_cents)
       )
 
       next if broker_carrier_without_rate_ids.empty?
@@ -62,7 +62,7 @@ class Shipment::FetchAndCreateRatesService
         shipment_fingerprint,
         user_type,
         declared_freight_classes,
-        broker_carrier_without_rate_ids,
+        broker_carrier_without_rate_ids
       )
     end
 
@@ -71,7 +71,7 @@ class Shipment::FetchAndCreateRatesService
 
   # @return [Array<Boolean>]
   def declared_freight_classes
-    return [ false ] if shipment.calculated_freight_classes.sort == shipment.declared_freight_classes.sort
+    return [false] if shipment.calculated_freight_classes.sort == shipment.declared_freight_classes.sort
 
     if user_type == :broker
       return [].tap do |builder|
@@ -80,7 +80,7 @@ class Shipment::FetchAndCreateRatesService
              end
     end
 
-    [ !@shipment.broker_customer.always_show_quotes_based_on_calculated_classes? ]
+    [!@shipment.broker_customer.always_show_quotes_based_on_calculated_classes?]
   end
 
   private

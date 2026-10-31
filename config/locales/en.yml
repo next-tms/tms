@@ -1,5 +1,11 @@
 en:
   app_name: "Liftoff"
+  accounting_connections:
+    callback:
+      success: Connected
+  accounting_mailer:
+    unknown_customers:
+      subject: Accounting Customer Sync Failure
   activerecord:
     attributes:
       address:
@@ -104,6 +110,16 @@ en:
           pending_delivery_appointment: Pending Delivery Appointment
           pickup_scheduled: Pickup Scheduled
           quoted: Quoted
+    errors:
+      models:
+        broker_carrier:
+          attributes:
+            encrypted_ach_routing_number:
+              invalid: must be nine digits
+        item:
+          attributes:
+            nmfc:
+              invalid: is not in the correct format
   bootstrap_form:
     labels:
       shipment:
@@ -113,6 +129,55 @@ en:
         pro: "Pro #"
         quote_id: "Quote #"
         shipper_reference: "SO #"
+  broker:
+    banks:
+      update:
+        failure: Unable to update bank
+      update_accounting:
+        failure: Unable to update accounting accounts
+        success: Accounting accounts updated
+    broker_carriers:
+      update:
+        failure: Unable to update carrier
+      update_accounting:
+        failure: Unable to update accounting vendors
+        success: Accounting vendors updated
+      update_tariff:
+        success: Tariff updated
+    broker_countries:
+      create:
+        failure: Unable to add country
+    broker_customers:
+      update_accounting:
+        failure: Unable to update accounting customers
+        success: Accounting customers updated
+    claims:
+      new:
+        missing_shipment: Cannot open a claim without a shipment
+      update:
+        failure: Unable to update claim
+    contacts:
+      update:
+        failure: Unable to update contact
+    delays:
+      update:
+        failure: Unable to update delay
+    payment_transactions:
+      update:
+        failure: Unable to update invoice
+    payments:
+      update:
+        failure: Unable to update payment
+    problems:
+      update:
+        failure: Unable to update exception
+    shipments:
+      destroy:
+        failure: Error deleting shipment
+        success: Shipment deleted
+    users:
+      update:
+        success: Successfully Updated User
   discussion_topics:
     tracking_event:
       arrived_at_terminal: #{model_name} arrived near %{city}, %{region_abbreviation} %{country_alpha2}
@@ -147,3 +212,6 @@ en:
     website_desc: Content for the <meta name="description"> HTML tag used for search engine results
     website_homepage: URL to your landing website, e.g. https://mycompany.com/
     website_logo_image_data: URL to your SVG logo (can be a data:-encoded URL)
+  test_mailer:
+    hello:
+      subject: Hello from Next TMS

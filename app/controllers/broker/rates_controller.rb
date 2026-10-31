@@ -8,6 +8,6 @@ class Broker::RatesController < Broker::BrokerController
   private
 
   def set_rate
-    @rate = Rate.find_by_uid(params[:uid])
+    @rate = Rate.find_by(uid: params[:uid])
   end
 end

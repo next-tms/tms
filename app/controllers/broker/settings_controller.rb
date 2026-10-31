@@ -6,15 +6,17 @@ class Broker::SettingsController < Broker::BrokerController
 
   before_action :set_setting, only: %i[company edit show update]
 
-  def company
-  end
+  def company; end
 
   def create
     @setting = Setting.new(setting_params)
 
-    redirect_to([ :broker, @setting ]) && return if @setting.save
+    unless @setting.save
+      render(:new)
+      return
+    end
 
-    render(:new)
+    redirect_to([:broker, @setting])
   end
 
   def edit; end
@@ -35,9 +37,12 @@ class Broker::SettingsController < Broker::BrokerController
   def update
     @setting.assign_attributes(setting_params)
 
-    redirect_to(broker_settings_path) && return if @setting.save
+    unless @setting.save
+      render(:edit)
+      return
+    end
 
-    render(:edit)
+    redirect_to([:broker, Setting])
   end
 
   private
@@ -47,10 +52,12 @@ class Broker::SettingsController < Broker::BrokerController
   end
 
   def setting_params
-    params.require(:setting).permit(
-      :key,
-      :value,
-      address_attributes: %i[city country_alpha2 region_iso31662 street street2 zip_code],
+    params.expect(
+      setting: [
+        :key,
+        :value,
+        { address_attributes: %i[city country_alpha2 region_iso31662 street street2 zip_code] }
+      ]
     )
   end
 end

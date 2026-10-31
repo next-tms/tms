@@ -1,0 +1,1 @@
+json.primary_pickup_address(@broker_customer.primary_pickup_address)

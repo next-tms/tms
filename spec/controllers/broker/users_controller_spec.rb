@@ -7,10 +7,20 @@ RSpec.describe(Broker::UsersController) do
 
   before { sign_in(current_user) }
 
+  describe '#user_params' do
+    subject { controller.__send__(:user_params).to_h }
+
+    let(:attributes) { { contact_attributes: { contact_roles_attributes: { '0' => { role: 'dispatch' } }, id: '1' }, first_name: 'Ada' } }
+
+    before { controller.params = { user: attributes } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
+  end
+
   describe 'GET #show' do
     before { get(:show, params: { id: user.id }) }
 
-    it { expect(response).to(have_http_status(:ok)) }
+    it { is_expected.to(have_http_status(:ok)) }
     it { expect(assigns(:user)).to(eq(user)) }
   end
 
@@ -27,7 +37,8 @@ RSpec.describe(Broker::UsersController) do
 
     before { patch(:update, params:) }
 
-    it { expect(response).to(redirect_to(broker_user_path(user))) }
+    it { is_expected.to(redirect_to(broker_user_path(user))) }
     it { expect(assigns(:user)).to(eq(user)) }
+    it { expect(flash[:success]).to(eq('Successfully Updated User')) }
   end
 end

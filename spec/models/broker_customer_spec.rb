@@ -89,4 +89,9 @@ RSpec.describe(BrokerCustomer) do
 
     it { expect(record.eligible_broker_accessorials).to(contain_exactly(blanket_accessorial, customer_accessorial)) }
   end
+
+  describe 'relationships' do
+    it { is_expected.to(have_many(:preferred_broker_carriers).dependent(:destroy)) }
+    it { is_expected.to(have_many(:upcharge_rules).dependent(:destroy)) }
+  end
 end

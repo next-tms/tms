@@ -18,13 +18,11 @@ module Documentable
         self,
         :documents,
         target: broadcast_target(document_type, namespace),
-        html: ApplicationController.render(
-          partial: "#{namespace}/#{self.class.name.underscore.pluralize}/documents/#{document_type}",
-          locals: {
-            self.class.name.underscore.to_sym => self,
-            this_dom_id: dom_id(self)
-          },
-        ).html_safe,
+        partial: "#{namespace}/#{self.class.name.underscore.pluralize}/documents/#{document_type}",
+        locals: {
+          self.class.name.underscore.to_sym => self,
+          this_dom_id: dom_id(self)
+        }
       )
     end
   end
@@ -37,7 +35,7 @@ module Documentable
         self,
         :documents,
         target:,
-        html: "<tr id=\"#{target}\"></tr>".html_safe,
+        html: ApplicationController.helpers.tag.tr(id: target)
       )
     end
   end

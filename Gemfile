@@ -21,12 +21,12 @@ gem 'jbuilder', '~> 2.15.1'
 # gem 'bcrypt', '~> 3.1.7'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: %i[ windows jruby ]
+gem 'tzinfo-data', platforms: %i[windows jruby]
 
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+gem 'solid_cable'
 gem 'solid_cache'
 gem 'solid_queue'
-gem 'solid_cable'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
@@ -42,7 +42,7 @@ gem 'image_processing', '~> 1.2'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem 'debug', platforms: %i[ mri windows ], require: 'debug/prelude'
+  gem 'debug', platforms: %i[mri windows], require: 'debug/prelude'
 
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem 'bundler-audit', require: false
@@ -51,15 +51,15 @@ group :development, :test do
   gem 'brakeman', require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem 'rubocop-rails-omakase', require: false
+  # gem 'rubocop-rails-omakase', require: false
 
   gem 'dotenv-rails', '~> 3.1.2'
 
-  gem 'rspec-rails', '~> 6.1.3'
   gem 'rails-controller-testing'
+  gem 'rspec-rails', '~> 6.1.3'
   gem 'webmock', '~> 3.18.1'
 
-  gem 'rubocop-next', '~> 1.0.9'
+  gem 'rubocop-next', '~> 1.0.10'
 end
 
 group :development do
@@ -84,8 +84,8 @@ group :test do
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'shoulda-matchers', '5.3.0'
-  gem 'webdrivers'
   gem 'timecop'
+  gem 'webdrivers'
 end
 
 gem 'bootstrap_form', '~> 5.4.0'
@@ -113,10 +113,10 @@ gem 'timezone', '~> 1.3'
 
 gem 'quickbooks-ruby', '~> 2.0'
 
-gem 'bcrypt', '~> 3.1' # explicitly for GraphQL
-gem 'graphql', '~> 2.0.31'
 gem 'action_policy'
 gem 'action_policy-graphql'
+gem 'bcrypt', '~> 3.1' # explicitly for GraphQL
+gem 'graphql', '~> 2.0.31'
 
 gem 'geocoder', '~> 1.8.1'
 gem 'google_places', '~> 2.0.0'
@@ -133,9 +133,9 @@ gem 'phony_rails'
 gem 'gotenberg-ruby', '~> 1.0.11'
 gem 'pstore' # explicitly for gotenberg-ruby
 
+gem 'matrix' # explicitly for prawn
 gem 'prawn', '~> 2.5.0'
 gem 'prawn-labels', '~> 1.2.6', require: 'prawn/labels'
-gem 'matrix' # explicitly for prawn
 
 gem 'rqrcode'
 

@@ -16,7 +16,7 @@ module Instigatable
     def update_suppressors
       suppressor_mappings.each_key do |key|
         suppressor_attributes = suppressor_mappings[key]
-        suppressor_enabled = public_send(key)
+        suppressor_enabled = public_send(:"#{key}?")
 
         unless suppressor_enabled
           suppressors.where(suppressor_attributes).destroy_all
@@ -26,7 +26,7 @@ module Instigatable
         existing_suppressors = suppressors.where(suppressor_attributes)
 
         if existing_suppressors.any?
-          suppressors.where(suppressor_attributes).touch_all
+          suppressors.where(suppressor_attributes).touch_all # rubocop:disable Rails/SkipsModelValidations
           next
         end
 

@@ -8,10 +8,10 @@ module HasProblematicRule
 
     def problematic_rule
       problematic_type
-      .constantize
-      .problematic_processor
-      .rules
-      .find { |problematic_rule|  problematic_rule.code == problematic_rule_code }
+        .constantize
+        .problematic_processor
+        .rules
+        .find { |problematic_rule| problematic_rule.code == problematic_rule_code }
     end
 
     private
@@ -22,9 +22,9 @@ module HasProblematicRule
                     problematic_type.present?
 
       return if problematic_type
-               .constantize
-               .problematic_rule_codes
-               .any?(problematic_rule_code.to_sym)
+                .constantize
+                .problematic_rule_codes
+                .any?(problematic_rule_code.to_sym)
 
       errors.add(
         :problematic_rule_code,

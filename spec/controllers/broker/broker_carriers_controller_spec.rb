@@ -1,13 +1,46 @@
 require 'rails_helper'
 
 RSpec.describe(Broker::BrokerCarriersController) do
-  subject { response }
-
   let(:current_user) { create(:root_broker_user) }
 
   before do
     sign_in(current_user)
     allow(Accounting).to(receive(:record_class).with(:vendor).and_return(double(order: [])))
+  end
+
+  describe '#accounting_params' do
+    subject { controller.__send__(:accounting_params).to_h }
+
+    let(:attributes) { { '1' => { accounting_vendor_id: '2' } } }
+
+    before { controller.params = { accounting: { broker_carriers: attributes } } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
+  end
+
+  describe '#broker_carrier_params' do
+    subject { controller.__send__(:broker_carrier_params).to_h }
+
+    let(:attributes) { { account: 'ACME', check_mailing_address_attributes: { city: 'Portland' } } }
+
+    before { controller.params = { broker_carrier: attributes } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
+  end
+
+  describe '#tariff_params' do
+    subject { controller.__send__(:tariff_params).to_h }
+
+    let(:attributes) do
+      {
+        overlength_rules_attributes: { '0' => { cost: '10' } },
+        pricing_rules_attributes: { '0' => { max_pallets: '4' } }
+      }
+    end
+
+    before { controller.params = { broker_carrier: attributes } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
   end
 
   describe 'GET #accounting' do
@@ -36,7 +69,9 @@ RSpec.describe(Broker::BrokerCarriersController) do
     let(:filter) { 'texas' }
 
     let!(:austin) { Terminal.create!(address: create(:address, city: 'Austin', region_iso31662: 'US-TX'), carrier: broker_carrier.carrier) }
-    let!(:fremont) { Terminal.create!(address: create(:address, city: 'Fremont', region_iso31662: 'US-CA'), carrier: broker_carrier.carrier) }
+    let!(:fremont) do
+      Terminal.create!(address: create(:address, city: 'Fremont', region_iso31662: 'US-CA'), carrier: broker_carrier.carrier)
+    end
 
     before { get(:terminals, params: { id: broker_carrier.id, q: { described_class::TERMINALS_FILTER => filter } }) }
 
@@ -100,7 +135,7 @@ RSpec.describe(Broker::BrokerCarriersController) do
 
     before { patch(:update, params: { broker_carrier: ach_attributes, id: broker_carrier.id }) }
 
-    it { is_expected.to(redirect_to([ :broker, broker_carrier ])) }
+    it { is_expected.to(redirect_to([:broker, broker_carrier])) }
     it { expect(broker_carrier.reload).to(have_attributes(ach_attributes)) }
   end
 

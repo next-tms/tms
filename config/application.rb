@@ -7,7 +7,7 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-Dotenv::Rails.load if [ 'development', 'test' ].include?(ENV['RAILS_ENV'])
+Dotenv::Rails.load if ['development', 'test'].include?(ENV['RAILS_ENV'])
 
 module Liftoff
   class Application < Rails::Application
@@ -17,7 +17,7 @@ module Liftoff
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    config.autoload_lib(ignore: ['assets', 'tasks'])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -34,25 +34,25 @@ module Liftoff
     config.active_record.encryption.hash_digest_class = OpenSSL::Digest::SHA1
     config.active_record.encryption.support_sha1_for_non_deterministic_encryption = true
     config.active_record.yaml_column_permitted_classes = [
-                                                               ActiveSupport::TimeWithZone,
-                                                               Array,
-                                                               GooglePlaces::Photo,
-                                                               GooglePlaces::Spot,
-                                                               Hash,
-                                                               HTTPI::Response,
-                                                               FreightKit::DocumentNotFoundError,
-                                                               FreightKit::ExpiredCredentialsError,
-                                                               FreightKit::HTTPError,
-                                                               FreightKit::InvalidCredentialsError,
-                                                               FreightKit::PickupResponse,
-                                                               FreightKit::ResponseError,
-                                                               FreightKit::ShipmentNotFoundError,
-                                                               FreightKit::UnserviceableAccessorialsError,
-                                                               FreightKit::UnserviceableError,
-                                                               JSON::ParserError,
-                                                               StandardError,
-                                                               Symbol,
-                                                               Timezone::Zone
-                                                        ]
+      ActiveSupport::TimeWithZone,
+      Array,
+      GooglePlaces::Photo,
+      GooglePlaces::Spot,
+      Hash,
+      HTTPI::Response,
+      FreightKit::DocumentNotFoundError,
+      FreightKit::ExpiredCredentialsError,
+      FreightKit::HTTPError,
+      FreightKit::InvalidCredentialsError,
+      FreightKit::PickupResponse,
+      FreightKit::ResponseError,
+      FreightKit::ShipmentNotFoundError,
+      FreightKit::UnserviceableAccessorialsError,
+      FreightKit::UnserviceableError,
+      JSON::ParserError,
+      StandardError,
+      Symbol,
+      Timezone::Zone
+    ]
   end
 end

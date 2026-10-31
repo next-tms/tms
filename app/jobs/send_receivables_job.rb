@@ -1,6 +1,6 @@
 class SendReceivablesJob < ApplicationJob
   def perform
-    broker_customers = BrokerCustomer.distinct.where(id: Receivable.unsent.joins(:shipment).pluck(:broker_customer_id))
+    broker_customers = BrokerCustomer.distinct.where(id: Receivable.unsent.joins(:shipment).select(:broker_customer_id))
     order = :created_at
 
     broker_customers.where.not(receivables_schedule: :immediately).find_each do |broker_customer|
@@ -45,7 +45,7 @@ class SendReceivablesJob < ApplicationJob
           paths << DownloadAttachmentService.call(receivable.shipment.carrier_pod).path
         end
 
-        load_ids = [ receivable.shipment.load_id ]
+        load_ids = [receivable.shipment.load_id]
         pdf = PDFService.merge(*paths)
         pdf_filename = ActiveStorage::Filename.new("#{receivable.shipment.load_id} Invoice.pdf").sanitized
 

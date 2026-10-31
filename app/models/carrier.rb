@@ -33,6 +33,7 @@
 #
 #  index_carriers_on_broker_billing_address_id  (broker_billing_address_id)
 #  index_carriers_on_check_mailing_address_id   (check_mailing_address_id)
+#  index_carriers_on_mc_number                  (mc_number) UNIQUE
 #  index_carriers_on_name                       (name) UNIQUE
 #  index_carriers_on_scac                       (scac) UNIQUE
 #
@@ -43,11 +44,11 @@
 #
 class Carrier < ApplicationRecord
   class << self
-    def ransackable_attributes(auth_object = nil)
-      [ 'name', 'scac' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['name', 'scac']
     end
 
-    def ransackable_associations(auth_object = nil)
+    def ransackable_associations(_auth_object = nil)
       []
     end
   end
@@ -64,13 +65,12 @@ class Carrier < ApplicationRecord
   encrypts :encrypted_api_key
   encrypts :encrypted_proxy_url
 
-  has_many :broker_carriers
+  has_many :broker_carriers, dependent: :restrict_with_error
 
-  has_many :carrier_areas
+  has_many :carrier_areas, dependent: :destroy
   has_many :areas, through: :carrier_areas
 
-  has_many :shipments
-  has_many :terminals
+  has_many :terminals, dependent: :destroy
 
   belongs_to :broker_billing_address, class_name: 'Address', optional: true
 

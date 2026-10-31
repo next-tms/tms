@@ -5,6 +5,14 @@
 class DocumentNotifier < BaseNotifier
   required_params :shipment, :document_type, :contact
 
+  HUMANIZED_DOCUMENT_TYPES = {
+    broker_bol: 'Bill of Landing',
+    broker_dispatch_sheet: 'Dispatch Sheet',
+    broker_quote: 'Quote',
+    carrier_bol: 'Scanned Bill of Landing',
+    carrier_pod: 'Proof of Delivery'
+  }.freeze
+
   def mailer_class(_notification = nil) = ContactMailer
 
   def mailer_params(_notification = nil)
@@ -20,15 +28,7 @@ class DocumentNotifier < BaseNotifier
   def mailer_method(_notification = nil) = :from_notification
   def message = "#{humanized_document_type} for Load ##{params[:shipment].load_id} is available"
 
-  def humanized_document_type
-    case params[:document_type].to_sym
-    when :carrier_bol then 'Scanned Bill of Landing'
-    when :carrier_pod then 'Proof of Delivery'
-    when :broker_quote then 'Quote'
-    when :broker_dispatch_sheet then 'Dispatch Sheet'
-    when :broker_bol then 'Bill of Landing'
-    end
-  end
+  def humanized_document_type = HUMANIZED_DOCUMENT_TYPES[params[:document_type].to_sym]
 
   def notification_subject = "Your #{humanized_document_type} is attached for the following shipment (Load ##{params[:shipment].load_id})"
   def url = documents_broker_shipment_path(params[:shipment], attr: params[:document_type])

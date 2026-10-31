@@ -13,7 +13,7 @@ module Types
       # Ref: https://github.com/rmosolgo/graphql-ruby/blob/c5bb72245b999cbafcf8a90d9572d2375cf60582/lib/graphql/schema/member/has_fields.rb#L72
       def multiple_fields(*args)
         args.each do |klass|
-          klass.fields.values.each do |field|
+          klass.fields.each_value do |field|
             add_field(field)
           end
         end

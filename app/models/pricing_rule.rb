@@ -64,14 +64,14 @@ class PricingRule < ApplicationRecord
 
   def validate_pallets
     broker_carrier
-    .pricing_rules
-    .reject(&:marked_for_destruction?)
-    .select { |record| record.carrier_area == carrier_area }
-    .each do |record|
-      next unless overlap?(record)
+      .pricing_rules
+      .reject(&:marked_for_destruction?)
+      .select { |record| record.carrier_area == carrier_area }
+      .each do |record|
+        next unless overlap?(record)
 
-      errors.add(:max_pallets, "conflicts with another #{model_name.human.downcase}")
-      errors.add(:min_pallets, "conflicts with another #{model_name.human.downcase}")
-    end
+        errors.add(:max_pallets, "conflicts with another #{model_name.human.downcase}")
+        errors.add(:min_pallets, "conflicts with another #{model_name.human.downcase}")
+      end
   end
 end

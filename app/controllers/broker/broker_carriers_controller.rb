@@ -38,9 +38,12 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @broker_carrier = BrokerCarrier.new(broker_carrier_params)
     @broker_carrier.ignore_bol_requires_tracking_number = Setting.ignore_broker_carrier_bol_requires_tracking_number(false)
 
-    redirect_to([ :broker, @broker_carrier ]) && return if @broker_carrier.save
+    unless @broker_carrier.save
+      render(:new)
+      return
+    end
 
-    render(:new)
+    redirect_to([:broker, @broker_carrier])
   end
 
   def preferences; end
@@ -48,13 +51,14 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def update_accounting
     authorize!(current_user, to: :accounts_payable_show?, with: AccountingPolicy)
 
-    if BrokerCarrier.update(accounting_params.keys, accounting_params.values).all?(&:valid?)
-      flash[:success] = 'Accounting vendors updated'
-    else
-      flash[:error] = 'Unable to update accounting vendors'
+    unless BrokerCarrier.update(accounting_params.keys, accounting_params.values).all?(&:valid?)
+      flash[:error] = t('.failure')
+      redirect_to([:accounting, :broker, BrokerCarrier])
+      return
     end
 
-    redirect_to(accounting_broker_broker_carriers_path)
+    flash[:success] = t('.success')
+    redirect_to([:accounting, :broker, BrokerCarrier])
   end
 
   def tariff; end
@@ -69,7 +73,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def search_terminals
     region_iso31662s = Transponder::ORM::Region
                        .all
-                       .select { |region| [ region.abbreviation, region.name ].any? { |value| value.casecmp?(params[:state].to_s) } }
+                       .select { |region| [region.abbreviation, region.name].any? { |value| value.casecmp?(params[:state].to_s) } }
                        .map(&:iso31662)
 
     @terminals = Terminal
@@ -84,20 +88,21 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @broker_carrier.assign_attributes(broker_carrier_params)
 
     unless @broker_carrier.save
-      flash[:error] = 'Unable to update carrier'
-      render(:edit) && return
+      flash[:error] = t('.failure')
+      render(:edit)
+      return
     end
 
-    redirect_to([ :broker, @broker_carrier ]) && return unless @broker_carrier.api_configured?
+    return redirect_to([:broker, @broker_carrier]) unless @broker_carrier.api_configured?
 
     update_documents = @broker_carrier.saved_change_to_account? ||
                        @broker_carrier.saved_change_to_username? ||
                        @broker_carrier.saved_change_to_password?
 
-    redirect_to([ :broker, @broker_carrier ]) && return unless update_documents
+    return redirect_to([:broker, @broker_carrier]) unless update_documents
 
     shipments = @broker_carrier.shipments.where('created_at > ?', 90.days.ago)
-    redirect_to([ :broker, @broker_carrier ]) && return if shipments.blank?
+    return redirect_to([:broker, @broker_carrier]) if shipments.blank?
 
     TrackShipmentsJob.perform_later(shipments.pluck(:id))
 
@@ -107,19 +112,19 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     delivered_shipment_ids = shipments.delivered.pluck(:id)
     FetchShipmentCarrierPODsJob.perform_later(delivered_shipment_ids) if delivered_shipment_ids.present?
 
-    redirect_to([ :broker, @broker_carrier ]) && return
+    redirect_to([:broker, @broker_carrier])
   end
 
   def update_tariff
     @broker_carrier.assign_attributes(tariff_params)
 
     unless @broker_carrier.save
-      render(:tariff, status: :unprocessable_entity)
+      render(:tariff, status: :unprocessable_content)
       return
     end
 
-    flash[:success] = 'Tariff updated'
-    redirect_to(tariff_broker_broker_carrier_path(@broker_carrier))
+    flash[:success] = t('.success')
+    redirect_to([:tariff, :broker, @broker_carrier])
   end
 
   def contacts
@@ -159,7 +164,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
            :items,
            :receiver_address,
            :tracking_carrier,
-           :shipper_address,
+           :shipper_address
          ).ransack(params[:q], auth_object: current_user)
 
     @q.sorts = 'created_at desc' if @q.sorts.blank?
@@ -175,7 +180,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     return query if filter.blank?
 
     region_iso31662s = Transponder::ORM::Region.all.select { |region| region.name.downcase.include?(filter.downcase) }.map(&:iso31662)
-    query.merge(g: [ { m: 'or', TERMINALS_FILTER => filter, address_region_iso31662_in: region_iso31662s } ])
+    query.merge(g: [{ m: 'or', TERMINALS_FILTER => filter, address_region_iso31662_in: region_iso31662s }])
   end
 
   def authorize_broker_carrier_access
@@ -188,41 +193,43 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def accounting_params = params.require(:accounting).permit(broker_carriers: %i[accounting_vendor_id]).require(:broker_carriers)
+  def accounting_params = params.expect(accounting: { broker_carriers: [%i[accounting_vendor_id]] }).require(:broker_carriers)
 
   def broker_carrier_params
-    params
-    .require(:broker_carrier)
-    .permit(
-      :id,
-      :account_desc,
-      :account,
-      :accounting_notes,
-      :broker_customer_id,
-      :carrier_id,
-      :create_invoice_on_pickup,
-      :customer_id,
-      :days_to_pay_after_invoice_date,
-      :default_bol_notes,
-      :encrypted_ach_account_number,
-      :encrypted_ach_bank_name,
-      :encrypted_ach_routing_number,
-      :encrypted_api_key,
-      :ignore_bol_requires_tracking_number,
-      :password,
-      :username,
-      :website_password,
-      :website_username,
-      check_mailing_address_attributes: %i[
-                                          id
-                                          ref
-                                          country_alpha2
-                                          street
-                                          street2
-                                          city
-                                          region_iso31662
-                                          zip_code
-                                        ],
+    params.expect(
+      broker_carrier: [
+        :id,
+        :account_desc,
+        :account,
+        :accounting_notes,
+        :broker_customer_id,
+        :carrier_id,
+        :create_invoice_on_pickup,
+        :customer_id,
+        :days_to_pay_after_invoice_date,
+        :default_bol_notes,
+        :encrypted_ach_account_number,
+        :encrypted_ach_bank_name,
+        :encrypted_ach_routing_number,
+        :encrypted_api_key,
+        :ignore_bol_requires_tracking_number,
+        :password,
+        :username,
+        :website_password,
+        :website_username,
+        {
+          check_mailing_address_attributes: %i[
+            id
+            ref
+            country_alpha2
+            street
+            street2
+            city
+            region_iso31662
+            zip_code
+          ]
+        }
+      ]
     )
   end
 
@@ -235,12 +242,14 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def tariff_params
-    params
-    .require(:broker_carrier)
-    .permit(
-      :id,
-      overlength_rules_attributes: %i[_destroy cost id max_length min_length],
-      pricing_rules_attributes: %i[_destroy id carrier_area_id cost_per_pallet max_pallets min_pallets],
+    params.expect(
+      broker_carrier: [
+        :id,
+        {
+          overlength_rules_attributes: [%i[_destroy cost id max_length min_length]],
+          pricing_rules_attributes: [%i[_destroy id carrier_area_id cost_per_pallet max_pallets min_pallets]]
+        }
+      ]
     )
   end
 end

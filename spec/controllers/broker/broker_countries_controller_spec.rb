@@ -1,17 +1,25 @@
 require 'rails_helper'
 
 RSpec.describe(Broker::BrokerCountriesController) do
-  subject { response }
-
   let(:current_user) { create(:root_broker_user) }
 
   before { sign_in(current_user) }
+
+  describe '#broker_country_params' do
+    subject { controller.__send__(:broker_country_params).to_h }
+
+    let(:attributes) { { country_alpha2: 'CA' } }
+
+    before { controller.params = { broker_country: attributes } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
+  end
 
   describe 'POST #create' do
     before { post(:create, params: { broker_country: { country_alpha2: 'CA' } }) }
 
     it { is_expected.to(redirect_to(broker_settings_company_path)) }
-    it { expect(BrokerCountry.pluck(:country_alpha2)).to(eq([ 'CA' ])) }
+    it { expect(BrokerCountry.pluck(:country_alpha2)).to(eq(['CA'])) }
 
     context 'when the country is already serviced' do
       before { post(:create, params: { broker_country: { country_alpha2: 'CA' } }) }
@@ -24,7 +32,7 @@ RSpec.describe(Broker::BrokerCountriesController) do
       before { post(:create, params: { broker_country: { country_alpha2: 'ZZ' } }) }
 
       it { expect(flash[:error]).to(eq('Unable to add country')) }
-      it { expect(BrokerCountry.pluck(:country_alpha2)).to(eq([ 'CA' ])) }
+      it { expect(BrokerCountry.pluck(:country_alpha2)).to(eq(['CA'])) }
     end
   end
 

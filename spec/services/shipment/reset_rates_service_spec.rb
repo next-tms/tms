@@ -33,7 +33,10 @@ RSpec.describe(Shipment::ResetRatesService) do
       end
 
       context 'when shipment#calculated_freight_classes and shipment#declared_freight_classes are blank' do
-        before { allow(shipment).to receive_messages(fingerprint: 'Other Fingerprint', calculated_freight_classes: [ nil ], declared_freight_classes: []) }
+        before do
+          allow(shipment).to receive_messages(fingerprint: 'Other Fingerprint', calculated_freight_classes: [nil],
+                                              declared_freight_classes: [])
+        end
 
         it { expect { call }.not_to(change(Rate, :count)) }
       end

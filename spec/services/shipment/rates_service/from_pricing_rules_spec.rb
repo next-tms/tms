@@ -11,7 +11,7 @@ RSpec.describe(Shipment::RatesService::FromPricingRules) do
       :shipment,
       broker_carrier:,
       receiver_address: create(:address, region_iso31662: receiver_region_iso31662),
-      shipper_address: create(:address, region_iso31662: 'US-CA'),
+      shipper_address: create(:address, region_iso31662: 'US-CA')
     )
   end
 

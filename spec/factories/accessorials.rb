@@ -17,6 +17,10 @@
 # @!attribute updated_at
 #   @return [Time]
 #
+# Indexes
+#
+#  index_accessorials_on_name  (name) UNIQUE
+#
 FactoryBot.define do
   factory :accessorial do
     name { 'MyString' }

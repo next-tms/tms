@@ -12,7 +12,7 @@ RSpec.describe(Users::InvitationsController) do
     context 'when companyable params are blank' do
       before { get(:new) }
 
-      it { expect(controller.send(:resource)).to(be_broker) }
+      it { expect(controller.__send__(:resource)).to(be_broker) }
     end
 
     context 'when companyable params are present' do
@@ -20,7 +20,7 @@ RSpec.describe(Users::InvitationsController) do
 
       before { get(:new, params: { companyable_id: broker_customer.id, companyable_type: 'BrokerCustomer' }) }
 
-      it { expect(controller.send(:resource).companyable).to(eq(broker_customer)) }
+      it { expect(controller.__send__(:resource).companyable).to(eq(broker_customer)) }
     end
   end
 
@@ -47,7 +47,7 @@ RSpec.describe(Users::InvitationsController) do
 
       before { invite }
 
-      it { expect(response).to(redirect_to(broker_users_path)) }
+      it { is_expected.to(redirect_to(broker_users_path)) }
       it { expect(User.last.email).to(eq(params.dig(:user, :email))) }
       it { expect(User.last.time_zone_name).to(eq('America/Chicago')) }
       it { expect(User.last).to(be_broker) }
@@ -71,7 +71,7 @@ RSpec.describe(Users::InvitationsController) do
 
       before { invite }
 
-      it { expect(response).to(redirect_to(broker_users_path)) }
+      it { is_expected.to(redirect_to(broker_users_path)) }
       it { expect(User.last.email).to(eq(params.dig(:user, :email))) }
       it { expect(User.last.time_zone_name).to(eq(broker_customer.office_address.time_zone_name)) }
       it { expect(ActionMailer::Base.deliveries).not_to(be_empty) }
@@ -93,7 +93,7 @@ RSpec.describe(Users::InvitationsController) do
 
       before { invite }
 
-      it { expect(response).to(redirect_to(broker_users_path)) }
+      it { is_expected.to(redirect_to(broker_users_path)) }
     end
   end
 end

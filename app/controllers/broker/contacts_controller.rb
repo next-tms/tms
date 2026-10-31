@@ -19,18 +19,22 @@ class Broker::ContactsController < Broker::BrokerController
   def create
     @contact = Contact.new(contact_params)
 
-    render(:new) && return unless @contact.save
+    unless @contact.save
+      render(:new)
+      return
+    end
 
-    redirect_to([ :broker, @contact ])
+    redirect_to([:broker, @contact])
   end
 
   def update
-    if !@contact.update(contact_params)
-      flash[:error] = 'Unable to update contact'
+    unless @contact.update(contact_params)
+      flash[:error] = t('.failure')
       render(:edit)
-    else
-      redirect_to([ :broker, @contact ])
+      return
     end
+
+    redirect_to([:broker, @contact])
   end
 
   private
@@ -42,15 +46,17 @@ class Broker::ContactsController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def contact_params
-    params.require(:contact).permit(
-      :id,
-      :companyable_sgid,
-      :email,
-      :first_name,
-      :job_title,
-      :last_name,
-      :mobile_phone,
-      :work_phone,
+    params.expect(
+      contact: %i[
+        id
+        companyable_sgid
+        email
+        first_name
+        job_title
+        last_name
+        mobile_phone
+        work_phone
+      ]
     )
   end
 end

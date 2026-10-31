@@ -31,17 +31,17 @@ class BaseNotifier < Noticed::Event
       <address>
         #{shipment.shipper_name}
         <br>
-        #{shipment.shipper_address.pretty("<br>").html_safe}
+        #{shipment.shipper_address.pretty('<br>')}
       </address>
 
       <p>To:</p>
       <address>
         #{shipment.receiver_name}
         <br>
-        #{shipment.receiver_address.pretty("<br>").html_safe}
+        #{shipment.receiver_address.pretty('<br>')}
       </address>
 
-      #{link_to("View shipment", url)}
+      #{link_to('View shipment', url)}
     HTML
   end
 end

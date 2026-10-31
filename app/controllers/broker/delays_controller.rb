@@ -10,24 +10,27 @@ class Broker::DelaysController < Broker::BrokerController
 
   def create
     @delay = Delay.new(delay_params)
-    if @delay.save
-      redirect_to [ :broker, @delay ]
-    else
-      render :new
+
+    unless @delay.save
+      render(:new)
+      return
     end
+
+    redirect_to([:broker, @delay])
   end
 
   def edit; end
 
   def update
     @delay.updated_by = current_user
-    @delay.save
-    if !@delay.update(delay_params)
-      flash[:error] = 'Unable to update delay'
-      render :edit
-    else
-      redirect_to broker_delay_path(@delay)
+
+    unless @delay.update(delay_params)
+      flash[:error] = t('.failure')
+      render(:edit)
+      return
     end
+
+    redirect_to([:broker, @delay])
   end
 
   def show
@@ -42,7 +45,5 @@ class Broker::DelaysController < Broker::BrokerController
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def delay_params
-    params.require(:delay).permit(:id, :notes)
-  end
+  def delay_params = params.expect(delay: %i[id notes])
 end

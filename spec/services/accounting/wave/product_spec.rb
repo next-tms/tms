@@ -41,10 +41,10 @@ RSpec.describe Accounting::Wave::Product do
         before { id }
 
         it do
-          expect(WebMock).to have_requested(:post, Accounting::Wave::Service::GRAPHQL_URL).with { |request|
+          expect(WebMock).to(have_requested(:post, Accounting::Wave::Service::GRAPHQL_URL).with do |request|
             body = JSON.parse(request.body)
             body['query'].include?('productCreate') && body.dig('variables', 'input', 'incomeAccountId') == 'acct-income'
-          }
+          end)
         end
       end
     end

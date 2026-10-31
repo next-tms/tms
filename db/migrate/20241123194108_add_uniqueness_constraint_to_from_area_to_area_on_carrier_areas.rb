@@ -1,7 +1,7 @@
 class AddUniquenessConstraintToFromAreaToAreaOnCarrierAreas < ActiveRecord::Migration[7.1]
   def up
     say('deduplicate(:carrier_areas, :from_area, :to_area)')
-    ids = CarrierArea.all.pluck(:carrier_id)
+    ids = CarrierArea.pluck(:carrier_id)
     Carrier.distinct.where(id: ids).includes(:carrier_areas).find_each do |record|
       duplicates(record.carrier_areas, :from_area_id, :to_area_id).each { |records| deduplicate(records) }
     end

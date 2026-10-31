@@ -3,7 +3,7 @@ class AddOfficeAddressToBrokerCustomer < ActiveRecord::Migration[7.0]
     add_reference :broker_customers, :office_address, foreign_key: { to_table: :addresses }
 
     say 'populate(:broker_customers, :office_address)'
-    BrokerCustomer.all.find_each do |broker_customer|
+    BrokerCustomer.find_each do |broker_customer|
       office_address = broker_customer.primary_pickup_address&.dup
       office_address = broker_customer.broker.address.dup if office_address.blank?
       office_address.save(validate: false)
@@ -15,7 +15,7 @@ class AddOfficeAddressToBrokerCustomer < ActiveRecord::Migration[7.0]
   end
 
   def down
-    Address.where(id: BrokerCustomer.all.pluck(:office_address_id)).delete_all
+    Address.where(id: BrokerCustomer.select(:office_address_id)).delete_all
 
     remove_column :broker_customers, :office_address_id
   end

@@ -1,7 +1,7 @@
 class ChangeNullOnBrokerCustomersPrimaryPickupAddressId < ActiveRecord::Migration[7.0]
   def up
     say 'populate(:broker_customers, :primary_pickup_address_id)'
-    Broker.all.find_each do |broker|
+    Broker.find_each do |broker|
       address = broker.address
 
       broker.broker_customers.where(primary_pickup_address_id: nil).find_each do |broker_customer|

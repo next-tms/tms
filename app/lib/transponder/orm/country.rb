@@ -27,7 +27,11 @@ module Transponder
             errors = response.original_hash['errors']
             raise GraphQL::Client::Error, errors.pluck('message').join(', ') if errors.present?
 
-            response.original_hash.dig('data', 'fetchCountries').map { |country| country.deep_transform_keys { |key| key.underscore.to_sym } }
+            response.original_hash.dig('data', 'fetchCountries').map do |country|
+              country.deep_transform_keys do |key|
+                key.underscore.to_sym
+              end
+            end
           end
         end
       end
@@ -36,6 +40,8 @@ module Transponder
 
       # Only alpha2 is required, so records that store a code Transponder no longer returns stay readable
       def initialize(alpha2:, alpha3: nil, name: nil, numeric: nil, regions: [])
+        super()
+
         @alpha2 = alpha2
         @alpha3 = alpha3
         @name = name

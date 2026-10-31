@@ -26,8 +26,7 @@ Rails.root.glob('spec/**/concerns/*.rb').sort.each { |f| require f }
 # If you are not using ActiveRecord, you can remove these lines.
 begin
   ActiveRecord::Migration.maintain_test_schema!
-rescue ActiveRecord::PendingMigrationError => e
-
+rescue ActiveRecord::PendingMigrationError
   exit(1)
 end
 RSpec.configure do |config|

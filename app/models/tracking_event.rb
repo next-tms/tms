@@ -56,25 +56,26 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class TrackingEvent < ApplicationRecord
-  DISCUSSABLE_EVENT_ACTIVE_SHIPPING_CODES = %i[
-                                              arrived_at_terminal
-                                              delivered
-                                              delivery_appointment_scheduled
-                                              departed
-                                              found
-                                              located
-                                              lost
-                                              out_for_delivery
-                                              pending_delivery_appointment
-                                              picked_up
-                                              pickup_driver_assigned
-                                              pickup_information_received_by_carrier
-                                              pickup_information_sent_to_carrier
-                                              sailed
-                                              trailer_closed
-                                              trailer_unloaded
-                                            ]
   include DiscussableTopic
+
+  DISCUSSABLE_EVENT_ACTIVE_SHIPPING_CODES = %i[
+    arrived_at_terminal
+    delivered
+    delivery_appointment_scheduled
+    departed
+    found
+    located
+    lost
+    out_for_delivery
+    pending_delivery_appointment
+    picked_up
+    pickup_driver_assigned
+    pickup_information_received_by_carrier
+    pickup_information_sent_to_carrier
+    sailed
+    trailer_closed
+    trailer_unloaded
+  ].freeze
 
   attr_writer :at_without_time_zone_string
 
@@ -108,7 +109,7 @@ class TrackingEvent < ApplicationRecord
   end
 
   def discussable_topic_description
-    key = [ :discussion_topics, self.class.name.underscore.to_sym, event.active_shipping_code.to_sym ].join('.')
+    key = [:discussion_topics, self.class.name.underscore.to_sym, event.active_shipping_code.to_sym].join('.')
     args = { city:, region_abbreviation: region.abbreviation, country_alpha2: country.alpha2 }
 
     I18n.t(key, **args)

@@ -5,8 +5,8 @@ class DropUserRoles < ActiveRecord::Migration[7.0]
       t.bigint('role_id', null: false)
       t.datetime('created_at', null: false)
       t.datetime('updated_at', null: false)
-      t.index([ 'role_id' ], name: 'index_user_roles_on_role_id')
-      t.index([ 'user_id' ], name: 'index_user_roles_on_user_id')
+      t.index(['role_id'], name: 'index_user_roles_on_role_id')
+      t.index(['user_id'], name: 'index_user_roles_on_user_id')
     end
   end
 end

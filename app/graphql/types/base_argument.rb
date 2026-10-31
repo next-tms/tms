@@ -1,6 +1,6 @@
 module Types
   class BaseArgument < GraphQL::Schema::Argument
-    def initialize(*args, **kwargs, &block)
+    def initialize(*args, **kwargs, &)
       argument_name, _type = args
 
       # Add a default description to argument fields

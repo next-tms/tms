@@ -15,7 +15,7 @@
 #
 # Indexes
 #
-#  index_settings_on_key  (key)
+#  index_settings_on_key  (key) UNIQUE
 #
 FactoryBot.define do
   factory :setting do

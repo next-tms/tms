@@ -4,7 +4,7 @@ class AddReceivablesContactToBrokerCustomers < ActiveRecord::Migration[7.0]
 
     say 'populate(:broker_customers, :receivables_contact_id)'
 
-    BrokerCustomer.all.find_each do |broker_customer|
+    BrokerCustomer.find_each do |broker_customer|
       if broker_customer.contacts.size == 1
         broker_customer.update_columns(receivables_contact_id: broker_customer.contacts.first.id)
         next

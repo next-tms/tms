@@ -5,7 +5,7 @@ module Accounting
     attr_accessor :account_id, :amount, :description, :kind, :linked_transactions, :quantity, :unit_price
 
     def initialize(kind: :description, linked_transactions: [], **attributes)
-      super(kind:, linked_transactions:, **attributes)
+      super
     end
   end
 end

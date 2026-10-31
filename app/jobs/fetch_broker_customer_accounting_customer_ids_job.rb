@@ -12,14 +12,14 @@ class FetchBrokerCustomerAccountingCustomerIdsJob < ApplicationJob
     broker_customers.find_each.each do |broker_customer|
       accounting_customer = broker_customer.accounting_customer
 
-      unless accounting_customer.blank?
-        broker_customer.update_columns(accounting_customer_id: accounting_customer.id)
+      if accounting_customer.present?
+        broker_customer.update_columns(accounting_customer_id: accounting_customer.id) # rubocop:disable Rails/SkipsModelValidations
         next
       end
 
       receivable = broker_customer.receivables.where.not(accounting_invoice_id: nil)&.last
 
-      unless receivable.blank?
+      if receivable.present?
         accounting_customer_id = receivable.accounting_invoice&.customer_id
 
         if accounting_customer_id.blank?
@@ -27,7 +27,7 @@ class FetchBrokerCustomerAccountingCustomerIdsJob < ApplicationJob
           next
         end
 
-        broker_customer.update_columns(accounting_customer_id:)
+        broker_customer.update_columns(accounting_customer_id:) # rubocop:disable Rails/SkipsModelValidations
         next
       end
 

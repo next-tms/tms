@@ -1,11 +1,11 @@
 class Shipment::RatesService
-  SERVICE_CLASSES = [ FromPricingRules, FromTransponderService ]
+  SERVICE_CLASSES = [FromPricingRules, FromTransponderService].freeze
 
   class << self
-    def call(*args, **kwargs)
+    def call(*, **)
       SERVICE_CLASSES
-      .map { |service_class| service_class.new(*args, **kwargs).call }
-      .flatten
+        .map { |service_class| service_class.new(*, **).call }
+        .flatten
     end
   end
 end

@@ -9,7 +9,7 @@
 #
 # Indexes
 #
-#  index_customers_on_name  (name)
+#  index_customers_on_name  (name) UNIQUE
 #
 FactoryBot.define do
   factory :customer do

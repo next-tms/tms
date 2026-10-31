@@ -88,7 +88,7 @@ class UserMailer < ApplicationMailer
       from: from(shipment),
       reply_to: reply_to(shipment),
       to: recipient,
-      subject: [ who_performed(@shipment), @subject ].join(' '),
+      subject: [who_performed(@shipment), @subject].join(' ')
     )
   end
 
@@ -96,19 +96,19 @@ class UserMailer < ApplicationMailer
     @shipment = params[:shipment]
   end
 
-  def from(shipment)
+  def from(_shipment)
     "#{Setting.value!(:name)} <#{Setting.robot_email!}>"
   end
 
   def to(shipment, method)
-    user_ids = (shipment.broker_customer&.sales_reps&.ids || []) + User.broker.with_role('dispatch')&.ids || []
+    user_ids = ((shipment.broker_customer&.sales_reps&.ids || []) + User.broker.with_role('dispatch')&.ids) || []
     user_ids -= User.broker.with_role('notifications:-dispatch').ids unless method == :new_shipment
 
     users = User.distinct.active.where(id: user_ids)
 
     users.inject('') do |str, user|
-      str = user.receive_email_notifications? ? str + "#{user.first_name} #{user.last_name} <#{user.email}>, " : str + ''
-    end    [0..-3]
+      user.receive_email_notifications? ? "#{str}#{user.first_name} #{user.last_name} <#{user.email}>, " : str
+    end[0..-3]
   end
 
   def reply_to(shipment)

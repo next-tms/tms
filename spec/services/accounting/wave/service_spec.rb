@@ -13,7 +13,11 @@ RSpec.describe Accounting::Wave::Service do
     let(:query) { Rack::Utils.parse_query(URI(url).query) }
 
     it { is_expected.to start_with('https://api.waveapps.com/oauth2/authorize/') }
-    it { expect(query).to include('redirect_uri' => redirect_uri, 'response_type' => 'code', 'scope' => described_class::SCOPE, 'state' => 'nonce') }
+
+    it {
+      expect(query).to include('redirect_uri' => redirect_uri, 'response_type' => 'code', 'scope' => described_class::SCOPE,
+                               'state' => 'nonce')
+    }
   end
 
   describe '#connect!' do
@@ -23,14 +27,21 @@ RSpec.describe Accounting::Wave::Service do
 
     before do
       stub_request(:post, 'https://api.waveapps.com/oauth2/token/')
-        .to_return(status: 200, headers: { 'Content-Type' => 'application/json' }, body: { access_token: 'access', refresh_token: 'refresh', token_type: 'bearer' }.to_json)
+        .to_return(status: 200, headers: { 'Content-Type' => 'application/json' }, body: {
+          access_token: 'access',
+          refresh_token: 'refresh', token_type: 'bearer'
+        }.to_json)
 
       stub_wave('businesses')
 
       connect
     end
 
-    it { expect(integration.reload.credentials.symbolize_keys).to include(access_token: 'access', business_id: 'business-1', refresh_token: 'refresh') }
+    it {
+      expect(integration.reload.credentials.symbolize_keys).to include(access_token: 'access', business_id: 'business-1',
+                                                                       refresh_token: 'refresh')
+    }
+
     it { expect(WebMock).to have_requested(:post, described_class::GRAPHQL_URL).with(headers: { 'Authorization' => 'Bearer access' }) }
   end
 

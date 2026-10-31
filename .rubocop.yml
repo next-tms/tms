@@ -1,28 +1,20 @@
-inherit_gem: { rubocop-rails-omakase: rubocop.yml }
-plugins:
-  - rubocop-graphql
-  - rubocop-rake
-  - rubocop-rspec
-  - rubocop-rspec_rails
+inherit_gem: { rubocop-next: rubocop.yml }
 
 AllCops:
   NewCops: enable
-GraphQL/ArgumentDescription:
-  Enabled: false
 GraphQL/ArgumentUniqueness:
-  Enabled: false
-GraphQL/ExtractInputType:
-  Enabled: false
-GraphQL/ExtractType:
-  Enabled: false
-GraphQL/FieldDescription:
   Enabled: false
 GraphQL/ObjectDescription:
   Enabled: false
 Layout/EndAlignment:
   EnforcedStyleAlignWith: keyword
 Layout/LineLength:
-  Max: 140
+  AllowedPatterns:
+    - '\A#  '
+Rails/ActionOrder:
+  Enabled: false
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: false
 Rails/AddColumnIndex:
   Enabled: true
 Rails/CreateTableWithTimestamps:
@@ -30,34 +22,15 @@ Rails/CreateTableWithTimestamps:
   Exclude:
     - 'db/migrate/{2016,2017,2018,2019,2020,2021,2022,2023}*.rb'
     - 'db/migrate/20260730162110_drop_shipment_items.rb'
-Rails/RootJoinChain:
-  Enabled: true
-Rails/RootPathnameMethods:
-  Enabled: true
-RSpec/AnyInstance:
-  Enabled: false
+Rails/NotNullColumn:
+  Exclude:
+    - 'db/migrate/{2020,2021,2022}*.rb'
+Rails/SkipsModelValidations:
+  Exclude:
+    - 'db/migrate/*.rb'
+Rails/ThreeStateBooleanColumn:
+  Exclude:
+    - 'db/migrate/{2016,2017,2018,2019,2020,2021,2022,2023}*.rb'
+    - 'db/migrate/20261023062118_drop_brokers.rb'
 RSpec/ExpectActual:
   Enabled: false
-RSpec/LetSetup:
-  Enabled: false
-RSpec/MultipleExpectations:
-  Enabled: false
-RSpec/ExampleLength:
-  Max: 10
-RSpec/MultipleMemoizedHelpers:
-  Max: 20
-RSpec/NestedGroups:
-  Max: 10
-RSpecRails/InferredSpecType:
-  Enabled: true
-Style/FileRead:
-  Enabled: true
-Style/FileWrite:
-  Enabled: true
-Style/FrozenStringLiteralComment:
-  Enabled: true
-  EnforcedStyle: never
-Style/HashSyntax:
-  EnforcedShorthandSyntax: always
-Style/StringLiterals:
-  EnforcedStyle: single_quotes

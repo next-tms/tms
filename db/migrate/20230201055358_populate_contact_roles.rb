@@ -5,10 +5,10 @@ class PopulateContactRoles < ActiveRecord::Migration[7.0]
       contact_id = user.contact.id
 
       Role
-      .where(id: user.user_roles.pluck(:role_id))
-      .pluck(:name)
-      .select { |name| ContactRole.roles.keys.include?(name) }
-      .map { |role| ContactRole.create(role:, contact_id:) }
+        .where(id: user.user_roles.pluck(:role_id))
+        .pluck(:name)
+        .select { |name| ContactRole.roles.keys.include?(name) }
+        .map { |role| ContactRole.create(role:, contact_id:) }
     end
   end
 

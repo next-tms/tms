@@ -1,7 +1,7 @@
 module Accounting
   module QuickBooks
     class Bill < Accounting::Bill
-      EXPENSE_ACCOUNT_ID = '62' # @todo Make configurable
+      EXPENSE_ACCOUNT_ID = '62'.freeze # @todo Make configurable
 
       class << self
         def attributes_from(bill)

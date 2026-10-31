@@ -15,11 +15,11 @@
 #
 class Bank < ApplicationRecord
   class << self
-    def ransackable_attributes(auth_object = nil)
-      [ 'name' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['name']
     end
 
-    def ransackable_associations(auth_object = nil)
+    def ransackable_associations(_auth_object = nil)
       []
     end
   end
@@ -30,10 +30,9 @@ class Bank < ApplicationRecord
 
   after_commit :push_to_accounting
 
-
   enum :kind, { checking: 'checking', credit_card: 'credit_card' }
 
-  has_many :payments
+  has_many :payments, dependent: :restrict_with_error
 
   validates :name, presence: true
 
@@ -48,12 +47,12 @@ class Bank < ApplicationRecord
   def to_accounting_account
     Accounting::Account.new(
       account_number:,
-      name: [ name, account_number.presence&.first(4) ].compact.join(' '),
-      sub_type: credit_card? ? :credit_card : :checking,
+      name: [name, account_number.presence&.first(4)].compact.join(' '),
+      sub_type: credit_card? ? :credit_card : :checking
     )
   end
 
   private
 
-  def push_to_accounting = Accounting.connected? && Accounting.supports?(:account) && !!PushBankToAccountingJob.perform_later(self)
+  def push_to_accounting = (PushBankToAccountingJob.perform_later(self) if Accounting.connected? && Accounting.supports?(:account))
 end

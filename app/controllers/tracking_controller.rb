@@ -8,10 +8,11 @@ class TrackingController < ApplicationController
                     Shipment.active.find_by(bol: @load_id)
                 end
 
-    @shipment.update_tracking_events if @shipment.present?
+    @shipment.presence&.update_tracking_events
   end
 
   private
+
   # Use callbacks to share common setup or constraints between actions.
   def set_load_id
     @load_id = params[:load_id]

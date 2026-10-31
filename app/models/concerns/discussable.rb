@@ -9,10 +9,10 @@ module Discussable
 
     after_initialize :build_discussion, if: -> { new_record? && discussion.blank? }
 
-    def build_discussion(*args)
-      return super(*args) if eligible_discussable_contacts.blank?
+    def build_discussion(*)
+      return super if eligible_discussable_contacts.blank?
 
-      record = super(*args)
+      record = super
 
       # Attributes from calling model
       record.subscriptions = eligible_discussable_contacts

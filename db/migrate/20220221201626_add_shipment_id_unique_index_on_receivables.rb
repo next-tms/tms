@@ -3,9 +3,9 @@ class AddShipmentIdUniqueIndexOnReceivables < ActiveRecord::Migration[7.0]
     remove_index :receivables, :shipment_id
 
     say 'remove_duplicates(:receivable)'
-    Receivable.all.find_each do |receivable|
+    Receivable.find_each do |receivable|
       duplicate_receivables = Receivable.where(shipment: receivable.shipment).where.not(id: receivable.id)
-      next if duplicate_receivables.size.zero?
+      next if duplicate_receivables.empty?
 
       ReceivableItem.where(receivable: duplicate_receivables).delete_all
       duplicate_receivables.delete_all

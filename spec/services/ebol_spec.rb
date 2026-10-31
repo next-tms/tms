@@ -4,7 +4,9 @@ RSpec.describe(EBOL) do
   let(:broker_carrier) { nil }
   let(:mailing_address) { create(:address, city: 'Cheyenne', region_iso31662: 'US-WY', street: '1 Broker Way', zip_code: '82001') }
   let(:packaging) { create(:packaging, freight_kit_type: 'pallet') }
-  let(:receiver_address) { create(:address, city: 'Fresno', region_iso31662: 'US-CA', street: '2 Receiver Rd', street2: 'Dock 4', zip_code: '93650') }
+  let(:receiver_address) do
+    create(:address, city: 'Fresno', region_iso31662: 'US-CA', street: '2 Receiver Rd', street2: 'Dock 4', zip_code: '93650')
+  end
   let(:shipment) do
     create(
       :shipment,
@@ -30,7 +32,7 @@ RSpec.describe(EBOL) do
       shipper_name: 'Shipper Co',
       shipper_reference: 'SR1',
       value_cents: 150_000,
-      value_currency: 'USD',
+      value_currency: 'USD'
     )
   end
   let(:shipper_address) { create(:address, city: 'Sacramento', region_iso31662: 'US-CA', street: '3 Shipper St', zip_code: '95814') }
@@ -41,7 +43,8 @@ RSpec.describe(EBOL) do
     create(:setting, key: 'mailing_address', value: mailing_address)
     create(:setting, key: 'name', value: 'Broker Co')
     create(:setting, key: 'phone', value: '+17755550199')
-    create(:item, declared_freight_class: 70, desc: 'Widgets', h: 40, hazmat: false, l: 48, nmfc: '12345', packaging:, quantity: 2, shipment:, w: 40, weight: 500)
+    create(:item, declared_freight_class: 70, desc: 'Widgets', h: 40, hazmat: false, l: 48, nmfc: '12345', packaging:, quantity: 2,
+                  shipment:, w: 40, weight: 500)
   end
 
   describe '.call' do
@@ -121,9 +124,9 @@ RSpec.describe(EBOL) do
     end
     let(:reference_numbers) do
       {
-        additionalReferences: [ { name: 'Shipper Reference', value: 'SR1' } ],
-        bol: [ 'B1', 'SB1' ],
-        po: [ { number: '4500' } ],
+        additionalReferences: [{ name: 'Shipper Reference', value: 'SR1' }],
+        bol: ['B1', 'SB1'],
+        po: [{ number: '4500' }],
         pro: 'P1',
         quoteId: 'Q1',
         shipmentId: '1001'
@@ -131,7 +134,7 @@ RSpec.describe(EBOL) do
     end
     let(:shipment_totals) do
       {
-        cube: 45,
+        cube: 89,
         cubeDimensionsUnit: 'Feet',
         currency: 'USD',
         declaredValue: 1500,
@@ -162,7 +165,7 @@ RSpec.describe(EBOL) do
         create(:item, declared_freight_class: 85, hazmat: true, packaging: create(:packaging, freight_kit_type: nil), shipment:)
       end
 
-      it { expect(document[:accessorials]).to(eq(codes: [ 'LFTD', 'HAZ' ])) }
+      it { expect(document[:accessorials]).to(eq(codes: ['LFTD', 'HAZ'])) }
       it { expect(document.dig(:commodities, :handlingUnits, 1, :type)).to(eq('OTH')) }
     end
 
@@ -175,16 +178,36 @@ RSpec.describe(EBOL) do
 
     context 'with a carrier that acts as a broker and has a billing address' do
       let(:broker_carrier) do
-        carrier = create(:carrier, acts_as_broker: true, broker_billing_address: create(:address, city: 'Austin', region_iso31662: 'US-TX', street: '4 Billing Blvd', zip_code: '73301'))
+        carrier = create(
+          :carrier,
+          acts_as_broker: true,
+          broker_billing_address: create(:address, city: 'Austin', region_iso31662: 'US-TX', street: '4 Billing Blvd', zip_code: '73301')
+        )
         create(:broker_carrier, account: 'ACCT9', carrier:)
       end
 
-      it { expect(document[:billTo]).to(include(address1: '4 Billing Blvd', city: 'Austin', name: broker_carrier.carrier.name, stateProvince: 'TX')) }
+      it {
+        expect(document[:billTo]).to(include(address1: '4 Billing Blvd', city: 'Austin', name: broker_carrier.carrier.name,
+                                             stateProvince: 'TX'))
+      }
+
       it { expect(document[:billTo]).not_to(have_key(:account)) }
     end
 
     context 'without a value, pickup date, or optional references' do
-      before { shipment.update_columns(bol: nil, customer_reference: nil, pickup_on: nil, pro: nil, quote_id: nil, shipper_bol: nil, shipper_reference: nil, value_cents: 0) }
+      before do
+        shipment.assign_attributes(
+          bol: nil,
+          customer_reference: nil,
+          pickup_on: nil,
+          pro: nil,
+          quote_id: nil,
+          shipper_bol: nil,
+          shipper_reference: nil,
+          value_cents: 0
+        )
+        shipment.save!(validate: false)
+      end
 
       it { expect(document[:bol]).not_to(have_key(:requestedPickupDate)) }
       it { expect(document[:referenceNumbers]).to(eq(shipmentId: '1001')) }

@@ -18,15 +18,18 @@ class Broker::PaymentsController < Broker::BrokerController
   def edit; end
 
   def update
-    redirect_to(broker_payment_path(@payment)) and return if @payment.update(payment_params)
+    unless @payment.update(payment_params)
+      flash[:error] = t('.failure')
+      render(:edit)
+      return
+    end
 
-    flash[:error] = 'Unable to update payment'
-    render(:edit)
+    redirect_to([:broker, @payment])
   end
 
   def pay
     @banks = Bank.order(:name)
-    @payment_methods = PaymentMethod.all.order(:name)
+    @payment_methods = PaymentMethod.order(:name)
     selected_bank = @payment.bank || @banks.first
 
     @selected_payment_method = selected_bank.applicable_payment_method
@@ -50,31 +53,23 @@ class Broker::PaymentsController < Broker::BrokerController
     payment_transactions = broker_carrier
                            .payment_transactions
                            .where(payment: nil)
-                           .where('due_on <= ?', cutoff_date.to_date)
+                           .where(due_on: ..cutoff_date.to_date)
 
     @payment = Payment.new(broker_carrier:, due_on: cutoff_date, payment_transactions:)
 
-    if @payment.save
-      flash[:success] = "Successfully Created new Payment for #{broker_carrier.broker_customer_specific_name}"
-      redirect_to(broker_payment_path(@payment))
-    else
+    unless @payment.save
       render(:new)
+      return
     end
+
+    flash[:success] = "Successfully Created new Payment for #{broker_carrier.broker_customer_specific_name}"
+    redirect_to([:broker, @payment])
   end
 
   def due_payment_transactions
-    broker_carrier = BrokerCarrier.find(params[:broker_carrier_id])
-    cutoff_date = params[:cutoff_date]
-    payment_transactions = broker_carrier
-                           .payment_transactions
-                           .where(payment: nil)
-                           .where('due_on <= ?', cutoff_date.to_date)
-
-    render(json: {
-      payment_transactions_count: payment_transactions.count,
-      broker_carrier_name: broker_carrier.broker_customer_specific_name,
-      date: cutoff_date.to_date.strftime('%b %e %Y')
-    })
+    @broker_carrier = BrokerCarrier.find(params[:broker_carrier_id])
+    @cutoff_date = params[:cutoff_date].to_date
+    @payment_transactions = @broker_carrier.payment_transactions.where(payment: nil).where(due_on: ..@cutoff_date)
   end
 
   private
@@ -90,28 +85,30 @@ class Broker::PaymentsController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def payment_params
-    params
-    .require(:payment)
-    .permit(
-      :id,
-      :approved_by_id,
-      :bank_id,
-      :broker_carrier_id,
-      :due_on,
-      :method_reference,
-      :paid_on,
-      :payment_method_id,
-      payment_transactions_attributes: %i[
-                                         _destroy
-                                         id
-                                         additional_charge
-                                         balance
-                                         invoice
-                                         notes
-                                         paid
-                                         pro
-                                         shipment_load_id
-                                       ],
+    params.expect(
+      payment: [
+        :id,
+        :approved_by_id,
+        :bank_id,
+        :broker_carrier_id,
+        :due_on,
+        :method_reference,
+        :paid_on,
+        :payment_method_id,
+        {
+          payment_transactions_attributes: [%i[
+            _destroy
+            id
+            additional_charge
+            balance
+            invoice
+            notes
+            paid
+            pro
+            shipment_load_id
+          ]]
+        }
+      ]
     )
   end
 

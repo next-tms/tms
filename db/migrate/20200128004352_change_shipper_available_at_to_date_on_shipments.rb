@@ -7,6 +7,7 @@ class ChangeShipperAvailableAtToDateOnShipments < ActiveRecord::Migration[6.0]
       shipment.save
     end
   end
+
   def down
     remove_column :shipments, :shipper_available_at, :datetime
     add_column :shipments, :shipper_available_at, :string

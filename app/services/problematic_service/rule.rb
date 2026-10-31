@@ -16,13 +16,13 @@ module ProblematicService
       end
 
       def by_any_role(*roles)
-        raise ArgumentError, 'roles must all be Symbol' unless roles.all? { |role| role.is_a?(Symbol) }
+        raise ArgumentError, 'roles must all be Symbol' unless roles.all?(Symbol)
 
         contact_roles = ContactRole.roles.keys.map(&:to_sym)
         roles.each do |role|
           next if contact_roles.include?(role)
 
-          raise ArgumentError, "Role must be one of #{contact_roles.keys.join(", ")}"
+          raise ArgumentError, "Role must be one of #{contact_roles.keys.join(', ')}"
         end
 
         all.select { |rule| rule.roles.intersect?(roles) }
@@ -51,26 +51,26 @@ module ProblematicService
         problems.resolved.find_each { |problem| problem.update!(resolved_at: nil, resolved_by: nil) }
       else
         Problem
-        .create!(
-          assigned_to: assign,
-          problematic_rule_code: code,
-          resolvable: record,
-          title: humanized(:title),
-        )
+          .create!(
+            assigned_to: assign,
+            problematic_rule_code: code,
+            resolvable: record,
+            title: humanized(:title)
+          )
       end
     end
 
     # @todo Deprecate
-    def code = self.class.code
+    delegate :code, to: :class
 
     # @todo Deprecate
-    def humanized = self.class.humanized
+    delegate :humanized, to: :class
 
     def problematic? = raise NotImplementedError
     def resolvable? = raise NotImplementedError
 
     # @todo Deprecate
-    def roles = self.class.roles
+    delegate :roles, to: :class
 
     def suppressor_instigators = []
     def suppressor_suppressible_types = []
@@ -79,11 +79,11 @@ module ProblematicService
       return Suppressor.none if suppressor_instigators.empty? || suppressor_suppressible_types.empty?
 
       Suppressor
-      .where(
-        instigator: suppressor_instigators,
-        problematic_rule_code: code,
-        suppressible_type: suppressor_suppressible_types,
-      )
+        .where(
+          instigator: suppressor_instigators,
+          problematic_rule_code: code,
+          suppressible_type: suppressor_suppressible_types
+        )
     end
 
     def with(record)
@@ -113,7 +113,7 @@ module ProblematicService
       return assigned_to if assigned_to.present?
 
       Rails.logger.warn(<<~WARN.squish)
-        Unable to find User with broker=(name: "#{Setting.value(:name)}"), role=(name: [#{roles.join(", ")}])
+        Unable to find User with broker=(name: "#{Setting.value(:name)}"), role=(name: [#{roles.join(', ')}])
       WARN
 
       Role.find_by(name: 'root').users.active.broker.order(Arel.sql('RANDOM()')).limit(1).first

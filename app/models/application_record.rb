@@ -10,9 +10,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   self.abstract_class = true
 
-  def human_attribute_name(attribute)
-    self.class.human_attribute_name(attribute)
-  end
+  delegate :human_attribute_name, to: :class
 
   def to_sgid_s
     to_sgid.to_s

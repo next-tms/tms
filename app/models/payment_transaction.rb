@@ -54,12 +54,12 @@
 #
 class PaymentTransaction < ApplicationRecord
   class << self
-    def ransackable_attributes(auth_object = nil)
-      [ 'id', 'legacy_load_id', 'notes' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['id', 'legacy_load_id', 'notes']
     end
 
-    def ransackable_associations(auth_object = nil)
-      [ 'shipment' ]
+    def ransackable_associations(_auth_object = nil)
+      ['shipment']
     end
   end
 
@@ -67,7 +67,7 @@ class PaymentTransaction < ApplicationRecord
 
   accounting_syncs :bill,
                    match: -> { { document_number: shipment.load_id.to_s } },
-                   prepare: lambda { |bill|
+                   prepare: ->(bill) {
                      broker_carrier.create_accounting_vendor if broker_carrier.accounting_vendor_id.blank?
                      bill.vendor_id = broker_carrier.accounting_vendor_id
                    }
@@ -102,7 +102,7 @@ class PaymentTransaction < ApplicationRecord
   def duplicates
     return [] if shipment.blank?
 
-    broker_carrier.payment_transactions.where(shipment:) - [ self ]
+    broker_carrier.payment_transactions.where(shipment:) - [self]
   end
 
   def paid?
@@ -114,7 +114,7 @@ class PaymentTransaction < ApplicationRecord
   end
 
   def shipment_load_id
-    shipment.blank? ? nil : shipment.load_id
+    shipment.presence&.load_id
   end
 
   def variance
@@ -128,9 +128,9 @@ class PaymentTransaction < ApplicationRecord
     Accounting::Bill.new(
       document_number: shipment.load_id.to_s,
       due_date: due_on,
-      line_items: [ accounting_bill_line_item ],
+      line_items: [accounting_bill_line_item],
       mailing_address: accounting_bill_mailing_address,
-      private_note: notes,
+      private_note: notes
     )
   end
 
@@ -138,18 +138,18 @@ class PaymentTransaction < ApplicationRecord
     return if accounting_bill.blank?
 
     method = persisted? ? :update_columns : :assign_attributes
-    send(method, balance_cents: accounting_bill.balance.cents, total_cents: accounting_bill.total.cents)
-    send(method, paid_at: DateTime.current) if accounting_bill.balance.zero?
+    public_send(method, balance_cents: accounting_bill.balance.cents, total_cents: accounting_bill.total.cents)
+    public_send(method, paid_at: DateTime.current) if accounting_bill.balance.zero?
 
     reload if persisted?
   end
 
-  def update_from_accounting_bill_later = !!FetchPaymentTransactionAccountingBillJob.perform_later(self)
+  def update_from_accounting_bill_later = FetchPaymentTransactionAccountingBillJob.perform_later(self)
 
   private
 
   def accounting_bill_description
-    parts = [ "#{Setting.value!(:name)} Load #{shipment.load_id}" ]
+    parts = ["#{Setting.value!(:name)} Load #{shipment.load_id}"]
     parts << "#{broker_carrier.name} Pro #{shipment.pro}" if shipment.pro.present?
 
     "Shipping (#{parts.join(' / ')})"
@@ -169,9 +169,9 @@ class PaymentTransaction < ApplicationRecord
   end
 
   def push_to_accounting
-    return false unless Accounting.connected? && Accounting.supports?(:bill)
+    return unless Accounting.connected? && Accounting.supports?(:bill)
 
-    !!PushPaymentTransactionToAccountingJob.perform_later(self)
+    PushPaymentTransactionToAccountingJob.perform_later(self)
   end
 
   def set_invoice

@@ -2,10 +2,10 @@ module FreightKitAPIClient
   module Services
     class Base
       WATIR_EXCEPTIONS = [
-                           Watir::Exception::UnknownObjectException,
-                           Watir::Exception::NoValueFoundException,
-                           Watir::Wait::TimeoutError
-                         ].freeze
+        Watir::Exception::UnknownObjectException,
+        Watir::Exception::NoValueFoundException,
+        Watir::Wait::TimeoutError
+      ].freeze
 
       def initialize(broker_carrier:)
         @carrier_client = FreightKitAPIClient.build_client(broker_carrier:)
@@ -14,9 +14,7 @@ module FreightKitAPIClient
 
       def freight_kit_api_call_block
         yield
-      rescue *WATIR_EXCEPTIONS => e
-        handle_timeout_error(e)
-      rescue Net::ReadTimeout => e
+      rescue *WATIR_EXCEPTIONS, Net::ReadTimeout => e
         handle_timeout_error(e)
       end
 
@@ -31,7 +29,7 @@ module FreightKitAPIClient
         # Watir Errors usually occurs due to BrokerCarrier's Web Page's Downtime
         Sentry.capture_message(
           "#{error.message} -> BrokerCarrier ID=#{broker_carrier.id} | " \
-          "Name=#{broker_carrier.carrier&.name} (#{broker_carrier.carrier&.scac})",
+          "Name=#{broker_carrier.carrier&.name} (#{broker_carrier.carrier&.scac})"
         )
 
         nil

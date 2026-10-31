@@ -22,11 +22,11 @@ module ProblematicService
     end
 
     def suppressor_instigators
-      [ *Setting.instigators, record.broker_customer ].compact
+      [*Setting.instigators, record.broker_customer].compact
     end
 
     def suppressor_suppressible_types
-      [ 'Receivable' ]
+      ['Receivable']
     end
   end
 end

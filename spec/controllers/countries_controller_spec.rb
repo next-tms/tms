@@ -3,9 +3,7 @@ require 'rails_helper'
 RSpec.describe(CountriesController) do
   render_views
 
-  subject { response }
-
-  let(:json) { JSON.parse(response.body) }
+  let(:json) { response.parsed_body }
 
   before { sign_in(create(:root_broker_user)) }
 
@@ -15,7 +13,7 @@ RSpec.describe(CountriesController) do
     it { is_expected.to(have_http_status(:ok)) }
     it { expect(json.dig('country', 'id')).to(eq('US')) }
     it { expect(json.dig('country', 'name')).to(eq('United States of America')) }
-    it { expect(json.dig('country', 'regions').pluck('id')).to(eq(%w[US-CA US-TX US-WY])) }
+    it { expect(json.dig('country', 'regions').pluck('id')).to(eq(['US-CA', 'US-TX', 'US-WY'])) }
     it { expect(json.dig('country', 'regions').first).to(eq({ 'abbreviation' => 'CA', 'id' => 'US-CA', 'name' => 'California' })) }
     it { expect(response.headers['Cache-Control']).to(include('public', 'max-age=86400')) }
     it { expect(response.headers['ETag']).to(be_present) }
@@ -41,7 +39,7 @@ RSpec.describe(CountriesController) do
       end
 
       it { is_expected.to(have_http_status(:ok)) }
-      it { expect(json.dig('country', 'regions').pluck('abbreviation')).to(eq(%w[CF TX WY])) }
+      it { expect(json.dig('country', 'regions').pluck('abbreviation')).to(eq(['CF', 'TX', 'WY'])) }
     end
   end
 

@@ -50,19 +50,19 @@ class Problem < ApplicationRecord
                   .or(
                     where(
                       problematic_rule_code: problematic_rule.code,
-                      resolvable_type: problematic_rule.model.name,
-                    ),
+                      resolvable_type: problematic_rule.model.name
+                    )
                   )
       end
 
       records
     end
 
-    def ransackable_attributes(auth_object = nil)
-      [ 'problematic_rule_code' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['problematic_rule_code']
     end
 
-    def ransackable_associations(auth_object = nil)
+    def ransackable_associations(_auth_object = nil)
       []
     end
   end
@@ -148,7 +148,7 @@ class Problem < ApplicationRecord
         problem: self,
         problematic: resolvable,
         suppressible_type: suppressor.suppressible_type,
-        suppressor:,
+        suppressor:
       )
     end
   end

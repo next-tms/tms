@@ -1,5 +1,5 @@
 class RemoveErrorObjectFromHasAPI < ActiveRecord::Migration[7.0]
-  TABLES = %i[pickups rates]
+  TABLES = %i[pickups rates].freeze
 
   def up
     TABLES.each do |table|

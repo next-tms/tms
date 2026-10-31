@@ -11,17 +11,17 @@ module HasAPI
       invalid_credentials_error: 'Authentication error, please update your credentials',
       not_implemented_error: 'API quoting not supported',
       unknown_carrier_error: 'API quoting not supported'
-    }
+    }.freeze
     FALLBACK_API_ERROR_CODE_MESSAGES = {
       not_serviceable_error: "Not serviceable, but carrier didn't explain why"
-    }
+    }.freeze
 
     attr_reader :record
 
     delegate :api_errors, to: :record
 
     def initialize(record)
-      raise ArgumentError, 'record.has_api? must be true' unless record.try(:has_api?)
+      raise ArgumentError, 'record.api_backed? must be true' unless record.try(:api_backed?)
 
       @record = record
     end

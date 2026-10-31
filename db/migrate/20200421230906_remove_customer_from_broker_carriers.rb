@@ -1,5 +1,5 @@
 class RemoveCustomerFromBrokerCarriers < ActiveRecord::Migration[6.0]
-  def change
+  def up
     remove_column :broker_carriers, :customer_id
   end
 end

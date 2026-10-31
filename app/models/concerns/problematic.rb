@@ -2,10 +2,10 @@ module Problematic
   extend ActiveSupport::Concern
 
   included do
-    after_commit :problematic!
+    after_save_commit :problematic!
 
-    has_many :problems, as: :resolvable
-    has_many :suppressions, as: :problematic
+    has_many :problems, as: :resolvable, dependent: :destroy
+    has_many :suppressions, as: :problematic, dependent: :destroy
 
     class << self
       def problematic_processor

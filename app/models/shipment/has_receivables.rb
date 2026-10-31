@@ -2,29 +2,29 @@ module Shipment::HasReceivables
   extend ActiveSupport::Concern
 
   included do
-    after_commit :create_receivable
+    after_save_commit :create_receivable
 
-    has_many :receivables
+    has_many :receivables, dependent: :restrict_with_error
 
-    scope :with_carrier_bol, lambda {
+    scope :with_carrier_bol, -> {
       left_joins(:carrier_bol_attachment)
         .group(:id)
         .having('COUNT(active_storage_attachments) != 0')
     }
 
-    scope :with_carrier_pod, lambda {
+    scope :with_carrier_pod, -> {
       left_joins(:carrier_pod_attachment)
         .group(:id)
         .having('COUNT(active_storage_attachments) != 0')
     }
 
-    scope :without_carrier_bol, lambda {
+    scope :without_carrier_bol, -> {
       left_joins(:carrier_bol_attachment)
         .group(:id)
         .having('COUNT(active_storage_attachments) = 0')
     }
 
-    scope :without_carrier_pod, lambda {
+    scope :without_carrier_pod, -> {
       left_joins(:carrier_pod_attachment)
         .group(:id)
         .having('COUNT(active_storage_attachments) = 0')
@@ -57,7 +57,10 @@ module Shipment::HasReceivables
     def receivable?
       reload
 
-      return false if receivables.any? || broker_customer.blank? || picked_up_at.blank? || broker_customer.receivables_schedule == 'never' ||
+      return false if receivables.any? ||
+                      broker_customer.blank? ||
+                      picked_up_at.blank? ||
+                      broker_customer.receivables_schedule == 'never' ||
                       (broker_customer.requires_shipment_delivery_before_receivable? && delivered_at.blank?) ||
                       problems_preventing_receivable?
 

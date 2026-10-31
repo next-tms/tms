@@ -33,6 +33,7 @@
 #
 #  index_carriers_on_broker_billing_address_id  (broker_billing_address_id)
 #  index_carriers_on_check_mailing_address_id   (check_mailing_address_id)
+#  index_carriers_on_mc_number                  (mc_number) UNIQUE
 #  index_carriers_on_name                       (name) UNIQUE
 #  index_carriers_on_scac                       (scac) UNIQUE
 #
@@ -45,9 +46,9 @@ require 'rails_helper'
 
 RSpec.describe(Carrier) do
   describe 'relationships' do
-    it { is_expected.to(have_many(:broker_carriers)) }
-    it { is_expected.to(have_many(:carrier_areas)) }
-    it { is_expected.to(have_many(:terminals)) }
+    it { is_expected.to(have_many(:broker_carriers).dependent(:restrict_with_error)) }
+    it { is_expected.to(have_many(:carrier_areas).dependent(:destroy)) }
+    it { is_expected.to(have_many(:terminals).dependent(:destroy)) }
 
     it { is_expected.to(belong_to(:broker_billing_address).required(false)) }
     it { is_expected.to(belong_to(:check_mailing_address).required(false)) }

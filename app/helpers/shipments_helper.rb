@@ -104,19 +104,23 @@ module ShipmentsHelper
       column_name: :total_charges,
       money: true
     }
-  }
+  }.freeze
 
   PREPENDED_TABLE_DATA = [
-                           display_name: 'Load',
-                           column_name: :load_id,
-                           partial: 'broker/shipments/show_many_td_load_id'
-                         ]
+    {
+      display_name: 'Load',
+      column_name: :load_id,
+      partial: 'broker/shipments/show_many_td_load_id'
+    }
+  ].freeze
 
   APPENDED_TABLE_DATA = [
-                          display_name: 'Dispatcher',
-                          column_name: :dispatcher_full_name,
-                          wrap: true
-                        ]
+    {
+      display_name: 'Dispatcher',
+      column_name: :dispatcher_full_name,
+      wrap: true
+    }
+  ].freeze
 
   def shipment_table_row_class(shipment)
     if action_name == 'pending_pickup' && shipment.pickup_on.present?
@@ -129,7 +133,10 @@ module ShipmentsHelper
       end
     elsif shipment.pending_departure?
       'table-danger'
-    elsif shipment.late? || shipment.canceled_at.present? || shipment.dispatch_incomplete? || (shipment.picked_up_at.present? && shipment.missing_delivery_eta_on?)
+    elsif shipment.late? ||
+          shipment.canceled_at.present? ||
+          shipment.dispatch_incomplete? ||
+          (shipment.picked_up_at.present? && shipment.missing_delivery_eta_on?)
       'table-warning'
     end
   end
@@ -149,10 +156,10 @@ module ShipmentsHelper
   end
 
   def charges_confirmed_note(shipment)
-    audit = shipment.audits.where('audited_changes @> ?', { 'charges_confirmed' => [ false, true ] }.to_json).first
+    audit = shipment.audits.where('audited_changes @> ?', { 'charges_confirmed' => [false, true] }.to_json).first
     changed_by = audit.user
 
-    safe_join([ "Shipment Charges Confirmed by #{changed_by.full_name} at ", time(audit.created_at) ])
+    safe_join(["Shipment Charges Confirmed by #{changed_by.full_name} at ", time(audit.created_at)])
   end
 
   def website_homepage_host

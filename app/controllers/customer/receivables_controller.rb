@@ -37,12 +37,7 @@ class Customer::ReceivablesController < Customer::CustomerController
     @receivable = current_user.companyable.receivables.find(params[:id])
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def receivable_params
-    params.require(:receivable).permit(:id)
-  end
-
   def required_includes
-    [ :shipment, { broker_customer: :customer } ]
+    [:shipment, { broker_customer: :customer }]
   end
 end

@@ -19,11 +19,12 @@ class Broker::ProblemsController < Broker::BrokerController
 
     @problem.created_by = current_user
 
-    if @problem.save
-      redirect_to([ :broker, @problem ])
-    else
+    unless @problem.save
       render(:edit)
+      return
     end
+
+    redirect_to([:broker, @problem])
   end
 
   def edit; end
@@ -31,7 +32,7 @@ class Broker::ProblemsController < Broker::BrokerController
   def suppressive
     @q = @scoped_problems.unresolved.suppressive.includes(required_includes).ransack(
       params[:q],
-      auth_object: current_user,
+      auth_object: current_user
     )
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
@@ -43,18 +44,19 @@ class Broker::ProblemsController < Broker::BrokerController
 
     @problem.resolved_by = current_user if @problem.will_save_change_to_resolved_at? && @problem.resolved_at.present?
 
-    if @problem.save
-      redirect_to(broker_problem_path(@problem))
-    else
-      flash[:error] = 'Unable to update exception'
+    unless @problem.save
+      flash[:error] = t('.failure')
       render(:edit)
+      return
     end
+
+    redirect_to([:broker, @problem])
   end
 
   def resolved
     @q = @scoped_problems.resolved.includes(required_includes + %i[resolved_by]).ransack(
       params[:q],
-      auth_object: current_user,
+      auth_object: current_user
     )
     @q.sorts = 'resolved_at desc' if @q.sorts.blank?
 
@@ -73,7 +75,7 @@ class Broker::ProblemsController < Broker::BrokerController
   def yours
     @q = @scoped_problems.unresolved.where(assigned_to: current_user).includes(required_includes).ransack(
       params[:q],
-      auth_object: current_user,
+      auth_object: current_user
     )
     @q.sorts = 'created_at asc' if @q.sorts.blank?
 
@@ -89,13 +91,15 @@ class Broker::ProblemsController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def problem_params
-    params.require(:problem).permit(
-      :id,
-      :body,
-      :resolved_at,
-      :resolvable_id,
-      :resolvable_type,
-      :title,
+    params.expect(
+      problem: %i[
+        id
+        body
+        resolved_at
+        resolvable_id
+        resolvable_type
+        title
+      ]
     )
   end
 

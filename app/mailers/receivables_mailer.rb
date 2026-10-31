@@ -25,7 +25,7 @@ class ReceivablesMailer < ApplicationMailer
       reply_to: Setting.customer_service_email!,
       to: pretty_email(broker_customer.receivables_contact),
       bcc:,
-      subject: load_ids.size > 1 ? 'Batch Invoices' : "Invoice #{load_ids[0]}",
+      subject: load_ids.size > 1 ? 'Batch Invoices' : "Invoice #{load_ids[0]}"
     )
   end
 

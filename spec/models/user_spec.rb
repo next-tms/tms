@@ -105,8 +105,10 @@ RSpec.describe(User) do
   it_behaves_like 'has_companyable'
 
   describe 'relationships' do
-    it { is_expected.to(have_many(:commissions)) }
-    it { is_expected.to(have_many(:problems)) }
+    it { is_expected.to(have_many(:broker_customer_sales_reps).dependent(:destroy)) }
+    it { is_expected.to(have_many(:commissions).dependent(:restrict_with_error)) }
+    it { is_expected.to(have_many(:problems).dependent(:nullify)) }
+    it { is_expected.to(have_many(:shipments_as_dispatcher).dependent(:nullify)) }
 
     it { is_expected.to(belong_to(:companyable).optional) }
     it { is_expected.to(belong_to(:contact)) }

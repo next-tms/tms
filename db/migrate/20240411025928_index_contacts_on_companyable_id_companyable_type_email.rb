@@ -11,7 +11,7 @@ class IndexContactsOnCompanyableIdCompanyableTypeEmail < ActiveRecord::Migration
                  .where(
                    companyable_id: duplicate.companyable_id,
                    companyable_type: duplicate.companyable_type,
-                   email: duplicate.email,
+                   email: duplicate.email
                  )
 
       contact = contacts.last
@@ -22,7 +22,7 @@ class IndexContactsOnCompanyableIdCompanyableTypeEmail < ActiveRecord::Migration
 
         value = other_contacts
                 .where
-                .not(Hash[attribute, nil])
+                .not({ attribute => nil })
                 .pluck(attribute)
                 .compact
                 .first

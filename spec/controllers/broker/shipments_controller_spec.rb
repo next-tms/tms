@@ -1,12 +1,36 @@
 require 'rails_helper'
 
 RSpec.describe(Broker::ShipmentsController) do
-  subject { response }
-
   let(:current_user) { create(:root_broker_user).tap { |user| user.add_role(:dispatch) } }
   let(:shipment) { create(:shipment) }
 
   before { sign_in(current_user) }
+
+  describe '#shipment_params' do
+    subject { controller.__send__(:shipment_params).to_h }
+
+    let(:attributes) do
+      {
+        items_attributes: { '0' => { quantity: '2', weight: '100' } },
+        receiver_address_attributes: { city: 'Portland' },
+        tracking_events_attributes: { '0' => { address_attributes: { city: 'Salem' }, event_id: '1' } }
+      }
+    end
+
+    before { controller.params = { shipment: attributes } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
+  end
+
+  describe '#tracking_event_params' do
+    subject { controller.__send__(:tracking_event_params).to_h }
+
+    let(:attributes) { { address_attributes: { city: 'Salem' }, event_id: '1' } }
+
+    before { controller.params = { tracking_event: attributes } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
+  end
 
   describe 'GET #history' do
     let!(:item) { create(:item, shipment:) }
@@ -84,5 +108,14 @@ RSpec.describe(Broker::ShipmentsController) do
       it { is_expected.to(have_http_status(:ok)) }
       it { expect(unknown_includes(Shipment, assigns(:shipments).includes_values)).to(be_empty) }
     end
+  end
+
+  describe 'PATCH #upload_document' do
+    let(:document) { fixture_file_upload('pod.pdf', 'application/pdf') }
+
+    before { patch(:upload_document, params: { load_id: shipment.load_id, shipment: { document:, document_type: 'carrier_pod' } }) }
+
+    it { is_expected.to(redirect_to(documents_broker_shipment_path(shipment))) }
+    it { expect(shipment.reload.carrier_pod).to(be_attached) }
   end
 end

@@ -13,10 +13,10 @@ RSpec.describe Accounting::Wave::Customer do
     it 'sends a customerCreate mutation scoped to the business' do
       created
 
-      expect(WebMock).to have_requested(:post, Accounting::Wave::Service::GRAPHQL_URL).with { |request|
+      expect(WebMock).to(have_requested(:post, Accounting::Wave::Service::GRAPHQL_URL).with do |request|
         body = JSON.parse(request.body)
-        body['query'].include?('customerCreate') && body.dig('variables', 'input').values_at('businessId', 'name') == %w[biz Acme]
-      }
+        body['query'].include?('customerCreate') && body.dig('variables', 'input').values_at('businessId', 'name') == ['biz', 'Acme']
+      end)
     end
   end
 
@@ -42,7 +42,7 @@ RSpec.describe Accounting::Wave::Customer do
 
     before { stub_wave('customers') }
 
-    it { expect(customers.map(&:display_name)).to eq(%w[Acme Beta]) }
+    it { expect(customers.map(&:display_name)).to eq(['Acme', 'Beta']) }
   end
 
   describe 'a failed mutation' do

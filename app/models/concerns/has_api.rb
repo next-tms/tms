@@ -32,9 +32,7 @@ module HasAPI
     api_errors.any?
   end
 
-  def has_api?
-    true
-  end
+  def api_backed? = true
 
   def successful?
     !errored?
@@ -44,19 +42,17 @@ module HasAPI
 
   def sanitize_api_object(object)
     case object
-    when Array then return object.to_json
-    when Hash then return object.to_json
+    when Array, Hash then return object.to_json
     when NilClass then return object
     when String
-      if object.start_with?('http://') || object.start_with?('https://')
-        return sanitize_api_object({ url: object })
-      else
-        begin
-          return sanitize_api_object(JSON.parse(object))
-        rescue JSON::ParserError
-          # do nothing
-        end
+      return sanitize_api_object({ url: object }) if object.start_with?('http://') || object.start_with?('https://')
+
+      begin
+        return sanitize_api_object(JSON.parse(object))
+      rescue JSON::ParserError
+        # do nothing
       end
+
     end
 
     raise "Not sure how to convert #{object.class} to JSON: #{object}"

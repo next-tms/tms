@@ -5,7 +5,7 @@ class ReplaceCountryIdsWithAlpha2 < ActiveRecord::Migration[8.1]
   class StandardizedAddress < ActiveRecord::Base; end
   class TrackingEvent < ActiveRecord::Base; end
 
-  MODELS = [ Address, BrokerCountry, StandardizedAddress, TrackingEvent ].freeze
+  MODELS = [Address, BrokerCountry, StandardizedAddress, TrackingEvent].freeze
 
   def up
     # tracking_events.country_alpha2 already exists (unused since country_id replaced it)

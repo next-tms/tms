@@ -2,15 +2,15 @@ module DiscussableTopic
   extend ActiveSupport::Concern
 
   included do
-    has_one :discussion_topic, as: :topic
+    has_one :discussion_topic, as: :topic, dependent: :destroy
     has_many :comments, through: :discussion_topic
 
     before_save :build_discussion_topic, if: -> { new_record? }
 
-    def build_discussion_topic(*args)
+    def build_discussion_topic(*)
       return self.discussion_topic = nil unless discussion.present? && build_discussable_topic?
 
-      record = super(*args)
+      record = super
 
       record.subscriptions = (discussion.subscriptions.active.map(&:contact) & eligible_discussable_contacts)
                              .select(&:active?)

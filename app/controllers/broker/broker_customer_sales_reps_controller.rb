@@ -5,7 +5,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
 
   def index
     @q = User
-         .where(id: BrokerCustomerSalesRep.all.pluck(:user_id))
+         .where(id: BrokerCustomerSalesRep.select(:user_id))
          .includes(:companyable)
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'first_name asc' if @q.sorts.blank?
@@ -21,7 +21,7 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
          .includes(required_includes)
          .ransack(
            params[:q],
-           auth_object: current_user,
+           auth_object: current_user
          )
     @q.sorts = 'shipment_load_id desc' if @q.sorts.blank?
 
@@ -36,10 +36,6 @@ class Broker::BrokerCustomerSalesRepsController < Broker::BrokerController
 
   def set_broker_customer_sales_rep
     @broker_customer_sales_rep = User.broker.find(params[:id])
-  end
-
-  def set_user_params
-    params.require(:user).permit(:id)
   end
 
   # Query helpers

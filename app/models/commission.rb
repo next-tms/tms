@@ -31,12 +31,12 @@
 #
 class Commission < ApplicationRecord
   class << self
-    def ransackable_associations(auth_object = nil)
-      [ 'shipment', 'user' ]
+    def ransackable_associations(_auth_object = nil)
+      ['shipment', 'user']
     end
 
-    def ransackable_attributes(auth_object = nil)
-      [ 'amount_cents', 'amount_currency', 'paid', 'shipment_id', 'updated_at', 'user_id' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['amount_cents', 'amount_currency', 'paid', 'shipment_id', 'updated_at', 'user_id']
     end
   end
 
@@ -49,9 +49,8 @@ class Commission < ApplicationRecord
   scope :unpaid, -> { where.not(id: paid) }
 
   # @todo `change_column_null :commissions, :user_id, false
-  validates :user, presence: true
 
   def percent
-    (amount.to_f / shipment.profit.to_f).round(2)
+    (amount / shipment.profit).round(2)
   end
 end

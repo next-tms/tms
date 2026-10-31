@@ -2,7 +2,10 @@ module AccountingSyncable
   extend ActiveSupport::Concern
 
   class_methods do
-    def accounting_syncs(resource, match:, builder: :"to_accounting_#{resource}", id_column: :"accounting_#{resource}_id", prepare: nil, columns: nil)
+    def accounting_syncs(resource, match:, columns: nil, prepare: nil)
+      builder = :"to_accounting_#{resource}"
+      id_column = :"accounting_#{resource}_id"
+
       define_method(:"accounting_#{resource}") do
         return unless Accounting.connected? && Accounting.supports?(resource)
 
@@ -16,7 +19,7 @@ module AccountingSyncable
         found = klass.find_by(**instance_exec(&match))
         return if found.blank?
 
-        update_columns(id_column => found.id)
+        update_columns(id_column => found.id) # rubocop:disable Rails/SkipsModelValidations
         memo[resource] = found
       end
 
@@ -30,7 +33,7 @@ module AccountingSyncable
         result = Accounting.record_class(resource).create(payload.attributes)
         return memo[resource] = nil if result.blank?
 
-        update_columns(**{ id_column => result.id }.merge(columns ? instance_exec(&columns) : {}))
+        update_columns(**{ id_column => result.id }, **columns ? instance_exec(&columns) : {}) # rubocop:disable Rails/SkipsModelValidations
         memo[resource] = result
       end
 

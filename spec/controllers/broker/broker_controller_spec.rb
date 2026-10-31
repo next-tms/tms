@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe(Broker::BrokerController) do
-  subject { response }
-
   let(:current_user) { create(:root_broker_user) }
 
   before { sign_in(current_user) }
@@ -19,7 +17,7 @@ RSpec.describe(Broker::BrokerController) do
     it { is_expected.to(have_http_status(:ok)) }
     it { expect(assigns(:broker_countries)).to(contain_exactly(broker_country)) }
     it { expect(assigns(:settings)).to(eq('phone' => setting)) }
-    it { expect(assigns(:unserviced_countries).map(&:alpha2)).to(eq(%w[MX US])) }
+    it { expect(assigns(:unserviced_countries).map(&:alpha2)).to(eq(['MX', 'US'])) }
 
     context 'when a customer user' do
       let(:current_user) { create(:customer_user) }

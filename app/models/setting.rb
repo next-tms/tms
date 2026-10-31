@@ -15,7 +15,7 @@
 #
 # Indexes
 #
-#  index_settings_on_key  (key)
+#  index_settings_on_key  (key) UNIQUE
 #
 class Setting < ApplicationRecord
   class << self
@@ -23,28 +23,24 @@ class Setting < ApplicationRecord
       keys.map { |key| value(key) }.find(&:present?)
     end
 
-    def required_keys
-      CONFIGURATION.select { |entry| !!entry[:required] }.map { |entry| entry[:key] }
-    end
+    def configuration = @configuration ||= Psych.load_file(Rails.root.join('config/settings.yml'), symbolize_names: true).freeze
+    def keys = configuration.pluck(:key)
+    def required_keys = configuration.select { |entry| entry[:required] }.pluck(:key)
 
-    def keys
-      CONFIGURATION.map { |entry| entry[:key] }
-    end
-
-    def method_missing(method_name, *arguments)
+    def method_missing(method_name, *)
       key = method_name.to_s.delete_suffix('!')
       return super unless keys.include?(key)
 
-      method_name.end_with?('!') ? value!(key, *arguments) : value(key, *arguments)
+      method_name.end_with?('!') ? value!(key, *) : value(key, *)
     end
 
     def respond_to_missing?(method_name, include_private = false) = keys.include?(method_name.to_s.delete_suffix('!')) || super
 
-    def ransackable_attributes(auth_object = nil)
-      [ 'key', 'value' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['key', 'value']
     end
 
-    def ransackable_associations(auth_object = nil)
+    def ransackable_associations(_auth_object = nil)
       []
     end
 
@@ -61,18 +57,19 @@ class Setting < ApplicationRecord
     def time_zone = ActiveSupport::TimeZone.new(value!(:time_zone_name))
   end
 
-  BOOLEAN_VALUES = { false: 'boolean:false', true: 'boolean:true' }.freeze
-  CONFIGURATION = Psych.load_file(Rails.root.join('config/settings.yml'), symbolize_names: true).freeze
-  DOMAIN_REGEX = /\b((xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}\b/
-
   include ::Instigatable
   include Setting::Instigatable
 
-  after_save :update_broker_carriers_ignore_bol_requires_tracking_number, if: -> { key == 'ignore_broker_carrier_bol_requires_tracking_number' }
+  BOOLEAN_VALUES = { false: 'boolean:false', true: 'boolean:true' }.freeze
+  DOMAIN_REGEX = /\b((xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}\b/
 
-  audited
+  after_save :update_broker_carriers_ignore_bol_requires_tracking_number, if: -> {
+    key == 'ignore_broker_carrier_bol_requires_tracking_number'
+  }
 
   before_save :save_address, if: :address?
+
+  audited
 
   phony_normalize :value, default_country_code: 'US', if: :phone?
 
@@ -108,7 +105,7 @@ class Setting < ApplicationRecord
   def kind
     return if key.blank?
 
-    entry = CONFIGURATION.find { |entry| entry[:key] == key }
+    entry = self.class.configuration.find { |entry| entry[:key] == key }
     return if entry.blank?
 
     entry[:kind]
@@ -126,16 +123,12 @@ class Setting < ApplicationRecord
   def value=(new_value)
     if new_value.is_a?(Address)
       @address = new_value
-      return super(new_value.id&.to_s)
+      super(new_value.id&.to_s)
+    elsif [true, false, 'true', 'false'].include?(new_value)
+      super([true, 'true'].include?(new_value) ? BOOLEAN_VALUES[:true] : BOOLEAN_VALUES[:false])
+    else
+      super
     end
-
-    return super unless [ true, false, 'true', 'false' ].include?(new_value)
-
-    if new_value.is_a?(String)
-      return self.value = new_value == 'true' ? BOOLEAN_VALUES[:true] : BOOLEAN_VALUES[:false]
-    end
-
-    self.value = new_value == true ? BOOLEAN_VALUES[:true] : BOOLEAN_VALUES[:false]
   end
 
   private
@@ -149,7 +142,7 @@ class Setting < ApplicationRecord
   def update_broker_carriers_ignore_bol_requires_tracking_number
     return unless saved_change_to_value?
 
-    BrokerCarrier.update_all(ignore_bol_requires_tracking_number: value)
+    BrokerCarrier.update_all(ignore_bol_requires_tracking_number: value) # rubocop:disable Rails/SkipsModelValidations
   end
 
   def validate_value
@@ -191,7 +184,7 @@ class Setting < ApplicationRecord
         return errors.add(:value, 'must be a URI')
       end
 
-      return if [ uri.scheme, uri.host ].all?(&:present?)
+      return if [uri.scheme, uri.host].all?(&:present?)
 
       errors.add(:value, 'must be a URI')
     end

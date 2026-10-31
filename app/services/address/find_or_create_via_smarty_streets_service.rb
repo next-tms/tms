@@ -2,7 +2,7 @@
 class Address::FindOrCreateViaSmartyStreetsService
   attr_reader :street, :street2, :city, :zip_code, :region_iso31662
 
-  def initialize(street:, street2: nil, city:, zip_code:, region_iso31662:)
+  def initialize(street:, city:, zip_code:, region_iso31662:, street2: nil)
     @street = street
     @street2 = street2
     @city = city
@@ -29,7 +29,7 @@ class Address::FindOrCreateViaSmartyStreetsService
       postal_code: zip_code,
       region:,
       country: region.country,
-      key: address_key,
+      key: address_key
     )
 
     new_standardized_address.time_zone_name = 'America/Los_Angeles' if Rails.env.test?

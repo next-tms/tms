@@ -2,9 +2,7 @@ class Shipment::CreateRatesJob < ApplicationJob
   queue_as :high_priority
 
   def perform(shipment, shipment_fingerprint, user_type, declared_freight_classes, broker_carrier_ids = [])
-    if [ true, false ].exclude?(declared_freight_classes)
-      raise ArgumentError, 'declared_freight_classes must be one of true, false'
-    end
+    raise ArgumentError, 'declared_freight_classes must be one of true, false' if [true, false].exclude?(declared_freight_classes)
 
     raise ArgumentError, 'shipment must be a Shipment' unless shipment.is_a?(Shipment)
     raise ArgumentError, 'shipment_fingerprint must be a String' unless shipment_fingerprint.is_a?(String)
@@ -25,7 +23,7 @@ class Shipment::CreateRatesJob < ApplicationJob
                 broker_carrier,
                 shipment,
                 declared_freight_classes:,
-                save: true,
+                save: true
               )
 
       partial = ApplicationController.render(partial: 'rates_service/rates', locals: { shipment:, rates:, user_type: })

@@ -8,7 +8,8 @@ RSpec.describe(Types::Iso31662Type) do
     context 'when a code is not a valid GraphQL name' do
       before do
         original_hash = JSON.parse(TransponderCountries::FIXTURE_PATH.read)
-        original_hash.dig('data', 'fetchCountries').last['regions'] << { 'abbreviation' => 'X1~', 'iso31662' => 'US-X1~', 'name' => 'Placeholder' }
+        original_hash.dig('data',
+                          'fetchCountries').last['regions'] << { 'abbreviation' => 'X1~', 'iso31662' => 'US-X1~', 'name' => 'Placeholder' }
 
         stub_transponder_countries(original_hash)
       end

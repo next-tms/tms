@@ -50,11 +50,6 @@
 #  index_standardized_addresses_on_region_iso31662  (region_iso31662)
 #
 class StandardizedAddress < ApplicationRecord
-  DOWNCASEABLE_ATTRIBUTES = []
-  SQUISHABLE_ATTRIBUTES = %i[city postal_code street street2]
-
-  include Normalizable
-
   attr_accessor :skip_smarty_streets_result_api_request,
                 :skip_google_places_spot_api_request,
                 :skip_open_street_map_result_api_request
@@ -67,6 +62,8 @@ class StandardizedAddress < ApplicationRecord
   belongs_to_transponder :region, foreign_key: :region_iso31662
 
   has_many :addresses, dependent: :nullify
+
+  normalizes :city, :postal_code, :street, :street2, with: ->(value) { value.squish }
 
   serialize :google_places_spot_cached, coder: YAML
   serialize :open_street_map_result_cached, coder: YAML
@@ -96,9 +93,9 @@ class StandardizedAddress < ApplicationRecord
   end
 
   def restaurant?
-    return unless types
+    return false unless types
 
-    !!types.intersect?([ 'food', 'meal takeaway', 'restaurant' ])
+    !!types.intersect?(['food', 'meal takeaway', 'restaurant'])
   end
 
   def blank_to_nil(obj)
@@ -109,7 +106,7 @@ class StandardizedAddress < ApplicationRecord
     @names ||= (
       Shipment.where(shipper_address: self).pluck(:shipper_name) +
       Shipment.where(receiver_address: self).pluck(:receiver_name)
-    ).uniq.reject(&:blank?)
+    ).uniq.compact_blank
   end
 
   def google_places_spot
@@ -128,20 +125,8 @@ class StandardizedAddress < ApplicationRecord
     return if skip_open_street_map_result_api_request
     return @open_street_map_result if @open_street_map_result
 
-    if up_to_date_cached_response?(:open_street_map_result)
-      return @open_street_map_result = open_street_map_result_cached
-    end
+    return @open_street_map_result = open_street_map_result_cached if up_to_date_cached_response?(:open_street_map_result)
 
-    # Temporarily disabled
-    self.open_street_map_result_updated_at = Time.current
-    return @open_street_map_result = nil
-    # Temporarily disabled
-
-    @open_street_map_result = Address::OpenStreetMapVerifyService.new(address_key: key, country:, street:).call
-
-    update_api_response_cache_and_timestamp(:open_street_map_result, @open_street_map_result)
-    @open_street_map_result = open_street_map_result_cached
-  rescue Net::OpenTimeout
     self.open_street_map_result_updated_at = Time.current
     @open_street_map_result = nil
   end
@@ -174,23 +159,23 @@ class StandardizedAddress < ApplicationRecord
     elsif smarty_streets_result['formatted_address'].present?
       self.street = smarty_streets_result['formatted_address'].split(',').first
     elsif smarty_streets_result['house_number'].present? && smarty_streets_result['street'].present?
-      self.street = "#{smarty_streets_result["house_number"]} #{smarty_streets_result["street"]}"
+      self.street = "#{smarty_streets_result['house_number']} #{smarty_streets_result['street']}"
     end
 
     self.city = smarty_streets_result.dig('components', 'city_name') || city
     self.region = Transponder::ORM::Region.find_by(
       abbreviation: smarty_streets_result.dig('components', 'state_abbreviation'),
-      country:,
+      country:
     ) || region
     self.postal_code = smarty_streets_result.dig('components', 'zipcode') || postal_code
   end
 
   def next_types
     next_types = []
-    streets_formatted = "#{street || ""} #{street2 || ""}".downcase
+    streets_formatted = "#{street || ''} #{street2 || ''}".downcase
 
     # Removed "aero", "aviation" as they can lead to incorrect type
-    next_types << 'airport' if [ 'aircraft', 'avionic', 'hangar' ].any? { |word| streets_formatted.include?(word) }
+    next_types << 'airport' if ['aircraft', 'avionic', 'hangar'].any? { |word| streets_formatted.include?(word) }
 
     yaml = YAML.load_file(Rails.root.join('config/postal_codes.yml').to_s)
     military_postal_codes = yaml['MILITARY'].inject([]) { |arr, postal_code| arr << postal_code.to_s }
@@ -210,7 +195,7 @@ class StandardizedAddress < ApplicationRecord
     types = google_places_spot.types if google_places_spot.present?
     if smarty_streets_result.present?
       types << smarty_streets_result.dig('metadata', 'rdi')
-      types -= [ 'street_address', 'premise' ]
+      types -= ['street_address', 'premise']
     end
 
     begin
@@ -219,8 +204,8 @@ class StandardizedAddress < ApplicationRecord
       types = []
     end
 
-    types = types - [ 'subpremise' ] + [ 'apartment' ] if types.include?([ 'residential', 'subpremise' ])
-    types -= [ 'establishment', 'premise' ]
+    types = types - ['subpremise'] + ['apartment'] if types.include?(['residential', 'subpremise'])
+    types -= ['establishment', 'premise']
 
     (next_types + types).sort.uniq
   end
@@ -231,20 +216,17 @@ class StandardizedAddress < ApplicationRecord
        open_street_map_result['lon'].present?
       self.latitude = open_street_map_result['lat']
       self.longitude = open_street_map_result['lon']
-      return true
+      return
     end
 
-    if google_places_spot.present? && google_places_spot&.lat.present? && google_places_spot&.lng.present?
-      self.latitude = google_places_spot.lat
-      self.longitude = google_places_spot.lng
-      return true
-    end
+    return unless google_places_spot.present? && google_places_spot&.lat.present? && google_places_spot&.lng.present?
 
-    false
+    self.latitude = google_places_spot.lat
+    self.longitude = google_places_spot.lng
   end
 
   def time_zone
-    ActiveSupport::TimeZone.new((time_zone_name.presence || 'America/Los_Angeles'))
+    ActiveSupport::TimeZone.new(time_zone_name.presence || 'America/Los_Angeles')
   end
 
   # private
@@ -277,11 +259,11 @@ class StandardizedAddress < ApplicationRecord
     updated_at_key = "#{type}_updated_at"
 
     if will_save_change_to_street? || will_save_change_to_city? || will_save_change_to_postal_code?
-      send("#{cache_key}=", nil)
-      send("#{updated_at_key}=", nil)
+      public_send("#{cache_key}=", nil)
+      public_send("#{updated_at_key}=", nil)
     end
 
-    updated_at_timestamp = send(updated_at_key)
+    updated_at_timestamp = public_send(updated_at_key)
 
     updated_at_timestamp.present? && updated_at_timestamp > 3.months.ago
   end
@@ -294,15 +276,15 @@ class StandardizedAddress < ApplicationRecord
     # Prevent calling the API multiple times during Shipment Creation. Before a shipment is created standardized address
     # is called multiple times for address checking specifically on Suggesting Broker Accessorials. On Shipment creation
     # previously the Geolocation APIs are called atleast 8 times
-    send("#{skip_api_request_key}=", true) if response.blank? && new_record?
+    public_send("#{skip_api_request_key}=", true) if response.blank? && new_record?
 
     # Update table columns to ensure we only call the API every 3 months if its already cached,
     # use #update_columns so it would just directly update the DB and not run any active record callbacks
     if persisted?
-      update_columns(cache_key => response, updated_at_key => Time.current)
+      update_columns(cache_key => response, updated_at_key => Time.current) # rubocop:disable Rails/SkipsModelValidations
     else
-      send("#{cache_key}=", response)
-      send("#{updated_at_key}=", Time.current)
+      public_send("#{cache_key}=", response)
+      public_send("#{updated_at_key}=", Time.current)
     end
   end
 end

@@ -3,7 +3,7 @@ class AddBalanceToReceivables < ActiveRecord::Migration[7.0]
     add_monetize :receivables, :balance, index: true
 
     Receivable.find_each do |receivable|
-      unless receivable.paid_at.blank?
+      if receivable.paid_at.present?
         receivable.update_columns(balance_cents: 0, balance_currency: receivable.total_currency)
         next
       end

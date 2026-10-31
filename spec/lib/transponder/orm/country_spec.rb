@@ -5,7 +5,7 @@ RSpec.describe(Transponder::ORM::Country) do
   let(:united_states) { described_class.find('US') }
 
   describe '.all' do
-    it { expect(described_class.all.pluck(:alpha2)).to(eq(%w[CA MX US])) }
+    it { expect(described_class.pluck(:alpha2)).to(eq(['CA', 'MX', 'US'])) }
     it { expect(described_class.all).to(equal(described_class.all)) }
 
     context 'when the collection is older than MEMO_EXPIRES_IN' do
@@ -19,7 +19,7 @@ RSpec.describe(Transponder::ORM::Country) do
     end
 
     context 'when Transponder returns errors' do
-      before { stub_transponder_countries({ 'errors' => [ { 'message' => 'Boom' } ] }) }
+      before { stub_transponder_countries({ 'errors' => [{ 'message' => 'Boom' }] }) }
 
       it { expect { described_class.all }.to(raise_error(GraphQL::Client::Error, 'Boom')) }
     end
@@ -42,7 +42,7 @@ RSpec.describe(Transponder::ORM::Country) do
   describe '#initialize' do
     it { expect(united_states.alpha3).to(eq('USA')) }
     it { expect(united_states.numeric).to(eq(840)) }
-    it { expect(united_states.regions.pluck(:iso31662)).to(eq(%w[US-CA US-TX US-WY])) }
+    it { expect(united_states.regions.pluck(:iso31662)).to(eq(['US-CA', 'US-TX', 'US-WY'])) }
     it { expect(united_states.regions.map(&:country)).to(all(equal(united_states))) }
   end
 

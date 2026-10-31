@@ -1,13 +1,31 @@
 require 'rails_helper'
 
 RSpec.describe(Broker::BanksController) do
-  subject { response }
-
   let(:current_user) { create(:root_broker_user) }
 
   before do
     sign_in(current_user)
     allow(Accounting).to(receive(:record_class).with(:account).and_return(double(order: [])))
+  end
+
+  describe '#accounting_params' do
+    subject { controller.__send__(:accounting_params).to_h }
+
+    let(:attributes) { { '1' => { accounting_account_id: '2', kind: 'checking' } } }
+
+    before { controller.params = { accounting: { banks: attributes } } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
+  end
+
+  describe '#bank_params' do
+    subject { controller.__send__(:bank_params).to_h }
+
+    let(:attributes) { { account_number: '123', name: 'Checking' } }
+
+    before { controller.params = { bank: attributes } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
   end
 
   describe 'GET #accounting' do

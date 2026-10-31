@@ -14,7 +14,7 @@ RSpec.describe(Types::Iso31661Alpha2Type) do
   end
 
   describe '.enum_values' do
-    it { expect(described_class.enum_values.map(&:graphql_name)).to(eq(%w[CA MX US])) }
-    it { expect(described_class.enum_values.map(&:value)).to(eq(%w[CA MX US])) }
+    it { expect(described_class.enum_values.map(&:graphql_name)).to(eq(['CA', 'MX', 'US'])) }
+    it { expect(described_class.enum_values.map(&:value)).to(eq(['CA', 'MX', 'US'])) }
   end
 end

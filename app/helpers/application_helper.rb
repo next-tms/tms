@@ -1,6 +1,13 @@
 module ApplicationHelper
   include Pagy::Frontend
 
+  FLASH_CLASSES = {
+    'alert' => 'warning',
+    'error' => 'danger',
+    'notice' => 'info',
+    'success' => 'success'
+  }.freeze
+
   # Stimulus
   def money_controller_data
     { action: 'blur->money#handle', controller: 'money', 'money-target': 'input' }
@@ -21,23 +28,16 @@ module ApplicationHelper
     html
   end
 
-  def flash_class(level)
-    case level
-    when 'notice' then 'info'
-    when 'success' then 'success'
-    when 'error' then 'danger'
-    when 'alert' then 'warning'
-    end
-  end
+  def flash_class(level) = FLASH_CLASSES[level]
 
   def homepage = Setting.website_homepage(root_path)
 
-  def maybe_badge(n, type: '')
-    "<span class=\"badge #{type}\">#{n}</span>".html_safe if n.positive?
+  def maybe_badge(count, type: '')
+    tag.span(count, class: "badge #{type}") if count.positive?
   end
 
   def number_to_percentage(*args)
-    return '0%' if args == args.reject(&:blank?)
+    return '0%' if args == args.compact_blank
 
     super
   end
@@ -46,8 +46,7 @@ module ApplicationHelper
     pluralize(number_with_delimiter(count), singular, plural)
   end
 
-  def pretty_api_error(rate)
-  end
+  def pretty_api_error(rate); end
 
   def clean_sentence(str)
     str = str.split(':').last
@@ -64,7 +63,7 @@ module ApplicationHelper
   end
 
   def valid_classes
-    @valid_classes ||= [ 55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400 ]
+    @valid_classes ||= [55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400]
   end
 
   def generate_qr(text)
@@ -92,11 +91,11 @@ module ApplicationHelper
     @devise_mapping ||= Devise.mappings[:user]
   end
 
-  def link_to_add_fields(name, f, association, classes)
-    new_object = f.object.send(association).klass.new
+  def link_to_add_fields(name, form, association, classes)
+    new_object = form.object.public_send(association).klass.new
     id = new_object.object_id
 
-    fields = f.fields_for(association, new_object, child_index: id) do |builder|
+    fields = form.fields_for(association, new_object, child_index: id) do |builder|
       render("#{association.to_s.singularize}_fields", f: builder)
     end
 
@@ -107,7 +106,7 @@ module ApplicationHelper
     return if shipment.broker_carrier.blank?
 
     if shipment.broker_carrier.carrier.acts_as_broker
-      (shipment.tracking_carrier.presence || shipment.broker_carrier.carrier)
+      shipment.tracking_carrier.presence || shipment.broker_carrier.carrier
     else
       shipment.broker_carrier.carrier
     end
@@ -187,9 +186,7 @@ module ApplicationHelper
       "https://tracking.carrierlogistics.com/scripts/fro.pol/boldetail.htm?wbtn=PRO&wpro1=#{real_pro(shipment)}"
     when 'FWDA'
       "https://www.forwardair.com/tracking?type=waybill&numbers=#{real_pro(shipment)}"
-    when 'FXFE'
-      "https://www.fedex.com/fedextrack/?tracknumbers=#{real_pro(shipment)}"
-    when 'FXNL'
+    when 'FXFE', 'FXNL'
       "https://www.fedex.com/fedextrack/?tracknumbers=#{real_pro(shipment)}"
     when 'HSXF'
       "http://apps.hawaiianexpress.com/track_freight.php?prono=#{real_pro(shipment)}"
@@ -243,8 +240,8 @@ module ApplicationHelper
     end
   end
 
-  def highlightable_element(id, table_element: false, &block)
+  def highlightable_element(id, table_element: false, &)
     element = table_element ? :tbody : :div
-    content_tag(element, id: id.to_sym, tabindex: '-1', &block)
+    content_tag(element, id: id.to_sym, tabindex: '-1', &)
   end
 end

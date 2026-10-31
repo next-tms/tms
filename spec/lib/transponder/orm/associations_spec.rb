@@ -63,7 +63,7 @@ RSpec.describe(Transponder::ORM::Associations) do
 
     context 'when an unchanged code is unknown' do
       let(:record) do
-        model_class.new(country_alpha2:, region_iso31662: 'US-ZZ').tap { |record| record.clear_changes_information }
+        model_class.new(country_alpha2:, region_iso31662: 'US-ZZ').tap(&:clear_changes_information)
       end
 
       it { expect(record.errors).to(be_empty) }

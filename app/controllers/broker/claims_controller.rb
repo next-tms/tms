@@ -6,9 +6,12 @@ class Broker::ClaimsController < Broker::BrokerController
   def create
     @claim = Claim.new(claim_params)
 
-    redirect_to([ :broker, @claim ]) and return if @claim.save
+    unless @claim.save
+      render(:new)
+      return
+    end
 
-    render(:new)
+    redirect_to([:broker, @claim])
   end
 
   def destroy
@@ -34,8 +37,8 @@ class Broker::ClaimsController < Broker::BrokerController
 
     return if @claim.shipment.present?
 
-    flash[:error] = 'Cannot open a claim without a shipment'
-    redirect_back(fallback_location: root_path)
+    flash[:error] = t('.missing_shipment')
+    redirect_back_or_to(root_path)
   end
 
   def paid
@@ -49,10 +52,13 @@ class Broker::ClaimsController < Broker::BrokerController
   end
 
   def update
-    redirect_to(broker_claim_path(@claim)) and return if @claim.update(claim_params)
+    unless @claim.update(claim_params)
+      flash[:error] = t('.failure')
+      render(:edit)
+      return
+    end
 
-    flash[:error] = 'Unable to update claim'
-    render(:edit)
+    redirect_to([:broker, @claim])
   end
 
   def show; end
@@ -70,19 +76,23 @@ class Broker::ClaimsController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def claim_params
-    params.require(:claim).permit(
-      :id,
-      :broker_carrier_id,
-      :due_on,
-      :shipment_id,
-      claim_items_attributes: %i[
-                                _destroy
-                                id
-                                balance
-                                payee_id
-                                payee_type
-                                total
-                              ],
+    params.expect(
+      claim: [
+        :id,
+        :broker_carrier_id,
+        :due_on,
+        :shipment_id,
+        {
+          claim_items_attributes: [%i[
+            _destroy
+            id
+            balance
+            payee_id
+            payee_type
+            total
+          ]]
+        }
+      ]
     )
   end
 

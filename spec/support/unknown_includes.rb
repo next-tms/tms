@@ -4,7 +4,7 @@ module UnknownIncludes
     case values
     when Array then values.flat_map { |value| unknown_includes(model, value) }
     when Hash then values.flat_map { |name, nested| unknown_includes(model, name) + nested_unknown_includes(model, name, nested) }
-    else model.reflect_on_association(values) ? [] : [ "#{model.name}##{values}" ]
+    else model.reflect_on_association(values) ? [] : ["#{model.name}##{values}"]
     end
   end
 

@@ -92,8 +92,19 @@ RSpec.describe(BrokerCarrier) do
     it { expect(described_class.normalize_value_for(:encrypted_ach_routing_number, ' 123456789 ')).to(eq('123456789')) }
   end
 
+  describe 'relationships' do
+    it { is_expected.to(have_many(:overlength_rules).dependent(:destroy)) }
+    it { is_expected.to(have_many(:payment_transactions).dependent(:restrict_with_error)) }
+    it { is_expected.to(have_many(:payments).dependent(:restrict_with_error)) }
+    it { is_expected.to(have_many(:preferred_by_broker_customers).dependent(:destroy)) }
+    it { is_expected.to(have_many(:pricing_rules).dependent(:destroy)) }
+    it { is_expected.to(have_many(:rates).dependent(:restrict_with_error)) }
+    it { is_expected.to(have_many(:shipments).dependent(:restrict_with_error)) }
+  end
+
   describe 'validations' do
     it { is_expected.to(allow_values(nil, '', '123456789').for(:encrypted_ach_routing_number)) }
     it { is_expected.not_to(allow_values('12345678', '1234567890', '12345678a').for(:encrypted_ach_routing_number)) }
+    it { is_expected.not_to(allow_value('12345678').for(:encrypted_ach_routing_number).with_message('must be nine digits')) }
   end
 end

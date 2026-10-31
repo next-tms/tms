@@ -37,9 +37,7 @@ module TransponderService
 
       estimated_delivery = Parser::DateTime.call(transponder_tracking[:estimated_delivery])
 
-      if estimated_delivery.present?
-        shipment.delivery_eta_on = estimated_delivery
-      end
+      shipment.delivery_eta_on = estimated_delivery if estimated_delivery.present?
 
       scheduled_delivery = Parser::DateTime.call(transponder_tracking[:scheduled_delivery])
 
@@ -68,12 +66,11 @@ module TransponderService
     end
 
     # Notify Sentry only once per day to prevent a spam notice every 30 minutes
-    # @return [Boolean]
     def log_invalid_data_to_sentry(shipment_event:, attr_name:)
       cache_key = "#{id}_shipment_event_invalid_#{attr_name}"
       notified_today = Rails.cache.read(cache_key)
 
-      return true if notified_today
+      return if notified_today
 
       Rails.cache.write(cache_key, 'notified', expires_in: 1.day)
 
@@ -84,8 +81,6 @@ module TransponderService
       MESSAGE
 
       Sentry.capture_message(message)
-
-      true
     end
 
     def parse_location(location)
@@ -95,13 +90,13 @@ module TransponderService
       country = Parser::Country.call(location[:country])
       region = country.regions.find_by(abbreviation: location[:region_abbreviation]) if country.present?
 
-      [ city, region, country ]
+      [city, region, country]
     end
 
     def parse_shipment_event(shipment_event)
       city, region, country = parse_location(shipment_event[:location])
 
-      if [ city, region, country ].any?(&:blank?)
+      if [city, region, country].any?(&:blank?)
         log_invalid_data_to_sentry(shipment_event:, attr_name: 'location')
 
         return
@@ -117,7 +112,7 @@ module TransponderService
 
       code = shipment_event[:code].downcase
 
-      freight_kit_carrier_fingerprint = Digest::SHA2.hexdigest([ at.to_fs(:db), code ].join)
+      freight_kit_carrier_fingerprint = Digest::SHA2.hexdigest([at.to_fs(:db), code].join)
       tracking_event = tracking_events.find_or_initialize_by(freight_kit_carrier_fingerprint:)
 
       # Hack for carriers that return Midnight on everything
@@ -140,7 +135,7 @@ module TransponderService
         event:,
         freight_kit_carrier_fingerprint:,
         region:,
-        time_zone_name: at.time_zone.name,
+        time_zone_name: at.time_zone.name
       )
 
       begin

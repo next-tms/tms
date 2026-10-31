@@ -131,11 +131,11 @@ class User < ApplicationRecord
       joins(:contact).where(contact: Contact.with_role(role))
     end
 
-    def ransackable_attributes(auth_object = nil)
-      [ 'companyable_type', 'email', 'first_name', 'invitation_accepted_at', 'last_name', 'last_sign_in_at' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['companyable_type', 'email', 'first_name', 'invitation_accepted_at', 'last_name', 'last_sign_in_at']
     end
 
-    def ransackable_associations(auth_object = nil)
+    def ransackable_associations(_auth_object = nil)
       []
     end
   end
@@ -165,17 +165,13 @@ class User < ApplicationRecord
 
   before_invitation_created :set_time_zone_name, if: -> { new_record? && time_zone_name.blank? }
 
-  has_many :broker_customer_sales_reps
-  has_many :commissions
+  has_many :broker_customer_sales_reps, dependent: :destroy
+  has_many :commissions, dependent: :restrict_with_error
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: 'Noticed::Notification'
-  has_many :problems, foreign_key: :assigned_to_id
-  has_many :shipments_as_dispatcher, class_name: 'Shipment', foreign_key: :dispatcher_id
-  has_many :user_roles
+  has_many :problems, dependent: :nullify, foreign_key: :assigned_to_id, inverse_of: :assigned_to
+  has_many :shipments_as_dispatcher, class_name: 'Shipment', dependent: :nullify, foreign_key: :dispatcher_id, inverse_of: :dispatcher
 
   has_many :broker_customers, through: :broker_customer_sales_reps
-
-  # Deprecated, do not use
-  has_many :user_roles
 
   has_many :subscriptions, through: :contact
 
@@ -249,8 +245,8 @@ class User < ApplicationRecord
   def sales_rep_for_broker_customers
     BrokerCustomer.where(
       id: BrokerCustomerSalesRep.where(
-        user: self,
-      ).pluck(:broker_customer_id),
+        user: self
+      ).select(:broker_customer_id)
     )
   end
 
@@ -263,8 +259,8 @@ class User < ApplicationRecord
 
     return User.broker if role?(:root)
 
-    scope = roles - [ Role.find_by(name: 'sales_rep') ]
-    User.where(id: UserRole.where(role: scope).where(user: User.broker).pluck(:user_id))
+    scope = roles - [Role.find_by(name: 'sales_rep')]
+    User.where(id: UserRole.where(role: scope).where(user: User.broker).select(:user_id))
   end
 
   def shipments
@@ -274,7 +270,7 @@ class User < ApplicationRecord
       :accounts_receivable,
       :dispatch,
       :root,
-      :sales_rep_for_all_broker_customers,
+      :sales_rep_for_all_broker_customers
     )
     return Shipment.all if !sales_rep_only? && all_shipments
 
@@ -302,12 +298,24 @@ class User < ApplicationRecord
     client.api.account.messages.create(
       from: '+14243616317',
       to: phone,
-      url: 'https://tms.next-tms.com/Next%%20TMS.vcf',
+      url: 'https://tms.next-tms.com/Next%%20TMS.vcf'
     )
   end
 
   def time_zone
     ActiveSupport::TimeZone.new(time_zone_name)
+  end
+
+  protected
+
+  # @note For Devise trackable
+  def extract_ip_from(request)
+    header = request.headers['Fly-Client-IP'].presence || request.headers['X-Forwarded-For']
+
+    return request.remote_ip if header.blank?
+
+    header = header.split(',')[0].strip if header.include?(',')
+    header
   end
 
   private
@@ -351,17 +359,5 @@ class User < ApplicationRecord
 
   def validate_time_zone_name
     errors.add(:time_zone_name, :invalid) if time_zone.blank?
-  end
-
-  protected
-
-  # @note For Devise trackable
-  def extract_ip_from(request)
-    header = request.headers['Fly-Client-IP'].presence || request.headers['X-Forwarded-For']
-
-    return request.remote_ip if header.blank?
-
-    header = header.split(',')[0].strip if header.include?(',')
-    header
   end
 end

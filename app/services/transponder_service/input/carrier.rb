@@ -41,7 +41,7 @@ module TransponderService
       end
 
       def carrier_credentials
-        object.carrier.required_freight_kit_credentials.map { |type| send("#{type}_credential") }.compact
+        object.carrier.required_freight_kit_credentials.map { |type| __send__("#{type}_credential") }.compact
       end
 
       def customer_location

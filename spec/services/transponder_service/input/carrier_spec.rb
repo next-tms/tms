@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe(TransponderService::Input::Carrier) do
   let(:account) { Faker::Alphanumeric.alphanumeric(number: 10, min_alpha: 3, min_numeric: 3).upcase }
-  let(:api_credentials) { [ Faker::Internet.username, Faker::Internet.password ] }
+  let(:api_credentials) { [Faker::Internet.username, Faker::Internet.password] }
   let(:encrypted_api_key) { Faker::Internet.password }
   let(:encrypted_proxy_url) { Faker::Internet.url }
-  let(:website_credentials) { [ Faker::Internet.username, Faker::Internet.password ] }
+  let(:website_credentials) { [Faker::Internet.username, Faker::Internet.password] }
 
   let(:carrier) { create(:carrier, encrypted_proxy_url:) }
 
@@ -21,14 +21,14 @@ RSpec.describe(TransponderService::Input::Carrier) do
       username:,
       password:,
       website_username:,
-      website_password:,
+      website_password:
     )
   end
 
   let(:service) { described_class.new(object) }
 
   describe '#api_credential' do
-    let!(:result) { service.send(:api_credential) }
+    let!(:result) { service.__send__(:api_credential) }
 
     it { expect(result[:account]).to(eq(object.account)) }
     it { expect(result[:api_key]).to(eq(object.encrypted_api_key)) }
@@ -44,7 +44,7 @@ RSpec.describe(TransponderService::Input::Carrier) do
   end
 
   describe '#api_key_credential' do
-    let!(:result) { service.send(:api_key_credential) }
+    let!(:result) { service.__send__(:api_key_credential) }
 
     it { expect(result[:account]).to(eq(object.account)) }
     it { expect(result[:api_key]).to(eq(object.encrypted_api_key)) }
@@ -58,7 +58,7 @@ RSpec.describe(TransponderService::Input::Carrier) do
   end
 
   describe '#api_proxy_credential' do
-    let!(:result) { service.send(:api_proxy_credential) }
+    let!(:result) { service.__send__(:api_proxy_credential) }
 
     it { expect(result[:api_key]).to(eq(object.encrypted_api_key)) }
     it { expect(result[:proxy_url]).to(eq(carrier.encrypted_proxy_url)) }
@@ -79,20 +79,20 @@ RSpec.describe(TransponderService::Input::Carrier) do
 
     before { allow(service).to(receive(:customer_location).and_return(customer_location)) }
 
-    it { expect(result[:carrier_credentials]).to(eq(service.send(:carrier_credentials))) }
+    it { expect(result[:carrier_credentials]).to(eq(service.__send__(:carrier_credentials))) }
     it { expect(result[:customer_location]).to(eq(customer_location)) }
     it { expect(result[:scac]).to(eq(carrier.scac)) }
-    it { expect(result[:tariff]).to(eq(service.send(:tariff))) }
+    it { expect(result[:tariff]).to(eq(service.__send__(:tariff))) }
   end
 
   describe '#selenoid_credential' do
-    let!(:result) { service.send(:selenoid_credential) }
+    let!(:result) { service.__send__(:selenoid_credential) }
 
     it { expect(result[:type]).to(eq('selenoid')) }
   end
 
   describe '#website_credential' do
-    let!(:result) { service.send(:website_credential) }
+    let!(:result) { service.__send__(:website_credential) }
 
     it { expect(result[:account]).to(eq(object.account)) }
     it { expect(result[:password]).to(eq(object.website_password)) }
@@ -110,7 +110,11 @@ RSpec.describe(TransponderService::Input::Carrier) do
       create(:setting, key: 'phone', value: '+15035550100')
     end
 
-    it { expect(service.send(:customer_location)).to(include('address1' => address.street, 'city' => address.city, 'postalCode' => address.zip_code)) }
-    it { expect(service.send(:customer_location)['contact']).to(include('companyName' => 'Acme Freight', 'email' => 'help@acme.test')) }
+    it {
+      expect(service.__send__(:customer_location)).to(include('address1' => address.street, 'city' => address.city,
+                                                              'postalCode' => address.zip_code))
+    }
+
+    it { expect(service.__send__(:customer_location)['contact']).to(include('companyName' => 'Acme Freight', 'email' => 'help@acme.test')) }
   end
 end

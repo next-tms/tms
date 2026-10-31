@@ -9,8 +9,8 @@ RSpec.describe Accounting::Wave::Invoice do
         customer_id: 'cust-1',
         document_number: '1001',
         due_date: Date.new(2026, 8, 15),
-        line_items: [ Accounting::LineItem.new(kind: :sales, description: 'Freight', quantity: 1, unit_price: 1234.56) ],
-        transaction_date: Time.utc(2026, 7, 30),
+        line_items: [Accounting::LineItem.new(kind: :sales, description: 'Freight', quantity: 1, unit_price: 1234.56)],
+        transaction_date: Time.utc(2026, 7, 30)
       )
     end
 
@@ -24,14 +24,14 @@ RSpec.describe Accounting::Wave::Invoice do
 
       it do
         expect(WebMock)
-        .to(
-          have_requested(:post, Accounting::Wave::Service::GRAPHQL_URL)
-          .with do |request|
-            body = JSON.parse(request.body)
-            item = body.dig('variables', 'input', 'items').first
-            body['query'].include?('invoiceCreate') && item.values_at('productId', 'unitPrice') == [ 'prod-1', 1234.56 ]
-          end
-        )
+          .to(
+            have_requested(:post, Accounting::Wave::Service::GRAPHQL_URL)
+            .with do |request|
+              body = JSON.parse(request.body)
+              item = body.dig('variables', 'input', 'items').first
+              body['query'].include?('invoiceCreate') && item.values_at('productId', 'unitPrice') == ['prod-1', 1234.56]
+            end
+          )
       end
     end
   end
@@ -55,7 +55,7 @@ RSpec.describe Accounting::Wave::Invoice do
     context 'when sending the query' do
       before { found }
 
-      it { expect(WebMock).to have_requested(:post, Accounting::Wave::Service::GRAPHQL_URL).with { |request| JSON.parse(request.body).dig('variables', 'invoiceNumber') == '1001' } }
+      it { expect(WebMock).to(have_requested(:post, Accounting::Wave::Service::GRAPHQL_URL).with { |request| JSON.parse(request.body).dig('variables', 'invoiceNumber') == '1001' }) }
     end
   end
 

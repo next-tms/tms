@@ -58,7 +58,7 @@ module Accounting
           ::Quickbooks::Model::BillPaymentLineItem.new(
             amount: line_item.amount,
             description: line_item.description,
-            linked_transactions: linked,
+            linked_transactions: linked
           )
         end
       end

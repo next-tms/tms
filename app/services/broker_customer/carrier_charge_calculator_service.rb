@@ -35,13 +35,13 @@ class BrokerCustomer::CarrierChargeCalculatorService
 
   def map_upcharge_rules(packaging_id:, quantity:)
     upcharge_rules.where(packaging_id:)
-                  .where('min <= ?', quantity)
-                  .where('max >= ?', quantity)
+                  .where(min: ..quantity)
+                  .where(max: quantity..)
                   .or(
                     upcharge_rules
                     .where(packaging_id:)
-                    .where('min <= ?', quantity)
-                    .where(max: nil),
+                    .where(min: ..quantity)
+                    .where(max: nil)
                   )
   end
 
@@ -65,8 +65,6 @@ class BrokerCustomer::CarrierChargeCalculatorService
         map_upcharge_rules(packaging_id:, quantity:)
       end.flatten
 
-      return unless upcharges.present?
-
       upcharges.pluck(:upcharge_percentage).max
     end
   end
@@ -78,7 +76,6 @@ class BrokerCustomer::CarrierChargeCalculatorService
     end.all?(true)
   end
 end
-
 
 ### Previous Logic
 

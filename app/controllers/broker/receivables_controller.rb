@@ -27,7 +27,8 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   def paid
-    @q = Receivable.paid.includes([ :shipment, { broker_customer: :customer }, :authorized_by ]).ransack(params[:q], auth_object: current_user)
+    @q = Receivable.paid.includes([:shipment, { broker_customer: :customer }, :authorized_by]).ransack(params[:q],
+                                                                                                       auth_object: current_user)
     @q.sorts = 'due_by asc' if @q.sorts.blank?
     @pagy, @receivables = pagy(@q.result)
   end
@@ -61,16 +62,14 @@ class Broker::ReceivablesController < Broker::BrokerController
     @receivable.authorized_by = current_user if receivable_params[:authorized_at].present?
     @receivable.sent_by = current_user if receivable_params[:sent_at].present?
 
-    if @receivable.save
-      if Accounting.connected?
-        PushReceivableToAccountingJob.perform_now(receivable: @receivable)
-      end
-
-      redirect_to(broker_receivable_path(@receivable)) and return
+    unless @receivable.save
+      flash[:error] = "Unable to update invoice: #{@receivable.errors.full_messages.to_sentence}"
+      render(:show)
+      return
     end
 
-    flash[:error] = "Unable to update invoice: #{@receivable.errors.full_messages.join("<br>").html_safe}"
-    render(:show)
+    PushReceivableToAccountingJob.perform_now(receivable: @receivable) if Accounting.connected?
+    redirect_to([:broker, @receivable])
   end
 
   def show
@@ -91,11 +90,9 @@ class Broker::ReceivablesController < Broker::BrokerController
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def receivable_params
-    params.require(:receivable).permit(:id, :authorized_at, :invoiced, :sent_at)
-  end
+  def receivable_params = params.expect(receivable: %i[id authorized_at invoiced sent_at])
 
   def required_includes
-    [ { shipment: { carrier_pod_attachment: :blob } }, { broker_customer: :customer }, :authorized_by ]
+    [{ shipment: { carrier_pod_attachment: :blob } }, { broker_customer: :customer }, :authorized_by]
   end
 end

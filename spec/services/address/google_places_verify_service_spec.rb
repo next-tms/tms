@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Address::GooglePlacesVerifyService) do
-  let(:address_key) { "4011 Lana Tier, Fremont, California, 94536" }
+  let(:address_key) { '4011 Lana Tier, Fremont, California, 94536' }
   let(:street) { '4011 Lana Tier' }
   let(:mock_address_service) { instance_double(GooglePlaces::Client) }
 
@@ -21,7 +21,7 @@ RSpec.describe(Address::GooglePlacesVerifyService) do
 
     context 'when address is valid' do
       let(:mock_result) { instance_double(GooglePlaces::Spot, formatted_address: address_key) }
-      let(:mock_data) { [ mock_result ] }
+      let(:mock_data) { [mock_result] }
 
       before { allow(mock_result).to receive(:is_a?).with(GooglePlaces::Spot).and_return(true) }
 
@@ -35,7 +35,7 @@ RSpec.describe(Address::GooglePlacesVerifyService) do
     end
 
     context 'when address result is not a GooglePlaces::Spot instance' do
-      let(:mock_data) { [ Object.new ] }
+      let(:mock_data) { [Object.new] }
 
       it { is_expected.to be_nil }
     end

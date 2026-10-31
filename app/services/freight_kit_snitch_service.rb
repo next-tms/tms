@@ -1,20 +1,14 @@
 class FreightKitSnitchService
   def self.snitch(error:, record:, request:, response:)
-    return false if error.is_a?(FreightKit::Error) && Rails.env.production?
+    return if error.is_a?(FreightKit::Error) && Rails.env.production?
 
-    message = "#{record.class.name} id=#{record&.id || "(new)"}\n"\
-              "error   : #{error.inspect}\n"\
-              "request : #{request}\n"\
+    message = "#{record.class.name} id=#{record&.id || '(new)'}\n" \
+              "error   : #{error.inspect}\n" \
+              "request : #{request}\n" \
               "response: #{response}"
 
-    if Rails.env.production?
-      Sentry.capture_exception(error, extra: { error_message: message })
-
-      return true
-    end
+    return Sentry.capture_exception(error, extra: { error_message: message }) if Rails.env.production?
 
     Rails.logger.debug(message)
-
-    true
   end
 end

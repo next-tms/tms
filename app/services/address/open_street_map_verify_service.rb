@@ -15,7 +15,7 @@ class Address::OpenStreetMapVerifyService
       q: "#{address_key}, #{country.name}",
       format: 'json',
       addressdetails: '1',
-      accept_language: 'en',
+      accept_language: 'en'
     )&.first
 
     accurate = result.is_a?(Hash) &&

@@ -13,10 +13,10 @@ module Accounting
     end
 
     def each(&) = to_a.each(&)
-    def find(id) = connection.find(id)
+    delegate :find, to: :connection
     def find_by(**conditions) = connection.find_by(conditions)
     def find_by!(**conditions) = find_by(**conditions) || raise(ActiveRecord::RecordNotFound, "Couldn't find #{orm_class}")
-    def first = to_a.first
+    delegate :first, to: :to_a
     def limit(page_size) = with(page: page || 1, page_size:)
     def order(**sort) = with(sort:)
     def to_a = @to_a ||= connection.all(filter:, page:, page_size:, sort:)
@@ -25,6 +25,6 @@ module Accounting
     private
 
     def connection = orm_class.connection
-    def with(**options) = self.class.new(orm_class, **{ filter:, page:, page_size:, sort: }.merge(options))
+    def with(**) = self.class.new(orm_class, filter:, page:, page_size:, sort:, **)
   end
 end

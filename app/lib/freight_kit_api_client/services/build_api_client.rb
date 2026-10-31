@@ -24,12 +24,13 @@ module FreightKitAPIClient
         address = Setting.mailing_address!
 
         FreightKit::Location.new(
-          contact: FreightKit::Contact.new(company_name: Setting.value!(:name), email: "robot@#{Setting.customer_service_email!.split("@")[1]}"),
+          contact: FreightKit::Contact.new(company_name: Setting.value!(:name),
+                                           email: "robot@#{Setting.customer_service_email!.split('@')[1]}"),
           address1: address.street.sub('Apt', 'Ste'),
           city: address.city,
           postal_code: address.zip_code,
           province: address.region.abbreviation,
-          country: ActiveUtils::Country.find(address.country_alpha2),
+          country: ActiveUtils::Country.find(address.country_alpha2)
         )
       end
 

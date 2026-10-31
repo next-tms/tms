@@ -109,7 +109,7 @@ class Rate < ApplicationRecord
   def pretty_service_type
     return '' if freight_kit_service_type.blank?
 
-    "#{freight_kit_service_type.sub("_", " ").titleize.sub("Am", "AM").sub("Pm", "PM")} LTL"
+    "#{freight_kit_service_type.sub('_', ' ').titleize.sub('Am', 'AM').sub('Pm', 'PM')} LTL"
   end
 
   def to_param
@@ -119,7 +119,7 @@ class Rate < ApplicationRecord
   private
 
   def set_expires_at
-    self.expires_at ||= Time.current + 14.days
+    self.expires_at ||= 14.days.from_now
   end
 
   def set_incomplete

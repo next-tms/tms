@@ -3,8 +3,9 @@ class AddTimeZoneNameToUsers < ActiveRecord::Migration[6.1]
     add_column :users, :time_zone_name, :string
 
     say 'Populate users.time_zone_name'
-    User.all.find_each do |user|
+    User.find_each do |user|
       next unless user.legacy_time_zone.is_a?(Timezone::Zone)
+
       user.update_columns(time_zone_name: user.legacy_time_zone.name)
     end
 

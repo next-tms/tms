@@ -3,8 +3,9 @@ class AddTimeZoneNameToTrackingEvents < ActiveRecord::Migration[6.1]
     add_column :tracking_events, :time_zone_name, :string
 
     say 'Populate tracking_events.time_zone_name'
-    TrackingEvent.all.find_each do |tracking_event|
+    TrackingEvent.find_each do |tracking_event|
       next unless tracking_event.legacy_time_zone.is_a?(Timezone::Zone)
+
       tracking_event.update_columns(time_zone_name: tracking_event.legacy_time_zone.name)
     end
   end

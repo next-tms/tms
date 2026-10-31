@@ -8,7 +8,7 @@ class CreateBrokerCustomerReceivableContacts < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    BrokerCustomer.all.find_each do |broker_customer|
+    BrokerCustomer.find_each do |broker_customer|
       next if broker_customer.receivables_contact_id.blank?
 
       BrokerCustomerReceivableContact.create(

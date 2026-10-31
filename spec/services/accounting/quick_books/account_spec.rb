@@ -27,7 +27,7 @@ RSpec.describe Accounting::QuickBooks::Account do
     context 'when the account number exceeds 20 characters' do
       let(:record) { described_class.new(account_number: '0' * 25, name: 'Bank', sub_type: :checking) }
 
-      it { saved && (expect(service).to(have_received(:create) { |model| expect(model.acct_num).to eq("#{'0' * 17}...") })) }
+      it { saved && expect(service).to(have_received(:create) { |model| expect(model.acct_num).to eq("#{'0' * 17}...") }) }
     end
   end
 
@@ -37,17 +37,17 @@ RSpec.describe Accounting::QuickBooks::Account do
     let(:checking) { Quickbooks::Model::Account.new(account_sub_type: 'Checking', classification: 'Liability').tap { it.id = '1' } }
     let(:asset) { Quickbooks::Model::Account.new(account_sub_type: 'Bank', classification: 'Asset').tap { it.id = '2' } }
 
-    before { allow(service).to receive(:all).and_return([ checking, asset ]) }
+    before { allow(service).to receive(:all).and_return([checking, asset]) }
 
     it 'returns only Checking/CreditCard liability accounts' do
-      expect(all.map(&:id)).to eq([ '1' ])
+      expect(all.map(&:id)).to eq(['1'])
     end
   end
 
   describe '.find_by' do
     subject(:found) { described_class.find_by(name: 'Operating') }
 
-    before { allow(service).to receive(:find_by).and_return([ Quickbooks::Model::Account.new(name: 'Operating').tap { it.id = '5' } ]) }
+    before { allow(service).to receive(:find_by).and_return([Quickbooks::Model::Account.new(name: 'Operating').tap { it.id = '5' }]) }
 
     it 'queries the QuickBooks name field' do
       found

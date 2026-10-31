@@ -19,10 +19,10 @@ module Accounting
         integration.update!(
           credentials: {
             access_token: response.token,
-            access_token_expires_at: (Time.at(response.expires_at) if response.expires_at),
+            access_token_expires_at: (Time.zone.at(response.expires_at) if response.expires_at),
             realm_id:,
             refresh_token: response.refresh_token
-          },
+          }
         )
       end
 
@@ -62,7 +62,7 @@ module Accounting
           ENV.fetch('INTUIT_CLIENT_SECRET'),
           authorize_url: 'https://appcenter.intuit.com/connect/oauth2',
           site: 'https://appcenter.intuit.com/connect/oauth2',
-          token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',
+          token_url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
         )
       end
 
@@ -73,10 +73,10 @@ module Accounting
         integration.update!(
           credentials: credentials.merge(
             access_token: refreshed.token,
-            access_token_expires_at: Time.at(refreshed.expires_at),
+            access_token_expires_at: Time.zone.at(refreshed.expires_at),
             refresh_token: refreshed.refresh_token,
-            refresh_token_expires_at: expires_in.positive? ? Time.now + expires_in.seconds : 100.days.from_now,
-          ),
+            refresh_token_expires_at: expires_in.positive? ? Time.zone.now + expires_in.seconds : 100.days.from_now
+          )
         )
       end
     end

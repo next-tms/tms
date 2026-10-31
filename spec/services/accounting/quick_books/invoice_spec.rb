@@ -17,7 +17,7 @@ RSpec.describe Accounting::QuickBooks::Invoice do
           Accounting::LineItem.new(description: 'Shipper Ref: ABC'),
           Accounting::LineItem.new(amount: 250.0, description: 'Freight', kind: :sales, quantity: 1, unit_price: 250.0)
         ],
-        shipping_method: 'A Very Long Carrier Name That Exceeds Thirty-One Characters',
+        shipping_method: 'A Very Long Carrier Name That Exceeds Thirty-One Characters'
       )
     end
 
@@ -54,7 +54,7 @@ RSpec.describe Accounting::QuickBooks::Invoice do
 
     before do
       allow(service).to receive(:create).and_raise(Quickbooks::IntuitRequestException.new('Duplicate Document Number Error'))
-      allow(service).to receive(:find_by).and_return([ existing ])
+      allow(service).to receive(:find_by).and_return([existing])
     end
 
     it { expect(saved.id).to eq('88') }

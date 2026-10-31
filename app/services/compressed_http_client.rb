@@ -1,16 +1,16 @@
 class CompressedHTTPClient
   class << self
-    def delete(url, accept: ACCEPT, headers: {}, **) = client(accept, **).delete(url, headers:)
-    def get(url, accept: ACCEPT, headers: {}, **) = client(accept, **).get(url, headers:)
-    def patch(url, accept: ACCEPT, body: nil, headers: {}, json: nil, **) = client(accept, **).patch(url, body:, headers:, json:)
-    def post(url, accept: ACCEPT, body: nil, headers: {}, json: nil, **) = client(accept, **).post(url, body:, headers:, json:)
-    def put(url, accept: ACCEPT, body: nil, headers: {}, json: nil, **) = client(accept, **).put(url, body:, headers:, json:)
+    def delete(url, accept: ACCEPT, **) = request(:delete, url, accept, **)
+    def get(url, accept: ACCEPT, **) = request(:get, url, accept, **)
+    def patch(url, accept: ACCEPT, **) = request(:patch, url, accept, **)
+    def post(url, accept: ACCEPT, **) = request(:post, url, accept, **)
+    def put(url, accept: ACCEPT, **) = request(:put, url, accept, **)
 
     def user_agent
       @user_agent ||= begin
         sysname = Etc.uname[:sysname]
-        arch, platform, os = sysname == 'Darwin' ? [ 'Intel', 'Macintosh', 'Mac OS X' ] : [ RbConfig::CONFIG['host_cpu'], sysname, sysname ]
-        parts = [ 'next-tms/1.0' ]
+        arch, platform, os = sysname == 'Darwin' ? ['Intel', 'Macintosh', 'Mac OS X'] : [RbConfig::CONFIG['host_cpu'], sysname, sysname]
+        parts = ['next-tms/1.0']
         parts << "(#{platform}; #{arch} #{os})"
         parts << "Rails/#{Rails.version}"
         parts << "Ruby/#{RUBY_VERSION} (#{Etc.uname[:machine]})"
@@ -21,18 +21,30 @@ class CompressedHTTPClient
     private
 
     def client(accept, **) = new(accept, persistent: false, **)
+
+    def request(verb, url, accept, **options)
+      arguments = options.extract!(*REQUEST_ARGUMENTS.fetch(verb))
+      client(accept, **options).public_send(verb, url, **arguments)
+    end
   end
 
   ACCEPT = 'application/json, application/vnd.api+json'.freeze
   ACCEPT_ENCODING = 'zstd, br, gzip'.freeze
   MAX_RETRIES = 5
-  RETRYABLE_STATUSES = [ 429, 503 ].freeze
+  REQUEST_ARGUMENTS = {
+    delete: %i[headers],
+    get: %i[headers],
+    patch: %i[body headers json],
+    post: %i[body headers json],
+    put: %i[body headers json]
+  }.freeze
+  RETRYABLE_STATUSES = [429, 503].freeze
   SENSITIVE_HTTP_HEADERS = Rails
                            .application
                            .config
                            .filter_parameters
                            .map { |parameter| /#{parameter.to_s.gsub('_', '[-_]')}/i } +
-                           [ /authorization/i, /cookie/i, /key/i ]
+                           [/authorization/i, /cookie/i, /key/i]
   PARAMETER_FILTER = ActiveSupport::ParameterFilter.new(SENSITIVE_HTTP_HEADERS)
 
   attr_reader :headers, :session
@@ -142,7 +154,7 @@ class CompressedHTTPClient
     return if value.blank?
     return value.to_i if value.match?(/\A\d+\z/)
 
-    [ (Time.httpdate(value) - Time.current).to_i, 0 ].max
+    [(Time.httpdate(value) - Time.current).to_i, 0].max
   rescue ArgumentError
     nil
   end
@@ -161,7 +173,7 @@ class CompressedHTTPClient
     # HTTPX's :retries plugin decrements request.retries from max_retries to 0, so attempts_made grows each retry
     attempts_made = request.options.max_retries - request.retries
     base = from_header || (attempts_made * 2)
-    base + rand(0..[ base / 2.0, 5 ].min) # add jitter to break stampedes
+    base + rand(0..[base / 2.0, 5].min) # add jitter to break stampedes
   end
 
   def retry_on_status?(response) = response.is_a?(HTTPX::Response) && RETRYABLE_STATUSES.include?(response.status)

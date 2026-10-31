@@ -1,5 +1,5 @@
 class Broker::BrokerController < ApplicationController
-  COMPANY_SETTING_KEYS = %w[mailing_address customer_service_email phone].freeze
+  COMPANY_SETTING_KEYS = ['mailing_address', 'customer_service_email', 'phone'].freeze
 
   before_action :restrict_to_broker_users
 

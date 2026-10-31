@@ -27,7 +27,7 @@ module Accounting
 
         private
 
-        def email_status(status) = %w[SENT VIEWED].include?(status) ? 'EmailSent' : status
+        def email_status(status) = ['SENT', 'VIEWED'].include?(status) ? 'EmailSent' : status
 
         def items_input(invoice)
           product_id = Product.id

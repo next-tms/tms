@@ -1,1 +1,1 @@
-Selenium::WebDriver::Chrome.path = ENV['GOOGLE_CHROME_SHIM'] unless ENV['GOOGLE_CHROME_SHIM'].blank?
+Selenium::WebDriver::Chrome.path = ENV['GOOGLE_CHROME_SHIM'] if ENV['GOOGLE_CHROME_SHIM'].present?

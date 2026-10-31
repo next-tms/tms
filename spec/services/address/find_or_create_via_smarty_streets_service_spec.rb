@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Address::FindOrCreateViaSmartyStreetsService) do
-  let(:address_key) { "4011 Lana Tier, Fremont, CA 94536" }
+  let(:address_key) { '4011 Lana Tier, Fremont, CA 94536' }
   let(:region) { Transponder::ORM::Region.find('US-CA') }
   let(:street) { '4011 Lana Tier' }
   let(:city) { 'Fremont' }

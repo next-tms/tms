@@ -4,7 +4,7 @@ class DropCarrierContacts < ActiveRecord::Migration[7.0]
   end
 
   def down
-    create_table "carrier_contacts", force: :cascade do |t|
+    create_table 'carrier_contacts', force: :cascade do |t|
       t.reference :broker
       t.reference :carrier
       t.reference :contact

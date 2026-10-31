@@ -5,6 +5,15 @@
 class ShipmentNotifier < BaseNotifier
   required_params :shipment, :attribute_changed
 
+  HUMANIZED_ATTRIBUTES = {
+    delivered_at: 'Delivered',
+    delivery_appointment_at: 'Scheduled for Delivery',
+    delivery_appointment_on: 'Scheduled for Delivery',
+    departed_origin_terminal_at: 'Departed from Origin Terminal"',
+    out_for_delivery_at: 'Out for Delivery',
+    picked_up_at: 'Picked Up'
+  }.freeze
+
   def mailer_class(_notification = nil) = UserMailer
   def mailer_params(_notification = nil) = { shipment: params[:shipment] }
   def mailer_method(_notification = nil) = params[:attribute_changed]
@@ -26,22 +35,13 @@ class ShipmentNotifier < BaseNotifier
   def humanized_attribute_changed
     return params[:shipment].booked_at.blank? ? 'Unbooked' : 'Booked' if params[:attribute_changed].to_sym == :booked_at
 
-    case params[:attribute_changed].to_sym
-    when :delivered_at then 'Delivered'
-    when :delivery_appointment_at then 'Scheduled for Delivery'
-    when :delivery_appointment_on then 'Scheduled for Delivery'
-    when :departed_origin_terminal_at then 'Departed from Origin Terminal"'
-    when :out_for_delivery_at then 'Out for Delivery'
-    when :picked_up_at then 'Picked Up'
-    end
+    HUMANIZED_ATTRIBUTES[params[:attribute_changed].to_sym]
   end
 
   def notification_subject = message
 
   def url
-    if %i[canceled_at new_shipment].include?(params[:attribute_changed].to_sym)
-      return broker_shipment_path(params[:shipment])
-    end
+    return broker_shipment_path(params[:shipment]) if %i[canceled_at new_shipment].include?(params[:attribute_changed].to_sym)
 
     if %i[dispatcher_id].include?(params[:attribute_changed].to_sym)
       return broker_shipment_path(params[:shipment], attr: params[:attribute_changed])

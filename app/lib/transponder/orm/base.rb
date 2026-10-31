@@ -14,9 +14,9 @@ module Transponder
       delegate :model_name, to: :class
 
       def ==(other) = other.is_a?(self.class) && other.id == id
-      alias_method :eql?, :==
+      alias eql? ==
 
-      def hash = [ self.class, id ].hash
+      def hash = [self.class, id].hash
       def id = public_send(self.class.primary_key)
       def inspect = "#<#{self.class.name} id=#{id}>"
       def persisted? = true

@@ -18,6 +18,7 @@ RSpec.describe(AccountingMailer) do
       create(:customer_user).tap { |user| user.contact.contact_roles.create!(role: :root) }
     end
 
-    it { expect(mail.to).to(eq([ root_user.email ])) }
+    it { expect(mail.subject).to(eq('Accounting Customer Sync Failure')) }
+    it { expect(mail.to).to(eq([root_user.email])) }
   end
 end

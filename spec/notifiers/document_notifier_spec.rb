@@ -8,11 +8,11 @@ RSpec.describe(DocumentNotifier) do
 
   before do
     allow(notifier).to receive(:params).and_return({
-      contact:,
-      document_type: :carrier_bol,
-      from_user:,
-      shipment:
-    })
+                                                     contact:,
+                                                     document_type: :carrier_bol,
+                                                     from_user:,
+                                                     shipment:
+                                                   })
   end
 
   describe '#mailer_class' do
@@ -40,7 +40,10 @@ RSpec.describe(DocumentNotifier) do
   end
 
   describe '#notification_subject' do
-    it { expect(notifier.notification_subject).to eq("Your Scanned Bill of Landing is attached for the following shipment (Load ##{shipment.load_id})") }
+    it do
+      expect(notifier.notification_subject)
+        .to(eq("Your Scanned Bill of Landing is attached for the following shipment (Load ##{shipment.load_id})"))
+    end
   end
 
   describe '#humanized_document_type' do

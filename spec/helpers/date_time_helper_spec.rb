@@ -13,7 +13,7 @@ RSpec.describe(DateTimeHelper) do
 
       it do
         expect(result).to(
-          eq(controller: 'flatpickr', flatpickr_date_format: 'Y-m-d', flatpickr_max_date: Date.new(2024, 2, 14)),
+          eq(controller: 'flatpickr', flatpickr_date_format: 'Y-m-d', flatpickr_max_date: Date.new(2024, 2, 14))
         )
       end
     end
@@ -134,8 +134,8 @@ RSpec.describe(DateTimeHelper) do
       expect(time_tag_html).to(
         eq(
           '<time datetime="2026-07-14T10:00:00-07:00" data-controller="time" ' \
-          'data-time-time-zone-value="America/Los_Angeles">2026-07-14T10:00:00-07:00</time>',
-        ),
+          'data-time-time-zone-value="America/Los_Angeles">2026-07-14T10:00:00-07:00</time>'
+        )
       )
     end
 
@@ -165,8 +165,8 @@ RSpec.describe(DateTimeHelper) do
         expect(time_tag_html).to(
           eq(
             '<time datetime="2026-07-14T13:00:00-04:00" data-controller="time" ' \
-            'data-time-time-zone-value="America/New_York">2026-07-14T13:00:00-04:00</time>',
-          ),
+            'data-time-time-zone-value="America/New_York">2026-07-14T13:00:00-04:00</time>'
+          )
         )
       end
 
@@ -230,13 +230,13 @@ RSpec.describe(DateTimeHelper) do
 
     let(:time_zone_name) { 'America/Denver' }
 
-    it { is_expected.to(include([ '(GMT-07:00) Mountain Time (US & Canada)', 'America/Denver' ])) }
+    it { is_expected.to(include(['(GMT-07:00) Mountain Time (US & Canada)', 'America/Denver'])) }
     it { expect(options.map(&:last)).to(eq(options.map(&:last).uniq)) }
 
     context 'when time_zone_name is not in the list' do
       let(:time_zone_name) { 'America/Boise' }
 
-      it { expect(options.first).to(eq([ 'America/Boise', 'America/Boise' ])) }
+      it { expect(options.first).to(eq(['America/Boise', 'America/Boise'])) }
     end
 
     context 'when time_zone_name is blank' do

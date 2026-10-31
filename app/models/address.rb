@@ -57,11 +57,11 @@
 #
 class Address < ApplicationRecord
   class << self
-    def ransackable_attributes(auth_object = nil)
-      [ 'city', 'country_alpha2', 'region_iso31662', 'street', 'street2', 'zip_code' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['city', 'country_alpha2', 'region_iso31662', 'street', 'street2', 'zip_code']
     end
 
-    def ransackable_associations(auth_object = nil)
+    def ransackable_associations(_auth_object = nil)
       []
     end
   end
@@ -158,7 +158,7 @@ class Address < ApplicationRecord
     @names ||= (
       Shipment.where(shipper_address: self).pluck(:shipper_name) +
       Shipment.where(receiver_address: self).pluck(:receiver_name)
-    ).uniq.reject(&:blank?)
+    ).uniq.compact_blank
   end
 
   def time_zone
@@ -178,7 +178,7 @@ class Address < ApplicationRecord
       city:,
       country: ActiveUtils::Country.find(country.alpha2),
       postal_code: zip_code,
-      province: region.abbreviation,
+      province: region.abbreviation
     )
   end
 
@@ -209,7 +209,7 @@ class Address < ApplicationRecord
       region_iso31662:,
       postal_code: zip_code,
       country_alpha2:,
-      key:,
+      key:
     )
 
     self.standardized_address = new_standardized_address
@@ -236,7 +236,7 @@ class Address < ApplicationRecord
       line1: street,
       line2: street2,
       postal_code: zip_code,
-      region: region.abbreviation,
+      region: region.abbreviation
     )
   end
 
@@ -256,11 +256,10 @@ class Address < ApplicationRecord
 
   def validate_ref
     case ref.downcase
-    when 'none' then errors.add(ref, "cannot be “#{value}”")
-    when 'verbal' then errors.add(ref, "cannot be “#{value}”")
+    when 'none', 'verbal' then errors.add(ref, "cannot be “#{value}”")
     end
 
-    [ 'C/O', 'P/O', 'P/U', 'Ref:', 'S/O', '#' ].each do |prefix|
+    ['C/O', 'P/O', 'P/U', 'Ref:', 'S/O', '#'].each do |prefix|
       matched_prefix = ref.match(/\A#{Regexp.escape(prefix)}/i)
       next if matched_prefix.blank?
 
@@ -281,10 +280,10 @@ class Address < ApplicationRecord
       value = public_send(attribute)
       next if value.blank?
 
-      matched_prefix = value.match(/\A#{Regexp.escape("C/O")}/i)
+      matched_prefix = value.match(/\A#{Regexp.escape('C/O')}/i)
       errors.add(attribute, "cannot contain “#{matched_prefix}”") if matched_prefix.present?
 
-      [ 'Re:', 'Ref:', 'Release' ].each do |prefix|
+      ['Re:', 'Ref:', 'Release'].each do |prefix|
         matched_prefix = value.match(/\A#{Regexp.escape(prefix)}/i)
         next if matched_prefix.blank?
 

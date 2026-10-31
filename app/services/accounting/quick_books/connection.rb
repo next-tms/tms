@@ -1,7 +1,7 @@
 module Accounting
   module QuickBooks
     class Connection
-      BACKOFF_EXCEPTIONS = [ ::Quickbooks::ServiceUnavailable, ::Quickbooks::TooManyRequests ].freeze
+      BACKOFF_EXCEPTIONS = [::Quickbooks::ServiceUnavailable, ::Quickbooks::TooManyRequests].freeze
       MAX_RETRIES = 10
       RETRY_WAIT_SECONDS = 30
 
@@ -9,7 +9,7 @@ module Accounting
 
       def initialize(record_class) = @record_class = record_class
 
-      def all(**) = request { |service| service.all }.map { |object| build(object) }
+      def all(**) = request(&:all).map { |object| build(object) }
       def create(record) = build(request { |service| service.create(record_class.serialize(record)) })
       def destroy(record) = request { |service| service.delete(service.fetch_by_id(record.id)) }
       def find(id) = build(request(return_nil_on_404: true) { |service| service.fetch_by_id(id) })

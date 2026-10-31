@@ -2,8 +2,6 @@ module Suppressible
   extend ActiveSupport::Concern
 
   included do
-    has_many :suppressions, as: :suppressible
-
     validate :suppressible!
 
     def suppressed_by_problematic

@@ -32,17 +32,18 @@ class Broker::UsersController < Broker::BrokerController
     # the Contact#accept_nested_attributes is not triggered on #update since we are
     # not updating or tou the @user.contact record
     new_roles = @user.contact.contact_roles.select(&:new_record?)
-    new_roles.map(&:save!) if new_roles
+    new_roles&.map(&:save!)
 
     removeable_roles = @user.contact.contact_roles.select(&:_destroy)
-    removeable_roles.map(&:destroy!) if removeable_roles.present?
+    removeable_roles.presence&.map(&:destroy!)
 
-    if @user.save
-      flash[:success] = 'Successfully Updated User'
-      redirect_to(broker_user_path(@user))
-    else
+    unless @user.save
       render(:edit)
+      return
     end
+
+    flash[:success] = t('.success')
+    redirect_to([:broker, @user])
   end
 
   private
@@ -52,17 +53,21 @@ class Broker::UsersController < Broker::BrokerController
   end
 
   def user_params
-    params.require(:user).permit(
-      :companyable_sgid,
-      :deactivated,
-      :email,
-      :first_name,
-      :last_name,
-      :phone,
-      contact_attributes: [
-                            :id,
-                            contact_roles_attributes: %i[_destroy id role]
-                          ],
+    params.expect(
+      user: [
+        :companyable_sgid,
+        :deactivated,
+        :email,
+        :first_name,
+        :last_name,
+        :phone,
+        {
+          contact_attributes: [
+            :id,
+            { contact_roles_attributes: [%i[_destroy id role]] }
+          ]
+        }
+      ]
     )
   end
 

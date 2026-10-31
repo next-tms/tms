@@ -1,0 +1,6 @@
+json.city(@address.city)
+json.state(@address.region.name)
+json.street(@address.street)
+json.street2(@address.street2)
+json.zip_code(@address.zip_code)
+json.standardized_address_id(@address.standardized_address_id)

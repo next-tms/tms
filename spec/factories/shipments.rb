@@ -192,7 +192,7 @@ FactoryBot.define do
   factory :shipment do
     sequence(:load_id)
 
-    applied_rate_id { }
+    applied_rate_id { nil }
     bol { Faker::Number.number }
     bol_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     booked_at { 2.weeks.ago }
@@ -204,7 +204,7 @@ FactoryBot.define do
     carrier_charge_currency { Faker::Currency.code }
     carrier_cost_cents { 1 }
     carrier_cost_currency { Faker::Currency.code }
-    created_by_id { }
+    created_by_id { nil }
     customer_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     customer_reference { Faker::Number.number }
     delivered_at { 1.minute.ago }
@@ -218,7 +218,7 @@ FactoryBot.define do
     lift_gate_delivery { false }
     lift_gate_pickup { false }
     lost_on { 5.minutes.ago }
-    notify { [ true, false ].sample }
+    notify { [true, false].sample }
     out_for_delivery_at { 1.week.ago }
     pending_appointment_since { 13.days.ago }
     picked_up_at { 13.days.ago }
@@ -233,7 +233,7 @@ FactoryBot.define do
     promised_delivery_by { 1.week.ago }
     public_notes { Faker::Lorem.sentences(number: rand(10)).join(' ') }
     quote_id { Faker::Number.number }
-    quote_only { [ true, false ].sample }
+    quote_only { [true, false].sample }
     quoted_delivery_by { 1.week.ago }
     receiver_address { create(:address) }
     receiver_available_at { 2.weeks.ago }
@@ -255,7 +255,7 @@ FactoryBot.define do
     total_charges_currency { Faker::Currency.code }
     total_cost_cents { Faker::Number.between(from: 100, to: 5_000).ceil }
     total_cost_currency { Faker::Currency.code }
-    truckload { [ true, false ].sample }
+    truckload { [true, false].sample }
     value_cents { Faker::Number.between(from: 100, to: 5_000).ceil }
     value_currency { Faker::Currency.code }
 

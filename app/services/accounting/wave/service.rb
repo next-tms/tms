@@ -21,10 +21,10 @@ module Accounting
         integration.update!(
           credentials: {
             access_token: response.token,
-            access_token_expires_at: (Time.at(response.expires_at) if response.expires_at),
+            access_token_expires_at: (Time.zone.at(response.expires_at) if response.expires_at),
             business_id: default_business_id(response),
             refresh_token: response.refresh_token
-          },
+          }
         )
       end
 
@@ -88,7 +88,7 @@ module Accounting
           ENV.fetch('WAVE_CLIENT_SECRET'),
           authorize_url: 'https://api.waveapps.com/oauth2/authorize/',
           site: 'https://api.waveapps.com',
-          token_url: 'https://api.waveapps.com/oauth2/token/',
+          token_url: 'https://api.waveapps.com/oauth2/token/'
         )
       end
 
@@ -98,9 +98,9 @@ module Accounting
         integration.update!(
           credentials: credentials.merge(
             access_token: refreshed.token,
-            access_token_expires_at: (Time.at(refreshed.expires_at) if refreshed.expires_at),
-            refresh_token: refreshed.refresh_token,
-          ),
+            access_token_expires_at: (Time.zone.at(refreshed.expires_at) if refreshed.expires_at),
+            refresh_token: refreshed.refresh_token
+          )
         )
       end
     end

@@ -57,7 +57,10 @@ RSpec.describe(Contact) do
   describe 'unique email index' do
     before { create(:contact, companyable: nil, email: 'staff@acme.test') }
 
-    it { expect { described_class.insert_all!([ { email: 'staff@acme.test' } ]) }.to(raise_error(ActiveRecord::RecordNotUnique)) }
-    it { expect { described_class.insert_all!([ { email: nil }, { email: nil } ]) }.not_to(raise_error) }
+    it { expect { build(:contact, companyable: nil, email: 'staff@acme.test').save(validate: false) }.to(raise_error(ActiveRecord::RecordNotUnique)) }
+
+    it do
+      expect { build_list(:contact, 2, companyable: nil, email: nil).each { |contact| contact.save!(validate: false) } }.not_to(raise_error)
+    end
   end
 end

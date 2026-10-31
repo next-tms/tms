@@ -92,7 +92,7 @@ class Pickup < ApplicationRecord
       applied_rate: rate,
       dispatched_at: Time.current,
       pickup_confirmation:,
-      updated_by:,
+      updated_by:
     )
 
     shipment.pro = pro if saved_change_to_pro?

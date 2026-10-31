@@ -28,6 +28,10 @@ RSpec.describe(Location) do
     it { expect(location.region).to(equal(Transponder::ORM::Region.find('US-TX'))) }
   end
 
+  describe 'relationships' do
+    it { is_expected.to(have_many(:location_areas).dependent(:destroy)) }
+  end
+
   describe 'validations' do
     before { location.validate }
 

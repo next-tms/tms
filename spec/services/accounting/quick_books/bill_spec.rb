@@ -12,8 +12,8 @@ RSpec.describe Accounting::QuickBooks::Bill do
     let(:bill) do
       described_class.new(
         document_number: '1001',
-        line_items: [ Accounting::LineItem.new(amount: 500.0, description: 'Shipping', kind: :account_based_expense) ],
-        vendor_id: '8',
+        line_items: [Accounting::LineItem.new(amount: 500.0, description: 'Shipping', kind: :account_based_expense)],
+        vendor_id: '8'
       )
     end
 
@@ -25,7 +25,7 @@ RSpec.describe Accounting::QuickBooks::Bill do
       expect(service).to(have_received(:create) do |model|
         expect(model.doc_number.to_s).to eq('1001')
         expect(model.vendor_ref.value).to eq('8')
-        expect(model.line_items.map(&:detail_type)).to eq([ 'AccountBasedExpenseLineDetail' ])
+        expect(model.line_items.map(&:detail_type)).to eq(['AccountBasedExpenseLineDetail'])
       end)
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Accounting::QuickBooks::Bill do
 
     before do
       allow(service).to receive(:create).and_raise(Quickbooks::IntuitRequestException.new('Duplicate Document Number Error'))
-      allow(service).to receive(:find_by).and_return([ existing ])
+      allow(service).to receive(:find_by).and_return([existing])
     end
 
     it { expect(saved.id).to eq('99') }

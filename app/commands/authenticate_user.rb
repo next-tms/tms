@@ -15,7 +15,7 @@ class AuthenticateUser
   attr_accessor :email, :password
 
   def api_user
-    user = User.find_by_email(email)
+    user = User.find_by(email:)
 
     unless user.present? && user.valid_password?(password)
       errors.add(:message, 'Invalid credentials')

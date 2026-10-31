@@ -1,11 +1,25 @@
 require 'rails_helper'
 
 RSpec.describe(Customer::ShipmentsController) do
-  subject { response }
-
   let(:current_user) { create(:customer_user) }
 
   before { sign_in(current_user) }
+
+  describe '#shipment_params' do
+    subject { controller.__send__(:shipment_params).to_h }
+
+    let(:attributes) do
+      {
+        customer_reference: 'PO1',
+        items_attributes: { '0' => { weight: '100' } },
+        shipper_address_attributes: { city: 'Portland' }
+      }
+    end
+
+    before { controller.params = { shipment: attributes } }
+
+    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
+  end
 
   describe 'GET #index' do
     before { get(:index) }

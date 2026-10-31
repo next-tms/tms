@@ -95,7 +95,8 @@ RSpec.describe(TrackingEvent) do
 
     it do
       expect(I18n)
-        .to(have_received(:t).with('discussion_topics.tracking_event.departed', city: 'Fremont', country_alpha2: 'US', region_abbreviation: 'CA'))
+        .to(have_received(:t).with('discussion_topics.tracking_event.departed', city: 'Fremont', country_alpha2: 'US',
+                                                                                region_abbreviation: 'CA'))
     end
   end
 

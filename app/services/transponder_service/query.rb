@@ -1,11 +1,11 @@
 module TransponderService
   module Query
     class << self
-      def call(query_name, broker_carrier, object, **kwargs)
+      def call(query_name, broker_carrier, object, **)
         input_class = "TransponderService::Input::#{query_name.to_s.camelize}".constantize
 
         query = base_query(broker_carrier)
-        query.merge!(input_class.call(object, **kwargs))
+        query.merge!(input_class.call(object, **))
 
         query
       end

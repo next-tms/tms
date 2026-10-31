@@ -42,10 +42,10 @@ class ShipmentBrokerAccessorial < ApplicationRecord
   def calculate_default_charge
     cost = self.cost || Money.new(0)
     charge = cost
-    if !broker_accessorial.upcharge_percent.blank? && (broker_accessorial.upcharge_percent > 0)
+    if broker_accessorial.upcharge_percent.present? && broker_accessorial.upcharge_percent.positive?
       charge += (cost * (0.01 * broker_accessorial.upcharge_percent))
     end
-    charge += broker_accessorial.upcharge if !broker_accessorial.upcharge.blank? && (broker_accessorial.upcharge > 0)
+    charge += broker_accessorial.upcharge if broker_accessorial.upcharge.present? && broker_accessorial.upcharge.positive?
     self.charge = charge
   end
 end

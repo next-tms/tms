@@ -8,7 +8,7 @@ class Shipment::RatesService
       if !ignore_value? && shipment.value.positive? && !carrier_finds_rate_with_declared_value?
         rate = build_rate(:api)
 
-        rate.api_errors = [ { message: "#{Shipment.model_name.human} #{Shipment.human_attribute_name(:value).downcase} not supported" } ]
+        rate.api_errors = [{ message: "#{Shipment.model_name.human} #{Shipment.human_attribute_name(:value).downcase} not supported" }]
 
         @rates << rate
         rate.save! if save?
@@ -22,7 +22,7 @@ class Shipment::RatesService
                      :fetch_rates,
                      broker_carrier,
                      shipment,
-                     declared_freight_classes:,
+                     declared_freight_classes:
                    )
       rescue StandardError => e
         Rails.env.development? ? raise(e) : Sentry.capture_exception(e)
@@ -46,7 +46,7 @@ class Shipment::RatesService
         rate.assign_attributes(
           api_errors: errors,
           api_request: response[:request],
-          api_response: response[:response],
+          api_response: response[:response]
         )
 
         @rates << rate
@@ -63,7 +63,7 @@ class Shipment::RatesService
         rate.assign_attributes(
           api_errors: response[:errors],
           api_request: response[:request],
-          api_response: response[:response],
+          api_response: response[:response]
         )
 
         @rates << rate
@@ -83,13 +83,13 @@ class Shipment::RatesService
 
         rate.assign_attributes(
           api_request: response[:request].try(:to_json),
-          api_response: response[:response].try(:to_json),
+          api_response: response[:response].try(:to_json)
         )
 
         currency = transponder_rate.dig(:total_cost, :currency)
         fractional = transponder_rate.dig(:total_cost, :fractional)
 
-        if [ currency, fractional ].all?(&:present?)
+        if [currency, fractional].all?(&:present?)
           cost = Money.new(fractional, currency)
         else
           @rates << rate
@@ -119,7 +119,7 @@ class Shipment::RatesService
           freight_kit_service_type: transponder_rate[:service_name],
           reference: transponder_rate[:estimate_reference],
           tracking_carrier:,
-          transit_days: transponder_rate[:transit_days],
+          transit_days: transponder_rate[:transit_days]
         )
 
         @rates << rate

@@ -10,7 +10,7 @@ module FreightKitAPIClient
       def call
         return if %i[api api_key api_proxy selenoid website].exclude?(type)
 
-        creds = send("#{type}_credentials")
+        creds = __send__("#{type}_credentials")
         return creds if @return_hash
 
         FreightKit::Credential.new(**creds)
@@ -58,7 +58,7 @@ module FreightKitAPIClient
       end
 
       def website_credentials
-        return if [ broker_carrier.website_username, broker_carrier.website_password ].any?(&:blank?)
+        return if [broker_carrier.website_username, broker_carrier.website_password].any?(&:blank?)
 
         {
           type: :website,

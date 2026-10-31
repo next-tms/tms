@@ -32,12 +32,12 @@
 #
 class Claim < ApplicationRecord
   class << self
-    def ransackable_attributes(auth_object = nil)
-      [ 'balance_cents', 'due_on', 'total_cents' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['balance_cents', 'due_on', 'total_cents']
     end
 
-    def ransackable_associations(auth_object = nil)
-      [ 'broker_carrier', 'broker_customer', 'shipment' ]
+    def ransackable_associations(_auth_object = nil)
+      ['broker_carrier', 'broker_customer', 'shipment']
     end
   end
 
@@ -46,7 +46,7 @@ class Claim < ApplicationRecord
 
   belongs_to :shipment
 
-  has_many :claim_items
+  has_many :claim_items, dependent: :destroy
   accepts_nested_attributes_for :claim_items, allow_destroy: true, reject_if: :all_blank
 
   has_many :items, through: :shipment
@@ -56,7 +56,7 @@ class Claim < ApplicationRecord
   monetize :balance_cents
   monetize :total_cents
 
-  scope :paid, -> { where('balance_cents <= ?', 0) }
+  scope :paid, -> { where(balance_cents: ..0) }
   scope :unpaid, -> { where('balance_cents > ?', 0) }
 
   private

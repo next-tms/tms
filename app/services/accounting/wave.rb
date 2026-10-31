@@ -8,7 +8,7 @@ module Accounting
           city: address['city'],
           line1: address['addressLine1'],
           line2: address['addressLine2'],
-          postal_code: address['postalCode'],
+          postal_code: address['postalCode']
         )
       end
 

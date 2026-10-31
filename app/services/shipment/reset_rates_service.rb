@@ -35,7 +35,7 @@ class Shipment::ResetRatesService
   end
 
   def blank_calculated_and_declared_freight_classes?
-    shipment.calculated_freight_classes.uniq == [ nil ] && shipment.declared_freight_classes.uniq.blank?
+    shipment.calculated_freight_classes.uniq == [nil] && shipment.declared_freight_classes.uniq.blank?
   end
 
   def customer_has_preferred_broker_carriers?
@@ -45,7 +45,7 @@ class Shipment::ResetRatesService
   def destroy_rates!
     return shipment.rates.destroy_all if shipment.applied_rate.blank?
 
-    applied_rate_and_pickups_rate_ids = [ shipment.applied_rate.id ] + shipment.pickups.pluck(:rate_id)
+    applied_rate_and_pickups_rate_ids = [shipment.applied_rate.id] + shipment.pickups.pluck(:rate_id)
     shipment.rates.where.not(id: applied_rate_and_pickups_rate_ids).destroy_all
   end
 

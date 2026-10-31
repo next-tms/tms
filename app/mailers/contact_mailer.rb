@@ -9,7 +9,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Bill of Lading',
       shipment:,
       from_user:,
-      to_contact:,
+      to_contact:
     )
   end
 
@@ -24,7 +24,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Dispatch Sheet',
       shipment:,
       from_user:,
-      to_contact:,
+      to_contact:
     )
   end
 
@@ -36,7 +36,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Quote',
       shipment:,
       from_user:,
-      to_contact:,
+      to_contact:
     )
   end
 
@@ -48,7 +48,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Scanned Bill of Lading',
       shipment:,
       from_user:,
-      to_contact:,
+      to_contact:
     )
   end
 
@@ -60,7 +60,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Proof of Delivery',
       shipment:,
       from_user:,
-      to_contact:,
+      to_contact:
     )
   end
 
@@ -72,7 +72,7 @@ class ContactMailer < ApplicationMailer
       document_name: 'Label',
       shipment:,
       from_user:,
-      to_contact:,
+      to_contact:
     )
   end
 
@@ -81,11 +81,11 @@ class ContactMailer < ApplicationMailer
     @document_type = params[:record].to_notification.humanized_document_type
 
     send_document(
-      document: params[:shipment].send(params[:document_type]),
+      document: params[:shipment].public_send(params[:document_type]),
       document_name: @document_type,
       shipment: params[:shipment],
       from_user: params[:from_user],
-      to_contact: params[:to_contact],
+      to_contact: params[:to_contact]
     )
   end
 
@@ -122,17 +122,11 @@ class ContactMailer < ApplicationMailer
       cc:,
       reply_to: from_user.blank? ? nil : pretty_email(from_user),
       to: pretty_email(to_contact),
-      subject:,
+      subject:
     )
   end
 
-  def pretty_email(model)
-    if model.label.blank?
-      model.email
-    else
-      # Postmark doesn't like this format:
-      # "#{model.label} <#{model.email}>"
-      model.email
-    end
-  end
+  # Postmark doesn't like this format:
+  # "#{model.label} <#{model.email}>"
+  def pretty_email(model) = model.email
 end

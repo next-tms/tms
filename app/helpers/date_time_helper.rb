@@ -14,7 +14,7 @@ module DateTimeHelper
                flatpickr_alt_input: true,
                flatpickr_alt_format: 'Y-m-d h:i K',
                flatpickr_enable_time: true,
-               flatpickr_date_format: 'Y-m-dTH:i:00-00:00',
+               flatpickr_date_format: 'Y-m-dTH:i:00-00:00'
              )
     end
 
@@ -29,7 +29,7 @@ module DateTimeHelper
       flatpickr_alt_input: true,
       flatpickr_alt_format: 'Y-m-d h:i K',
       flatpickr_enable_time: true,
-      flatpickr_date_format: "Y-m-dTH:i:00#{formatted_offset}",
+      flatpickr_date_format: "Y-m-dTH:i:00#{formatted_offset}"
     )
   end
 
@@ -39,10 +39,10 @@ module DateTimeHelper
     starts_at = hours_on(date, start_at, time_zone)
     ends_at = hours_on(date, end_at, time_zone)
 
-    return safe_join([ start_at, '-', end_at ], ' ') if starts_at.nil? || ends_at.nil?
-    return safe_join([ start_at, '-', end_at, tag.small(starts_at.zone) ], ' ') if starts_at.zone == ends_at.zone
+    return safe_join([start_at, '-', end_at], ' ') if starts_at.nil? || ends_at.nil?
+    return safe_join([start_at, '-', end_at, tag.small(starts_at.zone)], ' ') if starts_at.zone == ends_at.zone
 
-    safe_join([ start_at, tag.small(starts_at.zone), '-', end_at, tag.small(ends_at.zone) ], ' ')
+    safe_join([start_at, tag.small(starts_at.zone), '-', end_at, tag.small(ends_at.zone)], ' ')
   end
 
   def long_date(date, time_zone)
@@ -53,7 +53,7 @@ module DateTimeHelper
             "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
     end
 
-    date.in_time_zone(time_zone.name).strftime('%m/%d/%y').html_safe
+    date.in_time_zone(time_zone.name).strftime('%m/%d/%y')
   end
 
   def maybe_in_time_zone(datetime:, time_zone:)
@@ -72,10 +72,10 @@ module DateTimeHelper
 
     format = date.year == Time.current.year ? '%m/%d %a %-l:%M %p' : '%m/%d/%y %a %-l:%M %p'
 
-    parts = [ date.in_time_zone(time_zone.name).strftime(format) ]
-    parts << "<small>#{time_zone_abbreviation(time_zone, at: date)}</small>" if abbreviation
+    parts = [date.in_time_zone(time_zone.name).strftime(format)]
+    parts << tag.small(time_zone_abbreviation(time_zone, at: date)) if abbreviation
 
-    parts.join(' ').html_safe
+    safe_join(parts, ' ')
   end
 
   def short_date(date, time_zone)
@@ -86,7 +86,7 @@ module DateTimeHelper
             "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
     end
 
-    date.in_time_zone(time_zone).strftime('%m/%d/%y').html_safe
+    date.in_time_zone(time_zone).strftime('%m/%d/%y')
   end
 
   def time(datetime, time_zone = nil)
@@ -104,18 +104,16 @@ module DateTimeHelper
   end
 
   def time_zone_abbreviation(time_zone, at: Time.current)
-    unless time_zone.is_a?(ActiveSupport::TimeZone)
-      raise ArgumentError, 'time_zone must be an ActiveSupport::TimeZone'
-    end
+    raise ArgumentError, 'time_zone must be an ActiveSupport::TimeZone' unless time_zone.is_a?(ActiveSupport::TimeZone)
 
     at.in_time_zone(time_zone).zone
   end
 
   def time_zone_options(time_zone_name)
-    options = ActiveSupport::TimeZone.all.uniq { |time_zone| time_zone.tzinfo.name }.map { |time_zone| [ time_zone.to_s, time_zone.tzinfo.name ] }
+    options = ActiveSupport::TimeZone.all.uniq { |time_zone| time_zone.tzinfo.name }.map { |time_zone| [time_zone.to_s, time_zone.tzinfo.name] }
     return options if time_zone_name.blank? || options.any? { |_label, value| value == time_zone_name }
 
-    [ [ time_zone_name, time_zone_name ], *options ]
+    [[time_zone_name, time_zone_name], *options]
   end
 
   private

@@ -9,7 +9,7 @@ module Accounting
           country_sub_division_code: address.region,
           line1: address.line1,
           line2: address.line2,
-          postal_code: address.postal_code,
+          postal_code: address.postal_code
         )
       end
     end

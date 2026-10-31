@@ -1,26 +1,26 @@
 module TransponderService
   class << self
-    def mutate(operation, broker_carrier, object, **kwargs)
-      commit(:mutation, operation, broker_carrier, object, **kwargs)
+    def mutate(operation, broker_carrier, object, **)
+      commit(:mutation, operation, broker_carrier, object, **)
     end
 
-    def query(operation, broker_carrier, object, **kwargs)
-      commit(:query, operation, broker_carrier, object, **kwargs)
+    def query(operation, broker_carrier, object, **)
+      commit(:query, operation, broker_carrier, object, **)
     end
 
     private
 
-    def commit(method, operation, broker_carrier, object, **kwargs)
+    def commit(method, operation, broker_carrier, object, **)
       method_class = [
-                       'GraphQLClient',
-                       'Transponder',
-                       method.to_s.camelize,
-                       operation.to_s.camelize,
-                       'DETAILS'
-                     ]
+        'GraphQLClient',
+        'Transponder',
+        method.to_s.camelize,
+        operation.to_s.camelize,
+        'DETAILS'
+      ]
                      .join('::')
                      .constantize
-      variables = Query.call(operation.to_s.camelize(:lower), broker_carrier, object, **kwargs)
+      variables = Query.call(operation.to_s.camelize(:lower), broker_carrier, object, **)
       response = GraphQLClient::Transponder::Client.query(method_class, variables:)
 
       parse_response(response, operation.to_s.camelize(:lower))
@@ -29,7 +29,7 @@ module TransponderService
 
       Sentry.capture_exception(e)
 
-      { errors: [ e.message ] }
+      { errors: [e.message] }
     end
 
     def parse_response(response, operation)
@@ -48,7 +48,7 @@ module TransponderService
   end
 
   API_EXCEPTIONS = [
-                     GraphQL::Client::Error,
-                     RuntimeError
-                   ].freeze
+    GraphQL::Client::Error,
+    RuntimeError
+  ].freeze
 end

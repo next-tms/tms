@@ -23,11 +23,11 @@ RSpec.describe(Shipment::DeliveryDateService) do
       context "when #{shipment_datetime} is present" do
         let(:nullable_dates) do
           dates = %i[
-                    promised_delivery_by
-                    delivery_appointment_at
-                    delivery_appointment_on
-                    delivery_eta_on
-                  ] - [ shipment_datetime ]
+            promised_delivery_by
+            delivery_appointment_at
+            delivery_appointment_on
+            delivery_eta_on
+          ] - [shipment_datetime]
           dates.map { |date| { date => nil } }.reduce({}, :merge)
         end
 
@@ -36,7 +36,7 @@ RSpec.describe(Shipment::DeliveryDateService) do
           shipment.update!(**nullable_dates)
         end
 
-        it { is_expected.to(eq(shipment.reload.send(shipment_datetime))) }
+        it { is_expected.to(eq(shipment.reload.public_send(shipment_datetime))) }
       end
     end
 
@@ -44,11 +44,11 @@ RSpec.describe(Shipment::DeliveryDateService) do
       context "when #{shipment_date} is present" do
         let(:nullable_dates) do
           dates = %i[
-                    promised_delivery_by
-                    delivery_appointment_at
-                    delivery_appointment_on
-                    delivery_eta_on
-                  ] - [ shipment_date ]
+            promised_delivery_by
+            delivery_appointment_at
+            delivery_appointment_on
+            delivery_eta_on
+          ] - [shipment_date]
           dates.map { |date| { date => nil } }.reduce({}, :merge)
         end
 
@@ -61,8 +61,8 @@ RSpec.describe(Shipment::DeliveryDateService) do
           it "returns ##{shipment_date} converted to datetime based on receiver address timezone" do
             timezone = shipment.receiver_address.time_zone
             formatted_offset = Time.current.in_time_zone(timezone).formatted_offset
-            expected_datetime = Time.zone.parse("#{shipment.send(shipment_date)} #{delivery_hours} #{formatted_offset}")
-            expect(subject).to(eq(expected_datetime))
+            expected_datetime = Time.zone.parse("#{shipment.public_send(shipment_date)} #{delivery_hours} #{formatted_offset}")
+            is_expected.to(eq(expected_datetime))
           end
         end
 
@@ -71,13 +71,15 @@ RSpec.describe(Shipment::DeliveryDateService) do
 
           it 'returns converted datetime with interval' do
             timezone = shipment.receiver_address.time_zone
-            expect(subject).to(eq(shipment.send(shipment_date).in_time_zone(timezone).beginning_of_day + hours_interval))
+            is_expected.to(eq(shipment.public_send(shipment_date).in_time_zone(timezone).beginning_of_day + hours_interval))
           end
         end
       end
 
       context 'when dates are null' do
-        before { shipment.update(promised_delivery_by: nil, delivery_appointment_at: nil, delivery_appointment_on: nil, delivery_eta_on: nil) }
+        before do
+          shipment.update(promised_delivery_by: nil, delivery_appointment_at: nil, delivery_appointment_on: nil, delivery_eta_on: nil)
+        end
 
         context 'when pickup date is null' do
           before { allow(shipment).to(receive(pickup_date_attr).and_return(nil)) }
@@ -90,8 +92,9 @@ RSpec.describe(Shipment::DeliveryDateService) do
 
           it 'returns pickup date + 5 business days with interval' do
             timezone = shipment.receiver_address.time_zone
-            expected_datetime = 5.business_days.after(shipment.send(pickup_date_attr).in_time_zone(timezone)).beginning_of_day + hours_interval
-            expect(subject).to(eq(expected_datetime))
+            pickup_at = shipment.public_send(pickup_date_attr).in_time_zone(timezone)
+            expected_datetime = 5.business_days.after(pickup_at).beginning_of_day + hours_interval
+            is_expected.to(eq(expected_datetime))
           end
         end
       end

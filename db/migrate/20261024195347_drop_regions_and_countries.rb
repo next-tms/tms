@@ -7,8 +7,8 @@ class DropRegionsAndCountries < ActiveRecord::Migration[8.1]
   class StandardizedAddress < ActiveRecord::Base; end
   class TrackingEvent < ActiveRecord::Base; end
 
-  COUNTRY_MODELS = [ Address, BrokerCountry, StandardizedAddress, TrackingEvent ].freeze
-  REGION_MODELS = [ Address, Location, StandardizedAddress, TrackingEvent ].freeze
+  COUNTRY_MODELS = [Address, BrokerCountry, StandardizedAddress, TrackingEvent].freeze
+  REGION_MODELS = [Address, Location, StandardizedAddress, TrackingEvent].freeze
 
   def up
     drop_table :regions
@@ -35,12 +35,12 @@ class DropRegionsAndCountries < ActiveRecord::Migration[8.1]
     end
 
     say 'populate(:countries, :regions)'
-    Transponder::ORM::Country.all.each do |transponder_country|
+    Transponder::ORM::Country.all.to_a.each do |transponder_country|
       country = Country.create!(
         alpha2_code: transponder_country.alpha2,
         alpha3_code: transponder_country.alpha3,
         name: transponder_country.name,
-        un_code: transponder_country.numeric,
+        un_code: transponder_country.numeric
       )
 
       transponder_country.regions.each do |transponder_region|
@@ -48,7 +48,7 @@ class DropRegionsAndCountries < ActiveRecord::Migration[8.1]
           abbreviation: transponder_region.abbreviation,
           country_id: country.id,
           iso31662: transponder_region.iso31662.tr('-', '_'),
-          name: transponder_region.name,
+          name: transponder_region.name
         )
       end
     end
@@ -68,7 +68,7 @@ class DropRegionsAndCountries < ActiveRecord::Migration[8.1]
         abbreviation:,
         country_id: Country.find_by!(alpha2_code: alpha2).id,
         iso31662:,
-        name: iso31662.tr('_', '-'),
+        name: iso31662.tr('_', '-')
       )
     end
   end

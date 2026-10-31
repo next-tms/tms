@@ -43,21 +43,25 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
   def create
     @payment_transaction = PaymentTransaction.new(payment_transaction_params.except(:csv))
 
-    if payment_transaction_params[:csv].blank?
-      redirect_to([ :broker, @payment_transaction ]) and return if @payment_transaction.save
-
-      render(:new) and return
-    else
+    if payment_transaction_params[:csv].present?
       csv = payment_transaction_params[:csv].read.gsub(', ', ',')
       service = ProcessPaymentTransactionCsvService
                 .new(csv:, broker_carrier: @payment_transaction.broker_carrier, current_user:)
                 .call
 
       flash[service.status] = service.message
-      render(:import) and return if service.status == :error
+      return render(:import) if service.status == :error
 
-      redirect_to(due_broker_payment_transactions_path)
+      redirect_to([:due, :broker, PaymentTransaction])
+      return
     end
+
+    unless @payment_transaction.save
+      render(:new)
+      return
+    end
+
+    redirect_to([:broker, @payment_transaction])
   end
 
   def paid
@@ -71,8 +75,8 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
   def show
     begin
       @payment_transaction.update_from_accounting_bill if @payment_transaction.accounting_bill_id.present?
-    rescue StandardError => exception
-      Sentry.capture_exception(exception)
+    rescue StandardError => e
+      Sentry.capture_exception(e)
     end
 
     # TODO: Remove this requirement from view
@@ -83,12 +87,13 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
   end
 
   def update
-    if @payment_transaction.update(payment_transaction_params)
-      redirect_to(broker_payment_transaction_path(@payment_transaction))
-    else
-      flash[:error] = 'Unable to update invoice'
+    unless @payment_transaction.update(payment_transaction_params)
+      flash[:error] = t('.failure')
       render(:edit)
+      return
     end
+
+    redirect_to([:broker, @payment_transaction])
   end
 
   private
@@ -112,20 +117,20 @@ class Broker::PaymentTransactionsController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def payment_transaction_params
-    params
-    .require(:payment_transaction)
-    .permit(
-      :id,
-      :additional_charge,
-      :approved_by_id,
-      :balance,
-      :broker_carrier_id,
-      :csv,
-      :due_on,
-      :notes,
-      :paid,
-      :pro,
-      :shipment_load_id,
+    params.expect(
+      payment_transaction: %i[
+        id
+        additional_charge
+        approved_by_id
+        balance
+        broker_carrier_id
+        csv
+        due_on
+        notes
+        paid
+        pro
+        shipment_load_id
+      ]
     )
   end
 end

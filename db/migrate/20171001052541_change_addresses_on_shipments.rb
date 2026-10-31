@@ -1,5 +1,5 @@
 class ChangeAddressesOnShipments < ActiveRecord::Migration[5.1]
-  def change
+  def up
     remove_column :shipments, :shipper_street
     remove_column :shipments, :shipper_street2
     remove_column :shipments, :shipper_city

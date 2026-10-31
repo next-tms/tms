@@ -1,6 +1,6 @@
 class PopulateContactsFromUsers < ActiveRecord::Migration[6.1]
   def up
-    User.all.includes(:broker, :broker_customer).find_each do |user|
+    User.includes(:broker, :broker_customer).find_each do |user|
       contact = Contact.create(
         broker_customer: user.broker_customer,
         broker: user.broker,

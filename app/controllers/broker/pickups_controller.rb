@@ -6,21 +6,18 @@ class Broker::PickupsController < Broker::BrokerController
     @pickup.dispatcher = current_user
     @pickup.updated_by = current_user
 
-    if @pickup.save
-      DispatchShipmentPickupJob.perform_later(@pickup)
-      flash[:success] = "Pickup request sent to #{@pickup.broker_carrier.carrier.name}"
-      redirect_to broker_shipment_path(@pickup.shipment) and return
-    else
-      flash[:error] = @pickup.errors.full_messages.join('<br>').html_safe
-      redirect_back(fallback_location: quote_broker_shipment_path(@pickup.shipment))
+    unless @pickup.save
+      flash[:error] = @pickup.errors.full_messages.to_sentence
+      redirect_back_or_to([:quote, :broker, @pickup.shipment])
+      return
     end
+
+    DispatchShipmentPickupJob.perform_later(@pickup)
+    flash[:success] = "Pickup request sent to #{@pickup.broker_carrier.carrier.name}"
+    redirect_to([:broker, @pickup.shipment])
   end
 
   private
 
-  def pickup_params
-    params.require(:pickup).permit(
-      :rate_uid
-    )
-  end
+  def pickup_params = params.expect(pickup: [:rate_uid])
 end

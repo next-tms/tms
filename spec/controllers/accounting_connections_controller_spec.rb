@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe(AccountingConnectionsController) do
-  subject { response }
-
   let(:current_user) { create(:root_broker_user) }
 
   before { sign_in(current_user) }
@@ -35,7 +33,7 @@ RSpec.describe(AccountingConnectionsController) do
     before do
       allow(FetchBrokerCarrierAccountingVendorIdsJob).to(receive(:perform_later))
       allow(FetchBrokerCustomerAccountingCustomerIdsJob).to(receive(:perform_later))
-      allow_any_instance_of(Accounting::QuickBooks::Service).to(receive(:connect!)) # rubocop:disable RSpec/AnyInstance
+      allow_any_instance_of(Accounting::QuickBooks::Service).to(receive(:connect!))
       session[:accounting_oauth_nonce] = 'nonce'
       get(:callback, params: { code: 'code', kind: 'quickbooks', realmId: '1', state: 'app.nonce' })
     end

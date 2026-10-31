@@ -28,7 +28,7 @@ module TransponderService
           api_request: response[:request],
           api_response: response[:response],
           pickup_confirmation:,
-          updated_by: nil,
+          updated_by: nil
         )
       end
 

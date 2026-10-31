@@ -7,6 +7,6 @@ module CountriesHelper
       countries.unshift(Transponder::ORM::Country.find_or_initialize_by(alpha2: saved_alpha2))
     end
 
-    countries.map { |country| [ country.name, country.alpha2 ] }
+    countries.map { |country| [country.name, country.alpha2] }
   end
 end

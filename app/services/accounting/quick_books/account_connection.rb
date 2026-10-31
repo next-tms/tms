@@ -2,7 +2,7 @@ module Accounting
   module QuickBooks
     class AccountConnection < Connection
       def all(**)
-        request { |service| service.all }.select { |account| listable?(account) }.map { |account| build(account) }
+        request(&:all).select { |account| listable?(account) }.map { |account| build(account) }
       end
 
       private

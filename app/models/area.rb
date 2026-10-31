@@ -23,14 +23,14 @@ class Area < ApplicationRecord
 
       # An area with more locations also covers other places, so it is not this region's area
       candidates.find { |area| area.locations.size == 1 } ||
-        create!(locations: [ Location.new(region:) ], name: "#{region.name}, #{region.country.alpha2}")
+        create!(locations: [Location.new(region:)], name: "#{region.name}, #{region.country.alpha2}")
     end
   end
 
-  has_many :location_areas
+  has_many :location_areas, dependent: :destroy
   has_many :locations, through: :location_areas
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   def zip_codes
     locations.map(&:zip_code)

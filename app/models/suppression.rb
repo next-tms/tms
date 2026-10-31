@@ -65,7 +65,7 @@ class Suppression < ApplicationRecord
   end
 
   def set_suppressible_type
-    return unless suppressor.present?
+    return if suppressor.blank?
 
     self.suppressible_type = suppressor.suppressible_type
   end

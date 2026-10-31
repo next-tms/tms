@@ -2,14 +2,14 @@ module TransponderService
   module Input
     class Base
       class << self
-        def call(object, **kwargs)
-          new(object, **kwargs).call
+        def call(object, **)
+          new(object, **).call
         end
       end
 
       attr_reader :object, :options
 
-      def initialize(object, **kwargs)
+      def initialize(object, **_kwargs)
         @object = object
       end
 

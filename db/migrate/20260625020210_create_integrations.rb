@@ -36,7 +36,7 @@ class CreateIntegrations < ActiveRecord::Migration[8.0]
         },
         kind: 'quickbooks',
         name: 'default',
-        updated_at: intuit_account.updated_at,
+        updated_at: intuit_account.updated_at
       )
     end
   end

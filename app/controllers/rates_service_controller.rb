@@ -10,7 +10,7 @@ class RatesServiceController < ApplicationController
                @shipment,
                @shipment.fingerprint,
                @broker_carrier,
-               @declared_freight_classes,
+               @declared_freight_classes
              )
 
     if @rates.empty?
@@ -19,7 +19,7 @@ class RatesServiceController < ApplicationController
                 broker_carrier: @broker_carrier,
                 shipment: @shipment,
                 declared_freight_classes: @declared_freight_classes,
-                save_new_rates: true,
+                save_new_rates: true
               )
 
       @rates = fetch.to_rates

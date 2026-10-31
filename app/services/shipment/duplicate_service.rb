@@ -3,28 +3,28 @@ class Shipment::DuplicateService
   attr_reader :shipment
 
   NULLABLE_ATTRS = %i[
-                     quote_only
-                     pickup_on
-                     dispatched_at
-                     pickup_confirmation
-                     tracking_carrier_pickup_confirmation
-                     pickup_driver_assigned_at
-                     pickup_eta_at
-                     picked_up_at
-                     departed_origin_terminal_at
-                     delivery_eta_on
-                     out_for_delivery_at
-                     lost_on
-                     pending_appointment_since
-                     delivery_appointment_on
-                     delivery_appointment_at
-                     delivered_at
-                     canceled_at
-                     dispatched_at
-                     quoted_delivery_by
-                     quote_id
-                     pro
-                   ].freeze
+    quote_only
+    pickup_on
+    dispatched_at
+    pickup_confirmation
+    tracking_carrier_pickup_confirmation
+    pickup_driver_assigned_at
+    pickup_eta_at
+    picked_up_at
+    departed_origin_terminal_at
+    delivery_eta_on
+    out_for_delivery_at
+    lost_on
+    pending_appointment_since
+    delivery_appointment_on
+    delivery_appointment_at
+    delivered_at
+    canceled_at
+    dispatched_at
+    quoted_delivery_by
+    quote_id
+    pro
+  ].freeze
 
   def initialize(shipment:)
     @shipment = shipment

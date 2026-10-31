@@ -13,7 +13,7 @@ RSpec.describe Accounting::QuickBooks::Customer do
       described_class.new(
         billing_address: Accounting::Address.new(city: 'Reno', region: 'NV'),
         company_name: 'Acme',
-        display_name: 'Acme',
+        display_name: 'Acme'
       )
     end
 
@@ -37,7 +37,7 @@ RSpec.describe Accounting::QuickBooks::Customer do
     before { allow(service).to receive(:find_by).and_return(results) }
 
     context 'with a single match' do
-      let(:results) { [ Quickbooks::Model::Customer.new(company_name: 'Acme').tap { it.id = '7' } ] }
+      let(:results) { [Quickbooks::Model::Customer.new(company_name: 'Acme').tap { it.id = '7' }] }
 
       it { is_expected.to have_attributes(id: '7', company_name: 'Acme') }
 
@@ -49,7 +49,7 @@ RSpec.describe Accounting::QuickBooks::Customer do
     end
 
     context 'with multiple matches' do
-      let(:results) { [ Quickbooks::Model::Customer.new, Quickbooks::Model::Customer.new ] }
+      let(:results) { [Quickbooks::Model::Customer.new, Quickbooks::Model::Customer.new] }
 
       it { is_expected.to be_nil }
     end

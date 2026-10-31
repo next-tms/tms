@@ -11,7 +11,7 @@ class AccountingConnectionsController < ApplicationController
     FetchBrokerCustomerAccountingCustomerIdsJob.perform_later
     FetchBrokerCarrierAccountingVendorIdsJob.perform_later
 
-    flash[:success] = 'Connected'
+    flash[:success] = t('.success')
 
     if Rails.env.development?
       redirect_to(root_path)
@@ -52,6 +52,8 @@ class AccountingConnectionsController < ApplicationController
   end
 
   def valid_nonce?
-    (nonce = session.delete(:accounting_oauth_nonce)).present? && ActiveSupport::SecurityUtils.secure_compare(params[:state].to_s.split('.', 2).last.to_s, nonce)
+    (nonce = session.delete(:accounting_oauth_nonce)).present? && ActiveSupport::SecurityUtils.secure_compare(
+      params[:state].to_s.split('.', 2).last.to_s, nonce
+    )
   end
 end

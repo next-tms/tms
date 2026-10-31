@@ -1,7 +1,7 @@
 module Accounting
   module QuickBooks
     class Account < Accounting::Account
-      LISTABLE_SUB_TYPES = %w[Checking CreditCard].freeze
+      LISTABLE_SUB_TYPES = ['Checking', 'CreditCard'].freeze
       SUB_TYPES = { checking: 'Checking', credit_card: 'CreditCard' }.freeze
 
       class << self
@@ -27,7 +27,14 @@ module Accounting
         private
 
         def account_name(name) = name.gsub(':', ' -').gsub('"', '').squish[..99]
-        def account_number(number) = number.blank? ? nil : (number.length > 20 ? "#{number[..16]}..." : number)
+
+        def account_number(number)
+          if number.blank?
+            nil
+          else
+            (number.length > 20 ? "#{number[..16]}..." : number)
+          end
+        end
       end
     end
   end

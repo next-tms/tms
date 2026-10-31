@@ -12,7 +12,7 @@ module DocumentableService
       end
 
       def requirements
-        @missing_changes ||= super.tap do |builder|
+        @requirements ||= super.tap do |builder|
           builder << :total_charges_cents
         end
       end

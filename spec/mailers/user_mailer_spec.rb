@@ -19,8 +19,8 @@ RSpec.describe(UserMailer) do
       create(:setting, key: 'robot_email', value: 'robot@acme.test')
     end
 
-    it { expect(mail.from).to(eq([ 'robot@acme.test' ])) }
-    it { expect(mail.reply_to).to(eq([ 'help@acme.test' ])) }
+    it { expect(mail.from).to(eq(['robot@acme.test'])) }
+    it { expect(mail.reply_to).to(eq(['help@acme.test'])) }
     it { expect(mail.subject).to(eq('Welcome to Acme Freight')) }
     it { expect(mail.body.encoded).to(include('Welcome to Acme Freight.')) }
   end

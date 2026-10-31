@@ -72,12 +72,12 @@ class BrokerCarrier < ApplicationRecord
       joins(:carrier).order('carriers.name')
     end
 
-    def ransackable_attributes(auth_object = nil)
-      [ 'name', 'shipments_count' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['name', 'shipments_count']
     end
 
-    def ransackable_associations(auth_object = nil)
-      [ 'broker_customer', 'carrier' ]
+    def ransackable_associations(_auth_object = nil)
+      ['broker_customer', 'carrier']
     end
   end
 
@@ -101,13 +101,13 @@ class BrokerCarrier < ApplicationRecord
   encrypts :encrypted_ach_routing_number
   encrypts :encrypted_api_key
 
-  has_many :overlength_rules
-  has_many :payments
-  has_many :payment_transactions
-  has_many :preferred_by_broker_customers, class_name: 'PreferredBrokerCarrier'
-  has_many :pricing_rules
-  has_many :rates
-  has_many :shipments
+  has_many :overlength_rules, dependent: :destroy
+  has_many :payments, dependent: :restrict_with_error
+  has_many :payment_transactions, dependent: :restrict_with_error
+  has_many :preferred_by_broker_customers, class_name: 'PreferredBrokerCarrier', dependent: :destroy
+  has_many :pricing_rules, dependent: :destroy
+  has_many :rates, dependent: :restrict_with_error
+  has_many :shipments, dependent: :restrict_with_error
   has_many :terminals, through: :carrier
 
   has_many :pickups, through: :rates
@@ -127,7 +127,7 @@ class BrokerCarrier < ApplicationRecord
   scope :api_unconfigured, -> { where.not(id: api_configured.ids) }
   scope :blanket, -> { where(broker_customer: nil) }
 
-  validates :encrypted_ach_routing_number, allow_blank: true, format: { message: 'must be nine digits', with: /\A\d{9}\z/ }
+  validates :encrypted_ach_routing_number, allow_blank: true, format: { with: /\A\d{9}\z/ }
 
   accepts_nested_attributes_for :check_mailing_address
   accepts_nested_attributes_for :overlength_rules, allow_destroy: true
@@ -150,13 +150,13 @@ class BrokerCarrier < ApplicationRecord
 
     "#{carrier.name} - #{broker_customer.customer.name}"
   end
-  alias_method :name, :broker_customer_specific_name
+  alias name broker_customer_specific_name
 
   def to_accounting_vendor
     Accounting::Vendor.new(
       billing_address: check_mailing_address&.to_accounting_address,
       company_name: carrier.name,
-      display_name: carrier.name,
+      display_name: carrier.name
     )
   end
 

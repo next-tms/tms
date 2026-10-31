@@ -18,7 +18,7 @@ RSpec.describe(Transponder::ORM::Base) do
   end
 
   describe '.order' do
-    it { expect(Transponder::ORM::Country.order(:name).pluck(:alpha2)).to(eq(%w[CA MX US])) }
+    it { expect(Transponder::ORM::Country.order(:name).pluck(:alpha2)).to(eq(['CA', 'MX', 'US'])) }
   end
 
   describe '.primary_key' do

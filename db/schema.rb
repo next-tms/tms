@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_062143) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_203003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -23,6 +23,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_062143) do
     t.string "freight_kit_code"
     t.string "name"
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_accessorials_on_name", unique: true
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -168,7 +169,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_062143) do
     t.string "country_alpha2", limit: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["country_alpha2"], name: "index_broker_countries_on_country_alpha2"
+    t.index ["country_alpha2"], name: "index_broker_countries_on_country_alpha2", unique: true
   end
 
   create_table "broker_customer_dispatchers", force: :cascade do |t|
@@ -252,6 +253,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_062143) do
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
+    t.index ["mc_number"], name: "index_carriers_on_mc_number", unique: true
     t.index ["name"], name: "index_carriers_on_name", unique: true
     t.index ["scac"], name: "index_carriers_on_scac", unique: true
   end
@@ -334,7 +336,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_062143) do
 
   create_table "customers", force: :cascade do |t|
     t.string "name"
-    t.index ["name"], name: "index_customers_on_name"
+    t.index ["name"], name: "index_customers_on_name", unique: true
   end
 
   create_table "discussion_topics", force: :cascade do |t|
@@ -469,6 +471,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_062143) do
     t.string "freight_kit_type"
     t.string "name"
     t.index ["freight_kit_type"], name: "index_packagings_on_freight_kit_type"
+    t.index ["name"], name: "index_packagings_on_name", unique: true
   end
 
   create_table "payment_methods", force: :cascade do |t|
@@ -678,7 +681,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_062143) do
     t.string "key"
     t.datetime "updated_at", null: false
     t.string "value"
-    t.index ["key"], name: "index_settings_on_key"
+    t.index ["key"], name: "index_settings_on_key", unique: true
   end
 
   create_table "shipment_accessorials", force: :cascade do |t|

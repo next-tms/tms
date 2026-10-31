@@ -210,7 +210,7 @@ RSpec.describe(Shipment) do
       let(:shipment) { create(:shipment) }
 
       it 'creates an audit record' do
-        receiver_names = [ shipment.receiver_name, Faker::Company.name ]
+        receiver_names = [shipment.receiver_name, Faker::Company.name]
 
         expect { shipment.update(receiver_name: receiver_names[1]) }.to(change { shipment.audits.count }.by(1))
         audit = shipment.reload.audits.last
@@ -230,15 +230,33 @@ RSpec.describe(Shipment) do
     it { is_expected.to(belong_to(:tracking_carrier).required(false)) }
 
     it { is_expected.to(have_many(:accessorials).through(:shipment_accessorials)) }
+    it { is_expected.to(have_many(:claims).dependent(:restrict_with_error)) }
     it { is_expected.to(have_many(:commissions)) }
     it { is_expected.to(have_many(:items)) }
-    it { is_expected.to(have_many(:payment_transactions)) }
+    it { is_expected.to(have_many(:payment_transactions).dependent(:restrict_with_error)) }
     it { is_expected.to(have_many(:payments).through(:payment_transactions)) }
-    it { is_expected.to(have_many(:pickups)) }
-    it { is_expected.to(have_many(:problems)) }
+    it { is_expected.to(have_many(:pickups).dependent(:destroy)) }
+    it { is_expected.to(have_many(:problems).dependent(:destroy)) }
     it { is_expected.to(have_many(:rates)) }
+    it { is_expected.to(have_many(:receivables).dependent(:restrict_with_error)) }
     it { is_expected.to(have_many(:shipment_accessorials)) }
+    it { is_expected.to(have_many(:suppressions).dependent(:destroy)) }
     it { is_expected.to(have_many(:tracking_events)) }
+  end
+
+  describe '#destroy' do
+    subject { shipment.destroy }
+
+    let(:shipment) { create(:shipment) }
+
+    it { is_expected.to(be_destroyed) }
+
+    context 'with a receivable' do
+      before { build(:receivable, shipment:).save!(validate: false) }
+
+      it { is_expected.to(be(false)) }
+      it { expect { shipment.destroy }.not_to(change(described_class, :count)) }
+    end
   end
 
   describe '#assign_dispatcher' do
@@ -265,12 +283,12 @@ RSpec.describe(Shipment) do
 
     it 'ignores item shipment_id' do
       fresh_shipment = described_class.find(shipment.id)
-      fingerprint = fresh_shipment.send(:set_fingerprint)
+      fingerprint = fresh_shipment.__send__(:set_fingerprint)
       expect(fresh_shipment.flattened_items).to(be_present)
 
       fresh_shipment.flattened_items.each { |item| item.shipment_id = shipment.id + 1 }
 
-      expect(fresh_shipment.send(:set_fingerprint)).to(eq(fingerprint))
+      expect(fresh_shipment.__send__(:set_fingerprint)).to(eq(fingerprint))
     end
   end
 
@@ -288,7 +306,7 @@ RSpec.describe(Shipment) do
         pickup_confirmation: nil,
         pickup_hours_end_at: nil,
         pickup_on: nil,
-        promised_delivery_by: nil,
+        promised_delivery_by: nil
       )
     end
 
@@ -388,7 +406,7 @@ RSpec.describe(Shipment) do
   end
 
   describe '#status' do
-    subject { shipment.tap { |record| record.send(:set_status) }.status }
+    subject { shipment.tap { |record| record.__send__(:set_status) }.status }
 
     let(:shipment) do
       build(
@@ -407,7 +425,7 @@ RSpec.describe(Shipment) do
         pickup_hours_end_at: nil,
         pickup_on: nil,
         promised_delivery_by: nil,
-        total_charges_cents: nil,
+        total_charges_cents: nil
       )
     end
 

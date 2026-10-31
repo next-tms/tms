@@ -10,7 +10,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.update!(
       booked_at: Time.current,
       quote_only: false,
-      updated_by_id: current_user.id,
+      updated_by_id: current_user.id
     )
 
     if redirect_to_edit
@@ -18,7 +18,7 @@ class Customer::ShipmentsController < Customer::CustomerController
       return
     end
 
-    redirect_to([ :customer, @shipment ])
+    redirect_to([:customer, @shipment])
   end
 
   def unbook
@@ -28,7 +28,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.booked_at = nil
     @shipment.save
 
-    redirect_to([ :customer, @shipment ])
+    redirect_to([:customer, @shipment])
   end
 
   def documents; end
@@ -70,7 +70,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def booked
-    shipments = Shipment.where(broker_customer: [ current_user.companyable ]).active.booked.order(:booked_at)
+    shipments = Shipment.where(broker_customer: [current_user.companyable]).active.booked.order(:booked_at)
     @pagy, @shipments = pagy(shipments)
   end
 
@@ -81,20 +81,19 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.broker_customer = current_user.companyable
     @shipment.load_id = Shipment.last_load_id + 1
 
-    respond_to do |format|
-      if @shipment.save
-        location = if current_user.companyable.can_quote?
-                     quote_customer_shipment_path(@shipment)
-                   else
-                     [ :customer, @shipment ]
-                   end
-
-        format.html { redirect_to(location) }
-        format.json { render(:show, status: :created, location:) }
-      else
-        format.html { render(:new, status: :unprocessable_entity) }
-        format.json { render(json: @shipment.errors, status: :unprocessable_entity) }
+    unless @shipment.save
+      respond_to do |format|
+        format.html { render(:new, status: :unprocessable_content) }
+        format.json { render(:errors, locals: { record: @shipment }, status: :unprocessable_content) }
       end
+      return
+    end
+
+    location = current_user.companyable.can_quote? ? [:quote, :customer, @shipment] : [:customer, @shipment]
+
+    respond_to do |format|
+      format.html { redirect_to(location) }
+      format.json { render(:show, status: :created, location:) }
     end
   end
 
@@ -115,7 +114,7 @@ class Customer::ShipmentsController < Customer::CustomerController
       format.ebol do
         response.headers['Content-Disposition'] = ActionDispatch::Http::ContentDisposition.format(
           disposition: 'attachment',
-          filename: "#{@shipment.load_id}.ebol.json",
+          filename: "#{@shipment.load_id}.ebol.json"
         )
 
         stale?(
@@ -128,7 +127,7 @@ class Customer::ShipmentsController < Customer::CustomerController
             *@shipment.items,
             @shipment.receiver_address,
             @shipment.shipper_address
-          ].compact,
+          ].compact
         )
       end
       format.html
@@ -139,16 +138,19 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.updated_by = current_user
 
-    respond_to do |format|
-      if @shipment.save
-        location = customer_shipment_path(@shipment)
-
-        format.html { redirect_to(location) }
-        format.json { render(json: { location: }) }
-      else
-        format.html { render(:edit, status: :unprocessable_entity) }
-        format.json { render(json: @shipment.errors, status: :unprocessable_entity) }
+    unless @shipment.save
+      respond_to do |format|
+        format.html { render(:edit, status: :unprocessable_content) }
+        format.json { render(:errors, locals: { record: @shipment }, status: :unprocessable_content) }
       end
+      return
+    end
+
+    location = [:customer, @shipment]
+
+    respond_to do |format|
+      format.html { redirect_to(location) }
+      format.json { render(:location, locals: { location: }) }
     end
   end
 
@@ -205,7 +207,7 @@ class Customer::ShipmentsController < Customer::CustomerController
                   current_user
                   .companyable
                   .shipments
-                  .canceled_recently,
+                  .canceled_recently
                 )
                 .distinct
                 .order(:created_at)
@@ -222,7 +224,7 @@ class Customer::ShipmentsController < Customer::CustomerController
               .call(
                 @shipment,
                 user_type: current_user.type,
-                shipment_fingerprint: @shipment.fingerprint,
+                shipment_fingerprint: @shipment.fingerprint
               )
 
     @declared_freight_classes = service.declared_freight_classes.first
@@ -234,10 +236,10 @@ class Customer::ShipmentsController < Customer::CustomerController
   private
 
   def default_includes
-    [
-      :shipper_address,
-      :receiver_address,
-      :items
+    %i[
+      shipper_address
+      receiver_address
+      items
     ]
   end
 
@@ -251,101 +253,105 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def shipment_params
-    params.require(:shipment).permit(
-      :id,
-      :accessorials_has_been_suggested,
-      :applied_rate_uid,
-      :bol_notes,
-      :bol,
-      :booked_at,
-      :broker_carrier_id,
-      :broker_customer_id,
-      :broker_notes,
-      :canceled_at,
-      :carrier_id,
-      :customer_notes,
-      :customer_reference,
-      :delivered_at,
-      :delivery_appointment_on,
-      :delivery_hours_end_at,
-      :delivery_hours_start_at,
-      :dispatched_at,
-      :dispatched,
-      :lift_gate,
-      :out_for_delivery_at,
-      :picked_up_at,
-      :picked_up,
-      :pickup_on,
-      :pickup_confirmation,
-      :pickup_hours_end_at,
-      :pickup_hours_start_at,
-      :priority,
-      :pro,
-      :promised_delivery_by,
-      :quote_id,
-      :quote_only,
-      :quoted_delivery_by,
-      :receiver_available_at,
-      :receiver_contact_email,
-      :receiver_contact_name,
-      :receiver_contact_phone,
-      :receiver_name,
-      :receiver_unavailable_at,
-      :shipper_available_at,
-      :shipper_contact_email,
-      :shipper_contact_name,
-      :shipper_contact_phone,
-      :shipper_name,
-      :shipper_reference,
-      :shipper_unavailable_at,
-      :tracking_carrier_id,
-      :truckload,
-      :value,
-      shipper_address_attributes: %i[
-                                    id
-                                    ref
-                                    street
-                                    street2
-                                    city
-                                    region_iso31662
-                                    zip_code
-                                    country_alpha2
-                                    standardized_address_id
-                                  ],
-      receiver_address_attributes: %i[
-                                     id
-                                     ref
-                                     street
-                                     street2
-                                     city
-                                     region_iso31662
-                                     zip_code
-                                     country_alpha2
-                                     standardized_address_id
-                                   ],
-      items_attributes: %i[
-                          _destroy
-                          id
-                          packaging_id
-                          l
-                          w
-                          h
-                          nmfc
-                          declared_freight_class
-                          hazmat
-                          refrigerated
-                          desc
-                          weight
-                          quantity
-                        ],
-      shipment_accessorials_attributes: %i[_destroy accessorial_id],
-      shipment_broker_accessorials_attributes: %i[
-                                                 _destroy
-                                                 id
-                                                 broker_accessorial_id
-                                                 cost
-                                                 charge
-                                               ],
+    params.expect(
+      shipment: [
+        :id,
+        :accessorials_has_been_suggested,
+        :applied_rate_uid,
+        :bol_notes,
+        :bol,
+        :booked_at,
+        :broker_carrier_id,
+        :broker_customer_id,
+        :broker_notes,
+        :canceled_at,
+        :carrier_id,
+        :customer_notes,
+        :customer_reference,
+        :delivered_at,
+        :delivery_appointment_on,
+        :delivery_hours_end_at,
+        :delivery_hours_start_at,
+        :dispatched_at,
+        :dispatched,
+        :lift_gate,
+        :out_for_delivery_at,
+        :picked_up_at,
+        :picked_up,
+        :pickup_on,
+        :pickup_confirmation,
+        :pickup_hours_end_at,
+        :pickup_hours_start_at,
+        :priority,
+        :pro,
+        :promised_delivery_by,
+        :quote_id,
+        :quote_only,
+        :quoted_delivery_by,
+        :receiver_available_at,
+        :receiver_contact_email,
+        :receiver_contact_name,
+        :receiver_contact_phone,
+        :receiver_name,
+        :receiver_unavailable_at,
+        :shipper_available_at,
+        :shipper_contact_email,
+        :shipper_contact_name,
+        :shipper_contact_phone,
+        :shipper_name,
+        :shipper_reference,
+        :shipper_unavailable_at,
+        :tracking_carrier_id,
+        :truckload,
+        :value,
+        {
+          shipper_address_attributes: %i[
+            id
+            ref
+            street
+            street2
+            city
+            region_iso31662
+            zip_code
+            country_alpha2
+            standardized_address_id
+          ],
+          receiver_address_attributes: %i[
+            id
+            ref
+            street
+            street2
+            city
+            region_iso31662
+            zip_code
+            country_alpha2
+            standardized_address_id
+          ],
+          items_attributes: [%i[
+            _destroy
+            id
+            packaging_id
+            l
+            w
+            h
+            nmfc
+            declared_freight_class
+            hazmat
+            refrigerated
+            desc
+            weight
+            quantity
+          ]],
+          shipment_accessorials_attributes: [%i[_destroy accessorial_id]],
+          shipment_broker_accessorials_attributes: [%i[
+            _destroy
+            id
+            broker_accessorial_id
+            cost
+            charge
+          ]]
+        }
+      ]
     )
   end
 end

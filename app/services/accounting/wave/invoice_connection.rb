@@ -5,7 +5,9 @@ module Accounting
 
       def find_by(conditions)
         _field, value = conditions.first
-        query = "query Find($businessId: ID!, $invoiceNumber: String!) { business(id: $businessId) { invoices(page: 1, pageSize: 1, sort: [CREATED_AT_DESC], invoiceNumber: $invoiceNumber) { edges { node { #{record_class.selection} } } } } }"
+        query = <<~GQL
+          query Find($businessId: ID!, $invoiceNumber: String!) { business(id: $businessId) { invoices(page: 1, pageSize: 1, sort: [CREATED_AT_DESC], invoiceNumber: $invoiceNumber) { edges { node { #{record_class.selection} } } } } }
+        GQL
 
         build(execute(query, businessId: business_id, invoiceNumber: value.to_s).dig('business', 'invoices', 'edges', 0, 'node'))
       end

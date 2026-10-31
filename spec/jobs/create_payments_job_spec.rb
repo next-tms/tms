@@ -14,17 +14,19 @@ RSpec.describe(CreatePaymentsJob) do
 
     around { |example| Timecop.freeze(now) { example.run } }
 
-    it { is_expected.to(be(true)) }
-
     it do
       perform
-      expect(CreatePaymentJob).to(have_received(:perform_later).with(broker_carrier: payment_transaction.broker_carrier, payment_transaction_ids: [ payment_transaction.id ]))
+      expect(CreatePaymentJob).to(have_received(:perform_later).with(broker_carrier: payment_transaction.broker_carrier,
+                                                                     payment_transaction_ids: [payment_transaction.id]))
     end
 
     context 'when it is not Sunday night in the time zone setting' do
       let(:now) { Time.find_zone('America/Chicago').local(2026, 10, 26, 21, 30) }
 
-      it { is_expected.to(be(false)) }
+      it do
+        perform
+        expect(CreatePaymentJob).not_to(have_received(:perform_later))
+      end
     end
   end
 end

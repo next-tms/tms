@@ -36,7 +36,7 @@
 class UpchargeRule < ApplicationRecord
   audited
 
-  scope :packaging, lambda { |packaging|
+  scope :packaging, ->(packaging) {
     where(packaging:)
   }
 
@@ -44,5 +44,5 @@ class UpchargeRule < ApplicationRecord
   belongs_to :packaging
 
   monetize :upcharge_cents
-  validates_presence_of :min
+  validates :min, presence: true
 end

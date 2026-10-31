@@ -2,22 +2,14 @@ class Shipment::RatesService
   class Base
     attr_reader :broker_carrier, :declared_freight_classes, :rates, :shipment
 
-    def initialize(broker_carrier, shipment, declared_freight_classes: true, save:)
-      unless broker_carrier.is_a?(BrokerCarrier)
-        raise ArgumentError, 'broker_carrier must be a BrokerCarrier'
-      end
+    def initialize(broker_carrier, shipment, save:, declared_freight_classes: true)
+      raise ArgumentError, 'broker_carrier must be a BrokerCarrier' unless broker_carrier.is_a?(BrokerCarrier)
 
-      unless shipment.is_a?(Shipment)
-        raise ArgumentError, 'shipment must be a Shipment'
-      end
+      raise ArgumentError, 'shipment must be a Shipment' unless shipment.is_a?(Shipment)
 
-      if [ true, false ].none?(declared_freight_classes)
-        raise ArgumentError, 'declared_freight_classes must be one of true, false'
-      end
+      raise ArgumentError, 'declared_freight_classes must be one of true, false' if [true, false].none?(declared_freight_classes)
 
-      if [ true, false ].none?(save)
-        raise ArgumentError, 'save must be one of true, false'
-      end
+      raise ArgumentError, 'save must be one of true, false' if [true, false].none?(save)
 
       @broker_carrier = broker_carrier
       @declared_freight_classes = declared_freight_classes
@@ -43,7 +35,7 @@ class Shipment::RatesService
         shipment_fingerprint: shipment.fingerprint,
         shipment:,
         source:,
-        declared_freight_classes:,
+        declared_freight_classes:
       )
     end
 

@@ -1,5 +1,5 @@
 class RemoveDispatchedFromShipments < ActiveRecord::Migration[6.0]
-  def change
+  def up
     remove_column :shipments, :dispatched
   end
 end

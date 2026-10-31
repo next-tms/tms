@@ -6,7 +6,7 @@ shared_examples_for 'discussable_topic' do
 
   describe 'relationships' do
     it { expect(record).to(have_many(:comments).through(:discussion_topic)) }
-    it { expect(record).to(have_one(:discussion_topic)) }
+    it { expect(record).to(have_one(:discussion_topic).dependent(:destroy)) }
   end
 
   describe 'included methods' do
@@ -26,7 +26,7 @@ shared_examples_for 'discussable_topic' do
       end
 
       it "doesn't set #discussion" do
-        record.send(:build_discussion_topic)
+        record.__send__(:build_discussion_topic)
         expect(record.discussion_topic).to(be_nil)
       end
     end
@@ -38,7 +38,7 @@ shared_examples_for 'discussable_topic' do
       end
 
       it "doesn't set #discussion" do
-        record.send(:build_discussion_topic)
+        record.__send__(:build_discussion_topic)
         expect(record.discussion_topic).to(be_nil)
       end
     end
@@ -49,10 +49,10 @@ shared_examples_for 'discussable_topic' do
         record.resolvable.build_discussion if described_class == Problem
       end
 
-      it { expect(record.send(:build_discussion_topic)).to(be_a(DiscussionTopic)) }
+      it { expect(record.__send__(:build_discussion_topic)).to(be_a(DiscussionTopic)) }
 
       it 'sets #discussion' do
-        record.send(:build_discussion_topic)
+        record.__send__(:build_discussion_topic)
         expect(record.discussion_topic).to(be_present)
       end
     end

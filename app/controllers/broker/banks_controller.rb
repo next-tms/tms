@@ -12,7 +12,7 @@ class Broker::BanksController < Broker::BrokerController
   end
 
   def activity
-    @display_paid = [ '0', nil ].include?(params.dig(:q, :paid_on_null))
+    @display_paid = ['0', nil].include?(params.dig(:q, :paid_on_null))
 
     @q = @bank
          .payments
@@ -21,10 +21,10 @@ class Broker::BanksController < Broker::BrokerController
            :payment_transactions,
            {
              broker_carrier: [
-                               :carrier,
-                               { broker_customer: :customer }
-                             ]
-           },
+               :carrier,
+               { broker_customer: :customer }
+             ]
+           }
          )
          .ransack(params[:q], auth_object: current_user)
     @q.sorts = 'paid_on DESC' if @q.sorts.blank?
@@ -34,7 +34,7 @@ class Broker::BanksController < Broker::BrokerController
       format.html
       format.csv do
         csv = ''.dup
-        csv += "#{@payments.first.export_headers.join(",")}\n"
+        csv += "#{@payments.first.export_headers.join(',')}\n"
         csv += @payments.inject(''.dup) { |str, p| str << p.to_csv(false) }
         send_data(csv, filename: "#{@bank.pretty_name} Activity.csv")
       end
@@ -43,11 +43,13 @@ class Broker::BanksController < Broker::BrokerController
 
   def create
     @bank = Bank.new(bank_params)
-    if @bank.save
-      redirect_to([ :broker, @bank ])
-    else
+
+    unless @bank.save
       render(:new)
+      return
     end
+
+    redirect_to([:broker, @bank])
   end
 
   def edit; end
@@ -63,36 +65,38 @@ class Broker::BanksController < Broker::BrokerController
     @bank = Bank.new
   end
 
-  def show
-    authorize!(@bank, to: :show?, with: BrokerPolicy)
-  end
+  def show = authorize!(@bank, to: :show?, with: BrokerPolicy)
 
   def update
     @bank.assign_attributes(bank_params)
 
-    redirect_to(broker_banks_path) && return if @bank.save
+    unless @bank.save
+      flash[:danger] = t('.failure')
+      render(:edit)
+      return
+    end
 
-    flash[:danger] = 'Unable to update bank'
-    render(:edit)
+    redirect_to([:broker, Bank])
   end
 
   def update_accounting
     authorize!(current_user, to: :root_show?, with: AccountingPolicy)
 
-    if Bank.update(accounting_params.keys, accounting_params.values).all?(&:valid?)
-      flash[:success] = 'Accounting accounts updated'
-    else
-      flash[:error] = 'Unable to update accounting accounts'
+    unless Bank.update(accounting_params.keys, accounting_params.values).all?(&:valid?)
+      flash[:error] = t('.failure')
+      redirect_to([:accounting, :broker, Bank])
+      return
     end
 
-    redirect_to(accounting_broker_banks_path)
+    flash[:success] = t('.success')
+    redirect_to([:accounting, :broker, Bank])
   end
 
   private
 
   # Query helpers
-  def paid_or_pending_filter(q)
-    @display_paid ? q.result.paid : q.result.unpaid
+  def paid_or_pending_filter(query)
+    @display_paid ? query.result.paid : query.result.unpaid
   end
 
   def require_accounts_payable
@@ -106,13 +110,15 @@ class Broker::BanksController < Broker::BrokerController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def bank_params
-    params.require(:bank).permit(
-      :id,
-      :account_number,
-      :name,
-      :accounting_account_id,
+    params.expect(
+      bank: %i[
+        id
+        account_number
+        name
+        accounting_account_id
+      ]
     )
   end
 
-  def accounting_params = params.require(:accounting).permit(banks: %i[accounting_account_id kind]).require(:banks)
+  def accounting_params = params.expect(accounting: { banks: [%i[accounting_account_id kind]] }).require(:banks)
 end

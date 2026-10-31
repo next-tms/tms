@@ -1,15 +1,15 @@
 class Shipment::DeliveryDateService
-  delegate *%i[
-    receiver_address
-    promised_delivery_by
-    delivery_appointment_at
-    delivery_appointment_on
-    delivery_eta_on
-    delivery_hours_start_at
-    delivery_hours_end_at
-    pickup_from
-    pickup_by
-  ], to: :shipment
+  delegate(*%i[
+             receiver_address
+             promised_delivery_by
+             delivery_appointment_at
+             delivery_appointment_on
+             delivery_eta_on
+             delivery_hours_start_at
+             delivery_hours_end_at
+             pickup_from
+             pickup_by
+           ], to: :shipment)
 
   attr_reader :shipment, :type
 

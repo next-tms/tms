@@ -42,9 +42,9 @@
 #  fk_rails_...  (shipment_id => shipments.id)
 #
 class Item < ApplicationRecord
-  FREIGHT_CLASSES = [ 55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400 ]
+  FREIGHT_CLASSES = [55, 60, 65, 70, 77.5, 85, 92.5, 100, 110, 125, 150, 175, 200, 250, 300, 400].freeze
 
-  scope :packaging, lambda { |packaging|
+  scope :packaging, ->(packaging) {
     where(packaging:)
   }
 
@@ -56,7 +56,7 @@ class Item < ApplicationRecord
   validate :validate_declared_freight_class
 
   validates :desc, :quantity, :weight, presence: true
-  validates :nmfc, allow_blank: true, format: { with: /\d{4,5}(-\d{1,2})?/, message: 'is not in the correct format' }
+  validates :nmfc, allow_blank: true, format: { with: /\d{4,5}(-\d{1,2})?/ }
   validates :quantity, :weight, numericality: { only_integer: true, greater_than: 0 }
 
   accepts_nested_attributes_for :packaging, allow_destroy: true, reject_if: :all_blank
@@ -74,33 +74,29 @@ class Item < ApplicationRecord
   before_save :prettify_desc, if: :desc_changed?
 
   def standard_or_smaller?
-    return (long_side <= 48) if long_side
+    return long_side <= 48 if long_side
 
-    nil
+    false
   end
 
   def pallet_or_crate?
-    [ 'crate', 'drum', 'pallet', 'tote' ].include?(packaging.name)
+    ['crate', 'drum', 'pallet', 'tote'].include?(packaging.name)
   end
 
   def short_side
-    if l && w && h
-      return [ l, w ].min
-    end
+    return [l, w].min if l && w && h
 
     nil
   end
 
   def long_side
-    if l && w && h
-      return [ l, w ].max
-    end
+    return [l, w].max if l && w && h
 
     nil
   end
 
   def cubic_ft(rounded:)
-    return unless [ l, w, h ].all?(&:present?)
+    return unless [l, w, h].all?(&:present?)
 
     length_ft = Measured::Length.new(l, :in).convert_to(:ft).value
     width_ft = Measured::Length.new(w, :in).convert_to(:ft).value
@@ -113,7 +109,7 @@ class Item < ApplicationRecord
   end
 
   def density(rounded:)
-    return unless [ l, w, h, quantity ].all?(&:present?)
+    return unless [l, w, h, quantity].all?(&:present?)
 
     value = (weight.to_f / quantity) / cubic_ft(rounded: false)
     return value unless rounded
@@ -139,17 +135,17 @@ class Item < ApplicationRecord
     return 60 if density > 30
 
     density_table = [
-                      [ 1, 2, 300 ],
-                      [ 2, 4, 250 ],
-                      [ 4, 6, 175 ],
-                      [ 6, 8, 125 ],
-                      [ 8, 10, 100 ],
-                      [ 10, 12, 92.5 ],
-                      [ 12, 15, 85 ],
-                      [ 15, 22.5, 70 ],
-                      [ 22.5, 30, 65 ],
-                      [ 30, 35, 60 ]
-                    ]
+      [1, 2, 300],
+      [2, 4, 250],
+      [4, 6, 175],
+      [6, 8, 125],
+      [8, 10, 100],
+      [10, 12, 92.5],
+      [12, 15, 85],
+      [15, 22.5, 70],
+      [22.5, 30, 65],
+      [30, 35, 60]
+    ]
     density_table.each do |density_row|
       return density_row[2] if (density >= density_row[0]) && (density < density_row[1])
     end
@@ -193,7 +189,7 @@ class Item < ApplicationRecord
       hazmat: hazmat?,
       nmfc: nmfc.presence,
       quantity:,
-      units: :imperial,
+      units: :imperial
     )
   end
 
@@ -248,7 +244,7 @@ class Item < ApplicationRecord
                                         .map { |attribute| human_attribute_name(attribute).downcase }
     verb = missing_dimension_attribute_names.count > 1 ? 'are' : 'is'
 
-    message = "can't be blank when #{missing_dimension_attribute_names.join(", ")} #{verb} blank"
+    message = "can't be blank when #{missing_dimension_attribute_names.join(', ')} #{verb} blank"
 
     errors.add(:declared_freight_class, message)
   end

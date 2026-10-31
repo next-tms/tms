@@ -4,7 +4,7 @@ class AddAPIConfiguredToBrokerCarriers < ActiveRecord::Migration[7.0]
 
     say 'populate(:broker_carriers, :api_configured)'
     BrokerCarrier.find_each do |broker_carrier|
-      broker_carrier.send(:set_api_configured)
+      broker_carrier.__send__(:set_api_configured)
       next unless broker_carrier.api_configured_changed?
 
       broker_carrier.update_columns(api_configured: broker_carrier.api_configured)

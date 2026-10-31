@@ -15,11 +15,11 @@ RSpec.describe Accounting::QuickBooks::BillPayment do
         account_name: 'Operating',
         document_number: '900',
         line_items: [
-          Accounting::LineItem.new(amount: 250.0, description: 'PRO123', linked_transactions: [ { txn_id: '88', txn_type: 'Bill' } ])
+          Accounting::LineItem.new(amount: 250.0, description: 'PRO123', linked_transactions: [{ txn_id: '88', txn_type: 'Bill' }])
         ],
         pay_type: :check,
         total: Money.new(25_000),
-        vendor_id: '8',
+        vendor_id: '8'
       )
     end
 

@@ -9,27 +9,20 @@
 #
 # Indexes
 #
-#  index_customers_on_name  (name)
+#  index_customers_on_name  (name) UNIQUE
 #
 class Customer < ApplicationRecord
   class << self
-    def ransackable_attributes(auth_object = nil)
-      [ 'name' ]
+    def ransackable_attributes(_auth_object = nil)
+      ['name']
     end
 
-    def ransackable_associations(auth_object = nil)
+    def ransackable_associations(_auth_object = nil)
       []
     end
   end
 
-  has_many :broker_customers
-
-  has_many :shipments
-
-  has_many :location_addresses, class_name: 'Address'
-
-  has_many :broker_accessorials
-  accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
+  has_many :broker_customers, dependent: :restrict_with_error
 
   validates :name, uniqueness: true
 end

@@ -13,15 +13,15 @@ class DeduplicateContacts < ActiveRecord::Migration[7.0]
                  .contacts
                  .where(email: contact.email)
 
-      if [ contact.first_name, contact.last_name ].all?(&:present?)
+      if [contact.first_name, contact.last_name].all?(&:present?)
         contacts = contacts
                    .or(
                      contact
                      .companyable
                      .contacts
-                     .where(email: [ nil, '' ])
+                     .where(email: [nil, ''])
                      .where('first_name ILIKE ?', "%#{contact.first_name.strip}%")
-                     .where('last_name ILIKE ?', "%#{contact.last_name.strip}%"),
+                     .where('last_name ILIKE ?', "%#{contact.last_name.strip}%")
                    )
       end
 
@@ -36,8 +36,8 @@ class DeduplicateContacts < ActiveRecord::Migration[7.0]
 
         if contact.customer?
           DocumentPreference
-          .where(broker_customer: contact.companyable, contact: contacts)
-          .update_all(broker_customer_id: contact.companyable_id)
+            .where(broker_customer: contact.companyable, contact: contacts)
+            .update_all(broker_customer_id: contact.companyable_id)
         end
 
         contacts.find_each(&:destroy!)
@@ -49,8 +49,8 @@ class DeduplicateContacts < ActiveRecord::Migration[7.0]
 
         if contact.customer?
           DocumentPreference
-          .where(broker_customer: contact.companyable, contact: contacts)
-          .update_all(broker_customer_id: contact.companyable_id)
+            .where(broker_customer: contact.companyable, contact: contacts)
+            .update_all(broker_customer_id: contact.companyable_id)
         end
 
         contacts.find_each(&:destroy!)
@@ -59,13 +59,13 @@ class DeduplicateContacts < ActiveRecord::Migration[7.0]
 
       attributes = {}
       %i[first_name last_name email job_title label mobile_phone work_phone].each do |attribute|
-        attributes[attribute] = [ contact.public_send(attribute), contacts.pluck(attribute) ].flatten.compact_blank.first
+        attributes[attribute] = [contact.public_send(attribute), contacts.pluck(attribute)].flatten.compact_blank.first
       end
 
       if contact.customer?
         DocumentPreference
-        .where(broker_customer: contact.companyable, contact: contacts)
-        .update_all(broker_customer_id: contact.companyable_id)
+          .where(broker_customer: contact.companyable, contact: contacts)
+          .update_all(broker_customer_id: contact.companyable_id)
       end
 
       contacts.find_each(&:destroy!)

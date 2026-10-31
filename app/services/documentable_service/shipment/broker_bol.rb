@@ -17,9 +17,7 @@ module DocumentableService
           builder << :shipper_contact_name
           builder << :shipper_contact_phone
 
-          if record.picked_up?
-            builder.reject! { |attribute| scheduling_attributes.include?(attribute) }
-          end
+          builder.reject! { |attribute| scheduling_attributes.include?(attribute) } if record.picked_up?
         end
       end
 

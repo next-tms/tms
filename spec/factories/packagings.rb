@@ -12,6 +12,7 @@
 # Indexes
 #
 #  index_packagings_on_freight_kit_type  (freight_kit_type)
+#  index_packagings_on_name              (name) UNIQUE
 #
 FactoryBot.define do
   factory :packaging do

@@ -10,11 +10,7 @@ class AccountingMailer < ApplicationMailer
     users.find_each do |user|
       @user = user
 
-      mail(
-        to: @user.email,
-        reply_to: 'Next TMS <hello@next-tms.com>',
-        subject: 'Accounting Customer Sync Failure'
-      )
+      mail(to: @user.email, reply_to: 'Next TMS <hello@next-tms.com>')
     end
   end
 end

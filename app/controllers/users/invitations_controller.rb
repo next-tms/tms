@@ -1,6 +1,7 @@
 class Users::InvitationsController < Devise::InvitationsController
   def new
-    self.resource = resource_class.new(companyable_id: params[:companyable_id].presence, companyable_type: params[:companyable_type].presence)
+    self.resource = resource_class.new(companyable_id: params[:companyable_id].presence,
+                                       companyable_type: params[:companyable_type].presence)
 
     render :new
   end
@@ -13,9 +14,7 @@ class Users::InvitationsController < Devise::InvitationsController
     yield resource if block_given?
 
     if resource_invited
-      if is_flashing_format? && resource.invitation_sent_at
-        set_flash_message(:notice, :send_instructions, email: resource.email)
-      end
+      set_flash_message(:notice, :send_instructions, email: resource.email) if is_flashing_format? && resource.invitation_sent_at
       if method(:after_invite_path_for).arity == 1
         respond_with(resource, location: after_invite_path_for(current_inviter))
       else
@@ -31,7 +30,7 @@ class Users::InvitationsController < Devise::InvitationsController
     hacked_params = update_resource_params
 
     token_from_referer = if request.headers['Referer'].present?
-                           Rack::Utils.parse_query(URI(request.headers['Referer']).query).dig('invitation_token')
+                           Rack::Utils.parse_query(URI(request.headers['Referer']).query)['invitation_token']
                          end
 
     if hacked_params[:invitation_token] == hacked_params[:email] && token_from_referer.present?

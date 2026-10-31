@@ -15,11 +15,20 @@
 #
 # Indexes
 #
-#  index_settings_on_key  (key)
+#  index_settings_on_key  (key) UNIQUE
 #
 require 'rails_helper'
 
 RSpec.describe(Setting) do
+  describe '.configuration' do
+    it { expect(described_class.configuration).to(include({ key: 'copyright_holder', kind: :string })) }
+    it { expect(described_class.configuration).to(be_frozen) }
+  end
+
+  describe '.keys' do
+    it { expect(described_class.keys).to(include('copyright_holder', 'customer_service_email')) }
+  end
+
   describe '.method_missing' do
     context 'when key is configured' do
       before { create(:setting, key: 'phone', value: '+15035550100') }
@@ -233,7 +242,7 @@ RSpec.describe(Setting) do
     context 'when kind == :hostname' do
       before { allow(record).to(receive(:kind).and_return(:hostname)) }
 
-      let(:record) { build(:setting, value: Faker::Internet.domain_name(subdomain: [ true, false ].sample)) }
+      let(:record) { build(:setting, value: Faker::Internet.domain_name(subdomain: [true, false].sample)) }
 
       it { expect(record).to(be_valid) }
 
@@ -322,9 +331,20 @@ RSpec.describe(Setting) do
     it { expect(record.name).to(eq('Acme Freight')) }
   end
 
-  describe '#requires_charges_confirmed_on_receivables' do
-    it { expect(build(:setting, key: 'requires_charges_confirmed_on_receivables', value: true).requires_charges_confirmed_on_receivables).to(be(true)) }
-    it { expect(build(:setting, key: 'requires_charges_confirmed_on_receivables', value: false).requires_charges_confirmed_on_receivables).to(be(false)) }
+  describe '#requires_charges_confirmed_on_receivables?' do
+    subject { build(:setting, key: 'requires_charges_confirmed_on_receivables', value:) }
+
+    context 'when the value is true' do
+      let(:value) { true }
+
+      it { is_expected.to(be_requires_charges_confirmed_on_receivables) }
+    end
+
+    context 'when the value is false' do
+      let(:value) { false }
+
+      it { is_expected.not_to(be_requires_charges_confirmed_on_receivables) }
+    end
   end
 
   describe '#shipments' do
@@ -334,14 +354,19 @@ RSpec.describe(Setting) do
   end
 
   describe '#suppressor_mappings' do
-    it { expect(build(:setting, key: 'requires_charges_confirmed_on_receivables').send(:suppressor_mappings).keys).to(eq(%i[requires_charges_confirmed_on_receivables])) }
-    it { expect(build(:setting, key: 'phone').send(:suppressor_mappings)).to(be_empty) }
+    it do
+      setting = build(:setting, key: 'requires_charges_confirmed_on_receivables')
+
+      expect(setting.__send__(:suppressor_mappings).keys).to(eq(%i[requires_charges_confirmed_on_receivables]))
+    end
+
+    it { expect(build(:setting, key: 'phone').__send__(:suppressor_mappings)).to(be_empty) }
   end
 
   describe '#update_suppressors' do
     let(:record) { create(:setting, key: 'requires_charges_confirmed_on_receivables', value: true) }
 
-    it { expect(record.suppressors.pluck(:problematic_rule_code)).to(eq(%w[missing_charges_confirmed])) }
+    it { expect(record.suppressors.pluck(:problematic_rule_code)).to(eq(['missing_charges_confirmed'])) }
 
     context 'when value changes to false' do
       before { record.update!(value: false) }
@@ -359,7 +384,7 @@ RSpec.describe(Setting) do
 
     context 'when another setting changes' do
       before do
-        broker_carrier.update_columns(ignore_bol_requires_tracking_number: false)
+        broker_carrier.reload.update!(ignore_bol_requires_tracking_number: false)
         create(:setting, key: 'phone', value: '+15035550100')
       end
 

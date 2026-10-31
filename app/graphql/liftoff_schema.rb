@@ -17,14 +17,14 @@ class LiftoffSchema < GraphQL::Schema
   class << self
     # Union and Interface Resolution
     # TODO: Implement this method to return the correct GraphQL object type for `obj`
-    def resolve_type(abstract_type, obj, ctx) = raise(GraphQL::RequiredImplementationMissingError)
+    def resolve_type(_abstract_type, _obj, _ctx) = raise(GraphQL::RequiredImplementationMissingError)
 
     # Relay-style Object Identification:
 
     # Return a string UUID for `object`
-    def id_from_object(object, type_definition, query_ctx) = object.to_gid_param
+    def id_from_object(object, _type_definition, _query_ctx) = object.to_gid_param
 
     # Given a string UUID, find the object
-    def object_from_id(global_id, query_ctx) = GlobalID.find(global_id)
+    def object_from_id(global_id, _query_ctx) = GlobalID.find(global_id)
   end
 end

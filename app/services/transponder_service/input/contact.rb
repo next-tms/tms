@@ -1,8 +1,8 @@
 module TransponderService
   module Input
     class Contact < Base
-      VALID_RECORD_CLASSES = [ ::Contact, ::Setting, ::Shipment, ::User ]
-      VALID_ATTRIBUTE_PREFIXES = %i[shipper receiver]
+      VALID_RECORD_CLASSES = [::Contact, ::Setting, ::Shipment, ::User].freeze
+      VALID_ATTRIBUTE_PREFIXES = %i[shipper receiver].freeze
 
       attr_reader :object, :attribute_prefix
 
@@ -14,16 +14,16 @@ module TransponderService
         end
 
         if object.is_a?(::Shipment) && VALID_ATTRIBUTE_PREFIXES.exclude?(attribute_prefix)
-          raise ArgumentError, "attribute_prefix must be one of: #{VALID_ATTRIBUTE_PREFIXES.join(", ")}"
-        else
-          @attribute_prefix = attribute_prefix
+          raise ArgumentError, "attribute_prefix must be one of: #{VALID_ATTRIBUTE_PREFIXES.join(', ')}"
         end
+
+        @attribute_prefix = attribute_prefix
 
         super(object)
       end
 
       def build
-        send("build_from_#{object.class.to_s.underscore}")
+        __send__("build_from_#{object.class.to_s.underscore}")
       end
 
       private

@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
+
   impersonates :user
 
   before_action :add_floc_opt_out_header
@@ -8,7 +9,7 @@ class ApplicationController < ActionController::Base
 
   delegate :homepage, private: true, to: :helpers
 
-  etag { [ current_user, Setting.all ] }
+  etag { [current_user, Setting.all] }
 
   protect_from_forgery with: :exception
 
@@ -17,7 +18,7 @@ class ApplicationController < ActionController::Base
   # Rescue from invalid authenticity token
   rescue_from ActionController::InvalidAuthenticityToken, with: :bad_token
   def bad_token
-    redirect_to('/') && return
+    redirect_to('/')
   end
 
   def require_role(role)
@@ -41,7 +42,7 @@ class ApplicationController < ActionController::Base
   end
 
   def sign_out_deactivated_user
-    sign_out_and_redirect(current_user) && return if signed_in? && current_user.deactivated?
+    sign_out_and_redirect(current_user) if signed_in? && current_user.deactivated?
   end
 
   def user_sign_in_path
@@ -66,42 +67,42 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(
       :account_update,
       keys: %i[
-              email
-              email_notifications_blacklist
-              first_name
-              last_name
-              password
-              password_confirmation
-              phone
-              receive_email_notifications
-              receive_notifications_from_self
-              receive_read_notifications_by_email
-              receive_sms_notifications
-              time_zone_name
-            ],
+        email
+        email_notifications_blacklist
+        first_name
+        last_name
+        password
+        password_confirmation
+        phone
+        receive_email_notifications
+        receive_notifications_from_self
+        receive_read_notifications_by_email
+        receive_sms_notifications
+        time_zone_name
+      ]
     )
 
     devise_parameter_sanitizer.permit(
       :accept_invitation,
-      keys: %i[email broker_customer_id first_name last_name phone],
+      keys: %i[email broker_customer_id first_name last_name phone]
     )
 
     devise_parameter_sanitizer.permit(
       :invite,
       keys: [
-              :broker_customer_id,
-              :companyable_id,
-              :companyable_type,
-              :contact_id,
-              :contact_id,
-              :email,
-              :email,
-              :first_name,
-              :last_name,
-              :phone,
-              { user_roles_attributes: %i[_destroy role_id] },
-              { contact_attributes: { contact_roles_attributes: %i[_destroy role] } }
-            ],
+        :broker_customer_id,
+        :companyable_id,
+        :companyable_type,
+        :contact_id,
+        :contact_id,
+        :email,
+        :email,
+        :first_name,
+        :last_name,
+        :phone,
+        { user_roles_attributes: %i[_destroy role_id] },
+        { contact_attributes: { contact_roles_attributes: %i[_destroy role] } }
+      ]
     )
   end
 

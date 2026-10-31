@@ -15,10 +15,10 @@ RSpec.describe(ProblematicService::Rule) do
     let!(:other_problem) do
       create(:problem, problematic_rule_code: 'missing_broker_carrier_id', resolvable: shipment, resolved_at: other_problem_resolved_at)
     end
-    let(:other_problem_resolved_at) { }
+    let(:other_problem_resolved_at) { nil }
     let(:rule) { ProblematicService::Rule::Shipment::MissingPickedUpAt.new(ProblematicService::Processor::Shipment) }
     let(:rule_problems) { shipment.problems.where(problematic_rule_code: rule.code) }
-    let(:shipment) { create(:shipment, updated_by:).tap { |shipment| shipment.problems.delete_all } }
+    let(:shipment) { create(:shipment, updated_by:).tap { |shipment| shipment.problems.destroy_all } }
     let(:updated_by) { create(:broker_user) }
 
     context 'when resolvable' do
@@ -51,7 +51,7 @@ RSpec.describe(ProblematicService::Rule) do
   end
 
   describe '#assign' do
-    subject(:assigned_to) { ProblematicService::Rule::Shipment::MissingChargesConfirmed.new(nil).with(shipment).send(:assign) }
+    subject(:assigned_to) { ProblematicService::Rule::Shipment::MissingChargesConfirmed.new(nil).with(shipment).__send__(:assign) }
 
     let(:shipment) { build(:shipment).tap { |record| record.dispatcher = nil } }
     let!(:staff_user) { create(:broker_user).tap { |user| user.add_role(:accounts_receivable) } }

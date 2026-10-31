@@ -23,7 +23,7 @@ module Accounting
 
     include ActiveModel::Model
 
-    attr_reader :id
+    attr_reader :id, :attributes
 
     def initialize(id = nil, loaded: false, **attributes)
       @id = id
@@ -39,7 +39,6 @@ module Accounting
       @attributes[name]
     end
 
-    def attributes = @attributes
     def destroy = self.class.connection.destroy(self)
     def loaded? = @loaded
 

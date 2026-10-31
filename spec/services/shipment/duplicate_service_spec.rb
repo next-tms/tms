@@ -23,28 +23,28 @@ RSpec.describe(Shipment::DuplicateService) do
 
     it 'duplicates items' do
       new_shipment = call
-      except_attrs = [ 'id', 'created_at', 'updated_at', 'shipment_id' ]
+      except_attrs = ['id', 'created_at', 'updated_at', 'shipment_id']
       item.attributes.each do |k, v|
         next if except_attrs.include?(k)
 
-        expect(new_shipment.items.first.send(k)).to(eq(v))
+        expect(new_shipment.items.first.public_send(k)).to(eq(v))
       end
     end
 
     it 'duplicates broker accessorials' do
       new_shipment = call
-      except_attrs = [ 'id', 'created_at', 'updated_at' ]
-      broker_accessorial.attributes.each do |k, _v|
+      except_attrs = ['id', 'created_at', 'updated_at']
+      broker_accessorial.attributes.each_key do |k|
         next if except_attrs.include?(k)
 
-        expect(new_shipment.broker_accessorials.first.send(k)).to(eq(broker_accessorial.send(k)))
+        expect(new_shipment.broker_accessorials.first.public_send(k)).to(eq(broker_accessorial.public_send(k)))
       end
     end
 
     it 'stores nil on nullable attrs' do
       new_shipment = call
       described_class::NULLABLE_ATTRS.each do |attr|
-        expect(new_shipment.send(attr)).to(be_nil)
+        expect(new_shipment.public_send(attr)).to(be_nil)
       end
     end
   end

@@ -4,7 +4,7 @@ if ENV['SMARTY_STREETS_AUTH_ID']
   Geocoder.config[:smarty_streets] ||= {
     api_key: [
       ENV['SMARTY_STREETS_AUTH_ID'],
-      ENV['SMARTY_STREETS_AUTH_TOKEN']
+      ENV.fetch('SMARTY_STREETS_AUTH_TOKEN', nil)
     ]
   }
 end

@@ -5,8 +5,8 @@ RSpec.describe BrokerCustomer::CarrierChargeCalculatorService do
   let!(:shipment) do
     create(:shipment,
            broker_customer:,
-           carrier_cost_cents: 1000, carrier_cost_currency: "USD",
-           carrier_charge_cents: 1500, carrier_charge_currency: "USD")
+           carrier_cost_cents: 1000, carrier_cost_currency: 'USD',
+           carrier_charge_cents: 1500, carrier_charge_currency: 'USD')
   end
   let!(:upcharge_rule) { create(:upcharge_rule, broker_customer:, min: 1, upcharge_percentage: 5) }
   let!(:item) do

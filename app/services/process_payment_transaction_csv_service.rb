@@ -20,18 +20,18 @@ class ProcessPaymentTransactionCsvService
         return self
       end
 
-      due_on = parse_date(row['due'], :due) unless row['due'].blank?
-      due_on ||= parse_date(row['date'], :date) unless row['date'].blank?
+      due_on = parse_date(row['due'], :due) if row['due'].present?
+      due_on ||= parse_date(row['date'], :date) if row['date'].present?
 
       if due_on.blank?
         @message = "Unable to extract dates (\"date\") from row: #{row}, dates must be in the format YYYY-MM-DD"
         return self
       end
 
-      invoice = row['invoice'] unless row['invoice'].blank?
+      invoice = row['invoice'] if row['invoice'].present?
 
       pro = row['pro']
-      pro ||= Shipment.find_by_load_id(row['load'])&.pro unless row['load'].blank?
+      pro ||= Shipment.find_by(load_id: row['load'])&.pro if row['load'].present?
 
       next if balance_cents.blank? || due_on.blank? || pro.blank?
 
@@ -90,7 +90,7 @@ class ProcessPaymentTransactionCsvService
   end
 
   def build_success_message(saved_payment_transactions_count)
-    message_parts = [ 'Invoice'.pluralize(saved_payment_transactions_count) ]
+    message_parts = ['Invoice'.pluralize(saved_payment_transactions_count)]
     message_parts << "(#{saved_payment_transactions_count} found altogether)" if saved_payment_transactions_count > 1
     message_parts += [
       'will be assigned',

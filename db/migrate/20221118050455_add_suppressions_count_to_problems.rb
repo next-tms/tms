@@ -1,7 +1,7 @@
 class AddSuppressionsCountToProblems < ActiveRecord::Migration[7.0]
   def up
     add_column :problems, :suppressions_count, :integer
-add_index :problems, :suppressions_count
+    add_index :problems, :suppressions_count
 
     say 'populate(:problems, :suppressions_count)'
     Problem.find_each { |problem| Problem.reset_counters(problem.id, :suppressions) }

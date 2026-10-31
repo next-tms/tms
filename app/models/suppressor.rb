@@ -35,8 +35,8 @@ class Suppressor < ApplicationRecord
 
   has_many :suppressions, dependent: :destroy
 
-  validates :problematic_type, inclusion: { in: %w[Shipment] }, presence: true
-  validates :suppressible_type, inclusion: { in: %w[Receivable] }, presence: true
+  validates :problematic_type, inclusion: { in: ['Shipment'] }, presence: true
+  validates :suppressible_type, inclusion: { in: ['Receivable'] }, presence: true
 
   def describe
     return unless valid?

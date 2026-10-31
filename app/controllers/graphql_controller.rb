@@ -13,8 +13,7 @@ class GraphQLController < ActionController::API
       current_user:,
       session:
     }
-    result = LiftoffSchema.execute(query, variables:, context:, operation_name:)
-    render(json: result)
+    @result = LiftoffSchema.execute(query, variables:, context:, operation_name:)
   rescue StandardError => e
     raise e unless Rails.env.development?
 
@@ -43,10 +42,10 @@ class GraphQLController < ActionController::API
     end
   end
 
-  def handle_error_in_development(e)
-    logger.error(e.message)
-    logger.error(e.backtrace.join("\n"))
+  def handle_error_in_development(error)
+    logger.error(error.message)
+    logger.error(error.backtrace.join("\n"))
 
-    render(json: { errors: [ { message: e.message, backtrace: e.backtrace } ], data: {} }, status: :internal_server_error)
+    render(:error, locals: { error: }, status: :internal_server_error)
   end
 end

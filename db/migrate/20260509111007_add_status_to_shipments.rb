@@ -34,9 +34,9 @@ class AddStatusToShipments < ActiveRecord::Migration[8.0]
       'pickup_scheduled'
     elsif shipment.dispatched_at.present?
       'dispatched'
-    elsif shipment.booked_at.present? && shipment.total_charges_cents.to_i > 0
+    elsif shipment.booked_at.present? && shipment.total_charges_cents.to_i.positive?
       'booked_quoted'
-    elsif shipment.total_charges_cents.to_i > 0
+    elsif shipment.total_charges_cents.to_i.positive?
       'quoted'
     elsif shipment.booked_at.present?
       'booked'

@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   root 'welcome#index'
 
   mount GraphiQL::Rails::Engine, at: '/graphiql', graphql_path: '/graphql' if Rails.env.development?
-  post '/graphql', to: 'graphql#execute'
+  post '/graphql', to: 'graphql#execute', defaults: { format: :json }
 
   devise_for :users, controllers: { invitations: 'users/invitations', registrations: 'users/registrations' }
 
@@ -26,13 +26,15 @@ Rails.application.routes.draw do
   get 'rates/fetch', to: 'rates_service#fetch'
   get 'tracking' => 'tracking#show'
 
-  post 'fetch_details_by_zip_code', to: 'geocoder#fetch_details_by_zip_code'
-  post 'fetch_address_by_broker_customer', to: 'geocoder#fetch_address_by_broker_customer'
-  post 'validate_address', to: 'geocoder#validate_address'
+  post 'fetch_details_by_zip_code', to: 'geocoder#fetch_details_by_zip_code', defaults: { format: :json }
+  post 'fetch_address_by_broker_customer', to: 'geocoder#fetch_address_by_broker_customer', defaults: { format: :json }
+  post 'validate_address', to: 'geocoder#validate_address', defaults: { format: :json }
 
   AccountingConnectionsController::PROVIDERS.each do |kind, slug|
-    get "gateway/accounts/#{slug}/authenticate", as: :"connect_#{kind}_accounting", to: 'accounting_connections#connect', defaults: { kind: }
-    get "gateway/accounts/#{slug}/oauth-callback", as: :"oauth_callback_#{kind}_accounting", to: 'accounting_connections#callback', defaults: { kind: }
+    get "gateway/accounts/#{slug}/authenticate", as: :"connect_#{kind}_accounting", to: 'accounting_connections#connect',
+                                                 defaults: { kind: }
+    get "gateway/accounts/#{slug}/oauth-callback", as: :"oauth_callback_#{kind}_accounting", to: 'accounting_connections#callback',
+                                                   defaults: { kind: }
   end
 
   resources :notifications, only: %i[show index]
@@ -125,7 +127,7 @@ Rails.application.routes.draw do
 
       member { get :pay }
     end
-    post 'payment/due_payment_transactions', to: 'payments#due_payment_transactions'
+    post 'payment/due_payment_transactions', to: 'payments#due_payment_transactions', defaults: { format: :json }
 
     resources :receivables, path: 'receivables' do
       collection { get :authorized }
@@ -231,7 +233,7 @@ Rails.application.routes.draw do
               path: 'shipments',
               as: :shipments,
               param: :load_id,
-                                        only: %i[index new create edit show update] do
+              only: %i[index new create edit show update] do
       member { get 'book' => 'shipments#book', as: :book }
       member { get 'documents' => 'shipments#documents', as: :documents }
       member { get 'documents/bol' => 'shipments#documents_bol', as: :bol_document }

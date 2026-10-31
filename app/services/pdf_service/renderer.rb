@@ -14,7 +14,7 @@ module PDFService
               .render_to_string(
                 partial:,
                 formats: %i[pdf],
-                locals: locals.merge({ domain: ENV.fetch('DOMAIN') }),
+                locals: locals.merge({ domain: ENV.fetch('DOMAIN') })
               )
     end
 

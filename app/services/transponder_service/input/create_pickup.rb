@@ -4,7 +4,7 @@ module TransponderService
       def initialize(object)
         raise ArgumentError, 'object must be a Pickup' unless object.is_a?(Pickup)
 
-        super(object)
+        super
       end
 
       def build

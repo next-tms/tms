@@ -33,6 +33,7 @@
 #
 #  index_carriers_on_broker_billing_address_id  (broker_billing_address_id)
 #  index_carriers_on_check_mailing_address_id   (check_mailing_address_id)
+#  index_carriers_on_mc_number                  (mc_number) UNIQUE
 #  index_carriers_on_name                       (name) UNIQUE
 #  index_carriers_on_scac                       (scac) UNIQUE
 #
@@ -44,7 +45,7 @@
 FactoryBot.define do
   factory :carrier do
     sequence(:name) { |number| "#{Faker::Company.name} #{number}" }
-    sequence(:scac) { |number| format('%04d', number % 10000) }
+    sequence(:scac) { |number| format('%04d', number % 10_000) }
 
     check_mailing_address_id { create(:address) }
     mc_number { Faker::Number.number.to_s[..5] }

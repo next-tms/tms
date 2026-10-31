@@ -13,7 +13,7 @@
 #
 # Indexes
 #
-#  index_broker_countries_on_country_alpha2  (country_alpha2)
+#  index_broker_countries_on_country_alpha2  (country_alpha2) UNIQUE
 #
 class BrokerCountry < ApplicationRecord
   class << self

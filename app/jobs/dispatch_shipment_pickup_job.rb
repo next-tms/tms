@@ -6,7 +6,7 @@ class DispatchShipmentPickupJob < ApplicationJob
     return unless success
 
     PickupNotifier
-    .with(pickup:, pickup_action_type: :pickup_service_dispatched)
-    .deliver(pickup.shipment.users_to_notify)
+      .with(pickup:, pickup_action_type: :pickup_service_dispatched)
+      .deliver(pickup.shipment.users_to_notify)
   end
 end

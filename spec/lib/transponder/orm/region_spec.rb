@@ -5,7 +5,7 @@ RSpec.describe(Transponder::ORM::Region) do
   let(:unknown) { described_class.new(iso31662: 'ZZ-QQ') }
 
   describe '.all' do
-    it { expect(described_class.all.pluck(:iso31662)).to(eq(%w[CA-BC CA-ON MX-AGU US-CA US-TX US-WY])) }
+    it { expect(described_class.pluck(:iso31662)).to(eq(['CA-BC', 'CA-ON', 'MX-AGU', 'US-CA', 'US-TX', 'US-WY'])) }
     it { expect(described_class.all).to(equal(described_class.all)) }
 
     context 'when the country collection is older than MEMO_EXPIRES_IN' do
@@ -15,7 +15,7 @@ RSpec.describe(Transponder::ORM::Region) do
       after { Timecop.return }
 
       it { expect(described_class.all).not_to(equal(collection)) }
-      it { expect(described_class.all.first.country).to(equal(Transponder::ORM::Country.find('CA'))) }
+      it { expect(described_class.first.country).to(equal(Transponder::ORM::Country.find('CA'))) }
     end
 
     context 'when it was last built from another country collection' do
@@ -24,7 +24,7 @@ RSpec.describe(Transponder::ORM::Region) do
       before { Transponder::ORM::Country.instance_variable_set(:@all, nil) }
 
       it { expect(described_class.all).not_to(equal(collection)) }
-      it { expect(described_class.all.first.country).to(equal(Transponder::ORM::Country.find('CA'))) }
+      it { expect(described_class.first.country).to(equal(Transponder::ORM::Country.find('CA'))) }
     end
   end
 

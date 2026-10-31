@@ -25,7 +25,7 @@ RSpec.describe(Area) do
 
     it { expect { area }.to(change(described_class, :count).by(1)) }
     it { expect(area.name).to(eq('Texas, US')) }
-    it { expect(area.locations.map { |location| [ location.region_iso31662, location.zip_code ] }).to(eq([ [ 'US-TX', nil ] ])) }
+    it { expect(area.locations.map { |location| [location.region_iso31662, location.zip_code] }).to(eq([['US-TX', nil]])) }
 
     context 'when the region area exists' do
       let!(:existing) { described_class.find_or_create_by_region!(texas) }
@@ -36,7 +36,7 @@ RSpec.describe(Area) do
 
     context 'when only an area with several whole regions includes the region' do
       before do
-        described_class.create!(locations: [ Location.new(region: texas), Location.new(region_iso31662: 'US-CA') ], name: 'Southwest, US')
+        described_class.create!(locations: [Location.new(region: texas), Location.new(region_iso31662: 'US-CA')], name: 'Southwest, US')
       end
 
       it { expect { area }.to(change(described_class, :count).by(1)) }
@@ -44,9 +44,13 @@ RSpec.describe(Area) do
     end
 
     context 'when only a ZIP code area includes the region' do
-      before { described_class.create!(locations: [ Location.new(region: texas, zip_code: '78701') ], name: 'Austin Metro, US') }
+      before { described_class.create!(locations: [Location.new(region: texas, zip_code: '78701')], name: 'Austin Metro, US') }
 
       it { expect { area }.to(change(described_class, :count).by(1)) }
     end
+  end
+
+  describe 'relationships' do
+    it { is_expected.to(have_many(:location_areas).dependent(:destroy)) }
   end
 end

@@ -9,7 +9,7 @@ module DocumentableService
     attr_reader :document_type, :record
 
     def initialize(record)
-      model = "::#{self.class.to_s.split("::")[-2]}".constantize
+      model = "::#{self.class.to_s.split('::')[-2]}".constantize
 
       raise ArgumentError, "record must be a #{model}" unless record.is_a?(model)
       raise ArgumentError, 'record must be #documentable?' unless record.try(:documentable?)

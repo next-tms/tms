@@ -3,7 +3,7 @@ class RemoveBrokerFromCompanyables < ActiveRecord::Migration[8.1]
   class Contact < ApplicationRecord; end
   class User < ApplicationRecord; end
 
-  COMPANYABLE_MODELS = [ Contact, User ].freeze
+  COMPANYABLE_MODELS = [Contact, User].freeze
 
   def up
     change_column_null(:users, :companyable_id, true)

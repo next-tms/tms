@@ -8,27 +8,27 @@ RSpec.describe(Shipment::FetchAndCreateRatesService) do
 
       before do
         allow(Rate)
-        .to(
-          receive(:find_by)
-          .with(
-            broker_carrier:,
-            declared_freight_classes: false,
-            shipment_fingerprint:,
-            shipment:,
+          .to(
+            receive(:find_by)
+            .with(
+              broker_carrier:,
+              declared_freight_classes: false,
+              shipment_fingerprint:,
+              shipment:
+            )
+            .and_return(rate)
           )
-          .and_return(rate),
-        )
 
         allow(shipment)
-        .to(
-          receive(:valid_broker_carriers_for_quotation)
-          .with(user_type)
-          .and_return([ broker_carrier ]),
-        )
+          .to(
+            receive(:valid_broker_carriers_for_quotation)
+            .with(user_type)
+            .and_return([broker_carrier])
+          )
       end
 
       it { expect(subject.rates_declared_freight_classes_true).to(eq([])) }
-      it { expect(subject.rates_declared_freight_classes_false).to(eq([ rate ])) }
+      it { expect(subject.rates_declared_freight_classes_false).to(eq([rate])) }
       it { expect(subject.populate_rate_jobs_on_queue).to(be(false)) }
     end
 
@@ -41,21 +41,21 @@ RSpec.describe(Shipment::FetchAndCreateRatesService) do
           shipment:,
           broker_carrier:,
           declared_freight_classes: false,
-          shipment_fingerprint: shipment.fingerprint,
+          shipment_fingerprint: shipment.fingerprint
         )
       end
 
       before do
         allow(shipment)
-        .to(
-          receive(:valid_broker_carriers_for_quotation)
-          .with(user_type)
-          .and_return([ broker_carrier, broker_carrier2 ]),
-        )
+          .to(
+            receive(:valid_broker_carriers_for_quotation)
+            .with(user_type)
+            .and_return([broker_carrier, broker_carrier2])
+          )
       end
 
       it { expect(subject.rates_declared_freight_classes_true).to(eq([])) }
-      it { expect(subject.rates_declared_freight_classes_false).to(eq([ rate ])) }
+      it { expect(subject.rates_declared_freight_classes_false).to(eq([rate])) }
       it { expect(subject.populate_rate_jobs_on_queue).to(be(true)) }
     end
   end
