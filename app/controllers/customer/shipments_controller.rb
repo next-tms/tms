@@ -114,16 +114,14 @@ class Customer::ShipmentsController < Customer::CustomerController
         )
 
         stale?(
-          [
-            @shipment,
-            *@shipment.broker_accessorials,
-            @shipment.broker_carrier,
-            @shipment.broker_carrier&.carrier,
-            @shipment.broker_customer,
-            *@shipment.items,
-            @shipment.receiver_address,
-            @shipment.shipper_address
-          ].compact
+          @shipment,
+          @shipment.broker_accessorials,
+          @shipment.broker_carrier,
+          @shipment.broker_carrier&.carrier,
+          @shipment.broker_customer,
+          @shipment.items,
+          @shipment.receiver_address,
+          @shipment.shipper_address
         )
       end
       format.html

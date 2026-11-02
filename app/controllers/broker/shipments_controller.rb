@@ -233,16 +233,14 @@ class Broker::ShipmentsController < Broker::BrokerController
         )
 
         stale?(
-          [
-            @shipment,
-            *@shipment.broker_accessorials,
-            @shipment.broker_carrier,
-            @shipment.broker_carrier&.carrier,
-            @shipment.broker_customer,
-            *@shipment.items,
-            @shipment.receiver_address,
-            @shipment.shipper_address
-          ].compact
+          @shipment,
+          @shipment.broker_accessorials,
+          @shipment.broker_carrier,
+          @shipment.broker_carrier&.carrier,
+          @shipment.broker_customer,
+          @shipment.items,
+          @shipment.receiver_address,
+          @shipment.shipper_address
         )
       end
       format.html { redirect_to(quote_broker_shipment_path(@shipment)) if @shipment.quote_only? }
