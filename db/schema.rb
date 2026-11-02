@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_203003) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -122,6 +122,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_203003) do
     t.boolean "broker_only", default: true
     t.string "code"
     t.float "cost"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.boolean "fee", default: false
     t.integer "flat_charge_cents", default: 0, null: false
     t.string "flat_charge_currency", default: "USD", null: false
@@ -130,6 +131,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_203003) do
     t.integer "upcharge_cents", default: 0, null: false
     t.string "upcharge_currency", default: "USD", null: false
     t.float "upcharge_percent"
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["accessorial_id"], name: "index_broker_accessorials_on_accessorial_id"
     t.index ["broker_customer_id"], name: "index_broker_accessorials_on_broker_customer_id"
   end

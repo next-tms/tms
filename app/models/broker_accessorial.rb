@@ -26,6 +26,10 @@
 #   @return [String]
 # @!attribute upcharge_percent
 #   @return [Float]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
 # @!attribute accessorial_id
 #   @return []
 # @!attribute broker_customer_id
