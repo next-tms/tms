@@ -1,6 +1,9 @@
 module Accounting
   module QuickBooks
     class Service
+      class Disconnected < Accounting::Error; end
+      class ExceededAuthAttempts < Accounting::Error; end
+
       MAX_AUTH_ATTEMPTS = 3
       REQUIRED_CREDENTIALS = %i[access_token realm_id refresh_token].freeze
 
@@ -26,7 +29,7 @@ module Accounting
         )
       end
 
-      def connected? = credentials[:refresh_token].present?
+      def connected? = credentials[:refresh_token].present? && credentials[:refresh_token_revoked_at].blank?
 
       def perform_authenticated_request
         attempts = 0
@@ -36,7 +39,7 @@ module Accounting
           yield access_token
         rescue OAuth2::Error, ::Quickbooks::AuthorizationFailure
           attempts += 1
-          raise 'Accounting::QuickBooks::Service::ExceededAuthAttempts' if attempts >= MAX_AUTH_ATTEMPTS
+          raise ExceededAuthAttempts if attempts >= MAX_AUTH_ATTEMPTS
 
           sleep(1)
           refresh!
@@ -67,6 +70,20 @@ module Accounting
       end
 
       def refresh!
+        refresh_token = credentials[:refresh_token]
+
+        integration.with_lock do
+          rotate_tokens! if connected? && credentials[:refresh_token] == refresh_token
+        rescue OAuth2::Error => error
+          raise unless error.code == 'invalid_grant'
+
+          integration.update!(credentials: credentials.merge(refresh_token_revoked_at: Time.current))
+        end
+
+        raise Disconnected unless connected?
+      end
+
+      def rotate_tokens!
         refreshed = access_token.refresh!
         expires_in = refreshed.params['x_refresh_token_expires_in'].to_i
 

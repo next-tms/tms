@@ -119,4 +119,72 @@ RSpec.describe(Receivable) do
       it { expect(result).to(be(false)) }
     end
   end
+
+  describe '#save' do
+    let(:error) { Accounting::QuickBooks::Service::Disconnected.new }
+    let(:record) { build(:receivable, authorized_at: nil) }
+
+    before do
+      allow(Accounting).to(receive(:connected?).and_return(true))
+      allow(record).to(receive(:accounting_invoice).and_raise(error))
+      allow(Sentry).to(receive(:capture_exception))
+    end
+
+    it { expect(record.save).to(be(true)) }
+
+    it 'leaves the receivable unauthorized and uninvoiced' do
+      record.save
+
+      expect(record.reload).to(have_attributes(authorized_at: nil, invoiced: false))
+    end
+
+    it 'reports the accounting error' do
+      record.save
+
+      expect(Sentry).to(have_received(:capture_exception).with(error).twice)
+    end
+  end
+
+  describe '#sendable?' do
+    let(:error) { Accounting::QuickBooks::Service::Disconnected.new }
+    let(:record) { create(:receivable, shipment:) }
+    let(:shipment) { create(:shipment, broker_customer: create(:broker_customer), picked_up_at: Time.current) }
+
+    let(:result) { record.sendable? }
+
+    before do
+      allow(record).to(receive_messages(balance_cents: 100, update_from_api: nil))
+      allow(record).to(receive(:fetch_invoice).and_raise(error))
+      allow(Sentry).to(receive(:capture_exception))
+    end
+
+    it { expect(result).to(be(false)) }
+
+    it 'reports the accounting error' do
+      result
+
+      expect(Sentry).to(have_received(:capture_exception).with(error))
+    end
+  end
+
+  describe '#update_from_api' do
+    let(:error) { OAuth2::Error.new({ 'error' => 'invalid_grant' }) }
+    let(:record) { create(:receivable) }
+
+    let(:result) { record.update_from_api }
+
+    before do
+      allow(Accounting).to(receive(:connected?).and_return(true))
+      allow(record).to(receive(:update_from_accounting_invoice).and_raise(error))
+      allow(Sentry).to(receive(:capture_exception))
+    end
+
+    it { expect { result }.not_to(raise_error) }
+
+    it 'reports the accounting error' do
+      result
+
+      expect(Sentry).to(have_received(:capture_exception).with(error))
+    end
+  end
 end
