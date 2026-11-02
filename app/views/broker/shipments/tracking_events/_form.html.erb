@@ -1,0 +1,25 @@
+<%= bootstrap_form_with(model: @shipment, url: [:broker, @shipment, :tracking_events], method: :patch) do |f| %>
+  <%= f.alert_message 'Unable to save tracking:' %>
+
+  <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".tracking-event-form-wrapper">
+    <template data-nested-form-target="template">
+      <%= bootstrap_fields_for :tracking_events, TrackingEvent.new, index: 'NEW_RECORD' do |tracking_event_form| %>
+        <%= render 'tracking_event_form', f: tracking_event_form %>
+      <% end %>
+    </template>
+
+    <% @shipment.tracking_events.each_with_index do |tracking_event, index| %>
+      <%= bootstrap_fields_for :tracking_events, tracking_event, index: do |tracking_event_form| %>
+        <%= render 'tracking_event_form', f: tracking_event_form %>
+      <% end %>
+    <% end %>
+
+    <div data-nested-form-target="target"></div>
+
+    <%= link_to icon('solid', 'plus', 'Add'), '#', data: { action: 'nested-form#add' }, class: 'btn btn-light' %>
+  </div>
+
+  <%= f.form_group do %>
+    <%= f.submit class: 'btn btn-primary', value: 'Save' %>
+  <% end %>
+<% end %>

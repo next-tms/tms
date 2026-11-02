@@ -68,7 +68,6 @@ group :development do
 
   gem 'annotaterb'
   gem 'bullet', '~> 8.1.0'
-  gem 'graphiql-rails', '~> 1.9'
   gem 'letter_opener'
   gem 'listen', '>= 3.0.5', '< 3.10'
   gem 'rails_real_favicon'
@@ -98,6 +97,7 @@ gem 'devise_invitable', '~> 2.0'
 gem 'devise-pwned_password', '~> 0.2'
 
 gem 'freight_kit', '~> 0.1.16'
+gem 'measured', '~> 3.2.0'
 gem 'place_kit', '~> 0.0.5'
 
 gem 'sentry-rails', '~> 6.6'
@@ -108,7 +108,6 @@ gem 'business_time'
 gem 'httparty'
 gem 'money-rails', '~> 1.15.0'
 gem 'postmark-rails'
-gem 'simple_command'
 gem 'timezone', '~> 1.3'
 
 gem 'quickbooks-ruby', '~> 2.0'

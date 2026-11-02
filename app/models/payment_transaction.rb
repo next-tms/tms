@@ -10,6 +10,8 @@
 #   @return [Integer]
 # @!attribute balance_currency
 #   @return [String]
+# @!attribute dsdc_invoice
+#   @return [Hash]
 # @!attribute due_on
 #   @return [Date]
 # @!attribute invoice
@@ -32,6 +34,8 @@
 #   @return []
 # @!attribute created_by_id
 #   @return []
+# @!attribute dsdc_unique_id
+#   @return [String]
 # @!attribute legacy_load_id
 #   @return [String]
 # @!attribute payment_id
@@ -42,6 +46,7 @@
 # Indexes
 #
 #  index_payment_transactions_on_broker_carrier_id  (broker_carrier_id)
+#  index_payment_transactions_on_dsdc_unique_id     (broker_carrier_id,dsdc_unique_id) UNIQUE
 #  index_payment_transactions_on_payment_id         (payment_id)
 #  index_payment_transactions_on_shipment_id        (shipment_id)
 #
@@ -65,6 +70,8 @@ class PaymentTransaction < ApplicationRecord
 
   include AccountingSyncable
 
+  SHIPMENT_DOCUMENTS = { 'BOL' => :carrier_bol, 'POD' => :carrier_pod }.freeze
+
   accounting_syncs :bill,
                    match: -> { { document_number: shipment.load_id.to_s } },
                    prepare: ->(bill) {
@@ -85,18 +92,31 @@ class PaymentTransaction < ApplicationRecord
 
   belongs_to :broker_carrier
 
+  has_many_attached :dsdc_documents
+
   monetize :balance_cents
   monetize :paid_cents
 
   scope :due, -> { includes(:payment).where(payment: { paid_on: nil }).or(includes(:payment).where(payment: nil)) }
   scope :paid, -> { includes(:payment).where.not(payment: { paid_on: nil }) }
 
+  validates :dsdc_unique_id, allow_nil: true, uniqueness: { scope: :broker_carrier_id }
   validates :invoice, presence: true
   validates :shipment, presence: true
 
   # https://github.com/activerecord-hackery/ransack/issues/224#issuecomment-22818039
   ransacker :id do
     Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")
+  end
+
+  def attach_dsdc_documents(attachables)
+    blobs = attachables.map { |attachable| ActiveStorage::Blob.create_and_upload!(**attachable) }
+    dsdc_documents.attach(blobs)
+
+    blobs.each do |blob|
+      name = SHIPMENT_DOCUMENTS[blob.metadata[:document_type]]
+      shipment.public_send(name).attach(blob) if name && !shipment.public_send(name).attached?
+    end
   end
 
   def duplicates

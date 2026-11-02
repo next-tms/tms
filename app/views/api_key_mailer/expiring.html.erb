@@ -1,0 +1,5 @@
+<% provide :signature, @name %>
+
+<p><%= t('.greeting', first_name: @api_key.authorizable.first_name) %></p>
+<p><%= t('.body', expires_at: l(@api_key.expires_at.in_time_zone(@api_key.authorizable.time_zone), format: :long), name: @api_key.name) %></p>
+<p><%= link_to t('.roll'), api_key_url(@api_key) %></p>

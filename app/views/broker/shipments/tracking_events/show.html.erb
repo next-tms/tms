@@ -1,0 +1,15 @@
+<% provide :title, "Tracking — Load #{@shipment.load_id}" %>
+<% provide :no_cache, 'yes' %>
+
+<%= render 'broker/shipments/header', page_title: 'Tracking' %>
+<%= render 'broker/shipments/member_menu' %>
+
+<div class="btn-toolbar">
+  <%= link_to icon('solid', 'pencil-alt', 'Edit'), [:edit, :broker, @shipment, :tracking_events], class: 'btn btn-primary' %>
+</div>
+
+<div class="row">
+  <div class="col col-md-8">
+    <%= render 'tracking/tracking', shipment: @shipment, search_terminals_links: true %>
+  </div>
+</div>

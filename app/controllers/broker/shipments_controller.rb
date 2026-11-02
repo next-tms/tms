@@ -7,11 +7,9 @@ class Broker::ShipmentsController < Broker::BrokerController
                   book
                   book_modal
                   claims
-                  create_tracking_event
                   destroy
                   documents
                   edit
-                  edit_tracking_events
                   history
                   notes
                   pickup
@@ -21,7 +19,6 @@ class Broker::ShipmentsController < Broker::BrokerController
                   send_document
                   send_document_with_contact_mailer
                   show
-                  tracking_events
                   transit
                   unbook
                   update
@@ -29,7 +26,6 @@ class Broker::ShipmentsController < Broker::BrokerController
                   upload_document
                 ]
   before_action :authenticate_user!
-  before_action :authorize_access_to_shipment, only: %i[edit_tracking_events quote update upload_document show tracking_events]
 
   def accounting
     authorize!(@shipment, to: :accounts_show?, with: DispatchAndSalesRepPolicy)
@@ -125,11 +121,8 @@ class Broker::ShipmentsController < Broker::BrokerController
 
     Shipment.transaction do
       @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
-      @shipment.lock! # Avoid race condition on Shipment#load_id
-
       @shipment.created_by = current_user
       @shipment.dispatcher ||= current_user if current_user.dispatcher_for?(@shipment)
-      @shipment.load_id = Shipment.last_load_id + 1
       @shipment.updated_by = current_user
 
       if !@shipment.quote_only? && shipment_params[:accessorials_has_been_suggested].blank?
@@ -156,10 +149,14 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def edit
+    authorize!(@shipment, to: :manage?)
+
     @broker_customers = current_user.broker_customers.includes(:customer).order('customers.name')
   end
 
   def update
+    authorize!(@shipment, to: :manage?)
+
     @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))
     @shipment.updated_by = current_user
 
@@ -208,6 +205,8 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def upload_document
+    authorize!(@shipment, to: :manage?)
+
     document_params = params.expect(shipment: %i[document document_type])
     document = document_params[:document]
 
@@ -225,6 +224,8 @@ class Broker::ShipmentsController < Broker::BrokerController
   end
 
   def show
+    authorize!(@shipment, to: :view?)
+
     respond_to do |format|
       format.ebol do
         response.headers['Content-Disposition'] = ActionDispatch::Http::ContentDisposition.format(
@@ -579,22 +580,6 @@ class Broker::ShipmentsController < Broker::BrokerController
     @total_charges_updated_by = @shipment.whodunnit('total_charges_cents')
   end
 
-  def create_tracking_event
-    @tracking_event = TrackingEvent.new(tracking_event_params)
-    @tracking_event.shipment = @shipment
-
-    unless @tracking_event.save
-      render(:edit_tracking_events)
-      return
-    end
-
-    redirect_to([:tracking_events, :broker, @shipment])
-  end
-
-  def edit_tracking_events; end
-
-  def tracking_events; end
-
   def transit
     authorize!(@shipment, to: :show?, with: DispatchAndSalesRepPolicy)
   end
@@ -606,6 +591,8 @@ class Broker::ShipmentsController < Broker::BrokerController
   def delivery; end
 
   def quote
+    authorize!(@shipment, to: :manage?)
+
     Shipment::ResetRatesService.call(@shipment, force_reset: params[:force].present?)
     @shipment.rates.errored.destroy_all
 
@@ -630,17 +617,9 @@ class Broker::ShipmentsController < Broker::BrokerController
 
   private
 
-  def authorize_access_to_shipment
-    authorize!(@shipment, to: :show?)
-  end
-
   # Use callbacks to share common setup or constraints between actions.
   def set_shipment
     @shipment = Shipment.find_by!(load_id: params[:load_id])
-  end
-
-  def tracking_event_params
-    params.expect(tracking_event: [:id, :at, :event_id, :time_zone, { address_attributes: %i[id city region_iso31662 zip_code] }])
   end
 
   def shipment_params
@@ -731,6 +710,7 @@ class Broker::ShipmentsController < Broker::BrokerController
             weight
             quantity
           ]],
+          pickup_request_attributes: %i[id reschedule_reason],
           receiver_address_attributes: %i[
             id
             ref
@@ -760,17 +740,6 @@ class Broker::ShipmentsController < Broker::BrokerController
             broker_accessorial_id
             cost
             charge
-          ]],
-          tracking_events_attributes: [[
-            :_destroy,
-            :id,
-            :at,
-            :city,
-            :country_alpha2,
-            :event_id,
-            :public,
-            :region_iso31662,
-            { address_attributes: %i[id street street2 city region_iso31662 zip_code] }
           ]]
         }
       ]

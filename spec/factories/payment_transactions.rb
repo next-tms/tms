@@ -10,6 +10,8 @@
 #   @return [Integer]
 # @!attribute balance_currency
 #   @return [String]
+# @!attribute dsdc_invoice
+#   @return [Hash]
 # @!attribute due_on
 #   @return [Date]
 # @!attribute invoice
@@ -32,6 +34,8 @@
 #   @return []
 # @!attribute created_by_id
 #   @return []
+# @!attribute dsdc_unique_id
+#   @return [String]
 # @!attribute legacy_load_id
 #   @return [String]
 # @!attribute payment_id
@@ -42,6 +46,7 @@
 # Indexes
 #
 #  index_payment_transactions_on_broker_carrier_id  (broker_carrier_id)
+#  index_payment_transactions_on_dsdc_unique_id     (broker_carrier_id,dsdc_unique_id) UNIQUE
 #  index_payment_transactions_on_payment_id         (payment_id)
 #  index_payment_transactions_on_shipment_id        (shipment_id)
 #

@@ -12,22 +12,12 @@ RSpec.describe(Broker::ShipmentsController) do
     let(:attributes) do
       {
         items_attributes: { '0' => { quantity: '2', weight: '100' } },
-        receiver_address_attributes: { city: 'Portland' },
-        tracking_events_attributes: { '0' => { address_attributes: { city: 'Salem' }, event_id: '1' } }
+        pickup_request_attributes: { reschedule_reason: 'weather' },
+        receiver_address_attributes: { city: 'Portland' }
       }
     end
 
     before { controller.params = { shipment: attributes } }
-
-    it { is_expected.to(eq(attributes.deep_stringify_keys)) }
-  end
-
-  describe '#tracking_event_params' do
-    subject { controller.__send__(:tracking_event_params).to_h }
-
-    let(:attributes) { { address_attributes: { city: 'Salem' }, event_id: '1' } }
-
-    before { controller.params = { tracking_event: attributes } }
 
     it { is_expected.to(eq(attributes.deep_stringify_keys)) }
   end

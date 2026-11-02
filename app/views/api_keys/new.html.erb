@@ -1,0 +1,16 @@
+<% provide :title, t('.title', model_name: APIKey.model_name.human) %>
+
+<div class="page-header mb-4">
+  <h1><%= yield :title %></h1>
+</div>
+
+<%= bootstrap_form_with(model: @api_key, layout: :horizontal) do |f| %>
+  <%= f.alert_message t('.error', model_name: APIKey.model_name.human) %>
+
+  <%= f.text_field :name, autofocus: true %>
+  <%= f.select :ttl, APIKey::TTLS.map { |ttl| [ pluralize(ttl.in_days.to_i, 'day'), ttl.iso8601 ] }, selected: f.object.ttl&.iso8601 %>
+
+  <%= f.form_group do %>
+    <%= f.submit t('.submit'), class: 'btn btn-primary' %>
+  <% end %>
+<% end %>

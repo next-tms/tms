@@ -97,7 +97,9 @@ module DateTimeHelper
 
     zoned_datetime = datetime.in_time_zone(time_zone)
 
-    time_tag zoned_datetime, zoned_datetime.iso8601, data: { controller: 'time', time_time_zone_value: time_zone.tzinfo.name }
+    time_tag zoned_datetime,
+             zoned_datetime.strftime('%b %-d, %Y, %-l:%M %p %Z'),
+             data: { controller: 'time', time_time_zone_value: time_zone.tzinfo.name }
   end
 
   def time_zone_abbreviation(time_zone, at: Time.current)

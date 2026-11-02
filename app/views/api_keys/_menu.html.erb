@@ -1,0 +1,5 @@
+<nav class="nav border-top pt-4 mb-0">
+  <%= link_to t('.all'), api_keys_path, class: 'nav-link api-keys-index' %>
+  <%= link_to t('.active'), active_api_keys_path, class: 'nav-link api-keys-active' %>
+  <%= link_to t('.expired'), expired_api_keys_path, class: 'nav-link api-keys-expired' %>
+</nav>

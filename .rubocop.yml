@@ -11,6 +11,13 @@ Layout/EndAlignment:
 Layout/LineLength:
   AllowedPatterns:
     - '\A#  '
+Naming/PredicateMethod:
+  AllowedMethods:
+    - call
+    - edit
+    - index
+    - new
+    - show
 Rails/ActionOrder:
   Enabled: false
 Rails/ActiveRecordCallbacksOrder:

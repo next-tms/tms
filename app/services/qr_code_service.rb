@@ -1,7 +1,7 @@
 class QrCodeService
   class << self
     def tracking_data_uri(shipment)
-      url = Rails.application.routes.url_helpers.tracking_url(load_id: shipment.load_id, host: ENV.fetch('DOMAIN'))
+      url = Rails.application.routes.url_helpers.tracking_url(load_id: shipment.load_id, host: ENV.fetch('DOMAIN', 'localhost'))
 
       qr = RQRCode::QRCode.new(url)
 

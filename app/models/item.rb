@@ -68,6 +68,30 @@ class Item < ApplicationRecord
     packaging&.name
   end
 
+  def measured_h = h&.then { |height| Measured::Length.new(height, :in) }
+
+  def measured_h=(length)
+    self.h = length&.then { |measurement| measurement.convert_to(:in).value.ceil }
+  end
+
+  def measured_l = l&.then { |length| Measured::Length.new(length, :in) }
+
+  def measured_l=(length)
+    self.l = length&.then { |measurement| measurement.convert_to(:in).value.ceil }
+  end
+
+  def measured_w = w&.then { |width| Measured::Length.new(width, :in) }
+
+  def measured_w=(length)
+    self.w = length&.then { |measurement| measurement.convert_to(:in).value.ceil }
+  end
+
+  def measured_weight = weight&.then { |pounds| Measured::Weight.new(pounds, :lb) }
+
+  def measured_weight=(weight)
+    self.weight = weight&.then { |measurement| measurement.convert_to(:lb).value.ceil }
+  end
+
   # Prettify
   before_save :prettify_desc, if: :desc_changed?
 

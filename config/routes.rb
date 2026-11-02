@@ -12,8 +12,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root 'welcome#index'
 
-  mount GraphiQL::Rails::Engine, at: '/graphiql', graphql_path: '/graphql' if Rails.env.development?
-  post '/graphql', to: 'graphql#execute', defaults: { format: :json }
+  get '/graphiql', to: 'graphiql#show'
+  post '/graphql', to: 'graphql#execute', as: :graphql, defaults: { format: :json }
 
   devise_for :users, controllers: { invitations: 'users/invitations', registrations: 'users/registrations' }
 
@@ -35,6 +35,15 @@ Rails.application.routes.draw do
                                                  defaults: { kind: }
     get "gateway/accounts/#{slug}/oauth-callback", as: :"oauth_callback_#{kind}_accounting", to: 'accounting_connections#callback',
                                                    defaults: { kind: }
+  end
+
+  resources :api_keys, only: %i[create destroy index new show], path: 'account/api-keys' do
+    collection do
+      get :active
+      get :expired
+    end
+
+    resource :roll, only: %i[create], module: :api_keys
   end
 
   resources :notifications, only: %i[show index]
@@ -72,6 +81,10 @@ Rails.application.routes.draw do
     end
 
     resources :broker_carriers, path: 'carriers' do
+      resources :api_keys, module: :broker_carriers, only: %i[create destroy index new show], path: 'api-keys' do
+        resource :roll, module: :api_keys, only: %i[create]
+      end
+
       collection do
         get :accounting
         patch :accounting, to: 'broker_carriers#update_accounting'
@@ -177,6 +190,8 @@ Rails.application.routes.draw do
       # Stupid, but required for some AJAX without PATCH
       get 'update' => 'shipments#update', as: :update
 
+      resource :tracking_events, module: :shipments, only: %i[edit show update], path: 'tracking'
+
       member do
         get :accounting
         get :book
@@ -186,14 +201,11 @@ Rails.application.routes.draw do
         get :notes
         get :pricing
         get :quote
-        get :tracking, as: :tracking_events, to: 'shipments#tracking_events'
         get :transit
         get :unbook
         get 'book-modal'
         get 'documents/send/:shipment_method', to: 'shipments#send_document', as: :send_document
         get 'pickup-modal'
-        get 'tracking/edit', as: :edit_tracking_events, to: 'shipments#edit_tracking_events'
-        get 'tracking/update', as: :update_tracking_events, to: 'shipments#update_tracking_events'
 
         patch 'update-transit'
         patch 'upload-document'
@@ -202,7 +214,6 @@ Rails.application.routes.draw do
         post 'documents/send/:active_storage_blob_id',
              to: 'shipments#send_document_with_contact_mailer',
              as: :send_document_with_contact_mailer
-        post 'tracking/create', as: :create_tracking_event, to: 'shipments#create_tracking_event'
       end
     end
 
@@ -241,4 +252,21 @@ Rails.application.routes.draw do
   end
 
   resources :countries, only: %i[show]
+
+  namespace :dsdc, defaults: { format: :json }, format: false, path: 'api/dsdc' do
+    resources :bols, only: %i[create destroy update], param: :pro, path: 'bol/v1/app'
+    resources :documents, only: %i[create destroy index show], param: :invoice_number, path: 'v1/documents'
+    resources :invoices, only: %i[create destroy index show update], param: :unique_id, path: 'v1/invoices'
+
+    get 'v1/pickups', to: 'pickup_requests#show', as: :pickup_request_lookup
+    resources :pickup_requests, only: %i[create destroy update], param: :pickup_id, path: 'v1/pickups'
+
+    get 'shipment/bol/:bol/:origin_postal_code/public', to: 'public_shipments#show'
+    get 'shipment/bol/:bol/:origin_postal_code/verified', to: 'shipments#show'
+    get 'shipment/po/:account_number/:start_date/:end_date/verified', to: 'shipments#index'
+    get 'shipment/po/:po/:destination_postal_code/public', to: 'public_shipments#show'
+    get 'shipment/po/:po/:destination_postal_code/verified', to: 'shipments#show'
+    get 'shipment/pro/:pro/public', to: 'public_shipments#show'
+    get 'shipment/pro/:pro/verified', to: 'shipments#show'
+  end
 end

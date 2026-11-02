@@ -36,7 +36,7 @@ body {
     <p class="title">Confirm Your Email</p>
     <p>Hello <%= @resource.first_name %>,</p>
     <p>Please confirm your email:</p>
-    <p><%= link_to 'Confirm My Email', confirmation_url(@resource, confirmation_token: @token), host: ENV.fetch('DOMAIN'), protocol: 'https' %></p>
+    <p><%= link_to 'Confirm My Email', confirmation_url(@resource, confirmation_token: @token), host: ENV.fetch('DOMAIN', 'localhost'), protocol: 'https' %></p>
     <div class="signature">
       <p><em>All the best,</em></p>
       <p class="title"><%= Setting.value!(:name) %></p>

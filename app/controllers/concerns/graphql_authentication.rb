@@ -1,32 +1,40 @@
 module GraphQLAuthentication
   extend ActiveSupport::Concern
 
-  class InvalidCredentials < StandardError
+  include ActionController::RequestForgeryProtection
+  include APIKeyAuthentication
+
+  included do
+    self.allow_forgery_protection = ActionController::Base.allow_forgery_protection
+
+    before_action :authenticate!
   end
 
-  included { before_action :authenticate! }
+  def authenticate! = request_token.present? ? authenticate_api_key : authenticate_session
 
-  def authenticate!
-    return if params[:operationName] == 'IntrospectionQuery'
-    return if params[:query].include?('authenticate')
+  def authenticate_api_key
+    api_key = APIKey.authenticate(request_token)
+    message = api_key_error(api_key)
+    message ||= t('api_keys.errors.user_required') unless api_key&.user
 
-    @jwt_error, @current_user = decode_jwt(token: request.headers['Authorization'])
+    if message.present?
+      render_unauthorized_error_response(message)
+      return
+    end
 
-    return render_unauthorized_error_response(@jwt_error) if @jwt_error
-
-    render_unauthorized_error_response('Not Authorized') unless @current_user
+    @current_user = api_key.user
+    api_key.use!
   end
 
-  def decode_jwt(token:)
-    return [] unless token =~ /Bearer (.+)/
+  def authenticate_session
+    user = catch(:warden) { warden.user(:user) } if verified_request?
 
-    jwt = Regexp.last_match(1)
-    decoded_jwt = ::JWTManagerService.decode(jwt:)
-    jwt_error = decoded_jwt.error_message
-    id = decoded_jwt.payload&.fetch('id', nil)
-    user = User.find_by(id:)
+    unless user.is_a?(User)
+      render_unauthorized_error_response('Not Authorized')
+      return
+    end
 
-    [jwt_error, user]
+    @current_user = user
   end
 
   def render_unauthorized_error_response(error) = render('application/error', locals: { error: }, status: :unauthorized)

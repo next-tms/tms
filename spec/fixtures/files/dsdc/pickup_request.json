@@ -1,0 +1,70 @@
+{
+  "isTest": "False",
+  "customer": "Acme Manufacturing",
+  "pickupAddress": [
+    {
+      "orgAddressName": "Acme Manufacturing",
+      "orgAddressLine1": "100 Main St",
+      "orgAddressLine2": "",
+      "orgCity": "Los Angeles",
+      "orgContactName": "Sam Shipper",
+      "orgCountry": "USA",
+      "orgPhoneNumber": "2135550100",
+      "orgState": "CA",
+      "orgZip": "90012"
+    }
+  ],
+  "emergencyContact": [{ "emergName": "Sam Shipper", "emergPhone": "2135550100", "emergEmail": "sam@example.com" }],
+  "grossPickupWeight": 900,
+  "weightUofM": "LBS",
+  "handlingUnitCount": 2,
+  "cubicFeet": 120,
+  "linearFeet": 8,
+  "trailerNumber": "",
+  "loadedBy": "Shipper",
+  "sealNumber": "",
+  "readyDate": "2026-11-02T09:00:00-08:00",
+  "readyTime": "2026-11-02T09:00:00-08:00",
+  "closeTime": "2026-11-02T16:30:00-08:00",
+  "pickupLocationTimeZone": "UTC-8",
+  "dockDoorNumber": "4",
+  "dockContactEmail": "dock@example.com",
+  "dockContactName": "Dock Lead",
+  "dockContactPhone": "2135550101",
+  "confirmationEmail": "sam@example.com",
+  "shipmentDetails": [
+    {
+      "shipperRef": "9990001",
+      "proNumber": "PRO_NUMBER",
+      "description": "Machine parts",
+      "freightClass": "70",
+      "hazmatCheck": false,
+      "handlingUnitCount": 2,
+      "handlingUnitDetails": [{ "height": 50, "length": 48, "unitCount": 2, "unitType": "PLT", "width": 40, "weight": 900 }],
+      "referenceNumbers": [{ "refPieceCount": 10, "referenceNumber": "7770001", "referenceType": "PO" }],
+      "shipmentServices": [{ "serviceCode": "LFTD", "serviceDescription": "Lift gate at delivery" }]
+    }
+  ],
+  "destinationAddress": [
+    {
+      "cneeAddressName": "Widget Warehouse",
+      "cneeAddressLine1": "200 Market St",
+      "cneeCity": "San Francisco",
+      "cneeCountry": "USA",
+      "cneeState": "CA",
+      "cneeZip": "94105"
+    }
+  ],
+  "billToAddress": [
+    {
+      "btAccountNumber": "1",
+      "btAddressName": "Acme Manufacturing",
+      "btAddressLine1": "100 Main St",
+      "btCity": "Los Angeles",
+      "btCountry": "USA",
+      "btState": "CA"
+    }
+  ],
+  "requestFunction": "NewPickup",
+  "carrierPickupNumber": ""
+}

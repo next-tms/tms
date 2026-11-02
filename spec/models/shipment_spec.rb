@@ -152,6 +152,8 @@
 #   @return []
 # @!attribute load_id
 #   @return [Integer]
+# @!attribute pickup_request_id
+#   @return []
 # @!attribute quote_id
 #   @return [String]
 # @!attribute receiver_address_id
@@ -171,6 +173,7 @@
 #  index_shipments_on_created_by_id        (created_by_id)
 #  index_shipments_on_dispatcher_id        (dispatcher_id)
 #  index_shipments_on_load_id              (load_id) UNIQUE
+#  index_shipments_on_pickup_request_id    (pickup_request_id)
 #  index_shipments_on_receiver_address_id  (receiver_address_id)
 #  index_shipments_on_shipper_address_id   (shipper_address_id)
 #  index_shipments_on_status               (status)
@@ -183,6 +186,7 @@
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
 #  fk_rails_...  (created_by_id => users.id)
 #  fk_rails_...  (dispatcher_id => users.id)
+#  fk_rails_...  (pickup_request_id => pickup_requests.id)
 #  fk_rails_...  (receiver_address_id => addresses.id)
 #  fk_rails_...  (shipper_address_id => addresses.id)
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
@@ -221,10 +225,23 @@ RSpec.describe(Shipment) do
     end
   end
 
+  describe 'load ID assignment' do
+    before { create(:shipment, load_id: 4000) }
+
+    it { expect(create(:shipment, load_id: nil).load_id).to(eq(4001)) }
+    it { expect(create(:shipment, load_id: 5000).load_id).to(eq(5000)) }
+  end
+
+  describe 'normalizations' do
+    it { expect(described_class.new(bol: ' 1001  2 ').bol).to(eq('1001 2')) }
+    it { expect(described_class.new(pro: ' 42  43 ').pro).to(eq('42 43')) }
+  end
+
   describe 'relationships' do
     it { is_expected.to(belong_to(:applied_rate).required(false)) }
     it { is_expected.to(belong_to(:broker_carrier).required(false)) }
     it { is_expected.to(belong_to(:dispatcher)) }
+    it { is_expected.to(belong_to(:pickup_request).inverse_of(:shipments).optional) }
     it { is_expected.to(belong_to(:receiver_address)) }
     it { is_expected.to(belong_to(:shipper_address)) }
     it { is_expected.to(belong_to(:tracking_carrier).required(false)) }
@@ -388,6 +405,34 @@ RSpec.describe(Shipment) do
       context 'when pickup_by is nil' do
         it { is_expected.to(be_falsy) }
       end
+    end
+  end
+
+  describe '#missed_pickup?' do
+    subject { shipment.missed_pickup? }
+
+    let(:shipment) { build(:shipment, picked_up_at: nil, pickup_driver_assigned_at: 2.days.ago, pickup_on: 2.days.ago) }
+
+    before { create(:setting, key: 'time_zone_name', value: 'America/Los_Angeles') }
+
+    it { is_expected.to(be(true)) }
+
+    context 'when the freight was picked up' do
+      before { shipment.picked_up_at = 1.day.ago }
+
+      it { is_expected.to(be(false)) }
+    end
+
+    context 'when the pickup is in the future' do
+      before { shipment.pickup_on = 2.days.from_now }
+
+      it { is_expected.to(be(false)) }
+    end
+
+    context 'without a driver assigned' do
+      before { shipment.pickup_driver_assigned_at = nil }
+
+      it { is_expected.to(be(false)) }
     end
   end
 
@@ -627,6 +672,45 @@ RSpec.describe(Shipment) do
     it { is_expected.to(eq(200)) }
   end
 
+  describe '.accessible_by' do
+    subject { described_class.accessible_by(user) }
+
+    let!(:sales_rep_shipment) { create(:shipment) }
+    let!(:shipment) { create(:shipment) }
+    let(:user) { create(:broker_user).tap { |user| user.add_role(:accounts_payable) } }
+
+    it { is_expected.to(include(sales_rep_shipment, shipment)) }
+
+    context 'with a customer user' do
+      let(:user) { create(:customer_user, companyable: shipment.broker_customer) }
+
+      it { is_expected.to(contain_exactly(shipment)) }
+    end
+
+    context 'with a sales rep' do
+      let(:user) do
+        create(:broker_user).tap do |user|
+          user.broker_customer_sales_reps.create!(broker_customer: sales_rep_shipment.broker_customer, commission_percent: 10)
+        end
+      end
+
+      it { is_expected.to(contain_exactly(sales_rep_shipment)) }
+    end
+
+    context 'without a user' do
+      let(:user) { nil }
+
+      it { is_expected.to(be_empty) }
+    end
+  end
+
+  describe '.delivered_to' do
+    let!(:shipment) { create(:shipment) }
+
+    it { expect(described_class.delivered_to(shipment.receiver_address.zip_code)).to(include(shipment)) }
+    it { expect(described_class.delivered_to('00000')).not_to(include(shipment)) }
+  end
+
   describe '.last_load_id' do
     before { create(:setting, key: 'first_load_id', value: '1000') }
 
@@ -643,6 +727,39 @@ RSpec.describe(Shipment) do
 
       it { expect(described_class.last_load_id).to(eq(0)) }
     end
+  end
+
+  describe '.lock_load_ids' do
+    let(:advisory_locks) { "SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND pid = pg_backend_pid()" }
+
+    it do
+      described_class.transaction do
+        described_class.lock_load_ids
+
+        expect(described_class.connection.select_value(advisory_locks)).to(eq(1))
+      end
+    end
+  end
+
+  describe '.missed_pickup' do
+    let!(:shipment) { create(:shipment, picked_up_at: nil, pickup_driver_assigned_at: 2.days.ago, pickup_on: 2.days.ago) }
+
+    before { create(:setting, key: 'time_zone_name', value: 'America/Los_Angeles') }
+
+    it { expect(described_class.missed_pickup).to(include(shipment)) }
+
+    context 'when the pickup is in the future' do
+      before { shipment.update!(pickup_on: 2.days.from_now) }
+
+      it { expect(described_class.missed_pickup).not_to(include(shipment)) }
+    end
+  end
+
+  describe '.shipped_from' do
+    let!(:shipment) { create(:shipment) }
+
+    it { expect(described_class.shipped_from(shipment.shipper_address.zip_code)).to(include(shipment)) }
+    it { expect(described_class.shipped_from('00000')).not_to(include(shipment)) }
   end
 
   describe '#eligible_discussable_contacts' do

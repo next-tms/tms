@@ -10,10 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_194127) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
-  enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
 
   create_table "accessorials", force: :cascade do |t|
@@ -78,6 +77,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
     t.index ["country_alpha2"], name: "index_addresses_on_country_alpha2"
     t.index ["region_iso31662"], name: "index_addresses_on_region_iso31662"
     t.index ["standardized_address_id"], name: "index_addresses_on_standardized_address_id"
+  end
+
+  create_table "api_keys", force: :cascade do |t|
+    t.bigint "authorizable_id", null: false
+    t.string "authorizable_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.datetime "last_used_at"
+    t.string "name", null: false
+    t.bigint "rolled_from_id"
+    t.string "token", null: false
+    t.string "token_digest", null: false
+    t.string "token_suffix", null: false
+    t.interval "ttl"
+    t.datetime "updated_at", null: false
+    t.index ["authorizable_type", "authorizable_id"], name: "index_api_keys_on_authorizable"
+    t.index ["rolled_from_id"], name: "index_api_keys_on_rolled_from_id"
+    t.index ["token_digest"], name: "index_api_keys_on_token_digest", unique: true
   end
 
   create_table "areas", force: :cascade do |t|
@@ -337,7 +354,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
   end
 
   create_table "customers", force: :cascade do |t|
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "name"
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["name"], name: "index_customers_on_name", unique: true
   end
 
@@ -460,6 +479,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.datetime "created_at", precision: nil, null: false
+    t.jsonb "params"
+    t.datetime "read_at", precision: nil
+    t.bigint "recipient_id", null: false
+    t.string "recipient_type", null: false
+    t.string "type", null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["read_at"], name: "index_notifications_on_read_at"
+    t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
+  end
+
   create_table "overlength_rules", force: :cascade do |t|
     t.bigint "broker_carrier_id", null: false
     t.integer "cost_cents", default: 0, null: false
@@ -490,6 +521,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
     t.bigint "broker_carrier_id"
     t.datetime "created_at", null: false
     t.bigint "created_by_id"
+    t.jsonb "dsdc_invoice"
+    t.string "dsdc_unique_id"
     t.date "due_on"
     t.string "invoice"
     t.string "legacy_load_id"
@@ -500,6 +533,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
     t.string "pro"
     t.bigint "shipment_id"
     t.datetime "updated_at", null: false
+    t.index ["broker_carrier_id", "dsdc_unique_id"], name: "index_payment_transactions_on_dsdc_unique_id", unique: true
     t.index ["broker_carrier_id"], name: "index_payment_transactions_on_broker_carrier_id"
     t.index ["payment_id"], name: "index_payment_transactions_on_payment_id"
     t.index ["shipment_id"], name: "index_payment_transactions_on_shipment_id"
@@ -526,6 +560,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
     t.index ["broker_carrier_id"], name: "index_payments_on_broker_carrier_id"
     t.index ["created_by_id"], name: "index_payments_on_created_by_id"
     t.index ["payment_method_id"], name: "index_payments_on_payment_method_id"
+  end
+
+  create_table "pickup_requests", force: :cascade do |t|
+    t.datetime "accepted_pickup_at"
+    t.date "accepted_pickup_on"
+    t.datetime "canceled_at"
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id"
+    t.string "reschedule_reason"
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_pickup_requests_on_created_by_id"
   end
 
   create_table "pickups", force: :cascade do |t|
@@ -748,6 +793,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
     t.string "pickup_hours_end_at"
     t.string "pickup_hours_start_at"
     t.date "pickup_on"
+    t.bigint "pickup_request_id"
     t.integer "priority"
     t.string "pro"
     t.datetime "promised_delivery_by", precision: nil
@@ -790,6 +836,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
     t.index ["created_by_id"], name: "index_shipments_on_created_by_id"
     t.index ["dispatcher_id"], name: "index_shipments_on_dispatcher_id"
     t.index ["load_id"], name: "index_shipments_on_load_id", unique: true
+    t.index ["pickup_request_id"], name: "index_shipments_on_pickup_request_id"
     t.index ["receiver_address_id"], name: "index_shipments_on_receiver_address_id"
     t.index ["shipper_address_id"], name: "index_shipments_on_shipper_address_id"
     t.index ["status"], name: "index_shipments_on_status"
@@ -978,6 +1025,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "standardized_addresses"
+  add_foreign_key "api_keys", "api_keys", column: "rolled_from_id"
   add_foreign_key "broker_accessorials", "accessorials"
   add_foreign_key "broker_accessorials", "broker_customers"
   add_foreign_key "broker_carriers", "addresses", column: "check_mailing_address_id"
@@ -1019,6 +1067,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
   add_foreign_key "payments", "payment_methods"
   add_foreign_key "payments", "users", column: "approved_by_id"
   add_foreign_key "payments", "users", column: "created_by_id"
+  add_foreign_key "pickup_requests", "users", column: "created_by_id"
   add_foreign_key "pickups", "rates"
   add_foreign_key "pickups", "shipments"
   add_foreign_key "pickups", "users", column: "dispatcher_id"
@@ -1049,6 +1098,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_172622) do
   add_foreign_key "shipments", "addresses", column: "shipper_address_id"
   add_foreign_key "shipments", "broker_customers"
   add_foreign_key "shipments", "carriers", column: "tracking_carrier_id"
+  add_foreign_key "shipments", "pickup_requests"
   add_foreign_key "shipments", "rates", column: "applied_rate_id"
   add_foreign_key "shipments", "users", column: "created_by_id"
   add_foreign_key "shipments", "users", column: "dispatcher_id"

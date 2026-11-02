@@ -101,6 +101,7 @@ class BrokerCarrier < ApplicationRecord
   encrypts :encrypted_ach_routing_number
   encrypts :encrypted_api_key
 
+  has_many :api_keys, as: :authorizable, dependent: :destroy
   has_many :overlength_rules, dependent: :destroy
   has_many :payments, dependent: :restrict_with_error
   has_many :payment_transactions, dependent: :restrict_with_error

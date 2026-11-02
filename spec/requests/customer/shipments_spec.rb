@@ -18,7 +18,7 @@ RSpec.describe('Customer::Shipments') do
     it { is_expected.to(have_http_status(:ok)) }
     it { expect(response.media_type).to(eq('application/vnd.nmfta.ebol+json')) }
     it { expect(response.headers['Content-Disposition']).to(start_with('attachment; filename="4343.ebol.json"')) }
-    it { expect(response.parsed_body).to(eq(JSON.parse(EBOL.call(Shipment.find(shipment.id)).to_json))) }
+    it { expect(response.parsed_body).to(eq(JSON.parse(EBOL::Exporter.call(Shipment.find(shipment.id)).to_json))) }
 
     context 'with a carrier' do
       let(:shipment) do

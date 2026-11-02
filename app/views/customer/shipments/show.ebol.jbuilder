@@ -1,1 +1,1 @@
-json.merge!(EBOL.call(@shipment))
+json.merge!(EBOL::Exporter.call(@shipment))

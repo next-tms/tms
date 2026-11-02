@@ -79,6 +79,7 @@
 
   <ul class="list-unstyled mt-4">
     <li class="mb-2 p-2"><%= link_to icon('solid', 'user-circle', 'Account'), edit_user_registration_path, class: 'registrations' %></li>
+    <li class="mb-2 p-2"><%= link_to icon('solid', 'key', APIKey.model_name.human(count: 2)), api_keys_path, class: 'api-keys rolls' %></li>
 
     <% if current_user.role?(:root) %>
       <li class="mb-2 p-2">

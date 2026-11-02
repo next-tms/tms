@@ -66,11 +66,10 @@ class Carrier < ApplicationRecord
   encrypts :encrypted_proxy_url
 
   has_many :broker_carriers, dependent: :restrict_with_error
-
   has_many :carrier_areas, dependent: :destroy
-  has_many :areas, through: :carrier_areas
-
   has_many :terminals, dependent: :destroy
+
+  has_many :areas, through: :carrier_areas
 
   belongs_to :broker_billing_address, class_name: 'Address', optional: true
 

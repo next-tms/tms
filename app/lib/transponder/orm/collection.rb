@@ -5,7 +5,7 @@ module Transponder
 
       attr_reader :orm_class
 
-      delegate :[], :each, :empty?, :last, :size, to: :to_a
+      delegate :[], :each, :empty?, :last, :size, :to_ary, to: :to_a
 
       def initialize(orm_class, orm_objects)
         raise ArgumentError, 'orm_class must be descended from Transponder::ORM::Base' unless orm_class < Base

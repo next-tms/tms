@@ -1,0 +1,33 @@
+{
+  "uniqueID": "INV-UNIQUE-1",
+  "shipmentID": "SHIPMENT_ID",
+  "DOT": "1234567",
+  "MC": "MC-654321",
+  "invoiceHeader": {
+    "consignor": {
+      "consignorName": "Acme Shipping",
+      "address": { "streetAddress": "1 Main St", "adminArea1": "CA", "locality": "Fresno", "postalCode": "93701", "countryCode": "USA" }
+    },
+    "consignee": {
+      "consigneeName": "Widget Receiving",
+      "address": { "streetAddress": "2 Oak Ave", "adminArea1": "NV", "locality": "Reno", "postalCode": "89501", "countryCode": "USA" }
+    },
+    "billingParty": {
+      "billingPartyName": "Broker Billing",
+      "address": { "streetAddress": "3 Pine Rd", "adminArea1": "CA", "locality": "Sacramento", "postalCode": "95814", "countryCode": "USA" }
+    },
+    "terms": { "billingTerms": "Third Party", "paymentTerms": "Net 30", "paymentDueDate": "2026-12-01" },
+    "invoiceNumber": "CARRIER-INV-100",
+    "invoiceDate": "2026-11-01",
+    "invoiceAmount": { "currencyCode": "USD", "value": "425.50" }
+  },
+  "invoiceCharges": [
+    {
+      "chargeType": "BASE_CHARGE",
+      "chargeCode": "LINEHAUL",
+      "chargeUnitCode": "FLAT",
+      "cost": { "currencyCode": "USD", "value": "425.50" }
+    }
+  ],
+  "comments": [{ "id": 1, "commentText": "Delivered on time." }]
+}

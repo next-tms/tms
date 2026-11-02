@@ -6,6 +6,10 @@
 #   @return []
 # @!attribute name
 #   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
 #
 # Indexes
 #

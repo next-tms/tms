@@ -35,6 +35,12 @@ production:
   fetch_shipment_pros:
     class: FetchShipmentProsJob
     schedule: "*/15 * * * *"
+  mark_missed_pickup_requests:
+    class: MarkMissedPickupRequestsJob
+    schedule: "5 * * * *"
+  notify_expiring_api_keys:
+    class: NotifyExpiringAPIKeysJob
+    schedule: "0 15 * * *"
   push_receivables_to_accounting:
     class: PushReceivablesToAccountingJob
     schedule: "0 * * * *"

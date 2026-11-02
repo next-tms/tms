@@ -37,6 +37,10 @@ RSpec.describe(Transponder::ORM::Collection) do
     it { expect(collection.where(country:).pluck(:abbreviation)).to(eq(['CA', 'TX', 'WY'])) }
   end
 
+  describe '#to_ary' do
+    it { expect([country] + country.regions).to(eq([country, *country.regions.to_a])) }
+  end
+
   describe '#where' do
     it { expect(collection.where).to(equal(collection)) }
     it { expect(collection.where(abbreviation: 'CA').pluck(:iso31662)).to(eq(['US-CA'])) }

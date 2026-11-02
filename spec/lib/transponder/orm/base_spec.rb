@@ -31,6 +31,18 @@ RSpec.describe(Transponder::ORM::Base) do
     it { expect(country).not_to(eq(Transponder::ORM::Region.new(iso31662: 'US'))) }
   end
 
+  describe '#cache_key' do
+    it { expect(country.cache_key).to(eq('transponder/orm/countries/US')) }
+  end
+
+  describe '#cache_key_with_version' do
+    it { expect(country.cache_key_with_version).to(eq('transponder/orm/countries/US-United States of America')) }
+  end
+
+  describe '#cache_version' do
+    it { expect { described_class.new.cache_version }.to(raise_error(NotImplementedError)) }
+  end
+
   describe '#hash' do
     it { expect(country.hash).to(eq(Transponder::ORM::Country.new(alpha2: 'US').hash)) }
   end
@@ -53,5 +65,9 @@ RSpec.describe(Transponder::ORM::Base) do
 
   describe '#to_param' do
     it { expect(country.to_param).to(eq('US')) }
+  end
+
+  describe '#updated_at' do
+    it { expect(country.updated_at).to(be_nil) }
   end
 end

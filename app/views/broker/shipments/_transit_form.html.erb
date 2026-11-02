@@ -56,7 +56,27 @@
 
     <div class="col-sm-6 col-md-4">
       <p class="col-title"><%= icon 'solid', 'truck-loading', 'Pickup' %></p>
-        <%= f.text_field :pickup_on, label: 'Pickup On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: f.object.pickup_on, time_zone: f.object.shipper_address.time_zone) %>
+      <%= tag.div data: {
+                    controller: ('reschedule' if f.object.pickup_request),
+                    reschedule_accepted_on_value: f.object.pickup_request&.accepted_pickup_on&.iso8601
+                  } do
+      %>
+        <%= f.text_field :pickup_on,
+                         label: 'Pickup On',
+                         autocomplete: 'off',
+                         data: flatpickr_data.merge(action: 'change->reschedule#toggle', reschedule_target: 'pickupOn'),
+                         value: maybe_in_time_zone(datetime: f.object.pickup_on, time_zone: f.object.shipper_address.time_zone)
+        %>
+        <% if f.object.pickup_request %>
+          <%= f.fields_for :pickup_request do |pickup_request_form| %>
+            <%= tag.div data: { action: 'change->reschedule#toggle', reschedule_target: 'reason' },
+                        hidden: !pickup_request_form.object.reschedule_reason_applicable? do
+            %>
+              <%= pickup_request_form.select :reschedule_reason, enum_options_for_select(PickupRequest, :reschedule_reason), { include_blank: true, label: 'Reschedule Reason' }, class: 'form-select' %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
       <% unless shipment.broker_carrier.blank? %>
         <%= highlightable_element :dispatched_at do %>
           <%= f.text_field :dispatched_at, label: 'Dispatched', autocomplete: 'off', data: flatpickr_datetime_data(f.object.dispatched_at, f.object.shipper_address.time_zone), value: maybe_in_time_zone(datetime: f.object.dispatched_at, time_zone: f.object.shipper_address.time_zone) %>

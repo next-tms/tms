@@ -3,27 +3,27 @@ class Shipment::DuplicateService
   attr_reader :shipment
 
   NULLABLE_ATTRS = %i[
-    quote_only
-    pickup_on
+    canceled_at
+    delivered_at
+    delivery_appointment_at
+    delivery_appointment_on
+    delivery_eta_on
+    departed_origin_terminal_at
     dispatched_at
+    lost_on
+    out_for_delivery_at
+    pending_appointment_since
+    picked_up_at
     pickup_confirmation
-    tracking_carrier_pickup_confirmation
     pickup_driver_assigned_at
     pickup_eta_at
-    picked_up_at
-    departed_origin_terminal_at
-    delivery_eta_on
-    out_for_delivery_at
-    lost_on
-    pending_appointment_since
-    delivery_appointment_on
-    delivery_appointment_at
-    delivered_at
-    canceled_at
-    dispatched_at
-    quoted_delivery_by
-    quote_id
+    pickup_on
+    pickup_request_id
     pro
+    quote_id
+    quote_only
+    quoted_delivery_by
+    tracking_carrier_pickup_confirmation
   ].freeze
 
   def initialize(shipment:)
@@ -36,7 +36,7 @@ class Shipment::DuplicateService
     new_shipment.shipper_address = shipment.shipper_address.dup
     new_shipment.shipment_broker_accessorials << shipment.shipment_broker_accessorials.collect(&:dup)
     new_shipment.items << shipment.items.collect(&:dup)
-    new_shipment.load_id = Shipment.last_load_id + 1
+    new_shipment.load_id = nil
 
     # You want a duplicated shipment to have a shipment status of 'New'
     attrs = NULLABLE_ATTRS.map { |attr_name| { attr_name => nil } }

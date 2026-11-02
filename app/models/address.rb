@@ -93,6 +93,10 @@ class Address < ApplicationRecord
   end
   normalizes :zip_code, with: ->(zip_code) { zip_code.squish }
 
+  scope :with_zip_code, ->(zip_code) do
+    where("upper(split_part(replace(addresses.zip_code, ' ', ''), '-', 1)) = ?", zip_code.to_s.delete(' ').split('-').first.to_s.upcase)
+  end
+
   serialize :types, coder: YAML
 
   validate :region_matches_country

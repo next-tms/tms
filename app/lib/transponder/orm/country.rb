@@ -47,6 +47,8 @@ module Transponder
         @regions = Collection.new(Region, regions.map { |attributes| Region.new(country: self, **attributes) })
       end
 
+      def cache_version = name
+
       def format_address(str)
         return if str.blank?
 

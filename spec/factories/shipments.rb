@@ -152,6 +152,8 @@
 #   @return []
 # @!attribute load_id
 #   @return [Integer]
+# @!attribute pickup_request_id
+#   @return []
 # @!attribute quote_id
 #   @return [String]
 # @!attribute receiver_address_id
@@ -171,6 +173,7 @@
 #  index_shipments_on_created_by_id        (created_by_id)
 #  index_shipments_on_dispatcher_id        (dispatcher_id)
 #  index_shipments_on_load_id              (load_id) UNIQUE
+#  index_shipments_on_pickup_request_id    (pickup_request_id)
 #  index_shipments_on_receiver_address_id  (receiver_address_id)
 #  index_shipments_on_shipper_address_id   (shipper_address_id)
 #  index_shipments_on_status               (status)
@@ -183,6 +186,7 @@
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
 #  fk_rails_...  (created_by_id => users.id)
 #  fk_rails_...  (dispatcher_id => users.id)
+#  fk_rails_...  (pickup_request_id => pickup_requests.id)
 #  fk_rails_...  (receiver_address_id => addresses.id)
 #  fk_rails_...  (shipper_address_id => addresses.id)
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
@@ -258,6 +262,14 @@ FactoryBot.define do
     truckload { [true, false].sample }
     value_cents { Faker::Number.between(from: 100, to: 5_000).ceil }
     value_currency { Faker::Currency.code }
+
+    trait :usd do
+      carrier_charge_currency { 'USD' }
+      carrier_cost_currency { 'USD' }
+      total_charges_currency { 'USD' }
+      total_cost_currency { 'USD' }
+      value_currency { 'USD' }
+    end
 
     after(:build) do |record|
       user = build(:broker_user)

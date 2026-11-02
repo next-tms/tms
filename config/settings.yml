@@ -28,6 +28,7 @@
 - key: robot_email
   kind: :email
   required: true
+- key: scac
 - key: theme_primary_color
   kind: :string
 - key: theme_sidebar_background_color

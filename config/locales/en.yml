@@ -10,6 +10,15 @@ en:
     attributes:
       address:
         ref: Reference
+      api_key:
+        created_at: Created
+        expires_at: Expires
+        last_used_at: Last used
+        name: Name
+        status: Status
+        token: Key
+        token_suffix: Key
+        ttl: Expires in
       broker_carrier:
         encrypted_ach_account_number: "ACH Account #"
         encrypted_ach_bank_name: ACH Bank Name
@@ -40,6 +49,12 @@ en:
         h: Height
         l: Length
         w: Width
+      pickup_request:
+        accepted_pickup_at: Accepted At
+        accepted_pickup_on: Accepted Pickup On
+        canceled_at: Canceled At
+        pickup_on: Pickup On
+        reschedule_reason: Reschedule Reason
       pricing_rule:
         carrier_area_id: Lane
       region:
@@ -63,7 +78,14 @@ en:
         total_cost_cents: Carrier Cost
       user:
         company_sgid: Company
+    help:
+      api_key:
+        name: Where the key is used, for example “Warehouse WMS”
+        ttl: Roll the key to replace it before it expires
     models:
+      api_key:
+        one: API Key
+        other: API Keys
       broker_carrier:
         one: Carrier
         other: Carriers
@@ -92,6 +114,15 @@ en:
         one: Load
         other: Loads
     enums:
+      pickup_request:
+        reschedule_reasons:
+          capacity: Carrier capacity
+          closed: Shipper closed
+          missed: Driver dispatched but did not pick up
+          shipper: Shipper or 3PL request
+          special_equipment: Special equipment needed
+          too_busy: Shipper too busy
+          weather: Weather
       rate:
         sources:
           api: API
@@ -120,6 +151,51 @@ en:
           attributes:
             nmfc:
               invalid: is not in the correct format
+  api_key_mailer:
+    expiring:
+      body: Your API key “%{name}” expires %{expires_at}. Requests that use it will fail after that. Roll the key to get a replacement.
+      greeting: Hello %{first_name},
+      roll: Roll API key
+      subject: API key “%{name}” expires %{expires_at}
+  api_keys:
+    destroy:
+      destroyed: Destroyed %{model_name} “%{name}”
+    errors:
+      expired: API key “%{name}” expired at %{at}. Roll it or create a new API key.
+      invalid: API key is invalid.
+      missing: API key is missing. Send it in the X-API-Key header or as Authorization Bearer.
+      user_required: Only API keys that belong to a user can make this request.
+    header:
+      new: New
+    index:
+      dsdc_html: An NMFTA DSDC-compliant API at %{path}
+      graphql_html: A GraphQL API at %{path}. Use %{graphiql} to explore it.
+      intro_html: >-
+        %{model_name_plural} authenticate requests to these APIs. Send the key in the <code>X-API-Key</code>
+        header or as <code>Authorization: Bearer</code>. Keys expire after at most %{max_ttl}.
+      never: Never
+      titles:
+        active: Active
+        expired: Expired
+        index: All
+    member_menu:
+      destroy: Destroy
+      destroy_confirm: Destroy “%{name}”? Requests that use it will fail.
+      overview: Overview
+      roll: Roll
+      roll_confirm: This will replace the %{model_name} with a new one that expires in %{ttl}. The current key stops working in %{grace_period}. Are you sure?
+    menu:
+      active: Active
+      all: All
+      expired: Expired
+    new:
+      error: "Unable to save %{model_name}:"
+      submit: Save
+      title: New %{model_name}
+    show:
+      copy: Click the key to copy it.
+      never: Never
+      overview: Overview
   bootstrap_form:
     labels:
       shipment:
@@ -137,6 +213,28 @@ en:
         failure: Unable to update accounting accounts
         success: Accounting accounts updated
     broker_carriers:
+      api_keys:
+        destroy:
+          destroyed: Destroyed %{model_name} “%{name}”
+        index:
+          intro_html: >-
+            %{model_name_plural} let this carrier send invoices to <code>/api/dsdc/v1/invoices</code> and supporting documents to
+            <code>/api/dsdc/v1/documents</code> with the NMFTA DSDC Invoice and Documents API. Each invoice becomes a bill. Send the key to
+            the carrier. The carrier sends it in the <code>X-API-Key</code> header or as <code>Authorization: Bearer</code>. Carrier keys do
+            not expire. Roll or destroy a key to stop it.
+          never: Never
+          new: New
+        new:
+          error: "Unable to save %{model_name}:"
+          submit: Save
+          title: New %{model_name}
+        show:
+          copy: Click the key to copy it.
+          destroy: Destroy
+          destroy_confirm: Destroy “%{name}”? Requests that use it will fail.
+          never: Never
+          roll: Roll
+          roll_confirm: This will replace the %{model_name} with a new one. The current key stops working in %{grace_period}. Are you sure?
       update:
         failure: Unable to update carrier
       update_accounting:
@@ -196,6 +294,49 @@ en:
       sailed: #{model_name} left %{city}, %{region_abbreviation} %{country_alpha2} by ship
       trailer_closed: #{model_name} was in a closed trailer %{city}, %{region_abbreviation} %{country_alpha2}
       trailer_unloaded: #{model_name} was in an unloaded in %{city}, %{region_abbreviation} %{country_alpha2}
+  dsdc:
+    bols:
+      broker_bol_failed: The bill of lading PDF could not be created. Download it later from the shipment.
+      broker_label_failed: The shipping label PDF could not be created. Download it later from the shipment.
+      destroy:
+        picked_up: The shipment was already picked up, so its bill of lading cannot be canceled.
+      messages:
+        create: Bill of lading was created.
+        destroy: Bill of lading was canceled.
+        test: Test request is valid. Nothing was saved.
+        update: Bill of lading was updated.
+      unsupported_accessorial: Accessorial code %{code} is not supported and was ignored.
+      update:
+        picked_up: The shipment was already picked up, so its bill of lading cannot be changed.
+    documents:
+      create:
+        message: Documents were uploaded.
+    errors:
+      rate_limited: Too many requests. Wait one minute, then try again.
+    invoices:
+      create:
+        message: Invoice was created.
+      update:
+        message: Invoice was updated.
+    pickup_requests:
+      closes_before_ready: closeTime must be after readyTime.
+      messages:
+        create: Pickup request was accepted.
+        destroy: Pickup request was canceled.
+        test: Test request is valid. Nothing was saved.
+        update: Pickup request was updated.
+      pro_numbers_missing: Send at least one shipmentDetails entry with a proNumber. Create the bill of lading first to get a PRO number.
+      shipments_missing: "No active shipments have these PRO numbers: %{pro_numbers}."
+      shipments_picked_up: One or more shipments were already picked up.
+      shipments_scheduled: "These shipments already belong to another pickup request: %{pro_numbers}."
+      show:
+        lookup_type: lookupType must be %{lookup_types}.
+      statuses:
+        accepted: The pickup request was accepted.
+        cancelled: The pickup request was canceled.
+        departed: The driver picked up the freight.
+        en_route: A driver is assigned to the pickup.
+        rescheduled: The pickup was moved to a different day.
   settings:
     automatically_authorize_receivables: Automatically authorize receivable after creation?
     automatically_update_shipment_tracking_based_on_carrier_apis: Automatically update shipment tracking information based on carrier API's?
@@ -208,6 +349,7 @@ en:
     phone: Customer service phone number in E.164 format, e.g. +1-555-555-5555
     requires_charges_confirmed_on_receivables: Prevent creating receivable until shipment charges are confirmed?
     robot_email: Email address used for notification emails
+    scac: Standard Carrier Alpha Code (SCAC) of your company, returned by the NMFTA DSDC APIs
     time_zone_name: IANA time zone name
     website_desc: Content for the <meta name="description"> HTML tag used for search engine results
     website_homepage: URL to your landing website, e.g. https://mycompany.com/

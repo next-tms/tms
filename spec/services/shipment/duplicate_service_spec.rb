@@ -15,6 +15,11 @@ RSpec.describe(Shipment::DuplicateService) do
 
     it { expect { call }.to(change(Shipment, :count).by(1)) }
 
+    it do
+      expect(call).to(have_attributes(pickup_hours_end_at: shipment.pickup_hours_end_at,
+                                      pickup_hours_start_at: shipment.pickup_hours_start_at))
+    end
+
     it 'duplicates shipper and receiver address' do
       new_shipment = call
       expect(shipment.receiver_address.pretty('')).to(eq(new_shipment.receiver_address.pretty('')))

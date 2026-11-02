@@ -52,7 +52,7 @@
 
     <% if current_user.any_role?(:dispatch) || current_user.sales_rep_for?(@shipment.broker_customer) %>
       <%= link_to 'Routing', transit_broker_shipment_path(@shipment), class: 'nav-link shipments-transit shipments-quote' %>
-      <%= link_to 'Tracking', edit_tracking_events_broker_shipment_path(@shipment), class: 'nav-link shipments-edit-tracking-events' %>
+      <%= link_to 'Tracking', [:edit, :broker, @shipment, :tracking_events], class: 'nav-link tracking-events' %>
     <% end %>
 
     <% if current_user.role?(:accounts_payable) || current_user.role?(:accounts_receivable) || current_user.sales_rep_for?(@shipment.broker_customer) || current_user.dispatcher_for?(@shipment) || current_user == @shipment.dispatcher %>

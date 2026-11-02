@@ -16,12 +16,16 @@ module Transponder
       def ==(other) = other.is_a?(self.class) && other.id == id
       alias eql? ==
 
+      def cache_key = "#{model_name.cache_key}/#{id}"
+      def cache_key_with_version = "#{cache_key}-#{cache_version}"
+      def cache_version = raise(NotImplementedError, "#{self.class.name} must implement #cache_version")
       def hash = [self.class, id].hash
       def id = public_send(self.class.primary_key)
       def inspect = "#<#{self.class.name} id=#{id}>"
       def persisted? = true
       def to_model = self
       def to_param = id
+      def updated_at = nil
     end
   end
 end

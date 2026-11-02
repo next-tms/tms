@@ -75,7 +75,6 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.created_by = current_user
     @shipment.updated_by = current_user
     @shipment.broker_customer = current_user.companyable
-    @shipment.load_id = Shipment.last_load_id + 1
 
     unless @shipment.save
       respond_to do |format|
@@ -209,7 +208,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   end
 
   def quote
-    authorize!(@shipment, to: :show?)
+    authorize!(@shipment, to: :manage?)
 
     Shipment::ResetRatesService.call(@shipment, force_reset: params[:force].present?)
     @shipment.rates.errored.destroy_all

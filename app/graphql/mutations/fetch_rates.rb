@@ -12,8 +12,9 @@ module Mutations
     def resolve(shipment_load_id:, broker_carrier_id: nil, declared_freight_classes: false)
       shipment = Shipment.find_by(load_id: shipment_load_id)
 
-      authorize!(shipment, to: :show?, with: ShipmentPolicy)
       raise GraphQL::ExecutionError, 'No Shipment Found' unless shipment
+
+      authorize!(shipment, to: :view?)
 
       rates = if broker_carrier_id
                 broker_carrier = BrokerCarrier.find(broker_carrier_id)

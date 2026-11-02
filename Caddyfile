@@ -7,6 +7,7 @@
 	auto_https off
 	admin off
 	order coraza_waf first
+	order rate_limit before basic_auth
 }
 
 :{$PORT} {
@@ -18,6 +19,17 @@
 	}
 	header -Server
 	header -Via
+
+	rate_limit {
+		zone api {
+			events 600
+			key {client_ip}
+			match {
+				path /api/dsdc/*
+			}
+			window 1m
+		}
+	}
 
 	@scanner_probes path *.action *.ashx *.asmx *.asp *.aspx *.axd *.cfc *.cfm *.cgi *.dll *.do *.jsp *.jspx *.phar *.php *.php3 *.php4 *.php5 *.php7 *.phtml *.pl *.shtml /adminer* /phpmyadmin* /wp-* /xmlrpc*
 	handle @scanner_probes {

@@ -1,0 +1,16 @@
+<nav class="nav border-top pt-4 mb-0">
+  <%= link_to t('.overview'), @api_key, class: 'nav-link api-keys-show' %>
+
+  <% if @api_key.active? %>
+    <%= link_to t('.roll'),
+                api_key_roll_path(@api_key),
+                class: 'nav-link',
+                data: {
+                  turbo_confirm: t('.roll_confirm', grace_period: APIKey::ROLL_GRACE_PERIOD.inspect, model_name: APIKey.model_name.human, ttl: @api_key.ttl.inspect),
+                  turbo_method: :post
+                }
+    %>
+  <% end %>
+
+  <%= link_to t('.destroy'), @api_key, class: 'nav-link', data: { turbo_confirm: t('.destroy_confirm', name: @api_key.name), turbo_method: :delete } %>
+</nav>

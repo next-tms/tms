@@ -68,6 +68,14 @@ RSpec.describe(Address) do
     it { expect(described_class.ransackable_attributes).to(include('country_alpha2', 'region_iso31662')) }
   end
 
+  describe '.with_zip_code' do
+    let!(:address) { create(:address, zip_code: '90210-1234') }
+
+    it { expect(described_class.with_zip_code('90210')).to(include(address)) }
+    it { expect(described_class.with_zip_code('90211')).not_to(include(address)) }
+    it { expect(described_class.with_zip_code('90210-9999')).to(include(address)) }
+  end
+
   describe '#country' do
     it { expect(address.country).to(equal(Transponder::ORM::Country.find('US'))) }
   end

@@ -37,6 +37,10 @@ RSpec.describe(Transponder::ORM::Region) do
     it { expect(unknown.abbreviation).to(eq('QQ')) }
   end
 
+  describe '#cache_version' do
+    it { expect(california.cache_version).to(eq('CA-California')) }
+  end
+
   describe '#country' do
     it { expect(california.country).to(equal(Transponder::ORM::Country.find('US'))) }
     it { expect(described_class.new(iso31662: 'US-ZZ').country).to(equal(Transponder::ORM::Country.find('US'))) }

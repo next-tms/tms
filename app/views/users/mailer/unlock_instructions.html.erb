@@ -36,7 +36,7 @@ body {
     <p class="title">Account Locked</p>
     <p>Hello <%= @resource.first_name %>,</p>
     <p>Your account has been locked due to an excessive number of unsuccessful sign in attempts — to unlock your account and confirm it was you may do so through the link below:</p>
-    <p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token), host: ENV.fetch('DOMAIN'), protocol: 'https' %></p>
+    <p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token), host: ENV.fetch('DOMAIN', 'localhost'), protocol: 'https' %></p>
     <p>If you didn't request this, please ignore this email.</p>
     <p>Your password won't change until you access the link above and create a new one.</p>
     <div class="signature">

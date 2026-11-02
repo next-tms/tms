@@ -13,7 +13,7 @@
 
     <meta name="theme-color" content="black">
 
-    <link href="https://<%= ENV.fetch('DOMAIN') %><%= request.fullpath %>" rel="canonical" />
+    <link href="https://<%= ENV.fetch('DOMAIN', 'localhost') %><%= request.fullpath %>" rel="canonical" />
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

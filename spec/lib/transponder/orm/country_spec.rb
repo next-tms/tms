@@ -34,6 +34,10 @@ RSpec.describe(Transponder::ORM::Country) do
     it { expect { described_class.reset }.to(change { Transponder::ORM::Region.all.object_id }) }
   end
 
+  describe '#cache_version' do
+    it { expect(united_states.cache_version).to(eq('United States of America')) }
+  end
+
   describe '#format_address' do
     it { expect(united_states.format_address('')).to(be_nil) }
     it { expect(united_states.format_address('1 Main St, Los Angeles, CA 90001')).to(eq('1 Main St, Los Angeles, CA 90001')) }

@@ -23,4 +23,4 @@
   <% end %>
 </p>
 
-<%= link_to "View on our website", broker_shipment_url(@shipment, host: ENV.fetch('DOMAIN')) %>
+<%= link_to "View on our website", broker_shipment_url(@shipment, host: ENV.fetch('DOMAIN', 'localhost')) %>

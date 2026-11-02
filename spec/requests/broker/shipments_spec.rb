@@ -12,27 +12,49 @@ RSpec.describe('Broker::Shipments') do
     sign_in(current_user)
   end
 
+  describe 'DELETE /broker/shipments/:load_id' do
+    before { delete(broker_shipment_path(shipment)) }
+
+    it { is_expected.to(redirect_to(broker_shipments_path)) }
+    it { expect(Shipment.exists?(shipment.id)).to(be(false)) }
+
+    context 'with a receivable' do
+      let(:shipment) do
+        create(:shipment, broker_carrier: nil, load_id: 4242, quote_only: false).tap do |shipment|
+          build(:receivable, shipment:).save!(validate: false)
+        end
+      end
+
+      it { expect(flash[:danger]).to(eq('Error deleting shipment')) }
+      it { expect(Shipment.exists?(shipment.id)).to(be(true)) }
+    end
+
+    context 'without the sales rep role' do
+      let(:current_user) { create(:broker_user) }
+
+      it { is_expected.to(have_http_status(:not_found)) }
+      it { expect(Shipment.exists?(shipment.id)).to(be(true)) }
+    end
+  end
+
   describe 'GET /broker/shipments/:load_id.ebol' do
     before { get(broker_shipment_path(shipment, format: :ebol)) }
 
     it { is_expected.to(have_http_status(:ok)) }
     it { expect(response.media_type).to(eq('application/vnd.nmfta.ebol+json')) }
     it { expect(response.headers['Content-Disposition']).to(start_with('attachment; filename="4242.ebol.json"')) }
-    it { expect(response.parsed_body).to(eq(JSON.parse(EBOL.call(Shipment.find(shipment.id)).to_json))) }
-
-    context 'with a carrier' do
-      let(:shipment) { create(:shipment, broker_carrier: create(:broker_carrier), load_id: 4242, quote_only: false) }
-
-      it { is_expected.to(have_http_status(:ok)) }
-    end
+    it { expect(response.parsed_body).to(eq(JSON.parse(EBOL::Exporter.call(Shipment.find(shipment.id)).to_json))) }
 
     context 'when requested again with the ETag' do
       let(:etag) { response.headers['ETag'] }
 
-      context 'when nothing changed' do
-        before { get(broker_shipment_path(shipment, format: :ebol), headers: { 'If-None-Match' => etag }) }
+      context 'when an address changed' do
+        before do
+          shipment.receiver_address.update!(street: '9 New St', updated_at: 1.minute.from_now)
+          get(broker_shipment_path(shipment, format: :ebol), headers: { 'If-None-Match' => etag })
+        end
 
-        it { is_expected.to(have_http_status(:not_modified)) }
+        it { is_expected.to(have_http_status(:ok)) }
       end
 
       context 'when an item changed' do
@@ -44,39 +66,64 @@ RSpec.describe('Broker::Shipments') do
         it { is_expected.to(have_http_status(:ok)) }
       end
 
-      context 'when an address changed' do
-        before do
-          shipment.receiver_address.update!(street: '9 New St', updated_at: 1.minute.from_now)
-          get(broker_shipment_path(shipment, format: :ebol), headers: { 'If-None-Match' => etag })
-        end
+      context 'when nothing changed' do
+        before { get(broker_shipment_path(shipment, format: :ebol), headers: { 'If-None-Match' => etag }) }
 
-        it { is_expected.to(have_http_status(:ok)) }
+        it { is_expected.to(have_http_status(:not_modified)) }
       end
+    end
+
+    context 'with a carrier' do
+      let(:shipment) { create(:shipment, broker_carrier: create(:broker_carrier), load_id: 4242, quote_only: false) }
+
+      it { is_expected.to(have_http_status(:ok)) }
     end
   end
 
-  describe 'DELETE /broker/shipments/:load_id' do
-    before { delete(broker_shipment_path(shipment)) }
+  describe 'GET /broker/shipments/:load_id/edit' do
+    before do
+      seed_settings
+      get(edit_broker_shipment_path(shipment))
+    end
 
-    it { is_expected.to(redirect_to(broker_shipments_path)) }
-    it { expect(Shipment.exists?(shipment.id)).to(be(false)) }
+    it { is_expected.to(have_http_status(:ok)) }
 
-    context 'without the sales rep role' do
+    context 'when the user cannot access the shipment' do
       let(:current_user) { create(:broker_user) }
 
       it { is_expected.to(have_http_status(:not_found)) }
-      it { expect(Shipment.exists?(shipment.id)).to(be(true)) }
+    end
+  end
+
+  describe 'GET /broker/shipments/:load_id/transit' do
+    let(:reason) { Nokogiri::HTML(response.body).at_css('[data-reschedule-target="reason"]') }
+
+    before do
+      seed_settings
+      get(transit_broker_shipment_path(shipment))
     end
 
-    context 'with a receivable' do
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(reason).to(be_nil) }
+
+    context 'when the pickup is rescheduled' do
       let(:shipment) do
         create(:shipment, broker_carrier: nil, load_id: 4242, quote_only: false).tap do |shipment|
-          build(:receivable, shipment:).save!(validate: false)
+          create(:pickup_request, accepted_pickup_on: shipment.pickup_on - 1.day, shipments: [shipment])
         end
       end
 
-      it { expect(flash[:danger]).to(eq('Error deleting shipment')) }
-      it { expect(Shipment.exists?(shipment.id)).to(be(true)) }
+      it { expect(reason['hidden']).to(be_nil) }
+    end
+
+    context 'with a pickup request' do
+      let(:shipment) do
+        create(:shipment, broker_carrier: nil, load_id: 4242, quote_only: false).tap do |shipment|
+          create(:pickup_request, accepted_pickup_on: shipment.pickup_on, shipments: [shipment])
+        end
+      end
+
+      it { expect(reason['hidden']).to(be_present) }
     end
   end
 

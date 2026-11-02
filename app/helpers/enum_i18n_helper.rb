@@ -9,9 +9,7 @@ module EnumI18nHelper
   # Returns the i18n version the models current enum key
   # Example usage:
   # enum_l(user, :approval_state)
-  def enum_l(model, enum)
-    enum_i18n(model.class, enum, model.public_send(enum))
-  end
+  def enum_l(model, enum) = model.public_send(enum)&.then { |key| enum_i18n(model.class, enum, key) }
 
   # Returns the i18n string for the enum key
   # Example usage:

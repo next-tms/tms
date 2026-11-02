@@ -5,7 +5,7 @@ class CountriesController < ApplicationController
     respond_to do |format|
       format.json do
         expires_in(1.day, public: true)
-        fresh_when(etag: [@country.name, @regions.map { |region| [region.iso31662, region.abbreviation, region.name] }], public: true)
+        stale?(@country, @regions, public: true)
       end
     end
   end

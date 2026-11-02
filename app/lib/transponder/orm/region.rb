@@ -27,6 +27,7 @@ module Transponder
       end
 
       def abbreviation = @abbreviation ||= iso31662.split('-', 2).last
+      def cache_version = "#{abbreviation}-#{name}"
       def country = @country ||= Country.find_or_initialize_by(alpha2: iso31662.split('-', 2).first)
       def name = @name || iso31662
     end

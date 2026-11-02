@@ -130,7 +130,7 @@ RSpec.describe(DateTimeHelper) do
       expect(time_tag_html).to(
         eq(
           '<time datetime="2026-07-14T10:00:00-07:00" data-controller="time" ' \
-          'data-time-time-zone-value="America/Los_Angeles">2026-07-14T10:00:00-07:00</time>'
+          'data-time-time-zone-value="America/Los_Angeles">Jul 14, 2026, 10:00 AM PDT</time>'
         )
       )
     end
@@ -161,7 +161,7 @@ RSpec.describe(DateTimeHelper) do
         expect(time_tag_html).to(
           eq(
             '<time datetime="2026-07-14T13:00:00-04:00" data-controller="time" ' \
-            'data-time-time-zone-value="America/New_York">2026-07-14T13:00:00-04:00</time>'
+            'data-time-time-zone-value="America/New_York">Jul 14, 2026, 1:00 PM EDT</time>'
           )
         )
       end
@@ -176,7 +176,7 @@ RSpec.describe(DateTimeHelper) do
         let(:current_user) { build(:user, time_zone_name: 'America/Denver') }
 
         it { is_expected.to(include('datetime="2026-07-14T11:00:00-06:00"')) }
-        it { is_expected.to(include('data-time-time-zone-value="America/Denver">2026-07-14T11:00:00-06:00</time>')) }
+        it { is_expected.to(include('data-time-time-zone-value="America/Denver">Jul 14, 2026, 11:00 AM MDT</time>')) }
       end
     end
 

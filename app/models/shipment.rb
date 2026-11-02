@@ -152,6 +152,8 @@
 #   @return []
 # @!attribute load_id
 #   @return [Integer]
+# @!attribute pickup_request_id
+#   @return []
 # @!attribute quote_id
 #   @return [String]
 # @!attribute receiver_address_id
@@ -171,6 +173,7 @@
 #  index_shipments_on_created_by_id        (created_by_id)
 #  index_shipments_on_dispatcher_id        (dispatcher_id)
 #  index_shipments_on_load_id              (load_id) UNIQUE
+#  index_shipments_on_pickup_request_id    (pickup_request_id)
 #  index_shipments_on_receiver_address_id  (receiver_address_id)
 #  index_shipments_on_shipper_address_id   (shipper_address_id)
 #  index_shipments_on_status               (status)
@@ -183,6 +186,7 @@
 #  fk_rails_...  (broker_customer_id => broker_customers.id)
 #  fk_rails_...  (created_by_id => users.id)
 #  fk_rails_...  (dispatcher_id => users.id)
+#  fk_rails_...  (pickup_request_id => pickup_requests.id)
 #  fk_rails_...  (receiver_address_id => addresses.id)
 #  fk_rails_...  (shipper_address_id => addresses.id)
 #  fk_rails_...  (tracking_carrier_id => carriers.id)
@@ -191,6 +195,7 @@
 class Shipment < ApplicationRecord
   class << self
     def last_load_id = maximum(:load_id) || Setting.first_load_id.to_i
+    def lock_load_ids = connection.execute("SELECT pg_advisory_xact_lock(hashtext('shipments.load_id'))")
 
     def ransackable_attributes(_auth_object = nil)
       [
@@ -296,9 +301,7 @@ class Shipment < ApplicationRecord
   before_save :prettify_shipper_name, if: :shipper_name_changed?
   before_save :prettify_receiver_name, if: :receiver_name_changed?
   # Reference sanitization
-  before_save :squish_bol, if: :will_save_change_to_bol?
-  before_save :squish_pickup_confirmation, if: :will_save_change_to_pickup_confirmation?
-  before_save :squish_pro, if: :will_save_change_to_pro?
+
   # Fill in missing DateTimes
   # before_save :maybe_update_dispatched_at_to_now, if: :pickup_confirmation_changed?
   before_save :maybe_update_out_for_delivery_at_to_delivered_at, if: :delivered_at_changed?
@@ -318,8 +321,11 @@ class Shipment < ApplicationRecord
   before_save :remove_applied_rate, if: :will_save_change_to_tracking_carrier_id?
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
+  before_validation :assign_load_id, on: :create, if: -> { load_id.blank? }
   before_validation :set_dispatcher
   before_validation :set_status
+
+  belongs_to :pickup_request, inverse_of: :shipments, optional: true
 
   enum :status,
        {
@@ -362,13 +368,28 @@ class Shipment < ApplicationRecord
     Arel.sql("to_char(\"#{table_name}\".\"load_id\", '99999999')")
   end
 
+  scope :accessible_by, ->(user) {
+    if user&.customer?
+      where(broker_customer: user.companyable)
+    elsif !user&.broker?
+      none
+    elsif user.any_role?(:accounts_payable, :accounts_receivable, :dispatch)
+      all
+    else
+      where(broker_customer_id: nil).or(where(broker_customer_id: user.broker_customer_sales_reps.select(:broker_customer_id)))
+    end
+  }
   scope :active,                        -> { not_canceled } # TODO: Remove, use :not_canceled
   scope :booked,                        -> { active.where.not(booked_at: nil).where(dispatched_at: nil) }
   scope :canceled_recently,             -> { where('canceled_at > ?', 1.day.ago) }
+  scope :delivered_to,                  ->(zip_code) { joins(:receiver_address).merge(Address.with_zip_code(zip_code)) }
   scope :late,                          -> { where(id: late_per_promised_delivery_by).or(where(id: late_per_delivery_eta_on)).distinct }
   scope :late_per_delivery_eta_on,      -> { not_delivered.where(delivery_eta_on: ...Date.current) }
   scope :late_per_promised_delivery_by, -> { not_delivered.where(promised_delivery_by: ...Date.current) }
   scope :late_per_quoted_delivery_by,   -> { not_delivered.where(quoted_delivery_by: ...(Date.current + 3.days)) }
+  scope :missed_pickup, -> {
+    active.where(picked_up_at: nil, pickup_on: ...Setting.time_zone.today).where.not(pickup_driver_assigned_at: nil)
+  }
   scope :missing_charge,                -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
   scope :missing_cost,                  -> { active.where.not(id: pending_quotation).where(carrier_cost_cents: 0) }
   scope :missing_delivery_appointment, -> {
@@ -406,6 +427,7 @@ class Shipment < ApplicationRecord
   scope :pending_quotation,             -> {
     where(broker_carrier: nil, canceled_at: nil).or(where(broker_carrier: nil).where(id: canceled_recently))
   }
+  scope :shipped_from, ->(zip_code) { joins(:shipper_address).merge(Address.with_zip_code(zip_code)) }
 
   validates :load_id, presence: true, uniqueness: true
 
@@ -414,6 +436,7 @@ class Shipment < ApplicationRecord
   validate :validate_past_or_present_attributes
   validate :validate_pro_and_tracking_carrier_pro
 
+  accepts_nested_attributes_for :pickup_request, update_only: true
   accepts_nested_attributes_for :receiver_address
   accepts_nested_attributes_for :shipper_address
 
@@ -545,6 +568,8 @@ class Shipment < ApplicationRecord
   def delivery_by
     Shipment::DeliveryDateService.new(shipment: self).delivery_by
   end
+
+  def missed_pickup? = !canceled? && !picked_up? && pickup_driver_assigned_at.present? && pickup_on&.before?(Setting.time_zone.today)
 
   def picked_up?
     picked_up_at.present?
@@ -795,6 +820,11 @@ class Shipment < ApplicationRecord
   end
 
   private
+
+  def assign_load_id
+    self.class.lock_load_ids
+    self.load_id = self.class.last_load_id + 1
+  end
 
   def build_commissions
     return unless broker_customer.present? && [total_charges_cents, total_cost_cents].all?(&:positive?)
@@ -1093,19 +1123,6 @@ class Shipment < ApplicationRecord
     return unless (receiver_name == receiver_name.downcase) || (receiver_name == receiver_name.upcase)
 
     self.receiver_name = receiver_name.titleize
-  end
-
-  # Reference sanitization
-  def squish_bol
-    self.bol = bol&.squish
-  end
-
-  def squish_pickup_confirmation
-    self.pickup_confirmation = pickup_confirmation&.squish
-  end
-
-  def squish_pro
-    self.pro = pro&.squish
   end
 
   # Pricing

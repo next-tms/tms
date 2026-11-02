@@ -1,8 +1,9 @@
 class ShipmentPolicy < ActionPolicy::Base
-  # By default, Action Policy uses context[:current_user] as the user authorization context.
-  def show?
-    return false unless record
+  authorize :user, optional: true
 
-    record.accessible_by?(user)
-  end
+  relation_scope { |relation| relation.accessible_by(user) }
+
+  def create? = user.present? && user.customer?
+  def manage? = user.present? && record.accessible_by?(user)
+  def view? = manage?
 end

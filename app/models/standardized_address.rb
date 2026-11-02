@@ -116,6 +116,10 @@ class StandardizedAddress < ApplicationRecord
 
     update_api_response_cache_and_timestamp(:google_places_spot, result)
     @google_places_spot = result
+  rescue Errno::ECONNREFUSED, Net::OpenTimeout, Net::ReadTimeout, SocketError => e
+    Sentry.capture_exception(e)
+
+    nil
   end
 
   def open_street_map_result

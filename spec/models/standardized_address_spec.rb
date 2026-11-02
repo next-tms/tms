@@ -60,6 +60,29 @@ RSpec.describe(StandardizedAddress) do
     it { expect(record.country).to(equal(Transponder::ORM::Country.find('US'))) }
   end
 
+  describe '#google_places_spot' do
+    let(:record) { create(:standardized_address, google_places_spot_updated_at: 4.months.ago) }
+    let(:service) { instance_double(Address::GooglePlacesVerifyService) }
+
+    before do
+      allow(Address::GooglePlacesVerifyService).to(receive(:new).and_return(service))
+      allow(Sentry).to(receive(:capture_exception))
+      allow(service).to(receive(:call).and_raise(Socket::ResolutionError, 'getaddrinfo(3)'))
+    end
+
+    it { expect(record.google_places_spot).to(be_nil) }
+
+    it do
+      record.google_places_spot
+      expect(record.reload.google_places_spot_updated_at).to(be < 3.months.ago)
+    end
+
+    it do
+      record.google_places_spot
+      expect(Sentry).to(have_received(:capture_exception).with(an_instance_of(Socket::ResolutionError)))
+    end
+  end
+
   describe '#region' do
     it { expect(record.region).to(equal(Transponder::ORM::Region.find('US-CA'))) }
   end
