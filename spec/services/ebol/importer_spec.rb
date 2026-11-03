@@ -10,6 +10,12 @@ RSpec.describe(EBOL::Importer) do
     it { expect(importer.accessorial_codes).to(eq(['LFTD', 'XYZ'])) }
   end
 
+  describe '#bill_to_account' do
+    let(:body) { super().deep_merge('billTo' => { 'account' => '42' }) }
+
+    it { expect(importer.bill_to_account).to(eq('42')) }
+  end
+
   describe '#include_bol?' do
     it { is_expected.not_to(be_include_bol) }
   end

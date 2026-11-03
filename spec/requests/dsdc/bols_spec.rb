@@ -35,11 +35,30 @@ RSpec.describe('DSDC::BOLs') do
 
   describe 'POST /api/dsdc/bol/v1/app' do
     context 'when the API key belongs to a broker user' do
-      let(:api_key) { create(:api_key, authorizable: create(:broker_user)) }
+      let(:api_key) { create(:api_key, authorizable: broker_user) }
+      let(:body) { super().deep_merge('billTo' => { 'account' => broker_customer.id.to_s }) }
+      let(:broker_customer) { create(:broker_customer) }
+      let(:broker_user) { create(:broker_user).tap { |user| user.contact.add_role(:dispatch) } }
 
       before { post('/api/dsdc/bol/v1/app', headers:, params: body.to_json) }
 
-      it { expect(response).to(have_http_status(:not_found)) }
+      it { expect(response).to(have_http_status(:ok)) }
+      it { expect(shipment).to(have_attributes(broker_customer:, created_by: broker_user)) }
+
+      context 'when billTo.account does not match a customer' do
+        let(:body) { super().deep_merge('billTo' => { 'account' => '0' }) }
+
+        it { expect(response).to(have_http_status(:bad_request)) }
+        it { expect(json.first).to(include('code' => '300')) }
+        it { expect(Shipment.count).to(eq(0)) }
+      end
+
+      context 'when the broker user cannot book for the customer' do
+        let(:broker_user) { create(:broker_user) }
+
+        it { expect(response).to(have_http_status(:bad_request)) }
+        it { expect(Shipment.count).to(eq(0)) }
+      end
     end
 
     context 'when the BOL image cannot be created' do

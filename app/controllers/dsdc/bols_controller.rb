@@ -9,8 +9,13 @@ class DSDC::BOLsController < DSDC::ApplicationController
   wrap_parameters :bill_of_lading, format: :json, include: EBOL::Importer::ROOT_KEYS
 
   def create
-    @shipment = Shipment.new(booked_at: Time.current, broker_customer: current_user&.companyable, quote_only: false)
+    @shipment = Shipment.new(booked_at: Time.current, broker_customer:, quote_only: false)
     authorize!(@shipment, to: :create?)
+
+    if @shipment.broker_customer.blank?
+      render_failure('300', t('.unknown_customer', account: @importer.bill_to_account))
+      return
+    end
 
     @shipment.assign_attributes(@importer.shipment_attributes(@shipment))
     @shipment.created_by = current_user
@@ -68,6 +73,12 @@ class DSDC::BOLsController < DSDC::ApplicationController
   private
 
   def bol_params = params.expect(bill_of_lading: EBOL::Importer::PERMITTED)
+
+  def broker_customer
+    return current_user.companyable if current_user&.customer?
+
+    current_user&.broker_customers&.find_by(id: @importer.bill_to_account)
+  end
 
   def encoded_document(document_type, code)
     Base64.strict_encode64("DocumentableService::Shipment::Create#{document_type.to_s.camelcase}Job".constantize.render(@shipment))

@@ -293,6 +293,8 @@ en:
     bols:
       broker_bol_failed: The bill of lading PDF could not be created. Download it later from the shipment.
       broker_label_failed: The shipping label PDF could not be created. Download it later from the shipment.
+      create:
+        unknown_customer: billTo.account "%{account}" does not match a customer you can book for.
       destroy:
         picked_up: The shipment was already picked up, so its bill of lading cannot be canceled.
       messages:

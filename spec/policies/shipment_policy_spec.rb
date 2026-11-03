@@ -35,7 +35,7 @@ RSpec.describe(ShipmentPolicy) do
   describe '#create?' do
     subject { policy.apply(:create?) }
 
-    it { is_expected.to(be(false)) }
+    it { is_expected.to(be(true)) }
 
     context 'with a customer user' do
       let(:user) { build(:customer_user) }

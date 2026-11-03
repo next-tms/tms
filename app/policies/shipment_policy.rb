@@ -3,7 +3,7 @@ class ShipmentPolicy < ActionPolicy::Base
 
   relation_scope { |relation| relation.accessible_by(user) }
 
-  def create? = user.present? && user.customer?
+  def create? = user.present? && (user.broker? || user.customer?)
   def manage? = user.present? && record.accessible_by?(user)
   def view? = manage?
 end

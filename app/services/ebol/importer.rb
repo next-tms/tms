@@ -96,6 +96,7 @@ class EBOL::Importer
   end
 
   def accessorial_codes = Array(params.dig(:accessorials, :codes))
+  def bill_to_account = params.dig(:billTo, :account)
   def include_bol? = DSDC.boolean(params.dig(:images, :includeBol))
   def include_shipping_labels? = DSDC.boolean(params.dig(:images, :includeShippingLabels))
 
