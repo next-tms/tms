@@ -3,7 +3,11 @@ module Accounting
     class Vendor < Accounting::Vendor
       class << self
         def attributes_from(vendor)
-          { company_name: vendor.company_name, display_name: vendor.display_name }
+          {
+            billing_address: QuickBooks.address_from(vendor.billing_address),
+            company_name: vendor.company_name,
+            display_name: vendor.display_name
+          }
         end
 
         def connection = @connection ||= Connection.new(self)

@@ -96,7 +96,6 @@ gem 'devise', '~> 5.0'
 gem 'devise_invitable', '~> 2.0'
 gem 'devise-pwned_password', '~> 0.2'
 
-gem 'freight_kit', '~> 0.1.16'
 gem 'measured', '~> 3.2.0'
 gem 'place_kit', '~> 0.0.5'
 

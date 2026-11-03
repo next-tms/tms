@@ -53,6 +53,9 @@ production:
   track_shipments_pending_pickups:
     class: TrackShipmentsPendingPickupJob
     schedule: "*/15 * * * *"
+  sync_transponder_carriers:
+    class: SyncTransponderCarriersJob
+    schedule: "20 3 * * *"
   send_receivables:
     class: SendReceivablesJob
     schedule: "45 */2 * * *"

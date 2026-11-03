@@ -1,0 +1,29 @@
+<% if transponder_terminals.present? %>
+  <h3>Shared by FreightKit</h3>
+  <p class="text-muted">Every TMS that uses this carrier sees these terminals, so they cannot be changed here.</p>
+
+  <div class="table-responsive">
+    <table class="table table-condensed table-borderless table-striped table-unsortable">
+      <thead>
+        <tr>
+          <th>Location</th>
+          <th>Phone</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% transponder_terminals.each do |transponder_terminal| %>
+          <tr>
+            <td><%= transponder_terminal.address&.pretty(', ') %></td>
+            <td>
+              <% if transponder_terminal.phone.present? %>
+                <%= link_to transponder_terminal.phone.phony_formatted, "tel:#{transponder_terminal.phone}" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Account Terminals</h3>
+<% end %>

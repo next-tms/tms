@@ -57,13 +57,9 @@
 #
 class Address < ApplicationRecord
   class << self
-    def ransackable_attributes(_auth_object = nil)
-      ['city', 'country_alpha2', 'region_iso31662', 'street', 'street2', 'zip_code']
-    end
+    def ransackable_attributes(_auth_object = nil) = ['city', 'country_alpha2', 'region_iso31662', 'street', 'street2', 'zip_code']
 
-    def ransackable_associations(_auth_object = nil)
-      []
-    end
+    def ransackable_associations(_auth_object = nil) = []
   end
 
   before_save :set_standardized_address, unless: -> { Rails.env.test? }
@@ -130,33 +126,19 @@ class Address < ApplicationRecord
     str
   end
 
-  def locality
-    "#{city}, #{region.abbreviation}".sub(',  ', '')
-  end
+  def locality = "#{city}, #{region.abbreviation}".sub(',  ', '')
 
-  def permanently_closed?
-    standardized_address&.permanently_closed?
-  end
+  def permanently_closed? = standardized_address&.permanently_closed?
 
-  def commercial?
-    standardized_address&.commercial?
-  end
+  def commercial? = standardized_address&.commercial?
 
-  def residential?
-    standardized_address&.residential?
-  end
+  def residential? = standardized_address&.residential?
 
-  def restaurant?
-    standardized_address&.restaurant?
-  end
+  def restaurant? = standardized_address&.restaurant?
 
-  def full_address?
-    street.present? && city.present? && region.present?
-  end
+  def full_address? = street.present? && city.present? && region.present?
 
-  def blank_to_nil(obj)
-    obj == '' ? nil : obj
-  end
+  def blank_to_nil(obj) = obj == '' ? nil : obj
 
   def names
     @names ||= (
@@ -171,19 +153,7 @@ class Address < ApplicationRecord
     ActiveSupport::TimeZone.new(time_zone_name)
   end
 
-  def types
-    standardized_address&.types || []
-  end
-
-  def to_freight_kit_shipping_address
-    FreightKit::Location.new(
-      address1: street,
-      city:,
-      country: ActiveUtils::Country.find(country.alpha2),
-      postal_code: zip_code,
-      province: region.abbreviation
-    )
-  end
+  def types = standardized_address&.types || []
 
   def to_transponder_graphql_input
     {
@@ -234,7 +204,14 @@ class Address < ApplicationRecord
   end
 
   def to_accounting_address
-    Accounting::Address.new(city:, line1: street, line2: street2, postal_code: zip_code, region: region.abbreviation)
+    Accounting::Address.new(
+      city:,
+      country: country_alpha2,
+      line1: street,
+      line2: street2,
+      postal_code: zip_code,
+      region: region.abbreviation
+    )
   end
 
   private

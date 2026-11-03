@@ -10,6 +10,7 @@ RSpec.describe(Transponder::ORM::Associations) do
       end
 
       belongs_to_transponder :country, foreign_key: :country_alpha2
+      belongs_to_transponder :home_country, class_name: 'Country', foreign_key: :country_alpha2
       belongs_to_transponder :region, foreign_key: :region_iso31662, optional: true
     end
   end
@@ -21,6 +22,7 @@ RSpec.describe(Transponder::ORM::Associations) do
   describe 'reader' do
     it { expect(record.country).to(equal(Transponder::ORM::Country.find('US'))) }
     it { expect(record.region).to(equal(Transponder::ORM::Region.find('US-CA'))) }
+    it { expect(record.home_country).to(equal(Transponder::ORM::Country.find('US'))) }
 
     context 'when the code is blank' do
       let(:region_iso31662) { nil }

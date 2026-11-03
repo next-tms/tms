@@ -1,10 +1,6 @@
 module Transponder
   module ORM
     class Country < Base
-      CACHE_EXPIRES_IN = 1.day
-      # Each process rebuilds its collections from Rails.cache this often, so long-running workers see new Transponder data
-      MEMO_EXPIRES_IN = 1.hour
-
       class << self
         def all
           reset if @memo_expires_at&.past?
@@ -19,6 +15,12 @@ module Transponder
           super
         end
 
+        def find_by(**conditions)
+          return super unless conditions.key?(:name)
+
+          super(**conditions.except(:name), alpha2: conditions[:name].to_s.strip.presence&.then { |name| resolved_alpha2(name) })
+        end
+
         private
 
         def fetch
@@ -27,12 +29,30 @@ module Transponder
             errors = response.original_hash['errors']
             raise GraphQL::Client::Error, errors.pluck('message').join(', ') if errors.present?
 
-            response.original_hash.dig('data', 'fetchCountries').map do |country|
-              country.deep_transform_keys { |key| key.underscore.to_sym }
-            end
+            response
+              .original_hash
+              .dig('data', 'fetchCountries')
+              .map { |country| country.deep_transform_keys { |key| key.underscore.to_sym } }
           end
         end
+
+        def query_alpha2(name)
+          response = GraphQLClient::Transponder::Client.query(
+            GraphQLClient::Transponder::Query::FetchCountries::NAMED,
+            variables: { name: }
+          )
+          errors = response.original_hash['errors']
+          raise GraphQL::Client::Error, errors.pluck('message').join(', ') if errors.present?
+
+          response.original_hash.dig('data', 'fetchCountries', 0, 'alpha2')
+        end
+
+        def named_cache_key(name) = "transponder@#{ORM.version}/countries/named/#{name.downcase}"
+        def resolved_alpha2(name) = Rails.cache.fetch(named_cache_key(name), expires_in: CACHE_EXPIRES_IN) { query_alpha2(name) }
       end
+
+      CACHE_EXPIRES_IN = 1.day
+      MEMO_EXPIRES_IN = 1.hour
 
       attr_reader :alpha2, :alpha3, :numeric, :regions
 

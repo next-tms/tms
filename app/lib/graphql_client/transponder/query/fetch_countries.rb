@@ -11,5 +11,13 @@ module GraphQLClient
           }
         }
     GRAPHQL
+
+    NAMED = GraphQLClient::Transponder::Client.parse(<<-GRAPHQL)
+        query($name: String!) {
+          fetchCountries(name: $name) {
+            alpha2
+          }
+        }
+    GRAPHQL
   end
 end

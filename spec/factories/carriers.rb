@@ -8,12 +8,10 @@
 #   @return [Boolean]
 # @!attribute consider_bol_and_pod_documents_same
 #   @return [Boolean]
-# @!attribute encrypted_api_key
-#   @return [String]
-# @!attribute encrypted_proxy_url
-#   @return [String]
 # @!attribute has_traceable_pickup_confirmation
 #   @return [Boolean]
+# @!attribute legal_name
+#   @return [String]
 # @!attribute mc_number
 #   @return [Integer]
 # @!attribute name
@@ -24,6 +22,8 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
+# @!attribute transponder_id
+#   @return [String]
 # @!attribute broker_billing_address_id
 #   @return []
 # @!attribute check_mailing_address_id
@@ -36,6 +36,7 @@
 #  index_carriers_on_mc_number                  (mc_number) UNIQUE
 #  index_carriers_on_name                       (name) UNIQUE
 #  index_carriers_on_scac                       (scac) UNIQUE
+#  index_carriers_on_transponder_id             (transponder_id) UNIQUE
 #
 # Foreign Keys
 #
@@ -49,5 +50,17 @@ FactoryBot.define do
 
     check_mailing_address_id { create(:address) }
     mc_number { Faker::Number.number.to_s[..5] }
+
+    trait :saia do
+      scac { 'SAIA' }
+      transponder_id { '26a6a0c0-2e95-4835-ad73-4a3c8bb38cdd' }
+    end
+
+    trait :tql do
+      acts_as_broker { true }
+      consider_bol_and_pod_documents_same { true }
+      scac { 'TQYL' }
+      transponder_id { '8f0c3b52-6b1e-4b8e-9a51-3f2f0d7c1e44' }
+    end
   end
 end

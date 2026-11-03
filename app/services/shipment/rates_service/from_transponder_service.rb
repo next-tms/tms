@@ -1,7 +1,7 @@
 class Shipment::RatesService
   class FromTransponderService < Base
     def call
-      return rates if broker_carrier.to_freight_kit_carrier.blank?
+      return rates unless broker_carrier.api_configured? && broker_carrier.carrier.find_rates_implemented?
 
       response = nil
 
@@ -86,10 +86,7 @@ class Shipment::RatesService
 
           next if carrier_name.blank? || carrier_scac.blank?
 
-          # Import carrier information
-          tracking_carrier = Carrier.find_or_initialize_by(scac: carrier_scac.upcase)
-          tracking_carrier.name ||= carrier_name.titleize
-          tracking_carrier.save!
+          tracking_carrier = Carrier.create_with(name: carrier_name.titleize).find_or_create_by!(scac: carrier_scac.upcase)
         end
 
         rate.assign_attributes(
@@ -110,8 +107,6 @@ class Shipment::RatesService
 
     private
 
-    def carrier_finds_rate_with_declared_value?
-      broker_carrier.to_freight_kit_carrier.class.find_rates_with_declared_value?
-    end
+    def carrier_finds_rate_with_declared_value? = broker_carrier.carrier.find_rates_with_declared_value?
   end
 end

@@ -276,6 +276,248 @@ RSpec.describe(Shipment) do
     end
   end
 
+  describe 'helpers' do
+    let(:accessorial) { instance_double(Accessorial, code: 'liftgate', name: 'Liftgate') }
+    let(:loose_item) { instance_double(Item) }
+    let(:pallet_item) { instance_double(Item) }
+    let(:shipment) { build(:shipment, broker_carrier: nil, load_id: 42) }
+
+    describe '.ransackable_associations' do
+      it do
+        expect(described_class.ransackable_associations).to(eq(['broker_carrier', 'broker_customer', 'receiver_address',
+                                                                'shipper_address']))
+      end
+    end
+
+    describe '#accessorial_codes' do
+      it { expect(shipment.accessorial_codes).to(eq([])) }
+
+      context 'when the shipment has accessorials' do
+        before { allow(shipment).to(receive(:accessorials).and_return([accessorial])) }
+
+        it { expect(shipment.accessorial_codes).to(eq(['liftgate'])) }
+        it { expect(shipment.accessorial_names).to(eq(['Liftgate'])) }
+      end
+    end
+
+    describe '#accessorial_names' do
+      it { expect(shipment.accessorial_names).to(eq([])) }
+    end
+
+    describe '#assumed_accessorial_codes' do
+      before { allow(shipment).to(receive(:assumed_accessorials).and_return([accessorial])) }
+
+      it { expect(shipment.assumed_accessorial_codes).to(eq(['liftgate'])) }
+      it { expect(shipment.assumed_accessorial_names).to(eq(['Liftgate'])) }
+    end
+
+    describe '#assumed_accessorial_names' do
+      before { allow(shipment).to(receive(:assumed_accessorials).and_return([])) }
+
+      it { expect(shipment.assumed_accessorial_names).to(eq([])) }
+    end
+
+    describe '#broker_carrier_bol_requires_tracking_number?' do
+      it { expect(shipment.broker_carrier_bol_requires_tracking_number?).to(be(false)) }
+
+      context 'when the broker carrier requires it' do
+        before { shipment.broker_carrier = build(:broker_carrier, carrier: build(:carrier, :saia)) }
+
+        it { expect(shipment.broker_carrier_bol_requires_tracking_number?).to(be(true)) }
+      end
+    end
+
+    describe '#calculated_freight_classes' do
+      before do
+        allow(pallet_item).to(receive(:api_freight_class).with(use_declared_freight_class: false).and_return(85))
+        allow(shipment).to(receive(:items).and_return([pallet_item]))
+      end
+
+      it { expect(shipment.calculated_freight_classes).to(eq([85])) }
+    end
+
+    describe '#declared_freight_classes' do
+      before do
+        allow(pallet_item).to(receive(:api_freight_class).with(use_declared_freight_class: true).and_return(70))
+        allow(shipment).to(receive(:items).and_return([pallet_item]))
+      end
+
+      it { expect(shipment.declared_freight_classes).to(eq([70])) }
+      it { expect(shipment.freight_classes(use_declared_freight_class: true)).to(eq([70])) }
+    end
+
+    describe '#delivered?' do
+      it { expect(shipment.delivered?).to(be(true)) }
+
+      context 'when it is not delivered' do
+        before { shipment.delivered_at = nil }
+
+        it { expect(shipment.delivered?).to(be(false)) }
+      end
+    end
+
+    describe '#delivery_from' do
+      let(:delivery_date_service) { instance_double(Shipment::DeliveryDateService, delivery_from: Date.new(2026, 11, 2)) }
+
+      before { allow(Shipment::DeliveryDateService).to(receive(:new).with(shipment:).and_return(delivery_date_service)) }
+
+      it { expect(shipment.delivery_from).to(eq(Date.new(2026, 11, 2))) }
+    end
+
+    describe '#dispatcher_full_name' do
+      it { expect(shipment.dispatcher_full_name).to(eq(shipment.dispatcher.full_name)) }
+    end
+
+    describe '#eligible_broker_carriers' do
+      let!(:blanket) { create(:broker_carrier) }
+
+      before { allow(shipment.broker_customer).to(receive(:eligible_broker_carriers).with(:broker).and_return([blanket])) }
+
+      it { expect(shipment.eligible_broker_carriers(:broker)).to(eq([blanket])) }
+
+      context 'when there is no broker customer' do
+        before { shipment.broker_customer = nil }
+
+        it { expect(shipment.eligible_broker_carriers).to(contain_exactly(blanket)) }
+      end
+    end
+
+    describe '#incomplete?' do
+      it { expect(shipment.incomplete?).to(be(false)) }
+
+      context 'when the receiver name is blank' do
+        before { shipment.receiver_name = nil }
+
+        it { expect(shipment.incomplete?).to(be(true)) }
+      end
+    end
+
+    describe '#loose?' do
+      before { allow(shipment).to(receive_messages(items: [loose_item, pallet_item], palletized_items: [pallet_item])) }
+
+      it { expect(shipment.loose?).to(be(true)) }
+      it { expect(shipment.loose_items).to(eq([loose_item])) }
+      it { expect(shipment.palletized?).to(be(false)) }
+    end
+
+    describe '#palletized?' do
+      before { allow(shipment).to(receive_messages(items: [pallet_item], palletized_items: [pallet_item])) }
+
+      it { expect(shipment.palletized?).to(be(true)) }
+      it { expect(shipment.loose?).to(be(false)) }
+      it { expect(shipment.loose_items).to(eq([])) }
+    end
+
+    describe '#margin' do
+      before { shipment.assign_attributes(total_charges: Money.new(20_000, 'USD'), total_cost: Money.new(15_000, 'USD')) }
+
+      it { expect(shipment.margin).to(eq('25.0%')) }
+      it { expect(shipment.profit).to(eq(Money.new(5_000, 'USD'))) }
+    end
+
+    describe '#missing_delivery_eta_on?' do
+      it { expect(shipment.missing_delivery_eta_on?).to(be(false)) }
+
+      context 'when it is blank' do
+        before { shipment.delivery_eta_on = nil }
+
+        it { expect(shipment.missing_delivery_eta_on?).to(be(true)) }
+      end
+    end
+
+    describe '#profit' do
+      before { shipment.assign_attributes(total_charges: Money.new(100, 'USD'), total_cost: Money.new(300, 'USD')) }
+
+      it { expect(shipment.profit).to(eq(Money.new(-200, 'USD'))) }
+    end
+
+    describe '#remove_applied_rate' do
+      before do
+        shipment.applied_rate = build(:rate)
+        shipment.__send__(:remove_applied_rate)
+      end
+
+      it { expect(shipment.applied_rate).to(be_nil) }
+    end
+
+    describe '#remove_tracking_events' do
+      let(:tracking_events) { double(destroy_all: []) }
+
+      before do
+        allow(shipment).to(receive(:tracking_events).and_return(tracking_events))
+        shipment.__send__(:remove_tracking_events)
+      end
+
+      it { expect(tracking_events).to(have_received(:destroy_all)) }
+    end
+
+    describe '#suggested_accessorial_codes' do
+      before { allow(shipment).to(receive(:suggested_accessorials).and_return([accessorial])) }
+
+      it { expect(shipment.suggested_accessorial_codes).to(eq(['liftgate'])) }
+    end
+
+    describe '#to_param' do
+      it { expect(shipment.to_param).to(eq('42')) }
+    end
+
+    describe '#unbook' do
+      before { shipment.__send__(:unbook) }
+
+      it { expect(shipment.booked_at).to(be_nil) }
+    end
+
+    describe '#uncancel' do
+      before { shipment.__send__(:uncancel) }
+
+      it { expect(shipment.canceled_at).to(be_nil) }
+    end
+  end
+
+  describe '#validate_pro_and_tracking_carrier_pro' do
+    let(:broker_carrier) { create(:broker_carrier, carrier: create(:carrier, :saia)) }
+    let(:carrier_name) { broker_carrier.carrier.name }
+    let(:pro) { '12345678901' }
+    let(:shipment) do
+      build(:shipment, broker_carrier:, pro:, tracking_carrier:, tracking_carrier_pickup_confirmation: nil, tracking_carrier_pro:)
+    end
+    let(:tracking_carrier) { nil }
+    let(:tracking_carrier_pro) { nil }
+
+    before { shipment.__send__(:validate_pro_and_tracking_carrier_pro) }
+
+    it { expect(shipment.errors).to(be_empty) }
+
+    context 'when the pro does not match the carrier pattern' do
+      let(:pro) { '1234' }
+
+      it { expect(shipment.errors[:base]).to(eq(["Pro 1234 is invalid for #{broker_carrier.carrier.name}"])) }
+    end
+
+    context 'when the carrier is custom' do
+      let(:broker_carrier) { create(:broker_carrier) }
+      let(:pro) { '1234' }
+
+      it { expect(shipment.errors).to(be_empty) }
+    end
+
+    context 'when the tracking carrier pro matches the pro' do
+      let(:tracking_carrier) { create(:carrier) }
+      let(:tracking_carrier_pro) { pro }
+
+      it { expect(shipment.errors[:tracking_carrier_pro]).to(eq(["cannot match pro #{pro} from #{broker_carrier.carrier.name}"])) }
+    end
+
+    context 'when the tracking carrier pickup confirmation matches the pickup confirmation' do
+      let(:shipment) do
+        build(:shipment, broker_carrier:, pickup_confirmation: 'PU1', pro:, tracking_carrier:, tracking_carrier_pickup_confirmation: 'PU1')
+      end
+      let(:tracking_carrier) { create(:carrier) }
+
+      it { expect(shipment.errors[:tracking_carrier_pickup_confirmation]).to(eq(["cannot match pickup ref PU1 from #{carrier_name}"])) }
+    end
+  end
+
   describe '#assign_dispatcher' do
     let(:user) do
       record = build(:broker_user)

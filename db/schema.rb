@@ -247,34 +247,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_194127) do
     t.index ["requires_carrier_pod_on_receivables"], name: "index_broker_customers_on_requires_carrier_pod_on_receivables"
   end
 
-  create_table "carrier_areas", force: :cascade do |t|
-    t.bigint "carrier_id", null: false
-    t.bigint "from_area_id", null: false
-    t.bigint "to_area_id", null: false
-    t.index ["carrier_id", "from_area_id", "to_area_id"], name: "idx_on_carrier_id_from_area_id_to_area_id_bcd543b955", unique: true
-    t.index ["carrier_id"], name: "index_carrier_areas_on_carrier_id"
-    t.index ["from_area_id"], name: "index_carrier_areas_on_from_area_id"
-    t.index ["to_area_id"], name: "index_carrier_areas_on_to_area_id"
-  end
-
   create_table "carriers", id: :serial, force: :cascade do |t|
     t.boolean "acts_as_broker", default: false
     t.bigint "broker_billing_address_id"
     t.bigint "check_mailing_address_id"
     t.boolean "consider_bol_and_pod_documents_same", default: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "encrypted_api_key"
-    t.string "encrypted_proxy_url"
     t.boolean "has_traceable_pickup_confirmation", default: false
+    t.string "legal_name"
     t.integer "mc_number"
     t.string "name"
     t.string "scac"
+    t.uuid "transponder_id"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["broker_billing_address_id"], name: "index_carriers_on_broker_billing_address_id"
     t.index ["check_mailing_address_id"], name: "index_carriers_on_check_mailing_address_id"
     t.index ["mc_number"], name: "index_carriers_on_mc_number", unique: true
     t.index ["name"], name: "index_carriers_on_name", unique: true
     t.index ["scac"], name: "index_carriers_on_scac", unique: true
+    t.index ["transponder_id"], name: "index_carriers_on_transponder_id", unique: true
   end
 
   create_table "claim_items", force: :cascade do |t|
@@ -604,17 +595,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_194127) do
 
   create_table "pricing_rules", force: :cascade do |t|
     t.bigint "broker_carrier_id", null: false
-    t.bigint "carrier_area_id", null: false
     t.integer "cost_per_pallet_cents", default: 0, null: false
     t.string "cost_per_pallet_currency", default: "USD", null: false
     t.datetime "created_at", null: false
+    t.bigint "from_area_id", null: false
     t.integer "max_pallets"
     t.integer "min_pallets"
+    t.bigint "to_area_id", null: false
     t.datetime "updated_at", null: false
     t.index ["broker_carrier_id"], name: "index_pricing_rules_on_broker_carrier_id"
-    t.index ["carrier_area_id"], name: "index_pricing_rules_on_carrier_area_id"
+    t.index ["from_area_id"], name: "index_pricing_rules_on_from_area_id"
     t.index ["max_pallets"], name: "index_pricing_rules_on_max_pallets"
     t.index ["min_pallets"], name: "index_pricing_rules_on_min_pallets"
+    t.index ["to_area_id"], name: "index_pricing_rules_on_to_area_id"
   end
 
   create_table "problems", force: :cascade do |t|
@@ -1039,9 +1032,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_194127) do
   add_foreign_key "broker_customers", "addresses", column: "primary_pickup_address_id"
   add_foreign_key "broker_customers", "contacts", column: "receivables_contact_id"
   add_foreign_key "broker_customers", "customers"
-  add_foreign_key "carrier_areas", "areas", column: "from_area_id"
-  add_foreign_key "carrier_areas", "areas", column: "to_area_id"
-  add_foreign_key "carrier_areas", "carriers"
   add_foreign_key "carriers", "addresses", column: "broker_billing_address_id"
   add_foreign_key "carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "claim_items", "claims"
@@ -1074,8 +1064,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_194127) do
   add_foreign_key "pickups", "users", column: "updated_by_id"
   add_foreign_key "preferred_broker_carriers", "broker_carriers"
   add_foreign_key "preferred_broker_carriers", "broker_customers"
+  add_foreign_key "pricing_rules", "areas", column: "from_area_id"
+  add_foreign_key "pricing_rules", "areas", column: "to_area_id"
   add_foreign_key "pricing_rules", "broker_carriers"
-  add_foreign_key "pricing_rules", "carrier_areas"
   add_foreign_key "problems", "users", column: "assigned_to_id"
   add_foreign_key "problems", "users", column: "resolved_by_id"
   add_foreign_key "rate_accessorials", "accessorials"

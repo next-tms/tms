@@ -48,27 +48,27 @@
 
   <%= f.text_area :default_bol_notes, label: 'Default BOL Notes', rows: 7 %>
 
-  <% if f.object.carrier&.freight_kit_class.present? %>
+  <% if f.object.carrier&.transponder_carrier.present? %>
     <h3>Website Credentials</h3>
 
-    <% if (f.object.carrier.broker_carrier_credential_columns & %i[website_username website_password]).any? %>
+    <% if (f.object.credential_columns & %i[website_username website_password]).any? %>
       <p>The API for <%= f.object.name %> uses these credentials.</p>
     <% end %>
 
     <%= f.text_field :website_username, label: 'Username', autocomplete: 'off' %>
     <%= f.text_field :website_password, label: 'Password', autocomplete: 'off' %>
 
-    <% if (f.object.carrier.broker_carrier_credential_columns & %i[encrypted_api_key username password]).any? %>
+    <% if (f.object.credential_columns & %i[encrypted_api_key username password]).any? %>
       <h3>API Credentials</h3>
-      <% if f.object.carrier.broker_carrier_credential_columns.include?(:encrypted_api_key) %>
+      <% if f.object.credential_columns.include?(:encrypted_api_key) %>
         <%= f.text_field :encrypted_api_key, autocomplete: 'off' %>
       <% end %>
 
-      <% if f.object.carrier.broker_carrier_credential_columns.include?(:username) %>
+      <% if f.object.credential_columns.include?(:username) %>
         <%= f.text_field :username, autocomplete: 'off' %>
       <% end %>
 
-      <% if f.object.carrier.broker_carrier_credential_columns.include?(:password) %>
+      <% if f.object.credential_columns.include?(:password) %>
         <%= f.text_field :password, autocomplete: 'off' %>
       <% end %>
     <% end %>

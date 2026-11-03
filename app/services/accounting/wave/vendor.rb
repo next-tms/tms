@@ -1,11 +1,13 @@
 module Accounting
   module Wave
     class Vendor < Accounting::Vendor
-      SELECTION = 'id name address { addressLine1 addressLine2 city postalCode }'.freeze
-
       class << self
         def attributes_from(node)
-          { billing_address: Wave.address_from(node['address']), company_name: node['name'], display_name: node['name'] }
+          {
+            billing_address: Wave.address_from(node['address']),
+            company_name: node['name'],
+            display_name: node['name']
+          }
         end
 
         def collection_key = 'vendors'
@@ -15,6 +17,8 @@ module Accounting
         def node_key = 'vendor'
         def selection = SELECTION
       end
+
+      SELECTION = 'id name address { addressLine1 addressLine2 city country { code } postalCode province { code } }'.freeze
     end
   end
 end

@@ -64,9 +64,7 @@ class Item < ApplicationRecord
     self.packaging = Packaging.find_by(name:)
   end
 
-  def packaging_name
-    packaging&.name
-  end
+  def packaging_name = packaging&.name
 
   def measured_h = h&.then { |height| Measured::Length.new(height, :in) }
 
@@ -101,9 +99,7 @@ class Item < ApplicationRecord
     false
   end
 
-  def pallet_or_crate?
-    ['crate', 'drum', 'pallet', 'tote'].include?(packaging.name)
-  end
+  def pallet_or_crate? = ['crate', 'drum', 'pallet', 'tote'].include?(packaging.name)
 
   def short_side
     return [l, w].min if l && w && h
@@ -173,13 +169,9 @@ class Item < ApplicationRecord
     end
   end
 
-  def calculated_freight_class
-    sanitized_freight_class(density_to_freight_class(density(rounded: false)))
-  end
+  def calculated_freight_class = sanitized_freight_class(density_to_freight_class(density(rounded: false)))
 
-  def declared_freight_class
-    sanitized_freight_class(super)
-  end
+  def declared_freight_class = sanitized_freight_class(super)
 
   def display_freight_class
     if declared_freight_class.blank?
@@ -195,24 +187,6 @@ class Item < ApplicationRecord
     else
       calculated_freight_class.presence || declared_freight_class
     end
-  end
-
-  def as_freight_kit_package(use_declared_freight_class:)
-    FreightKit::Package.new(
-      weight * 16,
-      {
-        length: l,
-        width: w,
-        height: h
-      },
-      packaging.freight_kit_type&.to_sym,
-      declared_freight_class: api_freight_class(use_declared_freight_class:),
-      description: desc,
-      hazmat: hazmat?,
-      nmfc: nmfc.presence,
-      quantity:,
-      units: :imperial
-    )
   end
 
   def as_graphql_input(declared_freight_classes:)

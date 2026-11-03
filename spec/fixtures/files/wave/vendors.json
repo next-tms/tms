@@ -4,7 +4,20 @@
       "vendors": {
         "pageInfo": { "totalPages": 1 },
         "edges": [
-          { "node": { "id": "9", "name": "Carrier Co", "address": null } }
+          {
+            "node": {
+              "id": "9",
+              "name": "Carrier Co",
+              "address": {
+                "addressLine1": "PO Box 1",
+                "addressLine2": null,
+                "city": "Dallas",
+                "country": { "code": "US" },
+                "postalCode": "75373",
+                "province": { "code": "US-TX" }
+              }
+            }
+          }
         ]
       }
     }

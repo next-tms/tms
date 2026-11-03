@@ -3,10 +3,8 @@
 <%= render 'member_header' %>
 <h2><%= yield :title %></h2>
 
-<% freight_kit_carrier = @broker_carrier.to_freight_kit_carrier %>
-
-<% if freight_kit_carrier.present? && freight_kit_carrier.class.implemented?(:find_rates) %>
-  <% if freight_kit_carrier.rates_with_excessive_length_fees %>
+<% if @broker_carrier.api_configured? && @broker_carrier.carrier.find_rates_implemented? %>
+  <% if @broker_carrier.carrier.rates_with_excessive_length_fees? %>
     <%= render 'layouts/message',
                title: 'Nothing to configure',
                message: 'This carrier’s API handles tariff-specific pricing on its own.'

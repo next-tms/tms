@@ -8,7 +8,9 @@
           "addressLine1": "1 A St",
           "addressLine2": null,
           "city": "Reno",
-          "postalCode": "89501"
+          "country": { "code": "US" },
+          "postalCode": "89501",
+          "province": { "code": "US-NV" }
         }
       }
     }

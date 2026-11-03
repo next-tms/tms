@@ -1,0 +1,105 @@
+{
+  "data": {
+    "fetchCarriers": [
+      {
+        "actsAsBroker": false,
+        "bolRequiresTrackingNumber": true,
+        "checkMailingAddresses": [
+          {
+            "city": "Dallas",
+            "country": {
+              "alpha2": "US"
+            },
+            "id": "0c8c2f2e-3a5e-4a49-9d3c-6f1a1b2c3d01",
+            "postalCode": "75373",
+            "regionAbbreviation": "TX",
+            "street": "PO Box 730532",
+            "street2": null
+          }
+        ],
+        "considerBolAndPodDocumentsSame": false,
+        "contacts": [
+          {
+            "companyName": "Saia",
+            "department": "Dispatch",
+            "email": "dispatch@saia.test",
+            "fax": null,
+            "id": "5f2b7c1e-8d4a-4e2b-9c3d-7a6b5c4d3e02",
+            "name": null,
+            "phone": "+18005551234"
+          }
+        ],
+        "createPickupImplemented": true,
+        "findRatesImplemented": true,
+        "findRatesWithDeclaredValue": false,
+        "headquarters": {
+          "city": "Johns Creek",
+          "country": {
+            "alpha2": "US"
+          },
+          "id": "1d9d3f3f-4b6f-4b5a-8e4d-7a2b2c3d4e03",
+          "postalCode": "30097",
+          "regionAbbreviation": "GA",
+          "street": "11465 Johns Creek Pkwy",
+          "street2": null
+        },
+        "id": "26a6a0c0-2e95-4835-ad73-4a3c8bb38cdd",
+        "legalName": "Saia Motor Freight Line, LLC",
+        "name": "Saia",
+        "pickupNumberIsTrackingNumber": false,
+        "ratesWithExcessiveLengthFees": true,
+        "requiredCredentialTypes": [
+          "api"
+        ],
+        "scac": "SAIA",
+        "terminals": [
+          {
+            "address": {
+              "city": "Austin",
+              "country": {
+                "alpha2": "US"
+              },
+              "id": "2e0e4a4a-5c7a-4c6b-9f5e-8b3c3d4e5f04",
+              "postalCode": "78744",
+              "regionAbbreviation": "TX",
+              "street": "1 Freight Ln",
+              "street2": null
+            },
+            "id": "3f1f5b5b-6d8b-4d7c-8a6f-9c4d4e5f6a05",
+            "phone": "+15125550100"
+          }
+        ],
+        "usDotNumber": "29124",
+        "usMcNumber": "92726",
+        "validTrackingNumberPattern": "\\A\\d{11}\\z",
+        "websiteUrl": "https://www.saia.com"
+      },
+      {
+        "actsAsBroker": true,
+        "bolRequiresTrackingNumber": false,
+        "checkMailingAddresses": [],
+        "considerBolAndPodDocumentsSame": true,
+        "contacts": [],
+        "createPickupImplemented": false,
+        "findRatesImplemented": true,
+        "findRatesWithDeclaredValue": true,
+        "headquarters": null,
+        "id": "8f0c3b52-6b1e-4b8e-9a51-3f2f0d7c1e44",
+        "legalName": "Total Quality Logistics, LLC",
+        "name": "TQL",
+        "pickupNumberIsTrackingNumber": true,
+        "ratesWithExcessiveLengthFees": false,
+        "requiredCredentialTypes": [
+          "api_key",
+          "api_proxy"
+        ],
+        "scac": "TQYL",
+        "terminals": [],
+        "usDotNumber": null,
+        "usMcNumber": "320564",
+        "validTrackingNumberPattern": null,
+        "websiteUrl": "javascript:alert(1)"
+      }
+    ]
+  }
+}

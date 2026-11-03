@@ -8,12 +8,10 @@
 #   @return [Boolean]
 # @!attribute consider_bol_and_pod_documents_same
 #   @return [Boolean]
-# @!attribute encrypted_api_key
-#   @return [String]
-# @!attribute encrypted_proxy_url
-#   @return [String]
 # @!attribute has_traceable_pickup_confirmation
 #   @return [Boolean]
+# @!attribute legal_name
+#   @return [String]
 # @!attribute mc_number
 #   @return [Integer]
 # @!attribute name
@@ -24,6 +22,8 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
+# @!attribute transponder_id
+#   @return [String]
 # @!attribute broker_billing_address_id
 #   @return []
 # @!attribute check_mailing_address_id
@@ -36,6 +36,7 @@
 #  index_carriers_on_mc_number                  (mc_number) UNIQUE
 #  index_carriers_on_name                       (name) UNIQUE
 #  index_carriers_on_scac                       (scac) UNIQUE
+#  index_carriers_on_transponder_id             (transponder_id) UNIQUE
 #
 # Foreign Keys
 #
@@ -44,83 +45,65 @@
 #
 class Carrier < ApplicationRecord
   class << self
-    def ransackable_attributes(_auth_object = nil)
-      ['name', 'scac']
+    def ransackable_attributes(_auth_object = nil) = ['name', 'scac']
+    def ransackable_associations(_auth_object = nil) = []
+
+    def terminals_in(city:, state:)
+      region_iso31662s = Transponder::ORM::Region
+                         .all
+                         .select { |region| [region.abbreviation, region.name].any? { |value| value.casecmp?(state.to_s) } }
+                         .map(&:iso31662)
+
+      local_terminals_in(city:, region_iso31662s:) + transponder_terminals_in(city:, region_iso31662s:)
     end
 
-    def ransackable_associations(_auth_object = nil)
-      []
+    private
+
+    def local_terminals_in(city:, region_iso31662s:)
+      Terminal
+        .includes(:address)
+        .where(carrier: all, addresses: { region_iso31662: region_iso31662s })
+        .where(Address.arel_table[:city].matches(city))
+        .to_a
+    end
+
+    def transponder_terminals_in(city:, region_iso31662s:)
+      all
+        .flat_map { |carrier| carrier.transponder_terminals.to_a }
+        .select { |terminal| terminal.address&.located_in?(city:, region_iso31662s:) }
     end
   end
 
   include Companyable
 
-  INTERSTELLAR_CREDENTIAL_TYPE_BROKER_CARRIER_COLUMNS = {
-    api: %i[username password],
-    api_key: %i[encrypted_api_key],
-    website: %i[website_username website_password]
-  }.freeze
-
-  # API key belonging to Next TMS
-  encrypts :encrypted_api_key
-  encrypts :encrypted_proxy_url
-
   has_many :broker_carriers, dependent: :restrict_with_error
-  has_many :carrier_areas, dependent: :destroy
   has_many :terminals, dependent: :destroy
 
-  has_many :areas, through: :carrier_areas
-
   belongs_to :broker_billing_address, class_name: 'Address', optional: true
-
-  # has_many :location_addresses, class_name: 'Address', required: false
   belongs_to :check_mailing_address, class_name: 'Address', optional: true
+
+  belongs_to_transponder :transponder_carrier, class_name: 'Carrier', foreign_key: :transponder_id, optional: true
 
   accepts_nested_attributes_for :check_mailing_address
 
-  scope :freight_kit_api, -> do
-    ids = where(scac: FreightKit::Carriers.all.map(&:scac)).select { |record| record.broker_carrier_credential_columns.any? }.map(&:id)
-    where(id: ids)
-  end
+  delegate :bol_requires_tracking_number?,
+           :create_pickup_implemented?,
+           :find_rates_implemented?,
+           :find_rates_with_declared_value?,
+           :headquarters,
+           :pickup_number_is_tracking_number?,
+           :rates_with_excessive_length_fees?,
+           :us_dot_number,
+           :website_url,
+           to: :transponder_carrier,
+           allow_nil: true
+  delegate :check_mailing_addresses, :contacts, :terminals, to: :transponder_carrier, prefix: :transponder, allow_nil: true
+
+  scope :with_api, -> { where(transponder_id: Transponder::ORM::Carrier.all.select(&:api?).map(&:id)) }
 
   validates :name, uniqueness: true
-  validates :mc_number, :scac, uniqueness: { allow_nil: true }
+  validates :mc_number, :scac, :transponder_id, uniqueness: { allow_nil: true }
 
-  def bol_requires_tracking_number?
-    !!freight_kit_class&.bol_requires_tracking_number?
-  end
-
-  # Which `BrokerCarrier` columns are required for FreightKit to communicate with the carrier's API.
-  # @return <Boolean>
-  def broker_carrier_credential_columns
-    return [] if required_freight_kit_credentials.blank?
-
-    columns = required_freight_kit_credentials.map do |freight_kit_credential_type|
-      INTERSTELLAR_CREDENTIAL_TYPE_BROKER_CARRIER_COLUMNS[freight_kit_credential_type]
-    end
-
-    columns.flatten.compact
-  end
-
-  def create_pickup_implemented?
-    !!freight_kit_class&.create_pickup_implemented?
-  end
-
-  def freight_kit_class
-    return if scac.blank?
-
-    @freight_kit_class ||= ::FreightKit.const_get(scac)
-  rescue NameError
-    nil
-  end
-
-  # Whether the carrier considers `Shipment#pickup_confirmation`, `Shipment#pro` to be the same.
-  # @return <Boolean>
-  def pickup_number_is_tracking_number?
-    !!freight_kit_class&.pickup_number_is_tracking_number?
-  end
-
-  def required_freight_kit_credentials
-    freight_kit_class&.required_credential_types || []
-  end
+  def required_credential_types = transponder_carrier&.required_credential_types || []
+  def valid_tracking_number?(tracking_number) = transponder_carrier.nil? || transponder_carrier.valid_tracking_number?(tracking_number)
 end

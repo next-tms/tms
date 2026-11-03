@@ -68,21 +68,19 @@
 #
 class BrokerCarrier < ApplicationRecord
   class << self
-    def companyable_order
-      joins(:carrier).order('carriers.name')
-    end
-
-    def ransackable_attributes(_auth_object = nil)
-      ['name', 'shipments_count']
-    end
-
-    def ransackable_associations(_auth_object = nil)
-      ['broker_customer', 'carrier']
-    end
+    def companyable_order = joins(:carrier).merge(Carrier.order(:name))
+    def ransackable_attributes(_auth_object = nil) = ['name', 'shipments_count']
+    def ransackable_associations(_auth_object = nil) = ['broker_customer', 'carrier']
   end
 
   include AccountingSyncable
   include Companyable
+
+  CREDENTIAL_TYPE_COLUMNS = {
+    api: %i[username password],
+    api_key: %i[encrypted_api_key],
+    website: %i[website_username website_password]
+  }.freeze
 
   accounting_syncs :vendor, match: -> { { name: carrier.name } }
 
@@ -92,9 +90,7 @@ class BrokerCarrier < ApplicationRecord
   belongs_to :carrier
   belongs_to :check_mailing_address, class_name: 'Address', optional: true
 
-  delegate :acts_as_broker?, to: :carrier
-  delegate :pickup_number_is_tracking_number?, to: :carrier
-  delegate :scac, to: :carrier
+  delegate :acts_as_broker?, :pickup_number_is_tracking_number?, :scac, to: :carrier
 
   encrypts :encrypted_ach_account_number
   encrypts :encrypted_ach_bank_name
@@ -117,11 +113,7 @@ class BrokerCarrier < ApplicationRecord
 
   normalizes :encrypted_ach_account_number, :encrypted_ach_bank_name, :encrypted_ach_routing_number, with: ->(value) { value.squish }
 
-  scope :api_configured, -> do
-    ids = joins(:carrier).where(carrier: Carrier.freight_kit_api).select(&:api_configured?).map(&:id)
-
-    where(id: ids)
-  end
+  scope :api_configured, -> { where(id: joins(:carrier).merge(Carrier.with_api).select(&:api_configured?).map(&:id)) }
   scope :api_unconfigured, -> { where.not(id: api_configured.ids) }
   scope :blanket, -> { where(broker_customer: nil) }
 
@@ -132,47 +124,26 @@ class BrokerCarrier < ApplicationRecord
   accepts_nested_attributes_for :pricing_rules, allow_destroy: true
 
   def ach? = encrypted_ach_account_number.present? && encrypted_ach_routing_number.present?
-
-  def api_configured?
-    return false if carrier.broker_carrier_credential_columns.none?
-
-    carrier.broker_carrier_credential_columns.map { |column| public_send(column) }.all?(&:present?)
-  end
-
-  def bol_requires_tracking_number?
-    !ignore_bol_requires_tracking_number && carrier.bol_requires_tracking_number?
-  end
-
-  def broker_customer_specific_name
-    return carrier.name if broker_customer.blank?
-
-    "#{carrier.name} - #{broker_customer.customer.name}"
-  end
+  def api_configured? = carrier.required_credential_types.any? && credential_columns.all? { |column| public_send(column).present? }
+  def bol_requires_tracking_number? = !ignore_bol_requires_tracking_number && !!carrier.bol_requires_tracking_number?
+  def broker_customer_specific_name = broker_customer.blank? ? carrier.name : "#{carrier.name} - #{broker_customer.customer.name}"
   alias name broker_customer_specific_name
+
+  def credential_columns = CREDENTIAL_TYPE_COLUMNS.values_at(*carrier.required_credential_types).compact.flatten
+  def find_or_build_check_mailing_address = self.check_mailing_address ||= imported_check_mailing_address || Address.new
+
+  def imported_check_mailing_address
+    accounting_vendor&.billing_address&.to_address(Setting.mailing_address!.country_alpha2) ||
+      carrier.transponder_check_mailing_addresses&.first&.to_address
+  end
+
+  def payable_check_mailing_address = check_mailing_address || imported_check_mailing_address
 
   def to_accounting_vendor
     Accounting::Vendor.new(
-      billing_address: check_mailing_address&.to_accounting_address,
+      billing_address: payable_check_mailing_address&.to_accounting_address,
       company_name: carrier.name,
       display_name: carrier.name
     )
-  end
-
-  def to_freight_kit_carrier
-    @to_freight_kit_carrier ||= FreightKitAPIClient::Services::BuildAPIClient.call(broker_carrier: self)
-  end
-
-  def to_freight_kit_tariff
-    return if overlength_rules.blank?
-
-    freight_kit_overlength_rules = overlength_rules.map do |overlength_rule|
-      fee_cents = overlength_rule.cost_cents
-      max_length = Measured::Length.new(overlength_rule.max_length, :inches) if overlength_rule.max_length.present?
-      min_length = Measured::Length.new(overlength_rule.min_length, :inches)
-
-      { fee_cents:, max_length:, min_length: }
-    end
-
-    FreightKit::Tariff.new(overlength_rules: freight_kit_overlength_rules)
   end
 end

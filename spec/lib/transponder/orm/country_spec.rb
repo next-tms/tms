@@ -29,6 +29,34 @@ RSpec.describe(Transponder::ORM::Country) do
     it { expect(described_class.primary_key).to(eq(:alpha2)) }
   end
 
+  describe '.find_by' do
+    let(:error_response) { instance_double(GraphQL::Client::Response, original_hash: { 'errors' => [{ 'message' => 'Boom' }] }) }
+    let(:named_query) { GraphQLClient::Transponder::Query::FetchCountries::NAMED }
+
+    it { expect(described_class.find_by(name: ' United States of America ')).to(equal(united_states)) }
+    it { expect(described_class.find_by(name: 'can')).to(equal(canada)) }
+    it { expect(described_class.find_by(name: 'Narnia')).to(be_nil) }
+    it { expect(described_class.find_by(name: nil)).to(be_nil) }
+
+    context 'when Transponder returns errors' do
+      before do
+        allow(GraphQLClient::Transponder::Client).to(receive(:query).with(named_query, variables: anything).and_return(error_response))
+      end
+
+      it { expect { described_class.find_by(name: 'Canada') }.to(raise_error(GraphQL::Client::Error, 'Boom')) }
+    end
+
+    context 'when the name was resolved before' do
+      before do
+        allow(Rails).to(receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new))
+        described_class.find_by(name: 'Canada')
+        described_class.find_by(name: 'canada')
+      end
+
+      it { expect(GraphQLClient::Transponder::Client).to(have_received(:query).with(named_query, variables: { name: 'Canada' }).once) }
+    end
+  end
+
   describe '.reset' do
     it { expect { described_class.reset }.to(change { described_class.all.object_id }) }
     it { expect { described_class.reset }.to(change { Transponder::ORM::Region.all.object_id }) }

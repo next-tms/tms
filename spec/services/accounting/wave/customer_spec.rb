@@ -27,6 +27,7 @@ RSpec.describe Accounting::Wave::Customer do
 
     it { is_expected.to have_attributes(id: '1', company_name: 'Acme') }
     it { expect(found.billing_address).to have_attributes(line1: '1 A St', city: 'Reno') }
+    it { expect(found.billing_address).to(have_attributes(country: 'US', region: 'NV')) }
   end
 
   describe '.find_by' do

@@ -101,15 +101,62 @@ RSpec.describe(Address) do
     end
   end
 
+  describe '#blank_to_nil' do
+    it { expect(address.blank_to_nil('')).to(be_nil) }
+    it { expect(address.blank_to_nil('Fremont')).to(eq('Fremont')) }
+  end
+
+  describe '#full_address?' do
+    it { expect(address.full_address?).to(be(true)) }
+
+    context 'when the street is blank' do
+      before { address.street = nil }
+
+      it { expect(address.full_address?).to(be(false)) }
+    end
+  end
+
+  describe '#locality' do
+    it { expect(address.locality).to(eq('Fremont, CA')) }
+  end
+
+  describe 'standardized address predicates' do
+    let(:standardized_address) do
+      instance_double(
+        StandardizedAddress,
+        commercial?: true,
+        permanently_closed?: false,
+        residential?: false,
+        restaurant?: true,
+        types: ['commercial']
+      )
+    end
+
+    before { allow(address).to(receive(:standardized_address).and_return(standardized_address)) }
+
+    it { expect(address.commercial?).to(be(true)) }
+    it { expect(address.permanently_closed?).to(be(false)) }
+    it { expect(address.residential?).to(be(false)) }
+    it { expect(address.restaurant?).to(be(true)) }
+    it { expect(address.types).to(eq(['commercial'])) }
+
+    context 'when there is no standardized address' do
+      let(:standardized_address) { nil }
+
+      it { expect(address.commercial?).to(be_nil) }
+      it { expect(address.permanently_closed?).to(be_nil) }
+      it { expect(address.residential?).to(be_nil) }
+      it { expect(address.restaurant?).to(be_nil) }
+      it { expect(address.types).to(eq([])) }
+    end
+  end
+
   describe '#region' do
     it { expect(address.region).to(equal(Transponder::ORM::Region.find('US-CA'))) }
   end
 
-  describe '#to_freight_kit_shipping_address' do
-    let(:location) { address.to_freight_kit_shipping_address }
-
-    it { expect(location.country.code(:alpha2).value).to(eq('US')) }
-    it { expect(location.province).to(eq('CA')) }
+  describe '#to_accounting_address' do
+    it { expect(address.to_accounting_address).to(have_attributes(city: 'Fremont', country: 'US', line1: '4011 Lana Tier', region: 'CA')) }
   end
 
   describe '#to_transponder_graphql_input' do

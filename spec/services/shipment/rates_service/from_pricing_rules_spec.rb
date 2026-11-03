@@ -19,8 +19,7 @@ RSpec.describe(Shipment::RatesService::FromPricingRules) do
     from_area.locations.create!(region_iso31662: 'US-CA')
     to_area.locations.create!(region_iso31662: 'US-TX')
 
-    carrier_area = CarrierArea.create!(carrier: broker_carrier.carrier, from_area:, to_area:)
-    broker_carrier.pricing_rules.create!(carrier_area:, cost_per_pallet: Money.new(10_000), min_pallets: 1)
+    broker_carrier.pricing_rules.create!(cost_per_pallet: Money.new(10_000), from_area:, min_pallets: 1, to_area:)
 
     create(:item, packaging: create(:packaging, name: 'pallet'), shipment:)
   end
@@ -29,6 +28,13 @@ RSpec.describe(Shipment::RatesService::FromPricingRules) do
     let(:rates) { described_class.new(broker_carrier, shipment, save: false).call }
 
     it { expect(rates.size).to(eq(1)) }
+    it { expect(rates.first.cost).to(eq(Money.new(10_000))) }
+
+    context 'when the rule is for the reverse lane' do
+      before { broker_carrier.pricing_rules.first.update!(from_area: to_area, to_area: from_area) }
+
+      it { expect(rates).to(be_empty) }
+    end
 
     context 'when the receiver region has no location' do
       let(:receiver_region_iso31662) { 'US-WY' }

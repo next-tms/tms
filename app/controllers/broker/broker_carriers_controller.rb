@@ -8,14 +8,12 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   def accounting
     authorize!(current_user, to: :accounts_payable_show?, with: AccountingPolicy)
 
-    @broker_carriers = BrokerCarrier.includes(required_includes).order('carriers.name')
+    @broker_carriers = BrokerCarrier.includes(required_includes).companyable_order
 
     @vendors = Accounting.record_class(:vendor).order(:display_name)
   end
 
-  def edit
-    @broker_carrier.check_mailing_address = Address.new if @broker_carrier.check_mailing_address.blank?
-  end
+  def edit = @broker_carrier.find_or_build_check_mailing_address
 
   def index
     @q = BrokerCarrier.includes(required_includes).ransack(params[:q], auth_object: current_user)
@@ -29,10 +27,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     @carrier_contacts = @broker_carrier.carrier.contacts
   end
 
-  def new
-    @broker_carrier = BrokerCarrier.new
-    @broker_carrier.check_mailing_address = Address.new
-  end
+  def new = @broker_carrier = BrokerCarrier.new(check_mailing_address: Address.new)
 
   def create
     @broker_carrier = BrokerCarrier.new(broker_carrier_params)
@@ -71,17 +66,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
   end
 
   def search_terminals
-    region_iso31662s = Transponder::ORM::Region
-                       .all
-                       .select { |region| [region.abbreviation, region.name].any? { |value| value.casecmp?(params[:state].to_s) } }
-                       .map(&:iso31662)
-
-    @terminals = Terminal
-                 .includes(:address)
-                 .where(carrier_id: BrokerCarrier.select(:carrier_id))
-                 .where(addresses: { region_iso31662: region_iso31662s })
-                 .where('addresses.city ILIKE ?', params[:city])
-                 .references(:address)
+    @terminals = Carrier.where.associated(:broker_carriers).distinct.terminals_in(city: params[:city], state: params[:state])
   end
 
   def update
@@ -178,14 +163,10 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     query.merge(g: [{ m: 'or', TERMINALS_FILTER => filter, address_region_iso31662_in: region_iso31662s }])
   end
 
-  def authorize_broker_carrier_access
-    authorize!(@broker_carrier, to: :show?, with: BrokerPolicy)
-  end
+  def authorize_broker_carrier_access = authorize!(@broker_carrier, to: :show?, with: BrokerPolicy)
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_broker_carrier
-    @broker_carrier = BrokerCarrier.find(params[:id])
-  end
+  def set_broker_carrier = @broker_carrier = BrokerCarrier.find(params[:id])
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def accounting_params = params.expect(accounting: { broker_carriers: [%i[accounting_vendor_id]] }).require(:broker_carriers)
@@ -228,13 +209,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
     )
   end
 
-  def required_includes
-    [
-      :carrier,
-      :broker_customer,
-      { broker_customer: :customer }
-    ]
-  end
+  def required_includes = [:carrier, :broker_customer, { broker_customer: :customer }]
 
   def tariff_params
     params.expect(
@@ -242,7 +217,7 @@ class Broker::BrokerCarriersController < Broker::BrokerController
         :id,
         {
           overlength_rules_attributes: [%i[_destroy cost id max_length min_length]],
-          pricing_rules_attributes: [%i[_destroy id carrier_area_id cost_per_pallet max_pallets min_pallets]]
+          pricing_rules_attributes: [%i[_destroy id cost_per_pallet from_area_id max_pallets min_pallets to_area_id]]
         }
       ]
     )

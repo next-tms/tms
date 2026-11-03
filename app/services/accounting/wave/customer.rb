@@ -1,18 +1,20 @@
 module Accounting
   module Wave
     class Customer < Accounting::Customer
-      SELECTION = 'id name address { addressLine1 addressLine2 city postalCode }'.freeze
-
       class << self
         def attributes_from(node)
-          { billing_address: Wave.address_from(node['address']), company_name: node['name'], display_name: node['name'] }
+          {
+            billing_address: Wave.address_from(node['address']),
+            company_name: node['name'],
+            display_name: node['name']
+          }
         end
 
         def collection_key = 'customers'
         def connection = @connection ||= Connection.new(self)
 
         def create_input(customer, business_id)
-          { businessId: business_id, name: name_for(customer), address: Wave.address_input(customer.billing_address) }.compact
+          { address: Wave.address_input(customer.billing_address), businessId: business_id, name: name_for(customer) }.compact
         end
 
         def create_mutation = 'customerCreate'
@@ -22,7 +24,7 @@ module Accounting
         def node_key = 'customer'
 
         def patch_input(customer)
-          { id: customer.id, name: name_for(customer), address: Wave.address_input(customer.billing_address) }.compact
+          { address: Wave.address_input(customer.billing_address), id: customer.id, name: name_for(customer) }.compact
         end
 
         def patch_mutation = 'customerPatch'
@@ -32,6 +34,8 @@ module Accounting
 
         def name_for(customer) = customer.display_name.presence || customer.company_name
       end
+
+      SELECTION = 'id name address { addressLine1 addressLine2 city country { code } postalCode province { code } }'.freeze
     end
   end
 end

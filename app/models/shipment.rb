@@ -214,9 +214,7 @@ class Shipment < ApplicationRecord
       ]
     end
 
-    def ransackable_associations(_auth_object = nil)
-      ['broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address']
-    end
+    def ransackable_associations(_auth_object = nil) = ['broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address']
   end
 
   include Discussable
@@ -452,9 +450,7 @@ class Shipment < ApplicationRecord
     super(val == 'now' ? Time.current : val)
   end
 
-  def broker_carrier_bol_requires_tracking_number?
-    broker_carrier.present? && broker_carrier.bol_requires_tracking_number?
-  end
+  def broker_carrier_bol_requires_tracking_number? = broker_carrier.present? && broker_carrier.bol_requires_tracking_number?
 
   def calculated_freight_classes?
     return !applied_rate.declared_freight_classes? if applied_rate.present?
@@ -475,9 +471,7 @@ class Shipment < ApplicationRecord
     broker_carrier.carrier.acts_as_broker? ? tracking_carrier : broker_carrier.carrier
   end
 
-  def dispatcher_full_name
-    dispatcher&.full_name
-  end
+  def dispatcher_full_name = dispatcher&.full_name
 
   def dispatch_incomplete?
     true_pickup_confirmation = tracking_carrier.blank? ? pickup_confirmation : tracking_carrier_pickup_confirmation
@@ -487,9 +481,7 @@ class Shipment < ApplicationRecord
   end
 
   # @return [BrokerCarrier::ActiveRecord_Relation]
-  def eligible_broker_carriers(user_type = :customer)
-    broker_customer&.eligible_broker_carriers(user_type) || BrokerCarrier.where(broker_customer: nil)
-  end
+  def eligible_broker_carriers(user_type = :customer) = broker_customer&.eligible_broker_carriers(user_type) || BrokerCarrier.blanket
 
   def eligible_discussable_contacts
     ids = if broker_customer.present?
@@ -507,9 +499,7 @@ class Shipment < ApplicationRecord
     Contact.where(id: ids)
   end
 
-  def missing_delivery_eta_on?
-    delivery_eta_on.blank?
-  end
+  def missing_delivery_eta_on? = delivery_eta_on.blank?
 
   def total_broker_accessorial_charge
     return 0 if shipment_broker_accessorials.blank?
@@ -523,17 +513,11 @@ class Shipment < ApplicationRecord
     shipment_broker_accessorials.map(&:cost).inject(0) { |sum, x| sum + (x.nil? ? Money.new(0) : x) }
   end
 
-  def profit
-    total_charges - total_cost
-  end
+  def profit = total_charges - total_cost
 
-  def margin
-    "#{((1 - (total_cost / total_charges)) * 100).round(1)}%"
-  end
+  def margin = "#{((1 - (total_cost / total_charges)) * 100).round(1)}%"
 
-  def delivered?
-    delivered_at.present?
-  end
+  def delivered? = delivered_at.present?
 
   def delivered_in_days
     return 'unknown' if picked_up_at.blank? || delivered_at.blank?
@@ -549,31 +533,19 @@ class Shipment < ApplicationRecord
     @palletized_items = items.where.not(packaging: unpalletized_packagings)
   end
 
-  def palletized?
-    @palletized ||= palletized_items.size == items.size
-  end
+  def palletized? = @palletized ||= palletized_items.size == items.size
 
-  def loose_items
-    @loose_items = items - palletized_items
-  end
+  def loose_items = @loose_items = items - palletized_items
 
-  def loose?
-    @loose ||= !loose_items.empty?
-  end
+  def loose? = @loose ||= !loose_items.empty?
 
-  def delivery_from
-    Shipment::DeliveryDateService.new(shipment: self).delivery_from
-  end
+  def delivery_from = Shipment::DeliveryDateService.new(shipment: self).delivery_from
 
-  def delivery_by
-    Shipment::DeliveryDateService.new(shipment: self).delivery_by
-  end
+  def delivery_by = Shipment::DeliveryDateService.new(shipment: self).delivery_by
 
   def missed_pickup? = !canceled? && !picked_up? && pickup_driver_assigned_at.present? && pickup_on&.before?(Setting.time_zone.today)
 
-  def picked_up?
-    picked_up_at.present?
-  end
+  def picked_up? = picked_up_at.present?
 
   def pickup_from
     return if pickup_on.blank? || pickup_hours_start_at.blank? || shipper_address&.time_zone.blank?
@@ -625,13 +597,9 @@ class Shipment < ApplicationRecord
     self.broker_accessorials = broker_accessorials.uniq
   end
 
-  def accessorial_codes
-    @accessorial_codes ||= accessorials.blank? ? [] : accessorials.map(&:code)
-  end
+  def accessorial_codes = @accessorial_codes ||= accessorials.blank? ? [] : accessorials.map(&:code)
 
-  def accessorial_names
-    @accessorial_names ||= accessorials.blank? ? [] : accessorials.map(&:name)
-  end
+  def accessorial_names = @accessorial_names ||= accessorials.blank? ? [] : accessorials.map(&:name)
 
   def assumed_accessorials
     return @assumed_accessorials if @assumed_accessorials
@@ -639,13 +607,9 @@ class Shipment < ApplicationRecord
     @assumed_accessorials = BuildAssumedAccesorialsService.new(shipment: self).call
   end
 
-  def assumed_accessorial_codes
-    @assumed_accessorial_codes ||= assumed_accessorials.blank? ? [] : assumed_accessorials.map(&:code)
-  end
+  def assumed_accessorial_codes = @assumed_accessorial_codes ||= assumed_accessorials.blank? ? [] : assumed_accessorials.map(&:code)
 
-  def assumed_accessorial_names
-    @assumed_accessorial_names ||= assumed_accessorials.blank? ? [] : assumed_accessorials.map(&:name)
-  end
+  def assumed_accessorial_names = @assumed_accessorial_names ||= assumed_accessorials.blank? ? [] : assumed_accessorials.map(&:name)
 
   def suggested_accessorials
     return [] if assumed_accessorials.blank?
@@ -653,9 +617,7 @@ class Shipment < ApplicationRecord
     @suggested_accessorials = assumed_accessorials - (accessorials.presence || [])
   end
 
-  def suggested_accessorial_codes
-    @suggested_accessorial_codes ||= suggested_accessorials.blank? ? [] : suggested_accessorials.map(&:code)
-  end
+  def suggested_accessorial_codes = @suggested_accessorial_codes ||= suggested_accessorials.blank? ? [] : suggested_accessorials.map(&:code)
 
   def suggested_broker_accessorials
     return [] if suggested_accessorials.blank?
@@ -673,21 +635,13 @@ class Shipment < ApplicationRecord
     @suggested_broker_accessorials
   end
 
-  def freight_classes(use_declared_freight_class:)
-    items.inject([]) { |arr, item| arr << item.api_freight_class(use_declared_freight_class:) }
-  end
+  def freight_classes(use_declared_freight_class:) = items.map { |item| item.api_freight_class(use_declared_freight_class:) }
 
-  def calculated_freight_classes
-    @calculated_freight_classes ||= freight_classes(use_declared_freight_class: false)
-  end
+  def calculated_freight_classes = @calculated_freight_classes ||= freight_classes(use_declared_freight_class: false)
 
-  def declared_freight_classes
-    @declared_freight_classes ||= freight_classes(use_declared_freight_class: true)
-  end
+  def declared_freight_classes = @declared_freight_classes ||= freight_classes(use_declared_freight_class: true)
 
-  def incomplete?
-    [shipper_address, receiver_address].map(&:full_address?).any?(false) || [shipper_name, receiver_name].any?(&:blank?)
-  end
+  def incomplete? = [shipper_address, receiver_address].map(&:full_address?).any?(false) || [shipper_name, receiver_name].any?(&:blank?)
 
   def whodunnit(column)
     raise ArgumentError, "Column \"#{column}\" doesn't exist" if self.class.column_names.exclude?(column)
@@ -695,13 +649,9 @@ class Shipment < ApplicationRecord
     audits.includes(:user).select { |audit| audit.audited_changes.keys.include?('total_cost_cents') }.last&.user || nil
   end
 
-  def total_weight
-    items.sum(:weight)
-  end
+  def total_weight = items.sum(:weight)
 
-  def total_pieces
-    items.sum(:quantity)
-  end
+  def total_pieces = items.sum(:quantity)
 
   def total_cubic_ft(rounded:)
     return if items.any? { |item| item.cubic_ft(rounded: false).blank? }
@@ -758,9 +708,7 @@ class Shipment < ApplicationRecord
     user.customer? && broker_customer == user.companyable
   end
 
-  def to_param
-    load_id.to_s
-  end
+  def to_param = load_id.to_s
 
   # @return [BrokerCarrier::ActiveRecord_Relation]
   def valid_broker_carriers_for_quotation(user_type = :customer)
@@ -781,7 +729,8 @@ class Shipment < ApplicationRecord
   end
 
   def requires_charges_confirmed_on_receivables?
-    broker_customer&.requires_charges_confirmed_on_receivables || Setting.requires_charges_confirmed_on_receivables
+    broker_customer&.requires_charges_confirmed_on_receivables ||
+      Setting.requires_charges_confirmed_on_receivables
   end
 
   def undocumentable_reasons
@@ -952,47 +901,21 @@ class Shipment < ApplicationRecord
   def validate_pro_and_tracking_carrier_pro
     return unless (pro_changed? || tracking_carrier_pro_changed?) && broker_carrier.present? && pro.present?
 
-    # TODO: Call this on the FreightKit::Carrier class directly (see ITR-18)
-    begin
-      freight_kit_carrier = broker_carrier.to_freight_kit_carrier
-
-      if freight_kit_carrier.present? && !freight_kit_carrier.valid_tracking_number?(pro)
-        errors.add(:base, "Pro #{pro} is invalid for #{broker_carrier.carrier.name}")
-      end
-    rescue ArgumentError, NotImplementedError
-      nil
-    end
+    errors.add(:base, "Pro #{pro} is invalid for #{broker_carrier.carrier.name}") unless broker_carrier.carrier.valid_tracking_number?(pro)
 
     return if tracking_carrier.blank?
 
-    # TODO: Call this on the FreightKit::Carrier class directly (see ITR-18)
-    # if tracking_carrier.freight_kit_class.present? && tracking_carrier_pro.present?
-    #   begin
-    #     freight_kit_class = tracking_carrier.freight_kit_class
-    #
-    #     if freight_kit_class.present? && !freight_kit_class.valid_tracking_number?(tracking_carrier_pro)
-    #       errors.add(:base, "Carrier #{tracking_carrier.name} pro #{tracking_carrier_pro} is invalid")
-    #     end
-    #   rescue error
-    #   end
-    # end
-
-    if tracking_carrier_pickup_confirmation.present? && pickup_confirmation.present? &&
-       tracking_carrier_pickup_confirmation == pickup_confirmation
+    if tracking_carrier_pickup_confirmation.present? && tracking_carrier_pickup_confirmation == pickup_confirmation
       errors.add(
         :tracking_carrier_pickup_confirmation,
         "cannot match pickup ref #{pickup_confirmation} from #{broker_carrier.carrier.name}"
       )
     end
 
-    return unless tracking_carrier_pro.present? && pro.present? && tracking_carrier_pro == pro
-
-    errors.add(:tracking_carrier_pro, "cannot match pro #{pro} from #{broker_carrier.carrier.name}")
+    errors.add(:tracking_carrier_pro, "cannot match pro #{pro} from #{broker_carrier.carrier.name}") if tracking_carrier_pro == pro
   end
 
-  def remove_tracking_events
-    tracking_events.destroy_all
-  end
+  def remove_tracking_events = tracking_events.destroy_all
 
   def validate_applied_rate_association
     return if applied_rate.blank?
@@ -1021,9 +944,7 @@ class Shipment < ApplicationRecord
   end
 
   # Remove applied_rate when carrier changes
-  def remove_applied_rate
-    self.applied_rate = nil
-  end
+  def remove_applied_rate = self.applied_rate = nil
 
   # Fix broker_accessorials when broker_customer changes
   def recalculate_broker_accessorials
@@ -1098,13 +1019,9 @@ class Shipment < ApplicationRecord
     self.booked_at = dispatched_at if booked_at.blank?
   end
 
-  def unbook
-    self.booked_at = nil
-  end
+  def unbook = self.booked_at = nil
 
-  def uncancel
-    self.canceled_at = nil
-  end
+  def uncancel = self.canceled_at = nil
 
   def update_delivery_eta_on_to_out_for_delivery_at
     self.delivery_eta_on = out_for_delivery_at.to_date if delivery_eta_on.blank? && out_for_delivery_at.present?

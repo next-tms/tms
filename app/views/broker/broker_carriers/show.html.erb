@@ -30,10 +30,35 @@
           <tr>
             <th>Check Mailing Address</th>
             <td>
-              <% unless @broker_carrier.check_mailing_address.blank? %>
-                <address><%= @broker_carrier.check_mailing_address.pretty('<br>').html_safe %></address>
+              <% if @broker_carrier.payable_check_mailing_address.present? %>
+                <address><%= address_lines(@broker_carrier.payable_check_mailing_address) %></address>
+                <%= tag.small('Imported, not saved', class: 'text-muted') if @broker_carrier.check_mailing_address.blank? %>
               <% end %>
             </td>
+          </tr>
+          <tr>
+            <th>Legal Name</th>
+            <td><%= @broker_carrier.carrier.legal_name %></td>
+          </tr>
+          <tr>
+            <th>Headquarters</th>
+            <td>
+              <% if @broker_carrier.carrier.headquarters.present? %>
+                <address><%= address_lines(@broker_carrier.carrier.headquarters) %></address>
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <th>Website</th>
+            <td>
+              <% if @broker_carrier.carrier.website_url.present? %>
+                <%= link_to @broker_carrier.carrier.website_url, @broker_carrier.carrier.website_url, rel: 'noopener', target: '_blank' %>
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <th>US DOT / MC</th>
+            <td><%= [ @broker_carrier.carrier.us_dot_number, @broker_carrier.carrier.mc_number ].compact_blank.join(' / ') %></td>
           </tr>
         </tbody>
       </table>

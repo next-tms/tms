@@ -59,13 +59,8 @@
 #
 class PaymentTransaction < ApplicationRecord
   class << self
-    def ransackable_attributes(_auth_object = nil)
-      ['id', 'legacy_load_id', 'notes']
-    end
-
-    def ransackable_associations(_auth_object = nil)
-      ['shipment']
-    end
+    def ransackable_attributes(_auth_object = nil) = ['id', 'legacy_load_id', 'notes']
+    def ransackable_associations(_auth_object = nil) = ['shipment']
   end
 
   include AccountingSyncable
@@ -125,17 +120,13 @@ class PaymentTransaction < ApplicationRecord
     broker_carrier.payment_transactions.where(shipment:) - [self]
   end
 
-  def paid?
-    !!payment&.paid?
-  end
+  def paid? = !!payment&.paid?
 
   def shipment_load_id=(load_id)
     self.shipment = Shipment.find_by(load_id:)
   end
 
-  def shipment_load_id
-    shipment.presence&.load_id
-  end
+  def shipment_load_id = shipment&.load_id
 
   def variance
     return Money.new(0) if shipment.blank?
@@ -180,7 +171,7 @@ class PaymentTransaction < ApplicationRecord
   end
 
   def accounting_bill_mailing_address
-    address = broker_carrier.check_mailing_address&.to_accounting_address
+    address = broker_carrier.payable_check_mailing_address&.to_accounting_address
     return if address.nil?
 
     address.line2 = address.line1

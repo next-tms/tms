@@ -64,6 +64,15 @@ RSpec.describe(Broker::BrokerCarriersController) do
     end
   end
 
+  describe 'GET #accounting with broker carriers' do
+    let!(:alpha) { create(:broker_carrier, carrier: create(:carrier, name: 'Alpha')) }
+    let!(:zulu) { create(:broker_carrier, carrier: create(:carrier, name: 'Zulu')) }
+
+    before { get(:accounting) }
+
+    it { expect(assigns(:broker_carriers)).to(eq([alpha, zulu])) }
+  end
+
   describe 'GET #terminals' do
     let(:broker_carrier) { create(:broker_carrier) }
     let(:filter) { 'texas' }
@@ -125,6 +134,60 @@ RSpec.describe(Broker::BrokerCarriersController) do
 
       it { expect(assigns(:terminals)).to(be_empty) }
     end
+
+    context 'when Transponder shares a terminal for the carrier' do
+      let(:broker_carrier) { create(:broker_carrier, carrier: create(:carrier, :saia)) }
+
+      it { expect(assigns(:terminals)).to(contain_exactly(terminal, *broker_carrier.carrier.transponder_terminals)) }
+    end
+
+    context 'when Transponder shares a terminal in another city' do
+      let(:broker_carrier) { create(:broker_carrier, carrier: create(:carrier, :saia)) }
+
+      before { get(:search_terminals, params: { city: 'dallas', id: broker_carrier.id, state: }) }
+
+      it { expect(assigns(:terminals)).to(be_empty) }
+    end
+  end
+
+  describe 'GET #new' do
+    before { get(:new) }
+
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(assigns(:broker_carrier)).to(be_new_record) }
+    it { expect(assigns(:broker_carrier).check_mailing_address).to(be_a_new(Address)) }
+  end
+
+  describe 'GET #edit' do
+    let(:broker_carrier) { create(:broker_carrier, check_mailing_address:) }
+    let(:check_mailing_address) { nil }
+
+    before { get(:edit, params: { id: broker_carrier.id }) }
+
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(assigns(:broker_carrier).check_mailing_address).to(be_a_new(Address)) }
+
+    context 'when Transponder has a check mailing address' do
+      let(:broker_carrier) { create(:broker_carrier, carrier: create(:carrier, :saia)) }
+
+      it { expect(assigns(:broker_carrier).check_mailing_address).to(have_attributes(city: 'Dallas', new_record?: true)) }
+    end
+
+    context 'when the broker carrier has a check mailing address' do
+      let(:check_mailing_address) { create(:address) }
+
+      it { expect(assigns(:broker_carrier).check_mailing_address).to(eq(check_mailing_address)) }
+    end
+  end
+
+  describe 'POST #create' do
+    let(:broker_carrier) { BrokerCarrier.last }
+    let(:carrier) { create(:carrier) }
+
+    before { post(:create, params: { broker_carrier: { account: '42', carrier_id: carrier.id } }) }
+
+    it { is_expected.to(redirect_to([:broker, broker_carrier])) }
+    it { expect(broker_carrier).to(have_attributes(account: '42', carrier:)) }
   end
 
   describe 'PATCH #update' do
@@ -137,6 +200,21 @@ RSpec.describe(Broker::BrokerCarriersController) do
 
     it { is_expected.to(redirect_to([:broker, broker_carrier])) }
     it { expect(broker_carrier.reload).to(have_attributes(ach_attributes)) }
+  end
+
+  describe 'PATCH #update_tariff' do
+    let(:broker_carrier) { create(:broker_carrier) }
+    let(:from_area) { Area.create!(name: 'California, US') }
+    let(:params) { { broker_carrier: { pricing_rules_attributes: [pricing_rule_attributes] }, id: broker_carrier.id } }
+    let(:pricing_rule_attributes) do
+      { cost_per_pallet: '100', from_area_id: from_area.id, max_pallets: '', min_pallets: '1', to_area_id: to_area.id }
+    end
+    let(:to_area) { Area.create!(name: 'Texas, US') }
+
+    before { patch(:update_tariff, params:) }
+
+    it { is_expected.to(redirect_to(tariff_broker_broker_carrier_path(broker_carrier))) }
+    it { expect(broker_carrier.pricing_rules.pluck(:from_area_id, :to_area_id)).to(eq([[from_area.id, to_area.id]])) }
   end
 
   describe 'PATCH #update_accounting' do

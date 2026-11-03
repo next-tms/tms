@@ -9,6 +9,8 @@
   </div>
 </div>
 
+<%= render 'transponder_contacts', transponder_contacts: @broker_carrier.carrier.transponder_contacts %>
+
 <%= turbo_frame_tag :contacts do %>
   <%= render 'broker/contacts/show_many', contacts: @contacts, q: @q %>
 <% end %>

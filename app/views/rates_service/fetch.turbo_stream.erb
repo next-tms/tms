@@ -35,20 +35,12 @@
       <% next if !current_user.broker? && (!rate.preferred? || !rate.cost.positive?) %>
 
       <% if current_user.customer? %>
-        <% upcharged_rate = current_user
-                            .companyable
-                            .carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment)
-        %>
+        <% upcharged_rate = current_user.companyable.carrier_charge_calculator(carrier_cost: rate.cost, shipment: rate.shipment) %>
 
         <% next if upcharged_rate.blank? || !upcharged_rate.positive? || upcharged_rate <= rate.cost %>
       <% end %>
 
-      <% css_class = if !rate.preferred?
-                       'table-danger'
-                     elsif rate.applied?
-                       'table-warning'
-                     end
-      %>
+      <% css_class = if !rate.preferred? then 'table-danger' elsif rate.applied? then 'table-warning' end %>
       <tr data-rate-id="<%= rate.id %>" class="<%= css_class %>">
         <td class="text-nowrap">
           <div class="btn-toolbar">
@@ -73,10 +65,7 @@
                 %>
               <% end %>
 
-              <% if current_user.broker? &&
-                    rate.broker_carrier.api_configured? &&
-                    rate.broker_carrier.to_freight_kit_carrier.class.implemented?(:create_pickup)
-              %>
+              <% if current_user.broker? && rate.broker_carrier.api_configured? && rate.broker_carrier.carrier.create_pickup_implemented? %>
                 <%= link_to 'Dispatch',
                             pickup_modal_broker_shipment_path(
                               @shipment,

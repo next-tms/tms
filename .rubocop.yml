@@ -41,3 +41,7 @@ Rails/ThreeStateBooleanColumn:
     - 'db/migrate/20261023062118_drop_brokers.rb'
 RSpec/ExpectActual:
   Enabled: false
+RSpec/SpecFilePathFormat:
+  CustomTransform:
+    FetchShipmentCarrierBOLsJob: fetch_shipment_carrier_bols_job
+    FetchShipmentCarrierPODsJob: fetch_shipment_carrier_pods_job
