@@ -69,8 +69,7 @@
 class BrokerCarrier < ApplicationRecord
   class << self
     def companyable_order = joins(:carrier).merge(Carrier.order(:name))
-    def ransackable_attributes(_auth_object = nil) = ['name', 'shipments_count']
-    def ransackable_associations(_auth_object = nil) = ['broker_customer', 'carrier']
+    def ransackable_associations(auth_object = nil) = ['broker_customer', 'carrier'] - private_associations(auth_object)
   end
 
   include AccountingSyncable

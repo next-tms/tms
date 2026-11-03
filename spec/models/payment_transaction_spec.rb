@@ -72,7 +72,8 @@ RSpec.describe(PaymentTransaction) do
   end
 
   describe '.ransackable_attributes' do
-    it { expect(described_class.ransackable_attributes).to(eq(['id', 'legacy_load_id', 'notes'])) }
+    it { expect(described_class.ransackable_attributes).to(include('id', 'legacy_load_id', 'notes')) }
+    it { expect(described_class.ransackable_attributes).not_to(include('balance_cents', 'paid_cents')) }
   end
 
   describe '#accounting_bill_line_item' do

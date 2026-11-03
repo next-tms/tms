@@ -194,27 +194,12 @@
 #
 class Shipment < ApplicationRecord
   class << self
+    def customer_authorizable?(auth_object) = auth_object.is_a?(User) && auth_object.customer?
     def last_load_id = maximum(:load_id) || Setting.first_load_id.to_i
     def lock_load_ids = connection.execute("SELECT pg_advisory_xact_lock(hashtext('shipments.load_id'))")
-
-    def ransackable_attributes(_auth_object = nil)
-      [
-        'bol_notes',
-        'broker_notes',
-        'created_at',
-        'delivered_at',
-        'load_id',
-        'picked_up_at',
-        'pro',
-        'receiver_contact_name',
-        'receiver_name',
-        'shipper_contact_name',
-        'shipper_name',
-        'tracking_carrier_pro'
-      ]
-    end
-
-    def ransackable_associations(_auth_object = nil) = ['broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address']
+    def ransack_aliases(auth_object = nil) = customer_authorizable?(auth_object) ? CUSTOMER_REFERENCE_ALIASES : {}
+    def ransackable_associations(auth_object = nil) = RANSACKABLE_ASSOCIATIONS - private_associations(auth_object)
+    def ransackable_attributes(auth_object = nil) = super - (customer_authorizable?(auth_object) ? CUSTOMER_HIDDEN_COLUMNS : [])
   end
 
   include Discussable
@@ -226,7 +211,10 @@ class Shipment < ApplicationRecord
   include Shipment::HasReceivables
   include Shipment::Transponible
 
+  CUSTOMER_HIDDEN_COLUMNS = ['pickup_confirmation', 'pro', 'tracking_carrier_pickup_confirmation', 'tracking_carrier_pro'].freeze
+  CUSTOMER_REFERENCE_ALIASES = { 'pro' => 'customer_pro', 'tracking_carrier_pro' => 'customer_pro' }.freeze
   DOCUMENTABLE_TYPES = %i[broker_bol broker_label broker_dispatch_sheet broker_quote].freeze
+  RANSACKABLE_ASSOCIATIONS = ['broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address'].freeze
   REFERENCE_ATTRIBUTES = %i[bol customer_reference pickup_confirmation pro quote_id shipper_reference].freeze
 
   attr_accessor :dispatch_pickup
@@ -275,6 +263,13 @@ class Shipment < ApplicationRecord
   has_one_attached :carrier_label # TODO: Rename to carrier_bol
   has_one_attached :carrier_pod
   has_one_attached :broker_carrier_quote
+
+  has_many :document_attachments,
+           -> { where(name: Shipment.attachment_reflections.keys) },
+           as: :record,
+           class_name: 'ActiveStorage::Attachment',
+           dependent: nil,
+           inverse_of: :record
 
   belongs_to :receiver_address, class_name: 'Address'
   belongs_to :shipper_address, class_name: 'Address'
@@ -362,9 +357,16 @@ class Shipment < ApplicationRecord
   phony_normalize :shipper_contact_phone, default_country_code: 'US'
   phony_normalize :receiver_contact_phone, default_country_code: 'US'
 
-  ransacker :load_id do
-    Arel.sql("to_char(\"#{table_name}\".\"load_id\", '99999999')")
+  ransacker(:customer_pro) do
+    Arel.sql(<<~SQL.squish)
+      CASE
+        WHEN "#{table_name}"."tracking_carrier_id" IS NULL THEN "#{table_name}"."pro"
+        ELSE "#{table_name}"."tracking_carrier_pro"
+      END
+    SQL
   end
+
+  ransacker(:load_id_text) { Arel.sql("CAST(\"#{table_name}\".\"load_id\" AS text)") }
 
   scope :accessible_by, ->(user) {
     if user&.customer?
@@ -572,6 +574,15 @@ class Shipment < ApplicationRecord
     return pickup_by.present? && pickup_by < Time.current if picked_up_at.blank?
 
     @late ||= late_per_delivery_schedule? || (promised_delivery_by.present? && Date.current > promised_delivery_by)
+  end
+
+  def customer_pro = tracking_carrier_id.present? ? tracking_carrier_pro : pro
+
+  def late_since
+    return if delivered_at.present?
+    return (pickup_by if pickup_by&.past?) if picked_up_at.blank?
+
+    [late_per_delivery_schedule_since, promised_delivery_by_late_since].compact.select(&:past?).min
   end
 
   def accessorials
@@ -807,6 +818,14 @@ class Shipment < ApplicationRecord
 
     delivery_eta_on.present? && Date.current > delivery_eta_on
   end
+
+  def late_per_delivery_schedule_since
+    return delivery_appointment_at if delivery_appointment_at.present?
+
+    (delivery_appointment_on || delivery_eta_on)&.tomorrow&.beginning_of_day
+  end
+
+  def promised_delivery_by_late_since = promised_delivery_by && promised_delivery_by.to_date.tomorrow.beginning_of_day
 
   def sanitize_addresses_street
     [[:receiver_name, receiver_address], [:shipper_name, shipper_address]].each do |set|

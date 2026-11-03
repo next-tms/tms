@@ -25,7 +25,7 @@
 			events 600
 			key {client_ip}
 			match {
-				path /api/dsdc/*
+				path /api/dsdc/* /graphiql /graphql
 			}
 			window 1m
 		}

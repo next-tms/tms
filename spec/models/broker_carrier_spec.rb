@@ -100,10 +100,11 @@ RSpec.describe(BrokerCarrier) do
 
   describe '.ransackable_associations' do
     it { expect(described_class.ransackable_associations).to(eq(['broker_customer', 'carrier'])) }
+    it { expect(described_class.ransackable_associations(build(:broker_carrier))).to(eq(['carrier'])) }
   end
 
   describe '.ransackable_attributes' do
-    it { expect(described_class.ransackable_attributes).to(eq(['name', 'shipments_count'])) }
+    it { expect(described_class.ransackable_attributes).to(include('broker_customer_id', 'carrier_id')) }
   end
 
   describe '#ach?' do

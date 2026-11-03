@@ -59,7 +59,6 @@
 #
 class PaymentTransaction < ApplicationRecord
   class << self
-    def ransackable_attributes(_auth_object = nil) = ['id', 'legacy_load_id', 'notes']
     def ransackable_associations(_auth_object = nil) = ['shipment']
   end
 
@@ -100,9 +99,7 @@ class PaymentTransaction < ApplicationRecord
   validates :shipment, presence: true
 
   # https://github.com/activerecord-hackery/ransack/issues/224#issuecomment-22818039
-  ransacker :id do
-    Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")
-  end
+  ransacker(:id_text) { Arel.sql("CAST(\"#{table_name}\".\"id\" AS text)") }
 
   def attach_dsdc_documents(attachables)
     blobs = attachables.map { |attachable| ActiveStorage::Blob.create_and_upload!(**attachable) }

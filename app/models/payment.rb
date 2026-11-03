@@ -53,10 +53,6 @@
 #
 class Payment < ApplicationRecord
   class << self
-    def ransackable_attributes(_auth_object = nil)
-      ['due_on', 'id', 'paid_cents']
-    end
-
     def ransackable_associations(_auth_object = nil)
       ['approved_by', 'bank', 'broker_carrier', 'payment_transactions']
     end
@@ -85,9 +81,7 @@ class Payment < ApplicationRecord
   scope :unapproved, -> { where.not(approved_by: nil) }
 
   # https://github.com/activerecord-hackery/ransack/issues/224#issuecomment-22818039
-  ransacker :id do
-    Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")
-  end
+  ransacker(:id_text) { Arel.sql("CAST(\"#{table_name}\".\"id\" AS text)") }
 
   validates :due_on, presence: true
 

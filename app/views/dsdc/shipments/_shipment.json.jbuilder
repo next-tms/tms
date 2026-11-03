@@ -60,7 +60,7 @@ json.PODAvailable shipment.carrier_pod.attached?
 json.ProNumber status.pro_number
 json.Reconsignment false
 json.ReferenceNumbers do
-  json.AdditionalReferences shipment.pro
+  json.AdditionalReferences shipment.customer_pro
   json.bolNumber shipment.bol
   json.MasterBOL nil
   json.poNumber shipment.customer_reference

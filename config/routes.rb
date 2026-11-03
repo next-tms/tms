@@ -23,7 +23,6 @@ Rails.application.routes.draw do
   end
 
   get 'contact-card', to: 'brokers#contact_card'
-  get 'rates/fetch', to: 'rates_service#fetch'
   get 'tracking' => 'tracking#show'
 
   post 'fetch_details_by_zip_code', to: 'geocoder#fetch_details_by_zip_code', defaults: { format: :json }

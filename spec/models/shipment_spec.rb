@@ -198,6 +198,24 @@ RSpec.describe(Shipment) do
   it_behaves_like 'discussable'
   it_behaves_like 'documentable'
 
+  describe '.ransack_aliases' do
+    it { expect(described_class.ransack_aliases(build(:customer_user))).to(eq(described_class::CUSTOMER_REFERENCE_ALIASES)) }
+    it { expect(described_class.ransack_aliases(build(:broker_user))).to(eq({})) }
+    it { expect(described_class.ransack_aliases).to(eq({})) }
+  end
+
+  describe '.ransackable_attributes' do
+    let(:note_columns) { ['broker_and_broker_customer_notes', 'broker_notes'] }
+
+    it { expect(described_class.ransackable_attributes(build(:customer_user))).not_to(include(*described_class::CUSTOMER_HIDDEN_COLUMNS)) }
+    it { expect(described_class.ransackable_attributes(build(:customer_user))).to(include('customer_pro')) }
+    it { expect(described_class.ransackable_attributes).to(include('pro', 'tracking_carrier_pro')) }
+
+    it { expect(described_class.ransackable_attributes).to(include('broker_carrier_id', 'broker_customer_id', 'status')) }
+    it { expect(described_class.ransackable_attributes).not_to(include(*note_columns)) }
+    it { expect(described_class.ransackable_attributes(build(:broker_user))).to(include(*note_columns)) }
+  end
+
   describe 'audits' do
     context 'when shipment is created' do
       let(:shipment) { build(:shipment) }
@@ -287,6 +305,9 @@ RSpec.describe(Shipment) do
         expect(described_class.ransackable_associations).to(eq(['broker_carrier', 'broker_customer', 'receiver_address',
                                                                 'shipper_address']))
       end
+
+      it { expect(described_class.ransackable_associations(build(:broker_carrier))).not_to(include('broker_customer')) }
+      it { expect(described_class.ransackable_associations(build(:customer_user))).not_to(include('broker_carrier')) }
     end
 
     describe '#accessorial_codes' do
@@ -549,6 +570,14 @@ RSpec.describe(Shipment) do
 
       expect(fresh_shipment.__send__(:set_fingerprint)).to(eq(fingerprint))
     end
+
+    it 'matches after the first save' do
+      new_shipment = create(:shipment, value_cents: 1_000)
+      fingerprint = new_shipment.fingerprint
+      new_shipment.update!(bol_notes: 'Call ahead')
+
+      expect(new_shipment.reload.fingerprint).to(eq(fingerprint))
+    end
   end
 
   describe '#late?' do
@@ -646,6 +675,120 @@ RSpec.describe(Shipment) do
 
       context 'when pickup_by is nil' do
         it { is_expected.to(be_falsy) }
+      end
+    end
+  end
+
+  describe '#customer_pro' do
+    subject { shipment.customer_pro }
+
+    let(:shipment) { build(:shipment, pro: 'BROKER', tracking_carrier:, tracking_carrier_pro: 'CARRIER') }
+    let(:tracking_carrier) { create(:carrier) }
+
+    it { is_expected.to(eq('CARRIER')) }
+
+    context 'without a tracking carrier' do
+      let(:tracking_carrier) { nil }
+
+      it { is_expected.to(eq('BROKER')) }
+    end
+  end
+
+  describe '#late_since' do
+    subject { shipment.late_since }
+
+    let(:shipment) do
+      build(
+        :shipment,
+        delivered_at: nil,
+        delivery_appointment_at: nil,
+        delivery_appointment_on: nil,
+        delivery_eta_on: nil,
+        picked_up_at: nil,
+        pickup_confirmation: nil,
+        pickup_hours_end_at: nil,
+        pickup_on: nil,
+        promised_delivery_by: nil
+      )
+    end
+
+    context 'when delivered_at is present' do
+      before do
+        shipment.delivered_at = 1.hour.ago
+        shipment.delivery_eta_on = 3.days.ago.to_date
+        shipment.picked_up_at = 5.days.ago
+      end
+
+      it { is_expected.to(be_nil) }
+    end
+
+    context 'when picked_up_at is present' do
+      before { shipment.picked_up_at = 5.days.ago }
+
+      context 'when delivery_appointment_at is in the past' do
+        before { shipment.delivery_appointment_at = 1.hour.ago.change(usec: 0) }
+
+        it { is_expected.to(eq(shipment.delivery_appointment_at)) }
+      end
+
+      context 'when delivery_appointment_at is in the future' do
+        before do
+          shipment.delivery_appointment_at = 1.day.from_now
+          shipment.delivery_eta_on = 3.days.ago.to_date
+        end
+
+        it { is_expected.to(be_nil) }
+      end
+
+      context 'when delivery_appointment_on is yesterday' do
+        before { shipment.delivery_appointment_on = Date.yesterday }
+
+        it { is_expected.to(eq(Date.current.beginning_of_day)) }
+      end
+
+      context 'when delivery_appointment_on is today' do
+        before { shipment.delivery_appointment_on = Date.current }
+
+        it { is_expected.to(be_nil) }
+      end
+
+      context 'when delivery_eta_on is two days ago' do
+        before { shipment.delivery_eta_on = 2.days.ago.to_date }
+
+        it { is_expected.to(eq(Date.yesterday.beginning_of_day)) }
+      end
+
+      context 'when promised_delivery_by is earlier than the delivery schedule' do
+        before do
+          shipment.delivery_eta_on = Date.yesterday
+          shipment.promised_delivery_by = 3.days.ago
+        end
+
+        it { is_expected.to(eq(2.days.ago.to_date.beginning_of_day)) }
+      end
+
+      context 'when no delivery dates are set' do
+        it { is_expected.to(be_nil) }
+      end
+    end
+
+    context 'when not yet picked up' do
+      context 'when pickup_by is in the past' do
+        let(:pickup_by) { 1.hour.ago }
+
+        before { allow(shipment).to(receive(:pickup_by).and_return(pickup_by)) }
+
+        it { is_expected.to(eq(pickup_by)) }
+      end
+
+      context 'when pickup_by is in the future' do
+        before { allow(shipment).to(receive(:pickup_by).and_return(1.hour.from_now)) }
+
+        it { is_expected.to(be_nil) }
+      end
+
+      context 'when pickup_by is nil' do
+        it { is_expected.to(be_nil) }
       end
     end
   end

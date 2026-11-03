@@ -6,6 +6,36 @@ RSpec.describe(DSDC::ShipmentStatus) do
   let(:shipment) { build(:shipment, **attributes) }
   let(:attributes) { {} }
 
+  describe '#accessorial_codes' do
+    let(:accessorial) { build(:accessorial, freight_kit_code: 'appointment_delivery') }
+    let(:attributes) do
+      {
+        broker_accessorials: [
+          build(:broker_accessorial, accessorial:),
+          build(:broker_accessorial, accessorial:),
+          build(:broker_accessorial, accessorial: nil)
+        ]
+      }
+    end
+
+    it { expect(status.accessorial_codes).to(eq(['APTD'])) }
+
+    context 'when the broker accessorials are preloaded' do
+      let(:preloaded_shipment) { Shipment.includes(broker_accessorials: :accessorial).find(shipment.id) }
+      let(:queries) { [] }
+      let(:shipment) { create(:shipment).tap { |shipment| shipment.broker_accessorials << create(:broker_accessorial, accessorial:) } }
+
+      before do
+        status = described_class.new(preloaded_shipment)
+        subscriber = ActiveSupport::Notifications.subscribe('sql.active_record') { |*, payload| queries << payload[:sql] }
+        status.accessorial_codes
+        ActiveSupport::Notifications.unsubscribe(subscriber)
+      end
+
+      it { expect(queries).to(be_empty) }
+    end
+  end
+
   describe '#all_short_or_lost?' do
     it { is_expected.to(be_all_short_or_lost) }
 

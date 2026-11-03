@@ -30,10 +30,6 @@ class Terminal < ApplicationRecord
     def ransackable_associations(_auth_object = nil)
       ['address', 'carrier']
     end
-
-    def ransackable_attributes(_auth_object = nil)
-      ['phone']
-    end
   end
 
   belongs_to :address

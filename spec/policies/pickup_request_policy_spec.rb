@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe(PickupRequestPolicy) do
-  let(:pickup_request) { create(:pickup_request, shipments: [create(:shipment, broker_customer: user.companyable)]) }
-  let(:policy) { described_class.new(user:) }
-  let(:user) { create(:customer_user) }
+  let(:authorizable) { create(:customer_user) }
+  let(:pickup_request) { create(:pickup_request, shipments: [create(:shipment, broker_customer: authorizable.companyable)]) }
+  let(:policy) { described_class.new(authorizable:) }
 
   describe '#apply_scope' do
     subject { policy.apply_scope(PickupRequest.all, type: :active_record_relation) }
@@ -12,14 +12,14 @@ RSpec.describe(PickupRequestPolicy) do
 
     it { is_expected.to(contain_exactly(pickup_request)) }
 
-    context "with another customer's shipment on the request" do
-      before { create(:shipment, pickup_request:) }
+    context 'when not authorizable.is_a?(User)' do
+      let(:policy) { described_class.new(authorizable: create(:broker_carrier)) }
 
       it { is_expected.to(be_empty) }
     end
 
-    context 'without a user' do
-      let(:policy) { described_class.new(user: nil) }
+    context "with another customer's shipment on the request" do
+      before { create(:shipment, pickup_request:) }
 
       it { is_expected.to(be_empty) }
     end
@@ -31,7 +31,7 @@ RSpec.describe(PickupRequestPolicy) do
     it { is_expected.to(be(true)) }
 
     context 'with a broker user' do
-      let(:user) { create(:broker_user) }
+      let(:authorizable) { create(:broker_user) }
 
       it { is_expected.to(be(false)) }
     end
@@ -42,8 +42,8 @@ RSpec.describe(PickupRequestPolicy) do
 
     it { is_expected.to(be(true)) }
 
-    context 'without a user' do
-      let(:user) { nil }
+    context 'when not authorizable.is_a?(User)' do
+      let(:policy) { described_class.new(authorizable: build(:broker_carrier)) }
 
       it { is_expected.to(be(false)) }
     end

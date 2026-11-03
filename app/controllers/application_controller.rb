@@ -2,6 +2,8 @@ class ApplicationController < ActionController::Base
   include ConditionalRequests
   include Pagy::Backend
 
+  authorize :authorizable, through: :current_user
+
   before_action :add_floc_opt_out_header
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :sign_out_deactivated_user

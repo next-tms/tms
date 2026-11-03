@@ -1,13 +1,11 @@
-class PickupRequestPolicy < ActionPolicy::Base
-  authorize :user, optional: true
-
+class PickupRequestPolicy < ApplicationPolicy
   relation_scope do |relation|
-    next relation.none unless user
+    next relation.none unless user?
 
-    other_shipments = Shipment.where.not(id: user.shipments).where.not(pickup_request_id: nil)
-    relation.where(id: user.shipments.select(:pickup_request_id)).where.not(id: other_shipments.select(:pickup_request_id))
+    other_shipments = Shipment.where.not(id: authorizable.shipments).where.not(pickup_request_id: nil)
+    relation.where(id: authorizable.shipments.select(:pickup_request_id)).where.not(id: other_shipments.select(:pickup_request_id))
   end
 
-  def manage? = user.present? && user.customer?
-  def view? = user.present?
+  def manage? = customer?
+  def view? = user?
 end

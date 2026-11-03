@@ -64,6 +64,12 @@ require 'rails_helper'
 RSpec.describe(Receivable) do
   it_behaves_like 'discussable'
 
+  describe '.ransackable_attributes' do
+    it { expect(described_class.ransackable_attributes(build(:customer_user))).to(include(*described_class::CHARGE_COLUMNS)) }
+    it { expect(described_class.ransackable_attributes(build(:user, companyable: build(:broker_carrier)))).not_to(include('total_cents')) }
+    it { expect(described_class.ransackable_attributes).not_to(include('total_cents')) }
+  end
+
   describe '#missing_carrier_bol?' do
     let(:broker_customer) { create(:broker_customer) }
     let(:shipment) { create(:shipment, broker_customer:) }
@@ -146,9 +152,12 @@ RSpec.describe(Receivable) do
   end
 
   describe '#sendable?' do
+    let(:broker_customer) do
+      create(:broker_customer, requires_carrier_bol_on_receivables: false, requires_carrier_pod_on_receivables: false)
+    end
     let(:error) { Accounting::QuickBooks::Service::Disconnected.new }
     let(:record) { create(:receivable, shipment:) }
-    let(:shipment) { create(:shipment, broker_customer: create(:broker_customer), picked_up_at: Time.current) }
+    let(:shipment) { create(:shipment, broker_customer:, picked_up_at: Time.current) }
 
     let(:result) { record.sendable? }
 
@@ -168,8 +177,11 @@ RSpec.describe(Receivable) do
   end
 
   describe '#update_from_api' do
+    let(:broker_customer) do
+      create(:broker_customer, requires_carrier_bol_on_receivables: false, requires_carrier_pod_on_receivables: false)
+    end
     let(:error) { OAuth2::Error.new({ 'error' => 'invalid_grant' }) }
-    let(:record) { create(:receivable) }
+    let(:record) { create(:receivable, shipment: create(:shipment, broker_customer:)) }
 
     let(:result) { record.update_from_api }
 

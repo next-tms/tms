@@ -37,10 +37,6 @@ class Contact < ApplicationRecord
       ['companyable', 'contact_roles', 'user']
     end
 
-    def ransackable_attributes(_auth_object = nil)
-      ['comments', 'email', 'first_name', 'job_title', 'label', 'last_name']
-    end
-
     def with_any_role(*roles)
       joins(:contact_roles).where(contact_roles: { role: roles })
     end

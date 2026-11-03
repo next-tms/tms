@@ -1,12 +1,29 @@
 class DSDC::ShipmentsController < DSDC::ApplicationController
   INCLUDES = [
-    :accessorials,
     :applied_rate,
     :carrier_pod_attachment,
     :receiver_address,
     :shipper_address,
     :tracking_carrier,
-    { broker_carrier: :carrier, broker_customer: %i[customer office_address], items: :packaging, tracking_events: :event }
+    {
+      broker_accessorials: :accessorial,
+      broker_carrier: :carrier,
+      broker_customer: %i[customer office_address],
+      items: :packaging,
+      tracking_events: :event
+    }
+  ].freeze
+  LATE_SINCE_COLUMNS = %i[
+    delivered_at
+    delivery_appointment_at
+    delivery_appointment_on
+    delivery_eta_on
+    id
+    picked_up_at
+    pickup_hours_end_at
+    pickup_on
+    promised_delivery_by
+    shipper_address_id
   ].freeze
 
   before_action :set_shipments
@@ -15,6 +32,8 @@ class DSDC::ShipmentsController < DSDC::ApplicationController
   rescue_from Date::Error, with: :render_bad_request
 
   def index
+    authorize!(Shipment, to: :index?)
+
     @shipments = @shipments
                  .where(broker_customer_id: params[:account_number])
                  .where(pickup_on: Date.iso8601(params[:start_date])..Date.iso8601(params[:end_date]))
@@ -39,7 +58,8 @@ class DSDC::ShipmentsController < DSDC::ApplicationController
         .or(Carrier.where(id: @shipments.select(:tracking_carrier_id))),
       Customer.where(id: broker_customers.select(:customer_id)),
       Item.where(shipment: @shipments),
-      TrackingEvent.where(shipment: @shipments)
+      TrackingEvent.where(shipment: @shipments),
+      late_since(@shipments)
     )
   end
 
@@ -55,6 +75,7 @@ class DSDC::ShipmentsController < DSDC::ApplicationController
       @shipment.broker_customer&.office_address,
       @shipment.carrier_pod_attachment,
       @shipment.items,
+      @shipment.late_since,
       @shipment.receiver_address,
       @shipment.shipper_address,
       @shipment.tracking_carrier,
@@ -72,6 +93,15 @@ class DSDC::ShipmentsController < DSDC::ApplicationController
                 else
                   @shipments.delivered_to(params[:destination_postal_code]).find_by!(customer_reference: params[:po])
                 end
+  end
+
+  def late_since(shipments)
+    Shipment
+      .where(delivered_at: nil, id: shipments.select(:id))
+      .select(*LATE_SINCE_COLUMNS)
+      .includes(:shipper_address)
+      .filter_map(&:late_since)
+      .max
   end
 
   def set_shipments = @shipments = authorized_scope(Shipment.active.includes(INCLUDES))

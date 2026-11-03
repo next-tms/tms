@@ -15,4 +15,4 @@
 #
 #  index_customers_on_name  (name) UNIQUE
 #
-FactoryBot.define { factory(:customer) { name { Faker::Company.name } } }
+FactoryBot.define { factory(:customer) { sequence(:name) { |number| "#{Faker::Company.name} #{number}" } } }

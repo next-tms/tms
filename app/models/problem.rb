@@ -51,14 +51,6 @@ class Problem < ApplicationRecord
 
       records
     end
-
-    def ransackable_attributes(_auth_object = nil)
-      ['problematic_rule_code']
-    end
-
-    def ransackable_associations(_auth_object = nil)
-      []
-    end
   end
 
   include DiscussableTopic
@@ -74,9 +66,7 @@ class Problem < ApplicationRecord
 
   has_one :role, through: :problem_type
 
-  ransacker :id do
-    Arel.sql("to_char(\"#{table_name}\".\"id\", '99999999')")
-  end
+  ransacker(:id_text) { Arel.sql("CAST(\"#{table_name}\".\"id\" AS text)") }
 
   scope :unresolved, -> { where(resolved_at: nil) }
   scope :resolved, -> { where.not(id: unresolved) }

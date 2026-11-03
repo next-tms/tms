@@ -6,5 +6,9 @@ module Mutations
     object_class Types::BaseObject
 
     include ActionPolicy::GraphQL::Behaviour
+
+    private
+
+    def authorization_context = { authorizable: context[:authorizable] }
   end
 end

@@ -40,6 +40,12 @@ RSpec.describe(ApplicationController) do
       it { is_expected.to(be_nil) }
     end
 
+    context 'with a time' do
+      let(:object) { 1.hour.ago }
+
+      it { is_expected.to(eq(object)) }
+    end
+
     context 'without updated_at' do
       let(:object) { 'string' }
 

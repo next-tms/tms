@@ -36,7 +36,7 @@ RSpec.describe Accounting::QuickBooks::Service do
 
     before do
       allow(service).to receive(:sleep)
-      allow_any_instance_of(OAuth2::AccessToken).to receive(:refresh!).and_return(refreshed) # rubocop:disable RSpec/AnyInstance
+      allow_any_instance_of(OAuth2::AccessToken).to receive(:refresh!).and_return(refreshed)
     end
 
     it { expect(result).to eq('new-access') }
@@ -48,7 +48,8 @@ RSpec.describe Accounting::QuickBooks::Service do
           attempts << access_token.token
 
           if attempts.one?
-            Integration.find(integration.id).update!(credentials: credentials.merge(access_token: 'other-access', refresh_token: 'other-refresh'))
+            other_credentials = credentials.merge(access_token: 'other-access', refresh_token: 'other-refresh')
+            Integration.find(integration.id).update!(credentials: other_credentials)
             raise OAuth2::Error, { 'error' => 'invalid_token' }
           end
 
@@ -68,7 +69,7 @@ RSpec.describe Accounting::QuickBooks::Service do
 
     context 'when refreshing fails for another reason' do
       before do
-        allow_any_instance_of(OAuth2::AccessToken).to receive(:refresh!).and_raise(OAuth2::Error, { 'error' => 'invalid_client' }) # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(OAuth2::AccessToken).to receive(:refresh!).and_raise(OAuth2::Error, { 'error' => 'invalid_client' })
       end
 
       it { expect { result }.to raise_error(OAuth2::Error) }
@@ -81,7 +82,7 @@ RSpec.describe Accounting::QuickBooks::Service do
 
     context 'when the refresh token is invalid' do
       before do
-        allow_any_instance_of(OAuth2::AccessToken).to receive(:refresh!).and_raise(OAuth2::Error, { 'error' => 'invalid_grant' }) # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(OAuth2::AccessToken).to receive(:refresh!).and_raise(OAuth2::Error, { 'error' => 'invalid_grant' })
       end
 
       it { expect { result }.to raise_error(described_class::Disconnected) }

@@ -91,6 +91,64 @@ RSpec.describe('DSDC::Shipments') do
       it { expect(response).to(have_http_status(:not_modified)) }
     end
 
+    context 'when the shipment becomes late after the response' do
+      let(:path) { "/api/dsdc/shipment/pro/#{shipment.load_id}/verified" }
+      let!(:shipment) do
+        create(
+          :shipment,
+          broker_customer: api_key.authorizable.companyable,
+          delivered_at: nil,
+          delivery_appointment_at: nil,
+          delivery_appointment_on: nil,
+          delivery_eta_on: Date.current,
+          picked_up_at: 1.day.ago,
+          promised_delivery_by: nil
+        )
+      end
+
+      before do
+        get(path, headers:)
+        conditional_headers = { 'If-Modified-Since' => response.headers['Last-Modified'], 'If-None-Match' => response.headers['ETag'] }
+
+        Timecop.travel(2.days.from_now)
+        get(path, headers: headers.merge(conditional_headers))
+      end
+
+      after { Timecop.return }
+
+      it { expect(response).to(have_http_status(:ok)) }
+      it { expect(json['Late']).to(be(true)) }
+      it { expect(response.headers['Last-Modified']).to(eq(shipment.late_since.httpdate)) }
+    end
+
+    context 'when the shipment becomes late and the request repeats only the Last-Modified date' do
+      let(:path) { "/api/dsdc/shipment/pro/#{shipment.load_id}/verified" }
+      let!(:shipment) do
+        create(
+          :shipment,
+          broker_customer: api_key.authorizable.companyable,
+          delivered_at: nil,
+          delivery_appointment_at: nil,
+          delivery_appointment_on: nil,
+          delivery_eta_on: Date.current,
+          picked_up_at: 1.day.ago,
+          promised_delivery_by: nil
+        )
+      end
+
+      before do
+        get(path, headers:)
+        last_modified = response.headers['Last-Modified']
+
+        Timecop.travel(2.days.from_now)
+        get(path, headers: headers.merge('If-Modified-Since' => last_modified))
+      end
+
+      after { Timecop.return }
+
+      it { expect(response).to(have_http_status(:ok)) }
+    end
+
     context 'when the shipment belongs to another customer' do
       let!(:shipment) { create(:shipment) }
 
@@ -165,11 +223,66 @@ RSpec.describe('DSDC::Shipments') do
       it { expect(json.pluck('ProNumber')).to(eq([shipment.load_id.to_s])) }
     end
 
+    context 'when the request repeats the ETag' do
+      let(:queries) { [] }
+      let(:start_date) { shipment.pickup_on }
+
+      before do
+        path = "/api/dsdc/shipment/po/#{shipment.broker_customer_id}/#{start_date}/#{start_date.next_day}/verified"
+        conditional_headers = headers.merge('If-None-Match' => response.headers['ETag'])
+        subscriber = ActiveSupport::Notifications.subscribe('sql.active_record') { |*, payload| queries << payload[:sql] }
+        get(path, headers: conditional_headers)
+        ActiveSupport::Notifications.unsubscribe(subscriber)
+      end
+
+      it { expect(response).to(have_http_status(:not_modified)) }
+      it { expect(queries.grep(/SELECT "(broker_accessorials|items|packagings|tracking_events)"\.\*/)).to(be_empty) }
+    end
+
     context 'when an item changed after the shipment' do
       let!(:shipment) { super().tap { |shipment| create(:item, shipment:, updated_at: 1.day.from_now) } }
       let(:start_date) { shipment.pickup_on }
 
       it { expect(response.headers['Last-Modified']).to(eq(shipment.items.sole.updated_at.httpdate)) }
+    end
+
+    context 'when a shipment becomes late after the response' do
+      let!(:shipment) do
+        create(
+          :shipment,
+          broker_customer: api_key.authorizable.companyable,
+          delivered_at: nil,
+          delivery_appointment_at: nil,
+          delivery_appointment_on: nil,
+          delivery_eta_on: Date.current,
+          picked_up_at: 1.day.ago,
+          promised_delivery_by: nil
+        )
+      end
+      let(:start_date) { shipment.pickup_on }
+
+      before do
+        last_modified = response.headers['Last-Modified']
+
+        Timecop.travel(2.days.from_now)
+        get(
+          "/api/dsdc/shipment/po/#{shipment.broker_customer_id}/#{start_date}/#{start_date.next_day}/verified",
+          headers: headers.merge('If-Modified-Since' => last_modified)
+        )
+      end
+
+      after { Timecop.return }
+
+      it { expect(response).to(have_http_status(:ok)) }
+      it { expect(json.sole['Late']).to(be(true)) }
+    end
+
+    context 'with a broker carrier API key' do
+      let(:api_key) { create(:api_key, :broker_carrier) }
+      let!(:shipment) { create(:shipment, broker_carrier: api_key.authorizable) }
+      let(:start_date) { shipment.pickup_on }
+
+      it { expect(response).to(have_http_status(:not_found)) }
     end
 
     context 'when no shipment picks up in the range' do

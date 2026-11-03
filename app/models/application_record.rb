@@ -1,4 +1,5 @@
 class ApplicationRecord < ActiveRecord::Base
+  include Ransackable
   include Transponder::ORM::Associations
 
   class << self

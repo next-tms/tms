@@ -7,12 +7,11 @@ class DSDC::ApplicationController < ActionController::API
 
   attr_reader :api_key
 
-  authorize :broker_carrier, through: :current_broker_carrier
-  authorize :user, through: :current_user
+  authorize :authorizable, through: :current_authorizable
 
   before_action :authenticate
 
-  delegate :broker_carrier, :user, to: :api_key, allow_nil: true, prefix: :current
+  delegate :authorizable, :broker_carrier, :user, to: :api_key, allow_nil: true, prefix: :current
 
   etag { [api_key&.authorizable, Setting.all] }
 

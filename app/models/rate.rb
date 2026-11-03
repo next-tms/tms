@@ -100,11 +100,9 @@ class Rate < ApplicationRecord
     broker_carrier
   end
 
-  def preferred?
-    return true if broker_customer.blank?
+  def charge = @charge ||= shipment.broker_customer&.carrier_charge_calculator(carrier_cost: cost, shipment:)
 
-    shipment.broker_customer.eligible_broker_carriers(user_type: :customer).include?(broker_carrier)
-  end
+  def preferred? = broker_customer.blank? || shipment.broker_customer.eligible_broker_carriers(:customer).include?(broker_carrier)
 
   def pretty_service_type
     return '' if freight_kit_service_type.blank?

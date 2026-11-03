@@ -1,13 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe(AccountingPolicy) do
-  subject(:policy) { described_class.new(user, user:) }
+  subject(:policy) { described_class.new(authorizable, authorizable:) }
 
-  let(:user) { create(:broker_user) }
+  let(:authorizable) { create(:broker_user) }
 
   def grant(role)
-    user.contact.contact_roles.create!(role:)
-    user.reload
+    authorizable.contact.contact_roles.create!(role:)
+    authorizable.reload
   end
 
   describe '#accounts_payable_show?' do

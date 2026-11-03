@@ -6,7 +6,7 @@ class DSDC::ShipmentStatus
   delegate :tracking_events, to: :shipment
 
   def initialize(shipment) = @shipment = shipment
-  def accessorial_codes = EBOL.accessorial_codes(shipment.accessorials)
+  def accessorial_codes = EBOL.accessorial_codes(shipment.broker_accessorials.filter_map(&:accessorial).uniq)
   def all_short_or_lost? = shipment.lost_on.present? && latest_event_code != 'found'
   def appointment_at = shipment.delivery_appointment_at || shipment.delivery_appointment_on
   def appointment_required? = accessorial_codes.include?('APTD')

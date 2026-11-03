@@ -2,12 +2,22 @@ class GraphQLController < ActionController::API
   include GraphQLAuthentication
 
   INTROSPECTION_LIMITS = { max_complexity: 400, max_depth: 15 }.freeze
+  RATE_LIMIT_WINDOW = 1.minute
+
+  rate_limit by: -> { api_key.token_digest }, if: :api_key, name: 'api_key', to: 300, with: :render_rate_limited, within: RATE_LIMIT_WINDOW
+  rate_limit by: -> { current_user.id },
+             if: -> { current_user },
+             name: 'user',
+             to: 600,
+             unless: :api_key,
+             with: :render_rate_limited,
+             within: RATE_LIMIT_WINDOW
 
   def execute
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
-    context = { current_user:, session: }
+    context = { authorizable:, session: }
     limits = introspection?(query, operation_name:) ? INTROSPECTION_LIMITS : {}
     @result = LiftoffSchema.execute(query, variables:, context:, operation_name:, **limits)
   rescue StandardError => e
@@ -51,5 +61,11 @@ class GraphQLController < ActionController::API
     else
       raise ArgumentError, "Unexpected parameter: #{variables_param}"
     end
+  end
+
+  def render_rate_limited
+    response.headers['Retry-After'] = RATE_LIMIT_WINDOW.to_i.to_s
+
+    render(:rate_limited, status: :too_many_requests)
   end
 end

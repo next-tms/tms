@@ -36,14 +36,6 @@ class Setting < ApplicationRecord
 
     def respond_to_missing?(method_name, include_private = false) = keys.include?(method_name.to_s.delete_suffix('!')) || super
 
-    def ransackable_attributes(_auth_object = nil)
-      ['key', 'value']
-    end
-
-    def ransackable_associations(_auth_object = nil)
-      []
-    end
-
     def value(key, fallback_value = nil)
       value!(key)
     rescue ActiveRecord::RecordNotFound

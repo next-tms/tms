@@ -34,10 +34,6 @@ class Commission < ApplicationRecord
     def ransackable_associations(_auth_object = nil)
       ['shipment', 'user']
     end
-
-    def ransackable_attributes(_auth_object = nil)
-      ['amount_cents', 'amount_currency', 'paid', 'shipment_id', 'updated_at', 'user_id']
-    end
   end
 
   belongs_to :shipment

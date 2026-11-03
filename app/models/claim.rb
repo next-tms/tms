@@ -32,10 +32,6 @@
 #
 class Claim < ApplicationRecord
   class << self
-    def ransackable_attributes(_auth_object = nil)
-      ['balance_cents', 'due_on', 'total_cents']
-    end
-
     def ransackable_associations(_auth_object = nil)
       ['broker_carrier', 'broker_customer', 'shipment']
     end

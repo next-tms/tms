@@ -9,6 +9,7 @@ module ConditionalRequests
       # The ETag's `cache_version` ("<count>-<:usec timestamp>") already queries MAX(updated_at), minding LIMIT and DISTINCT.
       timestamp = object.cache_version.split('-', 2).second
       Time.find_zone('UTC').strptime(timestamp, '%Y%m%d%H%M%S%N') if timestamp.present?
+    when ActiveSupport::TimeWithZone, Time then object
     when Enumerable then object.filter_map { last_modified_of(it) }.max
     else object.try(:updated_at)
     end

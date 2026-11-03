@@ -79,6 +79,11 @@ RSpec.describe(BrokerCustomer) do
   it_behaves_like 'accounting_syncable', resource: :customer, record: 'Accounting::QuickBooks::Customer'
   it_behaves_like 'companyable'
 
+  describe '.ransackable_attributes' do
+    it { expect(described_class.ransackable_attributes).to(include('customer_id')) }
+    it { expect(described_class.ransackable_attributes).not_to(include('default_upcharge_cents', 'default_upcharge_percentage')) }
+  end
+
   describe '#eligible_broker_accessorials' do
     let(:record) { create(:broker_customer) }
 

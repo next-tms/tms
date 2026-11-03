@@ -2,10 +2,25 @@ module Types
   class QueryType < Types::BaseObject
     description 'GraphQL Queries'
 
-    # Add `node(id: ID!) and `nodes(ids: [ID!]!)`
     include GraphQL::Types::Relay::HasNodeField
     include GraphQL::Types::Relay::HasNodesField
 
-    multiple_fields Queries::Shipments, Queries::BrokerCarriers, Queries::BrokerCustomers
+    {
+      bill: PaymentTransaction,
+      broker_carrier: BrokerCarrier,
+      broker_customer: BrokerCustomer,
+      carrier: Carrier,
+      customer: Customer,
+      invoice: Receivable,
+      shipment: Shipment
+    }.each do |name, model|
+      field name, "Types::#{name.to_s.camelize}Type".constantize, authorize: { to: :view? }, null: true do
+        argument :id, ID, required: true
+      end
+
+      define_method(name) { |id:| model.find_by(id:) }
+
+      field name.to_s.pluralize.to_sym, resolver: "Resolvers::#{name.to_s.camelize.pluralize}Resolver".constantize
+    end
   end
 end

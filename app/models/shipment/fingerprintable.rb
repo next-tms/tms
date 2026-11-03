@@ -22,13 +22,11 @@ module Shipment::Fingerprintable
     parts << shipper_address.pretty(', ') if shipper_address.present?
     parts << receiver_address.pretty(', ') if receiver_address.present?
 
-    if created_at.present?
-      date = created_at.in_time_zone('America/Los_Angeles').to_date
+    date = (created_at || Time.current).in_time_zone('America/Los_Angeles').to_date
 
-      case date
-      when (Date.parse('2022-01-09')..) then parts << value_cents.to_s
-      when (Date.parse('2023-07-21')..) then parts << calculated_freight_classes?.to_s
-      end
+    case date
+    when (Date.parse('2022-01-09')..) then parts << value_cents.to_s
+    when (Date.parse('2023-07-21')..) then parts << calculated_freight_classes?.to_s
     end
 
     self.fingerprint = Digest::SHA2.hexdigest(parts.join)

@@ -74,8 +74,8 @@ module Accounting
 
         integration.with_lock do
           rotate_tokens! if connected? && credentials[:refresh_token] == refresh_token
-        rescue OAuth2::Error => error
-          raise unless error.code == 'invalid_grant'
+        rescue OAuth2::Error => e
+          raise unless e.code == 'invalid_grant'
 
           integration.update!(credentials: credentials.merge(refresh_token_revoked_at: Time.current))
         end

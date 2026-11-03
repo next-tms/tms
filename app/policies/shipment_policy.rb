@@ -1,9 +1,26 @@
-class ShipmentPolicy < ActionPolicy::Base
-  authorize :user, optional: true
+class ShipmentPolicy < ApplicationPolicy
+  relation_scope do |relation|
+    next relation.where(broker_carrier: companyable) if carrier?
+    next relation.none unless user?
 
-  relation_scope { |relation| relation.accessible_by(user) }
+    relation.accessible_by(authorizable)
+  end
 
-  def create? = user.present? && (user.broker? || user.customer?)
-  def manage? = user.present? && record.accessible_by?(user)
-  def view? = manage?
+  def create? = broker? || customer?
+  def fetch_rates? = !carrier? && view?
+  def index? = broker? || customer?
+  def manage? = user? && record.accessible_by?(authorizable)
+
+  def view?
+    return false unless record
+    return record.broker_carrier == companyable if carrier?
+
+    manage?
+  end
+
+  def view_carrier_references? = !customer?
+  def view_charges? = broker? || customer?
+  def view_costs? = broker? || carrier?
+  def view_internal_notes? = broker?
+  def view_shared_notes? = broker? || customer?
 end

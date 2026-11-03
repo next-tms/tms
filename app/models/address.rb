@@ -56,12 +56,6 @@
 #  fk_rails_...  (standardized_address_id => standardized_addresses.id)
 #
 class Address < ApplicationRecord
-  class << self
-    def ransackable_attributes(_auth_object = nil) = ['city', 'country_alpha2', 'region_iso31662', 'street', 'street2', 'zip_code']
-
-    def ransackable_associations(_auth_object = nil) = []
-  end
-
   before_save :set_standardized_address, unless: -> { Rails.env.test? }
 
   before_validation :set_country

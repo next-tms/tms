@@ -14,16 +14,6 @@
 #   @return [Integer]
 #
 class Bank < ApplicationRecord
-  class << self
-    def ransackable_attributes(_auth_object = nil)
-      ['name']
-    end
-
-    def ransackable_associations(_auth_object = nil)
-      []
-    end
-  end
-
   include AccountingSyncable
 
   accounting_syncs :account, match: -> { { name: to_accounting_account.name } }

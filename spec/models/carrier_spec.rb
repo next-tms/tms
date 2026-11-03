@@ -53,7 +53,8 @@ RSpec.describe(Carrier) do
   let(:tql) { build(:carrier, :tql) }
 
   describe '.ransackable_attributes' do
-    it { expect(described_class.ransackable_attributes).to(eq(['name', 'scac'])) }
+    it { expect(described_class.ransackable_attributes).to(include('name', 'scac')) }
+    it { expect(described_class.ransackable_attributes).not_to(include('encrypted_api_key', 'encrypted_proxy_url')) }
   end
 
   describe '.ransackable_associations' do

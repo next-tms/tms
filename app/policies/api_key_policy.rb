@@ -1,14 +1,15 @@
-class APIKeyPolicy < ActionPolicy::Base
-  relation_scope do |relation|
-    next relation.where(authorizable: user) unless accounts_payable?
+class APIKeyPolicy < ApplicationPolicy
+  alias_rule :view?, to: :manage?
 
-    relation.where(authorizable: user).or(relation.where(authorizable_type: 'BrokerCarrier'))
+  relation_scope do |relation|
+    next relation.where(authorizable:) unless accounts_payable?
+
+    relation.where(authorizable:).or(relation.where(authorizable_type: 'BrokerCarrier'))
   end
 
-  def manage? = record.authorizable == user || (record.broker_carrier? && accounts_payable?)
-  def view? = manage?
+  def manage? = record.authorizable == authorizable || (record.broker_carrier? && accounts_payable?)
 
   private
 
-  def accounts_payable? = user.broker? && user.any_role?(:accounts_payable, :root)
+  def accounts_payable? = broker? && authorizable.any_role?(:accounts_payable, :root)
 end

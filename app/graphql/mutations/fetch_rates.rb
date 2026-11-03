@@ -1,42 +1,22 @@
 module Mutations
   class FetchRates < BaseMutation
+    include Mutations::Concerns::Rateable
+
     description 'Fetch Shipment Rates'
 
     argument :broker_carrier_id, ID, required: false
-    argument :declared_freight_classes, Boolean, required: false
+    argument :declared_freight_classes, Boolean, default_value: false, replace_null_with_default: true, required: false
     argument :shipment_load_id, ID, required: true
 
-    field :rates, [Types::RateType], null: true
+    field :rates, [Types::RateType], null: false
     field :shipment, Types::ShipmentType, null: false
 
-    def resolve(shipment_load_id:, broker_carrier_id: nil, declared_freight_classes: false)
+    def resolve(declared_freight_classes:, shipment_load_id:, broker_carrier_id: nil)
       shipment = Shipment.find_by(load_id: shipment_load_id)
 
-      raise GraphQL::ExecutionError, 'No Shipment Found' unless shipment
+      authorize!(shipment, to: :fetch_rates?, with: ShipmentPolicy)
 
-      authorize!(shipment, to: :view?)
-
-      rates = if broker_carrier_id
-                broker_carrier = BrokerCarrier.find(broker_carrier_id)
-
-                fetch_rates(shipment, broker_carrier, declared_freight_classes)
-              else
-                shipment.valid_broker_carriers_for_quotation.map do |broker_carrier|
-                  fetch_rates(shipment, broker_carrier, declared_freight_classes)
-                end.flatten
-              end
-
-      {
-        rates: rates.select { |r| r.cost_cents.present? && r.cost_cents.positive? },
-        shipment:
-      }
-    end
-
-    def fetch_rates(shipment, broker_carrier, declared_freight_classes)
-      rates = Rate.by_shipment_and_broker_carrier(shipment, shipment.fingerprint, broker_carrier, declared_freight_classes)
-      return rates if rates.any?
-
-      Shipment::RatesService.new(broker_carrier:, shipment:, declared_freight_classes:, save_new_rates: true).call
+      { rates: rates_for(shipment, broker_carrier_id:, declared_freight_classes:), shipment: }
     end
   end
 end

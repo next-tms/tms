@@ -13,6 +13,7 @@
 ActiveRecord::Schema[8.1].define(version: 2026_11_02_194127) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
 
   create_table "accessorials", force: :cascade do |t|
@@ -468,18 +469,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_194127) do
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
-  end
-
-  create_table "notifications", force: :cascade do |t|
-    t.datetime "created_at", precision: nil, null: false
-    t.jsonb "params"
-    t.datetime "read_at", precision: nil
-    t.bigint "recipient_id", null: false
-    t.string "recipient_type", null: false
-    t.string "type", null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.index ["read_at"], name: "index_notifications_on_read_at"
-    t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
   end
 
   create_table "overlength_rules", force: :cascade do |t|

@@ -5,6 +5,8 @@ module GraphQLAuthentication
   include APIKeyAuthentication
 
   included do
+    attr_reader :api_key, :authorizable
+
     self.allow_forgery_protection = ActionController::Base.allow_forgery_protection
 
     before_action :authenticate!
@@ -13,15 +15,15 @@ module GraphQLAuthentication
   def authenticate! = request_token.present? ? authenticate_api_key : authenticate_session
 
   def authenticate_api_key
-    api_key = APIKey.authenticate(request_token)
+    @api_key = APIKey.authenticate(request_token)
     message = api_key_error(api_key)
-    message ||= t('api_keys.errors.user_required') unless api_key&.user
 
     if message.present?
       render_unauthorized_error_response(message)
       return
     end
 
+    @authorizable = api_key.authorizable
     @current_user = api_key.user
     api_key.use!
   end
@@ -34,6 +36,7 @@ module GraphQLAuthentication
       return
     end
 
+    @authorizable = user
     @current_user = user
   end
 

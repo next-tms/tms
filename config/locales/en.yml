@@ -159,7 +159,6 @@ en:
       expired: API key “%{name}” expired at %{at}. Roll it or create a new API key.
       invalid: API key is invalid.
       missing: API key is missing. Send it in the X-API-Key header or as Authorization Bearer.
-      user_required: Only API keys that belong to a user can make this request.
     header:
       new: New
     index:
@@ -334,6 +333,9 @@ en:
         departed: The driver picked up the freight.
         en_route: A driver is assigned to the pickup.
         rescheduled: The pickup was moved to a different day.
+  graphql:
+    errors:
+      rate_limited: Too many requests. Wait for the number of seconds in the Retry-After header, then try again.
   settings:
     automatically_authorize_receivables: Automatically authorize receivable after creation?
     automatically_update_shipment_tracking_based_on_carrier_apis: Automatically update shipment tracking information based on carrier API's?

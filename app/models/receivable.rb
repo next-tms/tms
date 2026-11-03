@@ -64,18 +64,18 @@ class Receivable < ApplicationRecord
     # @todo Remove
     delegate :build_from_shipment, to: :new
 
-    def ransackable_attributes(_auth_object = nil)
-      ['balance_cents', 'due_by', 'invoiced', 'sent_at', 'total_cents', 'paid_at']
-    end
-
     def ransackable_associations(_auth_object = nil)
       ['authorized_by', 'broker_customer', 'shipment']
     end
+
+    def ransackable_attributes(auth_object = nil) = auth_object.is_a?(User) && auth_object.customer? ? super | CHARGE_COLUMNS : super
   end
 
   include AccountingSyncable
   include Discussable
   include Suppressible
+
+  CHARGE_COLUMNS = ['balance_cents', 'balance_currency', 'total_cents', 'total_currency'].freeze
 
   accounting_syncs :invoice,
                    match: -> { { document_number: shipment.load_id.to_s } },
@@ -201,8 +201,8 @@ class Receivable < ApplicationRecord
 
   def update_from_api
     update_from_accounting_invoice if Accounting.connected?
-  rescue Accounting::Error, OAuth2::Error => error
-    Sentry.capture_exception(error)
+  rescue Accounting::Error, OAuth2::Error => e
+    Sentry.capture_exception(e)
   end
 
   def missing_carrier_bol?
@@ -254,8 +254,8 @@ class Receivable < ApplicationRecord
     return shipment.carrier_pod.attached? if broker_customer.requires_carrier_pod_on_receivables?
 
     true
-  rescue Accounting::Error, OAuth2::Error => error
-    Sentry.capture_exception(error)
+  rescue Accounting::Error, OAuth2::Error => e
+    Sentry.capture_exception(e)
     false
   end
 
@@ -394,8 +394,8 @@ class Receivable < ApplicationRecord
     return unless authorized_at.blank? && Accounting.connected? && accounting_invoice.present?
 
     self.authorized_at = accounting_invoice.created_at
-  rescue Accounting::Error, OAuth2::Error => error
-    Sentry.capture_exception(error)
+  rescue Accounting::Error, OAuth2::Error => e
+    Sentry.capture_exception(e)
   end
 
   def set_balance_and_total
@@ -416,8 +416,8 @@ class Receivable < ApplicationRecord
     return if invoiced?
 
     self.invoiced = Accounting.connected? && accounting_invoice.present?
-  rescue Accounting::Error, OAuth2::Error => error
-    Sentry.capture_exception(error)
+  rescue Accounting::Error, OAuth2::Error => e
+    Sentry.capture_exception(e)
   end
 
   def set_sent_at

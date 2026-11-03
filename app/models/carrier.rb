@@ -45,9 +45,6 @@
 #
 class Carrier < ApplicationRecord
   class << self
-    def ransackable_attributes(_auth_object = nil) = ['name', 'scac']
-    def ransackable_associations(_auth_object = nil) = []
-
     def terminals_in(city:, state:)
       region_iso31662s = Transponder::ORM::Region
                          .all

@@ -130,14 +130,6 @@ class User < ApplicationRecord
     def with_role(role)
       joins(:contact).where(contact: Contact.with_role(role))
     end
-
-    def ransackable_attributes(_auth_object = nil)
-      ['companyable_type', 'email', 'first_name', 'invitation_accepted_at', 'last_name', 'last_sign_in_at']
-    end
-
-    def ransackable_associations(_auth_object = nil)
-      []
-    end
   end
 
   include HasCompanyable
