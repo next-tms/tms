@@ -102,7 +102,7 @@ services:
       interval: 2s
       timeout: 2s
       retries: 30
-    image: rustfs/rustfs:1.0.3
+    image: rustfs/rustfs:1.0.4
     networks:
       default:
         aliases:
