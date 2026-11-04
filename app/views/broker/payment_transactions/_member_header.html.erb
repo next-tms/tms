@@ -20,7 +20,7 @@
         <tr>
           <td class="lead">
             <%= link_to @payment_transaction.broker_carrier.carrier.name,
-                        payment_transactions_broker_broker_carrier_path(@payment_transaction.broker_carrier),
+                        [:broker, @payment_transaction.broker_carrier.carrier, @payment_transaction.broker_carrier, :payment_transactions],
                         target: '_blank'
             %>
           </td>

@@ -1,0 +1,6 @@
+<% provide :title, 'Payments' %>
+
+<%= render 'broker/carriers/broker_carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<%= render 'broker/payments/show_many', payments: @payments, q: @q %>

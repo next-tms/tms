@@ -73,7 +73,6 @@ class BrokerCarrier < ApplicationRecord
   end
 
   include AccountingSyncable
-  include Companyable
 
   CREDENTIAL_TYPE_COLUMNS = {
     api: %i[username password],

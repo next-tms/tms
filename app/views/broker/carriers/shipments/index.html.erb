@@ -1,0 +1,6 @@
+<% provide :title, 'Shipments' %>
+
+<%= render 'broker/carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<%= render 'broker/shipments/show_many_pricing', shipments: @shipments, q: @q %>

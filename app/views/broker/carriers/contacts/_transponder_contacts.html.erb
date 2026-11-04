@@ -1,0 +1,35 @@
+<% if transponder_contacts.present? %>
+  <h3>Shared by FreightKit</h3>
+  <p class="text-muted">Every TMS that uses this carrier sees these contacts, so they cannot be changed here.</p>
+
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped">
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Fax</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% transponder_contacts.each do |transponder_contact| %>
+          <tr>
+            <td><%= transponder_contact.department %></td>
+            <td><%= transponder_contact.name %></td>
+            <td>
+              <% if transponder_contact.phone.present? %>
+                <%= link_to transponder_contact.phone.phony_formatted, "tel:#{transponder_contact.phone}" %>
+              <% end %>
+            </td>
+            <td><%= mail_to transponder_contact.email if transponder_contact.email.present? %></td>
+            <td><%= transponder_contact.fax&.phony_formatted %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Local Contacts</h3>
+<% end %>

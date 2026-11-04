@@ -1,0 +1,35 @@
+<% provide :title, 'Terminals' %>
+
+<%= render 'broker/carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<% if @nearby_terminals %>
+  <h3>Near <%= [params[:city], params[:state]].compact_blank.join(', ') %></h3>
+
+  <% if @nearby_terminals.any? %>
+    <div class="table-responsive">
+      <table class="table table-condensed table-borderless table-striped table-hover table-unsortable">
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @nearby_terminals.each do |terminal| %>
+            <tr>
+              <td><%= terminal.address&.pretty(', ') %></td>
+              <td><%= link_to terminal.phone.phony_formatted, "tel:#{terminal.phone}" if terminal.phone.present? %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
+<% end %>
+
+<%= render 'broker/carriers/terminals/transponder_terminals', transponder_terminals: @carrier.transponder_terminals %>
+
+<%= render 'terminals/show_many', q: @q %>

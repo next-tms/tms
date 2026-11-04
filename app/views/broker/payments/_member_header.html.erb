@@ -34,7 +34,7 @@
           </td>
 
           <td class="lead">
-            <%= link_to @payment.broker_carrier.carrier.name, broker_broker_carrier_path(@payment.broker_carrier), target: '_blank' %>
+            <%= link_to @payment.broker_carrier.carrier.name, [:broker, @payment.broker_carrier.carrier, @payment.broker_carrier], target: '_blank' %>
           </td>
 
           <td class="lead">

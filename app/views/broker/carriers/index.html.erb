@@ -1,0 +1,6 @@
+<% provide :title, 'All' %>
+
+<%= render 'header' %>
+<h2><%= yield :title %></h2>
+
+<%= render 'show_many', carriers: @carriers, q: @q %>

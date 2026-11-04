@@ -79,26 +79,31 @@ Rails.application.routes.draw do
       member { get 'commissions' => 'broker_customer_sales_reps#commissions', as: :commissions }
     end
 
-    resources :broker_carriers, path: 'carriers' do
-      resources :api_keys, module: :broker_carriers, only: %i[create destroy index new show], path: 'api-keys' do
-        resource :roll, module: :api_keys, only: %i[create]
-      end
+    namespace :carriers do
+      resource :accounting, only: %i[show update]
+    end
 
-      collection do
-        get :accounting
-        patch :accounting, to: 'broker_carriers#update_accounting'
-      end
+    resources :carriers, only: %i[create index new show] do
+      scope module: :carriers do
+        resources :broker_carriers, except: %i[destroy], path: 'accounts' do
+          scope module: :broker_carriers do
+            resources :api_keys, only: %i[create destroy index new show], path: 'api-keys' do
+              resource :roll, module: :api_keys, only: %i[create]
+            end
 
-      member do
-        get :contacts
-        get :payment_transactions, path: 'bills'
-        get :payments
-        get :shipments
-        get :tariff
-        get :terminals
-        get 'terminals/search' => 'broker_carriers#search_terminals', as: :search_terminals
+            resources :payment_transactions, only: %i[index], path: 'bills'
+            resources :payments, only: %i[index]
+            resources :shipments, only: %i[index]
 
-        patch :tariff, action: :update_tariff
+            resource :tariff, only: %i[show update]
+          end
+        end
+
+        resources :contacts, only: %i[index]
+        resources :payment_transactions, only: %i[index], path: 'bills'
+        resources :payments, only: %i[index]
+        resources :shipments, only: %i[index]
+        resources :terminals, only: %i[index]
       end
     end
 
@@ -107,7 +112,7 @@ Rails.application.routes.draw do
       collection { get :unpaid }
     end
 
-    resources :contacts
+    resources :contacts, except: %i[index]
 
     resources :banks, except: %i[destroy], path: 'bank-accounts' do
       collection do

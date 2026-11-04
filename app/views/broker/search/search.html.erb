@@ -8,7 +8,7 @@
 
 <% unless params[:q].blank? %>
   <h3>Carriers</h3>
-  <%= turbo_frame_tag 'broker_carriers', src: broker_broker_carriers_path(q: { carrier_name_cont: params[:q] }) %>
+  <%= turbo_frame_tag 'carriers', src: broker_carriers_path(q: { name_or_scac_cont: params[:q] }) %>
 
   <h3>Customers</h3>
   <%= turbo_frame_tag 'broker_customers', src: broker_broker_customers_path(q: { customer_name_cont: params[:q] }) %>

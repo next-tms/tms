@@ -8,7 +8,7 @@
         <div class="btn-group">
           <%= search_form_for(q, url: request.path, method: :get, local: true, class: 'form-inline') do |f| %>
             <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
-            <%= f.text_field Broker::BrokerCarriersController::TERMINALS_FILTER, value: params[:q].try(:[], Broker::BrokerCarriersController::TERMINALS_FILTER), placeholder: 'Filter', class: 'form-control me-2' %>
+            <%= f.text_field Broker::Carriers::TerminalsController::FILTER, value: params[:q].try(:[], Broker::Carriers::TerminalsController::FILTER), placeholder: 'Filter', class: 'form-control me-2' %>
             <%= f.submit 'Filter', class: 'btn btn-primary' %>
           <% end %>
         </div>

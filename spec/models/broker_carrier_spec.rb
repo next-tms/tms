@@ -74,7 +74,6 @@ RSpec.describe(BrokerCarrier) do
   let(:carrier) { create(:carrier, :saia) }
 
   it_behaves_like 'accounting_syncable', resource: :vendor, record: 'Accounting::QuickBooks::Vendor'
-  it_behaves_like 'companyable'
 
   describe '.api_configured' do
     let!(:configured) { create(:broker_carrier, carrier:, password: 'secret', username: 'user') }

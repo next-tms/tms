@@ -1,0 +1,43 @@
+<% provide :title, @broker_carrier.carrier.name %>
+
+<%= render 'broker/carriers/broker_carriers/member_header' %>
+<h2>Overview</h2>
+
+<div class="row">
+  <div class="col col-md-8">
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <th>Account #</th>
+            <td><%= @broker_carrier.account %></td>
+          </tr>
+          <tr>
+            <th>Account Description</th>
+            <td><%= @broker_carrier.account_desc %></td>
+          </tr>
+          <tr>
+            <th>Customer-Specific Pricing</th>
+            <td>
+              <% unless @broker_carrier.broker_customer.blank? %>
+                <br>
+                <%= link_to @broker_carrier.broker_customer.customer.name, broker_broker_customer_path(@broker_carrier.broker_customer), target: '_blank' %>
+              <% else %>
+                N/A
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <th>Check Mailing Address</th>
+            <td>
+              <% if @broker_carrier.payable_check_mailing_address.present? %>
+                <address><%= address_lines(@broker_carrier.payable_check_mailing_address) %></address>
+                <%= tag.small('Imported, not saved', class: 'text-muted') if @broker_carrier.check_mailing_address.blank? %>
+              <% end %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

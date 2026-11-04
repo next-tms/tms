@@ -1,0 +1,14 @@
+<% provide :title, t('.title', model_name: APIKey.model_name.human) %>
+
+<%= render 'broker/carriers/broker_carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<%= bootstrap_form_with(model: [:broker, @carrier, @broker_carrier, @api_key], layout: :horizontal) do |f| %>
+  <%= f.alert_message t('.error', model_name: APIKey.model_name.human) %>
+
+  <%= f.text_field :name, autofocus: true %>
+
+  <%= f.form_group do %>
+    <%= f.submit t('.submit'), class: 'btn btn-primary' %>
+  <% end %>
+<% end %>

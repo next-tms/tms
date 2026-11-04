@@ -12,7 +12,7 @@
           <% @terminals.each do |terminal| %>
             <tr>
               <td><%= terminal.address.pretty(', ') %></td>
-              <td><%= link_to terminal.phone.phony_formatted, "tel:#{terminal.phone.phony_formatted}" %></td>
+              <td><%= link_to terminal.phone.phony_formatted, "tel:#{terminal.phone.phony_formatted}" if terminal.phone.present? %></td>
             </tr>
           <% end %>
         </tbody>

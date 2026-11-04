@@ -10,7 +10,7 @@ shared_examples_for 'companyable' do
   end
 
   describe '#carrier?' do
-    it { expect(record.carrier?).to(eq(record.is_a?(BrokerCarrier))) }
+    it { expect(record.carrier?).to(eq(record.is_a?(Carrier))) }
   end
 
   describe '#customer?' do

@@ -71,9 +71,9 @@
           <% unless @shipment.broker_carrier.blank? %>
             <td class="lead">
               <% if @shipment.broker_carrier.carrier.acts_as_broker? and not @shipment.tracking_carrier.blank? %>
-                <li class="list-inline-item"><%= @shipment.tracking_carrier.name %> via <%= link_to @shipment.broker_carrier.carrier.name, broker_broker_carrier_path(@shipment.broker_carrier), target: '_blank' %></li>
+                <li class="list-inline-item"><%= @shipment.tracking_carrier.name %> via <%= link_to @shipment.broker_carrier.carrier.name, [:broker, @shipment.broker_carrier.carrier, @shipment.broker_carrier], target: '_blank' %></li>
               <% else %>
-                <li class="list-inline-item"><%= link_to @shipment.broker_carrier.carrier.name, broker_broker_carrier_path(@shipment.broker_carrier), target: '_blank' %></li>
+                <li class="list-inline-item"><%= link_to @shipment.broker_carrier.carrier.name, [:broker, @shipment.broker_carrier.carrier, @shipment.broker_carrier], target: '_blank' %></li>
               <% end %>
             </td>
           <% end %>

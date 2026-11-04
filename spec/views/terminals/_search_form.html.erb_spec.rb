@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe('terminals/_search_form') do
   subject { rendered }
 
-  let(:filter) { Broker::BrokerCarriersController::TERMINALS_FILTER }
+  let(:filter) { Broker::Carriers::TerminalsController::FILTER }
 
   before do
     controller.params[:q] = { filter => 'texas' }

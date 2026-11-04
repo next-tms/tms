@@ -1,0 +1,6 @@
+<% provide :title, 'Add' %>
+
+<%= render 'broker/carriers/header' %>
+<h2><%= yield :title %></h2>
+
+<%= render 'broker/carriers/broker_carriers/form', url: [:broker, :carriers] %>

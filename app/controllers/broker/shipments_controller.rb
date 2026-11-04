@@ -253,9 +253,7 @@ class Broker::ShipmentsController < Broker::BrokerController
   def send_document
     ids = Contact.broker.ids
 
-    if params[:shipment_method] != 'broker_quote' && @shipment.broker_carrier.present?
-      ids += @shipment.broker_carrier.contacts.where(companyable: @shipment.broker_carrier).ids
-    end
+    ids += @shipment.broker_carrier.carrier.contacts.ids if params[:shipment_method] != 'broker_quote' && @shipment.broker_carrier.present?
 
     if ['broker_dispatch_sheet', 'carrier_quote'].none?(params[:shipment_method]) &&
        @shipment.broker_customer.present?

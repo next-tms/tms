@@ -1,0 +1,39 @@
+<% provide :title, 'Accounts' %>
+
+<%= render 'broker/carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<div class="btn-toolbar mb-3">
+  <div class="btn-group">
+    <%= link_to icon('solid', 'plus', 'New'), [:new, :broker, @carrier, :broker_carrier], class: 'btn' %>
+  </div>
+</div>
+
+<%= turbo_frame_tag :broker_carriers do %>
+  <% unless @broker_carriers.blank? %>
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped table-hover">
+        <thead>
+          <tr>
+            <th><%= sort_link @q, :broker_customer_customer_name, 'Customer' %></th>
+            <th><%= sort_link @q, :account, 'Account #' %></th>
+            <th><%= sort_link @q, :shipments_count, 'Shipments' %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @broker_carriers.each do |broker_carrier| %>
+            <tr>
+              <td><%= link_to broker_carrier.broker_customer&.customer&.name || 'All', [:broker, broker_carrier.carrier, broker_carrier], target: '_top' %></td>
+              <td><%= broker_carrier.account %></td>
+              <td><%= broker_carrier.shipments_count.to_i %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
+<% end %>

@@ -31,7 +31,7 @@
                 <td>
                   <% unless payment.broker_carrier.blank? %>
                     <%= link_to payment.broker_carrier.broker_customer_specific_name,
-                                payments_broker_broker_carrier_path(payment.broker_carrier),
+                                [:broker, payment.broker_carrier.carrier, payment.broker_carrier, :payments],
                                 target: '_blank'
                     %>
                   <% end %>

@@ -1,0 +1,14 @@
+<% provide :title, 'Contacts' %>
+
+<%= render 'broker/carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<div class="btn-toolbar mb-3">
+  <div class="btn-group">
+    <%= link_to icon('solid', 'plus', 'New'), new_broker_contact_path(companyable_sgid: @carrier.companyable_sgid), class: 'btn' %>
+  </div>
+</div>
+
+<%= render 'broker/carriers/contacts/transponder_contacts', transponder_contacts: @carrier.transponder_contacts %>
+
+<%= render 'broker/contacts/show_many', contacts: @contacts, q: @q %>

@@ -62,7 +62,7 @@
           <td><%= time(tracking_event.at, tracking_event.time_zone) %></td>
           <td>
             <% if defined?(search_terminals_links) && search_terminals_links %>
-              <%= link_to tracking_event.pretty_location, search_terminals_broker_broker_carrier_path(shipment.broker_carrier, city: tracking_event.city, state: tracking_event.region.abbreviation) %>
+              <%= link_to tracking_event.pretty_location, polymorphic_path([:broker, shipment.carrier || shipment.broker_carrier.carrier, Terminal], city: tracking_event.city, state: tracking_event.region.abbreviation) %>
             <% else %>
               <%= tracking_event.pretty_location %>
             <% end %>

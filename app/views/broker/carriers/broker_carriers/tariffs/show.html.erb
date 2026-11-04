@@ -1,0 +1,30 @@
+<% provide :title, 'Tariff' %>
+
+<%= render 'broker/carriers/broker_carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<% if @broker_carrier.api_configured? && @broker_carrier.carrier.find_rates_implemented? %>
+  <% if @broker_carrier.carrier.rates_with_excessive_length_fees? %>
+    <%= render 'layouts/message',
+               title: 'Nothing to configure',
+               message: 'This carrier’s API handles tariff-specific pricing on its own.'
+    %>
+  <% else %>
+    <%= bootstrap_form_with(model: @broker_carrier, url: [:broker, @carrier, @broker_carrier, :tariff]) do |f|%>
+      <%= render 'broker/carriers/broker_carriers/overlength_rules_fields', f: %>
+
+      <%= f.form_group do %>
+        <%= f.submit class: 'btn btn-primary', value: 'Save' %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= bootstrap_form_with(model: @broker_carrier, url: [:broker, @carrier, @broker_carrier, :tariff]) do |f| %>
+    <%= render 'broker/carriers/broker_carriers/pricing_rules_fields', f: %>
+    <%= render 'broker/carriers/broker_carriers/overlength_rules_fields', f: %>
+
+    <%= f.form_group do %>
+      <%= f.submit class: 'btn btn-primary', value: 'Save' %>
+    <% end %>
+  <% end %>
+<% end %>

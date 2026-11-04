@@ -18,7 +18,7 @@
 
     <% if current_user.any_role?(:accounts_payable, :carrier_relations, :dispatch) %>
       <li class="mb-2 p-2">
-        <%= link_to icon('solid', 'truck-moving', 'Carriers'), broker_broker_carriers_path, class: 'broker-carriers' %>
+        <%= link_to icon('solid', 'truck-moving', 'Carriers'), broker_carriers_path, class: 'broker-carriers carriers' %>
       </li>
     <% end %>
 

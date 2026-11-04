@@ -1,0 +1,39 @@
+<% provide :title, @carrier.name %>
+
+<%= render 'member_header' %>
+<h2>Overview</h2>
+
+<div class="row">
+  <div class="col col-md-8">
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <th>Legal Name</th>
+            <td><%= @carrier.legal_name %></td>
+          </tr>
+          <tr>
+            <th>Headquarters</th>
+            <td>
+              <% if @carrier.headquarters.present? %>
+                <address><%= address_lines(@carrier.headquarters) %></address>
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <th>Website</th>
+            <td>
+              <% if @carrier.website_url.present? %>
+                <%= link_to @carrier.website_url, @carrier.website_url, rel: 'noopener', target: '_blank' %>
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <th>US DOT / MC</th>
+            <td><%= [@carrier.us_dot_number, @carrier.mc_number].compact_blank.join(' / ') %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

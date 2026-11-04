@@ -1,0 +1,6 @@
+<% provide :title, 'Preferences' %>
+
+<%= render 'broker/carriers/broker_carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<%= render 'broker/carriers/broker_carriers/form', url: [:broker, @carrier, @broker_carrier] %>

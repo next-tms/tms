@@ -1,0 +1,30 @@
+<%= turbo_frame_tag :carriers do %>
+  <%= render 'broker/carriers/search_form', q: q %>
+
+  <% unless carriers.blank? %>
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped table-hover">
+        <thead>
+          <tr>
+            <th><%= sort_link q, :name, 'Carrier' %></th>
+            <th>Accounts</th>
+            <th>Shipments</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% carriers.each do |carrier| %>
+            <tr>
+              <td><%= link_to carrier.name, [:broker, carrier], target: '_top' %></td>
+              <td><%= carrier.broker_carriers.size %></td>
+              <td><%= carrier.broker_carriers.sum { |broker_carrier| broker_carrier.shipments_count.to_i } %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
+<% end %>

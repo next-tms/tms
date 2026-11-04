@@ -2,7 +2,7 @@
 <% provide :menu, render('menu') %>
 
 <div class="page-header">
-  <h1>Payment <% unless @payment.broker_carrier.blank? %><small><%= link_to @payment.broker_carrier.broker_customer_specific_name, broker_broker_carrier_path(@payment.broker_carrier) %></small><% end %></h1>
+  <h1>Payment <% unless @payment.broker_carrier.blank? %><small><%= link_to @payment.broker_carrier.broker_customer_specific_name, [:broker, @payment.broker_carrier.carrier, @payment.broker_carrier] %></small><% end %></h1>
   <p class="lead"><%= yield :title %></p>
 </div>
 

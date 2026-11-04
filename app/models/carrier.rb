@@ -76,6 +76,10 @@ class Carrier < ApplicationRecord
   has_many :broker_carriers, dependent: :restrict_with_error
   has_many :terminals, dependent: :destroy
 
+  has_many :payment_transactions, through: :broker_carriers
+  has_many :payments, through: :broker_carriers
+  has_many :shipments, through: :broker_carriers
+
   belongs_to :broker_billing_address, class_name: 'Address', optional: true
   belongs_to :check_mailing_address, class_name: 'Address', optional: true
 

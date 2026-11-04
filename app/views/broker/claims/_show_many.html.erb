@@ -22,7 +22,7 @@
               <td>
                 <% unless claim.shipment.broker_carrier.blank? %>
                   <%= link_to claim.shipment.broker_carrier.broker_customer_specific_name,
-                              broker_broker_carrier_path(claim.shipment.broker_carrier),
+                              [:broker, claim.shipment.broker_carrier.carrier, claim.shipment.broker_carrier],
                               target: '_blank'
                   %>
                 <% end %>

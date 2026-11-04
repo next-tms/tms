@@ -206,36 +206,6 @@ en:
       update_accounting:
         failure: Unable to update accounting accounts
         success: Accounting accounts updated
-    broker_carriers:
-      api_keys:
-        destroy:
-          destroyed: Destroyed %{model_name} “%{name}”
-        index:
-          intro_html: >-
-            %{model_name_plural} let this carrier send invoices to <code>/api/dsdc/v1/invoices</code> and supporting documents to
-            <code>/api/dsdc/v1/documents</code> with the NMFTA DSDC Invoice and Documents API. Each invoice becomes a bill. Send the key to
-            the carrier. The carrier sends it in the <code>X-API-Key</code> header or as <code>Authorization: Bearer</code>. Carrier keys do
-            not expire. Roll or destroy a key to stop it.
-          never: Never
-          new: New
-        new:
-          error: "Unable to save %{model_name}:"
-          submit: Save
-          title: New %{model_name}
-        show:
-          copy: Click the key to copy it.
-          destroy: Destroy
-          destroy_confirm: Destroy “%{name}”? Requests that use it will fail.
-          never: Never
-          roll: Roll
-          roll_confirm: This will replace the %{model_name} with a new one. The current key stops working in %{grace_period}. Are you sure?
-      update:
-        failure: Unable to update carrier
-      update_accounting:
-        failure: Unable to update accounting vendors
-        success: Accounting vendors updated
-      update_tariff:
-        success: Tariff updated
     broker_countries:
       create:
         failure: Unable to add country
@@ -243,6 +213,39 @@ en:
       update_accounting:
         failure: Unable to update accounting customers
         success: Accounting customers updated
+    carriers:
+      accountings:
+        update:
+          failure: Unable to update accounting vendors
+          success: Accounting vendors updated
+      broker_carriers:
+        api_keys:
+          destroy:
+            destroyed: Destroyed %{model_name} “%{name}”
+          index:
+            intro_html: >-
+              %{model_name_plural} let this carrier send invoices to <code>/api/dsdc/v1/invoices</code> and supporting documents to
+              <code>/api/dsdc/v1/documents</code> with the NMFTA DSDC Invoice and Documents API. Each invoice becomes a bill. Send the key to
+              the carrier. The carrier sends it in the <code>X-API-Key</code> header or as <code>Authorization: Bearer</code>. Carrier keys do
+              not expire. Roll or destroy a key to stop it.
+            never: Never
+            new: New
+          new:
+            error: "Unable to save %{model_name}:"
+            submit: Save
+            title: New %{model_name}
+          show:
+            copy: Click the key to copy it.
+            destroy: Destroy
+            destroy_confirm: Destroy “%{name}”? Requests that use it will fail.
+            never: Never
+            roll: Roll
+            roll_confirm: This will replace the %{model_name} with a new one. The current key stops working in %{grace_period}. Are you sure?
+        tariffs:
+          update:
+            success: Tariff updated
+        update:
+          failure: Unable to update carrier
     claims:
       new:
         missing_shipment: Cannot open a claim without a shipment

@@ -4,5 +4,5 @@
 <h2><%= yield :title %></h2>
 
 <%= turbo_frame_tag :broker_carriers do %>
-  <%= render 'broker/broker_carriers/show_many', broker_carriers: @broker_carriers, q: @q %>
+  <%= render 'broker/carriers/broker_carriers/show_many', broker_carriers: @broker_carriers, q: @q %>
 <% end %>

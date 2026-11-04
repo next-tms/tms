@@ -1,0 +1,7 @@
+<nav class="nav border-top pt-4 mb-0">
+  <%= link_to 'All', broker_carriers_path, class: 'nav-link carriers-index' %>
+
+  <% if Accounting.connected? && current_user.role?(:accounts_payable) %>
+    <%= link_to 'Accounting', [:broker, :carriers, :accounting], class: 'nav-link broker-carriers-accounting' %>
+  <% end %>
+</nav>

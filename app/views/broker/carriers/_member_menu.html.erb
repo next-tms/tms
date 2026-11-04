@@ -1,0 +1,11 @@
+<nav class="nav border-top pt-4 mb-0">
+  <%= link_to 'Overview', [:broker, @carrier], class: 'nav-link carriers-show' %>
+  <%= link_to 'Accounts', [:broker, @carrier, :broker_carriers], class: 'nav-link broker-carriers-index' %>
+  <%= link_to 'Shipments', [:broker, @carrier, :shipments], class: 'nav-link shipments-index' %>
+  <% if current_user.any_role?(:accounts_payable, :root) %>
+    <%= link_to 'Bills', [:broker, @carrier, :payment_transactions], class: 'nav-link payment-transactions-index' %>
+    <%= link_to 'Payments', [:broker, @carrier, :payments], class: 'nav-link payments-index' %>
+  <% end %>
+  <%= link_to 'Contacts', [:broker, @carrier, :contacts], class: 'nav-link contacts-index' %>
+  <%= link_to 'Terminals', [:broker, @carrier, :terminals], class: 'nav-link terminals-index' %>
+</nav>

@@ -52,6 +52,8 @@ RSpec.describe(Carrier) do
   let(:saia) { build(:carrier, :saia) }
   let(:tql) { build(:carrier, :tql) }
 
+  it_behaves_like 'companyable'
+
   describe '.ransackable_attributes' do
     it { expect(described_class.ransackable_attributes).to(include('name', 'scac')) }
     it { expect(described_class.ransackable_attributes).not_to(include('encrypted_api_key', 'encrypted_proxy_url')) }
@@ -86,6 +88,10 @@ RSpec.describe(Carrier) do
   describe 'relationships' do
     it { is_expected.to(have_many(:broker_carriers).dependent(:restrict_with_error)) }
     it { is_expected.to(have_many(:terminals).dependent(:destroy)) }
+
+    it { is_expected.to(have_many(:payment_transactions).through(:broker_carriers)) }
+    it { is_expected.to(have_many(:payments).through(:broker_carriers)) }
+    it { is_expected.to(have_many(:shipments).through(:broker_carriers)) }
 
     it { is_expected.to(belong_to(:broker_billing_address).required(false)) }
     it { is_expected.to(belong_to(:check_mailing_address).required(false)) }
