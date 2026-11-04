@@ -26,7 +26,7 @@ RSpec.describe(Mutations::QuoteCreate) do
   let(:variables) do
     {
       input: {
-        accessorialCodes:,
+        accessorialCodes: accessorial_codes,
         packages: [{ quantity: 2, weight: 500 }],
         pickupOn: '2026-11-03',
         receiverAddress: { city: 'Fremont', regionIso31662: 'US_CA', street: '4011 Lana Tier', zipCode: '94536' },
@@ -64,6 +64,15 @@ RSpec.describe(Mutations::QuoteCreate) do
     it { expect { result }.not_to(change(Shipment, :count)) }
     it { expect(error['extensions']).to(eq('accessorialCodes' => ['inside_delivery'], 'code' => 'UNSERVICEABLE_ACCESSORIALS')) }
     it { expect(error['message']).to(eq('Accessorials not offered: inside_delivery')) }
+  end
+
+  context 'with a blanket accessorial' do
+    let(:broker_accessorial) { create(:broker_accessorial, accessorial:, broker_customer: nil) }
+
+    before { result }
+
+    it { expect(result['errors']).to(be_nil) }
+    it { expect(shipment.shipment_broker_accessorials.pluck(:broker_accessorial_id)).to(include(broker_accessorial.id)) }
   end
 
   context 'when the user is a broker' do

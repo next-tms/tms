@@ -31,7 +31,7 @@ module Mutations
                               .broker_customer
                               .eligible_broker_accessorials
                               .joins(:accessorial)
-                              .where(accessorial: { freight_kit_code: accessorial_codes })
+                              .where(accessorials: { freight_kit_code: accessorial_codes })
         unserviceable_codes = accessorial_codes.uniq - broker_accessorials.pluck('accessorials.freight_kit_code')
         raise_unserviceable_accessorials(unserviceable_codes) if unserviceable_codes.any?
 
