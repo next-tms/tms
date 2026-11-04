@@ -68,7 +68,10 @@ group :development do
 
   gem 'annotaterb'
   gem 'bullet', '~> 8.1.0'
+
   gem 'letter_opener'
+  gem 'nkf'
+
   gem 'listen', '>= 3.0.5', '< 3.10'
   gem 'rails_real_favicon'
   gem 'spring', '~> 4.1.1'
