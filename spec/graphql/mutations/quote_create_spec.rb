@@ -5,6 +5,7 @@ RSpec.describe(Mutations::QuoteCreate) do
 
   let(:authorizable) { create(:customer_user, companyable: broker_customer) }
   let(:accessorial) { create(:accessorial, freight_kit_code: 'liftgate_delivery') }
+  let(:accessorial_codes) { ['liftgate_delivery'] }
   let(:broker_accessorial) { create(:broker_accessorial, accessorial:, broker_customer:) }
   let(:broker_carrier) { create(:broker_carrier, carrier: create(:carrier, scac: 'ABCD')) }
   let(:broker_customer) { create(:broker_customer) }
@@ -25,7 +26,7 @@ RSpec.describe(Mutations::QuoteCreate) do
   let(:variables) do
     {
       input: {
-        accessorialCodes: ['liftgate_delivery', 'unknown'],
+        accessorialCodes:,
         packages: [{ quantity: 2, weight: 500 }],
         pickupOn: '2026-11-03',
         receiverAddress: { city: 'Fremont', regionIso31662: 'US_CA', street: '4011 Lana Tier', zipCode: '94536' },
@@ -54,6 +55,15 @@ RSpec.describe(Mutations::QuoteCreate) do
     it { expect(shipment).to(be_quote_only) }
     it { expect(shipment.items.pluck(:quantity, :weight)).to(eq([[2, 500]])) }
     it { expect(shipment.shipment_broker_accessorials.pluck(:broker_accessorial_id)).to(eq([broker_accessorial.id])) }
+  end
+
+  context 'with an accessorial the customer is not offered' do
+    let(:accessorial_codes) { ['liftgate_delivery', 'inside_delivery', 'inside_delivery'] }
+    let(:error) { result['errors'].sole }
+
+    it { expect { result }.not_to(change(Shipment, :count)) }
+    it { expect(error['extensions']).to(eq('accessorialCodes' => ['inside_delivery'], 'code' => 'UNSERVICEABLE_ACCESSORIALS')) }
+    it { expect(error['message']).to(eq('Accessorials not offered: inside_delivery')) }
   end
 
   context 'when the user is a broker' do
