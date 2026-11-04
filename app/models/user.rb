@@ -150,7 +150,7 @@ class User < ApplicationRecord
 
   before_invitation_created :set_time_zone_name, if: -> { new_record? && time_zone_name.blank? }
 
-  has_many :api_keys, as: :authorizable, dependent: :destroy
+  has_many :api_keys, dependent: :destroy
   has_many :broker_customer_sales_reps, dependent: :destroy
   has_many :commissions, dependent: :restrict_with_error
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: 'Noticed::Notification'

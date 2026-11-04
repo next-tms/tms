@@ -14,7 +14,7 @@ RSpec.describe('DSDC::BOLs') do
   end
 
   describe 'DELETE /api/dsdc/bol/v1/app/:pro' do
-    let(:existing) { create(:shipment, :usd, broker_customer: api_key.authorizable.companyable, picked_up_at:) }
+    let(:existing) { create(:shipment, :usd, broker_customer: api_key.user.companyable, picked_up_at:) }
 
     before { delete("/api/dsdc/bol/v1/app/#{existing.load_id}", headers:) }
 
@@ -35,7 +35,7 @@ RSpec.describe('DSDC::BOLs') do
 
   describe 'POST /api/dsdc/bol/v1/app' do
     context 'when the API key belongs to a broker user' do
-      let(:api_key) { create(:api_key, authorizable: broker_user) }
+      let(:api_key) { create(:api_key, user: broker_user) }
       let(:body) { super().deep_merge('billTo' => { 'account' => broker_customer.id.to_s }) }
       let(:broker_customer) { create(:broker_customer) }
       let(:broker_user) { create(:broker_user).tap { |user| user.contact.add_role(:dispatch) } }
@@ -126,7 +126,7 @@ RSpec.describe('DSDC::BOLs') do
     end
 
     context 'when the request names an existing PRO' do
-      let(:existing) { create(:shipment, :usd, broker_customer: api_key.authorizable.companyable, bol: '1001', picked_up_at: nil) }
+      let(:existing) { create(:shipment, :usd, broker_customer: api_key.user.companyable, bol: '1001', picked_up_at: nil) }
 
       before { post("/api/dsdc/bol/v1/app?pro=#{existing.load_id}", headers:, params: body.to_json) }
 
@@ -141,15 +141,7 @@ RSpec.describe('DSDC::BOLs') do
       it { expect(json['messageStatus']).to(include('status' => 'WARNING')) }
       it { expect(json.dig('messageStatus', 'information', 0, 'message')).to(include('XYZ')) }
 
-      it do
-        expect(shipment).to(
-          have_attributes(
-            bol: '5550001',
-            broker_customer: api_key.authorizable.companyable,
-            customer_reference: '7770001'
-          )
-        )
-      end
+      it { expect(shipment).to(have_attributes(bol: '5550001', broker_customer: api_key.user.companyable, customer_reference: '7770001')) }
 
       it do
         expect(shipment).to(have_attributes(pickup_hours_end_at: '4:30 PM', pickup_hours_start_at: '9:00 AM',
@@ -164,7 +156,7 @@ RSpec.describe('DSDC::BOLs') do
   end
 
   describe 'PUT /api/dsdc/bol/v1/app/:pro' do
-    let(:existing) { create(:shipment, :usd, broker_customer: api_key.authorizable.companyable, picked_up_at: nil) }
+    let(:existing) { create(:shipment, :usd, broker_customer: api_key.user.companyable, picked_up_at: nil) }
 
     before do
       body['bol']['function'] = 'Update'

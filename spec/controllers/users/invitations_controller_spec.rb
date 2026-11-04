@@ -55,6 +55,29 @@ RSpec.describe(Users::InvitationsController) do
       it { expect(ActionMailer::Base.deliveries).not_to(be_empty) }
     end
 
+    context 'when inviting a carrier user from a contact' do
+      let(:carrier) { create(:carrier) }
+      let(:contact) { create(:contact, companyable: carrier, email: 'billing@acme.test', first_name: 'Billie', last_name: 'Ng') }
+      let(:params) do
+        {
+          user: {
+            companyable_id: carrier.id,
+            companyable_type: 'Carrier',
+            contact_id: contact.id,
+            email: contact.email,
+            first_name: contact.first_name,
+            last_name: contact.last_name
+          }
+        }
+      end
+
+      before { invite }
+
+      it { is_expected.to(redirect_to("/broker/carriers/#{carrier.id}/users")) }
+      it { expect(User.last).to(have_attributes(carrier?: true, companyable: carrier, contact:)) }
+      it { expect(User.last.time_zone_name).to(eq('America/Chicago')) }
+    end
+
     context 'when inviting a customer user' do
       let(:broker_customer) { create(:broker_customer) }
       let(:params) do

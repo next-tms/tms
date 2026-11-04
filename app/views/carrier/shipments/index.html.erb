@@ -1,0 +1,42 @@
+<% provide :title, 'Shipments' %>
+
+<div class="page-header p-4 mb-4">
+  <h1 class="mb-0"><%= current_user.companyable.name %></h1>
+  <p class="lead mb-0"><%= @broker_carrier.broker_customer&.customer&.name || Setting.value!(:name) %></p>
+</div>
+<h2><%= yield :title %></h2>
+
+<% if @shipments.any? %>
+  <%= render 'layouts/pagy', pagy: @pagy %>
+
+  <div class="table-responsive">
+    <table class="table table-condensed table-borderless table-striped table-hover h-100">
+      <thead>
+        <tr>
+          <th><%= sort_link @q, :load_id, 'Load' %></th>
+          <th><%= sort_link @q, :pro, 'PRO' %></th>
+          <th>Shipper</th>
+          <th>Receiver</th>
+          <th><%= sort_link @q, :picked_up_at, 'Picked Up' %></th>
+          <th><%= sort_link @q, :delivered_at, 'Delivered' %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @shipments.each do |shipment| %>
+          <tr>
+            <td><%= shipment.load_id %></td>
+            <td><%= shipment.pro %></td>
+            <td><%= shipment.shipper_address&.pretty(', ') %></td>
+            <td><%= shipment.receiver_address&.pretty(', ') %></td>
+            <td><%= time(shipment.picked_up_at) %></td>
+            <td><%= time(shipment.delivered_at) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%= render 'layouts/pagy', pagy: @pagy %>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>

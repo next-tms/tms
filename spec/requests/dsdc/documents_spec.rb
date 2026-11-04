@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe('DSDC::Documents') do
-  let(:api_key) { create(:api_key, :broker_carrier, authorizable: broker_carrier) }
+  let(:api_key) { create(:api_key, user: create(:carrier_user, companyable: broker_carrier.carrier)) }
   let(:body) do
     {
       DOT: '1234567',
@@ -113,6 +113,17 @@ RSpec.describe('DSDC::Documents') do
       it { is_expected.to(have_http_status(:bad_request)) }
       it { expect(json).to(eq(['500'])) }
     end
+
+    context 'when another account of the carrier has a bill with the same invoice number' do
+      let(:other_account) { create(:broker_carrier, broker_customer: create(:broker_customer), carrier: broker_carrier.carrier) }
+
+      before do
+        create(:payment_transaction, broker_carrier: other_account, dsdc_invoice: {}, invoice: 'CARRIER-INV-100', shipment:)
+        get('/api/dsdc/v1/documents/CARRIER-INV-100', headers:)
+      end
+
+      it { is_expected.to(have_http_status(:not_found)) }
+    end
   end
 
   describe 'POST /api/dsdc/v1/documents' do
@@ -139,6 +150,21 @@ RSpec.describe('DSDC::Documents') do
 
       it { is_expected.to(have_http_status(:bad_request)) }
       it { expect(json).to(eq(['400'])) }
+    end
+
+    context 'when another account of the carrier has a bill with the same unique ID and invoice' do
+      let(:body) do
+        build(:payment_transaction, duplicate_attributes).save!(validate: false)
+
+        super()
+      end
+      let(:duplicate_attributes) do
+        { broker_carrier: other_account, dsdc_invoice: {}, dsdc_unique_id: 'INV-UNIQUE-1', invoice: 'CARRIER-INV-100', shipment: }
+      end
+      let(:other_account) { create(:broker_carrier, broker_customer: create(:broker_customer), carrier: broker_carrier.carrier) }
+
+      it { is_expected.to(have_http_status(:not_found)) }
+      it { expect(payment_transaction.reload.dsdc_documents).not_to(be_attached) }
     end
 
     context 'with an invoice that does not exist' do

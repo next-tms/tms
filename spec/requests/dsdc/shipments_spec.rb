@@ -4,7 +4,7 @@ RSpec.describe('DSDC::Shipments') do
   let(:api_key) { create(:api_key) }
   let(:headers) { { 'X-API-Key' => api_key.token } }
   let(:json) { response.parsed_body }
-  let!(:shipment) { create(:shipment, broker_customer: api_key.authorizable.companyable, bol: '1001', customer_reference: '2002') }
+  let!(:shipment) { create(:shipment, broker_customer: api_key.user.companyable, bol: '1001', customer_reference: '2002') }
 
   describe 'GET /api/dsdc/shipment/pro/:pro/verified' do
     context 'when the shipment belongs to the API key user' do
@@ -23,7 +23,7 @@ RSpec.describe('DSDC::Shipments') do
         create(
           :shipment,
           bol: '1001',
-          broker_customer: api_key.authorizable.companyable,
+          broker_customer: api_key.user.companyable,
           customer_reference: '2002',
           tracking_carrier: create(:carrier, updated_at: 1.day.from_now)
         )
@@ -39,7 +39,7 @@ RSpec.describe('DSDC::Shipments') do
         create(
           :shipment,
           bol: '1001',
-          broker_customer: api_key.authorizable.companyable,
+          broker_customer: api_key.user.companyable,
           customer_reference: '2002',
           receiver_address: create(:address, updated_at: 1.day.from_now)
         )
@@ -62,7 +62,7 @@ RSpec.describe('DSDC::Shipments') do
     end
 
     context 'when the customer changed after the shipment' do
-      let(:customer) { api_key.authorizable.companyable.customer }
+      let(:customer) { api_key.user.companyable.customer }
 
       before do
         customer.update!(updated_at: 1.day.from_now)
@@ -96,7 +96,7 @@ RSpec.describe('DSDC::Shipments') do
       let!(:shipment) do
         create(
           :shipment,
-          broker_customer: api_key.authorizable.companyable,
+          broker_customer: api_key.user.companyable,
           delivered_at: nil,
           delivery_appointment_at: nil,
           delivery_appointment_on: nil,
@@ -126,7 +126,7 @@ RSpec.describe('DSDC::Shipments') do
       let!(:shipment) do
         create(
           :shipment,
-          broker_customer: api_key.authorizable.companyable,
+          broker_customer: api_key.user.companyable,
           delivered_at: nil,
           delivery_appointment_at: nil,
           delivery_appointment_on: nil,
@@ -250,7 +250,7 @@ RSpec.describe('DSDC::Shipments') do
       let!(:shipment) do
         create(
           :shipment,
-          broker_customer: api_key.authorizable.companyable,
+          broker_customer: api_key.user.companyable,
           delivered_at: nil,
           delivery_appointment_at: nil,
           delivery_appointment_on: nil,
@@ -278,8 +278,8 @@ RSpec.describe('DSDC::Shipments') do
     end
 
     context 'with a broker carrier API key' do
-      let(:api_key) { create(:api_key, :broker_carrier) }
-      let!(:shipment) { create(:shipment, broker_carrier: api_key.authorizable) }
+      let(:api_key) { create(:api_key, :carrier) }
+      let!(:shipment) { create(:shipment, broker_carrier: create(:broker_carrier, carrier: api_key.user.companyable)) }
       let(:start_date) { shipment.pickup_on }
 
       it { expect(response).to(have_http_status(:not_found)) }

@@ -1,0 +1,56 @@
+<% provide :title, 'Users' %>
+
+<%= render 'broker/carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<% if @users.any? %>
+  <%= render 'layouts/pagy', pagy: @pagy %>
+
+  <div class="table-responsive">
+    <table class="table table-condensed table-borderless table-striped table-hover h-100">
+      <thead>
+        <tr>
+          <th><%= sort_link @q, :first_name, 'Name' %></th>
+          <th><%= sort_link @q, :email, 'Email' %></th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td><%= current_user.role?(:root) ? link_to(user.full_name, [:broker, user]) : user.full_name %></td>
+            <td><%= user.email %></td>
+            <td><%= carrier_user_status(user) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%= render 'layouts/pagy', pagy: @pagy %>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>
+
+<% if @uninvited_contacts.any? %>
+  <h3>Contacts</h3>
+
+  <div class="table-responsive">
+    <table class="table table-condensed table-borderless table-striped table-hover h-100">
+      <tbody>
+        <% @uninvited_contacts.each do |contact| %>
+          <tr>
+            <td><%= link_to contact.full_name, [:broker, contact] %></td>
+            <td><%= contact.email %></td>
+            <td class="text-end">
+              <%= link_to 'Invite',
+                          new_user_invitation_path(companyable_id: @carrier.id, companyable_type: 'Carrier', contact_id: contact.id),
+                          class: 'btn btn-sm btn-primary'
+              %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

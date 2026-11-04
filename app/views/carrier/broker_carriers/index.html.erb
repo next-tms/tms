@@ -1,0 +1,21 @@
+<% provide :title, 'Accounts' %>
+
+<div class="page-header p-4 mb-4">
+  <h1 class="mb-0"><%= current_user.companyable.name %></h1>
+</div>
+<h2><%= yield :title %></h2>
+
+<p>Choose the account you want to work under.</p>
+
+<% if @broker_carriers.any? %>
+  <div class="list-group">
+    <% @broker_carriers.each do |broker_carrier| %>
+      <%= link_to broker_carrier.broker_customer&.customer&.name || Setting.value!(:name),
+                  carrier_broker_carrier_shipments_path(broker_carrier),
+                  class: 'list-group-item list-group-item-action'
+      %>
+    <% end %>
+  </div>
+<% else %>
+  <%= render 'layouts/no_content' %>
+<% end %>

@@ -7,22 +7,6 @@ RSpec.describe(DocumentPolicy) do
   describe '#view?' do
     subject { policy.apply(:view?) }
 
-    context 'when authorizable.is_a?(BrokerCarrier)' do
-      let(:policy) { described_class.new(ActiveStorage::Attachment.new(name:), authorizable: build(:broker_carrier)) }
-
-      context 'with broker_dispatch_sheet' do
-        let(:name) { 'broker_dispatch_sheet' }
-
-        it { is_expected.to(be(true)) }
-      end
-
-      context 'with invoice' do
-        let(:name) { 'invoice' }
-
-        it { is_expected.to(be(false)) }
-      end
-    end
-
     context 'when authorizable.broker?' do
       let(:name) { 'broker_carrier_quote' }
 
@@ -30,7 +14,7 @@ RSpec.describe(DocumentPolicy) do
     end
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
 
       DocumentPolicy::CARRIER_NAMES.each do |document_name|
         context "with #{document_name}" do

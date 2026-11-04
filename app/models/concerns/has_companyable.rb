@@ -7,6 +7,7 @@ module HasCompanyable
     normalizes :companyable_type, with: ->(companyable_type) { companyable_type.presence }
 
     scope :broker, -> { where(companyable: nil) }
+    scope :carrier, -> { where(companyable_type: 'Carrier') }
     scope :customer, -> { where(companyable_type: 'BrokerCustomer') }
 
     validates :companyable, presence: true, if: :companyable_type?
@@ -14,11 +15,9 @@ module HasCompanyable
 
   def broker? = companyable_id.nil? && companyable_type.nil?
 
-  def carrier? = companyable.is_a?(BrokerCarrier)
+  def carrier? = companyable.is_a?(Carrier)
 
-  def companyable_sgid
-    companyable&.to_sgid_param
-  end
+  def companyable_sgid = companyable&.companyable_sgid
 
   def companyable_sgid=(sgid)
     self.companyable = GlobalID::Locator.locate_signed(sgid)

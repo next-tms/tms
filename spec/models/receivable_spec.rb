@@ -66,7 +66,7 @@ RSpec.describe(Receivable) do
 
   describe '.ransackable_attributes' do
     it { expect(described_class.ransackable_attributes(build(:customer_user))).to(include(*described_class::CHARGE_COLUMNS)) }
-    it { expect(described_class.ransackable_attributes(build(:user, companyable: build(:broker_carrier)))).not_to(include('total_cents')) }
+    it { expect(described_class.ransackable_attributes(build(:carrier_user))).not_to(include('total_cents')) }
     it { expect(described_class.ransackable_attributes).not_to(include('total_cents')) }
   end
 

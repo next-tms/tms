@@ -31,7 +31,7 @@ RSpec.describe(Types::ShipmentType) do
   it { expect(queries_from('broker_customers').size).to(eq(1)) }
 
   context 'when the user is a carrier' do
-    let(:authorizable) { create(:user, companyable: broker_carrier) }
+    let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
 
     it { expect(items.pluck('brokerCarrier')).to(all(eq('id' => broker_carrier.id.to_s))) }
     it { expect(items.pluck('brokerCustomer')).to(all(be_nil)) }
@@ -64,7 +64,7 @@ RSpec.describe(Types::ShipmentType) do
     it { expect(queries_from('receivables').size).to(eq(1)) }
 
     context 'when the user is a carrier' do
-      let(:authorizable) { create(:user, companyable: broker_carrier) }
+      let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
 
       it { expect(kinds).to(contain_exactly('CARRIER_QUOTE', 'DISPATCH_SHEET', 'POD', 'SCANNED_BOL')) }
     end
@@ -121,7 +121,7 @@ RSpec.describe(Types::ShipmentType) do
     it { expect(items.first.values).to(all(be_present)) }
 
     context 'when the user is a carrier' do
-      let(:authorizable) { create(:user, companyable: broker_carrier) }
+      let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
 
       it { expect(errors).to(include("Field 'carrierChargeCents' doesn't exist on type 'Shipment'")) }
 
@@ -154,7 +154,7 @@ RSpec.describe(Types::ShipmentType) do
     it { expect(items.first).to(eq('brokerAndBrokerCustomerNotes' => 'Shared', 'brokerNotes' => 'Internal')) }
 
     context 'when the user is a carrier' do
-      let(:authorizable) { create(:user, companyable: broker_carrier) }
+      let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
 
       it { expect(errors).to(include("Field 'brokerAndBrokerCustomerNotes' doesn't exist on type 'Shipment'")) }
       it { expect(errors).to(include("Field 'brokerNotes' doesn't exist on type 'Shipment'")) }

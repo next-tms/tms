@@ -4,7 +4,7 @@ RSpec.describe('DSDC authentication') do
   let(:api_key) { create(:api_key) }
   let(:json) { response.parsed_body }
   let(:path) { "/api/dsdc/shipment/pro/#{shipment.load_id}/verified" }
-  let(:shipment) { create(:shipment, broker_customer: api_key.authorizable.companyable) }
+  let(:shipment) { create(:shipment, broker_customer: api_key.user.companyable) }
 
   context 'with a Bearer token' do
     before { get(path, headers: { 'Authorization' => "Bearer #{api_key.token}" }) }
@@ -30,7 +30,7 @@ RSpec.describe('DSDC authentication') do
   end
 
   context 'when the user is deactivated' do
-    let(:api_key) { create(:api_key, authorizable: create(:customer_user, deactivated: true)) }
+    let(:api_key) { create(:api_key, user: create(:customer_user, deactivated: true)) }
 
     before { get(path, headers: { 'X-API-Key' => api_key.token }) }
 
@@ -38,7 +38,7 @@ RSpec.describe('DSDC authentication') do
   end
 
   context 'with a broker carrier key' do
-    let(:api_key) { create(:api_key, :broker_carrier) }
+    let(:api_key) { create(:api_key, :carrier) }
     let(:shipment) { create(:shipment) }
 
     before { get(path, headers: { 'X-API-Key' => api_key.token }) }

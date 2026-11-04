@@ -6,12 +6,12 @@ class DSDC::InvoicesController < DSDC::CarrierController
     @payment_transaction = PaymentTransaction.new
     authorize!(@payment_transaction, to: :manage?)
 
-    unless @invoice.mc_matches?(current_broker_carrier.carrier.mc_number)
+    unless @invoice.mc_matches?(current_user.companyable.mc_number)
       render_errors('300')
       return
     end
 
-    unless @payment_transaction.update(@invoice.payment_transaction_attributes(current_broker_carrier))
+    unless @payment_transaction.update(@invoice.payment_transaction_attributes(current_user.companyable))
       render_errors('300')
       return
     end
@@ -50,7 +50,7 @@ class DSDC::InvoicesController < DSDC::CarrierController
       return
     end
 
-    unless @invoice.mc_matches?(current_broker_carrier.carrier.mc_number)
+    unless @invoice.mc_matches?(current_user.companyable.mc_number)
       render_errors('300')
       return
     end
@@ -61,7 +61,7 @@ class DSDC::InvoicesController < DSDC::CarrierController
         return
       end
 
-      unless @payment_transaction.update(@invoice.payment_transaction_attributes(current_broker_carrier))
+      unless @payment_transaction.update(@invoice.payment_transaction_attributes(current_user.companyable))
         render_errors('300')
         return
       end
@@ -73,5 +73,5 @@ class DSDC::InvoicesController < DSDC::CarrierController
   private
 
   def set_invoice = @invoice = DSDC::InvoicePayload.new(request.request_parameters)
-  def set_payment_transaction = @payment_transaction = @payment_transactions.find_by!(dsdc_unique_id: params[:unique_id])
+  def set_payment_transaction = @payment_transaction = @payment_transactions.where(dsdc_unique_id: params[:unique_id]).sole
 end

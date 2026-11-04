@@ -16,8 +16,8 @@ RSpec.describe(TrackingEventPolicy) do
       it { is_expected.to(be(false)) }
     end
 
-    context 'when public and authorizable.is_a?(BrokerCarrier)' do
-      let(:policy) { described_class.new(build(:tracking_event, public: true), authorizable: build(:broker_carrier)) }
+    context 'when public and authorizable.carrier?' do
+      let(:policy) { described_class.new(build(:tracking_event, public: true), authorizable: build(:carrier_user)) }
 
       it { is_expected.to(be(true)) }
     end

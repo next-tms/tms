@@ -6,10 +6,10 @@ RSpec.describe('DSDC::PickupRequests') do
   let(:headers) { { 'Content-Type' => 'application/json', 'X-API-Key' => api_key.token } }
   let(:json) { response.parsed_body }
   let(:pickup_request) do
-    create(:pickup_request, accepted_pickup_on: shipment.pickup_on, created_by: api_key.authorizable, shipments: [shipment])
+    create(:pickup_request, accepted_pickup_on: shipment.pickup_on, created_by: api_key.user, shipments: [shipment])
   end
   let(:shipment) do
-    create(:shipment, :usd, broker_customer: api_key.authorizable.companyable, picked_up_at: nil, pickup_driver_assigned_at: nil)
+    create(:shipment, :usd, broker_customer: api_key.user.companyable, picked_up_at: nil, pickup_driver_assigned_at: nil)
   end
 
   describe 'DELETE /api/dsdc/v1/pickups/:pickup_id' do
@@ -122,7 +122,7 @@ RSpec.describe('DSDC::PickupRequests') do
     end
 
     context 'when the shipment was picked up' do
-      let(:shipment) { create(:shipment, :usd, broker_customer: api_key.authorizable.companyable) }
+      let(:shipment) { create(:shipment, :usd, broker_customer: api_key.user.companyable) }
 
       before { post('/api/dsdc/v1/pickups', headers:, params: body.to_json) }
 
@@ -140,13 +140,13 @@ RSpec.describe('DSDC::PickupRequests') do
                                                    pickup_on: Date.new(2026, 11, 2)))
       end
 
-      it { expect(shipment.reload.pickup_request.created_by).to(eq(api_key.authorizable)) }
+      it { expect(shipment.reload.pickup_request.created_by).to(eq(api_key.user)) }
       it { expect(PickupRequest.count).to(eq(1)) }
     end
   end
 
   describe 'PUT /api/dsdc/v1/pickups/:pickup_id' do
-    let(:other_shipment) { create(:shipment, :usd, broker_customer: api_key.authorizable.companyable, pickup_request:) }
+    let(:other_shipment) { create(:shipment, :usd, broker_customer: api_key.user.companyable, pickup_request:) }
 
     before do
       other_shipment

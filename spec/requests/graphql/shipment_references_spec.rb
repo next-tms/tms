@@ -26,7 +26,7 @@ RSpec.describe('GraphQL shipment references') do
   before { post('/graphql', headers:, params: { query: }) }
 
   context 'with a customer API key' do
-    let(:api_key) { create(:api_key, authorizable: create(:customer_user, companyable: broker_customer)) }
+    let(:api_key) { create(:api_key, user: create(:customer_user, companyable: broker_customer)) }
     let(:query) { '{ shipments { items { loadId pro } } }' }
 
     it { expect(items.pluck('loadId')).to(contain_exactly(pro_only_shipment.load_id, tracked_shipment.load_id)) }
@@ -89,8 +89,8 @@ RSpec.describe('GraphQL shipment references') do
     end
   end
 
-  context 'with a broker carrier API key' do
-    let(:api_key) { create(:api_key, :broker_carrier, authorizable: broker_carrier) }
+  context 'with a carrier user API key' do
+    let(:api_key) { create(:api_key, user: create(:carrier_user, companyable: broker_carrier.carrier)) }
 
     it { expect(items.pluck('loadId')).to(contain_exactly(pro_only_shipment.load_id, tracked_shipment.load_id)) }
     it { expect(items.pluck('pro')).to(contain_exactly('ALONE-1', 'BROKER-1')) }
@@ -104,15 +104,8 @@ RSpec.describe('GraphQL shipment references') do
     end
   end
 
-  context 'with a carrier user API key' do
-    let(:api_key) { create(:api_key, authorizable: create(:user, companyable: broker_carrier)) }
-
-    it { expect(items.pluck('loadId')).to(contain_exactly(pro_only_shipment.load_id, tracked_shipment.load_id)) }
-    it { expect(items.pluck('pro')).to(contain_exactly('ALONE-1', 'BROKER-1')) }
-  end
-
   context 'with a broker user API key' do
-    let(:api_key) { create(:api_key, authorizable: create(:broker_user).tap { |user| user.add_role(:dispatch) }) }
+    let(:api_key) { create(:api_key, user: create(:broker_user).tap { |user| user.add_role(:dispatch) }) }
 
     it { expect(items.pluck('loadId')).to(contain_exactly(other_shipment.load_id, pro_only_shipment.load_id, tracked_shipment.load_id)) }
     it { expect(items.pluck('trackingCarrierPro')).to(include('CARRIER-1')) }

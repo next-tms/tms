@@ -24,7 +24,7 @@ RSpec.describe(Types::BrokerCarrierType) do
     it { expect(data.values).to(all(be_present)) }
 
     context 'when the user is a carrier' do
-      let(:authorizable) { create(:user, companyable: broker_carrier) }
+      let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
 
       it { expect(errors).to(include("Field 'quotePaddingCents' doesn't exist on type 'BrokerCarrier'")) }
     end
@@ -38,7 +38,7 @@ RSpec.describe(Types::BrokerCarrierType) do
     it { expect(data).to(eq('accountingNotes' => 'Slow payer')) }
 
     context 'when the user is a carrier' do
-      let(:authorizable) { create(:user, companyable: broker_carrier) }
+      let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
 
       it { expect(errors).to(include("Field 'accountingNotes' doesn't exist on type 'BrokerCarrier'")) }
     end

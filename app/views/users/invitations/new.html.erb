@@ -1,10 +1,11 @@
-<% provide :title, "Invite #{params[:companyable_id].blank? ? 'Staff' : 'Customer'}" %>
-<% @contact = params[:contact_id].blank? ? nil : Contact.find(params[:contact_id]) %>
+<% companyable_type = resource.companyable_type.to_s %>
+<% provide :title, "Invite #{{ 'BrokerCustomer' => 'Customer', 'Carrier' => 'Carrier' }.fetch(companyable_type, 'Staff')}" %>
+<% @contact = resource.contact if resource.contact&.persisted? %>
 
 <%= render 'broker/users/member_header' %>
 
-<% case params[:companyable_type] %>
-<% when nil, '' %>
+<% case companyable_type %>
+<% when '' %>
   <div class="alert alert-warning">
     <p class="lead">Inviting staff</p>
     <p>You’re inviting staff to participate in the internal operations of <%= Setting.value!(:name) %>.</p>
@@ -14,14 +15,14 @@
     <p class="lead">Inviting customer</p>
     <p>You’re inviting a customer to log in.</p>
   </div>
+<% when 'Carrier' %>
+  <div class="alert alert-info">
+    <p class="lead">Inviting carrier</p>
+    <p>You’re inviting a carrier to log in and manage their API keys.</p>
+  </div>
 <% end %>
 
-<% if current_user.role?(:root) || (
-                                     params[:companyable_type] == 'BrokerCustomer' &&
-                                     params[:companyable_id].present? &&
-                                     current_user.sales_rep_for?(BrokerCustomer.find(params[:companyable_id]))
-                                   )
-%>
+<% if allowed_to?(:create?, resource, with: InvitationPolicy) %>
   <div class="row">
     <div class="col col-md-8">
       <%= bootstrap_form_for(
@@ -30,9 +31,9 @@
             url: invitation_path(resource_name),
             layout: :horizontal
           ) do |f| %>
-        <%= f.hidden_field :companyable_id, value: params[:companyable_id] %>
-        <%= f.hidden_field :companyable_type, value: params[:companyable_type] %>
-        <%= f.hidden_field :contact_id, value: params[:contact_id] %>
+        <%= f.hidden_field :companyable_id %>
+        <%= f.hidden_field :companyable_type %>
+        <%= f.hidden_field :contact_id, value: @contact&.id %>
 
         <% if @contact.present? %>
           <%= f.hidden_field :first_name, value: @contact.first_name %>
@@ -57,7 +58,7 @@
           </div>
         <% end %>
 
-        <% if params[:companyable_type].blank? %>
+        <% if companyable_type.blank? %>
           <div class="form-group row">
             <label class="col-form-label col-sm-2">Permissions</label>
             <div class="col-sm-10">

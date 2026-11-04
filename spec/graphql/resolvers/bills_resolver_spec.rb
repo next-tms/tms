@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe(Resolvers::BillsResolver) do
   subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables:).to_h }
 
-  let(:authorizable) { create(:user, companyable: broker_carrier) }
+  let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
   let(:broker_carrier) { create(:broker_carrier) }
   let(:items) { result.dig('data', 'bills', 'items') }
   let!(:payment_transactions) do

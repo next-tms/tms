@@ -48,7 +48,7 @@ RSpec.describe(DSDC::InvoicePayload) do
   end
 
   describe '#payment_transaction_attributes' do
-    let(:attributes) { payload.payment_transaction_attributes(broker_carrier) }
+    let(:attributes) { payload.payment_transaction_attributes(broker_carrier.carrier) }
 
     it do
       expect(attributes).to(
@@ -64,6 +64,13 @@ RSpec.describe(DSDC::InvoicePayload) do
           shipment:
         )
       )
+    end
+
+    context 'when the shipment is on another account of the carrier' do
+      let(:other_broker_carrier) { create(:broker_carrier, broker_customer: create(:broker_customer), carrier: broker_carrier.carrier) }
+      let(:shipment) { create(:shipment, :usd, broker_carrier: other_broker_carrier, pro: 'A7770123') }
+
+      it { expect(attributes[:broker_carrier]).to(eq(other_broker_carrier)) }
     end
 
     context 'without a payment due date' do
@@ -94,6 +101,15 @@ RSpec.describe(DSDC::InvoicePayload) do
       before { body['shipmentID'] = 'A7770123' }
 
       it { expect(payload.shipment(shipments)).to(eq(shipment)) }
+    end
+
+    context 'with a PRO shared by two shipments' do
+      before do
+        create(:shipment, :usd, broker_carrier:, pro: 'A7770123')
+        body['shipmentID'] = 'A7770123'
+      end
+
+      it { expect { payload.shipment(shipments) }.to(raise_error(ActiveRecord::SoleRecordExceeded)) }
     end
 
     context 'with an unknown shipment ID' do

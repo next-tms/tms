@@ -105,6 +105,7 @@ RSpec.describe(User) do
   it_behaves_like 'has_companyable'
 
   describe 'relationships' do
+    it { is_expected.to(have_many(:api_keys).dependent(:destroy)) }
     it { is_expected.to(have_many(:broker_customer_sales_reps).dependent(:destroy)) }
     it { is_expected.to(have_many(:commissions).dependent(:restrict_with_error)) }
     it { is_expected.to(have_many(:problems).dependent(:nullify)) }

@@ -8,8 +8,8 @@ module Ransackable
     def pricing_column?(column_name) = column_name.match?(PRICING_COLUMN_PATTERN)
 
     def private_associations(auth_object)
-      companyable = auth_object.is_a?(User) ? auth_object.companyable : auth_object
-      return ['broker_customer'] if companyable.is_a?(BrokerCarrier)
+      companyable = auth_object.try(:companyable)
+      return ['broker_customer'] if companyable.is_a?(Carrier)
       return ['broker_carrier'] if companyable.is_a?(BrokerCustomer)
 
       []

@@ -97,7 +97,7 @@ RSpec.describe(Mutations::QuoteCreate) do
   end
 
   context 'when the user is a carrier' do
-    let(:authorizable) { create(:user, companyable: broker_carrier) }
+    let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
     let(:rate_fields) { 'scac' }
 
     it { expect(result['errors'].first['extensions']).to(eq('code' => 'UNAUTHORIZED')) }

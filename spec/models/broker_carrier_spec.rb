@@ -99,7 +99,7 @@ RSpec.describe(BrokerCarrier) do
 
   describe '.ransackable_associations' do
     it { expect(described_class.ransackable_associations).to(eq(['broker_customer', 'carrier'])) }
-    it { expect(described_class.ransackable_associations(build(:broker_carrier))).to(eq(['carrier'])) }
+    it { expect(described_class.ransackable_associations(build(:carrier_user))).to(eq(['carrier'])) }
   end
 
   describe '.ransackable_attributes' do

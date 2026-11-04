@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_205832) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_213308) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -81,8 +81,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_205832) do
   end
 
   create_table "api_keys", force: :cascade do |t|
-    t.bigint "authorizable_id", null: false
-    t.string "authorizable_type", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.datetime "last_used_at"
@@ -93,9 +91,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_205832) do
     t.string "token_suffix", null: false
     t.interval "ttl"
     t.datetime "updated_at", null: false
-    t.index ["authorizable_type", "authorizable_id"], name: "index_api_keys_on_authorizable"
+    t.bigint "user_id", null: false
     t.index ["rolled_from_id"], name: "index_api_keys_on_rolled_from_id"
     t.index ["token_digest"], name: "index_api_keys_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_api_keys_on_user_id"
   end
 
   create_table "areas", force: :cascade do |t|
@@ -1008,6 +1007,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_205832) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "standardized_addresses"
   add_foreign_key "api_keys", "api_keys", column: "rolled_from_id"
+  add_foreign_key "api_keys", "users"
   add_foreign_key "broker_accessorials", "accessorials"
   add_foreign_key "broker_accessorials", "broker_customers"
   add_foreign_key "broker_carriers", "addresses", column: "check_mailing_address_id"

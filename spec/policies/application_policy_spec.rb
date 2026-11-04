@@ -5,11 +5,9 @@ RSpec.describe(ApplicationPolicy) do
 
   let(:policy_class) do
     Class.new(described_class) do
-      def broker_carrier_rule? = broker_carrier?
       def broker_rule? = broker?
       def carrier_rule? = carrier?
       def customer_rule? = customer?
-      def user_rule? = user?
 
       public :companyable
     end
@@ -23,14 +21,36 @@ RSpec.describe(ApplicationPolicy) do
   describe '#broker?' do
     subject { policy.apply(:broker_rule?) }
 
-    context 'when not authorizable.is_a?(User)' do
-      let(:authorizable) { build(:customer) }
+    context 'when user.broker?' do
+      let(:authorizable) { build(:broker_user) }
+
+      it { is_expected.to(be(true)) }
+    end
+
+    context 'when user.carrier?' do
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end
 
+    context 'when user.customer?' do
+      let(:authorizable) { build(:customer_user) }
+
+      it { is_expected.to(be(false)) }
+    end
+  end
+
+  describe '#carrier?' do
+    subject { policy.apply(:carrier_rule?) }
+
     context 'when user.broker?' do
       let(:authorizable) { build(:broker_user) }
+
+      it { is_expected.to(be(false)) }
+    end
+
+    context 'when user.carrier?' do
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(true)) }
     end
@@ -42,57 +62,13 @@ RSpec.describe(ApplicationPolicy) do
     end
   end
 
-  describe '#broker_carrier?' do
-    subject { policy.apply(:broker_carrier_rule?) }
-
-    context 'when authorizable.is_a?(BrokerCarrier)' do
-      let(:authorizable) { build(:broker_carrier) }
-
-      it { is_expected.to(be(true)) }
-    end
-
-    context 'when user.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
-
-      it { is_expected.to(be(false)) }
-    end
-  end
-
-  describe '#carrier?' do
-    subject { policy.apply(:carrier_rule?) }
-
-    context 'when authorizable.is_a?(BrokerCarrier)' do
-      let(:authorizable) { build(:broker_carrier) }
-
-      it { is_expected.to(be(true)) }
-    end
-
-    context 'when not authorizable.is_a?(User)' do
-      let(:authorizable) { build(:customer) }
-
-      it { is_expected.to(be(false)) }
-    end
-
-    context 'when user.broker?' do
-      let(:authorizable) { build(:broker_user) }
-
-      it { is_expected.to(be(false)) }
-    end
-
-    context 'when user.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
-
-      it { is_expected.to(be(true)) }
-    end
-  end
-
   describe '#companyable' do
     subject { policy.companyable }
 
-    context 'when authorizable.is_a?(BrokerCarrier)' do
-      let(:authorizable) { build(:broker_carrier) }
+    context 'when user.carrier?' do
+      let(:authorizable) { build(:carrier_user) }
 
-      it { is_expected.to(be(authorizable)) }
+      it { is_expected.to(be(authorizable.companyable)) }
     end
 
     context 'when user.customer?' do
@@ -112,14 +88,14 @@ RSpec.describe(ApplicationPolicy) do
   describe '#customer?' do
     subject { policy.apply(:customer_rule?) }
 
-    context 'when not authorizable.is_a?(User)' do
-      let(:authorizable) { build(:customer) }
+    context 'when user.broker?' do
+      let(:authorizable) { build(:broker_user) }
 
       it { is_expected.to(be(false)) }
     end
 
-    context 'when user.broker?' do
-      let(:authorizable) { build(:broker_user) }
+    context 'when user.carrier?' do
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end
@@ -144,21 +120,5 @@ RSpec.describe(ApplicationPolicy) do
     it { expect(policy.apply(:edit?)).to(be(false)) }
     it { expect(policy.resolve_rule(:edit?)).to(eq(:manage?)) }
     it { expect(policy.resolve_rule(:new?)).to(eq(:create?)) }
-  end
-
-  describe '#user?' do
-    subject { policy.apply(:user_rule?) }
-
-    context 'when authorizable.is_a?(User)' do
-      let(:authorizable) { build(:broker_user) }
-
-      it { is_expected.to(be(true)) }
-    end
-
-    context 'when not authorizable.is_a?(User)' do
-      let(:authorizable) { build(:customer) }
-
-      it { is_expected.to(be(false)) }
-    end
   end
 end

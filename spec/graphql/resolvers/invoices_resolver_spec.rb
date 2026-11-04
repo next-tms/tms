@@ -48,7 +48,7 @@ RSpec.describe(Resolvers::InvoicesResolver) do
     end
 
     context 'with a carrier user' do
-      let(:authorizable) { create(:user, companyable: create(:broker_carrier)) }
+      let(:authorizable) { create(:carrier_user) }
 
       it { expect(items).to(be_empty) }
     end

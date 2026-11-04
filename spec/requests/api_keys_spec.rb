@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe('APIKeys') do
-  let(:api_key) { create(:api_key, authorizable: user) }
+  let(:api_key) { create(:api_key, user:) }
   let(:user) { create(:customer_user) }
 
   before do
@@ -27,7 +27,7 @@ RSpec.describe('APIKeys') do
   end
 
   describe 'GET /account/api-keys/active' do
-    let(:expired_api_key) { create(:api_key, expires_at: 1.minute.ago, authorizable: user) }
+    let(:expired_api_key) { create(:api_key, expires_at: 1.minute.ago, user:) }
 
     before do
       api_key
@@ -41,7 +41,7 @@ RSpec.describe('APIKeys') do
   end
 
   describe 'GET /account/api-keys/expired' do
-    let(:expired_api_key) { create(:api_key, expires_at: 1.minute.ago, authorizable: user) }
+    let(:expired_api_key) { create(:api_key, expires_at: 1.minute.ago, user:) }
 
     before do
       api_key
@@ -74,7 +74,7 @@ RSpec.describe('APIKeys') do
       let(:ttl) { 181.days }
 
       it { expect(response).to(have_http_status(:unprocessable_content)) }
-      it { expect(APIKey.where(authorizable: user)).to(be_empty) }
+      it { expect(APIKey.where(user:)).to(be_empty) }
     end
   end
 
@@ -111,7 +111,7 @@ RSpec.describe('APIKeys') do
     it { expect(api_key.reload.expires_at).to(be_within(1.minute).of(APIKey::ROLL_GRACE_PERIOD.from_now)) }
 
     context 'when the key expired' do
-      let(:api_key) { create(:api_key, expires_at: 1.minute.ago, authorizable: user) }
+      let(:api_key) { create(:api_key, expires_at: 1.minute.ago, user:) }
 
       it { expect(response).to(have_http_status(:not_found)) }
     end

@@ -1,4 +1,6 @@
-<% if current_user.customer? %>
+<% if current_user.carrier? %>
+  <%= render 'layouts/sidebar_carrier' %>
+<% elsif current_user.customer? %>
   <%= render 'layouts/sidebar_customer' %>
 <% else %>
   <%= render 'layouts/sidebar_broker' %>

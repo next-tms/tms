@@ -7,13 +7,13 @@ class DSDC::ApplicationController < ActionController::API
 
   attr_reader :api_key
 
-  authorize :authorizable, through: :current_authorizable
+  authorize :authorizable, through: :current_user
 
   before_action :authenticate
 
-  delegate :authorizable, :broker_carrier, :user, to: :api_key, allow_nil: true, prefix: :current
+  delegate :user, to: :api_key, allow_nil: true, prefix: :current
 
-  etag { [api_key&.authorizable, Setting.all] }
+  etag { [api_key&.user, Setting.all] }
 
   helper EnumI18nHelper
 

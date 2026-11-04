@@ -218,29 +218,29 @@ en:
         update:
           failure: Unable to update accounting vendors
           success: Accounting vendors updated
+      api_keys:
+        destroy:
+          destroyed: Destroyed %{model_name} “%{name}”
+        index:
+          intro_html: >-
+            %{model_name_plural} let this carrier's users send invoices to <code>/api/dsdc/v1/invoices</code> and supporting documents to
+            <code>/api/dsdc/v1/documents</code> with the NMFTA DSDC Invoice and Documents API. Each invoice becomes a bill. Each key belongs
+            to a carrier user, who can also create their own. Send the key to the carrier. The carrier sends it in the
+            <code>X-API-Key</code> header or as <code>Authorization: Bearer</code>. Roll or destroy a key to stop it.
+          never: Never
+          new: New
+        new:
+          error: "Unable to save %{model_name}:"
+          submit: Save
+          title: New %{model_name}
+        show:
+          copy: Click the key to copy it.
+          destroy: Destroy
+          destroy_confirm: Destroy “%{name}”? Requests that use it will fail.
+          never: Never
+          roll: Roll
+          roll_confirm: This will replace the %{model_name} with a new one. The current key stops working in %{grace_period}. Are you sure?
       broker_carriers:
-        api_keys:
-          destroy:
-            destroyed: Destroyed %{model_name} “%{name}”
-          index:
-            intro_html: >-
-              %{model_name_plural} let this carrier send invoices to <code>/api/dsdc/v1/invoices</code> and supporting documents to
-              <code>/api/dsdc/v1/documents</code> with the NMFTA DSDC Invoice and Documents API. Each invoice becomes a bill. Send the key to
-              the carrier. The carrier sends it in the <code>X-API-Key</code> header or as <code>Authorization: Bearer</code>. Carrier keys do
-              not expire. Roll or destroy a key to stop it.
-            never: Never
-            new: New
-          new:
-            error: "Unable to save %{model_name}:"
-            submit: Save
-            title: New %{model_name}
-          show:
-            copy: Click the key to copy it.
-            destroy: Destroy
-            destroy_confirm: Destroy “%{name}”? Requests that use it will fail.
-            never: Never
-            roll: Roll
-            roll_confirm: This will replace the %{model_name} with a new one. The current key stops working in %{grace_period}. Are you sure?
         tariffs:
           update:
             success: Tariff updated

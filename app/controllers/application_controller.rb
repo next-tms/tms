@@ -86,7 +86,9 @@ class ApplicationController < ActionController::Base
   def user_sign_in_path
     return @user_sign_in_path = root_path unless current_user
 
-    @user_sign_in_path = if current_user.customer?
+    @user_sign_in_path = if current_user.carrier?
+                           carrier_root_path
+                         elsif current_user.customer?
                            customer_shipments_path
                          else
                            broker_shipments_path

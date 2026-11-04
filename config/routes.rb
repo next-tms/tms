@@ -85,12 +85,12 @@ Rails.application.routes.draw do
 
     resources :carriers, only: %i[create index new show] do
       scope module: :carriers do
+        resources :api_keys, only: %i[create destroy index new show], path: 'api-keys' do
+          resource :roll, module: :api_keys, only: %i[create]
+        end
+
         resources :broker_carriers, except: %i[destroy], path: 'accounts' do
           scope module: :broker_carriers do
-            resources :api_keys, only: %i[create destroy index new show], path: 'api-keys' do
-              resource :roll, module: :api_keys, only: %i[create]
-            end
-
             resources :payment_transactions, only: %i[index], path: 'bills'
             resources :payments, only: %i[index]
             resources :shipments, only: %i[index]
@@ -104,6 +104,7 @@ Rails.application.routes.draw do
         resources :payments, only: %i[index]
         resources :shipments, only: %i[index]
         resources :terminals, only: %i[index]
+        resources :users, only: %i[index]
       end
     end
 
@@ -226,6 +227,14 @@ Rails.application.routes.draw do
     resources :users do
       collection { delete 'stop-impersonating' }
       member { post :impersonate }
+    end
+  end
+
+  namespace :carrier do
+    root 'broker_carriers#index'
+
+    resources :broker_carriers, only: %i[index], path: '' do
+      resources :shipments, only: %i[index]
     end
   end
 

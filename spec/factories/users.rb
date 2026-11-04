@@ -140,6 +140,10 @@ FactoryBot.define do
       end
     end
 
+    factory :carrier_user do
+      association :companyable, factory: :carrier
+    end
+
     factory :customer_user do
       association :companyable, factory: :broker_customer
     end

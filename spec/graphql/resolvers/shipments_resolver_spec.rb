@@ -44,7 +44,7 @@ RSpec.describe(Resolvers::ShipmentsResolver) do
     it { expect(Time.zone.parse(result.dig('data', 'shipments', 'updatedAt'))).to(be_within(1.second).of(shipments.map(&:updated_at).max)) }
 
     context 'when the user is a carrier' do
-      let(:authorizable) { create(:user, companyable: other_broker_carrier) }
+      let(:authorizable) { create(:carrier_user, companyable: other_broker_carrier.carrier) }
 
       it { expect(load_ids).to(eq([1003])) }
     end
@@ -145,7 +145,7 @@ RSpec.describe(Resolvers::ShipmentsResolver) do
 
     context "when a carrier ORs another carrier's id" do
       let(:arguments) { { filter: { or: [{ brokerCarrierIdEq: broker_carrier.id }] } } }
-      let(:authorizable) { create(:user, companyable: other_broker_carrier) }
+      let(:authorizable) { create(:carrier_user, companyable: other_broker_carrier.carrier) }
 
       it { expect(load_ids).to(be_empty) }
     end

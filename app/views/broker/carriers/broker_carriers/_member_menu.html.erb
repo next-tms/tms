@@ -4,7 +4,6 @@
   <% if current_user.any_role?(:accounts_payable, :root) %>
     <%= link_to 'Bills', [:broker, @carrier, @broker_carrier, :payment_transactions], class: 'nav-link payment-transactions-index' %>
     <%= link_to 'Payments', [:broker, @carrier, @broker_carrier, :payments], class: 'nav-link payments-index' %>
-    <%= link_to APIKey.model_name.human(count: 2), [:broker, @carrier, @broker_carrier, APIKey], class: 'nav-link api-keys' %>
   <% end %>
   <%= link_to 'Preferences', [:edit, :broker, @carrier, @broker_carrier], class: 'nav-link broker-carriers-edit' %>
   <%= link_to 'Tariff', [:broker, @carrier, @broker_carrier, :tariff], class: 'nav-link tariffs-show' %>

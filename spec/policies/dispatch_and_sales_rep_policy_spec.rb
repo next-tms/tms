@@ -10,12 +10,6 @@ RSpec.describe(DispatchAndSalesRepPolicy) do
 
     it { is_expected.to(be(false)) }
 
-    context 'when not authorizable.is_a?(User)' do
-      let(:authorizable) { build(:customer) }
-
-      it { is_expected.to(be(false)) }
-    end
-
     context 'when the user is the dispatcher' do
       before { shipment.update!(dispatcher: authorizable) }
 
@@ -34,12 +28,6 @@ RSpec.describe(DispatchAndSalesRepPolicy) do
 
     it { is_expected.to(be(false)) }
 
-    context 'when not authorizable.is_a?(User)' do
-      let(:authorizable) { build(:customer) }
-
-      it { is_expected.to(be(false)) }
-    end
-
     context 'when the user is a sales rep for the broker customer' do
       before { BrokerCustomerSalesRep.create!(broker_customer: shipment.broker_customer, commission_percent: 5, user: authorizable) }
 
@@ -57,12 +45,6 @@ RSpec.describe(DispatchAndSalesRepPolicy) do
     subject { policy.apply(:show?) }
 
     it { is_expected.to(be(false)) }
-
-    context 'when not authorizable.is_a?(User)' do
-      let(:authorizable) { build(:customer) }
-
-      it { is_expected.to(be(false)) }
-    end
 
     context 'when the user is a sales rep for the broker customer' do
       before { BrokerCustomerSalesRep.create!(broker_customer: shipment.broker_customer, commission_percent: 5, user: authorizable) }

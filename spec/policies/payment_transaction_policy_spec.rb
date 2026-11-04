@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(PaymentTransactionPolicy) do
-  let(:authorizable) { broker_carrier }
+  let(:authorizable) { create(:carrier_user, companyable: broker_carrier.carrier) }
   let(:broker_carrier) { create(:broker_carrier) }
   let(:payment_transaction) { create(:payment_transaction, broker_carrier:) }
   let(:policy) { described_class.new(payment_transaction, authorizable:) }
@@ -25,10 +25,11 @@ RSpec.describe(PaymentTransactionPolicy) do
       it { is_expected.to(contain_exactly(other_payment_transaction, payment_transaction)) }
     end
 
-    context 'with a carrier user' do
-      let(:authorizable) { create(:user, companyable: broker_carrier) }
+    context 'with another account of the carrier' do
+      let(:other_account) { create(:broker_carrier, broker_customer: create(:broker_customer), carrier: broker_carrier.carrier) }
+      let!(:other_account_payment_transaction) { create(:payment_transaction, broker_carrier: other_account) }
 
-      it { is_expected.to(contain_exactly(payment_transaction)) }
+      it { is_expected.to(contain_exactly(other_account_payment_transaction, payment_transaction)) }
     end
 
     context 'with a customer user' do
@@ -43,10 +44,22 @@ RSpec.describe(PaymentTransactionPolicy) do
 
     it { is_expected.to(be(true)) }
 
-    context 'with a user' do
+    context 'with a customer user' do
       let(:authorizable) { create(:customer_user) }
 
       it { is_expected.to(be(false)) }
+    end
+
+    context 'with another carrier' do
+      let(:authorizable) { create(:carrier_user) }
+
+      it { is_expected.to(be(false)) }
+    end
+
+    context 'with a new record' do
+      let(:payment_transaction) { PaymentTransaction.new }
+
+      it { is_expected.to(be(true)) }
     end
   end
 
@@ -68,7 +81,7 @@ RSpec.describe(PaymentTransactionPolicy) do
     end
 
     context 'with another carrier' do
-      let(:authorizable) { create(:broker_carrier) }
+      let(:authorizable) { create(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end

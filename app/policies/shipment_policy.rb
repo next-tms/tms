@@ -1,7 +1,6 @@
 class ShipmentPolicy < ApplicationPolicy
   relation_scope do |relation|
-    next relation.where(broker_carrier: companyable) if carrier?
-    next relation.none unless user?
+    next relation.where(broker_carrier: companyable.broker_carriers) if carrier?
 
     relation.accessible_by(authorizable)
   end
@@ -9,11 +8,11 @@ class ShipmentPolicy < ApplicationPolicy
   def create? = broker? || customer?
   def fetch_rates? = !carrier? && view?
   def index? = broker? || customer?
-  def manage? = user? && record.accessible_by?(authorizable)
+  def manage? = record.accessible_by?(authorizable)
 
   def view?
     return false unless record
-    return record.broker_carrier == companyable if carrier?
+    return record.broker_carrier&.carrier == companyable if carrier?
 
     manage?
   end

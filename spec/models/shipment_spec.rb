@@ -306,7 +306,7 @@ RSpec.describe(Shipment) do
                                                                 'shipper_address']))
       end
 
-      it { expect(described_class.ransackable_associations(build(:broker_carrier))).not_to(include('broker_customer')) }
+      it { expect(described_class.ransackable_associations(build(:carrier_user))).not_to(include('broker_customer')) }
       it { expect(described_class.ransackable_associations(build(:customer_user))).not_to(include('broker_carrier')) }
     end
 

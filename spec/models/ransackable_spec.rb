@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe(Ransackable) do
   let(:broker) { build(:broker_user) }
-  let(:carrier) { build(:user, companyable: build(:broker_carrier)) }
+  let(:carrier) { build(:carrier_user) }
   let(:customer) { build(:customer_user) }
 
   describe '.broker_authorizable?' do
@@ -38,7 +38,6 @@ RSpec.describe(Ransackable) do
   describe '.private_associations' do
     it { expect(Shipment.private_associations(broker)).to(be_empty) }
     it { expect(Shipment.private_associations(carrier)).to(eq(['broker_customer'])) }
-    it { expect(Shipment.private_associations(carrier.companyable)).to(eq(['broker_customer'])) }
     it { expect(Shipment.private_associations(customer)).to(eq(['broker_carrier'])) }
     it { expect(Shipment.private_associations(nil)).to(be_empty) }
   end

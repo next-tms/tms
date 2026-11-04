@@ -13,7 +13,7 @@ RSpec.describe(RatePolicy) do
     end
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end
@@ -35,7 +35,7 @@ RSpec.describe(RatePolicy) do
     end
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end

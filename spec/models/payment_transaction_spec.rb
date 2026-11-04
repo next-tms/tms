@@ -132,10 +132,40 @@ RSpec.describe(PaymentTransaction) do
   end
 
   describe 'validations' do
+    let(:carrier) { payment_transaction.broker_carrier.carrier }
+    let(:other_account) { create(:broker_carrier, broker_customer: create(:broker_customer), carrier:) }
     let(:payment_transaction) { create(:payment_transaction, dsdc_unique_id: 'INV-1') }
 
     it { expect(build(:payment_transaction, broker_carrier: payment_transaction.broker_carrier, dsdc_unique_id: 'INV-1')).not_to(be_valid) }
     it { expect(build(:payment_transaction, dsdc_unique_id: 'INV-1')).to(be_valid) }
     it { expect(build(:payment_transaction, broker_carrier: payment_transaction.broker_carrier, dsdc_unique_id: nil)).to(be_valid) }
+    it { expect(build(:payment_transaction, broker_carrier: other_account, dsdc_unique_id: 'INV-1')).not_to(be_valid) }
+    it { expect(payment_transaction).to(be_valid) }
+
+    context 'when the unique ID changes' do
+      before do
+        allow(Carrier).to(receive(:lock).and_call_original)
+        payment_transaction.update!(dsdc_unique_id: 'INV-3')
+      end
+
+      it { expect(Carrier).to(have_received(:lock).at_least(:once)) }
+    end
+
+    context 'when a bill moves to an account of a carrier that already has the unique ID' do
+      let(:moved) { create(:payment_transaction, dsdc_unique_id: 'INV-1') }
+
+      before { moved.broker_carrier = other_account }
+
+      it { expect(moved).not_to(be_valid) }
+    end
+
+    context 'when another account already shares the unique ID' do
+      let(:duplicate) { build(:payment_transaction, broker_carrier: other_account, dsdc_unique_id: 'INV-1') }
+
+      before { duplicate.save!(validate: false) }
+
+      it { expect(duplicate.tap { |record| record.notes = 'Paid by check' }).to(be_valid) }
+      it { expect(duplicate.tap { |record| record.dsdc_unique_id = 'INV-2' }).to(be_valid) }
+    end
   end
 end

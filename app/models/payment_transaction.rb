@@ -98,6 +98,8 @@ class PaymentTransaction < ApplicationRecord
   validates :invoice, presence: true
   validates :shipment, presence: true
 
+  validate :validate_dsdc_unique_id_for_carrier, if: -> { will_save_change_to_broker_carrier_id? || will_save_change_to_dsdc_unique_id? }
+
   # https://github.com/activerecord-hackery/ransack/issues/224#issuecomment-22818039
   ransacker(:id_text) { Arel.sql("CAST(\"#{table_name}\".\"id\" AS text)") }
 
@@ -199,5 +201,13 @@ class PaymentTransaction < ApplicationRecord
     self.broker_carrier = shipment.broker_carrier
     self.invoice = shipment.pro.presence || shipment.load_id if invoice.blank?
     self.paid = balance if shipment.carrier_cost >= balance && !will_save_change_to_paid_cents?
+  end
+
+  def validate_dsdc_unique_id_for_carrier
+    return if dsdc_unique_id.blank? || broker_carrier.blank?
+
+    carrier = Carrier.lock.find(broker_carrier.carrier_id)
+    others = PaymentTransaction.where(broker_carrier: carrier.broker_carriers, dsdc_unique_id:).where.not(id:)
+    errors.add(:dsdc_unique_id, :taken) if others.exists?
   end
 end

@@ -16,7 +16,7 @@ RSpec.describe(CarrierPolicy) do
     end
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: broker_carrier) }
+      let(:authorizable) { build(:user, companyable: broker_carrier.carrier) }
 
       it { is_expected.to(contain_exactly(carrier)) }
     end
@@ -38,13 +38,13 @@ RSpec.describe(CarrierPolicy) do
     end
 
     context 'when authorizable.carrier? for another carrier' do
-      let(:authorizable) { build(:user, companyable: create(:broker_carrier, carrier: other_carrier)) }
+      let(:authorizable) { build(:user, companyable: other_carrier) }
 
       it { is_expected.to(be(false)) }
     end
 
     context 'when authorizable.carrier? for the carrier' do
-      let(:authorizable) { build(:user, companyable: broker_carrier) }
+      let(:authorizable) { build(:user, companyable: broker_carrier.carrier) }
 
       it { is_expected.to(be(true)) }
     end

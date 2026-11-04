@@ -6,6 +6,7 @@ class WelcomeController < ApplicationController
   end
 
   def after_sign_in_path
+    return carrier_root_path if current_user.carrier?
     return customer_shipments_path if current_user.customer?
 
     yours_broker_problems_path if current_user.broker?

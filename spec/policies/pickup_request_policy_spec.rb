@@ -12,8 +12,10 @@ RSpec.describe(PickupRequestPolicy) do
 
     it { is_expected.to(contain_exactly(pickup_request)) }
 
-    context 'when not authorizable.is_a?(User)' do
-      let(:policy) { described_class.new(authorizable: create(:broker_carrier)) }
+    context 'when authorizable.carrier?' do
+      let(:policy) { described_class.new(authorizable: create(:carrier_user)) }
+
+      before { pickup_request }
 
       it { is_expected.to(be_empty) }
     end
@@ -42,8 +44,8 @@ RSpec.describe(PickupRequestPolicy) do
 
     it { is_expected.to(be(true)) }
 
-    context 'when not authorizable.is_a?(User)' do
-      let(:policy) { described_class.new(authorizable: build(:broker_carrier)) }
+    context 'when authorizable.carrier?' do
+      let(:policy) { described_class.new(authorizable: build(:carrier_user)) }
 
       it { is_expected.to(be(false)) }
     end

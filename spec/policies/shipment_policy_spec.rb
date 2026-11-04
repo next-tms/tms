@@ -18,23 +18,14 @@ RSpec.describe(ShipmentPolicy) do
 
     it { is_expected.to(contain_exactly(sales_rep_shipment, unassigned_shipment)) }
 
-    context 'when authorizable.is_a?(BrokerCarrier)' do
-      let(:policy) { described_class.new(shipment, authorizable: broker_carrier) }
-
-      it { is_expected.to(contain_exactly(other_shipment, sales_rep_shipment, unassigned_shipment)) }
-    end
-
-    context 'when not authorizable.is_a?(User)' do
-      let(:policy) { described_class.new(shipment, authorizable: create(:customer)) }
-
-      it { is_expected.to(be_empty) }
-    end
-
     context 'when authorizable.carrier?' do
-      let(:authorizable) { create(:user, companyable: carrier_shipment.broker_carrier) }
+      let(:authorizable) { create(:user, companyable: carrier) }
+      let(:carrier) { carrier_shipment.broker_carrier.carrier }
       let(:carrier_shipment) { create(:shipment, broker_carrier: create(:broker_carrier)) }
+      let(:other_account) { create(:broker_carrier, broker_customer: create(:broker_customer), carrier:) }
+      let!(:other_account_shipment) { create(:shipment, broker_carrier: other_account) }
 
-      it { is_expected.to(contain_exactly(carrier_shipment)) }
+      it { is_expected.to(contain_exactly(carrier_shipment, other_account_shipment)) }
     end
 
     context 'when authorizable.customer?' do
@@ -55,14 +46,8 @@ RSpec.describe(ShipmentPolicy) do
 
     it { is_expected.to(be(true)) }
 
-    context 'when not authorizable.is_a?(User)' do
-      let(:policy) { described_class.new(shipment, authorizable: build(:customer)) }
-
-      it { is_expected.to(be(false)) }
-    end
-
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end
@@ -82,8 +67,8 @@ RSpec.describe(ShipmentPolicy) do
     it { is_expected.to(be(true)) }
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
-      let(:shipment) { build(:shipment, broker_carrier: authorizable.companyable) }
+      let(:authorizable) { build(:carrier_user) }
+      let(:shipment) { build(:shipment, broker_carrier: build(:broker_carrier, carrier: authorizable.companyable)) }
 
       it { is_expected.to(be(false)) }
     end
@@ -94,14 +79,8 @@ RSpec.describe(ShipmentPolicy) do
 
     it { is_expected.to(be(true)) }
 
-    context 'when authorizable.is_a?(BrokerCarrier)' do
-      let(:policy) { described_class.new(shipment, authorizable: build(:broker_carrier)) }
-
-      it { is_expected.to(be(false)) }
-    end
-
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end
@@ -128,15 +107,9 @@ RSpec.describe(ShipmentPolicy) do
       it { is_expected.to(be(false)) }
     end
 
-    context 'when not authorizable.is_a?(User)' do
-      let(:policy) { described_class.new(shipment, authorizable: build(:customer)) }
-
-      it { is_expected.to(be(false)) }
-    end
-
     context 'when authorizable.carrier? and the shipment is theirs' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
-      let(:shipment) { build(:shipment, broker_carrier: authorizable.companyable) }
+      let(:authorizable) { build(:carrier_user) }
+      let(:shipment) { build(:shipment, broker_carrier: build(:broker_carrier, carrier: authorizable.companyable)) }
 
       it { is_expected.to(be(false)) }
     end
@@ -151,28 +124,8 @@ RSpec.describe(ShipmentPolicy) do
       it { is_expected.to(be(true)) }
     end
 
-    context 'when authorizable.is_a?(BrokerCarrier) and the shipment is not theirs' do
-      let(:policy) { described_class.new(shipment, authorizable: build(:broker_carrier)) }
-      let(:shipment) { build(:shipment, broker_carrier: build(:broker_carrier)) }
-
-      it { is_expected.to(be(false)) }
-    end
-
-    context 'when authorizable.is_a?(BrokerCarrier) and the shipment is theirs' do
-      let(:policy) { described_class.new(shipment, authorizable: shipment.broker_carrier) }
-      let(:shipment) { build(:shipment, broker_carrier: build(:broker_carrier)) }
-
-      it { is_expected.to(be(true)) }
-    end
-
     context 'when not accessible_by?' do
       before { allow_any_instance_of(Shipment).to(receive(:accessible_by?).with(authorizable).and_return(false)) }
-
-      it { is_expected.to(be(false)) }
-    end
-
-    context 'when not authorizable.is_a?(User)' do
-      let(:policy) { described_class.new(shipment, authorizable: build(:customer)) }
 
       it { is_expected.to(be(false)) }
     end
@@ -184,15 +137,15 @@ RSpec.describe(ShipmentPolicy) do
     end
 
     context 'when authorizable.carrier? and the shipment is not theirs' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
       let(:shipment) { build(:shipment, broker_carrier: build(:broker_carrier)) }
 
       it { is_expected.to(be(false)) }
     end
 
     context 'when authorizable.carrier? and the shipment is theirs' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
-      let(:shipment) { build(:shipment, broker_carrier: authorizable.companyable) }
+      let(:authorizable) { build(:carrier_user) }
+      let(:shipment) { build(:shipment, broker_carrier: build(:broker_carrier, carrier: authorizable.companyable)) }
 
       it { is_expected.to(be(true)) }
     end
@@ -202,12 +155,6 @@ RSpec.describe(ShipmentPolicy) do
     subject { policy.apply(:view_carrier_references?) }
 
     it { is_expected.to(be(true)) }
-
-    context 'when authorizable.is_a?(BrokerCarrier)' do
-      let(:policy) { described_class.new(shipment, authorizable: build(:broker_carrier)) }
-
-      it { is_expected.to(be(true)) }
-    end
 
     context 'when authorizable.customer?' do
       let(:authorizable) { build(:customer_user) }
@@ -222,7 +169,7 @@ RSpec.describe(ShipmentPolicy) do
     it { is_expected.to(be(true)) }
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end
@@ -240,7 +187,7 @@ RSpec.describe(ShipmentPolicy) do
     it { is_expected.to(be(true)) }
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(true)) }
     end
@@ -258,7 +205,7 @@ RSpec.describe(ShipmentPolicy) do
     it { is_expected.to(be(true)) }
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end
@@ -276,7 +223,7 @@ RSpec.describe(ShipmentPolicy) do
     it { is_expected.to(be(true)) }
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: build(:broker_carrier)) }
+      let(:authorizable) { build(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end

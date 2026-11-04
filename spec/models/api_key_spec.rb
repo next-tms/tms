@@ -4,8 +4,6 @@
 #
 # @!attribute id
 #   @return []
-# @!attribute authorizable_type
-#   @return [String]
 # @!attribute expires_at
 #   @return [Time]
 # @!attribute last_used_at
@@ -24,32 +22,31 @@
 #   @return [Time]
 # @!attribute updated_at
 #   @return [Time]
-# @!attribute authorizable_id
-#   @return []
 # @!attribute rolled_from_id
+#   @return []
+# @!attribute user_id
 #   @return []
 #
 # Indexes
 #
-#  index_api_keys_on_authorizable    (authorizable_type,authorizable_id)
 #  index_api_keys_on_rolled_from_id  (rolled_from_id)
 #  index_api_keys_on_token_digest    (token_digest) UNIQUE
+#  index_api_keys_on_user_id         (user_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (rolled_from_id => api_keys.id)
+#  fk_rails_...  (user_id => users.id)
 #
 require 'rails_helper'
 
 RSpec.describe(APIKey) do
   subject(:api_key) { create(:api_key, ttl: 30.days) }
 
-  let(:broker_carrier_api_key) { create(:api_key, :broker_carrier) }
-
   describe '.active' do
     let!(:expired_api_key) { create(:api_key, expires_at: 1.day.ago) }
 
-    it { expect(described_class.active).to(include(api_key, broker_carrier_api_key)) }
+    it { expect(described_class.active).to(include(api_key)) }
     it { expect(described_class.active).not_to(include(expired_api_key)) }
   end
 
@@ -67,7 +64,7 @@ RSpec.describe(APIKey) do
     let!(:expired_api_key) { create(:api_key, expires_at: 1.day.ago) }
 
     it { expect(described_class.expired).to(include(expired_api_key)) }
-    it { expect(described_class.expired).not_to(include(api_key, broker_carrier_api_key)) }
+    it { expect(described_class.expired).not_to(include(api_key)) }
   end
 
   describe '.ransackable_associations' do
@@ -81,37 +78,22 @@ RSpec.describe(APIKey) do
   describe '#active?' do
     it { is_expected.to(be_active) }
     it { expect(build(:api_key, expires_at: 1.second.ago)).not_to(be_active) }
-    it { expect(broker_carrier_api_key).to(be_active) }
-  end
-
-  describe '#broker_carrier' do
-    it { expect(api_key.broker_carrier).to(be_nil) }
-    it { expect(broker_carrier_api_key.broker_carrier).to(eq(broker_carrier_api_key.authorizable)) }
-  end
-
-  describe '#broker_carrier?' do
-    it { is_expected.not_to(be_broker_carrier) }
-    it { expect(broker_carrier_api_key).to(be_broker_carrier) }
   end
 
   describe '#expired?' do
     it { is_expected.not_to(be_expired) }
     it { expect(build(:api_key, expires_at: 1.second.ago)).to(be_expired) }
-    it { expect(broker_carrier_api_key).not_to(be_expired) }
   end
 
   describe '#expires_soon?' do
     it { is_expected.not_to(be_expires_soon) }
     it { expect(create(:api_key, ttl: 7.days)).to(be_expires_soon) }
-    it { expect(broker_carrier_api_key).not_to(be_expires_soon) }
   end
 
   describe '#roll!' do
     let!(:rolled_api_key) { api_key.roll!(grace_period: 1.day) }
 
-    it do
-      expect(rolled_api_key).to(have_attributes(authorizable: api_key.authorizable, name: api_key.name, rolled_from: api_key, ttl: 30.days))
-    end
+    it { expect(rolled_api_key).to(have_attributes(name: api_key.name, rolled_from: api_key, ttl: 30.days, user: api_key.user)) }
 
     it { expect(rolled_api_key.token).to(start_with(described_class::TOKEN_PREFIX)) }
     it { expect(api_key.expires_at).to(be_within(1.second).of(1.day.from_now)) }
@@ -131,13 +113,6 @@ RSpec.describe(APIKey) do
     it { expect { api_key.roll! }.not_to(change(described_class, :count)) }
   end
 
-  describe '#roll! with a broker carrier key' do
-    let!(:rolled_api_key) { broker_carrier_api_key.roll! }
-
-    it { expect(rolled_api_key).to(have_attributes(authorizable: broker_carrier_api_key.authorizable, expires_at: nil, ttl: nil)) }
-    it { expect(broker_carrier_api_key.expires_at).to(be_within(1.minute).of(described_class::ROLL_GRACE_PERIOD.from_now)) }
-  end
-
   describe '#use!' do
     it { expect { api_key.use! }.to(change(api_key, :last_used_at).from(nil)) }
 
@@ -148,14 +123,9 @@ RSpec.describe(APIKey) do
     end
   end
 
-  describe '#user' do
-    it { expect(api_key.user).to(eq(api_key.authorizable)) }
-    it { expect(broker_carrier_api_key.user).to(be_nil) }
-  end
-
-  describe '#user?' do
-    it { is_expected.to(be_user) }
-    it { expect(broker_carrier_api_key).not_to(be_user) }
+  describe 'relationships' do
+    it { is_expected.to(belong_to(:rolled_from).class_name('APIKey').optional) }
+    it { is_expected.to(belong_to(:user)) }
   end
 
   describe 'token' do
@@ -171,7 +141,6 @@ RSpec.describe(APIKey) do
     it { expect(build(:api_key, ttl: 0.seconds)).not_to(be_valid) }
     it { expect(build(:api_key, name: '')).not_to(be_valid) }
     it { expect(build(:api_key, ttl: nil)).not_to(be_valid) }
-    it { expect(build(:api_key, :broker_carrier)).to(be_valid) }
-    it { expect(build(:api_key, :broker_carrier, ttl: 181.days)).not_to(be_valid) }
+    it { expect(build(:api_key, :carrier)).to(be_valid) }
   end
 end

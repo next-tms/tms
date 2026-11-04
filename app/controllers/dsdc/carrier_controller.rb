@@ -2,6 +2,7 @@ class DSDC::CarrierController < DSDC::ApplicationController
   before_action :set_payment_transactions
 
   rescue_from ActionController::ParameterMissing, ArgumentError, Money::Currency::UnknownCurrency, with: :render_formatting_error
+  rescue_from ActiveRecord::SoleRecordExceeded, with: :render_not_found
   rescue_from Money::Bank::UnknownRate, with: :render_business_error
 
   wrap_parameters false

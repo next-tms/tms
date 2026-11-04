@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe(APIKeyPolicy) do
-  let(:api_key) { create(:api_key, authorizable:) }
+  let(:api_key) { create(:api_key, user: authorizable) }
   let(:authorizable) { create(:customer_user) }
-  let(:carrier_api_key) { create(:api_key, :broker_carrier) }
+  let(:carrier_api_key) { create(:api_key, :carrier) }
   let(:policy) { described_class.new(api_key, authorizable:) }
 
   describe '#apply_scope' do

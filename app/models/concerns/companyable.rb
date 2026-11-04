@@ -7,9 +7,7 @@ module Companyable
     is_a?(Carrier)
   end
 
-  def companyable_sgid
-    to_sgid_param
-  end
+  def companyable_sgid = to_sgid(expires_in: nil).to_param
 
   def customer?
     is_a?(BrokerCustomer)

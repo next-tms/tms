@@ -25,7 +25,7 @@ RSpec.describe(ReceivablePolicy) do
     end
 
     context 'with a carrier' do
-      let(:authorizable) { receivable.shipment.broker_carrier || create(:broker_carrier) }
+      let(:authorizable) { create(:carrier_user) }
 
       it { is_expected.to(be_empty) }
     end
@@ -55,7 +55,7 @@ RSpec.describe(ReceivablePolicy) do
     end
 
     context 'with a carrier' do
-      let(:authorizable) { create(:broker_carrier) }
+      let(:authorizable) { create(:carrier_user) }
 
       it { is_expected.to(be(false)) }
     end

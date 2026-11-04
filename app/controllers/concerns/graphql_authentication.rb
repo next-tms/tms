@@ -23,7 +23,7 @@ module GraphQLAuthentication
       return
     end
 
-    @authorizable = api_key.authorizable
+    @authorizable = api_key.user
     @current_user = api_key.user
     api_key.use!
   end

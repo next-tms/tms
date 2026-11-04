@@ -5,7 +5,9 @@
   <% if current_user.any_role?(:accounts_payable, :root) %>
     <%= link_to 'Bills', [:broker, @carrier, :payment_transactions], class: 'nav-link payment-transactions-index' %>
     <%= link_to 'Payments', [:broker, @carrier, :payments], class: 'nav-link payments-index' %>
+    <%= link_to APIKey.model_name.human(count: 2), [:broker, @carrier, APIKey], class: 'nav-link api-keys-index' %>
   <% end %>
   <%= link_to 'Contacts', [:broker, @carrier, :contacts], class: 'nav-link contacts-index' %>
   <%= link_to 'Terminals', [:broker, @carrier, :terminals], class: 'nav-link terminals-index' %>
+  <%= link_to 'Users', [:broker, @carrier, :users], class: 'nav-link users-index' %>
 </nav>

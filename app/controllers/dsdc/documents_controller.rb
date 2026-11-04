@@ -5,7 +5,7 @@ class DSDC::DocumentsController < DSDC::CarrierController
 
   def create
     document = DSDC::DocumentPayload.new(request.request_parameters)
-    payment_transaction = @payment_transactions.find_by!(dsdc_unique_id: document.unique_id, invoice: document.invoice_number)
+    payment_transaction = @payment_transactions.where(dsdc_unique_id: document.unique_id, invoice: document.invoice_number).sole
     authorize!(payment_transaction, to: :manage?)
 
     payment_transaction.attach_dsdc_documents(document.attachables)
@@ -54,6 +54,6 @@ class DSDC::DocumentsController < DSDC::CarrierController
 
   private
 
-  def set_payment_transaction = @payment_transaction = @payment_transactions.find_by!(invoice: params[:invoice_number])
+  def set_payment_transaction = @payment_transaction = @payment_transactions.where(invoice: params[:invoice_number]).sole
   def too_large?(attachments) = attachments.joins(:blob).sum('active_storage_blobs.byte_size') > MAX_RESPONSE_SIZE
 end

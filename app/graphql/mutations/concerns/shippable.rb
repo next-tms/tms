@@ -5,12 +5,12 @@ module Mutations
 
       private
 
-      def actor = context[:authorizable].is_a?(User) ? context[:authorizable] : nil
+      def actor = context[:authorizable]
 
       def broker_customer_for(broker_customer_id)
         authorizable = context[:authorizable]
-        return authorizable.companyable if authorizable.is_a?(User) && authorizable.customer?
-        return unless authorizable.is_a?(User) && authorizable.broker?
+        return authorizable.companyable if authorizable.customer?
+        return unless authorizable.broker?
 
         authorizable.broker_customers.find_by(id: broker_customer_id)
       end

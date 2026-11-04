@@ -16,7 +16,7 @@ RSpec.describe(CustomerPolicy) do
     end
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: create(:broker_carrier)) }
+      let(:authorizable) { build(:user, companyable: create(:carrier)) }
 
       it { is_expected.to(be_empty) }
     end
@@ -38,7 +38,7 @@ RSpec.describe(CustomerPolicy) do
     end
 
     context 'when authorizable.carrier?' do
-      let(:authorizable) { build(:user, companyable: create(:broker_carrier)) }
+      let(:authorizable) { build(:user, companyable: create(:carrier)) }
 
       it { is_expected.to(be(false)) }
     end

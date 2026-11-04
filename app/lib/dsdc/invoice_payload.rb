@@ -14,10 +14,11 @@ class DSDC::InvoicePayload
   def mc_matches?(mc_number) = mc_number.blank? || params.expect(:MC).to_s.gsub(/\D/, '') == mc_number.to_s
   def notes = Array(params[:comments]).filter_map { |comment| comment[:commentText].presence }.join("\n").presence
 
-  def payment_transaction_attributes(broker_carrier)
+  def payment_transaction_attributes(carrier)
     params.expect(:DOT, invoiceCharges: [[:chargeType]])
 
-    shipment = shipment(broker_carrier.shipments)
+    shipment = shipment(carrier.shipments)
+    broker_carrier = shipment.broker_carrier
 
     {
       balance:,
@@ -35,7 +36,7 @@ class DSDC::InvoicePayload
   def shipment(shipments)
     shipment_id = params.expect(:shipmentID)
 
-    (shipments.find_by(load_id: shipment_id) if shipment_id.match?(/\A\d+\z/)) || shipments.find_by!(pro: shipment_id)
+    (shipments.find_by(load_id: shipment_id) if shipment_id.match?(/\A\d+\z/)) || shipments.where(pro: shipment_id).sole
   end
 
   def unique_id = params.expect(:uniqueID)

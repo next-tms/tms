@@ -1,10 +1,7 @@
 class DispatchAndSalesRepPolicy < ApplicationPolicy
-  def accounts_and_claims_show?
-    user? && (authorizable.any_role?(:accounts_payable, :accounts_receivable, :claims) || dispatcher_and_sales_rep?)
-  end
-
-  def accounts_show? = user? && (authorizable.any_role?(:accounts_payable, :accounts_receivable) || dispatcher_and_sales_rep?)
-  def show? = user? && (authorizable.role?(:dispatch) || authorizable.sales_rep_for?(record.broker_customer))
+  def accounts_and_claims_show? = authorizable.any_role?(:accounts_payable, :accounts_receivable, :claims) || dispatcher_and_sales_rep?
+  def accounts_show? = authorizable.any_role?(:accounts_payable, :accounts_receivable) || dispatcher_and_sales_rep?
+  def show? = authorizable.role?(:dispatch) || authorizable.sales_rep_for?(record.broker_customer)
 
   private
 

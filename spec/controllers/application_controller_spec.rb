@@ -126,4 +126,34 @@ RSpec.describe(ApplicationController) do
       it { expect(response.last_modified).to(eq(last_modified)) }
     end
   end
+
+  describe '#user_sign_in_path' do
+    subject { controller.__send__(:user_sign_in_path) }
+
+    before { allow(controller).to(receive(:current_user).and_return(user)) }
+
+    context 'when current_user.broker?' do
+      let(:user) { build(:broker_user) }
+
+      it { is_expected.to(eq(broker_shipments_path)) }
+    end
+
+    context 'when current_user.carrier?' do
+      let(:user) { build(:carrier_user) }
+
+      it { is_expected.to(eq(carrier_root_path)) }
+    end
+
+    context 'when current_user.customer?' do
+      let(:user) { build(:customer_user) }
+
+      it { is_expected.to(eq(customer_shipments_path)) }
+    end
+
+    context 'without a current_user' do
+      let(:user) { nil }
+
+      it { is_expected.to(eq(root_path)) }
+    end
+  end
 end

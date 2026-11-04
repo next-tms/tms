@@ -1,0 +1,16 @@
+<% provide :title, t('.title', model_name: APIKey.model_name.human) %>
+
+<%= render 'broker/carriers/member_header' %>
+<h2><%= yield :title %></h2>
+
+<%= bootstrap_form_with(model: [:broker, @carrier, @api_key], layout: :horizontal) do |f| %>
+  <%= f.alert_message t('.error', model_name: APIKey.model_name.human) %>
+
+  <%= f.collection_select :user_id, @carrier.users.order(:first_name), :id, :full_name %>
+  <%= f.text_field :name, autofocus: true %>
+  <%= f.select :ttl, APIKey::TTLS.map { |ttl| [pluralize(ttl.in_days.to_i, 'day'), ttl.iso8601] }, selected: f.object.ttl&.iso8601 %>
+
+  <%= f.form_group do %>
+    <%= f.submit t('.submit'), class: 'btn btn-primary' %>
+  <% end %>
+<% end %>

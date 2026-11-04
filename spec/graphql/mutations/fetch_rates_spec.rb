@@ -100,7 +100,7 @@ RSpec.describe(Mutations::FetchRates) do
   end
 
   context 'when the user is a carrier' do
-    let(:authorizable) { create(:user, companyable: broker_carrier) }
+    let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
     let(:rate_fields) { 'carrierName' }
 
     it { expect(result.dig('data', 'fetchRates')).to(be_nil) }

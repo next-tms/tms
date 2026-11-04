@@ -1,6 +1,6 @@
 <% provide :title, @api_key.name %>
 
-<%= render 'broker/carriers/broker_carriers/member_header' %>
+<%= render 'broker/carriers/member_header' %>
 <h2><%= yield :title %></h2>
 
 <div class="table-responsive">
@@ -12,6 +12,10 @@
           <input class="form-control font-monospace" data-action="click->clipboard#copy" data-controller="clipboard" readonly value="<%= @api_key.token %>">
           <div class="form-text"><%= t('.copy') %></div>
         </td>
+      </tr>
+      <tr>
+        <th><%= APIKey.human_attribute_name(:user) %></th>
+        <td><%= @api_key.user.full_name %></td>
       </tr>
       <tr>
         <th><%= APIKey.human_attribute_name(:created_at) %></th>
@@ -31,7 +35,7 @@
 
 <% if @api_key.active? %>
   <%= link_to t('.roll'),
-              [:broker, @carrier, @broker_carrier, @api_key, :roll],
+              [:broker, @carrier, @api_key, :roll],
               class: 'btn btn-secondary',
               data: {
                 turbo_confirm: t('.roll_confirm', grace_period: APIKey::ROLL_GRACE_PERIOD.inspect, model_name: APIKey.model_name.human),
@@ -41,7 +45,7 @@
 <% end %>
 
 <%= link_to t('.destroy'),
-            [:broker, @carrier, @broker_carrier, @api_key],
+            [:broker, @carrier, @api_key],
             class: 'btn btn-danger',
             data: { turbo_confirm: t('.destroy_confirm', name: @api_key.name), turbo_method: :delete }
 %>

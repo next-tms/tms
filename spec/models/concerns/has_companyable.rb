@@ -17,6 +17,14 @@ shared_examples_for 'has_companyable' do
     it { expect(described_class.broker).to(contain_exactly(broker_record)) }
   end
 
+  describe '.carrier' do
+    let!(:carrier_record) { create(described_class.to_s.underscore.to_sym, companyable: create(:carrier)) }
+
+    before { create(described_class.to_s.underscore.to_sym, companyable: create(:broker_customer)) }
+
+    it { expect(described_class.carrier).to(contain_exactly(carrier_record)) }
+  end
+
   describe '#broker?' do
     it { expect(build(described_class.to_s.underscore.to_sym, companyable: nil)).to(be_broker) }
     it { expect(build(described_class.to_s.underscore.to_sym, companyable: build(:broker_customer))).not_to(be_broker) }
@@ -24,8 +32,21 @@ shared_examples_for 'has_companyable' do
   end
 
   describe '#carrier?' do
-    it { expect(build(described_class.to_s.underscore.to_sym, companyable: build(:broker_carrier))).to(be_carrier) }
+    it { expect(build(described_class.to_s.underscore.to_sym, companyable: build(:carrier))).to(be_carrier) }
     it { expect(build(described_class.to_s.underscore.to_sym, companyable: nil)).not_to(be_carrier) }
+  end
+
+  describe '#companyable_sgid' do
+    let(:carrier) { create(:carrier) }
+
+    it { expect(build(described_class.to_s.underscore.to_sym, companyable: carrier).companyable_sgid).to(eq(carrier.companyable_sgid)) }
+    it { expect(build(described_class.to_s.underscore.to_sym, companyable: nil).companyable_sgid).to(be_nil) }
+  end
+
+  describe '#companyable_sgid=' do
+    let(:carrier) { create(:carrier) }
+
+    it { expect(build(described_class.to_s.underscore.to_sym, companyable_sgid: carrier.companyable_sgid).companyable).to(eq(carrier)) }
   end
 
   describe '#customer?' do

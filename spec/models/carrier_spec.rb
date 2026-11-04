@@ -54,6 +54,17 @@ RSpec.describe(Carrier) do
 
   it_behaves_like 'companyable'
 
+  describe '.companyable_order' do
+    let!(:alpha) { create(:broker_carrier, carrier: create(:carrier, name: 'Alpha')).carrier }
+    let!(:zulu) { create(:broker_carrier, carrier: create(:carrier, name: 'Zulu')).carrier }
+
+    let!(:mike) { create(:carrier_user, companyable: create(:carrier, name: 'Mike')).companyable }
+
+    before { create(:carrier, name: 'Unused') }
+
+    it { expect(described_class.companyable_order).to(eq([alpha, mike, zulu])) }
+  end
+
   describe '.ransackable_attributes' do
     it { expect(described_class.ransackable_attributes).to(include('name', 'scac')) }
     it { expect(described_class.ransackable_attributes).not_to(include('encrypted_api_key', 'encrypted_proxy_url')) }
@@ -88,7 +99,9 @@ RSpec.describe(Carrier) do
   describe 'relationships' do
     it { is_expected.to(have_many(:broker_carriers).dependent(:restrict_with_error)) }
     it { is_expected.to(have_many(:terminals).dependent(:destroy)) }
+    it { is_expected.to(have_many(:users).dependent(:restrict_with_error)) }
 
+    it { is_expected.to(have_many(:api_keys).through(:users)) }
     it { is_expected.to(have_many(:payment_transactions).through(:broker_carriers)) }
     it { is_expected.to(have_many(:payments).through(:broker_carriers)) }
     it { is_expected.to(have_many(:shipments).through(:broker_carriers)) }

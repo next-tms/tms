@@ -145,11 +145,11 @@ RSpec.describe('GraphQL') do
     end
 
     context 'with a broker carrier API key' do
-      let(:api_key) { create(:api_key, :broker_carrier) }
+      let(:api_key) { create(:api_key, :carrier) }
       let(:headers) { { 'X-API-Key' => api_key.token } }
       let(:other_shipment) { create(:shipment) }
       let(:query) { '{ shipments { items { id } } }' }
-      let(:shipment) { create(:shipment, broker_carrier: api_key.authorizable) }
+      let(:shipment) { create(:shipment, broker_carrier: create(:broker_carrier, carrier: api_key.user.companyable)) }
 
       before do
         other_shipment
@@ -162,7 +162,7 @@ RSpec.describe('GraphQL') do
     end
 
     context 'when the API key user is deactivated' do
-      let(:api_key) { create(:api_key, authorizable: create(:customer_user, deactivated: true)) }
+      let(:api_key) { create(:api_key, user: create(:customer_user, deactivated: true)) }
       let(:headers) { { 'X-API-Key' => api_key.token } }
 
       it { is_expected.to(have_http_status(:unauthorized)) }

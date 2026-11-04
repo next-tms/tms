@@ -45,6 +45,8 @@
 #
 class Carrier < ApplicationRecord
   class << self
+    def companyable_order = where(id: BrokerCarrier.select(:carrier_id)).or(where(id: User.carrier.select(:companyable_id))).order(:name)
+
     def terminals_in(city:, state:)
       region_iso31662s = Transponder::ORM::Region
                          .all
@@ -75,7 +77,9 @@ class Carrier < ApplicationRecord
 
   has_many :broker_carriers, dependent: :restrict_with_error
   has_many :terminals, dependent: :destroy
+  has_many :users, as: :companyable, dependent: :restrict_with_error
 
+  has_many :api_keys, through: :users
   has_many :payment_transactions, through: :broker_carriers
   has_many :payments, through: :broker_carriers
   has_many :shipments, through: :broker_carriers

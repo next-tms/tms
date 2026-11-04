@@ -28,10 +28,8 @@ class ApplicationPolicy
 
   private
 
-  def broker? = user? && authorizable.broker?
-  def broker_carrier? = authorizable.is_a?(BrokerCarrier)
-  def carrier? = companyable.is_a?(BrokerCarrier)
-  def companyable = user? ? authorizable.companyable : authorizable
-  def customer? = companyable.is_a?(BrokerCustomer)
-  def user? = authorizable.is_a?(User)
+  def broker? = authorizable.broker?
+  def carrier? = authorizable.carrier?
+  def companyable = authorizable.companyable
+  def customer? = authorizable.customer?
 end

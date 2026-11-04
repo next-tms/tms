@@ -1,18 +1,18 @@
 class PaymentTransactionPolicy < ApplicationPolicy
   relation_scope do |relation|
     next relation if accounts_payable?
-    next relation.where(broker_carrier: companyable) if carrier?
+    next relation.where(broker_carrier: companyable.broker_carriers) if carrier?
 
     relation.none
   end
 
-  def manage? = broker_carrier?
+  def manage? = carrier? && (record.broker_carrier.nil? || record.broker_carrier.carrier == companyable)
 
   def view?
     return false unless record
     return true if accounts_payable?
 
-    carrier? && record.broker_carrier == companyable
+    carrier? && record.broker_carrier&.carrier == companyable
   end
 
   private
