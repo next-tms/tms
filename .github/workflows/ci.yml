@@ -6,20 +6,33 @@ on:
     branches: [master]
 
 jobs:
+  scan_ruby:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libmagickwand-dev
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Scan for known security vulnerabilities in gems used
+        run: bin/bundler-audit
+
   scan_js:
     runs-on: ubuntu-latest
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libmagickwand-dev
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-        env:
-          BUNDLE_GITHUB__COM: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
       - name: Scan for security vulnerabilities in JavaScript dependencies
         run: bin/importmap audit
 
@@ -27,9 +40,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Scan for common security vulnerabilities using Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: config
           scan-ref: Dockerfile
@@ -42,14 +55,12 @@ jobs:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libmagickwand-dev
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-        env:
-          BUNDLE_GITHUB__COM: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
       - name: Lint Ruby code for consistent style
         run: bin/rubocop -f github
 
@@ -81,16 +92,14 @@ jobs:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libmagickwand-dev libpq-dev
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-        env:
-          BUNDLE_GITHUB__COM: ${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
       - name: Cache Bootsnap
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           key: bootsnap-${{ runner.os }}-${{ hashFiles('Gemfile.lock', 'app/**/*.rb', 'lib/**/*.rb') }}
           path: tmp/cache
@@ -104,28 +113,27 @@ jobs:
 
   push:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [scan_js, scan_dockerfile, lint, test]
+    needs: [scan_ruby, scan_js, scan_dockerfile, lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Log in to Docker registry
-        uses: docker/login-action@v4.7.0
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
           registry: registry.fly.io
           username: x
           password: ${{ secrets.FLY_API_TOKEN }}
       - name: Build and push Docker image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           push: true
           tags: registry.fly.io/next-tms:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: BUNDLER_GITHUB_OAUTH_KEY=${{ secrets.BUNDLER_GITHUB_OAUTH_KEY }}
       - name: Notify Flight
         run: |
           curl -v \

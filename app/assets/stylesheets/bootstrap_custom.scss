@@ -1,33 +1,12 @@
 /*! `Custom` Bootstrap 4 theme */
 
-$primary: #ff4500;
-// $secondary: #1a0eab;
-// $success: #3e4d59;
-// $danger: #f00;
-// $info: #E3F8FF;
-// $warning: #feee9e;
-$light: #F5F5F5;
-// $dark: #1e2b37;
-// $spacer:1.2rem;
-// $border-width: 0.1rem;
-// $btn-border-radius: 0.25rem;
-// $enable-shadows: true;
-
-$font-size-base: 0.90rem;
-
-$link-color: $primary;
-$link-decoration: none;
-
-$body-color: rgba(0, 0, 0, 0.85); // main is background-color: white
-
-// $input-bg: white;
-
-$spacer: .7rem;
-
-/*
-$table-cell-padding: .34rem !default;
-$table-cell-padding-sm: .17rem !default;
-*/
-
-// $headings-font-weight: 400;
-$headings-font-family: 'Nimbus Sans L', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+@use "bootstrap/bootstrap" with (
+  $body-color: rgba(0, 0, 0, 0.85),
+  $font-size-base: 0.90rem,
+  $headings-font-family: ('Nimbus Sans L', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"),
+  $light: #F5F5F5,
+  $link-color: #ff4500,
+  $link-decoration: none,
+  $primary: #ff4500,
+  $spacer: .7rem
+);

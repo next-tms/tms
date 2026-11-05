@@ -16,11 +16,13 @@ class LiftoffSchema < GraphQL::Schema
   mutation(Types::MutationType)
   query(Types::QueryType)
 
+  did_you_mean nil
   max_complexity 10_000
   max_depth 10
 
   # For batch-loading (see https://graphql-ruby.org/dataloader/overview.html)
   use GraphQL::Dataloader
+  use GraphQL::Schema::Visibility
 
   # GraphQL-Ruby calls this when something goes wrong while running a query:
 

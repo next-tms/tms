@@ -73,7 +73,6 @@ group :development do
   gem 'nkf'
 
   gem 'listen', '>= 3.0.5', '< 3.10'
-  gem 'rails_real_favicon'
   gem 'spring', '~> 4.1.1'
   gem 'traceroute'
 end
@@ -87,7 +86,6 @@ group :test do
   gem 'faker'
   gem 'shoulda-matchers', '5.3.0'
   gem 'timecop'
-  gem 'webdrivers'
 end
 
 gem 'bootstrap_form', '~> 5.4.0'
@@ -117,7 +115,7 @@ gem 'quickbooks-ruby', '~> 2.0'
 gem 'action_policy'
 gem 'action_policy-graphql'
 gem 'bcrypt', '~> 3.1' # explicitly for GraphQL
-gem 'graphql', '~> 2.0.31'
+gem 'graphql', '~> 2.6'
 
 gem 'geocoder', '~> 1.8.1'
 gem 'google_places', '~> 2.0.0'

@@ -13,6 +13,7 @@ RSpec.describe('Broker::Carriers::BrokerCarriers') do
   end
 
   describe 'GET /broker/carriers/:carrier_id/accounts' do
+    let(:customer_name) { other_broker_carrier.broker_customer.customer.name }
     let(:other_broker_carrier) { create(:broker_carrier, broker_customer: create(:broker_customer), carrier:) }
 
     before do
@@ -23,7 +24,7 @@ RSpec.describe('Broker::Carriers::BrokerCarriers') do
 
     it { is_expected.to(have_http_status(:ok)) }
     it { expect(assigns(:broker_carriers)).to(contain_exactly(broker_carrier, other_broker_carrier)) }
-    it { expect(response.body).to(include(other_broker_carrier.broker_customer.customer.name, "#{path}/#{broker_carrier.id}")) }
+    it { expect(response.body).to(include(ERB::Util.html_escape(customer_name), "#{path}/#{broker_carrier.id}")) }
   end
 
   describe 'GET /broker/carriers/:carrier_id/accounts/:id' do

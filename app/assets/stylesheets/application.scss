@@ -1,22 +1,20 @@
-@import "bootstrap_custom";
-@import "bootstrap/bootstrap";
-@import "rails_bootstrap_forms";
-@import "bootstrap_overrides";
-@import "bootstrap4_form_inline";
+@use "bootstrap_custom";
+@use "rails_bootstrap_forms";
+@use "bootstrap_overrides";
+@use "bootstrap4_form_inline";
 
-@import "flatpickr"; // @4.6.13 → vendor/assets/stylesheets/flatpickr.css
-@import "flatpickr_overrides";
+@use "flatpickr"; // @4.6.13 → vendor/assets/stylesheets/flatpickr.css
+@use "flatpickr_overrides";
 
-@import "turbo_overrides";
+@use "turbo_overrides";
 
-$fa-font-path: 'fontawesome';
-@import "fontawesome-free/fontawesome";
-@import "fontawesome-free/solid";
-@import "fontawesome-free/regular";
-@import "fontawesome-free/brands";
+@use "fontawesome-free/fontawesome" with ($fa-font-path: 'fontawesome');
+@use "fontawesome-free/solid" with ($fa-font-path: 'fontawesome');
+@use "fontawesome-free/regular" with ($fa-font-path: 'fontawesome');
+@use "fontawesome-free/brands" with ($fa-font-path: 'fontawesome');
 
-@import "sortable";
-@import "page_loader";
+@use "sortable";
+@use "page_loader";
 
 @font-face {
     font-family: "Nimbus Sans L";

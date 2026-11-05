@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .text-red { color: red; }
 
 ::selection {
@@ -59,7 +61,7 @@ main {
 }
 
 .page-header nav a:active, .page-header nav a:hover {
-  color: darken(#23292F, 0.6);
+  color: color.adjust(#23292F, $lightness: -0.6%);
 }
 
 aside, aside a, aside a:active, aside a:hover, aside a:visited {
@@ -113,7 +115,7 @@ main a, main a:active, main a:hover, main a:visited {
   background-size: cover;
 }
 
-.jumbotron-services h1 span, .jumbotron-services p span {
+.jumbotron-services h1 span, .jumbotron-services .h1 span, .jumbotron-services p span {
   font-weight: 700 !important;
   background: rgba(255, 204, 0, 0.8);
 }

@@ -55,6 +55,6 @@ RSpec.describe(Resolvers::InvoicesResolver) do
   end
 
   describe 'filter type' do
-    it { expect(LiftoffSchema.types['InvoiceFilter']).to(be(Types::InvoiceFilterType)) }
+    it { expect(GraphQL::Query.new(LiftoffSchema, context: { authorizable: }).types.type('InvoiceFilter')).to(be(Types::InvoiceFilterType)) }
   end
 end
