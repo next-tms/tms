@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
-gem 'rails', '~> 8.1.3'
+gem 'rails', '~> 8.1.4.1'
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem 'propshaft'
 # Use postgresql as the database for Active Record
@@ -100,7 +100,7 @@ gem 'devise_invitable', '~> 2.0'
 gem 'devise-pwned_password', '~> 0.2'
 
 gem 'measured', '~> 3.2.0'
-gem 'place_kit', '~> 0.0.5'
+gem 'place_kit', '~> 0.0.7'
 
 gem 'sentry-rails', '~> 6.6'
 gem 'sentry-ruby', '~> 6.6'
