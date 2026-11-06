@@ -517,7 +517,7 @@ class Shipment < ApplicationRecord
 
   def profit = total_charges - total_cost
 
-  def margin = "#{((1 - (total_cost / total_charges)) * 100).round(1)}%"
+  def margin = ("#{((1 - (total_cost / total_charges)) * 100).round(1)}%" unless total_charges.zero?)
 
   def delivered? = delivered_at.present?
 

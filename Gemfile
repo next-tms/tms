@@ -105,7 +105,7 @@ gem 'sentry-ruby', '~> 6.6'
 gem 'barby'
 gem 'business_time'
 gem 'httparty'
-gem 'money-rails', '~> 1.15.0'
+gem 'money-rails', '~> 3.0'
 gem 'postmark-rails'
 gem 'timezone', '~> 1.3'
 

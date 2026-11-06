@@ -17,7 +17,7 @@ class BrokerCustomer::ProfitabilityReportJsonService
     total_cost = dispatched_shipments.map(&:total_cost).inject(Money.new(0)) { |sum, x| sum + x }
     total_charges = dispatched_shipments.map(&:total_charges).inject(Money.new(0)) { |sum, x| sum + x }
     total_profit = total_charges - total_cost
-    total_margin = ((1 - (total_cost / total_charges)) * 100).round(1)
+    total_margin = ((1 - (total_cost / total_charges)) * 100).round(1) unless total_charges.zero?
 
     {
       dispatched_shipments_count: dispatched_shipments.size,

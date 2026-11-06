@@ -434,6 +434,12 @@ RSpec.describe(Shipment) do
 
       it { expect(shipment.margin).to(eq('25.0%')) }
       it { expect(shipment.profit).to(eq(Money.new(5_000, 'USD'))) }
+
+      context 'without charges' do
+        before { shipment.total_charges = Money.new(0, 'USD') }
+
+        it { expect(shipment.margin).to(be_nil) }
+      end
     end
 
     describe '#missing_delivery_eta_on?' do

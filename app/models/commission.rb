@@ -46,7 +46,5 @@ class Commission < ApplicationRecord
 
   # @todo `change_column_null :commissions, :user_id, false
 
-  def percent
-    (amount / shipment.profit).round(2)
-  end
+  def percent = shipment.profit.zero? ? 0 : (amount / shipment.profit).round(2)
 end

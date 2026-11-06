@@ -92,7 +92,7 @@
             </td>
 
             <td>
-              <% unless profitability_report[:total_margin].infinite? %>
+              <% if profitability_report[:total_margin] %>
                 <%= profitability_report[:total_margin]  %>%
               <% end %>
             </td>

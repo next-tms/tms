@@ -25,7 +25,7 @@ RSpec.describe('Carrier::BrokerCarriers') do
 
       it { is_expected.to(have_http_status(:ok)) }
       it { expect(assigns(:broker_carriers)).to(match_array(carrier.broker_carriers)) }
-      it { expect(response.body).to(include(broker_carrier.broker_customer.customer.name)) }
+      it { expect(response.body).to(include(ERB::Util.html_escape(broker_carrier.broker_customer.customer.name))) }
     end
 
     context 'when signed in as a customer' do

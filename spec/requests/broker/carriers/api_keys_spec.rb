@@ -23,7 +23,7 @@ RSpec.describe('Broker::Carriers::APIKeys') do
     end
 
     it { is_expected.to(have_http_status(:ok)) }
-    it { expect(response.body).to(include(api_key.name, "tms_…#{api_key.token_suffix}", carrier_user.full_name)) }
+    it { expect(response.body).to(include(api_key.name, "tms_…#{api_key.token_suffix}", ERB::Util.html_escape(carrier_user.full_name))) }
     it { expect(response.body).not_to(include(api_key.token, other_api_key.name)) }
 
     context 'when the request repeats the ETag' do
@@ -46,7 +46,7 @@ RSpec.describe('Broker::Carriers::APIKeys') do
     end
 
     it { is_expected.to(have_http_status(:ok)) }
-    it { expect(response.body).to(include(carrier_user.full_name)) }
+    it { expect(response.body).to(include(ERB::Util.html_escape(carrier_user.full_name))) }
   end
 
   describe 'POST /broker/carriers/:carrier_id/api-keys' do
