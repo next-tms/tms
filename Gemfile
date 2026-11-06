@@ -73,7 +73,6 @@ group :development do
   gem 'nkf'
 
   gem 'listen', '>= 3.0.5', '< 3.10'
-  gem 'spring', '~> 4.1.1'
   gem 'traceroute'
 end
 

@@ -614,7 +614,6 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    spring (4.1.1)
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     thor (1.5.0)
@@ -742,7 +741,6 @@ DEPENDENCIES
   solid_cable
   solid_cache
   solid_queue
-  spring (~> 4.1.1)
   stimulus-rails
   timecop
   timezone (~> 1.3)
