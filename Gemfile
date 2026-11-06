@@ -83,7 +83,7 @@ group :test do
 
   gem 'factory_bot_rails'
   gem 'faker'
-  gem 'shoulda-matchers', '5.3.0'
+  gem 'shoulda-matchers', '8.0.1'
   gem 'timecop'
 end
 
