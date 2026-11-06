@@ -67,7 +67,7 @@ group :development do
   gem 'web-console'
 
   gem 'annotaterb'
-  gem 'bullet', '~> 8.1.0'
+  gem 'bullet', '~> 8.3.1'
 
   gem 'letter_opener'
   gem 'nkf'
