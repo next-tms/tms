@@ -56,7 +56,7 @@ group :development, :test do
   gem 'dotenv-rails', '~> 3.1.2'
 
   gem 'rails-controller-testing'
-  gem 'rspec-rails', '~> 6.1.3'
+  gem 'rspec-rails', '~> 8.0.4'
   gem 'webmock', '~> 3.18.1'
 
   gem 'rubocop-next', '~> 1.0.11'
