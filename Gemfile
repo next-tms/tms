@@ -151,5 +151,5 @@ gem 'activesupport-cache-zstd_compressor'
 gem 'graphql-client'
 
 gem 'brotli', '~> 0.5'
-gem 'httpx', '~> 1.5'
+gem 'httpx', '~> 1.9'
 gem 'zstd-ruby', '~> 2.0'
