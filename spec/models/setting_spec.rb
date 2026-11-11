@@ -1,37 +1,3 @@
-# == Schema Information
-#
-# Table name: settings
-#
-# @!attribute id
-#   @return []
-# @!attribute key
-#   @return [String]
-# @!attribute value
-#   @return [String]
-# @!attribute created_at
-#   @return [Time]
-# @!attribute updated_at
-#   @return [Time]
-#
-# Indexes
-#
-#  index_settings_on_key  (key) UNIQUE
-#
-# @!attribute id
-#   @return []
-# @!attribute key
-#   @return [String]
-# @!attribute value
-#   @return [String]
-# @!attribute created_at
-#   @return [Time]
-# @!attribute updated_at
-#   @return [Time]
-#
-# Indexes
-#
-#  index_settings_on_key  (key) UNIQUE
-#
 require 'rails_helper'
 
 RSpec.describe(Setting) do

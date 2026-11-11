@@ -1,33 +1,3 @@
-# == Schema Information
-#
-# Table name: broker_countries
-#
-# @!attribute id
-#   @return []
-# @!attribute country_alpha2
-#   @return [String]
-# @!attribute created_at
-#   @return [Time]
-# @!attribute updated_at
-#   @return [Time]
-#
-# Indexes
-#
-#  index_broker_countries_on_country_alpha2  (country_alpha2) UNIQUE
-#
-# @!attribute id
-#   @return []
-# @!attribute country_alpha2
-#   @return [String]
-# @!attribute created_at
-#   @return [Time]
-# @!attribute updated_at
-#   @return [Time]
-#
-# Indexes
-#
-#  index_broker_countries_on_country_alpha2  (country_alpha2) UNIQUE
-#
 class BrokerCountry < ApplicationRecord
   class << self
     def countries = Transponder::ORM::Country.where(alpha2: pluck(:country_alpha2))

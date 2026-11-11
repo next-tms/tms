@@ -99,9 +99,6 @@ GEM
       zstd-ruby (>= 1.5.6.6, < 3)
     addressable (2.9.2)
       public_suffix (>= 2.0.2, < 8.0)
-    annotaterb (4.26.0)
-      activerecord (>= 6.0.0)
-      activesupport (>= 6.0.0)
     anonymous_loader (0.1.5)
       version_gem (~> 1.1, >= 1.1.17)
     ast (2.4.3)
@@ -678,7 +675,6 @@ DEPENDENCIES
   action_policy-graphql
   activerecord-session_store (~> 2.3.0)
   activesupport-cache-zstd_compressor
-  annotaterb
   audited
   aws-sdk-s3 (~> 1.130)
   barby

@@ -1,33 +1,3 @@
-# == Schema Information
-#
-# Table name: areas
-#
-# @!attribute id
-#   @return []
-# @!attribute name
-#   @return [String]
-# @!attribute created_at
-#   @return [Time]
-# @!attribute updated_at
-#   @return [Time]
-#
-# Indexes
-#
-#  index_areas_on_name  (name)
-#
-# @!attribute id
-#   @return []
-# @!attribute name
-#   @return [String]
-# @!attribute created_at
-#   @return [Time]
-# @!attribute updated_at
-#   @return [Time]
-#
-# Indexes
-#
-#  index_areas_on_name  (name)
-#
 class Area < ApplicationRecord
   class << self
     # A region area holds one location for the whole region (no ZIP code), for pricing rules by region
