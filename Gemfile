@@ -141,7 +141,7 @@ gem 'pagy'
 gem 'ransack', '~> 4.2'
 
 gem 'audited'
-gem 'noticed', '~> 3.0.0'
+gem 'noticed', '~> 3.1.1'
 gem 'pretender'
 gem 'public_suffix'
 

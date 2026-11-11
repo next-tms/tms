@@ -14,7 +14,7 @@ GEM
       action_policy (>= 0.5.0)
       graphql (>= 1.9.3)
       ruby-next-core (>= 0.10.0)
-    action_text-trix (2.1.18)
+    action_text-trix (2.1.19)
       railties
     actioncable (8.1.4.1)
       actionpack (= 8.1.4.1)
@@ -315,7 +315,7 @@ GEM
       net-smtp
     mainstreet (0.3.0)
       geocoder (>= 1.5.1)
-    marcel (1.1.0)
+    marcel (1.2.1)
     matrix (0.4.2)
     measured (3.2.2)
       activesupport (>= 5.2)
@@ -348,9 +348,9 @@ GEM
       net-protocol
     net-pop (0.1.2)
       net-protocol
-    net-protocol (0.2.2)
+    net-protocol (0.4.0)
       timeout
-    net-smtp (0.5.1)
+    net-smtp (0.5.2)
       net-protocol
     nio4r (2.7.5)
     nkf (0.3.0)
@@ -362,8 +362,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.7-x86_64-linux-musl)
       racc (~> 1.4)
-    noticed (3.0.0)
-      rails (>= 6.1.0)
+    noticed (3.1.1)
+      rails (>= 7.1.0)
     oauth2 (2.1.0)
       anonymous_loader (~> 0.1, >= 0.1.5)
       auth-sanitizer (~> 0.2, >= 0.2.5)
@@ -717,7 +717,7 @@ DEPENDENCIES
   measured (~> 3.2.0)
   money-rails (~> 3.0)
   nkf
-  noticed (~> 3.0.0)
+  noticed (~> 3.1.1)
   open_street_map (~> 1.2.3)
   pagy
   pg (~> 1.1)
