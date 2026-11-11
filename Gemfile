@@ -72,7 +72,7 @@ group :development do
   gem 'letter_opener'
   gem 'nkf'
 
-  gem 'listen', '>= 3.0.5', '< 3.10'
+  gem 'listen', '>= 3.0.5', '< 3.11'
   gem 'traceroute'
 end
 
