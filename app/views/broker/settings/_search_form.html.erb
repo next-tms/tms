@@ -7,7 +7,7 @@
     <div class="col-auto float-end">
       <%= search_form_for(q, url: request.path, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
-        <%= f.text_field :key_or_value_cont, placeholder: 'Search', autocomplete: 'off', class: 'form-control me-1' %>
+        <%= f.text_field :key_or_value_i_cont, placeholder: 'Search', autocomplete: 'off', class: 'form-control me-1' %>
       <% end %>
     </div>
   </div>

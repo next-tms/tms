@@ -6,7 +6,7 @@
     <div class="col-auto float-end">
       <%= search_form_for(q, url: request.path, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
-        <%= f.text_field :authorized_by_first_name_or_authorized_by_last_name_or_shipment_broker_customer_customer_name_or_shipment_load_id_text_cont, placeholder: 'Filter', class: 'form-control me-2' %>
+        <%= f.text_field :authorized_by_first_name_or_authorized_by_last_name_or_shipment_broker_customer_customer_name_or_shipment_load_id_text_i_cont, placeholder: 'Filter', class: 'form-control me-2' %>
         <%= f.submit 'Filter', class: 'btn btn-primary' %>
       <% end %>
     </div>

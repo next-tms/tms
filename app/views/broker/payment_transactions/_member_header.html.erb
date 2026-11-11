@@ -28,7 +28,7 @@
           <td class="lead">
             <% if @payment_transaction.legacy_load_id.blank? %>
               <%= link_to @payment_transaction.invoice,
-                          broker_shipments_path(q: { pro_cont: @payment_transaction.shipment.pro }),
+                          broker_shipments_path(q: { pro_i_cont: @payment_transaction.shipment.pro }),
                           target: '_blank'
               %>
             <% end %>

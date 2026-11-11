@@ -481,7 +481,7 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.4.2)
-    ransack (4.4.4)
+    ransack (6.0.1)
       activerecord (>= 7.2)
       activesupport (>= 7.2)
       i18n
@@ -734,7 +734,7 @@ DEPENDENCIES
   quickbooks-ruby (~> 2.0)
   rails (~> 8.1.4.1)
   rails-controller-testing
-  ransack (~> 4.2)
+  ransack (~> 6.0)
   rqrcode
   rspec-rails (~> 8.0.5)
   rubocop-next (~> 1.0.11)

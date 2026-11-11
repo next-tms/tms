@@ -56,7 +56,7 @@ RSpec.describe(Resolvers::ShipmentsResolver) do
     end
 
     context 'with a filter' do
-      let(:arguments) { { filter: { shipperNameCont: 'glob' } } }
+      let(:arguments) { { filter: { shipperNameICont: 'glob' } } }
 
       it { expect(load_ids).to(eq([1002])) }
     end

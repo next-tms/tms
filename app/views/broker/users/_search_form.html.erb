@@ -6,7 +6,7 @@
     <div class="col-auto float-end">
       <%= search_form_for(q, url: request.path, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
-        <%= f.text_field :first_name_or_last_name_or_email_cont, placeholder: 'Filter', autofocus: true, class: 'form-control me-2' %>
+        <%= f.text_field :first_name_or_last_name_or_email_i_cont, placeholder: 'Filter', autofocus: true, class: 'form-control me-2' %>
         <%= f.submit 'Filter', class: 'btn btn-primary' %>
       <% end %>
     </div>

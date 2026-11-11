@@ -1,5 +1,5 @@
 class Broker::Carriers::TerminalsController < Broker::Carriers::BaseController
-  FILTER = 'address_region_iso31662_or_address_city_or_address_street_or_address_zip_code_cont'.freeze
+  FILTER = 'address_region_iso31662_or_address_city_or_address_street_or_address_zip_code_i_cont'.freeze
 
   def index
     @q = @carrier.terminals.ransack(query, auth_object: current_user)

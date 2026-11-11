@@ -9,7 +9,7 @@
     <div class="col-auto float-end">
       <%= search_form_for(q, url: request.path, method: :get, local: true, class: 'form-inline mb-3') do |f| %>
         <%= f.hidden_field :s, value: params[:q].try(:[], :s) %>
-        <%= f.text_field :name_or_scac_cont, placeholder: 'Filter', class: 'form-control me-2' %>
+        <%= f.text_field :name_or_scac_i_cont, placeholder: 'Filter', class: 'form-control me-2' %>
         <%= f.submit 'Filter', class: 'btn btn-primary' %>
       <% end %>
     </div>

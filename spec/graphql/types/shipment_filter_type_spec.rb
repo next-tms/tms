@@ -6,6 +6,8 @@ RSpec.describe(Types::ShipmentFilterType) do
   describe '.add_attribute_arguments' do
     it { expect(arguments['createdAtGteq'].type.graphql_name).to(eq('ISO8601DateTime')) }
     it { expect(arguments['shipperNameCont'].type.graphql_name).to(eq('String')) }
+    it { expect(arguments['shipperNameICont'].type.graphql_name).to(eq('String')) }
+    it { expect(arguments['shipperNameNotIStart'].type.graphql_name).to(eq('String')) }
     it { expect(arguments['shipperNameIn'].type.to_type_signature).to(eq('[String!]')) }
     it { expect(arguments['statusNull'].type.graphql_name).to(eq('Boolean')) }
   end
