@@ -145,7 +145,7 @@ gem 'noticed', '~> 3.0.0'
 gem 'pretender'
 gem 'public_suffix'
 
-gem 'activerecord-session_store', '~> 2.1.0'
+gem 'activerecord-session_store', '~> 2.3.0'
 gem 'activesupport-cache-zstd_compressor'
 
 gem 'graphql-client'
