@@ -55,6 +55,8 @@
       </div>
     <% end %>
 
+    <%= render 'layouts/operator_notice', operator_notice: %>
+
     <% if current_user != true_user %>
       <div class="flash-alert alert alert-danger mb-0 border-0 rounded-0">
         <div class="container-fluid">

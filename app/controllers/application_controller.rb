@@ -6,11 +6,14 @@ class ApplicationController < ActionController::Base
 
   before_action :add_floc_opt_out_header
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :enforce_operator_notice
   before_action :sign_out_deactivated_user
 
   delegate :homepage, private: true, to: :helpers
 
-  etag { [current_user, Setting.all] }
+  etag { [current_user, operator_notice, Setting.all] }
+
+  helper_method :operator_notice
 
   impersonates :user
 
@@ -76,7 +79,14 @@ class ApplicationController < ActionController::Base
       )
   end
 
+  def enforce_operator_notice
+    return unless operator_notice.enforced?
+
+    request.format.html? ? render(layout: false, file: 'public/503.html', status: :service_unavailable) : head(:service_unavailable)
+  end
+
   def global_controller? = false
+  def operator_notice = (@operator_notice ||= OperatorNotice.current)
 
   def sign_out_deactivated_user = (sign_out_and_redirect(current_user) if signed_in? && current_user.deactivated?)
 

@@ -28,6 +28,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym('LTL')
   inflect.acronym('NMFC')
   inflect.acronym('OAuth2')
+  inflect.acronym('OFREP')
   inflect.acronym('ORM')
   inflect.acronym('PDF')
   inflect.acronym('PODs') # must come before "POD"
