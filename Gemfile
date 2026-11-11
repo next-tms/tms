@@ -119,7 +119,7 @@ gem 'graphql', '~> 2.6'
 gem 'geocoder', '~> 1.8.1'
 gem 'google_places', '~> 2.0.0'
 gem 'mainstreet', '~> 0.3.0'
-gem 'open_street_map', '~> 1.2.1'
+gem 'open_street_map', '~> 1.2.3'
 gem 'StreetAddress',
     git: 'https://github.com/Civitium/street-address',
     ref: '25d47a0e95a2b7e29f2ad084bf1fd99e63e3589a',

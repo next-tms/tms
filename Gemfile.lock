@@ -174,7 +174,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.8)
-    csv (3.3.5)
+    csv (3.3.7)
     dartsass-rails (0.5.1)
       railties (>= 6.0.0)
       sass-embedded (~> 1.63)
@@ -298,6 +298,7 @@ GEM
       logger (~> 1.6)
     letter_opener (1.10.0)
       launchy (>= 2.2, < 4)
+    libxml-ruby (5.0.6)
     lint_roller (1.1.0)
     listen (3.10.1)
       logger
@@ -337,7 +338,7 @@ GEM
       railties (>= 7.0)
     msgpack (1.8.7)
     multi_json (1.15.0)
-    multi_xml (0.8.1)
+    multi_xml (0.9.1)
       bigdecimal (>= 3.1, < 5)
     multipart-post (2.3.0)
     net-http (0.9.1)
@@ -375,8 +376,9 @@ GEM
       rack (>= 1.2, < 4)
       snaky_hash (~> 2.0, >= 2.0.9)
       version_gem (~> 1.1, >= 1.1.17)
-    open_street_map (1.2.2)
+    open_street_map (1.2.3)
       httparty (~> 0.17)
+      libxml-ruby (~> 5.0.3)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
     pagy (9.0.9)
@@ -715,7 +717,7 @@ DEPENDENCIES
   money-rails (~> 3.0)
   nkf
   noticed (~> 3.0.0)
-  open_street_map (~> 1.2.1)
+  open_street_map (~> 1.2.3)
   pagy
   pg (~> 1.1)
   phony_rails
