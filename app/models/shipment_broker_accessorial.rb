@@ -27,6 +27,31 @@
 #  fk_rails_...  (broker_accessorial_id => broker_accessorials.id)
 #  fk_rails_...  (shipment_id => shipments.id)
 #
+# @!attribute id
+#   @return []
+# @!attribute charge_cents
+#   @return [Integer]
+# @!attribute charge_currency
+#   @return [String]
+# @!attribute cost_cents
+#   @return [Integer]
+# @!attribute cost_currency
+#   @return [String]
+# @!attribute broker_accessorial_id
+#   @return []
+# @!attribute shipment_id
+#   @return []
+#
+# Indexes
+#
+#  index_shipment_broker_accessorials_on_broker_accessorial_id  (broker_accessorial_id)
+#  index_shipment_broker_accessorials_on_shipment_id            (shipment_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (broker_accessorial_id => broker_accessorials.id)
+#  fk_rails_...  (shipment_id => shipments.id)
+#
 class ShipmentBrokerAccessorial < ApplicationRecord
   belongs_to :broker_accessorial
 

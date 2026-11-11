@@ -17,6 +17,21 @@
 #
 #  index_settings_on_key  (key) UNIQUE
 #
+# @!attribute id
+#   @return []
+# @!attribute key
+#   @return [String]
+# @!attribute value
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+#
+# Indexes
+#
+#  index_settings_on_key  (key) UNIQUE
+#
 class Setting < ApplicationRecord
   class << self
     def first_value(*keys)

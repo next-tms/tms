@@ -15,6 +15,19 @@
 #
 #  index_broker_countries_on_country_alpha2  (country_alpha2) UNIQUE
 #
+# @!attribute id
+#   @return []
+# @!attribute country_alpha2
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+#
+# Indexes
+#
+#  index_broker_countries_on_country_alpha2  (country_alpha2) UNIQUE
+#
 require 'rails_helper'
 
 RSpec.describe(BrokerCountry) do

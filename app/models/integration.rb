@@ -19,6 +19,23 @@
 #
 #  index_integrations_on_kind_and_name  (kind,name) UNIQUE
 #
+# @!attribute id
+#   @return []
+# @!attribute credentials
+#   @return [Hash]
+# @!attribute kind
+#   @return [String]
+# @!attribute name
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+#
+# Indexes
+#
+#  index_integrations_on_kind_and_name  (kind,name) UNIQUE
+#
 class Integration < ApplicationRecord
   class << self
     def connected?(kind) = where(kind:).any?(&:connected?)

@@ -29,6 +29,33 @@
 #  fk_rails_...  (shipment_id => shipments.id)
 #  fk_rails_...  (user_id => users.id)
 #
+# @!attribute id
+#   @return []
+# @!attribute amount_cents
+#   @return [Integer]
+# @!attribute amount_currency
+#   @return [String]
+# @!attribute paid
+#   @return [Boolean]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+# @!attribute shipment_id
+#   @return []
+# @!attribute user_id
+#   @return []
+#
+# Indexes
+#
+#  index_commissions_on_shipment_id  (shipment_id)
+#  index_commissions_on_user_id      (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (shipment_id => shipments.id)
+#  fk_rails_...  (user_id => users.id)
+#
 require 'rails_helper'
 
 RSpec.describe Commission do

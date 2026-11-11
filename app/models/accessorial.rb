@@ -21,6 +21,25 @@
 #
 #  index_accessorials_on_name  (name) UNIQUE
 #
+# @!attribute id
+#   @return []
+# @!attribute code
+#   @return [String]
+# @!attribute fee
+#   @return [Boolean]
+# @!attribute freight_kit_code
+#   @return [String]
+# @!attribute name
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+#
+# Indexes
+#
+#  index_accessorials_on_name  (name) UNIQUE
+#
 class Accessorial < ApplicationRecord
   class << self
     def combined_accessorials(shipment:)

@@ -42,6 +42,46 @@
 #  fk_rails_...  (problem_id => problems.id)
 #  fk_rails_...  (suppressor_id => suppressors.id)
 #
+# @!attribute id
+#   @return []
+# @!attribute ignored_at
+#   @return [Time]
+# @!attribute instigator_type
+#   @return [String]
+# @!attribute problematic_type
+#   @return [String]
+# @!attribute suppressible_type
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+# @!attribute ignored_by_id
+#   @return []
+# @!attribute instigator_id
+#   @return []
+# @!attribute problem_id
+#   @return []
+# @!attribute problematic_id
+#   @return []
+# @!attribute suppressor_id
+#   @return []
+#
+# Indexes
+#
+#  index_suppressions_on_ignored_by_id      (ignored_by_id)
+#  index_suppressions_on_instigator         (instigator_type,instigator_id)
+#  index_suppressions_on_problem_id         (problem_id)
+#  index_suppressions_on_problematic        (problematic_type,problematic_id)
+#  index_suppressions_on_suppressible_type  (suppressible_type)
+#  index_suppressions_on_suppressor_id      (suppressor_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (ignored_by_id => users.id)
+#  fk_rails_...  (problem_id => problems.id)
+#  fk_rails_...  (suppressor_id => suppressors.id)
+#
 class Suppression < ApplicationRecord
   before_validation :set_ignored_at
   before_validation :set_suppressible_type

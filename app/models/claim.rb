@@ -30,6 +30,34 @@
 #
 #  fk_rails_...  (shipment_id => shipments.id)
 #
+# @!attribute id
+#   @return []
+# @!attribute balance_cents
+#   @return [Integer]
+# @!attribute balance_currency
+#   @return [String]
+# @!attribute due_on
+#   @return [Date]
+# @!attribute total_cents
+#   @return [Integer]
+# @!attribute total_currency
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+# @!attribute shipment_id
+#   @return []
+#
+# Indexes
+#
+#  index_claims_on_due_on       (due_on)
+#  index_claims_on_shipment_id  (shipment_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (shipment_id => shipments.id)
+#
 class Claim < ApplicationRecord
   class << self
     def ransackable_associations(_auth_object = nil)

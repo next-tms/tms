@@ -49,6 +49,53 @@
 #  index_standardized_addresses_on_key              (key)
 #  index_standardized_addresses_on_region_iso31662  (region_iso31662)
 #
+# @!attribute id
+#   @return []
+# @!attribute addresses_count
+#   @return [Integer]
+# @!attribute city
+#   @return [String]
+# @!attribute country_alpha2
+#   @return [String]
+# @!attribute google_places_spot_cached
+#   @return [String]
+# @!attribute google_places_spot_updated_at
+#   @return [Time]
+# @!attribute key
+#   @return [String]
+# @!attribute latitude
+#   @return [String]
+# @!attribute longitude
+#   @return [String]
+# @!attribute open_street_map_result_cached
+#   @return [String]
+# @!attribute open_street_map_result_updated_at
+#   @return [Time]
+# @!attribute postal_code
+#   @return [String]
+# @!attribute region_iso31662
+#   @return [String]
+# @!attribute smarty_streets_result_cached
+#   @return [String]
+# @!attribute smarty_streets_result_updated_at
+#   @return [Time]
+# @!attribute street
+#   @return [String]
+# @!attribute street2
+#   @return [String]
+# @!attribute time_zone_name
+#   @return [String]
+# @!attribute created_at
+#   @return [Time]
+# @!attribute updated_at
+#   @return [Time]
+#
+# Indexes
+#
+#  index_standardized_addresses_on_country_alpha2   (country_alpha2)
+#  index_standardized_addresses_on_key              (key)
+#  index_standardized_addresses_on_region_iso31662  (region_iso31662)
+#
 require 'rails_helper'
 
 RSpec.describe(StandardizedAddress) do
