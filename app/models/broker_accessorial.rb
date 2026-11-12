@@ -1,5 +1,5 @@
 class BrokerAccessorial < ApplicationRecord
-  scope :blanket, -> { where(customer: nil) }
+  scope :blanket, -> { where(broker_customer: nil) }
 
   belongs_to :broker_customer, optional: true
   belongs_to :accessorial, optional: true

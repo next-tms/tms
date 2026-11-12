@@ -125,11 +125,12 @@ class Broker::ShipmentsController < Broker::BrokerController
       @shipment.dispatcher ||= current_user if current_user.dispatcher_for?(@shipment)
       @shipment.updated_by = current_user
 
-      if !@shipment.quote_only? && shipment_params[:accessorials_has_been_suggested].blank?
-        @shipment.shipper_address.find_or_build_standardized_address if @shipment.shipper_address.standardized_address.blank?
+      @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment).any?
+    end
 
-        @shipment.receiver_address.find_or_build_standardized_address if @shipment.receiver_address.standardized_address.blank?
-      end
+    if @accessorials_has_been_suggested
+      render(:new, status: :unprocessable_content)
+      return
     end
 
     unless @shipment.save

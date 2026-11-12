@@ -437,19 +437,12 @@ class Shipment < ApplicationRecord
   def suggested_accessorial_codes = @suggested_accessorial_codes ||= suggested_accessorials.blank? ? [] : suggested_accessorials.map(&:code)
 
   def suggested_broker_accessorials
-    return [] if suggested_accessorials.blank?
+    return [] if suggested_accessorial_codes.blank?
 
-    @suggested_broker_accessorials = []
-    suggested_accessorials.each do |suggested_accessorial|
-      broker_accessorial = broker_customer.broker_accessorials.where(code: suggested_accessorial.code)
-      if broker_accessorial.blank?
-        broker_accessorial = BrokerAccessorial.where(code: suggested_accessorial.code)
-        @suggested_broker_accessorials << broker_accessorial.first if broker_accessorial.present?
-      else
-        @suggested_broker_accessorials << broker_accessorial.first
-      end
-    end
-    @suggested_broker_accessorials
+    @suggested_broker_accessorials ||= (broker_customer&.eligible_broker_accessorials || BrokerAccessorial.blanket.order(:name))
+                                       .where(code: suggested_accessorial_codes)
+                                       .where.not(id: broker_accessorial_ids)
+                                       .to_a
   end
 
   def freight_classes(use_declared_freight_class:) = items.map { |item| item.api_freight_class(use_declared_freight_class:) }

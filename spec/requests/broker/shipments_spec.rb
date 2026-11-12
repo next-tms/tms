@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe('Broker::Shipments') do
   let(:current_user) { create(:root_broker_user).tap { |user| user.add_role(:dispatch) } }
-  let(:shipment) { create(:shipment, broker_carrier: nil, load_id: 4242, quote_only: false) }
+  let(:shipment) { create(:shipment, :usd, broker_carrier: nil, load_id: 4242, quote_only: false) }
 
   before do
     create(:item, shipment:)
@@ -34,6 +34,33 @@ RSpec.describe('Broker::Shipments') do
 
       it { is_expected.to(have_http_status(:not_found)) }
       it { expect(Shipment.exists?(shipment.id)).to(be(true)) }
+    end
+  end
+
+  describe 'GET /broker/shipments/:load_id' do
+    let(:alert) { Nokogiri::HTML(response.body).at_xpath('//div[contains(@class, "alert")][.//p[contains(., "Missing Services")]]') }
+
+    before do
+      seed_settings
+      get(broker_shipment_path(shipment))
+    end
+
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(alert).to(be_nil) }
+
+    context 'with a suggested accessorial' do
+      let(:broker_accessorial) { BrokerAccessorial.find_by!(code: 'DAIR') }
+      let(:href) { broker_shipment_path(shipment, shipment: { shipment_broker_accessorials_attributes: }) }
+      let(:shipment) do
+        create(:shipment, :usd, broker_carrier: nil, dispatched_at: nil, load_id: 4242, quote_only: false, receiver_name: 'Airport').tap do
+          accessorial = create(:accessorial, code: 'DAIR', name: 'Airport')
+          create(:broker_accessorial, accessorial:, broker_customer: nil, code: 'DAIR', name: 'Airport')
+        end
+      end
+      let(:shipment_broker_accessorials_attributes) { [{ broker_accessorial_id: broker_accessorial.id }] }
+
+      it { expect(alert.at_css('a')['href']).to(eq(href)) }
+      it { expect(alert.at_css('a[data-turbo-method="patch"]').text).to(eq('Add Airport')) }
     end
   end
 
@@ -127,6 +154,21 @@ RSpec.describe('Broker::Shipments') do
     end
   end
 
+  describe 'PATCH /broker/shipments/:load_id' do
+    let(:broker_accessorial) { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'DAIR', name: 'Airport') }
+    let(:kept) { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'DRES', name: 'Residential') }
+    let(:shipment_broker_accessorials_attributes) { [{ broker_accessorial_id: broker_accessorial.id }] }
+
+    before do
+      shipment.shipment_broker_accessorials.create!(broker_accessorial: kept, cost: 10)
+      patch(broker_shipment_path(shipment, shipment: { shipment_broker_accessorials_attributes: }))
+    end
+
+    it { is_expected.to(redirect_to(broker_shipment_path(shipment))) }
+    it { expect(shipment.reload.broker_accessorials).to(contain_exactly(broker_accessorial, kept)) }
+    it { expect(shipment.shipment_broker_accessorials.find_by(broker_accessorial: kept).cost).to(eq(Money.from_amount(10))) }
+  end
+
   describe 'PATCH /broker/shipments/:load_id.json' do
     let(:delivered_at) { 1.day.ago }
 
@@ -139,6 +181,43 @@ RSpec.describe('Broker::Shipments') do
 
       it { is_expected.to(have_http_status(:unprocessable_content)) }
       it { expect(response.parsed_body).to(eq('delivered_at' => ['cannot be in the future'])) }
+    end
+  end
+
+  describe 'POST /broker/shipments' do
+    let(:accessorial) { create(:accessorial, code: 'DAIR', name: 'Airport') }
+    let(:accessorials_has_been_suggested) { nil }
+    let(:address) { { city: 'Reno', country_alpha2: 'US', zip_code: '89501' } }
+    let(:document) { Nokogiri::HTML(response.body) }
+    let(:params) do
+      {
+        shipment: {
+          accessorials_has_been_suggested:,
+          items_attributes: [{ desc: 'Box', quantity: 1, weight: 100 }],
+          quote_only: false,
+          receiver_address_attributes: address,
+          receiver_name: 'Airport',
+          shipper_address_attributes: address,
+          shipper_name: 'Acme'
+        }
+      }
+    end
+
+    before do
+      seed_settings
+      create(:broker_accessorial, accessorial:, broker_customer: nil, code: 'DAIR', name: 'Airport')
+      post(broker_shipments_path, params:)
+    end
+
+    it { is_expected.to(have_http_status(:unprocessable_content)) }
+    it { expect(document.at_css('.alert-info').text.squish).to(be_present) }
+    it { expect(document.at_css('input[name="shipment[accessorials_has_been_suggested]"]')['value']).to(eq('true')) }
+    it { expect(document.at_css('select[name$="[broker_accessorial_id]"] option[selected]').text).to(eq('Airport')) }
+
+    context 'when accessorials were already suggested' do
+      let(:accessorials_has_been_suggested) { 'true' }
+
+      it { expect(document.at_css('.alert-info')).to(be_nil) }
     end
   end
 end

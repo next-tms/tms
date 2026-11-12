@@ -3,6 +3,26 @@ class BuildAssumedAccesorialsService
 
   attr_reader :shipment
 
+  NO_DOCK_TYPES = [
+    'amusement_park',
+    'athletic_facility',
+    'cemetery',
+    'church',
+    'farm',
+    'fitness_center',
+    'golf_course',
+    'hospital',
+    'hotel',
+    'mall',
+    'motel',
+    'nursing_home',
+    'park',
+    'resort',
+    'restaurant',
+    'school',
+    'university'
+  ].freeze
+
   def initialize(shipment:)
     @shipment = shipment
   end
@@ -25,13 +45,12 @@ class BuildAssumedAccesorialsService
       accessorials << Accessorial.find_by(code: "#{prefix}MIL") if address.types.present? && (address.types.include? 'military')
 
       # Residential
-      if address.residential? || shipment.accessorial_codes.include?("#{prefix}RES")
+      if residential?(address, prefix)
         accessorials << Accessorial.find_by(code: "#{prefix}RES")
         accessorials << Accessorial.find_by(code: "#{prefix}APP")
-        if items.order(Arel.sql('items.weight / items.quantity DESC')).limit(1).first.weight >= 200
-          accessorials << Accessorial.find_by(code: "#{prefix}LIF")
-        end
       end
+
+      accessorials << Accessorial.find_by(code: "#{prefix}LIF") if liftgate?(address, prefix)
 
       # Restaurant
       accessorials << Accessorial.find_by(code: "#{prefix}RST") if address.restaurant?
@@ -40,6 +59,13 @@ class BuildAssumedAccesorialsService
     # Appointment delivery
     accessorials << Accessorial.find_by(code: 'DAPP') if bol_notes.present? && (bol_notes.downcase.include? 'must contact')
 
-    accessorials.uniq
+    accessorials.compact.uniq
   end
+
+  private
+
+  def heavy? = items.any? { |item| item.weight.to_f >= 200 }
+  def liftgate?(address, prefix) = (residential?(address, prefix) || no_dock?(address)) && heavy?
+  def no_dock?(address) = address.restaurant? || address.types.intersect?(NO_DOCK_TYPES)
+  def residential?(address, prefix) = address.residential? || shipment.accessorial_codes.include?("#{prefix}RES")
 end

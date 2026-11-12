@@ -76,6 +76,13 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.updated_by = current_user
     @shipment.broker_customer = current_user.companyable
 
+    @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment).any?
+
+    if @accessorials_has_been_suggested
+      render(:new, status: :unprocessable_content)
+      return
+    end
+
     unless @shipment.save
       respond_to do |format|
         format.html { render(:new, status: :unprocessable_content) }

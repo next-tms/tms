@@ -84,18 +84,18 @@
   </div>
 <% end %>
 
-<% if @shipment.dispatched_at.blank? and not @shipment.suggested_broker_accessorials.blank?  %>
+<% if @shipment.dispatched_at.blank? && @shipment.suggested_broker_accessorials.present? %>
   <div class="alert alert-warning">
     <p class="lead"><%= icon 'solid', 'dollar-sign', 'Missing Services' %></p>
     <p>Based on the shipment information the following services may be required and charged by the carrier:</p>
     <ul class="list-unstyled list-inline">
       <% @shipment.suggested_broker_accessorials.each do |broker_accessorial| %>
         <li class="list-inline-item">
-          <% accessorial_codes = [@shipment.broker_accessorials.pluck(:code), broker_accessorial.code].flatten.join(', ') %>
+          <% shipment_broker_accessorials_attributes = [{ broker_accessorial_id: broker_accessorial.id }] %>
           <%= link_to "Add #{broker_accessorial.name}",
-                      { shipment: { accessorial_codes: } },
-                      data: { turbo_method: :patch },
-                      class: 'btn btn-light'
+                      [:broker, @shipment, { shipment: { shipment_broker_accessorials_attributes: } }],
+                      class: 'btn btn-light',
+                      data: { turbo_method: :patch }
           %>
         </li>
       <% end %>

@@ -290,6 +290,42 @@ RSpec.describe(Shipment) do
       it { expect(shipment.suggested_accessorial_codes).to(eq(['liftgate'])) }
     end
 
+    describe '#suggested_broker_accessorials' do
+      let!(:blanket) { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'LIF', name: 'Liftgate') }
+      let!(:other_customer) { create(:broker_accessorial, accessorial: nil, code: 'RES', name: 'Residential') }
+      let(:shipment) { create(:shipment, broker_carrier: nil) }
+
+      before { allow(shipment).to(receive(:suggested_accessorial_codes).and_return(['LIF', 'RES'])) }
+
+      it { expect(shipment.suggested_broker_accessorials).to(eq([blanket])) }
+      it { expect(shipment.suggested_broker_accessorials).not_to(include(other_customer)) }
+
+      context 'when nothing is suggested' do
+        before { allow(shipment).to(receive(:suggested_accessorial_codes).and_return([])) }
+
+        it { expect(shipment.suggested_broker_accessorials).to(eq([])) }
+      end
+
+      context 'when the broker customer has its own accessorial' do
+        let!(:customer) { create(:broker_accessorial, accessorial: nil, broker_customer:, code: 'LIF', name: 'Lif') }
+        let(:broker_customer) { shipment.broker_customer }
+
+        it { expect(shipment.suggested_broker_accessorials).to(eq([customer])) }
+      end
+
+      context 'when the shipment already has the accessorial' do
+        before { shipment.broker_accessorials << blanket }
+
+        it { expect(shipment.suggested_broker_accessorials).to(eq([])) }
+      end
+
+      context 'when there is no broker customer' do
+        before { shipment.broker_customer = nil }
+
+        it { expect(shipment.suggested_broker_accessorials).to(eq([blanket])) }
+      end
+    end
+
     describe '#to_param' do
       it { expect(shipment.to_param).to(eq('42')) }
     end
