@@ -123,7 +123,6 @@ gem 'StreetAddress',
     ref: '25d47a0e95a2b7e29f2ad084bf1fd99e63e3589a',
     require: 'street_address'
 
-gem 'htmlentities'
 gem 'phony_rails'
 
 gem 'gotenberg-ruby', '~> 1.1.0'
