@@ -127,7 +127,7 @@ gem 'StreetAddress',
 gem 'htmlentities'
 gem 'phony_rails'
 
-gem 'gotenberg-ruby', '~> 1.0.11'
+gem 'gotenberg-ruby', '~> 1.1.0'
 gem 'pstore' # explicitly for gotenberg-ruby
 
 gem 'matrix' # explicitly for prawn
