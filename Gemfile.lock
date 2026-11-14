@@ -700,7 +700,6 @@ DEPENDENCIES
   graphql (~> 2.6)
   graphql-client
   htmlentities
-  httparty
   httpx (~> 1.9)
   image_processing (~> 1.2)
   importmap-rails
