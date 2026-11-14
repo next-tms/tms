@@ -6,6 +6,6 @@ FactoryBot.define do
     country_alpha2 { 'US' }
     event { create(:event) }
     region_iso31662 { 'US-CA' }
-    time_zone_name { Faker::Address.time_zone }
+    time_zone_name { TZInfo::Timezone.all_data_zone_identifiers.sample }
   end
 end

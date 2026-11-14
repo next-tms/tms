@@ -9,7 +9,7 @@ FactoryBot.define do
     region_iso31662 { 'US-CA' }
     smarty_streets_result_updated_at { Time.current }
     street { Faker::Address.street_address }
-    time_zone_name { Faker::Address.time_zone }
+    time_zone_name { TZInfo::Timezone.all_data_zone_identifiers.sample }
     zip_code { Faker::Address.zip }
   end
 end
