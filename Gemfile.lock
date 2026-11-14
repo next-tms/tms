@@ -309,7 +309,7 @@ GEM
       net-imap
       net-pop
       net-smtp
-    mainstreet (0.3.0)
+    mainstreet (0.5.0)
       geocoder (>= 1.5.1)
     marcel (1.2.1)
     matrix (0.4.2)
@@ -707,7 +707,7 @@ DEPENDENCIES
   jbuilder (~> 2.15.1)
   letter_opener
   listen (>= 3.0.5, < 3.11)
-  mainstreet (~> 0.3.0)
+  mainstreet (~> 0.5.0)
   matrix
   measured (~> 3.2.0)
   money-rails (~> 3.0)
