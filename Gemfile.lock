@@ -723,7 +723,6 @@ DEPENDENCIES
   pretender
   propshaft
   pstore
-  public_suffix
   puma (>= 5.0)
   quickbooks-ruby (~> 2.0)
   rails (~> 8.1.4.1)

@@ -141,7 +141,6 @@ gem 'ransack', '~> 6.0'
 gem 'audited'
 gem 'noticed', '~> 3.1.1'
 gem 'pretender'
-gem 'public_suffix'
 
 gem 'activerecord-session_store', '~> 2.3.0'
 gem 'activesupport-cache-zstd_compressor'
