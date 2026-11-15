@@ -16,7 +16,7 @@ RSpec.describe(Types::BrokerCarrierType) do
 
   it { expect(data['brokerCustomer']).to(eq('id' => broker_carrier.broker_customer_id.to_s)) }
   it { expect(data['carrier']).to(eq('id' => broker_carrier.carrier_id.to_s)) }
-  it { expect(data['shipments']).to(eq('items' => [{ 'id' => shipment.id.to_s }], 'totalItems' => 1)) }
+  it { expect(data['shipments']).to(eq('items' => [{ 'id' => shipment.load_id.to_s }], 'totalItems' => 1)) }
 
   describe 'markup fields' do
     let(:query) { 'query($id: ID!) { brokerCarrier(id: $id) { quotePaddingCents quotePaddingCurrency } }' }

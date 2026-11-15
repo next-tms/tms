@@ -32,7 +32,7 @@ RSpec.describe(Types::BrokerCustomerType) do
   it { expect(data['customer']).to(eq('id' => broker_customer.customer_id.to_s)) }
   it { expect(data['officeAddress']).to(eq('id' => broker_customer.office_address_id.to_s)) }
   it { expect(data['primaryPickupAddress']).to(eq('id' => broker_customer.primary_pickup_address_id.to_s)) }
-  it { expect(data['shipments']).to(eq('items' => [{ 'id' => shipment.id.to_s }])) }
+  it { expect(data['shipments']).to(eq('items' => [{ 'id' => shipment.load_id.to_s }])) }
 
   describe 'markup fields' do
     let(:query) { 'query($id: ID!) { brokerCustomer(id: $id) { defaultUpchargeCents defaultUpchargeCurrency defaultUpchargePercentage } }' }

@@ -8,6 +8,22 @@ RSpec.describe(Types::QueryType) do
   let(:id) { customer.id }
   let(:query) { 'query($id: ID!) { customer(id: $id) { id name } }' }
 
+  describe '#shipment' do
+    let(:authorizable) { create(:broker_user).tap { |broker_user| broker_user.add_role(:dispatch) } }
+    let(:id) { shipment.load_id }
+    let(:query) { 'query($id: ID!) { shipment(id: $id) { id loadId } }' }
+    let(:shipment) { create(:shipment) }
+
+    it { expect(result.dig('data', 'shipment')).to(eq('id' => shipment.load_id.to_s, 'loadId' => shipment.load_id)) }
+
+    context 'when given the database id' do
+      let(:id) { shipment.id }
+      let(:shipment) { create(:shipment, load_id: create(:shipment).load_id + 1000) }
+
+      it { expect(result.dig('data', 'shipment')).to(be_nil) }
+    end
+  end
+
   describe 'fields' do
     it { expect(described_class.fields.keys).to(include('brokerCarrier', 'brokerCarriers', 'brokerCustomer', 'brokerCustomers')) }
     it { expect(described_class.fields.keys).to(include('carrier', 'carriers', 'customer', 'customers', 'shipment', 'shipments')) }

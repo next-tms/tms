@@ -111,6 +111,12 @@ RSpec.describe(Types::ShipmentType) do
     end
   end
 
+  describe '#id' do
+    let(:query) { '{ shipments { items { id } } }' }
+
+    it { expect(items.pluck('id')).to(match_array(shipments.map { |shipment| shipment.load_id.to_s })) }
+  end
+
   describe 'money fields' do
     let(:charge_fields) { 'carrierChargeCents carrierChargeCurrency totalChargesCents totalChargesCurrency' }
     let(:cost_fields) { 'carrierCostCents carrierCostCurrency totalCostCents totalCostCurrency' }

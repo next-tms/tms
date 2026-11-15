@@ -33,7 +33,7 @@ module Types
     field :dispatcher_id, Integer
     field :documents, [Types::DocumentType], null: false
     field :events, [Types::TrackingEventType], null: false
-    field :id, ID, null: false
+    field :id, ID, method: :load_id, null: false
     field :lift_gate_delivery, Boolean
     field :lift_gate_pickup, Boolean
     field :load_id, Integer

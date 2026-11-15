@@ -22,5 +22,7 @@ module Types
 
       field name.to_s.pluralize.to_sym, resolver: "Resolvers::#{name.to_s.camelize.pluralize}Resolver".constantize
     end
+
+    def shipment(id:) = Shipment.find_by(load_id: id)
   end
 end

@@ -158,7 +158,7 @@ RSpec.describe('GraphQL') do
       end
 
       it { is_expected.to(have_http_status(:ok)) }
-      it { expect(json.dig('data', 'shipments', 'items')).to(eq([{ 'id' => shipment.id.to_s }])) }
+      it { expect(json.dig('data', 'shipments', 'items')).to(eq([{ 'id' => shipment.load_id.to_s }])) }
     end
 
     context 'when the API key user is deactivated' do
