@@ -20,8 +20,6 @@
                           data: { action: 'address#handle', 'address-target': 'country' },
                           class: 'form-select' %>
 
-  <%= address_form.hidden_field :standardized_address_id, data: { address_target: 'standardizedAddressId'} %>
-
   <div class="text-warning my-4 d-none" data-address-target="validateAddressLoading"> 
     <div class="spinner-border spinner-border-sm text-warning" role="status">
       <span class="visually-hidden">Loading...</span>
@@ -30,10 +28,10 @@
   </div>
 
   <div class="text-danger my-4 d-none" data-address-target="validateAddressFailed"> 
-    <%= icon('solid', 'exclamation', 'Address not found with SmartyStreets Address Verification. Ensure address is correct.')%>
+    <%= icon('solid', 'exclamation', 'Address not found. Make sure that the address is correct.')%>
   </div>
 
   <div class="text-success my-4 d-none" data-address-target="validateAddressSuccess"> 
-    <%= icon('solid', 'check', 'Address Verified via SmartyStreets Verification')%>
+    <%= icon('solid', 'check', 'Address verified')%>
   </div>
 <% end %>

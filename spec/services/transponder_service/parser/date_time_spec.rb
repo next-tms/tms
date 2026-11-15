@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe(TransponderService::Parser::DateTime) do
   describe '.call' do
+    subject(:parsed) { described_class.call(date_time) }
+
     let(:date_time) do
       {
         local_date_time: '2026-10-24T09:30:00',
@@ -9,29 +11,30 @@ RSpec.describe(TransponderService::Parser::DateTime) do
       }
     end
 
-    context 'when a standardized address in the same city and region has a time zone' do
-      before { create(:standardized_address, city: 'Fremont', time_zone_name: 'America/Los_Angeles') }
+    context 'when an address in the same city and region has a time zone' do
+      before { create(:address, city: 'Fremont', time_zone_name: 'America/Los_Angeles') }
 
-      it { expect(described_class.call(date_time).time_zone.name).to(eq('America/Los_Angeles')) }
-      it { expect(described_class.call(date_time).strftime('%H:%M')).to(eq('09:30')) }
+      it { expect(parsed.time_zone.name).to(eq('America/Los_Angeles')) }
+      it { expect(parsed.strftime('%H:%M')).to(eq('09:30')) }
     end
 
-    context 'when the matching standardized address is in another region' do
-      let(:client) { instance_double(GooglePlaces::Client, spots_by_query: []) }
+    context 'when the matching address is in another region' do
+      let(:verification) { instance_double(Geo::Verification, latitude: 37.55, longitude: -121.98) }
 
       before do
-        create(:standardized_address, city: 'Fremont', region_iso31662: 'US-TX', time_zone_name: 'America/Chicago')
-        allow(ENV).to(receive(:fetch).and_call_original)
-        allow(ENV).to(receive(:fetch).with('GOOGLE_API_KEY').and_return('mock_api_key'))
-        allow(GooglePlaces::Client).to(receive(:new).with('mock_api_key').and_return(client))
+        create(:address, city: 'Fremont', region_iso31662: 'US-TX', time_zone_name: 'America/Chicago', zip_code: '75001')
+        allow(Geo).to(receive_messages(time_zone: 'America/Los_Angeles', verify: verification))
+        parsed
       end
 
-      it { expect(described_class.call(date_time)).to(be_nil) }
+      it { expect(parsed.time_zone.name).to(eq('America/Los_Angeles')) }
+      it { expect(Geo).to(have_received(:time_zone).with(latitude: 37.55, longitude: -121.98)) }
+      it { expect(Geo).to(have_received(:verify).with(administrative_area: 'CA', locality: 'Fremont', region_code: 'US')) }
 
-      it do
-        described_class.call(date_time)
+      context 'when the city is not found' do
+        let(:verification) { nil }
 
-        expect(client).to(have_received(:spots_by_query).with('Fremont, CA, US'))
+        it { is_expected.to(be_nil) }
       end
     end
 
@@ -43,7 +46,7 @@ RSpec.describe(TransponderService::Parser::DateTime) do
         }
       end
 
-      it { expect(described_class.call(date_time)).to(be_nil) }
+      it { is_expected.to(be_nil) }
     end
   end
 end

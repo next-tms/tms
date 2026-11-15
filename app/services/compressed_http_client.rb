@@ -1,6 +1,13 @@
 class CompressedHTTPClient
   class << self
     def delete(url, accept: ACCEPT, **) = request(:delete, url, accept, **)
+
+    def filter_uri(uri)
+      filtered = URI(uri.to_s)
+      filtered.query = PARAMETER_FILTER.filter(Rack::Utils.parse_query(filtered.query)).to_query if filtered.query.present?
+      filtered.to_s
+    end
+
     def get(url, accept: ACCEPT, **) = request(:get, url, accept, **)
     def patch(url, accept: ACCEPT, **) = request(:patch, url, accept, **)
     def post(url, accept: ACCEPT, **) = request(:post, url, accept, **)
@@ -44,7 +51,7 @@ class CompressedHTTPClient
                            .config
                            .filter_parameters
                            .map { |parameter| /#{parameter.to_s.gsub('_', '[-_]')}/i } +
-                           [/authorization/i, /cookie/i, /key/i]
+                           [/auth[-_]id/i, /authorization/i, /cookie/i, /key/i]
   PARAMETER_FILTER = ActiveSupport::ParameterFilter.new(SENSITIVE_HTTP_HEADERS)
 
   attr_reader :headers, :session
@@ -141,7 +148,7 @@ class CompressedHTTPClient
     return unless Rails.logger.debug?
 
     Rails.logger.debug(<<~LOG.chomp)
-      #{DateTime.now}: [#{self.class}] - #{request.verb.to_s.upcase} #{request.uri} → #{response.status}
+      #{DateTime.now}: [#{self.class}] - #{request.verb.to_s.upcase} #{self.class.filter_uri(request.uri)} → #{response.status}
       \trequest  headers : #{filter_headers(request.headers)}
       \tresponse headers : #{filter_headers(response.headers)}
     LOG

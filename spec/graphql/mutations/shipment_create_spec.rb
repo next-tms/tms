@@ -89,9 +89,9 @@ RSpec.describe(Mutations::ShipmentCreate) do
           receiver_contact_email: 'receiver@example.com',
           receiver_contact_name: 'Rita Receiver',
           receiver_contact_phone: '+15105550100',
-          receiver_name: 'Receiver Co',
+          receiver_address_name: 'Receiver Co',
           shipper_contact_name: 'Sam Shipper',
-          shipper_name: 'Shipper Co',
+          shipper_address_name: 'Shipper Co',
           shipper_reference: '2002',
           updated_by: authorizable
         )

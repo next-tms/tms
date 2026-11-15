@@ -29,9 +29,9 @@ module DocumentableService
         @requirements ||= super.tap do |builder|
           builder << :broker_carrier
           builder << :receiver_address
-          builder << :receiver_name
+          builder << :receiver_address_name
           builder << :shipper_address
-          builder << :shipper_name
+          builder << :shipper_address_name
           builder << :pro if pro_number_required?
         end
       end

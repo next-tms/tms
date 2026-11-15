@@ -1,1 +1,1 @@
-json.standardized_address_id(@standardized_address.id)
+json.place_id(@verification.place_id)

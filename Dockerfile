@@ -47,7 +47,6 @@ RUN bundle config set --global frozen 1 && \
 COPY --exclude=.git/ . /app
 RUN bundle exec bootsnap precompile app/ lib/
 RUN DOMAIN=localhost \
-    GEONAMES_USERNAME=fake \
     POSTMARK_API_TOKEN=fake \
     SECRET_KEY_BASE_DUMMY=1 \
     bin/rails dartsass:build assets:precompile

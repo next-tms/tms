@@ -53,7 +53,7 @@ class CompressedHTTPClient
       response.body.rewind
 
       {
-        request: { headers: filter_headers(request.headers), uri: request.uri.to_s, verb: request.verb },
+        request: { headers: filter_headers(request.headers), uri: CompressedHTTPClient.filter_uri(request.uri), verb: request.verb },
         response: { body:, headers: filter_headers(response.headers), status: response.status, version: response.version }
       }
     end

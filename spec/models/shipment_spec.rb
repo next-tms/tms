@@ -4,6 +4,12 @@ RSpec.describe(Shipment) do
   it_behaves_like 'discussable'
   it_behaves_like 'documentable'
 
+  describe '.address_name_sql' do
+    subject { described_class.address_name_sql(:shipper) }
+
+    it { is_expected.to(eq('(SELECT addresses.name FROM addresses WHERE addresses.id = shipments.shipper_address_id)')) }
+  end
+
   describe '.ransack_aliases' do
     it { expect(described_class.ransack_aliases(build(:customer_user))).to(eq(described_class::CUSTOMER_REFERENCE_ALIASES)) }
     it { expect(described_class.ransack_aliases(build(:broker_user))).to(eq({})) }
@@ -38,13 +44,13 @@ RSpec.describe(Shipment) do
       let(:shipment) { create(:shipment) }
 
       it 'creates an audit record' do
-        receiver_names = [shipment.receiver_name, Faker::Company.name]
+        receiver_contact_names = [shipment.receiver_contact_name, Faker::Name.name]
 
-        expect { shipment.update(receiver_name: receiver_names[1]) }.to(change { shipment.audits.count }.by(1))
+        expect { shipment.update(receiver_contact_name: receiver_contact_names[1]) }.to(change { shipment.audits.count }.by(1))
         audit = shipment.reload.audits.last
 
         expect(audit.action).to(eq('update'))
-        expect(audit.audited_changes['receiver_name']).to(eq(receiver_names))
+        expect(audit.audited_changes['receiver_contact_name']).to(eq(receiver_contact_names))
       end
     end
   end
@@ -54,6 +60,45 @@ RSpec.describe(Shipment) do
 
     it { expect(create(:shipment, load_id: nil).load_id).to(eq(4001)) }
     it { expect(create(:shipment, load_id: 5000).load_id).to(eq(5000)) }
+  end
+
+  describe 'name prettifying' do
+    subject { shipment.shipper_address.name }
+
+    let(:broker_customer) { create(:broker_customer) }
+    let(:name) { 'ACME FOODS' }
+    let(:shipment) { create(:shipment, broker_customer:, shipper_address: build(:address, name:, street:, street2:)) }
+    let(:street) { '1 Main St' }
+    let(:street2) { nil }
+
+    it { is_expected.to(eq('Acme Foods')) }
+
+    context 'when the name is the customer name' do
+      let(:name) { broker_customer.customer.name.upcase }
+
+      before { broker_customer.customer.update!(name:) }
+
+      it { is_expected.to(eq(name)) }
+    end
+
+    context 'when the street is in care of someone' do
+      let(:name) { 'Acme' }
+      let(:street) { 'C/O Bob' }
+      let(:street2) { '1 Main St' }
+
+      it { is_expected.to(eq('Acme C/O Bob')) }
+      it { expect(shipment.shipper_address).to(have_attributes(street: '1 Main St', street2: nil)) }
+    end
+  end
+
+  describe 'name search' do
+    let!(:shipment) { create(:shipment, shipper_address: create(:address, name: 'Acme')) }
+
+    before { create(:shipment, shipper_address: create(:address, name: 'Zeta')) }
+
+    it { expect(described_class.ransack(shipper_name_eq: 'Acme').result).to(contain_exactly(shipment)) }
+    it { expect(described_class.ransack(receiver_name_eq: shipment.receiver_address.name).result).to(contain_exactly(shipment)) }
+    it { expect(described_class.ransack(sorts: 'shipper_name asc').result.first).to(eq(shipment)) }
   end
 
   describe 'normalizations' do
@@ -213,7 +258,7 @@ RSpec.describe(Shipment) do
       it { expect(shipment.incomplete?).to(be(false)) }
 
       context 'when the receiver name is blank' do
-        before { shipment.receiver_name = nil }
+        before { shipment.receiver_address.name = nil }
 
         it { expect(shipment.incomplete?).to(be(true)) }
       end

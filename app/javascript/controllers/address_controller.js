@@ -7,8 +7,7 @@ export default class extends Controller {
         'field',
         'validateAddressLoading',
         'validateAddressFailed',
-        'validateAddressSuccess',
-        'standardizedAddressId'
+        'validateAddressSuccess'
     ]
 
     connect(e) {
@@ -29,7 +28,6 @@ export default class extends Controller {
         let success = this.validateAddressSuccessTarget;
         let failed = this.validateAddressFailedTarget;
         let loading = this.validateAddressLoadingTarget;
-        let standardizedAddressId = this.standardizedAddressIdTarget;
 
         success.classList.add('d-none')
         failed.classList.add('d-none')
@@ -39,7 +37,7 @@ export default class extends Controller {
         let zip = this.fieldTargets.find(field => field.id.includes('_zip')).value
         let city = this.fieldTargets.find(field => field.id.includes('_city')).value
 
-        let data = { street: street, city: city, zip_code: zip, region_iso31662: this.regionsTarget.value }
+        let data = { city: city, country_alpha2: this.countryTarget.value, region_iso31662: this.regionsTarget.value, street: street, zip_code: zip }
 
         fetch('/validate_address', {
             method: 'POST',
@@ -57,8 +55,6 @@ export default class extends Controller {
                 loading.classList.add('d-none')
 
                 if (data.error == null) {
-                    let id = data.standardized_address_id
-                    standardizedAddressId.value = id;
                     success.classList.remove('d-none')
                 } else {
                     failed.classList.remove('d-none')
@@ -127,7 +123,7 @@ export default class extends Controller {
         let elementId = textField.id
         let helpText = textField.parentElement.lastElementChild
         let countrySelect = document.getElementById(elementId.replace('zip_code', "country_alpha2"))
-        let selectedCountry = countrySelect.options[countrySelect.selectedIndex].innerHTML;
+        let selectedCountry = countrySelect.value;
         const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
         var duration = 1000;
 
@@ -158,7 +154,7 @@ export default class extends Controller {
                         document.getElementById(elementId.replace("zip_code", "city")).value = data.city;
                         var stateSelect = document.getElementById(elementId.replace("zip_code", "region_iso31662"))
                         Array.from(stateSelect.options).forEach(function(option) {
-                            if (option.text ===  data.state) {
+                            if (option.value === data.region_iso31662) {
                               option.selected = true
                             }
                         })

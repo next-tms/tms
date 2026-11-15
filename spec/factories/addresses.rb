@@ -5,6 +5,7 @@ FactoryBot.define do
     google_places_spot_updated_at { Time.current }
     latitude { Faker::Address.latitude }
     longitude { Faker::Address.longitude }
+    name { Faker::Company.name }
     open_street_map_result_updated_at { Time.current }
     region_iso31662 { 'US-CA' }
     smarty_streets_result_updated_at { Time.current }

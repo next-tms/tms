@@ -282,7 +282,7 @@ class Receivable < ApplicationRecord
       description = <<~PICKUP.strip
         Pickup from:
 
-        #{shipment.shipper_name}
+        #{shipment.shipper_address.name}
         #{shipment.shipper_address.proper("\n")}
       PICKUP
 
@@ -308,7 +308,7 @@ class Receivable < ApplicationRecord
   def accounting_shipping_address
     address = shipment.receiver_address.to_accounting_address
     address.line2 = address.line1
-    address.line1 = shipment.receiver_name
+    address.line1 = shipment.receiver_address.name
     address
   end
 

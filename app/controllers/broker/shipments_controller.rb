@@ -68,7 +68,7 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              :items,
-             { shipper_address: :standardized_address },
+             :shipper_address,
              :tracking_carrier,
              { broker_carrier: :carrier },
              { broker_customer: :customer }
@@ -104,7 +104,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.dispatcher = current_user if current_user.role?(:dispatch) && !current_user.role?(:root)
     @shipment.receiver_address = Address.new
     @shipment.shipper_address = broker_customer&.primary_pickup_address&.dup || Address.new
-    @shipment.shipper_name = broker_customer&.customer&.name
+    @shipment.shipper_address.name = broker_customer&.customer&.name
 
     @customer_dispatcher_ids = @broker_customers.map { |customer| customer.dispatchers.take&.id || 'n' }.join(',')
   end
@@ -119,14 +119,12 @@ class Broker::ShipmentsController < Broker::BrokerController
   def create
     @broker_customers = current_user.broker_customers.includes(:customer).order('customers.name')
 
-    Shipment.transaction do
-      @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
-      @shipment.created_by = current_user
-      @shipment.dispatcher ||= current_user if current_user.dispatcher_for?(@shipment)
-      @shipment.updated_by = current_user
+    @shipment = Shipment.new(shipment_params.except(:accessorials_has_been_suggested))
+    @shipment.created_by = current_user
+    @shipment.dispatcher ||= current_user if current_user.dispatcher_for?(@shipment)
+    @shipment.updated_by = current_user
 
-      @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment).any?
-    end
+    @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment).any?
 
     if @accessorials_has_been_suggested
       render(:new, status: :unprocessable_content)
@@ -302,8 +300,8 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              { broker_carrier: :carrier },
-             { shipper_address: :standardized_address },
-             { receiver_address: :standardized_address },
+             :shipper_address,
+             :receiver_address,
              :tracking_carrier,
              { broker_customer: :customer }
            ]
@@ -363,7 +361,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              :receiver_address,
-             { shipper_address: :standardized_address },
+             :shipper_address,
              :tracking_carrier,
              {
                broker_carrier: :carrier,
@@ -386,7 +384,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              :receiver_address,
-             { shipper_address: :standardized_address },
+             :shipper_address,
              :tracking_carrier,
              {
                broker_carrier: :carrier,
@@ -408,8 +406,8 @@ class Broker::ShipmentsController < Broker::BrokerController
          .includes(
            [
              { broker_carrier: :carrier },
-             { receiver_address: :standardized_address },
-             { shipper_address: :standardized_address },
+             :receiver_address,
+             :shipper_address,
              :tracking_carrier,
              { broker_customer: :customer }
            ]
@@ -429,7 +427,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              :receiver_address,
-             { shipper_address: :standardized_address },
+             :shipper_address,
              {
                broker_carrier: :carrier,
                broker_customer: :customer
@@ -470,7 +468,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              :receiver_address,
-             { shipper_address: :standardized_address },
+             :shipper_address,
              :tracking_carrier,
              {
                broker_carrier: :carrier,
@@ -498,7 +496,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              :receiver_address,
-             { shipper_address: :standardized_address },
+             :shipper_address,
              :tracking_carrier,
              {
                broker_carrier: :carrier,
@@ -521,7 +519,7 @@ class Broker::ShipmentsController < Broker::BrokerController
            [
              :items,
              :shipper_address,
-             { receiver_address: :standardized_address },
+             :receiver_address,
              :tracking_carrier,
              {
                broker_carrier: :carrier,
@@ -679,13 +677,11 @@ class Broker::ShipmentsController < Broker::BrokerController
         :receiver_contact_email,
         :receiver_contact_name,
         :receiver_contact_phone,
-        :receiver_name,
         :receiver_unavailable_at,
         :shipper_available_at,
         :shipper_contact_email,
         :shipper_contact_name,
         :shipper_contact_phone,
-        :shipper_name,
         :shipper_reference,
         :shipper_unavailable_at,
         :tracking_carrier_id,
@@ -712,6 +708,7 @@ class Broker::ShipmentsController < Broker::BrokerController
           pickup_request_attributes: %i[id reschedule_reason],
           receiver_address_attributes: %i[
             id
+            name
             ref
             street
             street2
@@ -719,10 +716,10 @@ class Broker::ShipmentsController < Broker::BrokerController
             region_iso31662
             zip_code
             country_alpha2
-            standardized_address_id
           ],
           shipper_address_attributes: %i[
             id
+            name
             ref
             street
             street2
@@ -730,7 +727,6 @@ class Broker::ShipmentsController < Broker::BrokerController
             region_iso31662
             zip_code
             country_alpha2
-            standardized_address_id
           ],
           shipment_accessorials_attributes: [%i[_destroy accessorial_id]],
           shipment_broker_accessorials_attributes: [%i[

@@ -1,5 +1,6 @@
 class Shipment < ApplicationRecord
   class << self
+    def address_name_sql(role) = Arel.sql("(SELECT addresses.name FROM addresses WHERE addresses.id = #{table_name}.#{role}_address_id)")
     def customer_authorizable?(auth_object) = auth_object.is_a?(User) && auth_object.customer?
     def last_load_id = maximum(:load_id) || Setting.first_load_id.to_i
     def lock_load_ids = connection.execute("SELECT pg_advisory_xact_lock(hashtext('shipments.load_id'))")
@@ -80,13 +81,15 @@ class Shipment < ApplicationRecord
   belongs_to :receiver_address, class_name: 'Address'
   belongs_to :shipper_address, class_name: 'Address'
 
+  delegate :name, to: :receiver_address, prefix: true, allow_nil: true
+  delegate :name, to: :shipper_address, prefix: true, allow_nil: true
+
   belongs_to :tracking_carrier, class_name: 'Carrier', optional: true
 
   belongs_to :broker_customer, optional: true
 
   after_create :notify_of_new_shipment
 
-  before_save :sanitize_addresses_street
   before_save :remove_tracking_events, if: -> { pro_changed? || tracking_carrier_pro_changed? }
   # Fix broker_accessorials when broker_customer changes
   before_save :recalculate_broker_accessorials, if: :broker_customer_id_changed?
@@ -96,9 +99,6 @@ class Shipment < ApplicationRecord
   before_save :maybe_remove_tracking_carrier, if: :broker_carrier_id_changed?
   before_save :maybe_remove_tracking_carrier_pickup_confirmation, if: :broker_carrier_id_changed?
   before_save :maybe_remove_tracking_carrier_pro, if: :broker_carrier_id_changed?
-  # Prettify
-  before_save :prettify_shipper_name, if: :shipper_name_changed?
-  before_save :prettify_receiver_name, if: :receiver_name_changed?
   # Reference sanitization
 
   # Fill in missing DateTimes
@@ -121,6 +121,8 @@ class Shipment < ApplicationRecord
   before_save :validate_applied_rate_association, if: :will_save_change_to_applied_rate_id?
 
   before_validation :assign_load_id, on: :create, if: -> { load_id.blank? }
+  before_validation :sanitize_addresses_street
+  before_validation :prettify_names
   before_validation :set_dispatcher
   before_validation :set_status
 
@@ -151,10 +153,8 @@ class Shipment < ApplicationRecord
   normalizes :receiver_contact_email, :shipper_contact_email, with: ->(value) { value.downcase }
   normalizes(
     *REFERENCE_ATTRIBUTES,
-    :receiver_name,
     :receiver_contact_email,
     :receiver_contact_name,
-    :shipper_name,
     :shipper_contact_email,
     :shipper_contact_name,
     with: ->(value) { value.squish }
@@ -173,6 +173,8 @@ class Shipment < ApplicationRecord
   end
 
   ransacker(:load_id_text) { Arel.sql("CAST(\"#{table_name}\".\"load_id\" AS text)") }
+  ransacker(:receiver_name) { address_name_sql(:receiver) }
+  ransacker(:shipper_name) { address_name_sql(:shipper) }
 
   scope :accessible_by, ->(user) {
     if user&.customer?
@@ -451,7 +453,7 @@ class Shipment < ApplicationRecord
 
   def declared_freight_classes = @declared_freight_classes ||= freight_classes(use_declared_freight_class: true)
 
-  def incomplete? = [shipper_address, receiver_address].map(&:full_address?).any?(false) || [shipper_name, receiver_name].any?(&:blank?)
+  def incomplete? = [shipper_address, receiver_address].any? { !it.full_address? || it.name.blank? }
 
   def whodunnit(column)
     raise ArgumentError, "Column \"#{column}\" doesn't exist" if self.class.column_names.exclude?(column)
@@ -627,16 +629,10 @@ class Shipment < ApplicationRecord
   def promised_delivery_by_late_since = promised_delivery_by && promised_delivery_by.to_date.tomorrow.beginning_of_day
 
   def sanitize_addresses_street
-    [[:receiver_name, receiver_address], [:shipper_name, shipper_address]].each do |set|
-      attribute = set[0]
-      address = set[1]
-
+    [receiver_address, shipper_address].each do |address|
       next unless address&.street.present? && address.street.strip.upcase.start_with?('C/O')
 
-      new_value = public_send(attribute) || ''
-      new_value = "#{new_value} #{address.street}".strip
-      public_send("#{attribute}=", new_value)
-
+      address.name = "#{address.name} #{address.street}".strip
       address.street = address.street2
       address.street2 = nil
     end
@@ -846,19 +842,16 @@ class Shipment < ApplicationRecord
   end
 
   # Prettify
-  def prettify_shipper_name
-    return if shipper_name == broker_customer&.customer&.name
-    return unless (shipper_name == shipper_name.downcase) || (shipper_name == shipper_name.upcase)
+  def prettify_name(address)
+    name = address.name
+    return if name.blank? || !address.name_changed?
+    return if name == broker_customer&.customer&.name
+    return unless (name == name.downcase) || (name == name.upcase)
 
-    self.shipper_name = shipper_name.titleize
+    address.name = name.titleize
   end
 
-  def prettify_receiver_name
-    return if receiver_name == broker_customer&.customer&.name
-    return unless (receiver_name == receiver_name.downcase) || (receiver_name == receiver_name.upcase)
-
-    self.receiver_name = receiver_name.titleize
-  end
+  def prettify_names = [receiver_address, shipper_address].compact.each { prettify_name(it) }
 
   # Pricing
   def set_total_charges

@@ -71,13 +71,13 @@ module ShipmentsHelper
     },
     receiver: {
       display_name: 'Consignee',
-      column_name: :receiver_name,
+      column_name: :receiver_address_name,
       association_name: :receiver_address,
       address: true
     },
     shipper: {
       display_name: 'Shipper',
-      column_name: :shipper_name,
+      column_name: :shipper_address_name,
       association_name: :shipper_address,
       address: true
     },

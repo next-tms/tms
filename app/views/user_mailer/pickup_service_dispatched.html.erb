@@ -4,14 +4,14 @@
 
 <p>From:</p>
 <address>
-  <%= @pickup.shipment.shipper_name %>
+  <%= @pickup.shipment.shipper_address.name %>
   <br>
   <%= @pickup.shipment.shipper_address.pretty('<br>').html_safe %>
 </address>
 
 <p>To:</p>
 <address>
-  <%= @pickup.shipment.receiver_name %>
+  <%= @pickup.shipment.receiver_address.name %>
   <br>
   <%= @pickup.shipment.receiver_address.pretty('<br>').html_safe %>
 </address>

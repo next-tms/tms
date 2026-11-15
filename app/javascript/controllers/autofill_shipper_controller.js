@@ -28,7 +28,7 @@ export default class extends Controller {
                     return
                 }
 
-                document.querySelector('input[name="shipment[shipper_name]"]').value = shipperName
+                document.querySelector('input[name="shipment[shipper_address_attributes][name]"]').value = shipperName
 
                 const primaryPickupAddress = data['primary_pickup_address']
                 const shipperAddressQuery = '[name="shipment[shipper_address_attributes]'

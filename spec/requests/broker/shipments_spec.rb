@@ -51,8 +51,9 @@ RSpec.describe('Broker::Shipments') do
     context 'with a suggested accessorial' do
       let(:broker_accessorial) { BrokerAccessorial.find_by!(code: 'DAIR') }
       let(:href) { broker_shipment_path(shipment, shipment: { shipment_broker_accessorials_attributes: }) }
+      let(:receiver_address) { build(:address, name: 'Airport') }
       let(:shipment) do
-        create(:shipment, :usd, broker_carrier: nil, dispatched_at: nil, load_id: 4242, quote_only: false, receiver_name: 'Airport').tap do
+        create(:shipment, :usd, broker_carrier: nil, dispatched_at: nil, load_id: 4242, quote_only: false, receiver_address:).tap do
           accessorial = create(:accessorial, code: 'DAIR', name: 'Airport')
           create(:broker_accessorial, accessorial:, broker_customer: nil, code: 'DAIR', name: 'Airport')
         end
@@ -120,6 +121,20 @@ RSpec.describe('Broker::Shipments') do
 
       it { is_expected.to(have_http_status(:not_found)) }
     end
+  end
+
+  describe 'GET /broker/shipments/:load_id/history' do
+    let(:text) { Nokogiri::HTML(response.body).at_css('h2 + .table-responsive tbody').text.squish }
+
+    before do
+      seed_settings
+      shipment.shipper_address.update!(name: 'Acme Freight')
+      get(history_broker_shipment_path(shipment))
+    end
+
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(text).to(include('Shipper address updated')) }
+    it { expect(text).to(include('"Acme Freight"')) }
   end
 
   describe 'GET /broker/shipments/:load_id/transit' do
@@ -195,10 +210,8 @@ RSpec.describe('Broker::Shipments') do
           accessorials_has_been_suggested:,
           items_attributes: [{ desc: 'Box', quantity: 1, weight: 100 }],
           quote_only: false,
-          receiver_address_attributes: address,
-          receiver_name: 'Airport',
-          shipper_address_attributes: address,
-          shipper_name: 'Acme'
+          receiver_address_attributes: address.merge(name: 'Airport'),
+          shipper_address_attributes: address.merge(name: 'Acme')
         }
       }
     end

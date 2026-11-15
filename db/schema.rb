@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_213308) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_182711) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -68,16 +68,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_213308) do
     t.string "ref"
     t.string "region_iso31662"
     t.datetime "smarty_streets_result_updated_at", precision: nil
-    t.bigint "standardized_address_id"
     t.string "street"
     t.string "street2"
     t.string "time_zone_name"
     t.datetime "updated_at", precision: nil, null: false
     t.text "verification_info"
     t.string "zip_code"
+    t.boolean "business"
+    t.boolean "permanently_closed"
+    t.string "place_id"
+    t.boolean "po_box"
+    t.boolean "residential"
+    t.string "types", default: [], null: false, array: true
+    t.string "name"
+    t.boolean "dock"
+    t.string "fingerprint"
     t.index ["country_alpha2"], name: "index_addresses_on_country_alpha2"
+    t.index ["place_id"], name: "index_addresses_on_place_id"
     t.index ["region_iso31662"], name: "index_addresses_on_region_iso31662"
-    t.index ["standardized_address_id"], name: "index_addresses_on_standardized_address_id"
   end
 
   create_table "api_keys", force: :cascade do |t|
@@ -787,7 +795,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_213308) do
     t.string "receiver_contact_email"
     t.string "receiver_contact_name"
     t.string "receiver_contact_phone"
-    t.string "receiver_name"
     t.time "receiver_unavailable_at"
     t.bigint "shipper_address_id"
     t.datetime "shipper_available_at", precision: nil
@@ -795,7 +802,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_213308) do
     t.string "shipper_contact_email"
     t.string "shipper_contact_name"
     t.string "shipper_contact_phone"
-    t.string "shipper_name"
     t.string "shipper_reference"
     t.time "shipper_unavailable_at"
     t.string "status", null: false
@@ -823,31 +829,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_213308) do
     t.index ["status"], name: "index_shipments_on_status"
     t.index ["tracking_carrier_id"], name: "index_shipments_on_tracking_carrier_id"
     t.index ["updated_by_id"], name: "index_shipments_on_updated_by_id"
-  end
-
-  create_table "standardized_addresses", force: :cascade do |t|
-    t.integer "addresses_count"
-    t.string "city"
-    t.string "country_alpha2", limit: 2, null: false
-    t.datetime "created_at", null: false
-    t.text "google_places_spot_cached"
-    t.datetime "google_places_spot_updated_at", precision: nil
-    t.string "key"
-    t.string "latitude"
-    t.string "longitude"
-    t.text "open_street_map_result_cached"
-    t.datetime "open_street_map_result_updated_at", precision: nil
-    t.string "postal_code"
-    t.string "region_iso31662", null: false
-    t.text "smarty_streets_result_cached"
-    t.datetime "smarty_streets_result_updated_at", precision: nil
-    t.string "street"
-    t.string "street2"
-    t.string "time_zone_name", null: false
-    t.datetime "updated_at", null: false
-    t.index ["country_alpha2"], name: "index_standardized_addresses_on_country_alpha2"
-    t.index ["key"], name: "index_standardized_addresses_on_key"
-    t.index ["region_iso31662"], name: "index_standardized_addresses_on_region_iso31662"
   end
 
   create_table "stripe_accounts", force: :cascade do |t|
@@ -1005,7 +986,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_213308) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "addresses", "standardized_addresses"
   add_foreign_key "api_keys", "api_keys", column: "rolled_from_id"
   add_foreign_key "api_keys", "users"
   add_foreign_key "broker_accessorials", "accessorials"

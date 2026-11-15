@@ -165,7 +165,7 @@ RSpec.describe('DSDC::BOLs') do
     end
 
     it { expect(response).to(have_http_status(:ok)) }
-    it { expect(existing.reload.receiver_name).to(eq('Gadget Depot')) }
+    it { expect(existing.reload.receiver_address_name).to(eq('Gadget Depot')) }
     it { expect(existing.reload.items.count).to(eq(1)) }
   end
 end

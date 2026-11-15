@@ -96,16 +96,15 @@ gem 'devise_invitable', '~> 2.0'
 gem 'devise-pwned_password', '~> 0.2'
 
 gem 'measured', '~> 3.2.0'
-gem 'place_kit', '~> 0.0.7'
 
 gem 'sentry-rails', '~> 6.6'
 gem 'sentry-ruby', '~> 6.6'
 
 gem 'barby'
 gem 'business_time'
+gem 'csv'
 gem 'money-rails', '~> 3.0'
 gem 'postmark-rails'
-gem 'timezone', '~> 1.3'
 
 gem 'quickbooks-ruby', '~> 2.0'
 
@@ -114,10 +113,6 @@ gem 'action_policy-graphql'
 gem 'bcrypt', '~> 3.1' # explicitly for GraphQL
 gem 'graphql', '~> 2.6'
 
-gem 'geocoder', '~> 1.8.1'
-gem 'google_places', '~> 2.0.0'
-gem 'mainstreet', '~> 0.5.0'
-gem 'open_street_map', '~> 1.2.3'
 gem 'StreetAddress',
     git: 'https://github.com/Civitium/street-address',
     ref: '25d47a0e95a2b7e29f2ad084bf1fd99e63e3589a',

@@ -15,6 +15,7 @@ class EBOL::Importer::Location
       city: location[:city],
       country_alpha2: country&.alpha2,
       id: address&.id,
+      name: location[:name],
       region_iso31662: region&.iso31662,
       street: location[:address1],
       street2: location[:address2],

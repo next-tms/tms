@@ -28,9 +28,9 @@ RSpec.describe(Resolvers::ShipmentsResolver) do
 
   let!(:shipments) do
     [
-      create(:shipment, broker_carrier:, load_id: 1001, shipper_name: 'Acme'),
-      create(:shipment, broker_carrier:, load_id: 1002, shipper_name: 'Globex'),
-      create(:shipment, broker_carrier: other_broker_carrier, load_id: 1003, shipper_name: 'Initech')
+      create(:shipment, broker_carrier:, load_id: 1001, shipper_address: create(:address, name: 'Acme')),
+      create(:shipment, broker_carrier:, load_id: 1002, shipper_address: create(:address, name: 'Globex')),
+      create(:shipment, broker_carrier: other_broker_carrier, load_id: 1003, shipper_address: create(:address, name: 'Initech'))
     ]
   end
 

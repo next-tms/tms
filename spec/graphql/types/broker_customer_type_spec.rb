@@ -24,9 +24,9 @@ RSpec.describe(Types::BrokerCustomerType) do
 
   let(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables: { id: broker_customer.id }).to_h }
 
-  let!(:shipment) { create(:shipment, broker_carrier:, broker_customer:, shipper_name: 'Acme') }
+  let!(:shipment) { create(:shipment, broker_carrier:, broker_customer:, shipper_address: create(:address, name: 'Acme')) }
 
-  before { create(:shipment, broker_carrier:, shipper_name: 'Acme') }
+  before { create(:shipment, broker_carrier:, shipper_address: create(:address, name: 'Acme')) }
 
   it { expect(data['brokerCarriers']).to(eq('items' => [{ 'id' => broker_carrier.id.to_s }])) }
   it { expect(data['customer']).to(eq('id' => broker_customer.customer_id.to_s)) }

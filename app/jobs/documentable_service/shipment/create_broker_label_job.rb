@@ -18,11 +18,11 @@ module DocumentableService
           item.quantity.times do
             labels << <<~LABEL
               Shipper:
-              #{shipment.shipper_name}
+              #{shipment.shipper_address.name}
               #{shipment.shipper_address.pretty("\n")}
 
               Consignee:
-              #{shipment.receiver_name}
+              #{shipment.receiver_address.name}
               #{shipment.receiver_address.pretty("\n")}
 
               #{pro}

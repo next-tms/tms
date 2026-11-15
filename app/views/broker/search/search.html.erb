@@ -14,7 +14,7 @@
   <%= turbo_frame_tag 'broker_customers', src: broker_broker_customers_path(q: { customer_name_i_cont: params[:q] }) %>
 
   <h3>Shipments</h3>
-  <%= turbo_frame_tag 'shipments', src: broker_shipments_path(q: { bol_notes_or_broker_carrier_carrier_name_or_broker_carrier_carrier_scac_or_broker_customer_customer_name_or_broker_notes_or_load_id_text_or_shipper_name_or_shipper_contact_name_or_receiver_name_or_receiver_contact_name_or_shipper_address_city_or_receiver_address_city_or_shipper_address_zip_code_or_receiver_address_zip_code_or_pro_or_tracking_carrier_pro_i_cont: params[:q] }) %>
+  <%= turbo_frame_tag 'shipments', src: broker_shipments_path(q: { bol_notes_or_broker_carrier_carrier_name_or_broker_carrier_carrier_scac_or_broker_customer_customer_name_or_broker_notes_or_load_id_text_or_shipper_address_name_or_shipper_contact_name_or_receiver_address_name_or_receiver_contact_name_or_shipper_address_city_or_receiver_address_city_or_shipper_address_zip_code_or_receiver_address_zip_code_or_pro_or_tracking_carrier_pro_i_cont: params[:q] }) %>
 <% else %>
   <%= render 'layouts/no_content' %>
 <% end %>

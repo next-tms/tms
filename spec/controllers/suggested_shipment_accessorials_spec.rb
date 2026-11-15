@@ -25,10 +25,7 @@ RSpec.describe(SuggestedShipmentAccessorials) do
     let(:suggested) { shipment.shipment_broker_accessorials.select(&:suggested) }
 
     before do
-      [shipment.receiver_address, shipment.shipper_address].each do |address|
-        allow(address).to(receive(:find_or_build_standardized_address))
-        allow(address).to(receive(:standardized_address).and_return(nil))
-      end
+      [shipment.receiver_address, shipment.shipper_address].each { |address| allow(address).to(receive(:standardize)) }
       allow(shipment).to(receive(:suggested_broker_accessorials).and_return([broker_accessorial]))
     end
 
@@ -37,8 +34,8 @@ RSpec.describe(SuggestedShipmentAccessorials) do
     context 'when called' do
       before { suggested_broker_accessorials }
 
-      it { expect(shipment.receiver_address).to(have_received(:find_or_build_standardized_address)) }
-      it { expect(shipment.shipper_address).to(have_received(:find_or_build_standardized_address)) }
+      it { expect(shipment.receiver_address).to(have_received(:standardize)) }
+      it { expect(shipment.shipper_address).to(have_received(:standardize)) }
       it { expect(suggested.map(&:broker_accessorial)).to(eq([broker_accessorial])) }
     end
 
@@ -54,7 +51,7 @@ RSpec.describe(SuggestedShipmentAccessorials) do
       before { suggested_broker_accessorials }
 
       it { is_expected.to(eq([])) }
-      it { expect(shipment.receiver_address).to(have_received(:find_or_build_standardized_address)) }
+      it { expect(shipment.receiver_address).not_to(have_received(:standardize)) }
       it { expect(suggested).to(be_empty) }
     end
 
@@ -70,7 +67,7 @@ RSpec.describe(SuggestedShipmentAccessorials) do
       before { suggested_broker_accessorials }
 
       it { is_expected.to(eq([])) }
-      it { expect(shipment.receiver_address).not_to(have_received(:find_or_build_standardized_address)) }
+      it { expect(shipment.receiver_address).not_to(have_received(:standardize)) }
     end
   end
 end

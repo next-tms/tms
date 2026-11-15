@@ -32,7 +32,9 @@
                 <% end %>
               </ul>
             <% else %>
-              <% if audit.auditable_type == 'Item' %>
+              <% if audit.auditable_type == 'Address' %>
+                <%= audit.auditable_id == @shipment.shipper_address_id ? 'Shipper' : 'Receiver' %> address updated
+              <% elsif audit.auditable_type == 'Item' %>
                 Item updated
               <% end %>
               <ul class="list-unstyled">

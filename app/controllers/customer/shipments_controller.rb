@@ -45,11 +45,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.receiver_address = Address.new
 
     @shipment.shipper_contact_name = "#{current_user.first_name} #{current_user.last_name}"
-    @shipment.shipper_name = current_user.companyable.customer.name
-
-    return if current_user.companyable.primary_pickup_address.blank?
-
-    @shipment.shipper_address = current_user.companyable.primary_pickup_address.dup
+    @shipment.shipper_address.name = current_user.companyable.customer.name
   end
 
   def new_quote_only
@@ -292,13 +288,11 @@ class Customer::ShipmentsController < Customer::CustomerController
         :receiver_contact_email,
         :receiver_contact_name,
         :receiver_contact_phone,
-        :receiver_name,
         :receiver_unavailable_at,
         :shipper_available_at,
         :shipper_contact_email,
         :shipper_contact_name,
         :shipper_contact_phone,
-        :shipper_name,
         :shipper_reference,
         :shipper_unavailable_at,
         :tracking_carrier_id,
@@ -307,6 +301,7 @@ class Customer::ShipmentsController < Customer::CustomerController
         {
           shipper_address_attributes: %i[
             id
+            name
             ref
             street
             street2
@@ -314,10 +309,10 @@ class Customer::ShipmentsController < Customer::CustomerController
             region_iso31662
             zip_code
             country_alpha2
-            standardized_address_id
           ],
           receiver_address_attributes: %i[
             id
+            name
             ref
             street
             street2
@@ -325,7 +320,6 @@ class Customer::ShipmentsController < Customer::CustomerController
             region_iso31662
             zip_code
             country_alpha2
-            standardized_address_id
           ],
           items_attributes: [%i[
             _destroy

@@ -67,7 +67,7 @@ class EBOL::Exporter
         name: shipment.receiver_contact_name.presence,
         phone: phone(shipment.receiver_contact_phone)
       },
-      name: shipment.receiver_name
+      name: shipment.receiver_address.name
     )
   end
 
@@ -106,7 +106,7 @@ class EBOL::Exporter
         name: shipment.shipper_contact_name.presence,
         phone: phone(shipment.shipper_contact_phone)
       },
-      name: shipment.shipper_name
+      name: shipment.shipper_address.name
     )
   end
 

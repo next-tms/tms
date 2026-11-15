@@ -5,8 +5,9 @@ RSpec.describe(BuildAssumedAccesorialsService) do
     subject { described_class.new(shipment:).call.map(&:code) }
 
     let(:codes) { ['DAPP', 'DLIF', 'DRES', 'DRST', 'PLIF'] }
+    let(:dock) { nil }
     let(:receiver_types) { [] }
-    let(:shipment) { create(:shipment, :usd, broker_carrier: nil, receiver_name: 'Acme', shipper_name: 'Acme') }
+    let(:shipment) { create(:shipment, :usd, broker_carrier: nil, receiver_address: build(:address, dock:, name: 'Acme')) }
     let(:shipper_types) { [] }
     let(:weight) { 100 }
 
@@ -24,6 +25,19 @@ RSpec.describe(BuildAssumedAccesorialsService) do
       let(:weight) { 200 }
 
       it { is_expected.to(eq(['DLIF'])) }
+
+      context 'with a dock' do
+        let(:dock) { true }
+
+        it { is_expected.to(eq([])) }
+      end
+    end
+
+    context 'when a heavy shipment goes to a place without a dock' do
+      let(:dock) { false }
+      let(:weight) { 200 }
+
+      it { is_expected.to(eq(['DLIF'])) }
     end
 
     context 'when a heavy shipment goes to a residence' do
@@ -32,6 +46,12 @@ RSpec.describe(BuildAssumedAccesorialsService) do
       before { allow(shipment.receiver_address).to(receive(:residential?).and_return(true)) }
 
       it { is_expected.to(eq(['DRES', 'DAPP', 'DLIF'])) }
+
+      context 'with a dock' do
+        let(:dock) { true }
+
+        it { is_expected.to(eq(['DRES', 'DAPP', 'DLIF'])) }
+      end
     end
 
     context 'when a heavy shipment goes to a restaurant' do
@@ -51,6 +71,12 @@ RSpec.describe(BuildAssumedAccesorialsService) do
 
     context 'when a light shipment goes to a mall' do
       let(:receiver_types) { ['mall'] }
+
+      it { is_expected.to(eq([])) }
+    end
+
+    context 'when a light shipment goes to a place without a dock' do
+      let(:dock) { false }
 
       it { is_expected.to(eq([])) }
     end

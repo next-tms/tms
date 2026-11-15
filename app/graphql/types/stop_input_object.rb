@@ -10,11 +10,10 @@ module Types
 
     def shipment_attributes(role)
       {
-        "#{role}_address_attributes": address&.to_h,
+        "#{role}_address_attributes": { **address&.to_h, name: }.compact.presence,
         "#{role}_contact_email": contact_email,
         "#{role}_contact_name": contact_name,
-        "#{role}_contact_phone": contact_phone,
-        "#{role}_name": name
+        "#{role}_contact_phone": contact_phone
       }.compact
     end
   end

@@ -1,11 +1,19 @@
 class Address < ApplicationRecord
-  before_save :set_standardized_address, unless: -> { Rails.env.test? }
+  AIRPORT_WORDS = ['aircraft', 'avionic', 'hangar'].freeze
+  MILITARY_POSTAL_CODES = YAML.load_file(Rails.root.join('config/postal_codes.yml')).fetch('MILITARY').map(&:to_s).freeze
+  POSTAL_ATTRIBUTES = ['city', 'country_alpha2', 'region_iso31662', 'street', 'street2', 'zip_code'].freeze
+
+  audited associated_with: :shipment, on: :update, only: [*POSTAL_ATTRIBUTES, 'name', 'ref']
+
+  before_save :standardize
 
   before_validation :set_country
 
   belongs_to_transponder :country, foreign_key: :country_alpha2
   belongs_to_transponder :region, foreign_key: :region_iso31662
-  belongs_to :standardized_address, counter_cache: true, optional: true
+
+  has_one :receiver_shipment, class_name: 'Shipment', dependent: nil, foreign_key: :receiver_address_id, inverse_of: :receiver_address
+  has_one :shipper_shipment, class_name: 'Shipment', dependent: nil, foreign_key: :shipper_address_id, inverse_of: :shipper_address
 
   normalizes :city, with: ->(city) do
     new_city = city
@@ -13,6 +21,7 @@ class Address < ApplicationRecord
     new_city = city.titleize if (new_city == new_city.downcase) || (new_city == new_city.upcase)
     new_city.squish
   end
+  normalizes :name, with: ->(name) { name.squish }
   normalizes :ref, with: ->(ref) { ref.squish }
   normalizes :street, with: ->(street) do
     new_street = street
@@ -30,8 +39,6 @@ class Address < ApplicationRecord
     where("upper(split_part(replace(addresses.zip_code, ' ', ''), '-', 1)) = ?", zip_code.to_s.delete(' ').split('-').first.to_s.upcase)
   end
 
-  serialize :types, coder: YAML
-
   validate :region_matches_country
   validate :validate_ref, if: -> { ref.present? && ref_changed? }
   validate :validate_street, if: -> { street.present? && country.present? }
@@ -40,6 +47,12 @@ class Address < ApplicationRecord
 
   validates :city, presence: true
   validates :zip_code, presence: true
+
+  def blank_to_nil(obj) = obj == '' ? nil : obj
+  def commercial? = business?
+  def full_address? = street.present? && city.present? && region.present?
+  def locality = "#{city}, #{region.abbreviation}".sub(',  ', '')
+  def moved? = persisted? && POSTAL_ATTRIBUTES.any? { will_save_change_to_attribute?(it) }
 
   def pretty(seperator)
     str = ''.dup
@@ -63,34 +76,39 @@ class Address < ApplicationRecord
     str
   end
 
-  def locality = "#{city}, #{region.abbreviation}".sub(',  ', '')
+  def restaurant? = types.include?('restaurant')
+  def shipment = shipper_shipment || receiver_shipment
 
-  def permanently_closed? = standardized_address&.permanently_closed?
+  def standardize
+    return unless moved? || postal_address_changed? || (full_address? && will_save_change_to_name?)
+    return if [name, to_postal_address] == @standardized
 
-  def commercial? = standardized_address&.commercial?
-
-  def residential? = standardized_address&.residential?
-
-  def restaurant? = standardized_address&.restaurant?
-
-  def full_address? = street.present? && city.present? && region.present?
-
-  def blank_to_nil(obj) = obj == '' ? nil : obj
-
-  def names
-    @names ||= (
-      Shipment.where(shipper_address: self).pluck(:shipper_name) + Shipment.where(receiver_address: self).pluck(:receiver_name)
-    ).uniq.compact_blank
+    Address::StandardizeService.new(address: self).call
+    @standardized = [name, to_postal_address]
   end
 
-  def time_zone
-    return standardized_address.time_zone if standardized_address.present?
-    return ActiveSupport::TimeZone.new('America/Los_Angeles') if time_zone_name.blank?
+  def time_zone = ActiveSupport::TimeZone.new(time_zone_name.presence || 'America/Los_Angeles')
 
-    ActiveSupport::TimeZone.new(time_zone_name)
+  def to_accounting_address
+    Accounting::Address.new(
+      city:,
+      country: country_alpha2,
+      line1: street,
+      line2: street2,
+      postal_code: zip_code,
+      region: region.abbreviation
+    )
   end
 
-  def types = standardized_address&.types || []
+  def to_postal_address
+    {
+      address_lines: [street, street2].compact_blank,
+      administrative_area: region&.abbreviation,
+      locality: city,
+      postal_code: zip_code,
+      region_code: country_alpha2
+    }
+  end
 
   def to_transponder_graphql_input
     {
@@ -104,65 +122,25 @@ class Address < ApplicationRecord
     }
   end
 
-  def find_or_build_standardized_address
-    return unless full_address?
-
-    key = region.country.format_address(proper(', '))
-    key = proper(', ') if key.blank?
-
-    new_standardized_address = StandardizedAddress.where(country_alpha2: region.country.alpha2, key:)&.first
-
-    new_standardized_address ||= StandardizedAddress.new(
-      street:,
-      street2:,
-      city:,
-      region_iso31662:,
-      postal_code: zip_code,
-      country_alpha2:,
-      key:
-    )
-
-    self.standardized_address = new_standardized_address
-  end
-
-  def set_standardized_address
-    return unless full_address?
-
-    find_or_build_standardized_address
-    standardized_address.save
-
-    return unless standardized_address.persisted?
-
-    self.street = standardized_address.street || street
-    self.street2 = standardized_address.street2 || street2
-    self.city = standardized_address.city || city
-    self.region = standardized_address.region || region
-    self.zip_code = standardized_address.postal_code || zip_code
-  end
-
-  def to_accounting_address
-    Accounting::Address.new(
-      city:,
-      country: country_alpha2,
-      line1: street,
-      line2: street2,
-      postal_code: zip_code,
-      region: region.abbreviation
-    )
-  end
+  def types = (super + inferred_types).uniq.sort
 
   private
 
-  def set_country
-    return if region.blank? || country.present?
-
-    self.country = region.country
-  end
+  def airport? = AIRPORT_WORDS.any? { |word| "#{street} #{street2}".downcase.include?(word) }
+  def inferred_types = [('airport' if airport?), ('military_site' if military?)].compact
+  def military? = zip_code.present? && zip_code.start_with?(*MILITARY_POSTAL_CODES)
+  def postal_address_changed? = full_address? && POSTAL_ATTRIBUTES.any? { |attribute| will_save_change_to_attribute?(attribute) }
 
   def region_matches_country
     return if region.blank? || country.blank?
 
     errors.add(:region, "isn't within #{country.name}") unless region.country == country
+  end
+
+  def set_country
+    return if region.blank? || country.present?
+
+    self.country = region.country
   end
 
   def validate_ref

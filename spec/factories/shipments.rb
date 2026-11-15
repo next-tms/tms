@@ -50,7 +50,6 @@ FactoryBot.define do
     receiver_contact_email { Faker::Internet.email }
     receiver_contact_name { Faker::Name.name }
     receiver_contact_phone { Faker::PhoneNumber.phone_number }
-    receiver_name { Faker::Company.name }
     receiver_unavailable_at { '2022-07-04 19:26:38' }
     shipper_address { create(:address) }
     shipper_available_at { '2022-07-04 19:26:38' }
@@ -58,7 +57,6 @@ FactoryBot.define do
     shipper_contact_email { Faker::Internet.email }
     shipper_contact_name { Faker::Name.name }
     shipper_contact_phone { Faker::PhoneNumber.phone_number }
-    shipper_name { Faker::Company.name }
     shipper_reference { Faker::Number.number }
     shipper_unavailable_at { 13.days.ago }
     total_charges_cents { Faker::Number.between(from: 100, to: 5_000).ceil }

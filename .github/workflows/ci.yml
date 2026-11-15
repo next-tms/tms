@@ -83,11 +83,8 @@ jobs:
       AWS_REGION: fake-region-for-build-env
       AWS_S3_BUCKET: fake-bucket-for-build-env
       AWS_SECRET_ACCESS_KEY: fake-secret-access-key-for-build-env
-      GEONAMES_USERNAME: fake-username-for-build-env
       POSTMARK_API_TOKEN: fake-api-token-for-build-env
       SECRET_KEY_BASE: fake-secret-key-base-for-build-env
-      SMARTY_STREETS_AUTH_ID: fake-auth-id-for-build-env
-      SMARTY_STREETS_AUTH_TOKEN: fake-auth-token-for-build-env
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libmagickwand-dev libpq-dev

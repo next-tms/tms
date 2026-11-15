@@ -59,9 +59,9 @@ module TransponderService
     def contact_name(key)
       case key
       when :receiver
-        pickup.shipment.receiver_contact_name || pickup.shipment.receiver_name
+        pickup.shipment.receiver_contact_name || pickup.shipment.receiver_address.name
       when :shipper
-        pickup.shipment.shipper_contact_name || pickup.shipment.shipper_name
+        pickup.shipment.shipper_contact_name || pickup.shipment.shipper_address.name
       end
     end
 

@@ -29,14 +29,14 @@ class BaseNotifier < Noticed::Event
 
       <p>From:</p>
       <address>
-        #{shipment.shipper_name}
+        #{shipment.shipper_address.name}
         <br>
         #{shipment.shipper_address.pretty('<br>')}
       </address>
 
       <p>To:</p>
       <address>
-        #{shipment.receiver_name}
+        #{shipment.receiver_address.name}
         <br>
         #{shipment.receiver_address.pretty('<br>')}
       </address>

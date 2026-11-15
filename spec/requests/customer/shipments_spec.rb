@@ -42,6 +42,19 @@ RSpec.describe('Customer::Shipments') do
     end
   end
 
+  describe 'GET /customer/shipments/new' do
+    let(:document) { Nokogiri::HTML(response.body) }
+    let(:shipper_name) { document.at_css('input[name="shipment[shipper_address_attributes][name]"]')['value'] }
+
+    before do
+      seed_settings
+      get(new_customer_shipment_path)
+    end
+
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(shipper_name).to(eq(current_user.companyable.customer.name)) }
+  end
+
   describe 'PATCH /customer/shipments/:load_id.json' do
     before { patch(customer_shipment_path(shipment, format: :json), params: { shipment: { customer_reference: 'ABC123' } }) }
 
@@ -59,10 +72,8 @@ RSpec.describe('Customer::Shipments') do
           accessorials_has_been_suggested:,
           items_attributes: [{ desc: 'Box', quantity: 1, weight: 100 }],
           quote_only: false,
-          receiver_address_attributes: address,
-          receiver_name: 'Airport',
-          shipper_address_attributes: address,
-          shipper_name: 'Acme'
+          receiver_address_attributes: address.merge(name: 'Airport'),
+          shipper_address_attributes: address.merge(name: 'Acme')
         }
       }
     end

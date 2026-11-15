@@ -25,7 +25,10 @@ json.Commodities shipment.items do |item|
   json.weightUnit 'lbs'
 end
 json.ConsigneeAddress do
-  json.partial! 'dsdc/shipments/standard_address', account_number: nil, address: shipment.receiver_address, name: shipment.receiver_name
+  json.partial! 'dsdc/shipments/standard_address',
+                account_number: nil,
+                address: shipment.receiver_address,
+                name: shipment.receiver_address.name
 end
 json.CrossBorder status.cross_border?
 json.CrossBorderEntryNumber nil
@@ -54,7 +57,10 @@ json.PartnerCarrierName carrier&.name
 json.PartnerCarrierSCAC carrier&.scac
 json.PayType 'Prepaid'
 json.PickupAddress do
-  json.partial! 'dsdc/shipments/standard_address', account_number: nil, address: shipment.shipper_address, name: shipment.shipper_name
+  json.partial! 'dsdc/shipments/standard_address',
+                account_number: nil,
+                address: shipment.shipper_address,
+                name: shipment.shipper_address.name
 end
 json.PODAvailable shipment.carrier_pod.attached?
 json.ProNumber status.pro_number

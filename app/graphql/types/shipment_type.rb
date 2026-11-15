@@ -61,7 +61,7 @@ module Types
     field :receiver_contact_email, String
     field :receiver_contact_name, String
     field :receiver_contact_phone, String
-    field :receiver_name, String
+    field :receiver_name, String, method: :receiver_address_name
     field :receiver_unavailable_at, GraphQL::Types::ISO8601DateTime
     field :shipper_address, Types::AddressType, null: false
     field :shipper_available_at, GraphQL::Types::ISO8601DateTime
@@ -69,7 +69,7 @@ module Types
     field :shipper_contact_email, String
     field :shipper_contact_name, String
     field :shipper_contact_phone, String
-    field :shipper_name, String
+    field :shipper_name, String, method: :shipper_address_name
     field :shipper_reference, String
     field :shipper_unavailable_at, GraphQL::Types::ISO8601DateTime
     field :status, Types::ShipmentStatusEnum

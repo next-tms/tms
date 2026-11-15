@@ -12,6 +12,20 @@ RSpec.describe(CompressedHTTPClient) do
     it { expect(client).to(have_received(:delete).with('https://example.com', headers: { 'X-Test' => '1' })) }
   end
 
+  describe '.filter_uri' do
+    subject { described_class.filter_uri(uri) }
+
+    let(:uri) { 'https://example.com/lookup?auth-id=id&auth-token=token&key=secret&zipcode=97701' }
+
+    it { is_expected.to(eq('https://example.com/lookup?auth-id=%5BFILTERED%5D&auth-token=%5BFILTERED%5D&key=%5BFILTERED%5D&zipcode=97701')) }
+
+    context 'without a query' do
+      let(:uri) { 'https://example.com/lookup' }
+
+      it { is_expected.to(eq('https://example.com/lookup')) }
+    end
+  end
+
   describe '.get' do
     before { described_class.get('https://example.com', accept: 'text/csv') }
 

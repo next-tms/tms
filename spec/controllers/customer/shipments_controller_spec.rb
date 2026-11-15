@@ -38,7 +38,7 @@ RSpec.describe(Customer::ShipmentsController) do
     end
 
     describe 'PATCH #update' do
-      it { expect { patch(:update, params: { load_id: shipment.load_id, shipment: { shipper_name: 'Taken' } }) }.to(raise_error(ActiveRecord::RecordNotFound)) }
+      it { expect { patch(:update, params: { load_id: shipment.load_id, shipment: { shipper_contact_name: 'Taken' } }) }.to(raise_error(ActiveRecord::RecordNotFound)) }
     end
   end
 end

@@ -27,7 +27,7 @@
               <% unless shipment.shipper_address.full_address? %>
                 <%= shipment.shipper_address.zip_code %>
               <% else %>
-                <%= shipment.shipper_name %>
+                <%= shipment.shipper_address.name %>
                 <br>
                 <%= shipment.shipper_address.city %>, <%= shipment.shipper_address.region.abbreviation %>
               <% end %>
@@ -36,7 +36,7 @@
               <% unless shipment.receiver_address.full_address? %>
                 <%= shipment.receiver_address.zip_code %>
               <% else %>
-                <%= shipment.receiver_name %>
+                <%= shipment.receiver_address.name %>
                 <br>
                 <%= shipment.receiver_address.city %>, <%= shipment.receiver_address.region.abbreviation %>
               <% end %>

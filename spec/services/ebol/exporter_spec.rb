@@ -5,7 +5,15 @@ RSpec.describe(EBOL::Exporter) do
   let(:mailing_address) { create(:address, city: 'Cheyenne', region_iso31662: 'US-WY', street: '1 Broker Way', zip_code: '82001') }
   let(:packaging) { create(:packaging, freight_kit_type: 'pallet') }
   let(:receiver_address) do
-    create(:address, city: 'Fresno', region_iso31662: 'US-CA', street: '2 Receiver Rd', street2: 'Dock 4', zip_code: '93650')
+    create(
+      :address,
+      city: 'Fresno',
+      name: 'Receiver Co',
+      region_iso31662: 'US-CA',
+      street: '2 Receiver Rd',
+      street2: 'Dock 4',
+      zip_code: '93650'
+    )
   end
   let(:shipment) do
     create(
@@ -23,19 +31,19 @@ RSpec.describe(EBOL::Exporter) do
       receiver_contact_email: 'receiver@example.com',
       receiver_contact_name: 'Rita',
       receiver_contact_phone: '(559) 555-0101',
-      receiver_name: 'Receiver Co',
       shipper_address:,
       shipper_bol: 'SB1',
       shipper_contact_email: 'shipper@example.com',
       shipper_contact_name: 'Sam',
       shipper_contact_phone: '+1 916-555-0100',
-      shipper_name: 'Shipper Co',
       shipper_reference: 'SR1',
       value_cents: 150_000,
       value_currency: 'USD'
     )
   end
-  let(:shipper_address) { create(:address, city: 'Sacramento', region_iso31662: 'US-CA', street: '3 Shipper St', zip_code: '95814') }
+  let(:shipper_address) do
+    create(:address, city: 'Sacramento', name: 'Shipper Co', region_iso31662: 'US-CA', street: '3 Shipper St', zip_code: '95814')
+  end
 
   before do
     create(:setting, key: 'customer_service_email', value: 'help@broker.test')

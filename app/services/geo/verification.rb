@@ -1,0 +1,19 @@
+Geo::Verification = Data.define(
+  :address_lines,
+  :administrative_area,
+  :authority,
+  :business,
+  :dock,
+  :fingerprint,
+  :geocode_authority,
+  :latitude,
+  :locality,
+  :longitude,
+  :place_id,
+  :place_provider,
+  :places,
+  :po_box,
+  :postal_code,
+  :residential,
+  :verified
+)

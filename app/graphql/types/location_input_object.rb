@@ -10,11 +10,10 @@ module Types
 
     def shipment_attributes(prefix, address_id)
       {
-        "#{prefix}_address_attributes": address&.address_attributes&.merge(id: address_id),
+        "#{prefix}_address_attributes": { **address&.address_attributes, id: address_id, name: }.compact,
         "#{prefix}_contact_email": contact_email,
         "#{prefix}_contact_name": contact_name,
-        "#{prefix}_contact_phone": contact_phone,
-        "#{prefix}_name": name
+        "#{prefix}_contact_phone": contact_phone
       }.compact
     end
   end
