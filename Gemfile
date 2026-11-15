@@ -130,7 +130,7 @@ gem 'prawn-labels', '~> 1.2.6', require: 'prawn/labels'
 gem 'rqrcode'
 
 gem 'pagy'
-gem 'ransack', '~> 6.0'
+gem 'ransack', '~> 6.1'
 
 gem 'audited'
 gem 'noticed', '~> 3.1.1'
