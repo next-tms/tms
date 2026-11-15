@@ -8,6 +8,7 @@
     <% if !yield(:no_cache).blank? || !flash.blank? %>
       <meta name="turbo-cache-control" content="no-cache"/>
     <% end %>
+    <meta name="turbo-prefetch" content="false"/>
 
     <%= yield :alt_links %>
 
