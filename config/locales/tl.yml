@@ -1,0 +1,5 @@
+tl:
+  activerecord:
+    attributes:
+      address:
+        country_alpha2: Bansa

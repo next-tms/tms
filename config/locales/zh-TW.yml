@@ -1,0 +1,5 @@
+zh-TW:
+  activerecord:
+    attributes:
+      address:
+        country_alpha2: 國家
