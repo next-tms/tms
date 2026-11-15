@@ -13,7 +13,7 @@ module ProblematicService
     def resolvable?
       record.tracking_carrier.blank? ||
         record.tracking_carrier_pro.present? ||
-        record.booked_at.blank? ||
+        record.dispatched_at.blank? ||
         record.canceled_at.present? ||
         record.delivered_at.present?
     end
