@@ -87,7 +87,8 @@ module ShipmentsHelper
     },
     status: {
       display_name: 'Status',
-      column_name: :status
+      column_name: :status,
+      partial: 'broker/shipments/show_many_td_status'
     },
     size: {
       display_name: 'Size',
