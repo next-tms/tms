@@ -12,7 +12,7 @@ module ProblematicService
 
     def resolvable?
       record.picked_up_at.present? ||
-        record.booked_at.blank? ||
+        record.dispatched_at.blank? ||
         record.canceled_at.present? ||
         record.delivered_at.present? ||
         (record.pickup_by.present? && record.pickup_by > 8.hours.from_now)
