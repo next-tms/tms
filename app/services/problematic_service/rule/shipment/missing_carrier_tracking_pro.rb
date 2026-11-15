@@ -15,7 +15,8 @@ module ProblematicService
         record.tracking_carrier_pro.present? ||
         record.dispatched_at.blank? ||
         record.canceled_at.present? ||
-        record.delivered_at.present?
+        record.delivered_at.present? ||
+        record.receivables.sent.any?
     end
   end
 end
