@@ -27,7 +27,7 @@ RSpec.describe(Resolvers::Collection) do
     context 'with a page past the last page' do
       let(:page) { 3 }
 
-      it { expect { collection.items }.to(raise_error(Pagy::OverflowError)) }
+      it { expect { collection.items }.to(raise_error(Pagy::RangeError)) }
     end
   end
 

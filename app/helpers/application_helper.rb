@@ -1,6 +1,4 @@
 module ApplicationHelper
-  include Pagy::Frontend
-
   FLASH_CLASSES = { 'alert' => 'warning', 'error' => 'danger', 'notice' => 'info', 'success' => 'success' }.freeze
 
   # Stimulus

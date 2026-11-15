@@ -9,7 +9,7 @@ module Resolvers
     end
 
     def items = @items ||= scope.order(:id).offset(page == 1 ? 0 : pagy.offset).limit(page_size)
-    def pagy = @pagy ||= Pagy.new(count: scope.count, limit: page_size, page:)
+    def pagy = @pagy ||= Pagy::Offset.new(count: scope.count, limit: page_size, page:, raise_range_error: true)
     def pages = pagy.last
     def total_items = pagy.count
     def updated_at = scope.maximum(:updated_at)

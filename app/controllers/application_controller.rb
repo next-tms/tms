@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   include ConditionalRequests
-  include Pagy::Backend
+  include Pagy::Method
 
   authorize :authorizable, through: :current_user
 

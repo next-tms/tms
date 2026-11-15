@@ -32,7 +32,7 @@ class LiftoffSchema < GraphQL::Schema
 
   rescue_from(ActiveRecord::RecordNotFound) { |exception| GraphQL::ExecutionError.new("#{exception.model} not found") }
 
-  rescue_from(Pagy::OverflowError) do |exception|
+  rescue_from(Pagy::RangeError) do |exception|
     message = "Page #{exception.pagy.page} is past the last page (#{exception.pagy.last})"
 
     GraphQL::ExecutionError.new(message, extensions: { code: 'PAGE_OVERFLOW' })
