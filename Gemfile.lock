@@ -418,7 +418,7 @@ GEM
       rack
     pstore (0.2.1)
     public_suffix (7.0.5)
-    puma (8.0.2)
+    puma (8.1.1)
       nio4r (~> 2.0)
     pwned (2.4.1)
     quickbooks-ruby (2.0.7)
