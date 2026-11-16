@@ -1,4 +1,5 @@
 module ApplicationHelper
+  COPYRIGHT = Rails.root.join('COPYRIGHT').then { |path| path.read.strip if path.exist? }.freeze
   FLASH_CLASSES = { 'alert' => 'warning', 'error' => 'danger', 'notice' => 'info', 'success' => 'success' }.freeze
 
   # Stimulus
@@ -21,6 +22,7 @@ module ApplicationHelper
     html
   end
 
+  def copyright = COPYRIGHT
   def flash_class(level) = FLASH_CLASSES[level]
 
   def homepage = Setting.website_homepage(root_path)

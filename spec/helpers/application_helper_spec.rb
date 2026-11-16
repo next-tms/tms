@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe(ApplicationHelper) do
+  describe '#copyright' do
+    subject { helper.copyright }
+
+    before { stub_const('ApplicationHelper::COPYRIGHT', 'Copyright © 2021-2026 Example LLC') }
+
+    it { is_expected.to(eq('Copyright © 2021-2026 Example LLC')) }
+  end
+
   describe '#homepage' do
     subject { helper.homepage }
 

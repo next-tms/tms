@@ -17,13 +17,11 @@
       <% end %>
     <% end %>
 
-    <div class="mt-2">
-      <small class="text-muted">
-        Copyright ©
-        <%= Time.current.in_time_zone(Setting.time_zone).year %>
-        <%= Setting.first_value(:copyright_holder, :name) %>
-      </small>
-    </div>
+    <% if copyright.present? %>
+      <div class="mt-2">
+        <small class="text-muted"><%= copyright %></small>
+      </div>
+    <% end %>
 
     <ul class="list-inline list-inline-separated small">
       <% I18n.available_locales.sort_by { t(:locale_name, locale: it) }.each do |locale| %>

@@ -57,3 +57,6 @@
 /.github/copilot-instructions.md
 /.mcp.json
 /codex/
+
+# Ignore the copyright notice generated at build time.
+/COPYRIGHT

@@ -45,6 +45,7 @@ RUN bundle config set --global frozen 1 && \
     bundle install -j $(nproc) --retry 5
 
 COPY --exclude=.git/ . /app
+RUN echo "Copyright © 2021-$(TZ=America/Los_Angeles date +%Y) Third Party Transportation Management Systems LLC" > COPYRIGHT
 RUN bundle exec bootsnap precompile app/ lib/
 RUN DOMAIN=localhost \
     POSTMARK_API_TOKEN=fake \

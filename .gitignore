@@ -47,3 +47,6 @@ config/initializers/01_development_env.rb
 !/app/assets/builds/.keep
 
 /data/
+
+# Ignore the copyright notice generated at build time.
+/COPYRIGHT
