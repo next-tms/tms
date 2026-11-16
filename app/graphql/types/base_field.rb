@@ -19,6 +19,6 @@ module Types
 
     private
 
-    def policy_class = "#{owner.graphql_name}Policy".constantize
+    def policy_class = owner.policy_class
   end
 end

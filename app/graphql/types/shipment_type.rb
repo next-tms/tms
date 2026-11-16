@@ -8,18 +8,19 @@ module Types
     field :booked_at, GraphQL::Types::ISO8601DateTime
     field :broker_and_broker_customer_notes, String, visible_to: :view_shared_notes?
     field :broker_bol_shipment_fingerprint, String
-    field :broker_carrier, Types::BrokerCarrierType, authorize: { raise: false, to: :view? }
-    field :broker_customer, Types::BrokerCustomerType, authorize: { raise: false, to: :view? }
     field :broker_dispatch_sheet_shipment_fingerprint, String
     field :broker_notes, String, visible_to: :view_internal_notes?
     field :broker_quote_shipment_fingerprint, String
     field :canceled_at, GraphQL::Types::ISO8601DateTime
+    field :carrier, Types::CarrierType, authorize: { raise: false, to: :view? }
+    field :carrier_account, Types::CarrierAccountType, authorize: { raise: false, to: :view? }
     field :carrier_charge_cents, Integer, visible_to: :view_charges?
     field :carrier_charge_currency, String, visible_to: :view_charges?
     field :carrier_cost_cents, Integer, visible_to: :view_costs?
     field :carrier_cost_currency, String, visible_to: :view_costs?
     field :charges_confirmed, Boolean
     field :created_by_id, Integer
+    field :customer, Types::CustomerType, authorize: { raise: false, to: :view? }
     field :customer_notes, String
     field :customer_reference, String
     field :delivered_at, GraphQL::Types::ISO8601DateTime
@@ -34,6 +35,7 @@ module Types
     field :documents, [Types::DocumentType], null: false
     field :events, [Types::TrackingEventType], null: false
     field :id, ID, method: :load_id, null: false
+    field :items, [Types::ItemType], null: false
     field :lift_gate_delivery, Boolean
     field :lift_gate_pickup, Boolean
     field :load_id, Integer
@@ -85,8 +87,12 @@ module Types
     field :value_cents, Integer, null: false
     field :value_currency, String, null: false
 
-    def broker_carrier = dataloader.with(Sources::Association, Shipment, :broker_carrier).load(object)
-    def broker_customer = dataloader.with(Sources::Association, Shipment, :broker_customer).load(object)
+    def carrier
+      carrier_account&.then { |broker_carrier| dataloader.with(Sources::Association, BrokerCarrier, :carrier).load(broker_carrier) }
+    end
+
+    def carrier_account = dataloader.with(Sources::Association, Shipment, :broker_carrier).load(object)
+    def customer = dataloader.with(Sources::Association, Shipment, :broker_customer).load(object)
 
     def documents
       shipment_attachments = dataloader.with(Sources::Association, Shipment, :document_attachments).request(object)
@@ -104,6 +110,7 @@ module Types
       tracking_events.select { |tracking_event| allowed_to?(:view?, tracking_event) }.sort_by { |tracking_event| tracking_event.at.to_i }
     end
 
+    def items = dataloader.with(Sources::Association, Shipment, :items).load(object)
     def pro = allowed_to?(:view_carrier_references?, object) ? object.pro : object.customer_pro
     def receiver_address = dataloader.with(Sources::Association, Shipment, :receiver_address).load(object)
     def shipper_address = dataloader.with(Sources::Association, Shipment, :shipper_address).load(object)

@@ -7,7 +7,13 @@ RSpec.describe(Types::ShipmentType) do
   let(:broker_carrier) { create(:broker_carrier) }
   let(:items) { result.dig('data', 'shipments', 'items') }
   let(:query) do
-    '{ shipments { items { brokerCarrier { id } brokerCustomer { id } receiverAddress { id } shipperAddress { id } status } } }'
+    <<~GRAPHQL
+      {
+        shipments {
+          items { carrier { id } carrierAccount { id } customer { id } items { id } receiverAddress { id } shipperAddress { id } status }
+        }
+      }
+    GRAPHQL
   end
 
   let!(:shipments) { create_list(:shipment, 2, broker_carrier:) }
@@ -25,16 +31,21 @@ RSpec.describe(Types::ShipmentType) do
   end
 
   it { expect(items.first['status']).to(eq(shipments.first.status)) }
-  it { expect(items.pluck('brokerCustomer')).to(eq(shipments.map { |shipment| { 'id' => shipment.broker_customer_id.to_s } })) }
+  it { expect(items.pluck('carrier')).to(all(eq('id' => broker_carrier.carrier_id.to_s))) }
+  it { expect(items.pluck('carrierAccount')).to(all(eq('id' => broker_carrier.id.to_s))) }
+  it { expect(items.pluck('customer')).to(eq(shipments.map { |shipment| { 'id' => shipment.broker_customer_id.to_s } })) }
+  it { expect(items.pluck('items')).to(eq(shipments.map { |shipment| shipment.items.map { |item| { 'id' => item.id.to_s } } })) }
   it { expect(queries_from('addresses').size).to(eq(2)) }
   it { expect(queries_from('broker_carriers').size).to(eq(1)) }
   it { expect(queries_from('broker_customers').size).to(eq(1)) }
+  it { expect(queries_from('carriers').size).to(eq(1)) }
+  it { expect(queries_from('items').size).to(eq(1)) }
 
   context 'when the user is a carrier' do
     let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
 
-    it { expect(items.pluck('brokerCarrier')).to(all(eq('id' => broker_carrier.id.to_s))) }
-    it { expect(items.pluck('brokerCustomer')).to(all(be_nil)) }
+    it { expect(items.pluck('carrierAccount')).to(all(eq('id' => broker_carrier.id.to_s))) }
+    it { expect(items.pluck('customer')).to(all(be_nil)) }
     it { expect(items.pluck('shipperAddress')).to(all(be_present)) }
   end
 

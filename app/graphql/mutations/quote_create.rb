@@ -6,7 +6,7 @@ module Mutations
     description 'Create a Quote and fetch its Rates'
 
     argument :accessorial_codes, [String], default_value: [], replace_null_with_default: true, required: false
-    argument :broker_customer_id, ID, required: false
+    argument :customer_id, ID, as: :broker_customer_id, required: false
     argument :declared_freight_classes, Boolean, default_value: false, replace_null_with_default: true, required: false
     argument :packages, [Types::PackageInputObject], required: true, validates: { length: { minimum: 1 } }
     argument :pickup_on, GraphQL::Types::ISO8601Date, required: false
@@ -21,7 +21,7 @@ module Mutations
 
       authorize!(shipment, to: :create?)
 
-      raise_error('Broker customer not found', 'NOT_FOUND') if shipment.broker_customer.blank?
+      raise_error('Customer not found', 'NOT_FOUND') if shipment.broker_customer.blank?
       raise_error("Packages exceed #{Types::PackageInputObject::MAX_UNITS} units", 'TOO_MANY_UNITS') if too_many_units?(packages)
 
       shipment.assign_attributes(

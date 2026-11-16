@@ -47,7 +47,7 @@ module Mutations
     def bookable?(rate) = quotable?(rate) && (rate.expires_at.blank? || rate.expires_at.future?)
 
     def check_bookable!(shipment, rate)
-      raise_error('Broker customer not found', 'NOT_FOUND') if shipment.broker_customer.blank?
+      raise_error('Customer not found', 'NOT_FOUND') if shipment.broker_customer.blank?
       raise_error('Shipment is already booked', 'BOOKED') if shipment.booked_at.present?
       raise_error('Rate is not bookable', 'UNBOOKABLE_RATE') unless bookable?(rate) && eligible?(shipment, rate)
     end

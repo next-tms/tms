@@ -20,7 +20,7 @@ RSpec.describe(Types::ShipmentFilterType) do
     it { expect(arguments['brokerCarrierShipmentsCountGt'].type.graphql_name).to(eq('Int')) }
     it { expect(arguments['brokerCustomerIdEq'].type.graphql_name).to(eq('Int')) }
     it { expect(arguments['brokerCustomerCustomerIdIn'].type.to_type_signature).to(eq('[Int!]')) }
-    it { expect(Types::BrokerCarrierFilterType.arguments['shipmentsCountNotIn'].type.to_type_signature).to(eq('[Int!]')) }
+    it { expect(Types::CarrierAccountFilterType.arguments['shipmentsCountNotIn'].type.to_type_signature).to(eq('[Int!]')) }
   end
 
   describe '.attribute_type' do
@@ -31,7 +31,7 @@ RSpec.describe(Types::ShipmentFilterType) do
   end
 
   describe '.filters' do
-    let(:name_arguments) { described_class::PREDICATES[:string].keys.map { |suffix| "name_#{suffix}".camelize(:lower) } }
+    let(:name_arguments) { described_class::PREDICATES[:string].keys.map { |suffix| "customer_name_#{suffix}".camelize(:lower) } }
 
     it { expect(arguments['or'].type.to_type_signature).to(eq('[ShipmentFilter!]')) }
     it { expect(Types::CustomerFilterType.arguments.keys).to(include('or', *name_arguments)) }

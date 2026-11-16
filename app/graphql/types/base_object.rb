@@ -1,5 +1,9 @@
 module Types
   class BaseObject < GraphQL::Schema::Object
+    class << self
+      def policy_class = "#{graphql_name}Policy".constantize
+    end
+
     include ActionPolicy::GraphQL::Behaviour
 
     edge_type_class(Types::BaseEdge)

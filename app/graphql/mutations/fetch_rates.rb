@@ -4,7 +4,7 @@ module Mutations
 
     description 'Fetch Shipment Rates'
 
-    argument :broker_carrier_id, ID, required: false
+    argument :carrier_account_id, ID, as: :broker_carrier_id, required: false
     argument :declared_freight_classes, Boolean, default_value: false, replace_null_with_default: true, required: false
     argument :shipment_load_id, ID, required: true
 

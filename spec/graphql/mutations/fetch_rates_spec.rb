@@ -9,8 +9,8 @@ RSpec.describe(Mutations::FetchRates) do
   let(:other_broker_carrier) { create(:broker_carrier) }
   let(:query) do
     <<~GRAPHQL
-      mutation($brokerCarrierId: ID, $loadId: ID!) {
-        fetchRates(input: { brokerCarrierId: $brokerCarrierId, shipmentLoadId: $loadId }) {
+      mutation($carrierAccountId: ID, $loadId: ID!) {
+        fetchRates(input: { carrierAccountId: $carrierAccountId, shipmentLoadId: $loadId }) {
           rates { #{rate_fields} }
         }
       }
@@ -35,8 +35,8 @@ RSpec.describe(Mutations::FetchRates) do
     expect(Shipment::RatesService).to(have_received(:call).with(broker_carrier, shipment, declared_freight_classes: false, save: true))
   end
 
-  context 'when a broker carrier outside the quotable list is requested' do
-    let(:variables) { { brokerCarrierId: other_broker_carrier.id.to_s, loadId: shipment.load_id.to_s } }
+  context 'when a carrier account outside the quotable list is requested' do
+    let(:variables) { { carrierAccountId: other_broker_carrier.id.to_s, loadId: shipment.load_id.to_s } }
 
     it { expect(rates).to(be_empty) }
   end

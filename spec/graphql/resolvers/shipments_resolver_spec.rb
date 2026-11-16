@@ -180,7 +180,7 @@ RSpec.describe(Resolvers::ShipmentsResolver) do
         <<~GRAPHQL
           {
             shipments(pageSize: 100) {
-              items { brokerCustomer { shipments(pageSize: 100) { items { brokerCustomer { shipments(pageSize: 100) { items { id } } } } } } }
+              items { customer { shipments(pageSize: 100) { items { customer { shipments(pageSize: 100) { items { id } } } } } } }
             }
           }
         GRAPHQL

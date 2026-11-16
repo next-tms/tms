@@ -80,9 +80,9 @@ RSpec.describe(Mutations::QuoteCreate) do
 
     it { expect(result['errors'].first['extensions']).to(eq('code' => 'NOT_FOUND')) }
 
-    context 'with a broker customer' do
+    context 'with a customer' do
       let(:rate_fields) { 'chargeCents costCents scac' }
-      let(:variables) { { input: super()[:input].merge(brokerCustomerId: broker_customer.id.to_s) } }
+      let(:variables) { { input: super()[:input].merge(customerId: broker_customer.id.to_s) } }
 
       it { expect(data['rates']).to(eq([{ 'chargeCents' => 15_000, 'costCents' => 12_345, 'scac' => 'ABCD' }])) }
     end

@@ -1,6 +1,6 @@
 module Resolvers
   class CustomersResolver < CollectionResolver
-    MODEL = Customer
+    MODEL = BrokerCustomer
 
     argument :filter, Types::CustomerFilterType, required: false
 

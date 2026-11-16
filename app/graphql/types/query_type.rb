@@ -7,10 +7,8 @@ module Types
 
     {
       bill: PaymentTransaction,
-      broker_carrier: BrokerCarrier,
-      broker_customer: BrokerCustomer,
       carrier: Carrier,
-      customer: Customer,
+      customer: BrokerCustomer,
       invoice: Receivable,
       shipment: Shipment
     }.each do |name, model|

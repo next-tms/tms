@@ -2,6 +2,6 @@ module Types
   class CustomerFilterType < Types::BaseInputObject
     include Types::Concerns::Filterable
 
-    filters Customer
+    filters BrokerCustomer
   end
 end

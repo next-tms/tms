@@ -1,5 +1,5 @@
 module Types
-  class BrokerCarrierFilterType < Types::BaseInputObject
+  class CarrierAccountFilterType < Types::BaseInputObject
     include Types::Concerns::Filterable
 
     filters BrokerCarrier
