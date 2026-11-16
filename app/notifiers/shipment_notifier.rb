@@ -15,14 +15,14 @@ class ShipmentNotifier < BaseNotifier
   }.freeze
 
   def mailer_class(_notification = nil) = UserMailer
-  def mailer_params(_notification = nil) = { shipment: params[:shipment] }
+  def mailer_params(_notification = nil) = { actor: params[:actor], shipment: params[:shipment] }
   def mailer_method(_notification = nil) = params[:attribute_changed]
   def notification_type = "shipment:#{params[:attribute_changed]}"
 
   def message
-    shipment = params[:shipment].reload
+    shipment = params[:shipment]
     attribute_changed = params[:attribute_changed].to_sym
-    updated_by = shipment.updated_by&.full_name || 'Robot'
+    updated_by = params[:actor]&.full_name || 'Robot'
 
     return "#{updated_by} Cancelled Load ##{shipment.load_id}" if attribute_changed == :canceled_at
     return "#{updated_by} Entered Load ##{shipment.load_id}" if attribute_changed == :new_shipment

@@ -2,8 +2,8 @@
 
 <p>
   <%= @shipment.broker_customer&.customer.blank? ? 'Load' : "#{@shipment.broker_customer.customer.name} load" %> <%= @shipment.load_id %> 
-  <% if @shipment.updated_by %>
-    has been assigned to you by <%= @shipment.updated_by.full_name %>
+  <% if @actor %>
+    has been assigned to you by <%= @actor.full_name %>
   <% end %>
 </p>
 

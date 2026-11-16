@@ -870,14 +870,14 @@ class Shipment < ApplicationRecord
   def notify_of_new_shipment
     return if Rails.env.test?
 
-    ShipmentNotifier.with(attribute_changed: :new_shipment, shipment: self).deliver(users_to_notify)
+    ShipmentNotifier.with(actor: updated_by, attribute_changed: :new_shipment, shipment: self).deliver(users_to_notify)
   end
 
   def send_notification
     changed_attributes.each_key do |key|
       return false if !UserMailer.respond_to?(key) || changes[key][1].blank?
 
-      notification = ShipmentNotifier.with(shipment: self, attribute_changed: key)
+      notification = ShipmentNotifier.with(actor: updated_by, attribute_changed: key, shipment: self)
       return notification.deliver(dispatcher) if key == 'dispatcher_id'
 
       notification.deliver(users_to_notify)

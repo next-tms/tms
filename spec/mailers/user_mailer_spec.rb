@@ -8,6 +8,44 @@ RSpec.describe(UserMailer) do
     it { is_expected.to(include(DateTimeHelper)) }
   end
 
+  describe '#dispatcher_id' do
+    subject(:mail) { described_class.with(actor:, recipient:, shipment:).dispatcher_id }
+
+    let(:actor) { create(:broker_user) }
+    let(:recipient) { create(:broker_user) }
+    let(:shipment) { create(:shipment, updated_by: create(:broker_user)) }
+
+    before do
+      create(:setting, key: 'name', value: 'Acme Freight')
+      create(:setting, key: 'robot_email', value: 'robot@acme.test')
+    end
+
+    it { expect(mail.body.encoded).to(include("assigned to you by #{actor.full_name}")) }
+  end
+
+  describe '#new_shipment' do
+    subject(:mail) { described_class.with(actor:, recipient:, shipment:).new_shipment }
+
+    let(:actor) { create(:broker_user) }
+    let(:recipient) { create(:broker_user) }
+    let(:shipment) { create(:shipment, updated_by: create(:broker_user)) }
+
+    before do
+      create(:setting, key: 'name', value: 'Acme Freight')
+      create(:setting, key: 'robot_email', value: 'robot@acme.test')
+    end
+
+    it { expect(mail.reply_to).to(eq([actor.email])) }
+    it { expect(mail.subject).to(eq("#{actor.full_name} Entered Load #{shipment.load_id}")) }
+
+    context 'when actor is blank' do
+      let(:actor) { nil }
+
+      it { expect(mail.reply_to).to(eq(['robot@acme.test'])) }
+      it { expect(mail.subject).to(eq("Robot Entered Load #{shipment.load_id}")) }
+    end
+  end
+
   describe '#send_welcome' do
     subject(:mail) { described_class.send_welcome(user) }
 

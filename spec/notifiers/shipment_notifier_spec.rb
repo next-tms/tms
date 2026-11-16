@@ -15,7 +15,15 @@ RSpec.describe(ShipmentNotifier) do
   end
 
   describe '#mailer_params' do
-    it { expect(notifier.mailer_params).to eq({ shipment: }) }
+    it { expect(notifier.mailer_params).to eq({ actor: nil, shipment: }) }
+
+    context 'when actor is present' do
+      let(:actor) { build_stubbed(:broker_user) }
+
+      before { allow(notifier).to receive(:params).and_return({ actor:, attribute_changed: :new_shipment, shipment: }) }
+
+      it { expect(notifier.mailer_params).to eq({ actor:, shipment: }) }
+    end
   end
 
   describe '#notification_type' do
@@ -81,6 +89,15 @@ RSpec.describe(ShipmentNotifier) do
       before { allow(notifier).to receive(:params).and_return({ shipment:, attribute_changed: :picked_up_at }) }
 
       it { expect(notifier.message).to eq("Robot Marked Load ##{shipment.load_id} Picked Up") }
+    end
+
+    context 'when actor differs from shipment.updated_by' do
+      let(:actor) { create(:broker_user) }
+      let(:shipment) { create(:shipment, updated_by: create(:broker_user)) }
+
+      before { allow(notifier).to receive(:params).and_return({ actor:, attribute_changed: :new_shipment, shipment: }) }
+
+      it { expect(notifier.message).to eq("#{actor.full_name} Entered Load ##{shipment.load_id}") }
     end
   end
 

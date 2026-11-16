@@ -2,6 +2,7 @@ class UserMailer < ApplicationMailer
   default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
   helper :application, :date_time
 
+  before_action :set_actor, except: :send_welcome
   before_action :set_shipment, except: %i[send_welcome pickup_service_dispatched]
 
   def send_welcome(user)
@@ -84,8 +85,10 @@ class UserMailer < ApplicationMailer
   def send_shipment_updated(shipment, method_name)
     recipient = params[:recipient] ? "#{params[:recipient].full_name} <#{params[:recipient].email}>" : to(shipment, method_name)
 
-    mail(from: from(shipment), reply_to: reply_to(shipment), to: recipient, subject: [who_performed(@shipment), @subject].join(' '))
+    mail(from: from(shipment), reply_to:, to: recipient, subject: [who_performed, @subject].join(' '))
   end
+
+  def set_actor = @actor = params[:actor]
 
   def set_shipment
     @shipment = params[:shipment]
@@ -106,15 +109,6 @@ class UserMailer < ApplicationMailer
     end[0..-3]
   end
 
-  def reply_to(shipment)
-    return "Robot <#{Setting.robot_email!}>" if shipment.updated_by.blank?
-
-    "#{shipment.updated_by.first_name} #{shipment.updated_by.last_name} <#{shipment.updated_by.email}>"
-  end
-
-  def who_performed(shipment)
-    return 'Robot' if shipment.updated_by.blank?
-
-    "#{shipment.updated_by.first_name} #{shipment.updated_by.last_name}"
-  end
+  def reply_to = @actor.blank? ? "Robot <#{Setting.robot_email!}>" : "#{@actor.full_name} <#{@actor.email}>"
+  def who_performed = @actor&.full_name || 'Robot'
 end

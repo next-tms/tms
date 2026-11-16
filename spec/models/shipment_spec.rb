@@ -106,6 +106,32 @@ RSpec.describe(Shipment) do
     it { expect(described_class.new(pro: ' 42  43 ').pro).to(eq('42 43')) }
   end
 
+  describe 'notifications' do
+    let(:actor) { create(:broker_user) }
+    let(:shipment) { create(:shipment, delivered_at: nil, updated_by: nil) }
+
+    before { allow(ShipmentNotifier).to(receive(:with).and_call_original) }
+
+    context 'when a shipment is created' do
+      before do
+        allow(Rails.env).to(receive(:test?).and_return(false))
+        create(:shipment, updated_by: actor)
+      end
+
+      it { expect(ShipmentNotifier).to(have_received(:with).with(hash_including(actor:, attribute_changed: :new_shipment))) }
+    end
+
+    context 'when a notifiable attribute changes' do
+      before do
+        shipment.assign_attributes(delivered_at: Time.current)
+        shipment.updated_by = actor
+        shipment.save!
+      end
+
+      it { expect(ShipmentNotifier).to(have_received(:with).with(actor:, attribute_changed: 'delivered_at', shipment:)) }
+    end
+  end
+
   describe 'relationships' do
     it { is_expected.to(belong_to(:applied_rate).required(false)) }
     it { is_expected.to(belong_to(:broker_carrier).required(false)) }
