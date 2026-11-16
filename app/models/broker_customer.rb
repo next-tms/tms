@@ -103,7 +103,7 @@ class BrokerCustomer < ApplicationRecord
   def to_accounting_customer
     Accounting::Customer.new(
       billing_address: office_address.to_accounting_address,
-      company_name: customer.name,
+      company_name: customer.legal_name,
       display_name: customer.name,
       shipping_address: primary_pickup_address&.to_accounting_address
     )

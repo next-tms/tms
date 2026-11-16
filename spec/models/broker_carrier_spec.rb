@@ -188,6 +188,12 @@ RSpec.describe(BrokerCarrier) do
 
       it { expect(broker_carrier.to_accounting_vendor.billing_address.city).to(eq('Dallas')) }
     end
+
+    context 'when the carrier has a legal name' do
+      before { carrier.legal_name = 'Saia, LLC' }
+
+      it { expect(broker_carrier.to_accounting_vendor).to(have_attributes(company_name: 'Saia, LLC', display_name: carrier.name)) }
+    end
   end
 
   describe 'normalizations' do

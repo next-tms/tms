@@ -50,7 +50,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
 
   def contacts
     @q = @broker_customer.contacts.ransack(params[:q], auth_object: current_user)
-    @q.sorts = 'created_at desc' if @q.sorts.blank?
+    @q.sorts = 'first_name asc' if @q.sorts.blank?
     @pagy, @contacts = pagy(@q.result)
   end
 
@@ -252,7 +252,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
           broker_customer_sales_reps_attributes: [%i[_destroy id commission_flat commission_percent user_id]],
           broker_customer_dispatchers_attributes: [%i[_destroy id user_id]],
           broker_accessorials_attributes: [%i[_destroy id accessorial_id code flat_charge name upcharge upcharge_percent]],
-          customer_attributes: %i[_destroy id name],
+          customer_attributes: %i[_destroy id legal_name name],
           document_preferences_attributes: [%i[_destroy id contact_id kind]],
           office_address_attributes: %i[id street street2 city region_iso31662 zip_code country_alpha2],
           primary_pickup_address_attributes: %i[id street street2 city region_iso31662 zip_code country_alpha2],

@@ -71,7 +71,7 @@ class BrokerCarrier < ApplicationRecord
   def to_accounting_vendor
     Accounting::Vendor.new(
       billing_address: payable_check_mailing_address&.to_accounting_address,
-      company_name: carrier.name,
+      company_name: carrier.legal_name.presence || carrier.name,
       display_name: carrier.name
     )
   end

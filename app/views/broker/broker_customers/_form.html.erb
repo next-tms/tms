@@ -2,7 +2,15 @@
   <%= f.alert_message "Unable to save customer:" %>
 
   <%= f.fields_for :customer do |customer_form| %>
-    <%= customer_form.text_field :name, placeholder: 'Name', autofocus: true %>
+    <div data-controller="legal-name">
+      <%= customer_form.text_field :legal_name,
+                                   autofocus: true,
+                                   data: { action: 'legal-name#fill', 'legal-name-target': 'legalName' },
+                                   label: 'Legal Name',
+                                   placeholder: 'Legal Name'
+      %>
+      <%= customer_form.text_field :name, data: { 'legal-name-target': 'name' }, placeholder: 'Name' %>
+    </div>
   <% end %>
 
   <div class="form-group row">

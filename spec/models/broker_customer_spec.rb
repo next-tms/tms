@@ -20,6 +20,14 @@ RSpec.describe(BrokerCustomer) do
     it { expect(record.eligible_broker_accessorials).to(contain_exactly(blanket_accessorial, customer_accessorial)) }
   end
 
+  describe '#to_accounting_customer' do
+    subject { record.to_accounting_customer }
+
+    let(:record) { create(:broker_customer, customer: create(:customer, legal_name: 'Acme Holdings, LLC', name: 'Acme Freight')) }
+
+    it { is_expected.to(have_attributes(company_name: 'Acme Holdings, LLC', display_name: 'Acme Freight')) }
+  end
+
   describe 'relationships' do
     it { is_expected.to(have_many(:preferred_broker_carriers).dependent(:destroy)) }
     it { is_expected.to(have_many(:upcharge_rules).dependent(:destroy)) }

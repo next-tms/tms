@@ -11,7 +11,7 @@ module Accounting
         end
 
         def connection = @connection ||= Connection.new(self)
-        def find_field(attribute) = { name: :company_name }.fetch(attribute, attribute)
+        def find_field(attribute) = { name: :display_name }.fetch(attribute, attribute)
 
         def serialize(vendor, model = nil)
           model ||= ::Quickbooks::Model::Vendor.new
