@@ -8,13 +8,10 @@ class ApplicationMailer < ActionMailer::Base
   def notify_sentry_and_store_error_msg(error)
     # Notify once, But prevent ActionMailer from retrying te job
     Sentry.capture_exception(error)
-    return unless params[:record]
+    event = params[:notification]&.event
+    return if event.blank?
 
-    # Store Error Class and Msg when email failed and triggered by Notification class
-
-    error_msg = "#{error.class} | #{error}"
-
-    params[:record].params[:email_delivery_error] = error_msg
-    params[:record].save
+    event.params[:email_delivery_error] = "#{error.class} | #{error}"
+    event.save
   end
 end

@@ -3,7 +3,7 @@
 # DocumentNotifier.with(post: @post).deliver(current_user)
 
 class DocumentNotifier < BaseNotifier
-  required_params :shipment, :document_type, :contact
+  required_params :shipment, :document_type, :to_contact
 
   HUMANIZED_DOCUMENT_TYPES = {
     broker_bol: 'Bill of Landing',
@@ -18,7 +18,7 @@ class DocumentNotifier < BaseNotifier
   def mailer_params(_notification = nil)
     {
       from_user: params[:from_user],
-      to_contact: params[:contact],
+      to_contact: params[:to_contact],
       shipment: params[:shipment],
       document_type: params[:document_type]
     }

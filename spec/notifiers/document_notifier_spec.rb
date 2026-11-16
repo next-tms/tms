@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe(DocumentNotifier) do
-  let(:contact) { build_stubbed(:contact) }
   let(:from_user) { build_stubbed(:user) }
   let(:notifier) { described_class.new }
   let(:shipment) { build_stubbed(:shipment) }
+  let(:to_contact) { build_stubbed(:contact) }
 
-  before { allow(notifier).to receive(:params).and_return({ contact:, document_type: :carrier_bol, from_user:, shipment: }) }
+  before { allow(notifier).to receive(:params).and_return({ document_type: :carrier_bol, from_user:, shipment:, to_contact: }) }
 
   describe '#mailer_class' do
     it { expect(notifier.mailer_class).to eq(ContactMailer) }
@@ -17,7 +17,7 @@ RSpec.describe(DocumentNotifier) do
   end
 
   describe '#mailer_params' do
-    it { expect(notifier.mailer_params).to eq({ document_type: :carrier_bol, from_user:, shipment:, to_contact: contact }) }
+    it { expect(notifier.mailer_params).to eq({ document_type: :carrier_bol, from_user:, shipment:, to_contact: }) }
   end
 
   describe '#notification_type' do
@@ -48,7 +48,7 @@ RSpec.describe(DocumentNotifier) do
       broker_bol: 'Bill of Landing'
     }.each do |document_type, expected|
       context "when document_type is :#{document_type}" do
-        before { allow(notifier).to receive(:params).and_return({ contact:, document_type:, shipment: }) }
+        before { allow(notifier).to receive(:params).and_return({ document_type:, shipment:, to_contact: }) }
 
         it { expect(notifier.humanized_document_type).to eq(expected) }
       end

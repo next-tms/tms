@@ -6,6 +6,16 @@ RSpec.describe(BaseNotifier) do
 
   before { allow(notifier).to receive(:params).and_return({ shipment:, attribute_changed: :new_shipment }) }
 
+  describe '.delivery_methods' do
+    subject { described_class.delivery_methods[:email].config }
+
+    it { is_expected.to(include(if: :should_receive_email_notification?)) }
+    it { is_expected.to(include(mailer: :mailer_class)) }
+    it { is_expected.to(include(method: :mailer_method)) }
+    it { is_expected.to(include(params: :mailer_params)) }
+    it { is_expected.to(include(wait: 2.minutes)) }
+  end
+
   describe '#failed_email_delivery?' do
     context 'when email_delivery_error param is present' do
       before { allow(notifier).to receive(:params).and_return({ email_delivery_error: 'SMTP timeout' }) }

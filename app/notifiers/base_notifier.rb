@@ -2,8 +2,8 @@ class BaseNotifier < Noticed::Event
   deliver_by :email,
              mailer: :mailer_class,
              method: :mailer_method,
-             format: :mailer_params,
-             delay: 2.minutes,
+             params: :mailer_params,
+             wait: 2.minutes,
              if: :should_receive_email_notification?
 
   include ActionView::Helpers::UrlHelper # For link_to

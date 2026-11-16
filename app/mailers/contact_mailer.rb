@@ -42,7 +42,7 @@ class ContactMailer < ApplicationMailer
 
   def from_notification
     @shipment = params[:shipment]
-    @document_type = params[:record].to_notification.humanized_document_type
+    @document_type = params[:notification].event.humanized_document_type
 
     send_document(
       document: params[:shipment].public_send(params[:document_type]),

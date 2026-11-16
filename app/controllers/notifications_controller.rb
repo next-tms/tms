@@ -1,20 +1,29 @@
 class NotificationsController < ApplicationController
   before_action :authenticate_user!
-
-  def show
-    @notification = Notification.find(params[:id])
-    @notification.mark_as_read
-  end
+  before_action :set_notifications
+  before_action :set_notification, only: :show
 
   def index
-    notifications = current_user.notifications.newest_first
-
     if params.dig(:q, :params_cont)
-      ids = notifications.select { |n| n.to_notification.message.include?(params.dig(:q, :params_cont)) }.map(&:id)
-      notifications = current_user.notifications.where(id: ids).newest_first
+      ids = @notifications.select { |notification| notification.event.message.include?(params.dig(:q, :params_cont)) }.map(&:id)
+      @notifications = @notifications.where(id: ids)
     end
 
-    @q = notifications.ransack({}, auth_object: current_user)
-    @pagy, @notifications = pagy(@q.result)
+    @pagy, @notifications = pagy(@notifications)
+
+    stale?(@notifications)
   end
+
+  def show
+    authorize!(@notification, to: :view?)
+
+    @notification.mark_as_read unless @notification.read?
+
+    stale?(@notification)
+  end
+
+  private
+
+  def set_notification = @notification = @notifications.find(params.expect(:id))
+  def set_notifications = @notifications = authorized_scope(current_user.notifications.includes(:event).newest_first)
 end
