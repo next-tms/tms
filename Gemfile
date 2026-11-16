@@ -86,7 +86,7 @@ group :test do
   gem 'timecop'
 end
 
-gem 'bootstrap_form', '~> 5.4.0'
+gem 'bootstrap_form', '~> 5.6.1'
 gem 'dartsass-rails'
 
 gem 'aws-sdk-s3', '~> 1.242', group: :production
