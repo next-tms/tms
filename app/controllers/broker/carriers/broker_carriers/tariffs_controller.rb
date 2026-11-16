@@ -20,7 +20,7 @@ class Broker::Carriers::BrokerCarriers::TariffsController < Broker::Carriers::Br
       broker_carrier: [
         {
           overlength_rules_attributes: [%i[_destroy cost id max_length min_length]],
-          pricing_rules_attributes: [%i[_destroy cost_per_pallet from_area_id id max_pallets min_pallets to_area_id]]
+          pricing_rules_attributes: [%i[_destroy cost_per_pallet id lane_id max_pallets min_pallets]]
         }
       ]
     )

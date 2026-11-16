@@ -57,7 +57,16 @@ class Carrier < ApplicationRecord
            :website_url,
            to: :transponder_carrier,
            allow_nil: true
-  delegate :check_mailing_addresses, :contacts, :terminals, to: :transponder_carrier, prefix: :transponder, allow_nil: true
+  delegate :check_mailing_addresses,
+           :contacts,
+           :lanes,
+           :matching_lanes,
+           :serve?,
+           :terminals,
+           :territories,
+           to: :transponder_carrier,
+           prefix: :transponder,
+           allow_nil: true
 
   scope :with_api, -> { where(transponder_id: Transponder::ORM::Carrier.all.select(&:api?).map(&:id)) }
 

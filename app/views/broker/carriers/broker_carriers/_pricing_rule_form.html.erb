@@ -1,21 +1,10 @@
 <div class="pricing-rules-form-wrapper row gy-2 gx-3 align-items-top mb-4" data-new-record="<%= f.object.new_record? %>">
-  <div class="col col-sm-3">
-    <%= f.select :from_area_id,
-                 areas,
+  <div class="col col-sm-6">
+    <%= f.select :lane_id,
+                 lanes,
                  {
                    hide_label: true,
-                   include_blank: (PricingRule.human_attribute_name(:from_area) if f.object.new_record?),
-                   readonly: f.object.persisted?
-                 }
-    %>
-  </div>
-
-  <div class="col col-sm-3">
-    <%= f.select :to_area_id,
-                 areas,
-                 {
-                   hide_label: true,
-                   include_blank: (PricingRule.human_attribute_name(:to_area) if f.object.new_record?),
+                   include_blank: (PricingRule.human_attribute_name(:lane) if f.object.new_record?),
                    readonly: f.object.persisted?
                  }
     %>

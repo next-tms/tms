@@ -1,25 +1,24 @@
 class PricingRule < ApplicationRecord
   belongs_to :broker_carrier
-  belongs_to :from_area, class_name: 'Area'
-  belongs_to :to_area, class_name: 'Area'
+
+  belongs_to_transponder :lane, foreign_key: :lane_id
 
   monetize :cost_per_pallet_cents, allow_nil: false
 
   validate :validate_cost_per_pallet
-  validate :validate_pallets, if: -> { broker_carrier.present? && from_area.present? && to_area.present? }
+  validate :validate_lane_carrier, if: -> { broker_carrier.present? && will_save_change_to_lane_id? }
+  validate :validate_pallets, if: -> { broker_carrier.present? && lane_id.present? }
 
   validates :min_pallets, numericality: { greater_than: 0 }, presence: true, allow_nil: true
 
   def overlap?(other_record) = other_record != self && same_lane?(other_record) && pallets_range.overlap?(other_record.pallets_range)
-
   def pallets_range = (min_pallets || -1)..(max_pallets || Float::INFINITY)
-
-  def lane = [from_area, to_area]
-  def same_lane?(other_record) = lane.all?(&:present?) && other_record.lane == lane
+  def same_lane?(other_record) = lane_id.present? && other_record.lane_id == lane_id
 
   private
 
   def validate_cost_per_pallet = cost_per_pallet.positive? || errors.add(:cost_per_pallet, 'must be positive')
+  def validate_lane_carrier = lane.nil? || broker_carrier.carrier.transponder_lanes.to_a.include?(lane) || errors.add(:lane, :inclusion)
 
   def validate_pallets
     broker_carrier

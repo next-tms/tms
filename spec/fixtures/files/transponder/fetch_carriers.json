@@ -44,6 +44,45 @@
           "street2": null
         },
         "id": "26a6a0c0-2e95-4835-ad73-4a3c8bb38cdd",
+        "lanes": [
+          {
+            "destination": {
+              "country": {
+                "alpha2": "US"
+              },
+              "postalCodes": [],
+              "regionAbbreviation": "TX"
+            },
+            "id": "3f6d9a52-1c0e-4d8b-9a7e-5b2c4d6e8f01",
+            "origin": {
+              "country": {
+                "alpha2": "US"
+              },
+              "postalCodes": [],
+              "regionAbbreviation": "CA"
+            }
+          },
+          {
+            "destination": {
+              "country": {
+                "alpha2": "US"
+              },
+              "postalCodes": [
+                "850",
+                "851"
+              ],
+              "regionAbbreviation": "AZ"
+            },
+            "id": "7a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c02",
+            "origin": {
+              "country": {
+                "alpha2": "US"
+              },
+              "postalCodes": [],
+              "regionAbbreviation": null
+            }
+          }
+        ],
         "legalName": "Saia Motor Freight Line, LLC",
         "name": "Saia",
         "pickupNumberIsTrackingNumber": false,
@@ -69,6 +108,7 @@
             "phone": "+15125550100"
           }
         ],
+        "territories": [],
         "usDotNumber": "29124",
         "usMcNumber": "92726",
         "validTrackingNumberPattern": "\\A\\d{11}\\z",
@@ -85,6 +125,7 @@
         "findRatesWithDeclaredValue": true,
         "headquarters": null,
         "id": "8f0c3b52-6b1e-4b8e-9a51-3f2f0d7c1e44",
+        "lanes": [],
         "legalName": "Total Quality Logistics, LLC",
         "name": "TQL",
         "pickupNumberIsTrackingNumber": true,
@@ -95,6 +136,26 @@
         ],
         "scac": "TQYL",
         "terminals": [],
+        "territories": [
+          {
+            "country": {
+              "alpha2": "US"
+            },
+            "postalCodes": [],
+            "regionAbbreviation": "CA"
+          },
+          {
+            "country": {
+              "alpha2": "US"
+            },
+            "postalCodes": [
+              "889",
+              "890",
+              "891"
+            ],
+            "regionAbbreviation": "NV"
+          }
+        ],
         "usDotNumber": null,
         "usMcNumber": "320564",
         "validTrackingNumberPattern": null,

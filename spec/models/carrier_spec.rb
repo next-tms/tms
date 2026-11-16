@@ -150,9 +150,39 @@ RSpec.describe(Carrier) do
     it { expect(saia.transponder_contacts.map(&:department)).to(eq(['Dispatch'])) }
   end
 
+  describe '#transponder_lanes' do
+    it { expect(carrier.transponder_lanes).to(be_nil) }
+    it { expect(saia.transponder_lanes.map(&:name)).to(eq(['CA, US → TX, US', 'US → AZ, US (850, 851)'])) }
+  end
+
+  describe '#transponder_matching_lanes' do
+    let(:destination) { build(:address, region_iso31662: 'US-TX') }
+    let(:origin) { build(:address, region_iso31662: 'US-CA') }
+
+    before { stub_transponder_matching_lanes('3f6d9a52-1c0e-4d8b-9a7e-5b2c4d6e8f01') }
+
+    it { expect(carrier.transponder_matching_lanes(destination:, origin:)).to(be_nil) }
+    it { expect(saia.transponder_matching_lanes(destination:, origin:).map(&:id)).to(eq(['3f6d9a52-1c0e-4d8b-9a7e-5b2c4d6e8f01'])) }
+  end
+
+  describe '#transponder_serve?' do
+    let(:destination) { build(:address, region_iso31662: 'US-NV') }
+    let(:origin) { build(:address, region_iso31662: 'US-CA') }
+
+    before { stub_transponder_serve(true) }
+
+    it { expect(carrier.transponder_serve?(destination:, origin:)).to(be_nil) }
+    it { expect(tql.transponder_serve?(destination:, origin:)).to(be(true)) }
+  end
+
   describe '#transponder_terminals' do
     it { expect(carrier.transponder_terminals).to(be_nil) }
     it { expect(saia.transponder_terminals.map(&:phone)).to(eq(['+15125550100'])) }
+  end
+
+  describe '#transponder_territories' do
+    it { expect(carrier.transponder_territories).to(be_nil) }
+    it { expect(tql.transponder_territories.map(&:to_s)).to(eq(['CA, US', 'NV, US (889, 890, 891)'])) }
   end
 
   describe '#us_dot_number' do

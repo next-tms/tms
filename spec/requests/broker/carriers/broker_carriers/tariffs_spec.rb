@@ -16,16 +16,14 @@ RSpec.describe('Broker::Carriers::BrokerCarriers::Tariffs') do
   end
 
   describe 'PATCH /broker/carriers/:carrier_id/accounts/:broker_carrier_id/tariff' do
-    let(:from_area) { Area.create!(name: 'California, US') }
-    let(:pricing_rule_attributes) do
-      { cost_per_pallet: '100', from_area_id: from_area.id, max_pallets: '', min_pallets: '1', to_area_id: to_area.id }
-    end
-    let(:to_area) { Area.create!(name: 'Texas, US') }
+    let(:broker_carrier) { create(:broker_carrier, carrier: create(:carrier, :saia)) }
+    let(:lane_id) { '3f6d9a52-1c0e-4d8b-9a7e-5b2c4d6e8f01' }
+    let(:pricing_rule_attributes) { { cost_per_pallet: '100', lane_id:, max_pallets: '', min_pallets: '1' } }
 
     before { patch(path, params: { broker_carrier: { pricing_rules_attributes: [pricing_rule_attributes] } }) }
 
     it { is_expected.to(redirect_to(path)) }
-    it { expect(broker_carrier.pricing_rules.pluck(:from_area_id, :to_area_id)).to(eq([[from_area.id, to_area.id]])) }
+    it { expect(broker_carrier.pricing_rules.pluck(:lane_id)).to(eq([lane_id])) }
     it { expect(flash[:success]).to(eq('Tariff updated')) }
   end
 end

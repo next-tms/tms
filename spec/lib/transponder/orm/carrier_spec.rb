@@ -40,7 +40,11 @@ RSpec.describe(Transponder::ORM::Carrier) do
     it { expect(saia.check_mailing_addresses.map(&:city)).to(eq(['Dallas'])) }
     it { expect(saia.contacts.map(&:department)).to(eq(['Dispatch'])) }
     it { expect(saia.headquarters.city).to(eq('Johns Creek')) }
+    it { expect(saia.lanes.map(&:carrier)).to(eq([saia, saia])) }
     it { expect(saia.terminals.map(&:carrier)).to(eq([saia])) }
+    it { expect(saia.territories).to(eq([])) }
+    it { expect(tql.lanes).to(eq([])) }
+    it { expect(tql.territories.map(&:to_s)).to(eq(['CA, US', 'NV, US (889, 890, 891)'])) }
     it { expect(tql.headquarters).to(be_nil) }
     it { expect(tql.website_url).to(be_nil) }
   end
@@ -85,6 +89,34 @@ RSpec.describe(Transponder::ORM::Carrier) do
     it { expect(tql.find_rates_with_declared_value?).to(be(true)) }
   end
 
+  describe '#matching_lanes' do
+    subject(:matching_lanes) { saia.matching_lanes(destination:, origin:) }
+
+    let(:destination) { build(:address, region_iso31662: 'US-TX') }
+    let(:origin) { build(:address, region_iso31662: 'US-CA') }
+    let(:variables) do
+      { destination: destination.to_transponder_graphql_input, id: saia.id, origin: origin.to_transponder_graphql_input }
+    end
+
+    before { stub_transponder_matching_lanes('7a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c02', 'removed', '3f6d9a52-1c0e-4d8b-9a7e-5b2c4d6e8f01') }
+
+    it { expect(matching_lanes.map(&:id)).to(eq(['7a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c02', '3f6d9a52-1c0e-4d8b-9a7e-5b2c4d6e8f01'])) }
+
+    context 'when the lanes are fetched' do
+      let(:query) { GraphQLClient::Transponder::Query::FetchMatchingLanes::DETAILS }
+
+      before { matching_lanes }
+
+      it { expect(GraphQLClient::Transponder::Client).to(have_received(:query).with(query, variables:)) }
+    end
+
+    context 'when Transponder returns errors' do
+      before { stub_transponder_matching_lanes(errors: [{ 'message' => 'Boom' }]) }
+
+      it { expect { matching_lanes }.to(raise_error(GraphQL::Client::Error, 'Boom')) }
+    end
+  end
+
   describe '#name' do
     it { expect(saia.name).to(eq('Saia')) }
     it { expect(custom.name).to(eq('custom')) }
@@ -98,6 +130,40 @@ RSpec.describe(Transponder::ORM::Carrier) do
   describe '#rates_with_excessive_length_fees?' do
     it { expect(saia.rates_with_excessive_length_fees?).to(be(true)) }
     it { expect(tql.rates_with_excessive_length_fees?).to(be(false)) }
+  end
+
+  describe '#serve?' do
+    subject(:serve) { tql.serve?(destination:, origin:) }
+
+    let(:destination) { build(:address, region_iso31662: 'US-NV') }
+    let(:origin) { build(:address, region_iso31662: 'US-CA') }
+    let(:variables) do
+      { destination: destination.to_transponder_graphql_input, id: tql.id, origin: origin.to_transponder_graphql_input }
+    end
+
+    before { stub_transponder_serve(true) }
+
+    it { is_expected.to(be(true)) }
+
+    context 'when the carrier does not serve the points' do
+      before { stub_transponder_serve(false) }
+
+      it { is_expected.to(be(false)) }
+    end
+
+    context 'when the coverage is fetched' do
+      let(:query) { GraphQLClient::Transponder::Query::FetchServe::DETAILS }
+
+      before { serve }
+
+      it { expect(GraphQLClient::Transponder::Client).to(have_received(:query).with(query, variables:)) }
+    end
+
+    context 'when Transponder returns errors' do
+      before { stub_transponder_serve(nil, errors: [{ 'message' => 'Boom' }]) }
+
+      it { expect { serve }.to(raise_error(GraphQL::Client::Error, 'Boom')) }
+    end
   end
 
   describe '#valid_tracking_number?' do

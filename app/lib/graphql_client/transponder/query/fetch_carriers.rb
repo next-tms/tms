@@ -25,6 +25,15 @@ module GraphQLClient
               ...GraphQLClient::Transponder::Fragment::CarrierAddress::DETAILS
             }
             id
+            lanes {
+              destination {
+                ...GraphQLClient::Transponder::Fragment::Territory::DETAILS
+              }
+              id
+              origin {
+                ...GraphQLClient::Transponder::Fragment::Territory::DETAILS
+              }
+            }
             legalName
             name
             pickupNumberIsTrackingNumber
@@ -37,6 +46,9 @@ module GraphQLClient
               }
               id
               phone
+            }
+            territories {
+              ...GraphQLClient::Transponder::Fragment::Territory::DETAILS
             }
             usDotNumber
             usMcNumber

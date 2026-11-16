@@ -14,6 +14,23 @@ module TransponderCarriers
 
     Transponder::ORM::Carrier.reset
   end
+
+  def stub_transponder_matching_lanes(*lane_ids, errors: nil)
+    original_hash = { 'data' => { 'fetchCarriers' => [{ 'matchingLanes' => lane_ids.map { |lane_id| { 'id' => lane_id } } }] } }
+    original_hash = { 'errors' => errors } if errors.present?
+    response = instance_double(GraphQL::Client::Response, original_hash:)
+
+    allow(GraphQLClient::Transponder::Client)
+      .to(receive(:query).with(GraphQLClient::Transponder::Query::FetchMatchingLanes::DETAILS, variables: anything).and_return(response))
+  end
+
+  def stub_transponder_serve(serve, errors: nil)
+    original_hash = errors.present? ? { 'errors' => errors } : { 'data' => { 'fetchCarriers' => [{ 'serve' => serve }] } }
+    response = instance_double(GraphQL::Client::Response, original_hash:)
+
+    allow(GraphQLClient::Transponder::Client)
+      .to(receive(:query).with(GraphQLClient::Transponder::Query::FetchServe::DETAILS, variables: anything).and_return(response))
+  end
 end
 
 module TransponderCountries

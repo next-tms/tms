@@ -33,10 +33,12 @@ module Transponder
                   :contacts,
                   :headquarters,
                   :id,
+                  :lanes,
                   :legal_name,
                   :required_credential_types,
                   :scac,
                   :terminals,
+                  :territories,
                   :us_dot_number,
                   :us_mc_number,
                   :valid_tracking_number_pattern,
@@ -53,6 +55,7 @@ module Transponder
         find_rates_implemented: false,
         find_rates_with_declared_value: false,
         headquarters: nil,
+        lanes: [],
         legal_name: nil,
         name: nil,
         pickup_number_is_tracking_number: false,
@@ -60,6 +63,7 @@ module Transponder
         required_credential_types: [],
         scac: nil,
         terminals: [],
+        territories: [],
         us_dot_number: nil,
         us_mc_number: nil,
         valid_tracking_number_pattern: nil,
@@ -77,6 +81,7 @@ module Transponder
         @find_rates_with_declared_value = find_rates_with_declared_value
         @headquarters = CarrierAddress.new(**headquarters) if headquarters.present?
         @id = id
+        @lanes = lanes.map { |lane| Lane.new(**lane, carrier: self) }
         @legal_name = legal_name
         @name = name
         @pickup_number_is_tracking_number = pickup_number_is_tracking_number
@@ -84,6 +89,7 @@ module Transponder
         @required_credential_types = required_credential_types.map(&:to_sym)
         @scac = scac
         @terminals = terminals.map { |terminal| Terminal.new(**terminal, carrier: self) }
+        @territories = territories.map { |territory| Territory.new(**territory) }
         @us_dot_number = us_dot_number
         @us_mc_number = us_mc_number
         @valid_tracking_number_pattern = Regexp.new(valid_tracking_number_pattern) if valid_tracking_number_pattern.present?
@@ -98,10 +104,34 @@ module Transponder
       def create_pickup_implemented? = @create_pickup_implemented
       def find_rates_implemented? = @find_rates_implemented
       def find_rates_with_declared_value? = @find_rates_with_declared_value
+
+      def matching_lanes(destination:, origin:)
+        lane_ids = fetch_coverage(GraphQLClient::Transponder::Query::FetchMatchingLanes::DETAILS, destination:, origin:)['matchingLanes']
+        lanes.index_by(&:id).values_at(*lane_ids.to_a.pluck('id')).compact
+      end
+
       def name = @name || id
       def pickup_number_is_tracking_number? = @pickup_number_is_tracking_number
       def rates_with_excessive_length_fees? = @rates_with_excessive_length_fees
+
+      def serve?(destination:, origin:)
+        fetch_coverage(GraphQLClient::Transponder::Query::FetchServe::DETAILS, destination:, origin:)['serve'] == true
+      end
+
       def valid_tracking_number?(number) = valid_tracking_number_pattern.blank? || valid_tracking_number_pattern.match?(number.to_s)
+
+      private
+
+      def fetch_coverage(query, destination:, origin:)
+        response = GraphQLClient::Transponder::Client.query(
+          query,
+          variables: { destination: destination.to_transponder_graphql_input, id:, origin: origin.to_transponder_graphql_input }
+        )
+        errors = response.original_hash['errors']
+        raise GraphQL::Client::Error, errors.pluck('message').join(', ') if errors.present?
+
+        response.original_hash.dig('data', 'fetchCarriers', 0).to_h
+      end
     end
   end
 end

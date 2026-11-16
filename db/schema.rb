@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_15_233004) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_002705) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -103,13 +103,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_233004) do
     t.index ["rolled_from_id"], name: "index_api_keys_on_rolled_from_id"
     t.index ["token_digest"], name: "index_api_keys_on_token_digest", unique: true
     t.index ["user_id"], name: "index_api_keys_on_user_id"
-  end
-
-  create_table "areas", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "name"
-    t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_areas_on_name"
   end
 
   create_table "audits", force: :cascade do |t|
@@ -437,24 +430,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_233004) do
     t.index ["shipment_id"], name: "index_items_on_shipment_id"
   end
 
-  create_table "location_areas", force: :cascade do |t|
-    t.bigint "area_id", null: false
-    t.datetime "created_at", null: false
-    t.bigint "location_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["area_id"], name: "index_location_areas_on_area_id"
-    t.index ["location_id"], name: "index_location_areas_on_location_id"
-  end
-
-  create_table "locations", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "region_iso31662", null: false
-    t.datetime "updated_at", null: false
-    t.string "zip_code"
-    t.index ["region_iso31662"], name: "index_locations_on_region_iso31662"
-    t.index ["zip_code"], name: "index_locations_on_zip_code"
-  end
-
   create_table "noticed_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "notifications_count"
@@ -595,16 +570,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_233004) do
     t.integer "cost_per_pallet_cents", default: 0, null: false
     t.string "cost_per_pallet_currency", default: "USD", null: false
     t.datetime "created_at", null: false
-    t.bigint "from_area_id", null: false
     t.integer "max_pallets"
     t.integer "min_pallets"
-    t.bigint "to_area_id", null: false
     t.datetime "updated_at", null: false
+    t.string "lane_id", null: false
     t.index ["broker_carrier_id"], name: "index_pricing_rules_on_broker_carrier_id"
-    t.index ["from_area_id"], name: "index_pricing_rules_on_from_area_id"
+    t.index ["lane_id"], name: "index_pricing_rules_on_lane_id"
     t.index ["max_pallets"], name: "index_pricing_rules_on_max_pallets"
     t.index ["min_pallets"], name: "index_pricing_rules_on_min_pallets"
-    t.index ["to_area_id"], name: "index_pricing_rules_on_to_area_id"
   end
 
   create_table "problems", force: :cascade do |t|
@@ -1015,8 +988,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_233004) do
   add_foreign_key "document_preferences", "contacts"
   add_foreign_key "integration_mappings", "integrations"
   add_foreign_key "items", "shipments"
-  add_foreign_key "location_areas", "areas"
-  add_foreign_key "location_areas", "locations"
   add_foreign_key "overlength_rules", "broker_carriers"
   add_foreign_key "payment_transactions", "broker_carriers"
   add_foreign_key "payment_transactions", "payments"
@@ -1034,8 +1005,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_233004) do
   add_foreign_key "pickups", "users", column: "updated_by_id"
   add_foreign_key "preferred_broker_carriers", "broker_carriers"
   add_foreign_key "preferred_broker_carriers", "broker_customers"
-  add_foreign_key "pricing_rules", "areas", column: "from_area_id"
-  add_foreign_key "pricing_rules", "areas", column: "to_area_id"
   add_foreign_key "pricing_rules", "broker_carriers"
   add_foreign_key "problems", "users", column: "assigned_to_id"
   add_foreign_key "problems", "users", column: "resolved_by_id"

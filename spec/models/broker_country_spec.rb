@@ -13,22 +13,6 @@ RSpec.describe(BrokerCountry) do
     it { expect(described_class.countries.pluck(:alpha2)).to(contain_exactly('CA', 'US')) }
   end
 
-  describe '#create_region_areas' do
-    it { expect { described_class.create!(country_alpha2: 'CA') }.to(change(Area, :count).by(2)) }
-
-    it do
-      expect { described_class.create!(country_alpha2: 'CA') }.to(change do
-        Area.pluck(:name).sort
-      end.to(['British Columbia, CA', 'Ontario, CA']))
-    end
-
-    context 'when the region areas exist' do
-      before { Area.find_or_create_by_region!(Transponder::ORM::Region.find('CA-ON')) }
-
-      it { expect { described_class.create!(country_alpha2: 'CA') }.to(change(Area, :count).by(1)) }
-    end
-  end
-
   describe '#country' do
     it { expect(broker_country.country).to(equal(Transponder::ORM::Country.find('CA'))) }
   end
