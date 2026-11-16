@@ -1,10 +1,32 @@
 zh-TW:
+  accounting_connections:
+    callback:
+      success: 已連線
+  accounting_mailer:
+    unknown_customers:
+      subject: 會計客戶同步失敗
+  activemodel:
+    errors:
+      models:
+        broker_ware/quote:
+          attributes:
+            accessorials:
+              unserviceable: "不提供：%{codes}"
+            consignee_zip:
+              unknown: "不是已知的郵遞區號"
+            shipper_zip:
+              unknown: "不是已知的郵遞區號"
+        broker_ware/shipment_payload:
+          attributes:
+            shipment_status:
+              unsupported: "只能是 Booked、Quoted 或 Canceled。其他所有狀態皆由您的貨運承攬商更新。"
   activerecord:
     attributes:
       address:
         country_alpha2: 國家
+        ref: 參考編號
       api_key:
-        client_id: 用戶端 ID
+        client_id: "用戶端 ID"
         created_at: 建立時間
         expires_at: 到期時間
         last_used_at: 上次使用
@@ -12,7 +34,64 @@ zh-TW:
         status: 狀態
         token: 金鑰
         token_suffix: 金鑰
-        ttl: 有效期
+        ttl: 有效期限
+      broker_carrier:
+        encrypted_ach_account_number: ACH 帳號
+        encrypted_ach_bank_name: ACH 銀行名稱
+        encrypted_ach_routing_number: ACH 銀行代碼
+        encrypted_api_key: API 金鑰
+        password: 密碼
+        username: 使用者名稱
+        website_password: 密碼
+        website_username: 使用者名稱
+      broker_customer:
+        can_quote: 客戶可以詢價並預訂貨運
+        requires_charges_confirmed_on_receivables: 確認貨運費用前禁止建立應收帳款？
+        requires_customer_reference_number_on_receivables: 貨運有客戶參考編號前禁止建立應收帳款？
+        requires_shipment_delivery_before_receivable: 貨運送達前禁止建立應收帳款？
+        requires_shipment_shipper_reference_on_receivables: 貨運有託運人參考編號前禁止建立應收帳款？
+      broker_customer_sales_rep:
+        commission_flat: 固定佣金
+        commission_percent: 按比例佣金
+      contacts:
+        broker_carrier: 承運商
+        broker_customer: 客戶
+        label: 部門
+      contact:
+        company_sgid: 公司
+      item:
+        declared_freight_class: 貨運等級
+        desc: 說明
+        h: 高
+        l: 長
+        w: 寬
+      pickup_request:
+        accepted_pickup_at: 接受時間
+        accepted_pickup_on: 已接受的取貨日期
+        canceled_at: 取消時間
+        pickup_on: 取貨日期
+        reschedule_reason: 改期原因
+      region:
+        iso_3166_2: ISO 3166-2
+      shipment:
+        bol: 提單號碼
+        broker_bol: 提單
+        broker_carrier: 承運商
+        broker_dispatch_sheet: 派車單
+        broker_quote: 報價
+        carrier_bol: 提單掃描檔
+        carrier_pod: 簽收證明
+        customer_reference: 採購單號碼
+        pickup_confirmation: 取貨確認號碼
+        pro: PRO 號碼
+        quote_id: 報價號碼
+        shipper_reference: 銷售訂單號碼
+        total_charges: 費用
+        total_charges_cents: 費用
+        total_cost: 承運商成本
+        total_cost_cents: 承運商成本
+      user:
+        company_sgid: 公司
     help:
       api_key:
         name: 金鑰的使用位置，例如「倉庫 WMS」
@@ -21,22 +100,92 @@ zh-TW:
       api_key:
         one: API 金鑰
         other: API 金鑰
+      broker_carrier:
+        one: 承運商
+        other: 承運商
+      broker_customer:
+        one: 客戶
+        other: 客戶
+      broker_customer_sales_rep:
+        one: 業務代表
+        other: 業務代表
+      carrier:
+        one: 承運商
+        other: 承運商
+      overlength_rule:
+        one: 超長規則
+        other: 超長規則
+      pricing_rule:
+        one: 棧板定價規則
+        other: 棧板定價規則
+      receivable:
+        one: 應收帳款
+        other: 應收帳款
+      shipment:
+        one: 貨運
+        other: 貨運
+    enums:
+      pickup_request:
+        reschedule_reasons:
+          capacity: 承運商運能不足
+          closed: 託運人已關門
+          missed: 已派司機但未取貨
+          shipper: 託運人或第三方物流要求
+          special_equipment: 需要特殊設備
+          too_busy: 託運人太忙
+          weather: 天候
+      rate:
+        sources:
+          api: API
+          pricing_rule: 運價表
+      shipment:
+        statuses:
+          booked: 已預訂
+          booked_quoted: 已預訂，已報價
+          canceled: 已取消
+          delivered: 已送達
+          delivery_scheduled: 已安排送貨
+          dispatched: 已派車
+          in_transit: 運送中
+          new_shipment: 新建
+          out_for_delivery: 配送中
+          pending_delivery_appointment: 待預約送貨
+          pickup_scheduled: 已安排取貨
+          quoted: 已報價
+    errors:
+      models:
+        broker_carrier:
+          attributes:
+            encrypted_ach_routing_number:
+              invalid: 必須是九位數字
+        item:
+          attributes:
+            nmfc:
+              invalid: 格式不正確
+  api_key_mailer:
+    expiring:
+      body: 您的 API 金鑰「%{name}」將於 %{expires_at} 到期。之後使用它的請求將會失敗。請輪替金鑰以取得新金鑰。
+      greeting: "%{first_name}，您好："
+      roll: 輪替 API 金鑰
+      subject: API 金鑰「%{name}」將於 %{expires_at} 到期
   api_keys:
     destroy:
       destroyed: 已刪除%{model_name}「%{name}」
+    errors:
+      expired: API 金鑰「%{name}」已於 %{at} 到期。請輪替它或建立新的 API 金鑰。
+      invalid: API 金鑰無效。
+      missing: 缺少 API 金鑰。請在 X-API-Key 標頭中或以 Authorization Bearer 方式傳送。
     header:
       new: 新增
     index:
-      broker_ware_html: >-
-        相容 3PL Systems BrokerWare 的 API，位於 %{path}。以用戶端 ID 作為 <code>client_id</code>、金鑰作為
-        <code>client_secret</code>，向 %{token_path} 取得存取權杖。
-      dsdc_html: 符合 NMFTA DSDC 標準的 API，位於 %{path}
-      freightview_html: 相容 Freightview 的 API，位於 %{path}
-      graphql_html: GraphQL API，位於 %{path}。使用 %{graphiql} 進行探索。
+      broker_ware_html: "位於 %{path} 的相容 3PL Systems BrokerWare 的 API。請以用戶端 ID 作為 <code>client_id</code>、金鑰作為 <code>client_secret</code>，從 %{token_path} 取得存取權杖。"
+      dsdc_html: 位於 %{path} 的符合 NMFTA DSDC 標準的 API
+      freightview_html: "位於 %{path} 的相容 Freightview 的 API"
+      graphql_html: 位於 %{path} 的 GraphQL API。使用 %{graphiql} 進行探索。
       intro_html: >-
-        %{model_name_plural}用於驗證對這些 API 的請求。在 <code>X-API-Key</code> 標頭中或以
+        %{model_name_plural}用於驗證對這些 API 的請求。請在 <code>X-API-Key</code> 標頭中或以
         <code>Authorization: Bearer</code> 方式傳送金鑰。金鑰最長在 %{max_ttl} 後到期。
-      never: 從未使用
+      never: 從不
       titles:
         active: 有效
         expired: 已到期
@@ -46,7 +195,7 @@ zh-TW:
       destroy_confirm: 刪除「%{name}」？使用它的請求將會失敗。
       overview: 概覽
       roll: 輪替
-      roll_confirm: 這會以一個在 %{ttl} 後到期的新%{model_name}取代目前的%{model_name}。目前的金鑰將在 %{grace_period} 後停止運作。確定嗎？
+      roll_confirm: 這將以一個在 %{ttl} 後到期的新%{model_name}取代目前的金鑰。目前的金鑰將在 %{grace_period} 後失效。確定嗎？
     menu:
       active: 有效
       all: 全部
@@ -56,6 +205,202 @@ zh-TW:
       submit: 儲存
       title: 新增%{model_name}
     show:
-      copy: 點擊金鑰即可複製。
-      never: 從未使用
+      copy: 點按金鑰即可複製。
+      never: 從不
       overview: 概覽
+  bootstrap_form:
+    labels:
+      shipment:
+        bol: 提單號碼
+        customer_reference: 採購單號碼
+        pickup_confirmation: 取貨號碼
+        pro: PRO 號碼
+        quote_id: 報價號碼
+        shipper_reference: 銷售訂單號碼
+  broker:
+    banks:
+      update:
+        failure: 無法更新銀行
+      update_accounting:
+        failure: 無法更新會計科目
+        success: 會計科目已更新
+    broker_countries:
+      create:
+        failure: 無法新增國家
+    broker_customers:
+      update_accounting:
+        failure: 無法更新會計客戶
+        success: 會計客戶已更新
+    carriers:
+      accountings:
+        update:
+          failure: 無法更新會計供應商
+          success: 會計供應商已更新
+      api_keys:
+        destroy:
+          destroyed: 已刪除%{model_name}「%{name}」
+        index:
+          intro_html: >-
+            %{model_name_plural}讓此承運商的使用者透過 NMFTA DSDC 發票與文件 API 將發票傳送到 <code>/api/dsdc/v1/invoices</code>，並將佐證文件傳送到
+            <code>/api/dsdc/v1/documents</code>。每張發票都會成為一筆應付帳款。每個金鑰都屬於一位承運商使用者，該使用者也可以自行建立金鑰。
+            請將金鑰傳送給承運商。承運商在 <code>X-API-Key</code> 標頭中或以 <code>Authorization: Bearer</code> 方式傳送金鑰。
+            輪替或刪除金鑰即可停用它。
+          never: 從不
+          new: 新增
+        new:
+          error: 無法儲存%{model_name}：
+          submit: 儲存
+          title: 新增%{model_name}
+        show:
+          copy: 點按金鑰即可複製。
+          destroy: 刪除
+          destroy_confirm: 刪除「%{name}」？使用它的請求將會失敗。
+          never: 從不
+          roll: 輪替
+          roll_confirm: 這將以新的%{model_name}取代目前的金鑰。目前的金鑰將在 %{grace_period} 後失效。確定嗎？
+      broker_carriers:
+        tariffs:
+          update:
+            success: 運價表已更新
+        update:
+          failure: 無法更新承運商
+    claims:
+      new:
+        missing_shipment: 沒有貨運就無法提出索賠
+      update:
+        failure: 無法更新索賠
+    contacts:
+      update:
+        failure: 無法更新聯絡人
+    delays:
+      update:
+        failure: 無法更新延誤
+    payment_transactions:
+      update:
+        failure: 無法更新發票
+    payments:
+      update:
+        failure: 無法更新付款
+    problems:
+      update:
+        failure: 無法更新異常
+    shipments:
+      destroy:
+        failure: 刪除貨運時發生錯誤
+        success: 貨運已刪除
+    users:
+      update:
+        success: 使用者已成功更新
+  broker_ware:
+    document_deliveries:
+      create:
+        invalid_emails: "請在 emails 中傳送 1 到 %{max} 個有效的電子郵件地址。"
+        unknown_documents: "請在 documentNames 中至少傳送一個文件名稱。可用的名稱為 %{names}。"
+    errors:
+      rate_limited: "請求過多。請等待 Retry-After 標頭中的秒數後再試一次。"
+      unauthorized: "存取權杖缺少、無效或已到期。請從 /connect/token 取得新的權杖。"
+    shipments:
+      index:
+        unknown_status: "狀態「%{status}」不明。"
+      lane_changed: "託運人或收貨人的郵遞區號與已報價的貨運不同。請重新為貨運報價。"
+      picked_up: "此貨運已取貨，因此無法變更或取消。"
+      unbookable_rate: "運價報價「%{rate_quote_id}」無法預訂。它不明、已到期或已被預訂。"
+  discussion_topics:
+    tracking_event:
+      arrived_at_terminal: "%{model_name}已抵達 %{city}, %{region_abbreviation} %{country_alpha2} 附近"
+      delivered: "%{model_name}已送達"
+      delivery_appointment_scheduled: "%{model_name}已預約送貨"
+      departed: "%{model_name}已離開 %{city}, %{region_abbreviation} %{country_alpha2}"
+      found: "%{model_name}已在 %{city}, %{region_abbreviation} %{country_alpha2} 附近找到"
+      located: "%{model_name}已定位到 %{city}, %{region_abbreviation} %{country_alpha2} 附近"
+      lost: "%{model_name}已遺失"
+      out_for_delivery: "%{model_name}正在 %{city}, %{region_abbreviation} %{country_alpha2} 附近配送"
+      pending_delivery_appointment: "%{model_name}待預約送貨"
+      picked_up: "%{model_name}已取貨"
+      pickup_driver_assigned: "%{model_name}已指派司機"
+      pickup_information_received_by_carrier: "承運商已收到%{model_name}的取貨資訊"
+      pickup_information_sent_to_carrier: "%{model_name}的取貨資訊已傳送給承運商"
+      sailed: "%{model_name}已從 %{city}, %{region_abbreviation} %{country_alpha2} 搭船離開"
+      trailer_closed: "%{model_name}位於 %{city}, %{region_abbreviation} %{country_alpha2} 的封閉拖車中"
+      trailer_unloaded: "%{model_name}已在 %{city}, %{region_abbreviation} %{country_alpha2} 卸貨"
+  dsdc:
+    bols:
+      broker_bol_failed: 無法建立提單 PDF。請稍後從貨運中下載。
+      broker_label_failed: 無法建立運送標籤 PDF。請稍後從貨運中下載。
+      create:
+        unknown_customer: billTo.account "%{account}" 與您可預訂的任何客戶都不相符。
+      destroy:
+        picked_up: 此貨運已取貨，因此無法取消其提單。
+      messages:
+        create: 提單已建立。
+        destroy: 提單已取消。
+        test: 測試請求有效。未儲存任何內容。
+        update: 提單已更新。
+      unsupported_accessorial: 不支援附加服務代碼 %{code}，已略過。
+      update:
+        picked_up: 此貨運已取貨，因此無法變更其提單。
+    documents:
+      create:
+        message: 文件已上傳。
+    errors:
+      rate_limited: 請求過多。請等待一分鐘後再試一次。
+    invoices:
+      create:
+        message: 發票已建立。
+      update:
+        message: 發票已更新。
+    pickup_requests:
+      closes_before_ready: closeTime 必須晚於 readyTime。
+      messages:
+        create: 取貨請求已接受。
+        destroy: 取貨請求已取消。
+        test: 測試請求有效。未儲存任何內容。
+        update: 取貨請求已更新。
+      pro_numbers_missing: 請至少傳送一個含有 proNumber 的 shipmentDetails 項目。請先建立提單以取得 PRO 號碼。
+      shipments_missing: 沒有使用這些 PRO 號碼的有效貨運：%{pro_numbers}。
+      shipments_picked_up: 一個或多個貨運已取貨。
+      shipments_scheduled: 這些貨運已屬於另一個取貨請求：%{pro_numbers}。
+      show:
+        lookup_type: lookupType 必須是 %{lookup_types}。
+      statuses:
+        accepted: 取貨請求已接受。
+        cancelled: 取貨請求已取消。
+        departed: 司機已取走貨物。
+        en_route: 已為取貨指派司機。
+        rescheduled: 取貨已改到其他日期。
+  freightview:
+    errors:
+      missing: "缺少必填屬性。"
+      not_found: "找不到該資源。"
+      rate_limited: "請求過多。請等待一分鐘後再試一次。"
+      required: "此屬性為必填。"
+    ltl_shipments:
+      create:
+        customer_required: "請使用屬於客戶使用者的 API 金鑰。"
+        unserviceable_accessorial: "您的帳戶不提供附加服務 %{code}。"
+        unsupported_accessorial: "不支援此附加服務。"
+        unsupported_accessorials: "一項或多項附加服務無法使用。"
+  graphql:
+    errors:
+      rate_limited: 請求過多。請等待 Retry-After 標頭中的秒數後再試一次。
+  locale_name: 繁體中文
+  settings:
+    automatically_authorize_receivables: 建立後自動核准應收帳款？
+    automatically_update_shipment_tracking_based_on_carrier_apis: 根據承運商 API 自動更新貨運追蹤資訊？
+    copyright_holder: 貴公司的法定名稱（用於版權聲明），例如 我的公司股份有限公司
+    customer_service_email: 向客戶顯示的客服電子郵件地址
+    domain: Next TMS 使用的網域，例如 tms.mycompany.com
+    ignore_broker_carrier_bol_requires_tracking_number: 當貨運缺少追蹤號碼而承運商要求提供時，仍允許建立提單？
+    mailing_address: 貴公司的郵寄地址，顯示在提單和報價等文件上
+    name: 貴公司的顯示名稱，例如 我的公司
+    phone: E.164 格式的客服電話號碼，例如 +1-555-555-5555
+    requires_charges_confirmed_on_receivables: 確認貨運費用前禁止建立應收帳款？
+    robot_email: 用於傳送通知郵件的電子郵件地址
+    scac: 貴公司的標準承運商字母代碼（SCAC），由 NMFTA DSDC API 傳回
+    time_zone_name: IANA 時區名稱
+    website_desc: 用於搜尋引擎結果的 <meta name="description"> HTML 標籤內容
+    website_homepage: 貴公司首頁網站的 URL，例如 https://mycompany.com/
+    website_logo_image_data: "貴公司 SVG 標誌的 URL（可以是 data: 編碼的 URL）"
+  test_mailer:
+    hello:
+      subject: 來自 Next TMS 的問候

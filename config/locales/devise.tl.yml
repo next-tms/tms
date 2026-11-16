@@ -1,0 +1,60 @@
+tl:
+  devise:
+    confirmations:
+      confirmed: "Matagumpay na nakumpirma ang iyong email address."
+      send_instructions: "Makakatanggap ka ng email na may mga tagubilin kung paano kumpirmahin ang iyong email address sa loob ng ilang minuto."
+      send_paranoid_instructions: "Kung nasa aming database ang iyong email address, makakatanggap ka ng email na may mga tagubilin kung paano ito kumpirmahin sa loob ng ilang minuto."
+    failure:
+      already_authenticated: "Naka-sign in ka na."
+      inactive: "Hindi pa aktibo ang iyong account."
+      invalid: "Hindi wasto ang %{authentication_keys} o password."
+      locked: "Naka-lock ang iyong account."
+      last_attempt: "May isa ka pang pagsubok bago ma-lock ang iyong account."
+      not_found_in_database: "Hindi wasto ang %{authentication_keys} o password."
+      timeout: "Nag-expire ang iyong session. Mag-sign in muli para magpatuloy."
+      unauthenticated: "Kailangan mong mag-sign in o mag-sign up bago magpatuloy."
+      unconfirmed: "Kailangan mong kumpirmahin ang iyong email address bago magpatuloy."
+    mailer:
+      confirmation_instructions:
+        subject: "Mga tagubilin sa pagkumpirma"
+      reset_password_instructions:
+        subject: "Mga tagubilin sa pag-reset ng password"
+      unlock_instructions:
+        subject: "Mga tagubilin sa pag-unlock"
+      password_change:
+        subject: "Napalitan ang Password"
+    omniauth_callbacks:
+      failure: "Hindi ka ma-authenticate mula sa %{kind} dahil \"%{reason}\"."
+      success: "Matagumpay na na-authenticate mula sa %{kind} account."
+    passwords:
+      no_token: "Hindi mo ma-access ang pahinang ito nang hindi galing sa email para sa pag-reset ng password. Kung galing ka nga roon, tiyaking ginamit mo ang buong URL."
+      send_instructions: "Makakatanggap ka ng email na may mga tagubilin kung paano i-reset ang iyong password sa loob ng ilang minuto."
+      send_paranoid_instructions: "Kung nasa aming database ang iyong email address, makakatanggap ka ng link para sa pag-recover ng password sa iyong email address sa loob ng ilang minuto."
+      updated: "Matagumpay na napalitan ang iyong password. Naka-sign in ka na ngayon."
+      updated_not_active: "Matagumpay na napalitan ang iyong password."
+    registrations:
+      destroyed: "Paalam! Matagumpay na nakansela ang iyong account. Sana ay makita ka naming muli."
+      signed_up: "Maligayang pagdating! Matagumpay kang nakapag-sign up."
+      signed_up_but_inactive: "Matagumpay kang nakapag-sign up. Gayunman, hindi ka namin ma-sign in dahil hindi pa aktibo ang iyong account."
+      signed_up_but_locked: "Matagumpay kang nakapag-sign up. Gayunman, hindi ka namin ma-sign in dahil naka-lock ang iyong account."
+      signed_up_but_unconfirmed: "Nagpadala kami ng mensahe na may link sa pagkumpirma sa iyong email address. Buksan ang link para i-activate ang iyong account."
+      update_needs_confirmation: "Matagumpay mong na-update ang iyong account, pero kailangan naming i-verify ang iyong bagong email address. Tingnan ang iyong email at buksan ang link sa pagkumpirma."
+      updated: "Matagumpay na na-update ang iyong account."
+    sessions:
+      signed_in: "Matagumpay na naka-sign in."
+      signed_out: "Matagumpay na naka-sign out."
+      already_signed_out: "Matagumpay na naka-sign out."
+    unlocks:
+      send_instructions: "Makakatanggap ka ng email na may mga tagubilin kung paano i-unlock ang iyong account sa loob ng ilang minuto."
+      send_paranoid_instructions: "Kung umiiral ang iyong account, makakatanggap ka ng email na may mga tagubilin kung paano ito i-unlock sa loob ng ilang minuto."
+      unlocked: "Matagumpay na na-unlock ang iyong account. Mag-sign in para magpatuloy."
+  errors:
+    messages:
+      already_confirmed: "ay nakumpirma na, subukang mag-sign in"
+      confirmation_period_expired: "ay kailangang kumpirmahin sa loob ng %{period}, humiling ng bago"
+      expired: "ay nag-expire na, humiling ng bago"
+      not_found: "ay hindi nahanap"
+      not_locked: "ay hindi naka-lock"
+      not_saved:
+        one: "Hindi na-save ang %{resource} na ito dahil sa 1 error:"
+        other: "Hindi na-save ang %{resource} na ito dahil sa %{count} error:"

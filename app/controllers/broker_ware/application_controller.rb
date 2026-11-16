@@ -2,6 +2,7 @@ class BrokerWare::ApplicationController < ActionController::API
   include AbstractController::Translation
   include ActionPolicy::Controller
   include ConditionalRequests
+  include Localization
 
   RATE_LIMIT_WINDOW = 1.minute
 
@@ -10,7 +11,8 @@ class BrokerWare::ApplicationController < ActionController::API
   authorize :authorizable, through: :current_user
 
   before_action :underscore_params
-  before_action :authenticate
+
+  prepend_before_action :authenticate
 
   delegate :user, to: :api_key, allow_nil: true, prefix: :current
 

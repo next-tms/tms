@@ -1,10 +1,32 @@
 tl:
+  accounting_connections:
+    callback:
+      success: Nakakonekta
+  accounting_mailer:
+    unknown_customers:
+      subject: Nabigo ang Pag-sync ng mga Kustomer sa Accounting
+  activemodel:
+    errors:
+      models:
+        broker_ware/quote:
+          attributes:
+            accessorials:
+              unserviceable: "ay hindi inaalok: %{codes}"
+            consignee_zip:
+              unknown: "ay hindi kilalang zip code"
+            shipper_zip:
+              unknown: "ay hindi kilalang zip code"
+        broker_ware/shipment_payload:
+          attributes:
+            shipment_status:
+              unsupported: "ay maaari lamang maging Booked, Quoted, o Canceled. Ang iyong broker ang nag-a-update ng lahat ng iba pang status."
   activerecord:
     attributes:
       address:
         country_alpha2: Bansa
+        ref: Reperensya
       api_key:
-        client_id: Client ID
+        client_id: "Client ID"
         created_at: Ginawa
         expires_at: Mag-e-expire
         last_used_at: Huling ginamit
@@ -13,28 +35,155 @@ tl:
         token: Key
         token_suffix: Key
         ttl: Mag-e-expire sa loob ng
+      broker_carrier:
+        encrypted_ach_account_number: "Blg. ng ACH Account"
+        encrypted_ach_bank_name: Pangalan ng ACH Bank
+        encrypted_ach_routing_number: "Blg. ng ACH Routing"
+        encrypted_api_key: API Key
+        password: Password
+        username: Username
+        website_password: Password
+        website_username: Username
+      broker_customer:
+        can_quote: Maaaring mag-quote at mag-book ng mga kargamento ang kustomer
+        requires_charges_confirmed_on_receivables: Pigilan ang paggawa ng receivable hangga't hindi nakukumpirma ang mga singil sa kargamento?
+        requires_customer_reference_number_on_receivables: Pigilan ang paggawa ng receivable hangga't wala pang reference number ng kustomer ang kargamento?
+        requires_shipment_delivery_before_receivable: Pigilan ang paggawa ng receivable hangga't hindi pa naihahatid ang kargamento?
+        requires_shipment_shipper_reference_on_receivables: Pigilan ang paggawa ng receivable hangga't wala pang reference number ng shipper ang kargamento?
+      broker_customer_sales_rep:
+        commission_flat: nakapirming komisyon
+        commission_percent: komisyong batay sa porsiyento
+      contacts:
+        broker_carrier: Carrier
+        broker_customer: Kustomer
+        label: Departamento
+      contact:
+        company_sgid: Kompanya
+      item:
+        declared_freight_class: Klase ng kargamento
+        desc: Paglalarawan
+        h: Taas
+        l: Haba
+        w: Lapad
+      pickup_request:
+        accepted_pickup_at: Tinanggap Noong
+        accepted_pickup_on: Tinanggap na Pickup Sa
+        canceled_at: Kinansela Noong
+        pickup_on: Pickup Sa
+        reschedule_reason: Dahilan ng Paglipat ng Iskedyul
+      region:
+        iso_3166_2: ISO 3166-2
+      shipment:
+        bol: "Blg. ng BOL"
+        broker_bol: Bill of Lading
+        broker_carrier: Carrier
+        broker_dispatch_sheet: Dispatch Sheet
+        broker_quote: Quote
+        carrier_bol: Na-scan na Bill of Lading
+        carrier_pod: Patunay ng Paghahatid
+        customer_reference: "Blg. ng PO"
+        pickup_confirmation: "Blg. ng PU"
+        pro: "Blg. ng PRO"
+        quote_id: "Blg. ng Quote"
+        shipper_reference: "Blg. ng SO"
+        total_charges: Singil
+        total_charges_cents: Singil
+        total_cost: Gastos sa Carrier
+        total_cost_cents: Gastos sa Carrier
+      user:
+        company_sgid: Kompanya
     help:
       api_key:
-        name: Kung saan ginagamit ang key, halimbawa “WMS ng bodega”
+        name: Kung saan ginagamit ang key, halimbawa “Warehouse WMS”
         ttl: I-roll ang key para palitan ito bago ito mag-expire
     models:
       api_key:
         one: API Key
         other: Mga API Key
+      broker_carrier:
+        one: Carrier
+        other: Mga Carrier
+      broker_customer:
+        one: Kustomer
+        other: Mga Kustomer
+      broker_customer_sales_rep:
+        one: Sales Rep
+        other: Mga Sales Rep
+      carrier:
+        one: Carrier
+        other: Mga Carrier
+      overlength_rule:
+        one: Panuntunan sa Sobrang Haba
+        other: Mga Panuntunan sa Sobrang Haba
+      pricing_rule:
+        one: Panuntunan sa Presyo ng Pallet
+        other: Mga Panuntunan sa Presyo ng Pallet
+      receivable:
+        one: Receivable
+        other: Mga Receivable
+      shipment:
+        one: Karga
+        other: Mga Karga
+    enums:
+      pickup_request:
+        reschedule_reasons:
+          capacity: Kapasidad ng carrier
+          closed: Sarado ang shipper
+          missed: Napadala ang driver pero hindi nakapag-pickup
+          shipper: Hiling ng shipper o 3PL
+          special_equipment: Kailangan ng espesyal na kagamitan
+          too_busy: Masyadong abala ang shipper
+          weather: Panahon
+      rate:
+        sources:
+          api: API
+          pricing_rule: Taripa
+      shipment:
+        statuses:
+          booked: Naka-book
+          booked_quoted: "Naka-book, Na-quote"
+          canceled: Kinansela
+          delivered: Naihatid
+          delivery_scheduled: Nakaiskedyul ang Paghahatid
+          dispatched: Naipadala
+          in_transit: Nasa Biyahe
+          new_shipment: Bago
+          out_for_delivery: Ihahatid Na
+          pending_delivery_appointment: Naghihintay ng Appointment sa Paghahatid
+          pickup_scheduled: Nakaiskedyul ang Pickup
+          quoted: Na-quote
+    errors:
+      models:
+        broker_carrier:
+          attributes:
+            encrypted_ach_routing_number:
+              invalid: dapat ay siyam na digit
+        item:
+          attributes:
+            nmfc:
+              invalid: ay wala sa tamang format
+  api_key_mailer:
+    expiring:
+      body: Mag-e-expire ang iyong API key na “%{name}” sa %{expires_at}. Mabibigo ang mga request na gumagamit nito pagkatapos noon. I-roll ang key para makakuha ng kapalit.
+      greeting: Kumusta %{first_name},
+      roll: I-roll ang API key
+      subject: Mag-e-expire ang API key na “%{name}” sa %{expires_at}
   api_keys:
     destroy:
       destroyed: Binura ang %{model_name} na “%{name}”
+    errors:
+      expired: Nag-expire ang API key na “%{name}” noong %{at}. I-roll ito o gumawa ng bagong API key.
+      invalid: Hindi wasto ang API key.
+      missing: Walang API key. Ipadala ito sa X-API-Key header o bilang Authorization Bearer.
     header:
       new: Bago
     index:
-      broker_ware_html: >-
-        Isang API na tugma sa 3PL Systems BrokerWare sa %{path}. Humingi ng access token mula sa %{token_path} gamit ang
-        Client ID bilang <code>client_id</code> at ang key bilang <code>client_secret</code>.
+      broker_ware_html: "Isang API na tugma sa 3PL Systems BrokerWare sa %{path}. Humiling ng access token mula sa %{token_path} gamit ang Client ID bilang <code>client_id</code> at ang key bilang <code>client_secret</code>."
       dsdc_html: Isang API na sumusunod sa NMFTA DSDC sa %{path}
       freightview_html: Isang API na tugma sa Freightview sa %{path}
       graphql_html: Isang GraphQL API sa %{path}. Gamitin ang %{graphiql} para galugarin ito.
       intro_html: >-
-        Ang %{model_name_plural} ay nagpapatunay ng mga request sa mga API na ito. Ipadala ang key sa <code>X-API-Key</code>
+        Ang mga %{model_name_plural} ang nagpapatunay sa mga request sa mga API na ito. Ipadala ang key sa <code>X-API-Key</code>
         header o bilang <code>Authorization: Bearer</code>. Nag-e-expire ang mga key pagkalipas ng hindi hihigit sa %{max_ttl}.
       never: Hindi kailanman
       titles:
@@ -44,11 +193,9 @@ tl:
     member_menu:
       destroy: Burahin
       destroy_confirm: Burahin ang “%{name}”? Mabibigo ang mga request na gumagamit nito.
-      overview: Pangkalahatang-ideya
+      overview: Pangkalahatang-tanaw
       roll: I-roll
-      roll_confirm: >-
-        Papalitan nito ang %{model_name} ng bago na mag-e-expire sa loob ng %{ttl}. Titigil sa paggana ang kasalukuyang key
-        sa loob ng %{grace_period}. Sigurado ka ba?
+      roll_confirm: Papalitan nito ang %{model_name} ng bago na mag-e-expire sa loob ng %{ttl}. Titigil sa paggana ang kasalukuyang key sa loob ng %{grace_period}. Sigurado ka ba?
     menu:
       active: Aktibo
       all: Lahat
@@ -60,4 +207,200 @@ tl:
     show:
       copy: I-click ang key para kopyahin ito.
       never: Hindi kailanman
-      overview: Pangkalahatang-ideya
+      overview: Pangkalahatang-tanaw
+  bootstrap_form:
+    labels:
+      shipment:
+        bol: "Blg. ng BOL"
+        customer_reference: "Blg. ng PO"
+        pickup_confirmation: "Blg. ng Pickup"
+        pro: "Blg. ng Pro"
+        quote_id: "Blg. ng Quote"
+        shipper_reference: "Blg. ng SO"
+  broker:
+    banks:
+      update:
+        failure: Hindi ma-update ang bangko
+      update_accounting:
+        failure: Hindi ma-update ang mga account sa accounting
+        success: Na-update ang mga account sa accounting
+    broker_countries:
+      create:
+        failure: Hindi maidagdag ang bansa
+    broker_customers:
+      update_accounting:
+        failure: Hindi ma-update ang mga kustomer sa accounting
+        success: Na-update ang mga kustomer sa accounting
+    carriers:
+      accountings:
+        update:
+          failure: Hindi ma-update ang mga vendor sa accounting
+          success: Na-update ang mga vendor sa accounting
+      api_keys:
+        destroy:
+          destroyed: Binura ang %{model_name} na “%{name}”
+        index:
+          intro_html: >-
+            Pinapayagan ng mga %{model_name_plural} ang mga user ng carrier na ito na magpadala ng mga invoice sa <code>/api/dsdc/v1/invoices</code> at mga kalakip na dokumento sa
+            <code>/api/dsdc/v1/documents</code> gamit ang NMFTA DSDC Invoice and Documents API. Nagiging bill ang bawat invoice. Pagmamay-ari ng isang carrier user
+            ang bawat key, at maaari rin silang gumawa ng sarili nila. Ipadala ang key sa carrier. Ipinapadala ito ng carrier sa
+            <code>X-API-Key</code> header o bilang <code>Authorization: Bearer</code>. I-roll o burahin ang key para patigilin ito.
+          never: Hindi kailanman
+          new: Bago
+        new:
+          error: "Hindi ma-save ang %{model_name}:"
+          submit: I-save
+          title: Bagong %{model_name}
+        show:
+          copy: I-click ang key para kopyahin ito.
+          destroy: Burahin
+          destroy_confirm: Burahin ang “%{name}”? Mabibigo ang mga request na gumagamit nito.
+          never: Hindi kailanman
+          roll: I-roll
+          roll_confirm: Papalitan nito ang %{model_name} ng bago. Titigil sa paggana ang kasalukuyang key sa loob ng %{grace_period}. Sigurado ka ba?
+      broker_carriers:
+        tariffs:
+          update:
+            success: Na-update ang taripa
+        update:
+          failure: Hindi ma-update ang carrier
+    claims:
+      new:
+        missing_shipment: Hindi makapagbukas ng claim nang walang kargamento
+      update:
+        failure: Hindi ma-update ang claim
+    contacts:
+      update:
+        failure: Hindi ma-update ang contact
+    delays:
+      update:
+        failure: Hindi ma-update ang pagkaantala
+    payment_transactions:
+      update:
+        failure: Hindi ma-update ang invoice
+    payments:
+      update:
+        failure: Hindi ma-update ang bayad
+    problems:
+      update:
+        failure: Hindi ma-update ang exception
+    shipments:
+      destroy:
+        failure: Nagka-error sa pagbura ng kargamento
+        success: Nabura ang kargamento
+    users:
+      update:
+        success: Matagumpay na Na-update ang User
+  broker_ware:
+    document_deliveries:
+      create:
+        invalid_emails: "Magpadala ng 1 hanggang %{max} na wastong email address sa emails."
+        unknown_documents: "Magpadala ng kahit isang pangalan ng dokumento sa documentNames. Ang mga available na pangalan ay %{names}."
+    errors:
+      rate_limited: "Masyadong maraming request. Maghintay ng bilang ng segundo sa Retry-After header, pagkatapos ay subukang muli."
+      unauthorized: "Wala, hindi wasto, o expired na ang access token. Humiling ng bago mula sa /connect/token."
+    shipments:
+      index:
+        unknown_status: "Hindi kilala ang status na “%{status}”."
+      lane_changed: "Iba ang zip code ng shipper o consignee sa kargamentong na-rate. I-rate muli ang kargamento."
+      picked_up: "Na-pickup na ang kargamento, kaya hindi na ito mababago o makakansela."
+      unbookable_rate: "Hindi ma-book ang rate quote na “%{rate_quote_id}”. Hindi ito kilala, expired na, o naka-book na."
+  discussion_topics:
+    tracking_event:
+      arrived_at_terminal: "Dumating ang %{model_name} malapit sa %{city}, %{region_abbreviation} %{country_alpha2}"
+      delivered: "Naihatid ang %{model_name}"
+      delivery_appointment_scheduled: "Nakaiskedyul ang appointment sa paghahatid ng %{model_name}"
+      departed: "Umalis ang %{model_name} sa %{city}, %{region_abbreviation} %{country_alpha2}"
+      found: "Natagpuan ang %{model_name} malapit sa %{city}, %{region_abbreviation} %{country_alpha2}"
+      located: "Natukoy ang lokasyon ng %{model_name} malapit sa %{city}, %{region_abbreviation} %{country_alpha2}"
+      lost: "Nawala ang %{model_name}"
+      out_for_delivery: "Ihahatid na ang %{model_name} malapit sa %{city}, %{region_abbreviation} %{country_alpha2}"
+      pending_delivery_appointment: "Naghihintay ng appointment sa paghahatid ang %{model_name}"
+      picked_up: "Na-pickup ang %{model_name}"
+      pickup_driver_assigned: "Naitalaga sa driver ang %{model_name}"
+      pickup_information_received_by_carrier: "Natanggap ng carrier ang impormasyon sa pickup ng %{model_name}"
+      pickup_information_sent_to_carrier: "Naipadala sa carrier ang impormasyon sa pickup ng %{model_name}"
+      sailed: "Umalis ang %{model_name} sa %{city}, %{region_abbreviation} %{country_alpha2} sakay ng barko"
+      trailer_closed: "Nasa saradong trailer ang %{model_name} sa %{city}, %{region_abbreviation} %{country_alpha2}"
+      trailer_unloaded: "Naibaba ang %{model_name} sa %{city}, %{region_abbreviation} %{country_alpha2}"
+  dsdc:
+    bols:
+      broker_bol_failed: Hindi magawa ang PDF ng bill of lading. I-download ito mamaya mula sa kargamento.
+      broker_label_failed: Hindi magawa ang PDF ng shipping label. I-download ito mamaya mula sa kargamento.
+      create:
+        unknown_customer: Hindi tugma ang billTo.account "%{account}" sa alinmang kustomer na maaari mong i-book.
+      destroy:
+        picked_up: Na-pickup na ang kargamento, kaya hindi na makakansela ang bill of lading nito.
+      messages:
+        create: Nagawa ang bill of lading.
+        destroy: Kinansela ang bill of lading.
+        test: Wasto ang test request. Walang na-save.
+        update: Na-update ang bill of lading.
+      unsupported_accessorial: Hindi suportado ang accessorial code na %{code} at hindi ito pinansin.
+      update:
+        picked_up: Na-pickup na ang kargamento, kaya hindi na mababago ang bill of lading nito.
+    documents:
+      create:
+        message: Na-upload ang mga dokumento.
+    errors:
+      rate_limited: Masyadong maraming request. Maghintay ng isang minuto, pagkatapos ay subukang muli.
+    invoices:
+      create:
+        message: Nagawa ang invoice.
+      update:
+        message: Na-update ang invoice.
+    pickup_requests:
+      closes_before_ready: Dapat ay pagkatapos ng readyTime ang closeTime.
+      messages:
+        create: Tinanggap ang pickup request.
+        destroy: Kinansela ang pickup request.
+        test: Wasto ang test request. Walang na-save.
+        update: Na-update ang pickup request.
+      pro_numbers_missing: Magpadala ng kahit isang shipmentDetails entry na may proNumber. Gawin muna ang bill of lading para makakuha ng PRO number.
+      shipments_missing: "Walang aktibong kargamento na may ganitong mga PRO number: %{pro_numbers}."
+      shipments_picked_up: Na-pickup na ang isa o higit pang kargamento.
+      shipments_scheduled: "Kabilang na sa ibang pickup request ang mga kargamentong ito: %{pro_numbers}."
+      show:
+        lookup_type: Dapat ay %{lookup_types} ang lookupType.
+      statuses:
+        accepted: Tinanggap ang pickup request.
+        cancelled: Kinansela ang pickup request.
+        departed: Na-pickup ng driver ang kargamento.
+        en_route: May driver nang nakatalaga sa pickup.
+        rescheduled: Inilipat ang pickup sa ibang araw.
+  freightview:
+    errors:
+      missing: "May kulang na kinakailangang property."
+      not_found: "Hindi nahanap ang resource."
+      rate_limited: "Masyadong maraming request. Maghintay ng isang minuto, pagkatapos ay subukang muli."
+      required: "Kinakailangan ang property na ito."
+    ltl_shipments:
+      create:
+        customer_required: "Gumamit ng API key na pagmamay-ari ng isang customer user."
+        unserviceable_accessorial: "Hindi inaalok sa iyong account ang accessorial na %{code}."
+        unsupported_accessorial: "Hindi suportado ang accessorial na ito."
+        unsupported_accessorials: "Hindi magagamit ang isa o higit pang accessorial."
+  graphql:
+    errors:
+      rate_limited: Masyadong maraming request. Maghintay ng bilang ng segundo sa Retry-After header, pagkatapos ay subukang muli.
+  locale_name: Tagalog
+  settings:
+    automatically_authorize_receivables: Awtomatikong i-authorize ang receivable pagkatapos itong gawin?
+    automatically_update_shipment_tracking_based_on_carrier_apis: Awtomatikong i-update ang tracking ng kargamento batay sa mga API ng carrier?
+    copyright_holder: Legal na pangalan ng iyong kompanya (ginagamit para sa copyright notice), hal. My Company, LLC
+    customer_service_email: Email address na ipinapakita sa mga kustomer para sa customer service
+    domain: Domain na ginagamit para sa Next TMS, hal. tms.mycompany.com
+    ignore_broker_carrier_bol_requires_tracking_number: Payagan ang paggawa ng bill of lading kapag walang tracking number ang kargamento at hinihingi ito ng carrier?
+    mailing_address: Mailing address ng iyong kompanya, ipinapakita sa mga dokumento gaya ng mga bill of lading at quote
+    name: Display name ng iyong kompanya, hal. My Company
+    phone: Numero ng telepono ng customer service sa format na E.164, hal. +1-555-555-5555
+    requires_charges_confirmed_on_receivables: Pigilan ang paggawa ng receivable hangga't hindi nakukumpirma ang mga singil sa kargamento?
+    robot_email: Email address na ginagamit para sa mga notification email
+    scac: Standard Carrier Alpha Code (SCAC) ng iyong kompanya, ibinabalik ng mga NMFTA DSDC API
+    time_zone_name: Pangalan ng IANA time zone
+    website_desc: Nilalaman para sa <meta name="description"> HTML tag na ginagamit sa mga resulta ng search engine
+    website_homepage: URL ng iyong pangunahing website, hal. https://mycompany.com/
+    website_logo_image_data: URL ng iyong SVG logo (maaaring data:-encoded URL)
+  test_mailer:
+    hello:
+      subject: Kumusta mula sa Next TMS

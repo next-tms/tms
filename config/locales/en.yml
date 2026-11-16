@@ -121,16 +121,16 @@ en:
         other: Customers
       broker_customer_sales_rep:
         one: Sales Rep
-        many: Sales Reps
+        other: Sales Reps
       carrier:
         one: Carrier
         other: Carriers
       overlength_rule:
         one: Overlength Rule
-        many: Overlength Rules
+        other: Overlength Rules
       pricing_rule:
         one: Pallet Pricing Rule
-        many: Pallet Pricing Rules
+        other: Pallet Pricing Rules
       receivable:
         one: Receivable
         other: Receivables
@@ -320,22 +320,22 @@ en:
       unbookable_rate: Rate quote “%{rate_quote_id}” cannot be booked. It is unknown, expired, or already booked.
   discussion_topics:
     tracking_event:
-      arrived_at_terminal: #{model_name} arrived near %{city}, %{region_abbreviation} %{country_alpha2}
-      delivered: #{model_name} was delivered
-      delivery_appointment_scheduled: #{model_name} delivery appointment scheduled
-      departed: #{model_name} left %{city}, %{region_abbreviation} %{country_alpha2}
-      found: #{model_name} was found near %{city}, %{region_abbreviation} %{country_alpha2}
-      located: #{model_name} was located near %{city}, %{region_abbreviation} %{country_alpha2}
-      lost: #{model_name} was lost
-      out_for_delivery: #{model_name} was out for delivery near %{city}, %{region_abbreviation} %{country_alpha2}
-      pending_delivery_appointment: #{model_name} was pending delivery appointment
-      picked_up: #{model_name} was picked up
-      pickup_driver_assigned: #{model_name} assigned to a driver
-      pickup_information_received_by_carrier: #{model_name} pickup information received by carrier
-      pickup_information_sent_to_carrier: #{model_name} pickup information sent to carrier
-      sailed: #{model_name} left %{city}, %{region_abbreviation} %{country_alpha2} by ship
-      trailer_closed: #{model_name} was in a closed trailer %{city}, %{region_abbreviation} %{country_alpha2}
-      trailer_unloaded: #{model_name} was in an unloaded in %{city}, %{region_abbreviation} %{country_alpha2}
+      arrived_at_terminal: "%{model_name} arrived near %{city}, %{region_abbreviation} %{country_alpha2}"
+      delivered: "%{model_name} was delivered"
+      delivery_appointment_scheduled: "%{model_name} delivery appointment scheduled"
+      departed: "%{model_name} left %{city}, %{region_abbreviation} %{country_alpha2}"
+      found: "%{model_name} was found near %{city}, %{region_abbreviation} %{country_alpha2}"
+      located: "%{model_name} was located near %{city}, %{region_abbreviation} %{country_alpha2}"
+      lost: "%{model_name} was lost"
+      out_for_delivery: "%{model_name} was out for delivery near %{city}, %{region_abbreviation} %{country_alpha2}"
+      pending_delivery_appointment: "%{model_name} was pending delivery appointment"
+      picked_up: "%{model_name} was picked up"
+      pickup_driver_assigned: "%{model_name} assigned to a driver"
+      pickup_information_received_by_carrier: "%{model_name} pickup information received by carrier"
+      pickup_information_sent_to_carrier: "%{model_name} pickup information sent to carrier"
+      sailed: "%{model_name} left %{city}, %{region_abbreviation} %{country_alpha2} by ship"
+      trailer_closed: "%{model_name} was in a closed trailer in %{city}, %{region_abbreviation} %{country_alpha2}"
+      trailer_unloaded: "%{model_name} was unloaded in %{city}, %{region_abbreviation} %{country_alpha2}"
   dsdc:
     bols:
       broker_bol_failed: The bill of lading PDF could not be created. Download it later from the shipment.
@@ -396,6 +396,7 @@ en:
   graphql:
     errors:
       rate_limited: Too many requests. Wait for the number of seconds in the Retry-After header, then try again.
+  locale_name: English (US)
   settings:
     automatically_authorize_receivables: Automatically authorize receivable after creation?
     automatically_update_shipment_tracking_based_on_carrier_apis: Automatically update shipment tracking information based on carrier API's?

@@ -69,6 +69,7 @@ class User < ApplicationRecord
   scope :dispatchers, -> { broker.with_role(:dispatch) }
 
   validate :validate_time_zone_name, if: -> { time_zone_name.present? && time_zone_name_changed? }
+  validates :locale, allow_nil: true, inclusion: { in: -> { I18n.available_locales.map(&:to_s) } }
   validates :time_zone_name, presence: true
 
   accepts_nested_attributes_for :contact, allow_destroy: true, reject_if: :all_blank

@@ -53,7 +53,7 @@ class TrackingEvent < ApplicationRecord
 
   def discussable_topic_description
     key = [:discussion_topics, self.class.name.underscore.to_sym, event.active_shipping_code.to_sym].join('.')
-    args = { city:, region_abbreviation: region.abbreviation, country_alpha2: country.alpha2 }
+    args = { city:, country_alpha2: country.alpha2, model_name: Shipment.model_name.human, region_abbreviation: region.abbreviation }
 
     I18n.t(key, **args)
   end

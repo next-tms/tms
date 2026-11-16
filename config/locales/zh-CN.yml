@@ -1,61 +1,406 @@
 zh-CN:
+  accounting_connections:
+    callback:
+      success: 已连接
+  accounting_mailer:
+    unknown_customers:
+      subject: 会计客户同步失败
+  activemodel:
+    errors:
+      models:
+        broker_ware/quote:
+          attributes:
+            accessorials:
+              unserviceable: "不提供：%{codes}"
+            consignee_zip:
+              unknown: "不是已知的邮政编码"
+            shipper_zip:
+              unknown: "不是已知的邮政编码"
+        broker_ware/shipment_payload:
+          attributes:
+            shipment_status:
+              unsupported: "只能是 Booked、Quoted 或 Canceled。其他所有状态均由您的货运代理更新。"
   activerecord:
     attributes:
       address:
         country_alpha2: 国家
+        ref: 参考号
       api_key:
-        client_id: 客户端 ID
+        client_id: "客户端 ID"
         created_at: 创建时间
-        expires_at: 过期时间
+        expires_at: 到期时间
         last_used_at: 上次使用
         name: 名称
         status: 状态
         token: 密钥
         token_suffix: 密钥
         ttl: 有效期
+      broker_carrier:
+        encrypted_ach_account_number: ACH 账号
+        encrypted_ach_bank_name: ACH 银行名称
+        encrypted_ach_routing_number: ACH 路由号
+        encrypted_api_key: API 密钥
+        password: 密码
+        username: 用户名
+        website_password: 密码
+        website_username: 用户名
+      broker_customer:
+        can_quote: 客户可以询价并预订货运
+        requires_charges_confirmed_on_receivables: 确认货运费用前禁止创建应收账款？
+        requires_customer_reference_number_on_receivables: 货运有客户参考号前禁止创建应收账款？
+        requires_shipment_delivery_before_receivable: 货运送达前禁止创建应收账款？
+        requires_shipment_shipper_reference_on_receivables: 货运有发货人参考号前禁止创建应收账款？
+      broker_customer_sales_rep:
+        commission_flat: 固定佣金
+        commission_percent: 按比例佣金
+      contacts:
+        broker_carrier: 承运商
+        broker_customer: 客户
+        label: 部门
+      contact:
+        company_sgid: 公司
+      item:
+        declared_freight_class: 货运等级
+        desc: 描述
+        h: 高
+        l: 长
+        w: 宽
+      pickup_request:
+        accepted_pickup_at: 接受时间
+        accepted_pickup_on: 已接受的提货日期
+        canceled_at: 取消时间
+        pickup_on: 提货日期
+        reschedule_reason: 改期原因
+      region:
+        iso_3166_2: ISO 3166-2
+      shipment:
+        bol: 提单号
+        broker_bol: 提单
+        broker_carrier: 承运商
+        broker_dispatch_sheet: 调度单
+        broker_quote: 报价
+        carrier_bol: 提单扫描件
+        carrier_pod: 签收证明
+        customer_reference: 采购订单号
+        pickup_confirmation: 提货确认号
+        pro: PRO 号
+        quote_id: 报价号
+        shipper_reference: 销售订单号
+        total_charges: 费用
+        total_charges_cents: 费用
+        total_cost: 承运商成本
+        total_cost_cents: 承运商成本
+      user:
+        company_sgid: 公司
     help:
       api_key:
         name: 密钥的使用位置，例如“仓库 WMS”
-        ttl: 在密钥过期前轮换以替换它
+        ttl: 在密钥到期前轮换以替换它
     models:
       api_key:
         one: API 密钥
         other: API 密钥
+      broker_carrier:
+        one: 承运商
+        other: 承运商
+      broker_customer:
+        one: 客户
+        other: 客户
+      broker_customer_sales_rep:
+        one: 销售代表
+        other: 销售代表
+      carrier:
+        one: 承运商
+        other: 承运商
+      overlength_rule:
+        one: 超长规则
+        other: 超长规则
+      pricing_rule:
+        one: 托盘定价规则
+        other: 托盘定价规则
+      receivable:
+        one: 应收账款
+        other: 应收账款
+      shipment:
+        one: 货运
+        other: 货运
+    enums:
+      pickup_request:
+        reschedule_reasons:
+          capacity: 承运商运力不足
+          closed: 发货人已关门
+          missed: 已派司机但未提货
+          shipper: 发货人或第三方物流要求
+          special_equipment: 需要特殊设备
+          too_busy: 发货人太忙
+          weather: 天气
+      rate:
+        sources:
+          api: API
+          pricing_rule: 运价表
+      shipment:
+        statuses:
+          booked: 已预订
+          booked_quoted: 已预订，已报价
+          canceled: 已取消
+          delivered: 已送达
+          delivery_scheduled: 已安排送货
+          dispatched: 已调度
+          in_transit: 运输中
+          new_shipment: 新建
+          out_for_delivery: 派送中
+          pending_delivery_appointment: 待预约送货
+          pickup_scheduled: 已安排提货
+          quoted: 已报价
+    errors:
+      models:
+        broker_carrier:
+          attributes:
+            encrypted_ach_routing_number:
+              invalid: 必须是九位数字
+        item:
+          attributes:
+            nmfc:
+              invalid: 格式不正确
+  api_key_mailer:
+    expiring:
+      body: 您的 API 密钥“%{name}”将于 %{expires_at} 到期。之后使用它的请求将会失败。请轮换密钥以获取新密钥。
+      greeting: "%{first_name}，您好："
+      roll: 轮换 API 密钥
+      subject: API 密钥“%{name}”将于 %{expires_at} 到期
   api_keys:
     destroy:
       destroyed: 已删除%{model_name}“%{name}”
+    errors:
+      expired: API 密钥“%{name}”已于 %{at} 到期。请轮换它或创建新的 API 密钥。
+      invalid: API 密钥无效。
+      missing: 缺少 API 密钥。请在 X-API-Key 请求头中或以 Authorization Bearer 方式发送。
     header:
       new: 新建
     index:
-      broker_ware_html: >-
-        兼容 3PL Systems BrokerWare 的 API，位于 %{path}。以客户端 ID 作为 <code>client_id</code>、密钥作为
-        <code>client_secret</code>，从 %{token_path} 获取访问令牌。
-      dsdc_html: 符合 NMFTA DSDC 标准的 API，位于 %{path}
-      freightview_html: 兼容 Freightview 的 API，位于 %{path}
-      graphql_html: GraphQL API，位于 %{path}。使用 %{graphiql} 进行探索。
+      broker_ware_html: "位于 %{path} 的兼容 3PL Systems BrokerWare 的 API。请以客户端 ID 作为 <code>client_id</code>、密钥作为 <code>client_secret</code>，从 %{token_path} 获取访问令牌。"
+      dsdc_html: 位于 %{path} 的符合 NMFTA DSDC 标准的 API
+      freightview_html: "位于 %{path} 的兼容 Freightview 的 API"
+      graphql_html: 位于 %{path} 的 GraphQL API。使用 %{graphiql} 进行探索。
       intro_html: >-
-        %{model_name_plural}用于验证对这些 API 的请求。在 <code>X-API-Key</code> 请求头中或以
-        <code>Authorization: Bearer</code> 方式发送密钥。密钥最长在 %{max_ttl} 后过期。
-      never: 从未使用
+        %{model_name_plural}用于验证对这些 API 的请求。请在 <code>X-API-Key</code> 请求头中或以
+        <code>Authorization: Bearer</code> 方式发送密钥。密钥最长在 %{max_ttl} 后到期。
+      never: 从不
       titles:
         active: 有效
-        expired: 已过期
+        expired: 已到期
         index: 全部
     member_menu:
       destroy: 删除
       destroy_confirm: 删除“%{name}”？使用它的请求将会失败。
       overview: 概览
       roll: 轮换
-      roll_confirm: 这会用一个在 %{ttl} 后过期的新%{model_name}替换当前%{model_name}。当前密钥将在 %{grace_period} 后停止工作。确定吗？
+      roll_confirm: 这将用一个在 %{ttl} 后到期的新%{model_name}替换当前密钥。当前密钥将在 %{grace_period} 后失效。确定吗？
     menu:
       active: 有效
       all: 全部
-      expired: 已过期
+      expired: 已到期
     new:
       error: 无法保存%{model_name}：
       submit: 保存
       title: 新建%{model_name}
     show:
       copy: 点击密钥即可复制。
-      never: 从未使用
+      never: 从不
       overview: 概览
+  bootstrap_form:
+    labels:
+      shipment:
+        bol: 提单号
+        customer_reference: 采购订单号
+        pickup_confirmation: 提货号
+        pro: PRO 号
+        quote_id: 报价号
+        shipper_reference: 销售订单号
+  broker:
+    banks:
+      update:
+        failure: 无法更新银行
+      update_accounting:
+        failure: 无法更新会计科目
+        success: 会计科目已更新
+    broker_countries:
+      create:
+        failure: 无法添加国家
+    broker_customers:
+      update_accounting:
+        failure: 无法更新会计客户
+        success: 会计客户已更新
+    carriers:
+      accountings:
+        update:
+          failure: 无法更新会计供应商
+          success: 会计供应商已更新
+      api_keys:
+        destroy:
+          destroyed: 已删除%{model_name}“%{name}”
+        index:
+          intro_html: >-
+            %{model_name_plural}让此承运商的用户通过 NMFTA DSDC 发票和文档 API 将发票发送到 <code>/api/dsdc/v1/invoices</code>，并将证明文件发送到
+            <code>/api/dsdc/v1/documents</code>。每张发票都会成为一笔应付账款。每个密钥都属于一个承运商用户，该用户也可以自行创建密钥。
+            请将密钥发送给承运商。承运商在 <code>X-API-Key</code> 请求头中或以 <code>Authorization: Bearer</code> 方式发送密钥。
+            轮换或删除密钥即可停用它。
+          never: 从不
+          new: 新建
+        new:
+          error: 无法保存%{model_name}：
+          submit: 保存
+          title: 新建%{model_name}
+        show:
+          copy: 点击密钥即可复制。
+          destroy: 删除
+          destroy_confirm: 删除“%{name}”？使用它的请求将会失败。
+          never: 从不
+          roll: 轮换
+          roll_confirm: 这将用新的%{model_name}替换当前密钥。当前密钥将在 %{grace_period} 后失效。确定吗？
+      broker_carriers:
+        tariffs:
+          update:
+            success: 运价表已更新
+        update:
+          failure: 无法更新承运商
+    claims:
+      new:
+        missing_shipment: 没有货运就无法提出索赔
+      update:
+        failure: 无法更新索赔
+    contacts:
+      update:
+        failure: 无法更新联系人
+    delays:
+      update:
+        failure: 无法更新延误
+    payment_transactions:
+      update:
+        failure: 无法更新发票
+    payments:
+      update:
+        failure: 无法更新付款
+    problems:
+      update:
+        failure: 无法更新异常
+    shipments:
+      destroy:
+        failure: 删除货运时出错
+        success: 货运已删除
+    users:
+      update:
+        success: 用户已成功更新
+  broker_ware:
+    document_deliveries:
+      create:
+        invalid_emails: "请在 emails 中发送 1 到 %{max} 个有效的电子邮件地址。"
+        unknown_documents: "请在 documentNames 中至少发送一个文档名称。可用的名称为 %{names}。"
+    errors:
+      rate_limited: "请求过多。请等待 Retry-After 请求头中的秒数后重试。"
+      unauthorized: "访问令牌缺失、无效或已到期。请从 /connect/token 获取新令牌。"
+    shipments:
+      index:
+        unknown_status: "状态“%{status}”未知。"
+      lane_changed: "发货人或收货人邮政编码与已报价的货运不同。请重新为货运报价。"
+      picked_up: "该货运已提货，因此无法更改或取消。"
+      unbookable_rate: "运价报价“%{rate_quote_id}”无法预订。它未知、已到期或已被预订。"
+  discussion_topics:
+    tracking_event:
+      arrived_at_terminal: "%{model_name}已到达 %{city}, %{region_abbreviation} %{country_alpha2} 附近"
+      delivered: "%{model_name}已送达"
+      delivery_appointment_scheduled: "%{model_name}已预约送货"
+      departed: "%{model_name}已离开 %{city}, %{region_abbreviation} %{country_alpha2}"
+      found: "%{model_name}已在 %{city}, %{region_abbreviation} %{country_alpha2} 附近找到"
+      located: "%{model_name}已定位到 %{city}, %{region_abbreviation} %{country_alpha2} 附近"
+      lost: "%{model_name}已丢失"
+      out_for_delivery: "%{model_name}正在 %{city}, %{region_abbreviation} %{country_alpha2} 附近派送"
+      pending_delivery_appointment: "%{model_name}待预约送货"
+      picked_up: "%{model_name}已提货"
+      pickup_driver_assigned: "%{model_name}已分配司机"
+      pickup_information_received_by_carrier: "承运商已收到%{model_name}的提货信息"
+      pickup_information_sent_to_carrier: "%{model_name}的提货信息已发送给承运商"
+      sailed: "%{model_name}已从 %{city}, %{region_abbreviation} %{country_alpha2} 乘船离开"
+      trailer_closed: "%{model_name}位于 %{city}, %{region_abbreviation} %{country_alpha2} 的封闭拖车中"
+      trailer_unloaded: "%{model_name}已在 %{city}, %{region_abbreviation} %{country_alpha2} 卸货"
+  dsdc:
+    bols:
+      broker_bol_failed: 无法创建提单 PDF。请稍后从货运中下载。
+      broker_label_failed: 无法创建运输标签 PDF。请稍后从货运中下载。
+      create:
+        unknown_customer: billTo.account "%{account}" 与您可预订的任何客户都不匹配。
+      destroy:
+        picked_up: 该货运已提货，因此无法取消其提单。
+      messages:
+        create: 提单已创建。
+        destroy: 提单已取消。
+        test: 测试请求有效。未保存任何内容。
+        update: 提单已更新。
+      unsupported_accessorial: 不支持附加服务代码 %{code}，已忽略。
+      update:
+        picked_up: 该货运已提货，因此无法更改其提单。
+    documents:
+      create:
+        message: 文档已上传。
+    errors:
+      rate_limited: 请求过多。请等待一分钟后重试。
+    invoices:
+      create:
+        message: 发票已创建。
+      update:
+        message: 发票已更新。
+    pickup_requests:
+      closes_before_ready: closeTime 必须晚于 readyTime。
+      messages:
+        create: 提货请求已接受。
+        destroy: 提货请求已取消。
+        test: 测试请求有效。未保存任何内容。
+        update: 提货请求已更新。
+      pro_numbers_missing: 请至少发送一个带有 proNumber 的 shipmentDetails 条目。请先创建提单以获取 PRO 号。
+      shipments_missing: 没有使用这些 PRO 号的有效货运：%{pro_numbers}。
+      shipments_picked_up: 一个或多个货运已提货。
+      shipments_scheduled: 这些货运已属于另一个提货请求：%{pro_numbers}。
+      show:
+        lookup_type: lookupType 必须是 %{lookup_types}。
+      statuses:
+        accepted: 提货请求已接受。
+        cancelled: 提货请求已取消。
+        departed: 司机已提取货物。
+        en_route: 已为提货分配司机。
+        rescheduled: 提货已改到其他日期。
+  freightview:
+    errors:
+      missing: "缺少必填属性。"
+      not_found: "未找到该资源。"
+      rate_limited: "请求过多。请等待一分钟后重试。"
+      required: "此属性为必填项。"
+    ltl_shipments:
+      create:
+        customer_required: "请使用属于客户用户的 API 密钥。"
+        unserviceable_accessorial: "您的账户不提供附加服务 %{code}。"
+        unsupported_accessorial: "不支持此附加服务。"
+        unsupported_accessorials: "一项或多项附加服务无法使用。"
+  graphql:
+    errors:
+      rate_limited: 请求过多。请等待 Retry-After 请求头中的秒数后重试。
+  locale_name: 简体中文
+  settings:
+    automatically_authorize_receivables: 创建后自动授权应收账款？
+    automatically_update_shipment_tracking_based_on_carrier_apis: 根据承运商 API 自动更新货运跟踪信息？
+    copyright_holder: 贵公司的法定名称（用于版权声明），例如 我的公司有限公司
+    customer_service_email: 向客户显示的客服电子邮件地址
+    domain: Next TMS 使用的域名，例如 tms.mycompany.com
+    ignore_broker_carrier_bol_requires_tracking_number: 当货运缺少跟踪号而承运商要求提供时，仍允许创建提单？
+    mailing_address: 贵公司的邮寄地址，显示在提单和报价等文件上
+    name: 贵公司的显示名称，例如 我的公司
+    phone: E.164 格式的客服电话号码，例如 +1-555-555-5555
+    requires_charges_confirmed_on_receivables: 确认货运费用前禁止创建应收账款？
+    robot_email: 用于发送通知邮件的电子邮件地址
+    scac: 贵公司的标准承运商字母代码（SCAC），由 NMFTA DSDC API 返回
+    time_zone_name: IANA 时区名称
+    website_desc: 用于搜索引擎结果的 <meta name="description"> HTML 标签内容
+    website_homepage: 贵公司主页网站的 URL，例如 https://mycompany.com/
+    website_logo_image_data: "贵公司 SVG 标志的 URL（可以是 data: 编码的 URL）"
+  test_mailer:
+    hello:
+      subject: 来自 Next TMS 的问候

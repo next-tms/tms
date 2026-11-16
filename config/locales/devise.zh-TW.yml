@@ -1,0 +1,60 @@
+zh-TW:
+  devise:
+    confirmations:
+      confirmed: "您的電子郵件地址已成功確認。"
+      send_instructions: "幾分鐘後，您將收到一封電子郵件，說明如何確認您的電子郵件地址。"
+      send_paranoid_instructions: "如果您的電子郵件地址存在於我們的資料庫中，幾分鐘後您將收到一封電子郵件，說明如何確認您的電子郵件地址。"
+    failure:
+      already_authenticated: "您已登入。"
+      inactive: "您的帳戶尚未啟用。"
+      invalid: "%{authentication_keys}或密碼無效。"
+      locked: "您的帳戶已被鎖定。"
+      last_attempt: "您還有一次嘗試機會，之後您的帳戶將被鎖定。"
+      not_found_in_database: "%{authentication_keys}或密碼無效。"
+      timeout: "您的工作階段已逾時。請重新登入以繼續。"
+      unauthenticated: "您需要登入或註冊後才能繼續。"
+      unconfirmed: "您需要確認您的電子郵件地址後才能繼續。"
+    mailer:
+      confirmation_instructions:
+        subject: "確認說明"
+      reset_password_instructions:
+        subject: "重設密碼說明"
+      unlock_instructions:
+        subject: "解鎖說明"
+      password_change:
+        subject: "密碼已變更"
+    omniauth_callbacks:
+      failure: "無法透過 %{kind} 驗證您的身分，原因是「%{reason}」。"
+      success: "已透過 %{kind} 帳戶成功驗證。"
+    passwords:
+      no_token: "您只能透過重設密碼郵件存取此頁面。如果您確實來自重設密碼郵件，請確認您使用了完整的 URL。"
+      send_instructions: "幾分鐘後，您將收到一封電子郵件，說明如何重設您的密碼。"
+      send_paranoid_instructions: "如果您的電子郵件地址存在於我們的資料庫中，幾分鐘後您將在該地址收到一個密碼復原連結。"
+      updated: "您的密碼已成功變更。您現在已登入。"
+      updated_not_active: "您的密碼已成功變更。"
+    registrations:
+      destroyed: "再見！您的帳戶已成功取消。希望很快再見到您。"
+      signed_up: "歡迎！您已成功註冊。"
+      signed_up_but_inactive: "您已成功註冊。但由於您的帳戶尚未啟用，我們無法為您登入。"
+      signed_up_but_locked: "您已成功註冊。但由於您的帳戶已被鎖定，我們無法為您登入。"
+      signed_up_but_unconfirmed: "一封包含確認連結的郵件已寄到您的電子郵件地址。請點按該連結啟用您的帳戶。"
+      update_needs_confirmation: "您已成功更新帳戶，但我們需要驗證您的新電子郵件地址。請查看郵件並點按確認連結以確認您的新電子郵件地址。"
+      updated: "您的帳戶已成功更新。"
+    sessions:
+      signed_in: "登入成功。"
+      signed_out: "已成功登出。"
+      already_signed_out: "已成功登出。"
+    unlocks:
+      send_instructions: "幾分鐘後，您將收到一封電子郵件，說明如何解鎖您的帳戶。"
+      send_paranoid_instructions: "如果您的帳戶存在，幾分鐘後您將收到一封電子郵件，說明如何解鎖。"
+      unlocked: "您的帳戶已成功解鎖。請登入以繼續。"
+  errors:
+    messages:
+      already_confirmed: "已經確認，請嘗試登入"
+      confirmation_period_expired: "需要在 %{period} 內確認，請重新申請"
+      expired: "已逾期，請重新申請"
+      not_found: "找不到"
+      not_locked: "未被鎖定"
+      not_saved:
+        one: "1 個錯誤導致此%{resource}無法儲存："
+        other: "%{count} 個錯誤導致此%{resource}無法儲存："

@@ -1,10 +1,32 @@
 eo:
+  accounting_connections:
+    callback:
+      success: Konektita
+  accounting_mailer:
+    unknown_customers:
+      subject: Malsukcesa sinkronigo de kontadaj klientoj
+  activemodel:
+    errors:
+      models:
+        broker_ware/quote:
+          attributes:
+            accessorials:
+              unserviceable: "ne estas ofertataj: %{codes}"
+            consignee_zip:
+              unknown: "ne estas konata poŝtkodo"
+            shipper_zip:
+              unknown: "ne estas konata poŝtkodo"
+        broker_ware/shipment_payload:
+          attributes:
+            shipment_status:
+              unsupported: "povas esti nur Booked, Quoted aŭ Canceled. Via makleristo ĝisdatigas ĉiujn aliajn statojn."
   activerecord:
     attributes:
       address:
         country_alpha2: Lando
+        ref: Referenco
       api_key:
-        client_id: Klienta ID
+        client_id: "Klienta ID"
         created_at: Kreita
         expires_at: Eksvalidiĝas
         last_used_at: Laste uzita
@@ -13,6 +35,63 @@ eo:
         token: Ŝlosilo
         token_suffix: Ŝlosilo
         ttl: Eksvalidiĝas post
+      broker_carrier:
+        encrypted_ach_account_number: ACH-kontonumero
+        encrypted_ach_bank_name: Nomo de ACH-banko
+        encrypted_ach_routing_number: ACH-vojiga numero
+        encrypted_api_key: API-ŝlosilo
+        password: Pasvorto
+        username: Uzantnomo
+        website_password: Pasvorto
+        website_username: Uzantnomo
+      broker_customer:
+        can_quote: La kliento povas peti prezofertojn kaj mendi sendaĵojn
+        requires_charges_confirmed_on_receivables: Ĉu malpermesi krei ricevendaĵon ĝis la kostoj de la sendaĵo estas konfirmitaj?
+        requires_customer_reference_number_on_receivables: Ĉu malpermesi krei ricevendaĵon ĝis la sendaĵo havas referencnumeron de kliento?
+        requires_shipment_delivery_before_receivable: Ĉu malpermesi krei ricevendaĵon ĝis la sendaĵo estas liverita?
+        requires_shipment_shipper_reference_on_receivables: Ĉu malpermesi krei ricevendaĵon ĝis la sendaĵo havas referencnumeron de sendinto?
+      broker_customer_sales_rep:
+        commission_flat: fiksa komisipago
+        commission_percent: procenta komisipago
+      contacts:
+        broker_carrier: Transportisto
+        broker_customer: Kliento
+        label: Fako
+      contact:
+        company_sgid: Firmao
+      item:
+        declared_freight_class: Frajtoklaso
+        desc: Priskribo
+        h: Alto
+        l: Longo
+        w: Larĝo
+      pickup_request:
+        accepted_pickup_at: Akceptita je
+        accepted_pickup_on: Akceptita ŝarĝpreno je
+        canceled_at: Nuligita je
+        pickup_on: Ŝarĝpreno je
+        reschedule_reason: Kialo de replanado
+      region:
+        iso_3166_2: ISO 3166-2
+      shipment:
+        bol: BOL-numero
+        broker_bol: Konosamento
+        broker_carrier: Transportisto
+        broker_dispatch_sheet: Ekspedfolio
+        broker_quote: Prezoferto
+        carrier_bol: Skanita konosamento
+        carrier_pod: Pruvo de liverado
+        customer_reference: Aĉetmendo-numero
+        pickup_confirmation: Ŝarĝpreno-numero
+        pro: PRO-numero
+        quote_id: Prezoferto-numero
+        shipper_reference: Vendmendo-numero
+        total_charges: Kosto
+        total_charges_cents: Kosto
+        total_cost: Kosto de transportisto
+        total_cost_cents: Kosto de transportisto
+      user:
+        company_sgid: Firmao
     help:
       api_key:
         name: Kie la ŝlosilo estas uzata, ekzemple “Magazena WMS”
@@ -21,15 +100,85 @@ eo:
       api_key:
         one: API-ŝlosilo
         other: API-ŝlosiloj
+      broker_carrier:
+        one: Transportisto
+        other: Transportistoj
+      broker_customer:
+        one: Kliento
+        other: Klientoj
+      broker_customer_sales_rep:
+        one: Vendoreprezentanto
+        other: Vendoreprezentantoj
+      carrier:
+        one: Transportisto
+        other: Transportistoj
+      overlength_rule:
+        one: Regulo pri troa longo
+        other: Reguloj pri troa longo
+      pricing_rule:
+        one: Regulo pri paledprezo
+        other: Reguloj pri paledprezo
+      receivable:
+        one: Ricevendaĵo
+        other: Ricevendaĵoj
+      shipment:
+        one: Ŝarĝo
+        other: Ŝarĝoj
+    enums:
+      pickup_request:
+        reschedule_reasons:
+          capacity: Kapacito de transportisto
+          closed: Sendinto fermita
+          missed: Ŝoforo sendita sed ne prenis la ŝarĝon
+          shipper: Peto de sendinto aŭ 3PL
+          special_equipment: Necesas speciala ekipaĵo
+          too_busy: Sendinto tro okupata
+          weather: Vetero
+      rate:
+        sources:
+          api: API
+          pricing_rule: Tarifo
+      shipment:
+        statuses:
+          booked: Mendita
+          booked_quoted: Mendita, prezofertita
+          canceled: Nuligita
+          delivered: Liverita
+          delivery_scheduled: Liverado planita
+          dispatched: Ekspedita
+          in_transit: Survoje
+          new_shipment: Nova
+          out_for_delivery: Liverata
+          pending_delivery_appointment: Atendas liveradan rendevuon
+          pickup_scheduled: Ŝarĝpreno planita
+          quoted: Prezofertita
+    errors:
+      models:
+        broker_carrier:
+          attributes:
+            encrypted_ach_routing_number:
+              invalid: devas havi naŭ ciferojn
+        item:
+          attributes:
+            nmfc:
+              invalid: ne havas la ĝustan formaton
+  api_key_mailer:
+    expiring:
+      body: Via API-ŝlosilo “%{name}” eksvalidiĝos je %{expires_at}. Petoj, kiuj uzas ĝin, malsukcesos poste. Renovigu la ŝlosilon por ricevi anstataŭaĵon.
+      greeting: Saluton %{first_name},
+      roll: Renovigi API-ŝlosilon
+      subject: API-ŝlosilo “%{name}” eksvalidiĝos je %{expires_at}
   api_keys:
     destroy:
       destroyed: Forigis %{model_name} “%{name}”
+    errors:
+      expired: API-ŝlosilo “%{name}” eksvalidiĝis je %{at}. Renovigu ĝin aŭ kreu novan API-ŝlosilon.
+      invalid: API-ŝlosilo estas nevalida.
+      missing: Mankas API-ŝlosilo. Sendu ĝin en la kapo X-API-Key aŭ kiel Authorization Bearer.
     header:
       new: Nova
     index:
-      broker_ware_html: >-
-        API kongrua kun 3PL Systems BrokerWare ĉe %{path}. Petu alirĵetonon de %{token_path} kun la Klienta ID kiel
-        <code>client_id</code> kaj la ŝlosilo kiel <code>client_secret</code>.
+      broker_ware_html: "API kongrua kun 3PL Systems BrokerWare ĉe %{path}. Petu alirĵetonon de %{token_path} kun la Klienta ID kiel <code>client_id</code> kaj la ŝlosilo kiel <code>client_secret</code>."
       dsdc_html: API konforma al NMFTA DSDC ĉe %{path}
       freightview_html: API kongrua kun Freightview ĉe %{path}
       graphql_html: GraphQL-API ĉe %{path}. Uzu %{graphiql} por esplori ĝin.
@@ -46,18 +195,212 @@ eo:
       destroy_confirm: Ĉu forigi “%{name}”? Petoj, kiuj uzas ĝin, malsukcesos.
       overview: Superrigardo
       roll: Renovigi
-      roll_confirm: >-
-        Ĉi tio anstataŭigos la %{model_name} per nova, kiu eksvalidiĝos post %{ttl}. La nuna ŝlosilo ĉesos funkcii post
-        %{grace_period}. Ĉu vi certas?
+      roll_confirm: Tio anstataŭigos la %{model_name} per nova, kiu eksvalidiĝos post %{ttl}. La nuna ŝlosilo ĉesos funkcii post %{grace_period}. Ĉu vi certas?
     menu:
       active: Aktivaj
       all: Ĉiuj
       expired: Eksvalidiĝintaj
     new:
-      error: "Ne eblas konservi %{model_name}:"
+      error: "Ne eblis konservi %{model_name}:"
       submit: Konservi
       title: Nova %{model_name}
     show:
       copy: Alklaku la ŝlosilon por kopii ĝin.
       never: Neniam
       overview: Superrigardo
+  bootstrap_form:
+    labels:
+      shipment:
+        bol: BOL-numero
+        customer_reference: Aĉetmendo-numero
+        pickup_confirmation: Ŝarĝpreno-numero
+        pro: PRO-numero
+        quote_id: Prezoferto-numero
+        shipper_reference: Vendmendo-numero
+  broker:
+    banks:
+      update:
+        failure: Ne eblis ĝisdatigi la bankon
+      update_accounting:
+        failure: Ne eblis ĝisdatigi la kontadajn kontojn
+        success: Kontadaj kontoj ĝisdatigitaj
+    broker_countries:
+      create:
+        failure: Ne eblis aldoni la landon
+    broker_customers:
+      update_accounting:
+        failure: Ne eblis ĝisdatigi la kontadajn klientojn
+        success: Kontadaj klientoj ĝisdatigitaj
+    carriers:
+      accountings:
+        update:
+          failure: Ne eblis ĝisdatigi la kontadajn liverantojn
+          success: Kontadaj liverantoj ĝisdatigitaj
+      api_keys:
+        destroy:
+          destroyed: Forigis %{model_name} “%{name}”
+        index:
+          intro_html: >-
+            %{model_name_plural} ebligas al la uzantoj de ĉi tiu transportisto sendi fakturojn al <code>/api/dsdc/v1/invoices</code> kaj subtenajn dokumentojn al
+            <code>/api/dsdc/v1/documents</code> per la NMFTA DSDC Invoice and Documents API. Ĉiu fakturo iĝas pagendaĵo. Ĉiu ŝlosilo apartenas
+            al uzanto de la transportisto, kiu ankaŭ povas krei siajn proprajn. Sendu la ŝlosilon al la transportisto. La transportisto sendas ĝin en la kapo
+            <code>X-API-Key</code> aŭ kiel <code>Authorization: Bearer</code>. Renovigu aŭ forigu ŝlosilon por malaktivigi ĝin.
+          never: Neniam
+          new: Nova
+        new:
+          error: "Ne eblis konservi %{model_name}:"
+          submit: Konservi
+          title: Nova %{model_name}
+        show:
+          copy: Alklaku la ŝlosilon por kopii ĝin.
+          destroy: Forigi
+          destroy_confirm: Ĉu forigi “%{name}”? Petoj, kiuj uzas ĝin, malsukcesos.
+          never: Neniam
+          roll: Renovigi
+          roll_confirm: Tio anstataŭigos la %{model_name} per nova. La nuna ŝlosilo ĉesos funkcii post %{grace_period}. Ĉu vi certas?
+      broker_carriers:
+        tariffs:
+          update:
+            success: Tarifo ĝisdatigita
+        update:
+          failure: Ne eblis ĝisdatigi la transportiston
+    claims:
+      new:
+        missing_shipment: Ne eblas malfermi reklamacion sen sendaĵo
+      update:
+        failure: Ne eblis ĝisdatigi la reklamacion
+    contacts:
+      update:
+        failure: Ne eblis ĝisdatigi la kontakton
+    delays:
+      update:
+        failure: Ne eblis ĝisdatigi la prokraston
+    payment_transactions:
+      update:
+        failure: Ne eblis ĝisdatigi la fakturon
+    payments:
+      update:
+        failure: Ne eblis ĝisdatigi la pagon
+    problems:
+      update:
+        failure: Ne eblis ĝisdatigi la escepton
+    shipments:
+      destroy:
+        failure: Eraro dum forigo de la sendaĵo
+        success: Sendaĵo forigita
+    users:
+      update:
+        success: Uzanto sukcese ĝisdatigita
+  broker_ware:
+    document_deliveries:
+      create:
+        invalid_emails: "Sendu inter 1 kaj %{max} validajn retpoŝtadresojn en emails."
+        unknown_documents: "Sendu almenaŭ unu dokumentnomon en documentNames. Disponeblaj nomoj estas %{names}."
+    errors:
+      rate_limited: "Tro da petoj. Atendu la nombron da sekundoj en la kapo Retry-After, poste reprovu."
+      unauthorized: "La alirĵetono mankas, estas nevalida aŭ eksvalidiĝis. Petu novan de /connect/token."
+    shipments:
+      index:
+        unknown_status: "Stato “%{status}” estas nekonata."
+      lane_changed: "La poŝtkodo de la sendinto aŭ ricevonto diferencas de la prezigita sendaĵo. Prezigu la sendaĵon denove."
+      picked_up: "La sendaĵo jam estis prenita, do ĝi ne povas esti ŝanĝita aŭ nuligita."
+      unbookable_rate: "Prezoferto “%{rate_quote_id}” ne povas esti mendita. Ĝi estas nekonata, eksvalidiĝinta aŭ jam mendita."
+  discussion_topics:
+    tracking_event:
+      arrived_at_terminal: "%{model_name} alvenis proksime de %{city}, %{region_abbreviation} %{country_alpha2}"
+      delivered: "%{model_name} estis liverita"
+      delivery_appointment_scheduled: "%{model_name} havas planitan liveradan rendevuon"
+      departed: "%{model_name} foriris el %{city}, %{region_abbreviation} %{country_alpha2}"
+      found: "%{model_name} estis trovita proksime de %{city}, %{region_abbreviation} %{country_alpha2}"
+      located: "%{model_name} estis lokalizita proksime de %{city}, %{region_abbreviation} %{country_alpha2}"
+      lost: "%{model_name} perdiĝis"
+      out_for_delivery: "%{model_name} estas liverata proksime de %{city}, %{region_abbreviation} %{country_alpha2}"
+      pending_delivery_appointment: "%{model_name} atendas liveradan rendevuon"
+      picked_up: "%{model_name} estis prenita"
+      pickup_driver_assigned: "%{model_name} estis asignita al ŝoforo"
+      pickup_information_received_by_carrier: "La transportisto ricevis la ŝarĝpreno-informojn de %{model_name}"
+      pickup_information_sent_to_carrier: "La ŝarĝpreno-informoj de %{model_name} estis senditaj al la transportisto"
+      sailed: "%{model_name} foriris el %{city}, %{region_abbreviation} %{country_alpha2} per ŝipo"
+      trailer_closed: "%{model_name} estis en fermita postveturilo en %{city}, %{region_abbreviation} %{country_alpha2}"
+      trailer_unloaded: "%{model_name} estis malŝarĝita en %{city}, %{region_abbreviation} %{country_alpha2}"
+  dsdc:
+    bols:
+      broker_bol_failed: Ne eblis krei la PDF-on de la konosamento. Elŝutu ĝin poste el la sendaĵo.
+      broker_label_failed: Ne eblis krei la PDF-on de la sendetikedo. Elŝutu ĝin poste el la sendaĵo.
+      create:
+        unknown_customer: billTo.account "%{account}" ne kongruas kun kliento, por kiu vi povas mendi.
+      destroy:
+        picked_up: La sendaĵo jam estis prenita, do ĝia konosamento ne povas esti nuligita.
+      messages:
+        create: La konosamento estis kreita.
+        destroy: La konosamento estis nuligita.
+        test: La prova peto estas valida. Nenio estis konservita.
+        update: La konosamento estis ĝisdatigita.
+      unsupported_accessorial: La kroma serva kodo %{code} ne estas subtenata kaj estis ignorita.
+      update:
+        picked_up: La sendaĵo jam estis prenita, do ĝia konosamento ne povas esti ŝanĝita.
+    documents:
+      create:
+        message: La dokumentoj estis alŝutitaj.
+    errors:
+      rate_limited: Tro da petoj. Atendu unu minuton, poste reprovu.
+    invoices:
+      create:
+        message: La fakturo estis kreita.
+      update:
+        message: La fakturo estis ĝisdatigita.
+    pickup_requests:
+      closes_before_ready: closeTime devas esti post readyTime.
+      messages:
+        create: La ŝarĝpreno-peto estis akceptita.
+        destroy: La ŝarĝpreno-peto estis nuligita.
+        test: La prova peto estas valida. Nenio estis konservita.
+        update: La ŝarĝpreno-peto estis ĝisdatigita.
+      pro_numbers_missing: Sendu almenaŭ unu eron de shipmentDetails kun proNumber. Unue kreu la konosamenton por ricevi PRO-numeron.
+      shipments_missing: "Neniuj aktivaj sendaĵoj havas ĉi tiujn PRO-numerojn: %{pro_numbers}."
+      shipments_picked_up: Unu aŭ pli da sendaĵoj jam estis prenitaj.
+      shipments_scheduled: "Ĉi tiuj sendaĵoj jam apartenas al alia ŝarĝpreno-peto: %{pro_numbers}."
+      show:
+        lookup_type: lookupType devas esti %{lookup_types}.
+      statuses:
+        accepted: La ŝarĝpreno-peto estis akceptita.
+        cancelled: La ŝarĝpreno-peto estis nuligita.
+        departed: La ŝoforo prenis la frajton.
+        en_route: Ŝoforo estas asignita al la ŝarĝpreno.
+        rescheduled: La ŝarĝpreno estis movita al alia tago.
+  freightview:
+    errors:
+      missing: "Mankas deviga eco."
+      not_found: "La rimedo ne estis trovita."
+      rate_limited: "Tro da petoj. Atendu unu minuton, poste reprovu."
+      required: "Ĉi tiu eco estas deviga."
+    ltl_shipments:
+      create:
+        customer_required: "Uzu API-ŝlosilon, kiu apartenas al klienta uzanto."
+        unserviceable_accessorial: "La kroma servo %{code} ne estas ofertata al via konto."
+        unsupported_accessorial: "Ĉi tiu kroma servo ne estas subtenata."
+        unsupported_accessorials: "Unu aŭ pli da kromaj servoj ne povas esti uzataj."
+  graphql:
+    errors:
+      rate_limited: Tro da petoj. Atendu la nombron da sekundoj en la kapo Retry-After, poste reprovu.
+  locale_name: Esperanto
+  settings:
+    automatically_authorize_receivables: Ĉu aŭtomate rajtigi ricevendaĵon post kreado?
+    automatically_update_shipment_tracking_based_on_carrier_apis: Ĉu aŭtomate ĝisdatigi la spurajn informojn de sendaĵoj laŭ la API-oj de transportistoj?
+    copyright_holder: Laŭleĝa nomo de via firmao (uzata por la kopirajta avizo), ekz. Mia Firmao, LLC
+    customer_service_email: Retpoŝtadreso por klientservo montrata al klientoj
+    domain: Domajno uzata por Next TMS, ekz. tms.miafirmao.com
+    ignore_broker_carrier_bol_requires_tracking_number: Ĉu permesi krei konosamenton kiam mankas la spurnumero de la sendaĵo kaj la transportisto postulas ĝin?
+    mailing_address: Poŝtadreso de via firmao, montrata sur dokumentoj kiel konosamentoj kaj prezofertoj
+    name: Montrata nomo de via firmao, ekz. Mia Firmao
+    phone: Telefonnumero de klientservo en formato E.164, ekz. +1-555-555-5555
+    requires_charges_confirmed_on_receivables: Ĉu malpermesi krei ricevendaĵon ĝis la kostoj de la sendaĵo estas konfirmitaj?
+    robot_email: Retpoŝtadreso uzata por sciigaj retmesaĝoj
+    scac: Standard Carrier Alpha Code (SCAC) de via firmao, redonata de la NMFTA DSDC API-oj
+    time_zone_name: Nomo de IANA-horzono
+    website_desc: Enhavo por la HTML-etikedo <meta name="description"> uzata en rezultoj de serĉiloj
+    website_homepage: URL de via ĉefa retejo, ekz. https://miafirmao.com/
+    website_logo_image_data: URL de via SVG-emblemo (povas esti data:-kodita URL)
+  test_mailer:
+    hello:
+      subject: Saluton de Next TMS

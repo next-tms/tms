@@ -1,0 +1,25 @@
+eo:
+  devise:
+    failure:
+      invited: "Vi havas atendantan inviton. Akceptu ĝin por fini krei vian konton."
+    invitations:
+      send_instructions: "Invita retmesaĝo estis sendita al %{email}."
+      invitation_token_invalid: "La donita invita ĵetono ne estas valida!"
+      updated: "Via pasvorto estis sukcese agordita. Vi nun estas ensalutinta."
+      updated_not_active: "Via pasvorto estis sukcese agordita."
+      no_invitations_remaining: "Ne restas invitoj"
+      invitation_removed: "Via invito estis forigita."
+      new:
+        header: "Sendi inviton"
+        submit_button: "Sendi inviton"
+      edit:
+        header: "Agordu vian pasvorton"
+        submit_button: "Agordi mian pasvorton"
+    mailer:
+      invitation_instructions:
+        subject: "Instrukcioj pri invito"
+        hello: "Saluton %{email}"
+        someone_invited_you: "Iu invitis vin al %{url}. Vi povas akcepti per la suba ligilo."
+        accept: "Akcepti inviton"
+        accept_until: "Ĉi tiu invito validas ĝis %{due_date}."
+        ignore: "Se vi ne volas akcepti la inviton, bonvolu ignori ĉi tiun retmesaĝon. Via konto ne estos kreita ĝis vi malfermos la supran ligilon kaj agordos vian pasvorton."

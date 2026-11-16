@@ -24,5 +24,21 @@
         <%= Setting.first_value(:copyright_holder, :name) %>
       </small>
     </div>
+
+    <ul class="list-inline list-inline-separated small">
+      <% I18n.available_locales.sort_by { t(:locale_name, locale: it) }.each do |locale| %>
+        <li class="list-inline-item">
+          <%=
+            link_to_unless(
+              locale == I18n.locale,
+              t(:locale_name, locale:),
+              url_for(request.query_parameters.merge(lang: locale)),
+              hreflang: locale,
+              lang: locale
+            )
+          %>
+        </li>
+      <% end %>
+    </ul>
   </div>
 </footer>

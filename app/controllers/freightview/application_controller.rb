@@ -2,6 +2,7 @@ class Freightview::ApplicationController < ActionController::API
   include ActionPolicy::Controller
   include APIKeyAuthentication
   include ConditionalRequests
+  include Localization
 
   RATE_LIMIT_WINDOW = 1.minute
 
@@ -9,7 +10,7 @@ class Freightview::ApplicationController < ActionController::API
 
   authorize :authorizable, through: :current_user
 
-  before_action :authenticate
+  prepend_before_action :authenticate
 
   delegate :user, to: :api_key, allow_nil: true, prefix: :current
 

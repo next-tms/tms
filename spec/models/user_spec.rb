@@ -15,6 +15,7 @@ RSpec.describe(User) do
   end
 
   describe 'validations' do
+    it { is_expected.to(validate_inclusion_of(:locale).in_array(I18n.available_locales.map(&:to_s)).allow_nil) }
     it { is_expected.to(validate_presence_of(:time_zone_name)) }
   end
 

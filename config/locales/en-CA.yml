@@ -1,0 +1,21 @@
+en-CA:
+  activerecord:
+    attributes:
+      pickup_request:
+        canceled_at: Cancelled At
+    enums:
+      shipment:
+        statuses:
+          canceled: Cancelled
+  dsdc:
+    bols:
+      destroy:
+        picked_up: The shipment was already picked up, so its bill of lading cannot be cancelled.
+      messages:
+        destroy: Bill of lading was cancelled.
+    pickup_requests:
+      messages:
+        destroy: Pickup request was cancelled.
+      statuses:
+        cancelled: The pickup request was cancelled.
+  locale_name: English (Canada)

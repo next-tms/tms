@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include ConditionalRequests
+  include Localization
   include Pagy::Method
 
   authorize :authorizable, through: :current_user
@@ -8,6 +9,8 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :enforce_operator_notice
   before_action :sign_out_deactivated_user
+
+  prepend_before_action :remember_locale
 
   delegate :homepage, private: true, to: :helpers
 

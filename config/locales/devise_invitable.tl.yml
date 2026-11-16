@@ -1,0 +1,25 @@
+tl:
+  devise:
+    failure:
+      invited: "May nakabinbin kang imbitasyon. Tanggapin ito para matapos ang paggawa ng iyong account."
+    invitations:
+      send_instructions: "Naipadala ang email ng imbitasyon sa %{email}."
+      invitation_token_invalid: "Hindi wasto ang ibinigay na invitation token!"
+      updated: "Matagumpay na naitakda ang iyong password. Naka-sign in ka na ngayon."
+      updated_not_active: "Matagumpay na naitakda ang iyong password."
+      no_invitations_remaining: "Wala nang natitirang imbitasyon"
+      invitation_removed: "Inalis ang iyong imbitasyon."
+      new:
+        header: "Magpadala ng imbitasyon"
+        submit_button: "Magpadala ng imbitasyon"
+      edit:
+        header: "Itakda ang iyong password"
+        submit_button: "Itakda ang aking password"
+    mailer:
+      invitation_instructions:
+        subject: "Mga tagubilin sa imbitasyon"
+        hello: "Kumusta %{email}"
+        someone_invited_you: "May nag-imbita sa iyo sa %{url}. Maaari mo itong tanggapin sa link sa ibaba."
+        accept: "Tanggapin ang imbitasyon"
+        accept_until: "Mag-e-expire ang imbitasyong ito sa %{due_date}."
+        ignore: "Kung ayaw mong tanggapin ang imbitasyon, huwag pansinin ang email na ito. Hindi magagawa ang iyong account hangga't hindi mo binubuksan ang link sa itaas at itinatakda ang iyong password."

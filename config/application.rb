@@ -27,6 +27,7 @@ module Liftoff
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    config.i18n.available_locales = %i[en en-AU en-CA en-GB eo es tl zh-CN zh-TW]
     config.i18n.fallbacks = true
 
     config.action_mailer.default_url_options = { host: ENV.fetch('DOMAIN', 'localhost:3000') }

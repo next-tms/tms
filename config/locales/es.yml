@@ -1,10 +1,32 @@
 es:
+  accounting_connections:
+    callback:
+      success: Conectado
+  accounting_mailer:
+    unknown_customers:
+      subject: Error de sincronización de clientes contables
+  activemodel:
+    errors:
+      models:
+        broker_ware/quote:
+          attributes:
+            accessorials:
+              unserviceable: "no se ofrecen: %{codes}"
+            consignee_zip:
+              unknown: "no es un código postal conocido"
+            shipper_zip:
+              unknown: "no es un código postal conocido"
+        broker_ware/shipment_payload:
+          attributes:
+            shipment_status:
+              unsupported: "solo puede ser Booked, Quoted o Canceled. Tu bróker actualiza todos los demás estados."
   activerecord:
     attributes:
       address:
         country_alpha2: País
+        ref: Referencia
       api_key:
-        client_id: ID de cliente
+        client_id: "ID de cliente"
         created_at: Creada
         expires_at: Vence
         last_used_at: Último uso
@@ -13,28 +35,155 @@ es:
         token: Clave
         token_suffix: Clave
         ttl: Vence en
+      broker_carrier:
+        encrypted_ach_account_number: "N.º de cuenta ACH"
+        encrypted_ach_bank_name: Nombre del banco ACH
+        encrypted_ach_routing_number: "N.º de ruta ACH"
+        encrypted_api_key: Clave de API
+        password: Contraseña
+        username: Usuario
+        website_password: Contraseña
+        website_username: Usuario
+      broker_customer:
+        can_quote: El cliente puede cotizar y reservar envíos
+        requires_charges_confirmed_on_receivables: "¿Impedir crear la cuenta por cobrar hasta que se confirmen los cargos del envío?"
+        requires_customer_reference_number_on_receivables: "¿Impedir crear la cuenta por cobrar hasta que el envío tenga el número de referencia del cliente?"
+        requires_shipment_delivery_before_receivable: "¿Impedir crear la cuenta por cobrar hasta que se entregue el envío?"
+        requires_shipment_shipper_reference_on_receivables: "¿Impedir crear la cuenta por cobrar hasta que el envío tenga el número de referencia del remitente?"
+      broker_customer_sales_rep:
+        commission_flat: comisión fija
+        commission_percent: comisión porcentual
+      contacts:
+        broker_carrier: Transportista
+        broker_customer: Cliente
+        label: Departamento
+      contact:
+        company_sgid: Empresa
+      item:
+        declared_freight_class: Clase de flete
+        desc: Descripción
+        h: Alto
+        l: Largo
+        w: Ancho
+      pickup_request:
+        accepted_pickup_at: Aceptada el
+        accepted_pickup_on: Recolección aceptada para el
+        canceled_at: Cancelada el
+        pickup_on: Recolección el
+        reschedule_reason: Motivo de reprogramación
+      region:
+        iso_3166_2: ISO 3166-2
+      shipment:
+        bol: "N.º de BOL"
+        broker_bol: Conocimiento de embarque
+        broker_carrier: Transportista
+        broker_dispatch_sheet: Hoja de despacho
+        broker_quote: Cotización
+        carrier_bol: Conocimiento de embarque escaneado
+        carrier_pod: Comprobante de entrega
+        customer_reference: "N.º de OC"
+        pickup_confirmation: "N.º de recolección"
+        pro: "N.º de PRO"
+        quote_id: "N.º de cotización"
+        shipper_reference: "N.º de OV"
+        total_charges: Cargo
+        total_charges_cents: Cargo
+        total_cost: Costo del transportista
+        total_cost_cents: Costo del transportista
+      user:
+        company_sgid: Empresa
     help:
       api_key:
         name: Dónde se usa la clave, por ejemplo “WMS del almacén”
-        ttl: Renueve la clave para reemplazarla antes de que venza
+        ttl: Renueva la clave para reemplazarla antes de que venza
     models:
       api_key:
         one: Clave de API
         other: Claves de API
+      broker_carrier:
+        one: Transportista
+        other: Transportistas
+      broker_customer:
+        one: Cliente
+        other: Clientes
+      broker_customer_sales_rep:
+        one: Representante de ventas
+        other: Representantes de ventas
+      carrier:
+        one: Transportista
+        other: Transportistas
+      overlength_rule:
+        one: Regla de sobrelongitud
+        other: Reglas de sobrelongitud
+      pricing_rule:
+        one: Regla de precio por tarima
+        other: Reglas de precio por tarima
+      receivable:
+        one: Cuenta por cobrar
+        other: Cuentas por cobrar
+      shipment:
+        one: Carga
+        other: Cargas
+    enums:
+      pickup_request:
+        reschedule_reasons:
+          capacity: Capacidad del transportista
+          closed: Remitente cerrado
+          missed: Se envió al conductor, pero no recogió
+          shipper: Solicitud del remitente o del 3PL
+          special_equipment: Se necesita equipo especial
+          too_busy: Remitente demasiado ocupado
+          weather: Clima
+      rate:
+        sources:
+          api: API
+          pricing_rule: Tarifa
+      shipment:
+        statuses:
+          booked: Reservada
+          booked_quoted: "Reservada, cotizada"
+          canceled: Cancelada
+          delivered: Entregada
+          delivery_scheduled: Entrega programada
+          dispatched: Despachada
+          in_transit: En tránsito
+          new_shipment: Nueva
+          out_for_delivery: En reparto
+          pending_delivery_appointment: Cita de entrega pendiente
+          pickup_scheduled: Recolección programada
+          quoted: Cotizada
+    errors:
+      models:
+        broker_carrier:
+          attributes:
+            encrypted_ach_routing_number:
+              invalid: debe tener nueve dígitos
+        item:
+          attributes:
+            nmfc:
+              invalid: no tiene el formato correcto
+  api_key_mailer:
+    expiring:
+      body: Tu clave de API “%{name}” vence el %{expires_at}. Después, las solicitudes que la usen fallarán. Renueva la clave para obtener una nueva.
+      greeting: "Hola, %{first_name}:"
+      roll: Renovar clave de API
+      subject: La clave de API “%{name}” vence el %{expires_at}
   api_keys:
     destroy:
-      destroyed: Se eliminó la %{model_name} “%{name}”
+      destroyed: Se eliminó %{model_name} “%{name}”
+    errors:
+      expired: La clave de API “%{name}” venció el %{at}. Renuévala o crea una clave de API nueva.
+      invalid: La clave de API no es válida.
+      missing: Falta la clave de API. Envíala en el encabezado X-API-Key o como Authorization Bearer.
     header:
       new: Nueva
     index:
-      broker_ware_html: >-
-        Una API compatible con 3PL Systems BrokerWare en %{path}. Solicite un token de acceso en %{token_path} con el ID de
-        cliente como <code>client_id</code> y la clave como <code>client_secret</code>.
-      dsdc_html: Una API conforme a NMFTA DSDC en %{path}
-      freightview_html: Una API compatible con Freightview en %{path}
-      graphql_html: Una API GraphQL en %{path}. Use %{graphiql} para explorarla.
+      broker_ware_html: "Una API compatible con 3PL Systems BrokerWare en %{path}. Solicita un token de acceso en %{token_path} con el ID de cliente como <code>client_id</code> y la clave como <code>client_secret</code>."
+      dsdc_html: Una API compatible con NMFTA DSDC en %{path}
+      freightview_html: "Una API compatible con Freightview en %{path}"
+      graphql_html: Una API GraphQL en %{path}. Usa %{graphiql} para explorarla.
       intro_html: >-
-        Las %{model_name_plural} autentican las solicitudes a estas API. Envíe la clave en el encabezado <code>X-API-Key</code>
+        Las %{model_name_plural} autentican las solicitudes a estas API. Envía la clave en el encabezado <code>X-API-Key</code>
         o como <code>Authorization: Bearer</code>. Las claves vencen después de %{max_ttl} como máximo.
       never: Nunca
       titles:
@@ -43,21 +192,215 @@ es:
         index: Todas
     member_menu:
       destroy: Eliminar
-      destroy_confirm: ¿Eliminar “%{name}”? Las solicitudes que la usen fallarán.
+      destroy_confirm: "¿Eliminar “%{name}”? Las solicitudes que la usen fallarán."
       overview: Resumen
       roll: Renovar
-      roll_confirm: >-
-        Esto reemplazará la %{model_name} por una nueva que vence en %{ttl}. La clave actual dejará de funcionar en
-        %{grace_period}. ¿Está seguro?
+      roll_confirm: Esto reemplazará la %{model_name} por una nueva que vence en %{ttl}. La clave actual dejará de funcionar en %{grace_period}. ¿Estás seguro?
     menu:
       active: Activas
       all: Todas
       expired: Vencidas
     new:
-      error: "No se pudo guardar la %{model_name}:"
+      error: "No se pudo guardar %{model_name}:"
       submit: Guardar
       title: Nueva %{model_name}
     show:
-      copy: Haga clic en la clave para copiarla.
+      copy: Haz clic en la clave para copiarla.
       never: Nunca
       overview: Resumen
+  bootstrap_form:
+    labels:
+      shipment:
+        bol: "N.º de BOL"
+        customer_reference: "N.º de OC"
+        pickup_confirmation: "N.º de recolección"
+        pro: "N.º de PRO"
+        quote_id: "N.º de cotización"
+        shipper_reference: "N.º de OV"
+  broker:
+    banks:
+      update:
+        failure: No se pudo actualizar el banco
+      update_accounting:
+        failure: No se pudieron actualizar las cuentas contables
+        success: Cuentas contables actualizadas
+    broker_countries:
+      create:
+        failure: No se pudo agregar el país
+    broker_customers:
+      update_accounting:
+        failure: No se pudieron actualizar los clientes contables
+        success: Clientes contables actualizados
+    carriers:
+      accountings:
+        update:
+          failure: No se pudieron actualizar los proveedores contables
+          success: Proveedores contables actualizados
+      api_keys:
+        destroy:
+          destroyed: Se eliminó %{model_name} “%{name}”
+        index:
+          intro_html: >-
+            Las %{model_name_plural} permiten que los usuarios de este transportista envíen facturas a <code>/api/dsdc/v1/invoices</code> y documentos de respaldo a
+            <code>/api/dsdc/v1/documents</code> con la API de facturas y documentos NMFTA DSDC. Cada factura se convierte en una cuenta por pagar. Cada clave pertenece
+            a un usuario del transportista, que también puede crear las suyas. Envía la clave al transportista. El transportista la envía en el encabezado
+            <code>X-API-Key</code> o como <code>Authorization: Bearer</code>. Renueva o elimina una clave para desactivarla.
+          never: Nunca
+          new: Nueva
+        new:
+          error: "No se pudo guardar %{model_name}:"
+          submit: Guardar
+          title: Nueva %{model_name}
+        show:
+          copy: Haz clic en la clave para copiarla.
+          destroy: Eliminar
+          destroy_confirm: "¿Eliminar “%{name}”? Las solicitudes que la usen fallarán."
+          never: Nunca
+          roll: Renovar
+          roll_confirm: Esto reemplazará la %{model_name} por una nueva. La clave actual dejará de funcionar en %{grace_period}. ¿Estás seguro?
+      broker_carriers:
+        tariffs:
+          update:
+            success: Tarifa actualizada
+        update:
+          failure: No se pudo actualizar el transportista
+    claims:
+      new:
+        missing_shipment: No se puede abrir un reclamo sin un envío
+      update:
+        failure: No se pudo actualizar el reclamo
+    contacts:
+      update:
+        failure: No se pudo actualizar el contacto
+    delays:
+      update:
+        failure: No se pudo actualizar el retraso
+    payment_transactions:
+      update:
+        failure: No se pudo actualizar la factura
+    payments:
+      update:
+        failure: No se pudo actualizar el pago
+    problems:
+      update:
+        failure: No se pudo actualizar la excepción
+    shipments:
+      destroy:
+        failure: Error al eliminar el envío
+        success: Envío eliminado
+    users:
+      update:
+        success: Usuario actualizado correctamente
+  broker_ware:
+    document_deliveries:
+      create:
+        invalid_emails: "Envía entre 1 y %{max} direcciones de correo electrónico válidas en emails."
+        unknown_documents: "Envía al menos un nombre de documento en documentNames. Los nombres disponibles son %{names}."
+    errors:
+      rate_limited: "Demasiadas solicitudes. Espera la cantidad de segundos del encabezado Retry-After y vuelve a intentarlo."
+      unauthorized: "El token de acceso falta, no es válido o venció. Solicita uno nuevo en /connect/token."
+    shipments:
+      index:
+        unknown_status: "El estado “%{status}” es desconocido."
+      lane_changed: "El código postal del remitente o del destinatario difiere del envío cotizado. Vuelve a cotizar el envío."
+      picked_up: "El envío ya se recogió, por lo que no se puede cambiar ni cancelar."
+      unbookable_rate: "La cotización de tarifa “%{rate_quote_id}” no se puede reservar. Es desconocida, venció o ya se reservó."
+  discussion_topics:
+    tracking_event:
+      arrived_at_terminal: "%{model_name} llegó cerca de %{city}, %{region_abbreviation} %{country_alpha2}"
+      delivered: "%{model_name} fue entregada"
+      delivery_appointment_scheduled: "%{model_name} tiene cita de entrega programada"
+      departed: "%{model_name} salió de %{city}, %{region_abbreviation} %{country_alpha2}"
+      found: "%{model_name} fue encontrada cerca de %{city}, %{region_abbreviation} %{country_alpha2}"
+      located: "%{model_name} fue localizada cerca de %{city}, %{region_abbreviation} %{country_alpha2}"
+      lost: "%{model_name} se extravió"
+      out_for_delivery: "%{model_name} salió a reparto cerca de %{city}, %{region_abbreviation} %{country_alpha2}"
+      pending_delivery_appointment: "%{model_name} está pendiente de cita de entrega"
+      picked_up: "%{model_name} fue recogida"
+      pickup_driver_assigned: "%{model_name} fue asignada a un conductor"
+      pickup_information_received_by_carrier: "%{model_name} con información de recolección recibida por el transportista"
+      pickup_information_sent_to_carrier: "%{model_name} con información de recolección enviada al transportista"
+      sailed: "%{model_name} salió de %{city}, %{region_abbreviation} %{country_alpha2} por barco"
+      trailer_closed: "%{model_name} estaba en un remolque cerrado en %{city}, %{region_abbreviation} %{country_alpha2}"
+      trailer_unloaded: "%{model_name} se descargó en %{city}, %{region_abbreviation} %{country_alpha2}"
+  dsdc:
+    bols:
+      broker_bol_failed: No se pudo crear el PDF del conocimiento de embarque. Descárgalo más tarde desde el envío.
+      broker_label_failed: No se pudo crear el PDF de la etiqueta de envío. Descárgalo más tarde desde el envío.
+      create:
+        unknown_customer: billTo.account "%{account}" no coincide con ningún cliente para el que puedas reservar.
+      destroy:
+        picked_up: El envío ya se recogió, por lo que su conocimiento de embarque no se puede cancelar.
+      messages:
+        create: Se creó el conocimiento de embarque.
+        destroy: Se canceló el conocimiento de embarque.
+        test: La solicitud de prueba es válida. No se guardó nada.
+        update: Se actualizó el conocimiento de embarque.
+      unsupported_accessorial: El código de servicio adicional %{code} no es compatible y se ignoró.
+      update:
+        picked_up: El envío ya se recogió, por lo que su conocimiento de embarque no se puede cambiar.
+    documents:
+      create:
+        message: Se cargaron los documentos.
+    errors:
+      rate_limited: Demasiadas solicitudes. Espera un minuto y vuelve a intentarlo.
+    invoices:
+      create:
+        message: Se creó la factura.
+      update:
+        message: Se actualizó la factura.
+    pickup_requests:
+      closes_before_ready: closeTime debe ser posterior a readyTime.
+      messages:
+        create: Se aceptó la solicitud de recolección.
+        destroy: Se canceló la solicitud de recolección.
+        test: La solicitud de prueba es válida. No se guardó nada.
+        update: Se actualizó la solicitud de recolección.
+      pro_numbers_missing: Envía al menos una entrada de shipmentDetails con un proNumber. Crea primero el conocimiento de embarque para obtener un número PRO.
+      shipments_missing: "Ningún envío activo tiene estos números PRO: %{pro_numbers}."
+      shipments_picked_up: Uno o más envíos ya se recogieron.
+      shipments_scheduled: "Estos envíos ya pertenecen a otra solicitud de recolección: %{pro_numbers}."
+      show:
+        lookup_type: lookupType debe ser %{lookup_types}.
+      statuses:
+        accepted: Se aceptó la solicitud de recolección.
+        cancelled: Se canceló la solicitud de recolección.
+        departed: El conductor recogió la carga.
+        en_route: Se asignó un conductor a la recolección.
+        rescheduled: La recolección se cambió a otro día.
+  freightview:
+    errors:
+      missing: "Falta una propiedad obligatoria."
+      not_found: "No se encontró el recurso."
+      rate_limited: "Demasiadas solicitudes. Espera un minuto y vuelve a intentarlo."
+      required: "Esta propiedad es obligatoria."
+    ltl_shipments:
+      create:
+        customer_required: "Usa una clave de API que pertenezca a un usuario cliente."
+        unserviceable_accessorial: "El servicio adicional %{code} no se ofrece para tu cuenta."
+        unsupported_accessorial: "Este servicio adicional no es compatible."
+        unsupported_accessorials: "No se pueden usar uno o más servicios adicionales."
+  graphql:
+    errors:
+      rate_limited: Demasiadas solicitudes. Espera la cantidad de segundos del encabezado Retry-After y vuelve a intentarlo.
+  locale_name: Español
+  settings:
+    automatically_authorize_receivables: "¿Autorizar automáticamente la cuenta por cobrar después de crearla?"
+    automatically_update_shipment_tracking_based_on_carrier_apis: "¿Actualizar automáticamente el rastreo de envíos según las API de los transportistas?"
+    copyright_holder: Razón social de tu empresa (se usa en el aviso de derechos de autor), p. ej., Mi Empresa, S.A. de C.V.
+    customer_service_email: Correo electrónico de atención al cliente que ven los clientes
+    domain: Dominio que usa Next TMS, p. ej., tms.miempresa.com
+    ignore_broker_carrier_bol_requires_tracking_number: "¿Permitir crear el conocimiento de embarque cuando falta el número de rastreo del envío y el transportista lo exige?"
+    mailing_address: Dirección postal de tu empresa, que aparece en documentos como conocimientos de embarque y cotizaciones
+    name: Nombre visible de tu empresa, p. ej., Mi Empresa
+    phone: Teléfono de atención al cliente en formato E.164, p. ej., +1-555-555-5555
+    requires_charges_confirmed_on_receivables: "¿Impedir crear la cuenta por cobrar hasta que se confirmen los cargos del envío?"
+    robot_email: Correo electrónico que se usa para los correos de notificación
+    scac: Código SCAC (Standard Carrier Alpha Code) de tu empresa, que devuelven las API NMFTA DSDC
+    time_zone_name: Nombre de zona horaria IANA
+    website_desc: Contenido de la etiqueta HTML <meta name="description"> que se usa en los resultados de los buscadores
+    website_homepage: URL de tu sitio web principal, p. ej., https://miempresa.com/
+    website_logo_image_data: URL de tu logotipo SVG (puede ser una URL codificada con data:)
+  test_mailer:
+    hello:
+      subject: Saludos desde Next TMS

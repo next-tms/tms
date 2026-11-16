@@ -204,3 +204,8 @@ iframe {
 footer .row {
   padding-top: 2.4rem;
 }
+
+.list-inline-separated .list-inline-item:not(:last-child)::after {
+  content: "|";
+  margin-left: .5rem;
+}

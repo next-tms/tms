@@ -27,19 +27,34 @@ RSpec.describe(TrackingEvent) do
   end
 
   describe '#discussable_topic_description' do
+    subject { record.discussable_topic_description }
+
     let(:record) { build(:tracking_event, city: 'Fremont') }
 
     before do
       allow(record.event).to(receive(:active_shipping_code).and_return('departed'))
       allow(I18n).to(receive(:t).and_call_original)
-
-      record.discussable_topic_description
     end
 
-    it do
-      expect(I18n)
-        .to(have_received(:t).with('discussion_topics.tracking_event.departed', city: 'Fremont', country_alpha2: 'US',
-                                                                                region_abbreviation: 'CA'))
+    it { is_expected.to(include(Shipment.model_name.human, 'Fremont')) }
+    it { is_expected.not_to(include('Translation missing')) }
+
+    context 'with the translation arguments' do
+      before { record.discussable_topic_description }
+
+      it do
+        expect(I18n)
+          .to(
+            have_received(:t)
+              .with(
+                'discussion_topics.tracking_event.departed',
+                city: 'Fremont',
+                country_alpha2: 'US',
+                model_name: Shipment.model_name.human,
+                region_abbreviation: 'CA'
+              )
+          )
+      end
     end
   end
 

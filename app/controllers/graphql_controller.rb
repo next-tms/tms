@@ -1,5 +1,6 @@
 class GraphQLController < ActionController::API
   include GraphQLAuthentication
+  include Localization
 
   INTROSPECTION_LIMITS = { max_complexity: 400, max_depth: 15 }.freeze
   RATE_LIMIT_WINDOW = 1.minute
