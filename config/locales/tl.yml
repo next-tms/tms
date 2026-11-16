@@ -31,6 +31,7 @@ tl:
         Isang API na tugma sa 3PL Systems BrokerWare sa %{path}. Humingi ng access token mula sa %{token_path} gamit ang
         Client ID bilang <code>client_id</code> at ang key bilang <code>client_secret</code>.
       dsdc_html: Isang API na sumusunod sa NMFTA DSDC sa %{path}
+      freightview_html: Isang API na tugma sa Freightview sa %{path}
       graphql_html: Isang GraphQL API sa %{path}. Gamitin ang %{graphiql} para galugarin ito.
       intro_html: >-
         Ang %{model_name_plural} ay nagpapatunay ng mga request sa mga API na ito. Ipadala ang key sa <code>X-API-Key</code>

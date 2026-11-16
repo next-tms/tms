@@ -193,6 +193,7 @@ en:
     index:
       broker_ware_html: A 3PL Systems BrokerWare-compatible API at %{path}. Request an access token from %{token_path} with the Client ID as <code>client_id</code> and the key as <code>client_secret</code>.
       dsdc_html: An NMFTA DSDC-compliant API at %{path}
+      freightview_html: A Freightview-compatible API at %{path}
       graphql_html: A GraphQL API at %{path}. Use %{graphiql} to explore it.
       intro_html: >-
         %{model_name_plural} authenticate requests to these APIs. Send the key in the <code>X-API-Key</code>
@@ -380,6 +381,18 @@ en:
         departed: The driver picked up the freight.
         en_route: A driver is assigned to the pickup.
         rescheduled: The pickup was moved to a different day.
+  freightview:
+    errors:
+      missing: A required property is missing.
+      not_found: The resource was not found.
+      rate_limited: Too many requests. Wait one minute, then try again.
+      required: This property is required.
+    ltl_shipments:
+      create:
+        customer_required: Use an API key that belongs to a customer user.
+        unserviceable_accessorial: Accessorial %{code} is not offered to your account.
+        unsupported_accessorial: This accessorial is not supported.
+        unsupported_accessorials: One or more accessorials cannot be used.
   graphql:
     errors:
       rate_limited: Too many requests. Wait for the number of seconds in the Retry-After header, then try again.

@@ -1,0 +1,47 @@
+{
+  "bolNumber": "1001",
+  "destination": {
+    "accessorials": {
+      "liftgate": true,
+      "notify": false
+    },
+    "address": "4011 Lana Tier",
+    "city": "Fremont",
+    "closesAt": "16:30",
+    "company": "Acme Receiving",
+    "contactEmail": "Receiving@Example.com",
+    "contactName": "Riley Receiver",
+    "contactPhone": "5105550100",
+    "country": "us",
+    "opensAt": "09:00",
+    "postalCode": "94536",
+    "shipType": "residential",
+    "state": "CA"
+  },
+  "items": [
+    {
+      "description": "Widgets",
+      "dimensionsUOM": "in",
+      "freightClass": 70,
+      "height": 48,
+      "length": 48,
+      "nmfcNumber": 12345,
+      "nmfcSubNumber": 2,
+      "quantity": 2,
+      "type": "pallet",
+      "weight": 500,
+      "weightUOM": "lbs",
+      "width": 40
+    }
+  ],
+  "origin": {
+    "city": "Austin",
+    "closesAt": "17:00",
+    "company": "Acme Shipping",
+    "country": "us",
+    "opensAt": "08:00",
+    "postalCode": "78701",
+    "state": "TX"
+  },
+  "pickupDate": "2026-11-17"
+}

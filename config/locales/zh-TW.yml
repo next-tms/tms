@@ -31,6 +31,7 @@ zh-TW:
         相容 3PL Systems BrokerWare 的 API，位於 %{path}。以用戶端 ID 作為 <code>client_id</code>、金鑰作為
         <code>client_secret</code>，向 %{token_path} 取得存取權杖。
       dsdc_html: 符合 NMFTA DSDC 標準的 API，位於 %{path}
+      freightview_html: 相容 Freightview 的 API，位於 %{path}
       graphql_html: GraphQL API，位於 %{path}。使用 %{graphiql} 進行探索。
       intro_html: >-
         %{model_name_plural}用於驗證對這些 API 的請求。在 <code>X-API-Key</code> 標頭中或以

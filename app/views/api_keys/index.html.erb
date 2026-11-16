@@ -3,11 +3,12 @@
 <%= render 'header' %>
 <h2><%= yield :title %></h2>
 
-<p><%= t('.intro_html', max_ttl: pluralize(APIKey::MAX_TTL.in_days.to_i, 'day'), model_name_plural: APIKey.model_name.human(count: 2)) %></p>
+<p><%= t('.intro_html', max_ttl: t('datetime.distance_in_words.x_days', count: APIKey::MAX_TTL.in_days.to_i), model_name_plural: APIKey.model_name.human(count: 2)) %></p>
 
 <ul>
   <li><%= t('.broker_ware_html', path: tag.code('/api/v1'), token_path: tag.code(broker_ware_connect_token_path)) %></li>
   <li><%= t('.dsdc_html', path: tag.code('/api/dsdc')) %></li>
+  <li><%= t('.freightview_html', path: tag.code('/api/v2.0')) %></li>
   <li><%= t('.graphql_html', graphiql: link_to('GraphiQL', graphiql_path, data: { turbo: false }), path: tag.code(graphql_path)) %></li>
 </ul>
 

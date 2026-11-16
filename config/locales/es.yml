@@ -31,6 +31,7 @@ es:
         Una API compatible con 3PL Systems BrokerWare en %{path}. Solicite un token de acceso en %{token_path} con el ID de
         cliente como <code>client_id</code> y la clave como <code>client_secret</code>.
       dsdc_html: Una API conforme a NMFTA DSDC en %{path}
+      freightview_html: Una API compatible con Freightview en %{path}
       graphql_html: Una API GraphQL en %{path}. Use %{graphiql} para explorarla.
       intro_html: >-
         Las %{model_name_plural} autentican las solicitudes a estas API. Envíe la clave en el encabezado <code>X-API-Key</code>

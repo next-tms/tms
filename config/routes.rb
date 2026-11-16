@@ -305,4 +305,9 @@ Rails.application.routes.draw do
     get 'shipment/pro/:pro/public', to: 'public_shipments#show'
     get 'shipment/pro/:pro/verified', to: 'shipments#show'
   end
+
+  namespace :freightview, defaults: { format: :json }, format: false, path: 'api/v2.0' do
+    resources :ltl_shipments, only: %i[create], path: 'shipments/ltl'
+    resources :shipments, only: %i[show], param: :shipment_id
+  end
 end

@@ -119,6 +119,7 @@ gem 'StreetAddress',
     require: 'street_address'
 
 gem 'phony_rails'
+gem 'rails-i18n', '~> 8.0'
 
 gem 'gotenberg-ruby', '~> 1.1.0'
 gem 'pstore' # explicitly for gotenberg-ruby

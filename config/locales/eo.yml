@@ -31,6 +31,7 @@ eo:
         API kongrua kun 3PL Systems BrokerWare ĉe %{path}. Petu alirĵetonon de %{token_path} kun la Klienta ID kiel
         <code>client_id</code> kaj la ŝlosilo kiel <code>client_secret</code>.
       dsdc_html: API konforma al NMFTA DSDC ĉe %{path}
+      freightview_html: API kongrua kun Freightview ĉe %{path}
       graphql_html: GraphQL-API ĉe %{path}. Uzu %{graphiql} por esplori ĝin.
       intro_html: >-
         %{model_name_plural} aŭtentigas petojn al ĉi tiuj API-oj. Sendu la ŝlosilon en la kapo <code>X-API-Key</code>
