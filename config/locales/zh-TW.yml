@@ -3,3 +3,58 @@ zh-TW:
     attributes:
       address:
         country_alpha2: 國家
+      api_key:
+        client_id: 用戶端 ID
+        created_at: 建立時間
+        expires_at: 到期時間
+        last_used_at: 上次使用
+        name: 名稱
+        status: 狀態
+        token: 金鑰
+        token_suffix: 金鑰
+        ttl: 有效期
+    help:
+      api_key:
+        name: 金鑰的使用位置，例如「倉庫 WMS」
+        ttl: 在金鑰到期前輪替以取代它
+    models:
+      api_key:
+        one: API 金鑰
+        other: API 金鑰
+  api_keys:
+    destroy:
+      destroyed: 已刪除%{model_name}「%{name}」
+    header:
+      new: 新增
+    index:
+      broker_ware_html: >-
+        相容 3PL Systems BrokerWare 的 API，位於 %{path}。以用戶端 ID 作為 <code>client_id</code>、金鑰作為
+        <code>client_secret</code>，向 %{token_path} 取得存取權杖。
+      dsdc_html: 符合 NMFTA DSDC 標準的 API，位於 %{path}
+      graphql_html: GraphQL API，位於 %{path}。使用 %{graphiql} 進行探索。
+      intro_html: >-
+        %{model_name_plural}用於驗證對這些 API 的請求。在 <code>X-API-Key</code> 標頭中或以
+        <code>Authorization: Bearer</code> 方式傳送金鑰。金鑰最長在 %{max_ttl} 後到期。
+      never: 從未使用
+      titles:
+        active: 有效
+        expired: 已到期
+        index: 全部
+    member_menu:
+      destroy: 刪除
+      destroy_confirm: 刪除「%{name}」？使用它的請求將會失敗。
+      overview: 概覽
+      roll: 輪替
+      roll_confirm: 這會以一個在 %{ttl} 後到期的新%{model_name}取代目前的%{model_name}。目前的金鑰將在 %{grace_period} 後停止運作。確定嗎？
+    menu:
+      active: 有效
+      all: 全部
+      expired: 已到期
+    new:
+      error: 無法儲存%{model_name}：
+      submit: 儲存
+      title: 新增%{model_name}
+    show:
+      copy: 點擊金鑰即可複製。
+      never: 從未使用
+      overview: 概覽

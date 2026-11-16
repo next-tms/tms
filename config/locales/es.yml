@@ -3,3 +3,60 @@ es:
     attributes:
       address:
         country_alpha2: País
+      api_key:
+        client_id: ID de cliente
+        created_at: Creada
+        expires_at: Vence
+        last_used_at: Último uso
+        name: Nombre
+        status: Estado
+        token: Clave
+        token_suffix: Clave
+        ttl: Vence en
+    help:
+      api_key:
+        name: Dónde se usa la clave, por ejemplo “WMS del almacén”
+        ttl: Renueve la clave para reemplazarla antes de que venza
+    models:
+      api_key:
+        one: Clave de API
+        other: Claves de API
+  api_keys:
+    destroy:
+      destroyed: Se eliminó la %{model_name} “%{name}”
+    header:
+      new: Nueva
+    index:
+      broker_ware_html: >-
+        Una API compatible con 3PL Systems BrokerWare en %{path}. Solicite un token de acceso en %{token_path} con el ID de
+        cliente como <code>client_id</code> y la clave como <code>client_secret</code>.
+      dsdc_html: Una API conforme a NMFTA DSDC en %{path}
+      graphql_html: Una API GraphQL en %{path}. Use %{graphiql} para explorarla.
+      intro_html: >-
+        Las %{model_name_plural} autentican las solicitudes a estas API. Envíe la clave en el encabezado <code>X-API-Key</code>
+        o como <code>Authorization: Bearer</code>. Las claves vencen después de %{max_ttl} como máximo.
+      never: Nunca
+      titles:
+        active: Activas
+        expired: Vencidas
+        index: Todas
+    member_menu:
+      destroy: Eliminar
+      destroy_confirm: ¿Eliminar “%{name}”? Las solicitudes que la usen fallarán.
+      overview: Resumen
+      roll: Renovar
+      roll_confirm: >-
+        Esto reemplazará la %{model_name} por una nueva que vence en %{ttl}. La clave actual dejará de funcionar en
+        %{grace_period}. ¿Está seguro?
+    menu:
+      active: Activas
+      all: Todas
+      expired: Vencidas
+    new:
+      error: "No se pudo guardar la %{model_name}:"
+      submit: Guardar
+      title: Nueva %{model_name}
+    show:
+      copy: Haga clic en la clave para copiarla.
+      never: Nunca
+      overview: Resumen

@@ -31,6 +31,30 @@ RSpec.describe(ReceivablePolicy) do
     end
   end
 
+  describe '#index?' do
+    subject { policy.apply(:index?) }
+
+    it { is_expected.to(be(false)) }
+
+    context 'with an accounts payable customer user' do
+      let(:authorizable) { create(:customer_user).tap { |customer_user| customer_user.add_role(:accounts_payable) } }
+
+      it { is_expected.to(be(true)) }
+    end
+
+    context 'with an accounts receivable user' do
+      let(:authorizable) { create(:broker_user).tap { |broker_user| broker_user.add_role(:accounts_receivable) } }
+
+      it { is_expected.to(be(true)) }
+    end
+
+    context 'with a carrier' do
+      let(:authorizable) { create(:carrier_user) }
+
+      it { is_expected.to(be(false)) }
+    end
+  end
+
   describe '#view?' do
     subject { policy.apply(:view?) }
 

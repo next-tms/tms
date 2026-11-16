@@ -6,12 +6,40 @@ en:
   accounting_mailer:
     unknown_customers:
       subject: Accounting Customer Sync Failure
+  activemodel:
+    attributes:
+      broker_ware/quote:
+        accessorials: accessorials
+        consignee_zip: consigneeZip
+        shipper_zip: shipperZip
+      broker_ware/shipment_payload:
+        estimated_delivery_close_time: estimatedDeliveryCloseTime
+        estimated_delivery_open_time: estimatedDeliveryOpenTime
+        pickup_close_time: pickupCloseTime
+        pickup_date: pickupDate
+        pickup_open_time: pickupOpenTime
+        shipment_status: shipmentStatus
+    errors:
+      models:
+        broker_ware/quote:
+          attributes:
+            accessorials:
+              unserviceable: "are not offered: %{codes}"
+            consignee_zip:
+              unknown: is not a known zip code
+            shipper_zip:
+              unknown: is not a known zip code
+        broker_ware/shipment_payload:
+          attributes:
+            shipment_status:
+              unsupported: can only be Booked, Quoted, or Canceled. Your broker updates every other status.
   activerecord:
     attributes:
       address:
         country_alpha2: Country
         ref: Reference
       api_key:
+        client_id: Client ID
         created_at: Created
         expires_at: Expires
         last_used_at: Last used
@@ -163,6 +191,7 @@ en:
     header:
       new: New
     index:
+      broker_ware_html: A 3PL Systems BrokerWare-compatible API at %{path}. Request an access token from %{token_path} with the Client ID as <code>client_id</code> and the key as <code>client_secret</code>.
       dsdc_html: An NMFTA DSDC-compliant API at %{path}
       graphql_html: A GraphQL API at %{path}. Use %{graphiql} to explore it.
       intro_html: >-
@@ -274,6 +303,20 @@ en:
     users:
       update:
         success: Successfully Updated User
+  broker_ware:
+    document_deliveries:
+      create:
+        invalid_emails: Send between 1 and %{max} valid email addresses in emails.
+        unknown_documents: Send at least one document name in documentNames. Available names are %{names}.
+    errors:
+      rate_limited: Too many requests. Wait for the number of seconds in the Retry-After header, then try again.
+      unauthorized: The access token is missing, invalid, or expired. Request a new one from /connect/token.
+    shipments:
+      index:
+        unknown_status: Status “%{status}” is unknown.
+      lane_changed: The shipper or consignee zip code differs from the rated shipment. Rate the shipment again.
+      picked_up: The shipment was already picked up, so it cannot be changed or canceled.
+      unbookable_rate: Rate quote “%{rate_quote_id}” cannot be booked. It is unknown, expired, or already booked.
   discussion_topics:
     tracking_event:
       arrived_at_terminal: #{model_name} arrived near %{city}, %{region_abbreviation} %{country_alpha2}

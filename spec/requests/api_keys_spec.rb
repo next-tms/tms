@@ -18,6 +18,7 @@ RSpec.describe('APIKeys') do
     it { expect(response).to(have_http_status(:ok)) }
     it { expect(response.body).to(include(api_key.name, "tms_…#{api_key.token_suffix}")) }
     it { expect(response.body).not_to(include(api_key.token)) }
+    it { expect(response.body).to(include('/api/v1', '/connect/token')) }
 
     context 'when the request repeats the ETag' do
       before { get('/account/api-keys', headers: { 'If-None-Match' => response.headers['ETag'] }) }
@@ -82,7 +83,7 @@ RSpec.describe('APIKeys') do
     before { get("/account/api-keys/#{api_key.id}") }
 
     it { is_expected.to(have_http_status(:ok)) }
-    it { expect(response.body).to(include(api_key.name, api_key.token)) }
+    it { expect(response.body).to(include(api_key.client_id, api_key.name, api_key.token)) }
 
     context 'when the key belongs to another user' do
       let(:api_key) { create(:api_key) }

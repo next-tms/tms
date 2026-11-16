@@ -14,6 +14,8 @@ RSpec.describe(APIKey) do
     it { expect(described_class.authenticate(api_key.token)).to(eq(api_key)) }
     it { expect(described_class.authenticate('tms_unknown')).to(be_nil) }
     it { expect(described_class.authenticate(nil)).to(be_nil) }
+    it { expect(described_class.authenticate(api_key.token, client_id: api_key.client_id)).to(eq(api_key)) }
+    it { expect(described_class.authenticate(api_key.token, client_id: 'unknown')).to(be_nil) }
   end
 
   describe '.digest' do
@@ -33,6 +35,21 @@ RSpec.describe(APIKey) do
 
   describe '.ransackable_attributes' do
     it { expect(described_class.ransackable_attributes).to(eq(['created_at', 'expires_at', 'last_used_at', 'name', 'token_suffix'])) }
+  end
+
+  describe '#access_token' do
+    it { expect(described_class.find_signed(api_key.access_token, purpose: :access_token)).to(eq(api_key)) }
+    it { expect(described_class.find_signed(api_key.access_token)).to(be_nil) }
+  end
+
+  describe '#access_token_ttl' do
+    it { expect(api_key.access_token_ttl).to(eq(described_class::ACCESS_TOKEN_TTL)) }
+
+    context 'when the key expires sooner' do
+      subject(:api_key) { create(:api_key, expires_at: 1.hour.from_now) }
+
+      it { expect(api_key.access_token_ttl).to(be_within(1.minute).of(1.hour)) }
+    end
   end
 
   describe '#active?' do
@@ -89,6 +106,7 @@ RSpec.describe(APIKey) do
   end
 
   describe 'token' do
+    it { expect(api_key.client_id).to(match(/\A\h{32}\z/)) }
     it { expect(api_key.token).to(match(/\Atms_[1-9A-HJ-NP-Za-km-z]{43}\z/)) }
     it { expect(api_key.token_digest).to(eq(described_class.digest(api_key.token))) }
     it { expect(api_key.token_suffix).to(eq(api_key.token.last(4))) }

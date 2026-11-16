@@ -1,11 +1,12 @@
 class APIKey < ApplicationRecord
   class << self
-    def authenticate(token) = token.presence && find_by(token_digest: digest(token))
+    def authenticate(token, **attributes) = token.presence && find_by(**attributes, token_digest: digest(token))
     def digest(token) = OpenSSL::Digest::SHA256.hexdigest(token.to_s)
     def ransackable_associations(_auth_object = nil) = []
     def ransackable_attributes(_auth_object = nil) = ['created_at', 'expires_at', 'last_used_at', 'name', 'token_suffix']
   end
 
+  ACCESS_TOKEN_TTL = 1.day
   EXPIRES_SOON = 7.days
   MAX_TTL = 180.days
   ROLL_GRACE_PERIOD = 8.hours
@@ -29,10 +30,12 @@ class APIKey < ApplicationRecord
 
   validates :expires_at, comparison: { less_than_or_equal_to: -> { MAX_TTL.from_now } }, if: :expires_at, on: :create
   validates :expires_at, :ttl, presence: true
-  validates :name, :token, :token_digest, :token_suffix, presence: true
+  validates :client_id, :name, :token, :token_digest, :token_suffix, presence: true
   validates :name, length: { maximum: 100 }
   validates :ttl, allow_nil: true, comparison: { greater_than: 0.seconds, less_than_or_equal_to: MAX_TTL }
 
+  def access_token = signed_id(expires_in: access_token_ttl, purpose: :access_token)
+  def access_token_ttl = [ACCESS_TOKEN_TTL, expires_at && (expires_at - Time.current).seconds].compact.min
   def active? = !expired?
   def expired? = expires_at.present? && expires_at.past?
   def expires_soon? = active? && expires_at.present? && expires_at.before?(EXPIRES_SOON.from_now)
@@ -51,6 +54,7 @@ class APIKey < ApplicationRecord
   private
 
   def set_token
+    self.client_id = SecureRandom.hex(16)
     self.token = "#{TOKEN_PREFIX}#{SecureRandom.base58(43)}"
     self.token_digest = self.class.digest(token)
     self.token_suffix = token.last(4)

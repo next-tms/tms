@@ -3,3 +3,58 @@ zh-CN:
     attributes:
       address:
         country_alpha2: 国家
+      api_key:
+        client_id: 客户端 ID
+        created_at: 创建时间
+        expires_at: 过期时间
+        last_used_at: 上次使用
+        name: 名称
+        status: 状态
+        token: 密钥
+        token_suffix: 密钥
+        ttl: 有效期
+    help:
+      api_key:
+        name: 密钥的使用位置，例如“仓库 WMS”
+        ttl: 在密钥过期前轮换以替换它
+    models:
+      api_key:
+        one: API 密钥
+        other: API 密钥
+  api_keys:
+    destroy:
+      destroyed: 已删除%{model_name}“%{name}”
+    header:
+      new: 新建
+    index:
+      broker_ware_html: >-
+        兼容 3PL Systems BrokerWare 的 API，位于 %{path}。以客户端 ID 作为 <code>client_id</code>、密钥作为
+        <code>client_secret</code>，从 %{token_path} 获取访问令牌。
+      dsdc_html: 符合 NMFTA DSDC 标准的 API，位于 %{path}
+      graphql_html: GraphQL API，位于 %{path}。使用 %{graphiql} 进行探索。
+      intro_html: >-
+        %{model_name_plural}用于验证对这些 API 的请求。在 <code>X-API-Key</code> 请求头中或以
+        <code>Authorization: Bearer</code> 方式发送密钥。密钥最长在 %{max_ttl} 后过期。
+      never: 从未使用
+      titles:
+        active: 有效
+        expired: 已过期
+        index: 全部
+    member_menu:
+      destroy: 删除
+      destroy_confirm: 删除“%{name}”？使用它的请求将会失败。
+      overview: 概览
+      roll: 轮换
+      roll_confirm: 这会用一个在 %{ttl} 后过期的新%{model_name}替换当前%{model_name}。当前密钥将在 %{grace_period} 后停止工作。确定吗？
+    menu:
+      active: 有效
+      all: 全部
+      expired: 已过期
+    new:
+      error: 无法保存%{model_name}：
+      submit: 保存
+      title: 新建%{model_name}
+    show:
+      copy: 点击密钥即可复制。
+      never: 从未使用
+      overview: 概览

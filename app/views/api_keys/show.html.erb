@@ -7,6 +7,12 @@
   <table class="table table-borderless table-striped">
     <tbody>
       <tr>
+        <th><%= APIKey.human_attribute_name(:client_id) %></th>
+        <td>
+          <input class="form-control font-monospace" data-action="click->clipboard#copy" data-controller="clipboard" readonly value="<%= @api_key.client_id %>">
+        </td>
+      </tr>
+      <tr>
         <th><%= APIKey.human_attribute_name(:token_suffix) %></th>
         <td>
           <input class="form-control font-monospace" data-action="click->clipboard#copy" data-controller="clipboard" readonly value="<%= @api_key.token %>">

@@ -3,3 +3,60 @@ tl:
     attributes:
       address:
         country_alpha2: Bansa
+      api_key:
+        client_id: Client ID
+        created_at: Ginawa
+        expires_at: Mag-e-expire
+        last_used_at: Huling ginamit
+        name: Pangalan
+        status: Katayuan
+        token: Key
+        token_suffix: Key
+        ttl: Mag-e-expire sa loob ng
+    help:
+      api_key:
+        name: Kung saan ginagamit ang key, halimbawa “WMS ng bodega”
+        ttl: I-roll ang key para palitan ito bago ito mag-expire
+    models:
+      api_key:
+        one: API Key
+        other: Mga API Key
+  api_keys:
+    destroy:
+      destroyed: Binura ang %{model_name} na “%{name}”
+    header:
+      new: Bago
+    index:
+      broker_ware_html: >-
+        Isang API na tugma sa 3PL Systems BrokerWare sa %{path}. Humingi ng access token mula sa %{token_path} gamit ang
+        Client ID bilang <code>client_id</code> at ang key bilang <code>client_secret</code>.
+      dsdc_html: Isang API na sumusunod sa NMFTA DSDC sa %{path}
+      graphql_html: Isang GraphQL API sa %{path}. Gamitin ang %{graphiql} para galugarin ito.
+      intro_html: >-
+        Ang %{model_name_plural} ay nagpapatunay ng mga request sa mga API na ito. Ipadala ang key sa <code>X-API-Key</code>
+        header o bilang <code>Authorization: Bearer</code>. Nag-e-expire ang mga key pagkalipas ng hindi hihigit sa %{max_ttl}.
+      never: Hindi kailanman
+      titles:
+        active: Aktibo
+        expired: Expired
+        index: Lahat
+    member_menu:
+      destroy: Burahin
+      destroy_confirm: Burahin ang “%{name}”? Mabibigo ang mga request na gumagamit nito.
+      overview: Pangkalahatang-ideya
+      roll: I-roll
+      roll_confirm: >-
+        Papalitan nito ang %{model_name} ng bago na mag-e-expire sa loob ng %{ttl}. Titigil sa paggana ang kasalukuyang key
+        sa loob ng %{grace_period}. Sigurado ka ba?
+    menu:
+      active: Aktibo
+      all: Lahat
+      expired: Expired
+    new:
+      error: "Hindi ma-save ang %{model_name}:"
+      submit: I-save
+      title: Bagong %{model_name}
+    show:
+      copy: I-click ang key para kopyahin ito.
+      never: Hindi kailanman
+      overview: Pangkalahatang-ideya

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_16_002705) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_035653) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -89,6 +89,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_002705) do
   end
 
   create_table "api_keys", force: :cascade do |t|
+    t.string "client_id", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.datetime "last_used_at"
@@ -100,6 +101,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_002705) do
     t.interval "ttl"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["client_id"], name: "index_api_keys_on_client_id", unique: true
     t.index ["rolled_from_id"], name: "index_api_keys_on_rolled_from_id"
     t.index ["token_digest"], name: "index_api_keys_on_token_digest", unique: true
     t.index ["user_id"], name: "index_api_keys_on_user_id"

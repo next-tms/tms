@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   get '/graphiql', to: 'graphiql#show'
   post '/graphql', to: 'graphql#execute', as: :graphql, defaults: { format: :json }
 
+  get '.well-known/api-catalog', to: 'well_known/api_catalogs#show', as: :api_catalog, defaults: { format: :json }, format: false
+
   devise_for :users, controllers: { invitations: 'users/invitations', registrations: 'users/registrations' }
 
   as :user do
@@ -265,6 +267,27 @@ Rails.application.routes.draw do
   end
 
   resources :countries, only: %i[show]
+
+  scope as: :broker_ware, defaults: { format: :json }, format: false, module: :broker_ware do
+    post 'connect/token', to: 'tokens#create'
+
+    scope path: 'api/v1' do
+      get 'accessorial', to: 'accessorials#index'
+      post 'CancelShipment', to: 'shipments#destroy'
+      post 'createshipment', to: 'shipments#create'
+      get 'GetLoads', to: 'shipments#index'
+      get 'invoice', to: 'invoices#index'
+      get 'Invoice/customfields', to: 'invoices#index', defaults: { custom_fields: true }
+      get 'ListShipmentDocuments', to: 'documents#index', defaults: { names: true }
+      get 'LoadDocsbyURL', to: 'documents#index'
+      get 'ProductList', to: 'products#index'
+      post 'rating', to: 'rates#create'
+      post 'RatingWithRateQuoteId', to: 'rates#create', defaults: { breakdown: true }
+      post 'SendShipmentDocuments', to: 'document_deliveries#create'
+      get 'tracking', to: 'tracking#show'
+      post 'UpdateShipment', to: 'shipments#update'
+    end
+  end
 
   namespace :dsdc, defaults: { format: :json }, format: false, path: 'api/dsdc' do
     resources :bols, only: %i[create destroy update], param: :pro, path: 'bol/v1/app'

@@ -6,6 +6,8 @@ class ReceivablePolicy < ApplicationPolicy
     relation.none
   end
 
+  def index? = accounts_receivable? || (customer? && authorizable.role?(:accounts_payable))
+
   def view?
     return false unless record
     return true if accounts_receivable?

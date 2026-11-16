@@ -3,3 +3,60 @@ eo:
     attributes:
       address:
         country_alpha2: Lando
+      api_key:
+        client_id: Klienta ID
+        created_at: Kreita
+        expires_at: Eksvalidiĝas
+        last_used_at: Laste uzita
+        name: Nomo
+        status: Stato
+        token: Ŝlosilo
+        token_suffix: Ŝlosilo
+        ttl: Eksvalidiĝas post
+    help:
+      api_key:
+        name: Kie la ŝlosilo estas uzata, ekzemple “Magazena WMS”
+        ttl: Renovigu la ŝlosilon por anstataŭigi ĝin antaŭ ol ĝi eksvalidiĝas
+    models:
+      api_key:
+        one: API-ŝlosilo
+        other: API-ŝlosiloj
+  api_keys:
+    destroy:
+      destroyed: Forigis %{model_name} “%{name}”
+    header:
+      new: Nova
+    index:
+      broker_ware_html: >-
+        API kongrua kun 3PL Systems BrokerWare ĉe %{path}. Petu alirĵetonon de %{token_path} kun la Klienta ID kiel
+        <code>client_id</code> kaj la ŝlosilo kiel <code>client_secret</code>.
+      dsdc_html: API konforma al NMFTA DSDC ĉe %{path}
+      graphql_html: GraphQL-API ĉe %{path}. Uzu %{graphiql} por esplori ĝin.
+      intro_html: >-
+        %{model_name_plural} aŭtentigas petojn al ĉi tiuj API-oj. Sendu la ŝlosilon en la kapo <code>X-API-Key</code>
+        aŭ kiel <code>Authorization: Bearer</code>. Ŝlosiloj eksvalidiĝas post maksimume %{max_ttl}.
+      never: Neniam
+      titles:
+        active: Aktivaj
+        expired: Eksvalidiĝintaj
+        index: Ĉiuj
+    member_menu:
+      destroy: Forigi
+      destroy_confirm: Ĉu forigi “%{name}”? Petoj, kiuj uzas ĝin, malsukcesos.
+      overview: Superrigardo
+      roll: Renovigi
+      roll_confirm: >-
+        Ĉi tio anstataŭigos la %{model_name} per nova, kiu eksvalidiĝos post %{ttl}. La nuna ŝlosilo ĉesos funkcii post
+        %{grace_period}. Ĉu vi certas?
+    menu:
+      active: Aktivaj
+      all: Ĉiuj
+      expired: Eksvalidiĝintaj
+    new:
+      error: "Ne eblas konservi %{model_name}:"
+      submit: Konservi
+      title: Nova %{model_name}
+    show:
+      copy: Alklaku la ŝlosilon por kopii ĝin.
+      never: Neniam
+      overview: Superrigardo
