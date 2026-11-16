@@ -29,9 +29,9 @@ class ReplacePricingRuleAreasWithLanes < ActiveRecord::Migration[8.1]
     PricingRule.reset_column_information
 
     PricingRule.includes(broker_carrier: :carrier, from_area: :locations, to_area: :locations).find_each do |pricing_rule|
-      lane = lane(pricing_rule)
+      lane = lane_from(pricing_rule)
 
-      if lane.nil?
+      if lane.blank?
         say("Deleted pricing rule #{pricing_rule.id}: no FreightKit lane for #{pricing_rule.attributes.compact.to_json}")
         pricing_rule.delete
         next
@@ -74,10 +74,8 @@ class ReplacePricingRuleAreasWithLanes < ActiveRecord::Migration[8.1]
     PricingRule.reset_column_information
 
     PricingRule.find_each do |pricing_rule|
-      lane = Transponder::ORM::Lane.find_by(id: pricing_rule.lane_id)
-      raise(ActiveRecord::IrreversibleMigration, "No FreightKit lane #{pricing_rule.lane_id}") if lane.nil?
-
-      pricing_rule.update_columns(from_area_id: territory_area(lane.origin).id, to_area_id: territory_area(lane.destination).id)
+      from_area, to_area = areas_from(pricing_rule)
+      pricing_rule.update_columns(from_area_id: from_area.id, to_area_id: to_area.id)
     end
 
     change_column_null(:pricing_rules, :from_area_id, false)
@@ -95,7 +93,14 @@ class ReplacePricingRuleAreasWithLanes < ActiveRecord::Migration[8.1]
     [*regions.sole.split('-', 2), area.locations.filter_map(&:zip_code).sort]
   end
 
-  def lane(pricing_rule)
+  def areas_from(pricing_rule)
+    lane = Transponder::ORM::Lane.find_by(id: pricing_rule.lane_id)
+    raise(ActiveRecord::IrreversibleMigration, "No FreightKit lane #{pricing_rule.lane_id}") if lane.blank?
+
+    [territory_area(lane.origin), territory_area(lane.destination)]
+  end
+
+  def lane_from(pricing_rule)
     carrier = pricing_rule.broker_carrier.carrier
     transponder_carrier = Transponder::ORM::Carrier.find_by(id: carrier.transponder_id) ||
                           (Transponder::ORM::Carrier.find_by(scac: carrier.scac) if carrier.scac.present?)

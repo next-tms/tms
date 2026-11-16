@@ -125,6 +125,7 @@ production:
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
     password: <%= ENV["LIFTOFF_DATABASE_PASSWORD"] %>
+    prepared_statements: false
   cache:
     <<: *primary_production
     url: <%= ENV["CACHE_DATABASE_URL"] %>
