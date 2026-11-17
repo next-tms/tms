@@ -78,6 +78,7 @@ tl:
         broker_bol: Bill of Lading
         broker_carrier: Carrier
         broker_dispatch_sheet: Dispatch Sheet
+        broker_ebol: eBOL
         broker_quote: Quote
         carrier_bol: Na-scan na Bill of Lading
         carrier_pod: Patunay ng Paghahatid

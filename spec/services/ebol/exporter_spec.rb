@@ -51,8 +51,20 @@ RSpec.describe(EBOL::Exporter) do
     create(:setting, key: 'mailing_address', value: mailing_address)
     create(:setting, key: 'name', value: 'Broker Co')
     create(:setting, key: 'phone', value: '+17755550199')
-    create(:item, declared_freight_class: 70, desc: 'Widgets', h: 40, hazmat: false, l: 48, nmfc: '12345', packaging:, quantity: 2,
-                  shipment:, w: 40, weight: 500)
+    create(
+      :item,
+      declared_freight_class: 70,
+      desc: 'Widgets',
+      h: 40,
+      hazmat: false,
+      l: 48,
+      nmfc: '12345',
+      packaging:,
+      quantity: 2,
+      shipment:,
+      w: 40,
+      weight: 500
+    )
   end
 
   describe '.call' do
@@ -192,8 +204,14 @@ RSpec.describe(EBOL::Exporter) do
       end
 
       it do
-        expect(document[:billTo]).to(include(address1: '4 Billing Blvd', city: 'Austin', name: broker_carrier.carrier.name,
-                                             stateProvince: 'TX'))
+        expect(document[:billTo]).to(
+          include(
+            address1: '4 Billing Blvd',
+            city: 'Austin',
+            name: broker_carrier.carrier.name,
+            stateProvince: 'TX'
+          )
+        )
       end
 
       it { expect(document[:billTo]).not_to(have_key(:account)) }
@@ -201,8 +219,16 @@ RSpec.describe(EBOL::Exporter) do
 
     context 'without a value, pickup date, or optional references' do
       before do
-        shipment.update!(bol: nil, customer_reference: nil, pickup_on: nil, pro: nil, quote_id: nil, shipper_bol: nil,
-                         shipper_reference: nil, value_cents: 0)
+        shipment.update!(
+          bol: nil,
+          customer_reference: nil,
+          pickup_on: nil,
+          pro: nil,
+          quote_id: nil,
+          shipper_bol: nil,
+          shipper_reference: nil,
+          value_cents: 0
+        )
       end
 
       it { expect(document[:bol]).not_to(have_key(:requestedPickupDate)) }

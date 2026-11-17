@@ -78,6 +78,7 @@ eo:
         broker_bol: Konosamento
         broker_carrier: Transportisto
         broker_dispatch_sheet: Ekspedfolio
+        broker_ebol: eBOL
         broker_quote: Prezoferto
         carrier_bol: Skanita konosamento
         carrier_pod: Pruvo de liverado

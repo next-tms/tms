@@ -38,6 +38,8 @@ module DocumentableService
       nil
     end
 
+    def create_missing_document! = (create_document! unless record.public_send(document_type).attached? || missing_requirements.any?)
+
     def missing_requirements
       requirements.reject do |requirement|
         value = record.public_send(requirement)

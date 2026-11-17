@@ -78,6 +78,7 @@ es:
         broker_bol: Conocimiento de embarque
         broker_carrier: Transportista
         broker_dispatch_sheet: Hoja de despacho
+        broker_ebol: eBOL
         broker_quote: Cotización
         carrier_bol: Conocimiento de embarque escaneado
         carrier_pod: Comprobante de entrega

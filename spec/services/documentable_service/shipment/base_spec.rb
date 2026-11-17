@@ -7,6 +7,7 @@ RSpec.describe(DocumentableService::Shipment::Base) do
     [
       DocumentableService::Shipment::BrokerBOL,
       DocumentableService::Shipment::BrokerDispatchSheet,
+      DocumentableService::Shipment::BrokerEBOL,
       DocumentableService::Shipment::BrokerLabel,
       DocumentableService::Shipment::BrokerQuote
     ].each do |service|

@@ -5,6 +5,21 @@ module EBOL
     def freight_kit_code(code) = ACCESSORIAL_CODES.key(code)
     def freight_kit_type(type) = HANDLING_UNIT_ALIASES[type.to_s.upcase] || HANDLING_UNIT_TYPES.key(type.to_s.upcase) || 'piece'
     def handling_unit_type(packaging) = HANDLING_UNIT_TYPES.fetch(packaging&.freight_kit_type, 'OTH')
+    def valid?(document) = SCHEMA.valid?(document.as_json)
+
+    private
+
+    def defined_requirements(node)
+      case node
+      when Array then node.map { |element| defined_requirements(element) }
+      when Hash
+        schema = node.transform_values { |value| defined_requirements(value) }
+        schema['properties'] ? schema.merge('required' => schema['required']&.intersection(schema['properties'].keys)).compact : schema
+      else node
+      end
+    end
+
+    def openapi = defined_requirements(YAML.safe_load_file(Rails.root.join("vendor/nmfta/ebol-#{VERSION}.openapi.yaml"), aliases: true))
   end
 
   ACCESSORIAL_CODES = {
@@ -39,4 +54,5 @@ module EBOL
     'truckload' => 'TRU'
   }.freeze
   VERSION = '2.1.0'.freeze
+  SCHEMA = JSONSchemer.openapi(openapi).schema('BOL_Request')
 end

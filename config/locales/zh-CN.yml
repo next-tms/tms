@@ -78,6 +78,7 @@ zh-CN:
         broker_bol: 提单
         broker_carrier: 承运商
         broker_dispatch_sheet: 调度单
+        broker_ebol: eBOL
         broker_quote: 报价
         carrier_bol: 提单扫描件
         carrier_pod: 签收证明

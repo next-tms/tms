@@ -51,6 +51,8 @@
         <%= render 'broker/shipments/documents/broker_bol', this_dom_id:, shipment: @shipment %>
       <% end %>
 
+      <%= render 'broker/shipments/documents/broker_ebol', this_dom_id:, shipment: @shipment %>
+
       <%= render 'broker/shipments/documents/broker_label', this_dom_id:, shipment: @shipment %>
 
       <%= highlightable_element :broker_dispatch_sheet, table_element: true do %>

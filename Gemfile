@@ -146,3 +146,5 @@ gem 'graphql-client'
 gem 'brotli', '~> 0.5'
 gem 'httpx', '~> 1.9'
 gem 'zstd-ruby', '~> 2.0'
+
+gem 'json_schemer', '~> 2.5'

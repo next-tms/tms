@@ -20,7 +20,7 @@ class Shipment < ApplicationRecord
 
   CUSTOMER_HIDDEN_COLUMNS = ['pickup_confirmation', 'pro', 'tracking_carrier_pickup_confirmation', 'tracking_carrier_pro'].freeze
   CUSTOMER_REFERENCE_ALIASES = { 'pro' => 'customer_pro', 'tracking_carrier_pro' => 'customer_pro' }.freeze
-  DOCUMENTABLE_TYPES = %i[broker_bol broker_label broker_dispatch_sheet broker_quote].freeze
+  DOCUMENTABLE_TYPES = %i[broker_bol broker_ebol broker_label broker_dispatch_sheet broker_quote].freeze
   RANSACKABLE_ASSOCIATIONS = ['broker_carrier', 'broker_customer', 'receiver_address', 'shipper_address'].freeze
   REFERENCE_ATTRIBUTES = %i[bol customer_reference pickup_confirmation pro quote_id shipper_reference].freeze
 
@@ -63,6 +63,7 @@ class Shipment < ApplicationRecord
   has_many :broker_accessorials, through: :shipment_broker_accessorials
 
   has_one_attached :broker_bol
+  has_one_attached :broker_ebol
   has_one_attached :broker_dispatch_sheet
   has_one_attached :broker_label
   has_one_attached :broker_quote

@@ -78,6 +78,7 @@ zh-TW:
         broker_bol: 提單
         broker_carrier: 承運商
         broker_dispatch_sheet: 派車單
+        broker_ebol: eBOL
         broker_quote: 報價
         carrier_bol: 提單掃描檔
         carrier_pod: 簽收證明

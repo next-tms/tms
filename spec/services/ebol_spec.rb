@@ -29,6 +29,15 @@ RSpec.describe(EBOL) do
     it { expect(described_class.handling_unit_type(nil)).to(eq('OTH')) }
   end
 
+  describe '.valid?' do
+    let(:document) { JSON.parse(file_fixture('dsdc/bol_request.json').read) }
+
+    it { expect(described_class.valid?(document)).to(be(true)) }
+    it { expect(described_class.valid?(document.symbolize_keys)).to(be(true)) }
+    it { expect(described_class.valid?(document.except('origin'))).to(be(false)) }
+    it { expect(described_class.valid?(document.deep_merge('bol' => { 'isTest' => 'yes' }))).to(be(false)) }
+  end
+
   describe 'DELIVERY_ACCESSORIAL_CODES' do
     it { expect(described_class::DELIVERY_ACCESSORIAL_CODES).to(eq(['APTD', 'GTD_AM', 'GTD_PM', 'IDL', 'LFTD', 'LTDAD', 'MNC', 'RES'])) }
   end

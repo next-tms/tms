@@ -71,13 +71,6 @@
     <% end %>
 
     <%= link_to 'Documents', documents_broker_shipment_path(@shipment), class: 'nav-link shipments-documents' %>
-
-    <a class="nav-link dropdown-toggle" href="#" id="shipment-download-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-      Download
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="shipment-download-dropdown">
-      <%= link_to 'eBOL', [ :broker, @shipment, { format: :ebol } ], data: { turbo: false }, class: 'dropdown-item' %>
-    </ul>
     <%= link_to 'Notes', notes_broker_shipment_path(@shipment), class: 'nav-link shipments-notes' %>
     <%= link_to 'History', history_broker_shipment_path(@shipment), class: 'nav-link shipments-history' %>
   <% elsif @shipment.quote_only? %>

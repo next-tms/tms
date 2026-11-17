@@ -16,6 +16,12 @@ class ContactMailer < ApplicationMailer
     send_document(document: shipment.broker_dispatch_sheet, document_name: 'Dispatch Sheet', shipment:, from_user:, to_contact:)
   end
 
+  def broker_ebol(from_user:, to_contact:, shipment:)
+    @shipment = shipment
+
+    send_document(document: shipment.broker_ebol, document_name: 'eBOL', shipment:, from_user:, to_contact:)
+  end
+
   def broker_quote(from_user:, to_contact:, shipment:)
     @shipment = shipment
 
@@ -55,13 +61,16 @@ class ContactMailer < ApplicationMailer
 
   private
 
+  def attach_document(document) = (attachments[document.filename.to_s] = { mime_type: document.content_type, content: document.download })
+
   def send_document(document:, document_name:, from_user:, to_contact:, shipment:)
     return unless document.attached?
 
     # Do not send email if document is not yet uploaded and prevent
     # Postmark::InvalidEmailAddressError: Zero-sized attachments not allowed.
 
-    attachments[document.filename.to_s] = { mime_type: document.content_type, content: document.download }
+    attach_document(document)
+    attach_document(shipment.broker_ebol) if document.name == 'broker_bol' && shipment.broker_ebol.attached?
 
     # Avoid SendGrid::DuplicatePersonalizationError
     cc = if from_user.is_a?(User)

@@ -225,29 +225,10 @@ class Broker::ShipmentsController < Broker::BrokerController
   def show
     authorize!(@shipment, to: :view?)
 
-    respond_to do |format|
-      format.ebol do
-        response.headers['Content-Disposition'] = ActionDispatch::Http::ContentDisposition.format(
-          disposition: 'attachment',
-          filename: "#{@shipment.load_id}.ebol.json"
-        )
-
-        stale?(
-          @shipment,
-          @shipment.broker_accessorials,
-          @shipment.broker_carrier,
-          @shipment.broker_carrier&.carrier,
-          @shipment.broker_customer,
-          @shipment.items,
-          @shipment.receiver_address,
-          @shipment.shipper_address
-        )
-      end
-      format.html { redirect_to(quote_broker_shipment_path(@shipment)) if @shipment.quote_only? }
-    end
+    redirect_to(quote_broker_shipment_path(@shipment)) if @shipment.quote_only?
   end
 
-  def documents; end
+  def documents = DocumentableService::Shipment::BrokerEBOL.new(@shipment).create_missing_document!
 
   def send_document
     ids = Contact.broker.ids

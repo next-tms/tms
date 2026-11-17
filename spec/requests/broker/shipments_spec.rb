@@ -6,9 +6,8 @@ RSpec.describe('Broker::Shipments') do
 
   before do
     create(:item, shipment:)
-    create(:setting, key: 'customer_service_email', value: 'help@broker.test')
     create(:setting, key: 'mailing_address', value: create(:address))
-    create(:setting, key: 'name', value: 'Broker Co')
+    seed_settings
     sign_in(current_user)
   end
 
@@ -40,10 +39,7 @@ RSpec.describe('Broker::Shipments') do
   describe 'GET /broker/shipments/:load_id' do
     let(:alert) { Nokogiri::HTML(response.body).at_xpath('//div[contains(@class, "alert")][.//p[contains(., "Missing Services")]]') }
 
-    before do
-      seed_settings
-      get(broker_shipment_path(shipment))
-    end
+    before { get(broker_shipment_path(shipment)) }
 
     it { is_expected.to(have_http_status(:ok)) }
     it { expect(alert).to(be_nil) }
@@ -65,54 +61,24 @@ RSpec.describe('Broker::Shipments') do
     end
   end
 
-  describe 'GET /broker/shipments/:load_id.ebol' do
-    before { get(broker_shipment_path(shipment, format: :ebol)) }
-
-    it { is_expected.to(have_http_status(:ok)) }
-    it { expect(response.media_type).to(eq('application/vnd.nmfta.ebol+json')) }
-    it { expect(response.headers['Content-Disposition']).to(start_with('attachment; filename="4242.ebol.json"')) }
-    it { expect(response.parsed_body).to(eq(JSON.parse(EBOL::Exporter.call(Shipment.find(shipment.id)).to_json))) }
-
-    context 'when requested again with the ETag' do
-      let(:etag) { response.headers['ETag'] }
-
-      context 'when an address changed' do
-        before do
-          shipment.receiver_address.update!(street: '9 New St', updated_at: 1.minute.from_now)
-          get(broker_shipment_path(shipment, format: :ebol), headers: { 'If-None-Match' => etag })
-        end
-
-        it { is_expected.to(have_http_status(:ok)) }
-      end
-
-      context 'when an item changed' do
-        before do
-          shipment.items.first.update!(updated_at: 1.minute.from_now, weight: 999)
-          get(broker_shipment_path(shipment, format: :ebol), headers: { 'If-None-Match' => etag })
-        end
-
-        it { is_expected.to(have_http_status(:ok)) }
-      end
-
-      context 'when nothing changed' do
-        before { get(broker_shipment_path(shipment, format: :ebol), headers: { 'If-None-Match' => etag }) }
-
-        it { is_expected.to(have_http_status(:not_modified)) }
-      end
+  describe 'GET /broker/shipments/:load_id/documents' do
+    before do
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+      get(documents_broker_shipment_path(shipment))
     end
 
-    context 'with a carrier' do
-      let(:shipment) { create(:shipment, broker_carrier: create(:broker_carrier), load_id: 4242, quote_only: false) }
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(DocumentableService::Shipment::CreateBrokerEBOLJob).not_to(have_been_enqueued) }
 
-      it { is_expected.to(have_http_status(:ok)) }
+    context 'with a carrier' do
+      let(:shipment) { create(:shipment, :usd, broker_carrier: create(:broker_carrier), load_id: 4242, quote_only: false) }
+
+      it { expect(DocumentableService::Shipment::CreateBrokerEBOLJob).to(have_been_enqueued.with(shipment)) }
     end
   end
 
   describe 'GET /broker/shipments/:load_id/edit' do
-    before do
-      seed_settings
-      get(edit_broker_shipment_path(shipment))
-    end
+    before { get(edit_broker_shipment_path(shipment)) }
 
     it { is_expected.to(have_http_status(:ok)) }
 
@@ -127,7 +93,6 @@ RSpec.describe('Broker::Shipments') do
     let(:text) { Nokogiri::HTML(response.body).at_css('h2 + .table-responsive tbody').text.squish }
 
     before do
-      seed_settings
       shipment.shipper_address.update!(name: 'Acme Freight')
       get(history_broker_shipment_path(shipment))
     end
@@ -140,10 +105,7 @@ RSpec.describe('Broker::Shipments') do
   describe 'GET /broker/shipments/:load_id/transit' do
     let(:reason) { Nokogiri::HTML(response.body).at_css('[data-reschedule-target="reason"]') }
 
-    before do
-      seed_settings
-      get(transit_broker_shipment_path(shipment))
-    end
+    before { get(transit_broker_shipment_path(shipment)) }
 
     it { is_expected.to(have_http_status(:ok)) }
     it { expect(reason).to(be_nil) }
@@ -217,7 +179,6 @@ RSpec.describe('Broker::Shipments') do
     end
 
     before do
-      seed_settings
       create(:broker_accessorial, accessorial:, broker_customer: nil, code: 'DAIR', name: 'Airport')
       post(broker_shipments_path, params:)
     end

@@ -20,7 +20,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym('BOL')
   inflect.acronym('BOLs')
   inflect.acronym('DSDC')
-  inflect.acronym('eBOL')
+  inflect.acronym('EBOL')
   inflect.acronym('GraphiQL')
   inflect.acronym('GraphQL')
   inflect.acronym('HTTP')

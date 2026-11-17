@@ -27,7 +27,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     redirect_to([:customer, @shipment])
   end
 
-  def documents; end
+  def documents = DocumentableService::Shipment::BrokerEBOL.new(@shipment).create_missing_document!
 
   def index
     shipments = current_user.companyable.shipments.active.includes(default_includes).order(created_at: :desc)
@@ -107,28 +107,7 @@ class Customer::ShipmentsController < Customer::CustomerController
 
   def edit; end
 
-  def show
-    respond_to do |format|
-      format.ebol do
-        response.headers['Content-Disposition'] = ActionDispatch::Http::ContentDisposition.format(
-          disposition: 'attachment',
-          filename: "#{@shipment.load_id}.ebol.json"
-        )
-
-        stale?(
-          @shipment,
-          @shipment.broker_accessorials,
-          @shipment.broker_carrier,
-          @shipment.broker_carrier&.carrier,
-          @shipment.broker_customer,
-          @shipment.items,
-          @shipment.receiver_address,
-          @shipment.shipper_address
-        )
-      end
-      format.html
-    end
-  end
+  def show; end
 
   def update
     @shipment.assign_attributes(shipment_params.except(:accessorials_has_been_suggested))

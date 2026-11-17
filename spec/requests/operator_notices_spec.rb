@@ -47,10 +47,8 @@ RSpec.describe('Operator notices') do
 
     context 'when the notice is enforced for a non-HTML request' do
       before do
-        create(:setting, key: 'customer_service_email', value: 'help@broker.test')
-        create(:setting, key: 'mailing_address', value: create(:address))
         cache.write('operator_notice', notice.merge('status' => 'suspended'))
-        get(broker_shipment_path(shipment, format: :ebol))
+        get(broker_shipments_path(format: :json))
       end
 
       it { is_expected.to(have_http_status(:service_unavailable)) }
