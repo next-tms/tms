@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
 
   authorize :authorizable, through: :current_user
 
+  before_action :add_api_catalog_link_header
   before_action :add_floc_opt_out_header
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :enforce_operator_notice
@@ -32,6 +33,7 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def add_api_catalog_link_header = response.set_header('Link', %(<#{api_catalog_path}>; rel="api-catalog"))
   def add_floc_opt_out_header = response.set_header('Permissions-Policy', 'interest-cohort=()')
 
   def after_sign_in_path_for(resource_or_scope)

@@ -3,8 +3,6 @@ module Mutations
     include Mutations::Concerns::Rateable
     include Mutations::Concerns::Shippable
 
-    description 'Create a Quote and fetch its Rates'
-
     argument :accessorial_codes, [String], default_value: [], replace_null_with_default: true, required: false
     argument :customer_id, ID, as: :broker_customer_id, required: false
     argument :declared_freight_classes, Boolean, default_value: false, replace_null_with_default: true, required: false

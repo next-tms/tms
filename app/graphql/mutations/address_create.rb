@@ -1,7 +1,5 @@
 module Mutations
   class AddressCreate < BaseMutation
-    description 'Creates a new address'
-
     argument :address_input, Types::AddressInputObject, required: true
 
     field :address, Types::AddressType, null: true

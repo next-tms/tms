@@ -1,0 +1,64 @@
+---
+name: tms
+<% description = "Connect to and use the #{Setting.value!(:name)} TMS (transportation management system) at #{request.host} through its MCP server." -%>
+description: <%= "#{description} Use when the user wants to search, view, quote, or book shipments, or look up invoices, bills, customers, or carriers.".to_json %>
+---
+<% server_name = MCPController.server_name -%>
+<% variable = "#{server_name.underscore.upcase}_API_KEY" -%>
+
+# <%= Setting.value!(:name) %> TMS
+
+The TMS is at <%= root_url %>. Its MCP server is at <%= mcp_url %>. Connect it under the name `<%= server_name %>`, so that questions about <%= Setting.value!(:name) %> go to its tools.
+
+Every tool runs as the user who owns the API key. Results contain only the records and fields that this user can see. Customers do not see carrier costs, and carriers do not see customer charges.
+
+## Connect
+
+If the TMS tools (for example `search_shipments`) are not available, do these steps:
+
+1. Tell the user to open <%= new_api_key_url %>, sign in, and create an API key. A key starts with `tms_` and expires in 90 days or less.
+2. Tell the user to put the key in an environment variable named `<%= variable %>`, for example in their shell profile. Do not ask the user to paste the key into the conversation.
+3. Give the user the configuration for their client.
+4. Tell the user to restart the client. Then call `graphql_schema` to make sure that the connection works.
+
+For Claude Code, the user runs this command in a shell where `<%= variable %>` is set:
+
+```
+claude mcp add --transport http --scope user <%= server_name %> <%= mcp_url %> --header "Authorization: Bearer $<%= variable %>"
+```
+
+The shell puts the key into the command, so Claude Code saves it in the user configuration. When the user rolls the key, they run `claude mcp remove <%= server_name %>` and then this command again.
+
+For Codex, the user adds this to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.<%= server_name %>]
+url = "<%= mcp_url %>"
+bearer_token_env_var = "<%= variable %>"
+```
+
+For other clients, use the Streamable HTTP transport with the header `Authorization: Bearer <key>`.
+
+## Find records
+
+- Use `search_shipments`, `search_invoices`, `search_bills`, `search_customers`, and `search_carriers` to find records. Each returns one page of results (`page`, `page_size`, at most <%= Resolvers::Concerns::Filterable::MAX_PAGE_SIZE %> a page) and the total count.
+- To filter, call `graphql_schema` with the filter type name first, for example `ShipmentFilter`. It lists each attribute and its predicates. A filter key joins an attribute and a predicate, for example `{"load_id_eq": 1234}` or `{"receiver_address_city_i_cont": "fremont"}`. Use `or` with a list of filters to match any of them.
+- To sort, give `sort` a list such as `["created_at:desc"]`.
+- Use `get_shipment`, `get_invoice`, `get_bill`, `get_customer`, and `get_carrier` for one record with its related records. The ID of a shipment is its load ID. Invoices are receivables. Bills are carrier payments.
+- For a question that these tools do not answer, call `graphql_schema`, then write a query for `graphql_query`. `graphql_query` runs queries only. It does not run mutations.
+
+## Quote and book
+
+These tools change data. Before you call one, tell the user what it will do and get their approval.
+
+1. Call `create_quote` with the shipper address, the receiver address, and the packages. Each address needs `city`, `zip_code`, and `region_iso31662`, written with an underscore, for example `US_CA`. Each package needs `quantity` and `weight` in pounds. The result contains the new shipment and its carrier rates.
+2. Show the rates to the user and let them choose one.
+3. Call `create_shipment` with the `rate_id` of that rate. Add the pickup date and the shipper and receiver contact details that the user gives you.
+
+To get new rates for a shipment that exists, call `fetch_rates` with its load ID.
+
+## Errors
+
+- If the server returns HTTP 401 and says that the key expired, tell the user to roll the key at <%= api_keys_url %>, then update the client configuration.
+- If the server returns HTTP 429, wait for the number of seconds in the `Retry-After` header, then try again. A key can make <%= APIRateLimiting::API_KEY_LIMIT %> requests a minute.
+- If a tool result has `isError` set to true, read the GraphQL `errors` in it. Do not try the same call again without a change.

@@ -7,8 +7,6 @@ module Mutations
     HOURS_FORMAT = '%-l:%M %p'.freeze
     LANE_ATTRIBUTES = ['city', 'region_iso31662', 'zip_code'].freeze
 
-    description 'Book a Quote Rate as a Shipment'
-
     argument :bol_notes, String, required: false
     argument :customer_reference, String, required: false
     argument :delivery_hours_end_at, GraphQL::Types::ISO8601DateTime, required: false

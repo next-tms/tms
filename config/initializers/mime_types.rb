@@ -4,3 +4,5 @@
 # Mime::Type.register "text/richtext", :rtf
 Mime::Type.register 'application/pdf', :pdf
 Mime::Type.register 'application/vnd.nmfta.ebol+json', :ebol
+
+ActiveSupport.on_load(:action_view) { ActionView::Template::Handlers::ERB.escape_ignore_list |= [Mime[:md].to_s] }

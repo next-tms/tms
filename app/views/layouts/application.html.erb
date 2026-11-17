@@ -16,6 +16,7 @@
     <meta name="theme-color" content="black">
 
     <link href="https://<%= ENV.fetch('DOMAIN', 'localhost') %><%= request.fullpath %>" rel="canonical" />
+    <link href="<%= api_catalog_path %>" rel="api-catalog" />
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

@@ -384,6 +384,9 @@ tl:
     errors:
       rate_limited: Masyadong maraming request. Maghintay ng bilang ng segundo sa Retry-After header, pagkatapos ay subukang muli.
   locale_name: Tagalog
+  mcp:
+    errors:
+      rate_limited: Masyadong maraming request. Maghintay ng bilang ng segundo sa Retry-After header, pagkatapos ay subukang muli.
   settings:
     automatically_authorize_receivables: Awtomatikong i-authorize ang receivable pagkatapos itong gawin?
     automatically_update_shipment_tracking_based_on_carrier_apis: Awtomatikong i-update ang tracking ng kargamento batay sa mga API ng carrier?

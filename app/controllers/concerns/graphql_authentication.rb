@@ -9,7 +9,7 @@ module GraphQLAuthentication
 
     self.allow_forgery_protection = ActionController::Base.allow_forgery_protection
 
-    before_action :authenticate!
+    prepend_before_action :authenticate!
   end
 
   def authenticate! = request_token.present? ? authenticate_api_key : authenticate_session

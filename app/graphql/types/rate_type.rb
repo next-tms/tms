@@ -16,6 +16,7 @@ module Types
     field :scac, String, null: true
     field :transit_days, Integer, null: true
 
+    def breakdown = object.breakdown.presence
     def carrier_name = object.broker_carrier&.carrier&.name
     def charge_cents = object.charge&.cents
     def charge_currency = object.charge&.currency&.iso_code

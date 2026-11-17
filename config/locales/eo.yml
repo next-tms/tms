@@ -384,6 +384,9 @@ eo:
     errors:
       rate_limited: Tro da petoj. Atendu la nombron da sekundoj en la kapo Retry-After, poste reprovu.
   locale_name: Esperanto
+  mcp:
+    errors:
+      rate_limited: Tro da petoj. Atendu la nombron da sekundoj en la kapo Retry-After, poste reprovu.
   settings:
     automatically_authorize_receivables: Ĉu aŭtomate rajtigi ricevendaĵon post kreado?
     automatically_update_shipment_tracking_based_on_carrier_apis: Ĉu aŭtomate ĝisdatigi la spurajn informojn de sendaĵoj laŭ la API-oj de transportistoj?

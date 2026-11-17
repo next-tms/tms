@@ -384,6 +384,9 @@ zh-TW:
     errors:
       rate_limited: 請求過多。請等待 Retry-After 標頭中的秒數後再試一次。
   locale_name: 繁體中文
+  mcp:
+    errors:
+      rate_limited: 請求過多。請等待 Retry-After 標頭中的秒數後再試一次。
   settings:
     automatically_authorize_receivables: 建立後自動核准應收帳款？
     automatically_update_shipment_tracking_based_on_carrier_apis: 根據承運商 API 自動更新貨運追蹤資訊？

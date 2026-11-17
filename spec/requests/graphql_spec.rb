@@ -44,6 +44,14 @@ RSpec.describe('GraphQL') do
 
         it { is_expected.to(have_http_status(:ok)) }
       end
+
+      context 'when the user prefers Spanish' do
+        let(:description) { I18n.with_locale(:es) { Types::Translation.call(:fields, :query, :shipments) } }
+        let(:query) { '{ __type(name: "Query") { fields { description name } } }' }
+        let(:user) { create(:customer_user, locale: 'es') }
+
+        it { expect(json.dig('data', '__type', 'fields')).to(include('description' => description, 'name' => 'shipments')) }
+      end
     end
 
     context 'when signed in without a valid CSRF token' do

@@ -384,6 +384,9 @@ es:
     errors:
       rate_limited: Demasiadas solicitudes. Espera la cantidad de segundos del encabezado Retry-After y vuelve a intentarlo.
   locale_name: Español
+  mcp:
+    errors:
+      rate_limited: Demasiadas solicitudes. Espera la cantidad de segundos del encabezado Retry-After y vuelve a intentarlo.
   settings:
     automatically_authorize_receivables: "¿Autorizar automáticamente la cuenta por cobrar después de crearla?"
     automatically_update_shipment_tracking_based_on_carrier_apis: "¿Actualizar automáticamente el rastreo de envíos según las API de los transportistas?"

@@ -120,12 +120,33 @@ RSpec.describe(Types::ShipmentType) do
 
       it { expect(events.pluck('city')).to(eq(['Earlier', 'Later'])) }
     end
+
+    context 'when the user is a carrier' do
+      let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
+
+      it { expect(events.pluck('city')).to(eq(['Earlier', 'Later'])) }
+
+      context 'when the carrier is the tracking carrier' do
+        before { shipments.each { |shipment| shipment.update!(tracking_carrier: broker_carrier.carrier) } }
+
+        it { expect(events.pluck('city')).to(eq(['Private', 'Earlier', 'Later'])) }
+      end
+    end
   end
 
   describe '#id' do
     let(:query) { '{ shipments { items { id } } }' }
 
     it { expect(items.pluck('id')).to(match_array(shipments.map { |shipment| shipment.load_id.to_s })) }
+  end
+
+  describe '#picked_up' do
+    let(:query) { '{ shipments { items { pickedUp } } }' }
+    let!(:shipments) do
+      [create(:shipment, broker_carrier:), create(:shipment, broker_carrier:, delivered_at: nil, dispatched_at: nil, picked_up_at: nil)]
+    end
+
+    it { expect(items.pluck('pickedUp')).to(contain_exactly(true, false)) }
   end
 
   describe 'money fields' do

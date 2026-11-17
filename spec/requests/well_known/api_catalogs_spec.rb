@@ -13,11 +13,29 @@ RSpec.describe('API catalog') do
 
     it do
       expect(json[:linkset].pluck(:anchor)).to(
-        eq(['http://www.example.com/api/v1', 'http://www.example.com/api/dsdc', 'http://www.example.com/graphql'])
+        eq(['http://www.example.com/api/v1', 'http://www.example.com/api/dsdc', 'http://www.example.com/graphql', 'http://www.example.com/mcp'])
       )
     end
 
     it { expect(json[:linkset].first[:'service-doc'].sole).to(eq(href: 'https://documenter.getpostman.com/view/1985869/TWDWJch4', type: 'text/html')) }
+    it { expect(json[:linkset].last[:'service-doc'].sole).to(eq(href: 'http://www.example.com/skills/tms/SKILL.md', type: 'text/markdown')) }
+  end
+
+  describe 'GET /users/sign_in' do
+    before do
+      seed_settings
+      get('/users/sign_in')
+    end
+
+    it { expect(response.headers['Link']).to(include('</.well-known/api-catalog>; rel="api-catalog"')) }
+    it { expect(response.body).to(include('<link href="/.well-known/api-catalog" rel="api-catalog" />')) }
+  end
+
+  describe 'GET /' do
+    before { get('/') }
+
+    it { is_expected.to(have_http_status(:found)) }
+    it { expect(response.headers['Link']).to(include('</.well-known/api-catalog>; rel="api-catalog"')) }
   end
 
   describe 'HEAD /.well-known/api-catalog' do

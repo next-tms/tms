@@ -45,3 +45,5 @@ RSpec/SpecFilePathFormat:
   CustomTransform:
     FetchShipmentCarrierBOLsJob: fetch_shipment_carrier_bols_job
     FetchShipmentCarrierPODsJob: fetch_shipment_carrier_pods_job
+    GraphQLQuery: graphql_query
+    GraphQLSchema: graphql_schema

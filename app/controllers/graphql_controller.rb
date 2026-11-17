@@ -1,18 +1,9 @@
 class GraphQLController < ActionController::API
+  include APIRateLimiting
   include GraphQLAuthentication
   include Localization
 
   INTROSPECTION_LIMITS = { max_complexity: 400, max_depth: 15 }.freeze
-  RATE_LIMIT_WINDOW = 1.minute
-
-  rate_limit by: -> { api_key.token_digest }, if: :api_key, name: 'api_key', to: 300, with: :render_rate_limited, within: RATE_LIMIT_WINDOW
-  rate_limit by: -> { current_user.id },
-             if: -> { current_user },
-             name: 'user',
-             to: 600,
-             unless: :api_key,
-             with: :render_rate_limited,
-             within: RATE_LIMIT_WINDOW
 
   def execute
     variables = prepare_variables(params[:variables])
@@ -62,11 +53,5 @@ class GraphQLController < ActionController::API
     else
       raise ArgumentError, "Unexpected parameter: #{variables_param}"
     end
-  end
-
-  def render_rate_limited
-    response.headers['Retry-After'] = RATE_LIMIT_WINDOW.to_i.to_s
-
-    render(:rate_limited, status: :too_many_requests)
   end
 end

@@ -128,6 +128,9 @@ en:
       overlength_rule:
         one: Overlength Rule
         other: Overlength Rules
+      payment_transaction:
+        one: Bill
+        other: Bills
       pricing_rule:
         one: Pallet Pricing Rule
         other: Pallet Pricing Rules
@@ -396,7 +399,27 @@ en:
   graphql:
     errors:
       rate_limited: Too many requests. Wait for the number of seconds in the Retry-After header, then try again.
+    fields:
+      mutation:
+        address_create: Create an address
+        fetch_rates: Fetch carrier rates for an existing %{shipment} by its load ID
+        quote_create: Create a quote for a lane and its packages, then fetch carrier rates for it
+        shipment_create: Book a quote rate as a %{shipment}
+      query:
+        bill: Get the %{payment_transaction} with the given ID
+        bills: Search %{payment_transactions} with optional filters, sorting, and pagination
+        carrier: Get the %{carrier} with the given ID
+        carriers: Search %{carriers} with optional filters, sorting, and pagination
+        customer: Get the %{broker_customer} with the given ID
+        customers: Search %{broker_customers} with optional filters, sorting, and pagination
+        invoice: Get the %{receivable} with the given ID
+        invoices: Search %{receivables} with optional filters, sorting, and pagination
+        shipment: Get the %{shipment} with the given load ID
+        shipments: Search %{shipments} with optional filters, sorting, and pagination
   locale_name: English (US)
+  mcp:
+    errors:
+      rate_limited: Too many requests. Wait for the number of seconds in the Retry-After header, then try again.
   settings:
     automatically_authorize_receivables: Automatically authorize receivable after creation?
     automatically_update_shipment_tracking_based_on_carrier_apis: Automatically update shipment tracking information based on carrier API's?

@@ -384,6 +384,9 @@ zh-CN:
     errors:
       rate_limited: 请求过多。请等待 Retry-After 请求头中的秒数后重试。
   locale_name: 简体中文
+  mcp:
+    errors:
+      rate_limited: 请求过多。请等待 Retry-After 请求头中的秒数后重试。
   settings:
     automatically_authorize_receivables: 创建后自动授权应收账款？
     automatically_update_shipment_tracking_based_on_carrier_apis: 根据承运商 API 自动更新货运跟踪信息？

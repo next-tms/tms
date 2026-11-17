@@ -7,10 +7,7 @@ module Types
     field :bol_notes, String
     field :booked_at, GraphQL::Types::ISO8601DateTime
     field :broker_and_broker_customer_notes, String, visible_to: :view_shared_notes?
-    field :broker_bol_shipment_fingerprint, String
-    field :broker_dispatch_sheet_shipment_fingerprint, String
     field :broker_notes, String, visible_to: :view_internal_notes?
-    field :broker_quote_shipment_fingerprint, String
     field :canceled_at, GraphQL::Types::ISO8601DateTime
     field :carrier, Types::CarrierType, authorize: { raise: false, to: :view? }
     field :carrier_account, Types::CarrierAccountType, authorize: { raise: false, to: :view? }
@@ -43,7 +40,7 @@ module Types
     field :notify, Boolean
     field :out_for_delivery_at, GraphQL::Types::ISO8601DateTime
     field :pending_appointment_since, GraphQL::Types::ISO8601Date
-    field :picked_up, Boolean
+    field :picked_up, Boolean, method: :picked_up?
     field :picked_up_at, GraphQL::Types::ISO8601DateTime
     field :pickup_confirmation, String, visible_to: :view_carrier_references?
     field :pickup_driver_assigned_at, GraphQL::Types::ISO8601DateTime

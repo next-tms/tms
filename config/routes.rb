@@ -14,8 +14,12 @@ Rails.application.routes.draw do
 
   get '/graphiql', to: 'graphiql#show'
   post '/graphql', to: 'graphql#execute', as: :graphql, defaults: { format: :json }
+  post '/mcp', to: 'mcp#create', as: :mcp, defaults: { format: :json }
+  match '/mcp', to: ->(_env) { [405, { 'allow' => 'POST' }, []] }, via: %i[delete get]
 
   get '.well-known/api-catalog', to: 'well_known/api_catalogs#show', as: :api_catalog, defaults: { format: :json }, format: false
+  get 'llms.txt', to: 'llms_texts#show', as: :llms_text, defaults: { format: :text }, format: false
+  get 'skills/tms/SKILL.md', to: 'skills#show', as: :skill, defaults: { format: :md }, format: false
 
   devise_for :users, controllers: { invitations: 'users/invitations', registrations: 'users/registrations' }
 
