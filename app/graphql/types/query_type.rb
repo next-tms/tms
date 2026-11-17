@@ -10,7 +10,8 @@ module Types
       carrier: Carrier,
       customer: BrokerCustomer,
       invoice: Receivable,
-      shipment: Shipment
+      shipment: Shipment,
+      task: Problem
     }.each do |name, model|
       field name, "Types::#{name.to_s.camelize}Type".constantize, authorize: { to: :view? }, null: true do
         argument :id, ID, required: true

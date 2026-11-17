@@ -15,13 +15,15 @@ class MCPController < ActionController::API
     Tools::GetCustomer,
     Tools::GetInvoice,
     Tools::GetShipment,
+    Tools::GetTask,
     Tools::GraphQLQuery,
     Tools::GraphQLSchema,
     Tools::SearchBills,
     Tools::SearchCarriers,
     Tools::SearchCustomers,
     Tools::SearchInvoices,
-    Tools::SearchShipments
+    Tools::SearchShipments,
+    Tools::SearchTasks
   ].freeze
 
   def create
@@ -40,7 +42,7 @@ class MCPController < ActionController::API
   def instructions
     <<~TEXT.squish
       Tools for the TMS (transportation management system) of #{Setting.value!(:name)} at #{request.host}.
-      Use them for questions about #{Setting.value!(:name)} shipments, quotes, invoices, bills, customers, and carriers.
+      Use them for questions about #{Setting.value!(:name)} shipments, quotes, invoices, bills, customers, carriers, and tasks.
       A load number is the load ID of a shipment: get_shipment returns its dates, ETA, promised delivery, and tracking events.
       Each tool runs as the user who owns the API key, so results only include the records and fields that user can see.
     TEXT

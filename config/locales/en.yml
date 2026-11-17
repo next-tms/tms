@@ -417,6 +417,8 @@ en:
         invoices: Search %{receivables} with optional filters, sorting, and pagination
         shipment: Get the %{shipment} with the given load ID
         shipments: Search %{shipments} with optional filters, sorting, and pagination
+        task: Get the task with the given ID
+        tasks: Search tasks with optional filters, sorting, and pagination
   locale_name: English (US)
   mcp:
     errors:

@@ -27,7 +27,9 @@ RSpec.describe(Types::QueryType) do
   describe 'fields' do
     it { expect(described_class.fields.keys).not_to(include('brokerCarrier', 'brokerCarriers', 'brokerCustomer', 'brokerCustomers')) }
     it { expect(described_class.fields.keys).to(include('carrier', 'carriers', 'customer', 'customers', 'shipment', 'shipments')) }
+    it { expect(described_class.fields.keys).to(include('task', 'tasks')) }
     it { expect(described_class.fields['shipments'].resolver).to(eq(Resolvers::ShipmentsResolver)) }
+    it { expect(described_class.fields['tasks'].resolver).to(eq(Resolvers::TasksResolver)) }
   end
 
   describe 'singular fields' do

@@ -1,7 +1,7 @@
 ---
 name: tms
 <% description = "Connect to and use the #{Setting.value!(:name)} TMS (transportation management system) at #{request.host} through its MCP server." -%>
-description: <%= "#{description} Use when the user wants to search, view, quote, or book shipments, or look up invoices, bills, customers, or carriers.".to_json %>
+description: <%= "#{description} Use when the user wants to search, view, quote, or book shipments, or look up invoices, bills, customers, carriers, or tasks.".to_json %>
 ---
 <% server_name = MCPController.server_name -%>
 <% variable = "#{server_name.underscore.upcase}_API_KEY" -%>
@@ -41,10 +41,10 @@ For other clients, use the Streamable HTTP transport with the header `Authorizat
 
 ## Find records
 
-- Use `search_shipments`, `search_invoices`, `search_bills`, `search_customers`, and `search_carriers` to find records. Each returns one page of results (`page`, `page_size`, at most <%= Resolvers::Concerns::Filterable::MAX_PAGE_SIZE %> a page) and the total count.
+- Use `search_shipments`, `search_invoices`, `search_bills`, `search_customers`, `search_carriers`, and `search_tasks` to find records. Each returns one page of results (`page`, `page_size`, at most <%= Resolvers::Concerns::Filterable::MAX_PAGE_SIZE %> a page) and the total count.
 - To filter, call `graphql_schema` with the filter type name first, for example `ShipmentFilter`. It lists each attribute and its predicates. A filter key joins an attribute and a predicate, for example `{"load_id_eq": 1234}` or `{"receiver_address_city_i_cont": "fremont"}`. Use `or` with a list of filters to match any of them.
 - To sort, give `sort` a list such as `["created_at:desc"]`.
-- Use `get_shipment`, `get_invoice`, `get_bill`, `get_customer`, and `get_carrier` for one record with its related records. The ID of a shipment is its load ID. Invoices are receivables. Bills are carrier payments.
+- Use `get_shipment`, `get_invoice`, `get_bill`, `get_customer`, `get_carrier`, and `get_task` for one record with its related records. The ID of a shipment is its load ID. Invoices are receivables. Bills are carrier payments. Tasks are the follow-up work that brokers resolve on a shipment, for example a missing carrier POD.
 - For a question that these tools do not answer, call `graphql_schema`, then write a query for `graphql_query`. `graphql_query` runs queries only. It does not run mutations.
 
 ## Quote and book
