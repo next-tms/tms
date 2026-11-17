@@ -381,11 +381,11 @@ GEM
       ast (~> 2.4.1)
       racc
     pdf-core (0.10.0)
-    pg (1.6.3)
-    pg (1.6.3-aarch64-linux-musl)
-    pg (1.6.3-arm64-darwin)
-    pg (1.6.3-x86_64-linux)
-    pg (1.6.3-x86_64-linux-musl)
+    pg (1.7.0)
+    pg (1.7.0-aarch64-linux-musl)
+    pg (1.7.0-arm64-darwin)
+    pg (1.7.0-x86_64-linux)
+    pg (1.7.0-x86_64-linux-musl)
     phony (2.20.2)
     phony_rails (0.15.0)
       activesupport (>= 3.0)
@@ -710,7 +710,7 @@ DEPENDENCIES
   nkf
   noticed (~> 3.1.1)
   pagy
-  pg (~> 1.1)
+  pg (~> 1.7)
   phony_rails
   postmark-rails
   prawn (~> 2.5.0)
