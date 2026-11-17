@@ -7,7 +7,7 @@
                  .collect {
                    |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ]
                  }.sort,
-                 { label: 'Carrier', hide_label: true, include_blank: true, wrapper: false },
+                 { hide_label: true, include_blank: true, wrapper: false },
                  class: 'form-select'
     %>
   </div>

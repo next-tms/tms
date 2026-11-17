@@ -22,9 +22,24 @@ eo:
               unsupported: "povas esti nur Booked, Quoted aŭ Canceled. Via makleristo ĝisdatigas ĉiujn aliajn statojn."
   activerecord:
     attributes:
+      accessorial:
+        code: Kodo
+        fee: Kosto
+        name: Nomo
       address:
+        business: Komerca
+        city: Urbo
         country_alpha2: Lando
+        dock: Ŝarĝkajo
+        name: Nomo
+        po_box: Poŝtkesto
         ref: Referenco
+        region_iso31662: Ŝtato aŭ provinco
+        residential: Loĝeja
+        street: Strato
+        street2: Strato, linio 2
+        time_zone_name: Horzono
+        zip_code: Poŝtkodo
       api_key:
         client_id: "Klienta ID"
         created_at: Kreita
@@ -35,97 +50,553 @@ eo:
         token: Ŝlosilo
         token_suffix: Ŝlosilo
         ttl: Eksvalidiĝas post
+        user: Uzanto
+      bank:
+        account_number: Kontonumero
+        kind: Tipo
+        name: Nomo
+      broker_accessorial:
+        accessorial: Kroma servo
+        accessorial_id: Kroma servo
+        broker_customer: Kliento
+        broker_only: Nur por makleristo
+        code: Kodo
+        cost: Kosto
+        fee: Kosto
+        flat_charge: Fiksa kosto
+        name: Nomo
+        upcharge: Krompago
+        upcharge_percent: Procento de krompago
       broker_carrier:
+        account: Kontonumero
+        account_desc: Priskribo de konto
+        accounting_notes: Kontadaj notoj
+        broker_customer: Kliento
+        broker_customer_id: Kliento
+        carrier: Transportisto
+        carrier_id: Transportisto
+        check_mailing_address: Adreso por ĉekoj
+        create_invoice_on_pickup: Krei fakturon ĉe ŝarĝpreno
+        days_to_pay_after_invoice_date: Tagoj ĝis limdato
+        default_bol_notes: Defaŭltaj BOL-notoj
         encrypted_ach_account_number: ACH-kontonumero
         encrypted_ach_bank_name: Nomo de ACH-banko
         encrypted_ach_routing_number: ACH-vojiga numero
         encrypted_api_key: API-ŝlosilo
+        ignore_bol_requires_tracking_number: Krei BOL sen PRO-numero
         password: Pasvorto
+        quote_padding: Prezoferta aldono
         username: Uzantnomo
         website_password: Pasvorto
         website_username: Uzantnomo
+      broker_country:
+        country_alpha2: Lando
       broker_customer:
+        always_show_quotes_based_on_calculated_classes: Ĉiam montri tarifojn laŭ la kalkulita klaso
         can_quote: La kliento povas peti prezofertojn kaj mendi sendaĵojn
+        customer: Kliento
+        default_bol_notes: Defaŭltaj instrukcioj sur BOL
+        default_upcharge: Defaŭlta krompago
+        default_upcharge_percentage: Defaŭlta procento de krompago
+        enable_auto_freight_class: Aŭtomate kalkuli la frajtoklason
+        ignore_value_on_api_quotes: Ignori la deklaritan valoron por API-prezofertoj
+        internal_notes: Klienta gvidilo
+        office_address: Oficeja adreso
+        preferred_broker_carriers_kind: Listo de preferataj transportistoj
+        primary_pickup_address: Ĉefa adreso de ŝarĝpreno
+        receivables_contact: Kontakto por ricevendaĵoj
+        receivables_contact_id: Kontakto por ricevendaĵoj
+        receivables_schedule: Horaro de ricevendaĵoj
+        requires_carrier_bol_on_receivables: Ĉu ricevendaĵoj bezonas la BOL de la transportisto?
+        requires_carrier_pod_on_receivables: Ĉu ricevendaĵoj bezonas la pruvon de liverado de la transportisto?
         requires_charges_confirmed_on_receivables: Ĉu malpermesi krei ricevendaĵon ĝis la kostoj de la sendaĵo estas konfirmitaj?
         requires_customer_reference_number_on_receivables: Ĉu malpermesi krei ricevendaĵon ĝis la sendaĵo havas referencnumeron de kliento?
         requires_shipment_delivery_before_receivable: Ĉu malpermesi krei ricevendaĵon ĝis la sendaĵo estas liverita?
         requires_shipment_shipper_reference_on_receivables: Ĉu malpermesi krei ricevendaĵon ĝis la sendaĵo havas referencnumeron de sendinto?
+        valid_freight_classes: Validaj frajtoklasoj
+      broker_customer_dispatcher:
+        broker_customer: Kliento
+        user: Ekspedisto
+        user_id: Ekspedisto
       broker_customer_sales_rep:
+        broker_customer: Kliento
         commission_flat: fiksa komisipago
         commission_percent: procenta komisipago
+        user: Vendoreprezentanto
+        user_id: Vendoreprezentanto
+      carrier:
+        acts_as_broker: Agas kiel makleristo
+        broker_billing_address: Faktura adreso de makleristo
+        check_mailing_address: Adreso por ĉekoj
+        consider_bol_and_pod_documents_same: Trakti BOL kaj pruvon de liverado kiel la saman dokumenton
+        has_traceable_pickup_confirmation: Havas spureblan konfirmon de ŝarĝpreno
+        legal_name: Jura nomo
+        mc_number: MC-numero
+        name: Nomo
+        scac: SCAC
+      claim:
+        balance: Saldo
+        due_on: Limdato
+        shipment: Ŝarĝo
+        total: Sumo
+      claim_item:
+        balance: Saldo
+        claim: Reklamacio
+        notes: Notoj
+        payee: Ricevonto de pago
+        payee_id: Ricevonto de pago
+        total: Sumo
+      comment:
+        body: Komento
+        contact: Kontakto
+        discussion_topic: Temo
+      commission:
+        amount: Kvanto
+        paid: Pagita
+        shipment: Ŝarĝo
+        user: Vendoreprezentanto
+      contact:
+        comments: Komentoj
+        companyable_sgid: Firmao
+        email: Retpoŝto
+        first_name: Persona nomo
+        job_title: Posteno
+        label: Fako
+        last_name: Familia nomo
+        mobile_phone: Poŝtelefono
+        work_phone: Laborejtelefono
+      contact_role:
+        contact: Kontakto
+        role: Rolo
       contacts:
         broker_carrier: Transportisto
         broker_customer: Kliento
         label: Fako
-      contact:
-        company_sgid: Firmao
+      customer:
+        legal_name: Jura nomo
+        name: Nomo
+      document_preference:
+        broker_customer: Kliento
+        contact: Kontakto
+        contact_id: Kontakto
+        kind: Dokumento
       item:
         declared_freight_class: Frajtoklaso
         desc: Priskribo
         h: Alto
+        hazmat: Danĝera materialo
         l: Longo
+        nmfc: NMFC
+        packaging: Pakaĵo
+        packaging_id: Pakaĵo
+        quantity: Kvanto
+        refrigerated: Malvarmigita
+        shipment: Ŝarĝo
         w: Larĝo
+        weight: Pezo
+      overlength_rule:
+        broker_carrier: Transportisto
+        cost: Kosto
+        max_length: Maksimuma longo
+        min_length: Minimuma longo
+      packaging:
+        name: Nomo
+      payment:
+        approved_at: Aprobita
+        approved_by: Aprobita de
+        bank: Banko
+        bank_id: Banko
+        broker_carrier: Transportisto
+        broker_carrier_id: Transportisto
+        created_by: Kreita de
+        due_on: Limdato
+        legacy_csv: CSV
+        method_reference: Referenco
+        paid: Pagita
+        paid_on: Pagita je
+        payment_method: Pagmaniero
+        payment_method_id: Pagmaniero
+      payment_method:
+        name: Nomo
+      payment_transaction:
+        additional_charge: Aldona kosto
+        balance: Saldo
+        broker_carrier: Transportisto
+        broker_carrier_id: Transportisto
+        created_by: Kreita de
+        csv: CSV
+        due_on: Limdato
+        invoice: Fakturo
+        notes: Rimarko
+        paid: Pagita
+        payment: Pago
+        pro: PRO-numero
+        shipment: Ŝarĝo
+        shipment_load_id: Ŝarĝo
+      pickup:
+        confirmed_at: Konfirmita
+        dispatcher: Ekspedisto
+        pickup_confirmation: Ŝarĝpreno-numero
+        pro: PRO-numero
+        rate: Tarifo
+        requested_at: Petita
+        shipment: Ŝarĝo
       pickup_request:
         accepted_pickup_at: Akceptita je
         accepted_pickup_on: Akceptita ŝarĝpreno je
         canceled_at: Nuligita je
+        created_by: Kreita de
         pickup_on: Ŝarĝpreno je
         reschedule_reason: Kialo de replanado
+      preferred_broker_carrier:
+        broker_carrier: Transportisto
+        broker_carrier_id: Transportisto
+        broker_customer: Kliento
+      pricing_rule:
+        broker_carrier: Transportisto
+        cost_per_pallet: Kosto po paledo
+        lane: Itinero
+        max_pallets: Maksimumaj paledoj
+        min_pallets: Minimumaj paledoj
+      problem:
+        assigned_to: Asignita al
+        body: Priskribo
+        resolved_at: Solvita
+        resolved_by: Solvita de
+        title: Titolo
+      rate:
+        broker_carrier: Transportisto
+        broker_customer: Kliento
+        cost: Kosto
+        expires_at: Eksvalidiĝas
+        reference: Referenco
+        shipment: Ŝarĝo
+        source: Fonto
+        tracking_carrier: Spura transportisto
+        transit_days: Tagoj de transporto
+      receivable:
+        authorized_at: Rajtigita
+        authorized_by: Rajtigita de
+        balance: Saldo
+        created_by: Kreita de
+        due_by: Limdato
+        invoice: Fakturo
+        invoiced: Fakturita
+        paid_at: Pagita
+        sent_at: Sendita
+        sent_by: Sendita de
+        shipment: Ŝarĝo
+        total: Sumo
+      receivable_item:
+        charge: Kosto
+        description: Priskribo
       region:
         iso_3166_2: ISO 3166-2
+      setting:
+        key: Ŝlosilo
+        value: Valoro
       shipment:
+        applied_rate: Tarifo
         bol: BOL-numero
+        bol_notes: BOL-notoj
+        booked_at: Mendita
+        broker_and_broker_customer_notes: Komunaj notoj
         broker_bol: Konosamento
         broker_carrier: Transportisto
+        broker_carrier_id: Transportisto
+        broker_carrier_quote: Prezoferto de transportisto
+        broker_customer: Kliento
+        broker_customer_id: Kliento
         broker_dispatch_sheet: Ekspedfolio
         broker_ebol: eBOL
+        broker_label: Sendaĵa etikedo
+        broker_notes: Internaj notoj
         broker_quote: Prezoferto
+        canceled_at: Nuligita
         carrier_bol: Skanita konosamento
+        carrier_charge: Baza transporta kosto
+        carrier_cost: Baza transporta elspezo
         carrier_pod: Pruvo de liverado
+        charges_confirmed: Kostoj konfirmitaj
+        created_by: Kreita de
+        customer_notes: Klientaj notoj
         customer_reference: Aĉetmendo-numero
+        delivered_at: Liverita
+        delivery_appointment_at: Horo de liverada rendevuo
+        delivery_appointment_on: Liverada rendevuo
+        delivery_eta_on: Atendata liverado
+        delivery_hours_end_at: Fino de liveradaj horoj
+        delivery_hours_start_at: Komenco de liveradaj horoj
+        departed_origin_terminal_at: Foriris
+        dispatched_at: Ekspedita
+        dispatcher: Ekspedisto
+        dispatcher_id: Ekspedisto
+        lift_gate_delivery: Liverado per levpordo
+        lift_gate_pickup: Ŝarĝpreno per levpordo
+        load_id: Ŝarĝo-numero
+        lost_on: Perdita je
+        out_for_delivery_at: Liverata
+        pending_appointment_since: Rendevuo atendata ekde
+        picked_up_at: Prenita
         pickup_confirmation: Ŝarĝpreno-numero
+        pickup_driver_assigned_at: Ŝoforo asignita
+        pickup_eta_at: Atendata ŝarĝpreno
+        pickup_hours_end_at: Fino de ŝarĝprenaj horoj
+        pickup_hours_start_at: Komenco de ŝarĝprenaj horoj
+        pickup_on: Dato de ŝarĝpreno
+        pickup_request: Peto de ŝarĝpreno
+        priority: Prioritato
         pro: PRO-numero
+        promised_delivery_by: Promesita liverado
+        public_notes: Publikaj notoj
         quote_id: Prezoferto-numero
+        quote_only: Nur prezoferto
+        quoted_delivery_by: Prezofertita liverado
+        receiver_address: Ricevanto
+        receiver_contact_email: Retpoŝto de ricevanto
+        receiver_contact_name: Kontakto de ricevanto
+        receiver_contact_phone: Telefono de ricevanto
+        shipper_address: Sendinto
+        shipper_contact_email: Retpoŝto de sendinto
+        shipper_contact_name: Kontakto de sendinto
+        shipper_contact_phone: Telefono de sendinto
         shipper_reference: Vendmendo-numero
+        status: Stato
         total_charges: Kosto
         total_charges_cents: Kosto
         total_cost: Kosto de transportisto
         total_cost_cents: Kosto de transportisto
+        tracking_carrier: Spura transportisto
+        tracking_carrier_id: Spura transportisto
+        tracking_carrier_pickup_confirmation: Ŝarĝpreno-numero de spura transportisto
+        tracking_carrier_pro: PRO-numero de spura transportisto
+        truckload: Plena kamionŝarĝo
+        updated_by: Ĝisdatigita de
+        value: Deklarita valoro
+      shipment_broker_accessorial:
+        broker_accessorial: Kroma servo
+        broker_accessorial_id: Kroma servo
+        charge: Kosto
+        cost: Elspezo
+      subscription:
+        contact: Kontakto
+      terminal:
+        address: Adreso
+        carrier: Transportisto
+        phone: Telefono
+      tracking_event:
+        address: Adreso
+        at: Tempo
+        city: Urbo
+        country_alpha2: Lando
+        event: Evento
+        event_id: Evento
+        public: Publika
+        region_iso31662: Ŝtato aŭ provinco
+        shipment: Ŝarĝo
+        terminal: Terminalo
+        time_zone_name: Horzono
+        user: Uzanto
+      upcharge_rule:
+        broker_customer: Kliento
+        max: Maksimumo
+        min: Minimumo
+        packaging: Pakaĵo
+        packaging_id: Pakaĵo
+        upcharge: Krompago
+        upcharge_percentage: Procento de krompago
       user:
-        company_sgid: Firmao
+        companyable_sgid: Firmao
+        contact: Kontakto
+        current_password: Nuna pasvorto
+        deactivated: Ĉu malaktivigita?
+        email: Retpoŝto
+        first_name: Persona nomo
+        last_name: Familia nomo
+        locale: Lingvo
+        password: Pasvorto
+        password_confirmation: Konfirmo de pasvorto
+        phone: Telefono
+        receive_email_notifications: Ĉu ricevi sciigojn per retpoŝto?
+        receive_notifications_from_self: Ĉu ricevi sciigojn, kiujn vi mem kaŭzis?
+        receive_read_notifications_by_email: Ĉu ricevi per retpoŝto sciigojn, kiujn vi jam vidis?
+        receive_sms_notifications: Ĉu ricevi sciigojn per tekstmesaĝo?
+        time_zone_name: Horzono
     help:
       api_key:
         name: Kie la ŝlosilo estas uzata, ekzemple “Magazena WMS”
         ttl: Renovigu la ŝlosilon por anstataŭigi ĝin antaŭ ol ĝi eksvalidiĝas
+      broker_accessorial:
+        flat_charge: Ĉiam apliki ĉi tiun sumon sendepende de la kotizo de la transportisto
+      broker_carrier:
+        days_to_pay_after_invoice_date: Uzata por krei limdatojn de pago kiam ili ne estas indikitaj en kontoeltiroj
+      broker_customer:
+        internal_notes: Montrata interne ĉe ĉiu ŝarĝo
+      shipment:
+        broker_carrier_id: Por manaj prezoferoj
+        tracking_carrier_id: Por spurado
+      user:
+        current_password: Necesa por konservi
+        phone: Internacia formato (kun komenca +) aŭ usona formato
+        time_zone_name: Horoj estas montrataj en ĉi tiu zono
     models:
+      accessorial:
+        one: Kroma servo
+        other: Kromaj servoj
+      address:
+        one: Adreso
+        other: Adresoj
       api_key:
         one: API-ŝlosilo
         other: API-ŝlosiloj
+      bank:
+        one: Banko
+        other: Bankoj
+      broker_accessorial:
+        one: Kroma servo
+        other: Kromaj servoj
       broker_carrier:
         one: Transportisto
         other: Transportistoj
+      broker_country:
+        one: Lando
+        other: Landoj
       broker_customer:
         one: Kliento
         other: Klientoj
+      broker_customer_dispatcher:
+        one: Ekspedisto
+        other: Ekspedistoj
       broker_customer_sales_rep:
         one: Vendoreprezentanto
         other: Vendoreprezentantoj
       carrier:
         one: Transportisto
         other: Transportistoj
+      claim:
+        one: Reklamacio
+        other: Reklamacioj
+      claim_item:
+        one: Ero de reklamacio
+        other: Eroj de reklamacio
+      comment:
+        one: Komento
+        other: Komentoj
+      commission:
+        one: Komisipago
+        other: Komisipagoj
+      contact:
+        one: Kontakto
+        other: Kontaktoj
+      contact_role:
+        one: Rolo
+        other: Roloj
+      customer:
+        one: Kliento
+        other: Klientoj
+      document_preference:
+        one: Dokumenta prefero
+        other: Dokumentaj preferoj
+      item:
+        one: Ero
+        other: Eroj
       overlength_rule:
         one: Regulo pri troa longo
         other: Reguloj pri troa longo
+      packaging:
+        one: Pakaĵo
+        other: Pakaĵoj
+      payment:
+        one: Pago
+        other: Pagoj
+      payment_method:
+        one: Pagmaniero
+        other: Pagmanieroj
+      payment_transaction:
+        one: Pagendaĵo
+        other: Pagendaĵoj
+      pickup:
+        one: Ŝarĝpreno
+        other: Ŝarĝprenoj
+      pickup_request:
+        one: Peto de ŝarĝpreno
+        other: Petoj de ŝarĝpreno
+      preferred_broker_carrier:
+        one: Preferata transportisto
+        other: Preferataj transportistoj
       pricing_rule:
         one: Regulo pri paledprezo
         other: Reguloj pri paledprezo
+      problem:
+        one: Problemo
+        other: Problemoj
+      rate:
+        one: Tarifo
+        other: Tarifoj
       receivable:
         one: Ricevendaĵo
         other: Ricevendaĵoj
+      receivable_item:
+        one: Ero de ricevendaĵo
+        other: Eroj de ricevendaĵo
+      setting:
+        one: Agordo
+        other: Agordoj
       shipment:
         one: Ŝarĝo
         other: Ŝarĝoj
+      shipment_broker_accessorial:
+        one: Kosto de kroma servo
+        other: Kostoj de kromaj servoj
+      subscription:
+        one: Abono
+        other: Abonoj
+      terminal:
+        one: Terminalo
+        other: Terminaloj
+      tracking_event:
+        one: Spura evento
+        other: Spuraj eventoj
+      upcharge_rule:
+        one: Regulo pri krompago
+        other: Reguloj pri krompago
+      user:
+        one: Uzanto
+        other: Uzantoj
     enums:
+      bank:
+        kinds:
+          checking: Ĉekkonto
+          credit_card: Kreditkarto
+      broker_customer:
+        preferred_broker_carriers_kinds:
+          blacklist: Bloklisto
+          whitelist: Permesolisto
+        receivables_schedules:
+          daily: Ĉiutage
+          immediately: Tuj
+          monthly: Ĉiumonate
+          never: Neniam
+          weekly: Ĉiusemajne
+      contact_role:
+        roles:
+          accounting: Kontado
+          accounts_payable: Pagendaĵoj
+          accounts_receivable: Ricevendaĵoj
+          appointments: Rendevuoj
+          carrier_relations: Rilatoj kun transportistoj
+          claims: Reklamacioj
+          controller: Kontrolisto
+          dispatch: Ekspedado
+          quoting: Prezofertado
+          root: Radiko
+          sales_rep: Vendoreprezentanto
+          sales_rep_for_all_broker_customers: Vendoreprezentanto por ĉiuj klientoj
+          tracking: Spurado
+      document_preference:
+        kinds:
+          carrier_bol: Skanita konosamento
+          carrier_pod: Pruvo de liverado
       pickup_request:
         reschedule_reasons:
           capacity: Kapacito de transportisto
@@ -306,6 +777,9 @@ eo:
       lane_changed: "La poŝtkodo de la sendinto aŭ ricevonto diferencas de la prezigita sendaĵo. Prezigu la sendaĵon denove."
       picked_up: "La sendaĵo jam estis prenita, do ĝi ne povas esti ŝanĝita aŭ nuligita."
       unbookable_rate: "Prezoferto “%{rate_quote_id}” ne povas esti mendita. Ĝi estas nekonata, eksvalidiĝinta aŭ jam mendita."
+  date:
+    formats:
+      numeric: "%Y-%m-%d"
   discussion_topics:
     tracking_event:
       arrived_at_terminal: "%{model_name} alvenis proksime de %{city}, %{region_abbreviation} %{country_alpha2}"
@@ -369,6 +843,9 @@ eo:
         departed: La ŝoforo prenis la frajton.
         en_route: Ŝoforo estas asignita al la ŝarĝpreno.
         rescheduled: La ŝarĝpreno estis movita al alia tago.
+  flatpickr:
+    alt_formats:
+      datetime: "Y-m-d H:i"
   freightview:
     errors:
       missing: "Mankas deviga eco."
@@ -384,6 +861,48 @@ eo:
   graphql:
     errors:
       rate_limited: Tro da petoj. Atendu la nombron da sekundoj en la kapo Retry-After, poste reprovu.
+    fields:
+      mutation:
+        address_create: Krei adreson
+        fetch_rates: Akiri tarifojn de transportistoj por ekzistanta %{shipment} laŭ ĝia ŝarĝo-ID
+        quote_create: Krei prezoferton por itinero kaj ĝiaj pakaĵoj, poste akiri tarifojn de transportistoj por ĝi
+        shipment_create: Mendi tarifon de prezoferto kiel %{shipment}
+      query:
+        bill: Akiri la %{payment_transaction} kun la donita ID
+        bills: Serĉi %{payment_transactions} kun nedevigaj filtriloj, ordigo kaj paĝigo
+        carrier: Akiri la %{carrier} kun la donita ID
+        carriers: Serĉi %{carriers} kun nedevigaj filtriloj, ordigo kaj paĝigo
+        customer: Akiri la %{broker_customer} kun la donita ID
+        customers: Serĉi %{broker_customers} kun nedevigaj filtriloj, ordigo kaj paĝigo
+        invoice: Akiri la %{receivable} kun la donita ID
+        invoices: Serĉi %{receivables} kun nedevigaj filtriloj, ordigo kaj paĝigo
+        shipment: Akiri la %{shipment} kun la donita ŝarĝo-ID
+        shipments: Serĉi %{shipments} kun nedevigaj filtriloj, ordigo kaj paĝigo
+        task: Akiri la taskon kun la donita ID
+        tasks: Serĉi taskojn kun nedevigaj filtriloj, ordigo kaj paĝigo
+  helpers:
+    placeholder:
+      item:
+        h: A
+        l: L
+        w: La
+        weight: lb
+      overlength_rule:
+        max_length: Maks
+        min_length: Min
+      payment:
+        legacy_csv: legacy load, pro, paid, notes
+      pricing_rule:
+        max_pallets: Maks
+        min_pallets: Min
+      upcharge_rule:
+        max: Maks
+        min: Min
+      user:
+        email: Via retpoŝtadreso
+        password: Nova pasvorto
+        password_confirmation: Konfirmu la novan pasvorton
+        phone: Via telefono
   locale_name: Esperanto
   mcp:
     errors:
@@ -408,3 +927,6 @@ eo:
   test_mailer:
     hello:
       subject: Saluton de Next TMS
+  time:
+    formats:
+      tag: "%Y-%m-%d %H:%M %Z"

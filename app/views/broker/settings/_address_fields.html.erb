@@ -3,11 +3,11 @@
 
   <div class="col-sm-10" data-controller="address">
     <%= f.fields_for :address do |address_form| %>
-      <%= address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
+      <%= address_form.text_field :street, hide_label: true, placeholder: true %>
       <%= address_form.text_field :street2, hide_label: true %>
-      <%= address_form.text_field :city, hide_label: true, placeholder: 'City' %>
+      <%= address_form.text_field :city, hide_label: true, placeholder: true %>
       <%= address_form.select :region_iso31662, Array(address_form.object.region).map { |region| [region.name, region.id] }, { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
-      <%= address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
+      <%= address_form.text_field :zip_code, hide_label: true, placeholder: true %>
       <%= address_form.select :country_alpha2, country_options(BrokerCountry.countries.order(:name), address_form.object.country_alpha2), { hide_label: true }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
     <% end %>
   </div>

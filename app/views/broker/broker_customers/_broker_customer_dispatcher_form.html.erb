@@ -2,7 +2,7 @@
   <div class="col-auto">
     <%= f.select :user_id,
                  User.dispatchers.collect { |user| [user.full_name, user.id ] },
-                 { label: 'Dispatcher', hide_label: true, wrapper: false },
+                 { hide_label: true, wrapper: false },
                  class: 'form-select' %>
   </div>
 

@@ -21,6 +21,26 @@ RSpec.describe(DateTimeHelper) do
     end
   end
 
+  describe('#flatpickr_datetime_data') do
+    subject { helper.flatpickr_datetime_data(nil, time_zone) }
+
+    let(:time_zone) { ActiveSupport::TimeZone['America/Los_Angeles'] }
+
+    it { is_expected.to(include(flatpickr_alt_format: 'Y-m-d h:i K', flatpickr_date_format: 'Y-m-dTH:i:00-08:00')) }
+
+    context 'when I18n.locale is es' do
+      around { |example| I18n.with_locale(:es) { example.run } }
+
+      it { is_expected.to(include(flatpickr_alt_format: 'Y-m-d H:i')) }
+    end
+
+    context 'when time_zone.blank?' do
+      let(:time_zone) { nil }
+
+      it { is_expected.to(include(flatpickr_alt_format: 'Y-m-d h:i K', flatpickr_date_format: 'Y-m-dTH:i:00-00:00')) }
+    end
+  end
+
   describe('#hours_range') do
     subject { helper.hours_range(date, start_at, end_at, time_zone) }
 
@@ -117,6 +137,41 @@ RSpec.describe(DateTimeHelper) do
     end
   end
 
+  describe('#short_date') do
+    subject { helper.short_date(date, time_zone) }
+
+    let(:date) { Date.new(2026, 7, 14) }
+    let(:time_zone) { ActiveSupport::TimeZone['America/Los_Angeles'] }
+
+    it do
+      is_expected.to(
+        eq(
+          '<time datetime="2026-07-14T00:00:00-07:00" data-controller="time" ' \
+          'data-time-date-style-value="short" data-time-locale-value="en" data-time-time-style-value="" ' \
+          'data-time-time-zone-value="America/Los_Angeles">07/14/26</time>'
+        )
+      )
+    end
+
+    context 'when date.blank?' do
+      let(:date) { nil }
+
+      it { is_expected.to(be_nil) }
+    end
+
+    context 'when I18n.locale is zh-CN' do
+      around { |example| I18n.with_locale(:'zh-CN') { example.run } }
+
+      it { is_expected.to(include('>2026/07/14</time>')) }
+    end
+
+    context 'when time_zone.blank?' do
+      let(:time_zone) { nil }
+
+      it { is_expected.to(be_nil) }
+    end
+  end
+
   describe('#time') do
     subject(:time_tag_html) { helper.time(datetime, time_zone) }
 
@@ -130,6 +185,7 @@ RSpec.describe(DateTimeHelper) do
       expect(time_tag_html).to(
         eq(
           '<time datetime="2026-07-14T10:00:00-07:00" data-controller="time" ' \
+          'data-time-date-style-value="medium" data-time-locale-value="en" data-time-time-style-value="short" ' \
           'data-time-time-zone-value="America/Los_Angeles">Jul 14, 2026, 10:00 AM PDT</time>'
         )
       )
@@ -147,6 +203,20 @@ RSpec.describe(DateTimeHelper) do
       it { is_expected.to(include('datetime="2026-07-14T00:00:00-07:00"')) }
     end
 
+    context 'when I18n.locale is es' do
+      around { |example| I18n.with_locale(:es) { example.run } }
+
+      it { is_expected.to(include('data-time-locale-value="es"')) }
+      it { is_expected.to(include('>14 jul 2026, 10:00 PDT</time>')) }
+    end
+
+    context 'when time_style is nil' do
+      subject(:time_tag_html) { helper.time(datetime, time_zone, date_style: :long, time_style: nil) }
+
+      it { is_expected.to(include('data-time-date-style-value="long" data-time-locale-value="en" data-time-time-style-value=""')) }
+      it { is_expected.to(include('>07/14/26</time>')) }
+    end
+
     context 'when time_zone is omitted' do
       subject(:time_tag_html) { helper.time(datetime) }
 
@@ -161,6 +231,7 @@ RSpec.describe(DateTimeHelper) do
         expect(time_tag_html).to(
           eq(
             '<time datetime="2026-07-14T13:00:00-04:00" data-controller="time" ' \
+            'data-time-date-style-value="medium" data-time-locale-value="en" data-time-time-style-value="short" ' \
             'data-time-time-zone-value="America/New_York">Jul 14, 2026, 1:00 PM EDT</time>'
           )
         )

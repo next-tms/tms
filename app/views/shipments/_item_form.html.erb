@@ -7,21 +7,21 @@
       <%= f.number_field :quantity, hide_label: true, placeholder: '#', min: 1, wrapper: false %>
       <%= f.select :packaging_id,
                    Packaging.order(:name).all.collect {|c| [ c.name, c.id ] },
-                   { label: 'Packaging', hide_label: true, selected: ( f.object.packaging_id ? f.object.packaging_id : default_packaging_id ), wrapper: false },
+                   { hide_label: true, selected: ( f.object.packaging_id ? f.object.packaging_id : default_packaging_id ), wrapper: false },
                    class: 'form-select' %>
     </div>
   </div>
 
   <div class="col-auto">
-    <%= f.text_field :desc, hide_label: 'true', placeholder: 'Description', wrapper: false %>
+    <%= f.text_field :desc, hide_label: 'true', placeholder: true, wrapper: false %>
   </div>
 
   <div class="col-sm-3">
     <div class="input-group">
-      <%= f.text_field :l, hide_label: true, placeholder: 'L', data: { action: 'keyup->dimensions#fromLength', 'dimensions-target': 'length' }, wrapper: false %>
-      <%= f.text_field :w, hide_label: true, placeholder: 'W', data: { 'dimensions-target': 'width' }, wrapper: false %>
-      <%= f.text_field :h, hide_label: true, placeholder: 'H', data: { 'dimensions-target': 'height' }, wrapper: false %>
-      <%= f.text_field :weight, hide_label: true, placeholder: 'lbs', data: { 'dimensions-target': 'weight' }, wrapper: false %>
+      <%= f.text_field :l, hide_label: true, placeholder: true, data: { action: 'keyup->dimensions#fromLength', 'dimensions-target': 'length' }, wrapper: false %>
+      <%= f.text_field :w, hide_label: true, placeholder: true, data: { 'dimensions-target': 'width' }, wrapper: false %>
+      <%= f.text_field :h, hide_label: true, placeholder: true, data: { 'dimensions-target': 'height' }, wrapper: false %>
+      <%= f.text_field :weight, hide_label: true, placeholder: true, data: { 'dimensions-target': 'weight' }, wrapper: false %>
     </div>
   </div>
 
@@ -29,11 +29,11 @@
     <div class="input-group">
       <%= f.select :declared_freight_class,
                    [['Auto', nil]] + valid_classes.collect { |c| [c, c] },
-                   { label: 'Class', hide_label: true, selected: ( f.object.declared_freight_class ? f.object.declared_freight_class : f.object.calculated_freight_class ), wrapper: false },
+                   { hide_label: true, selected: ( f.object.declared_freight_class ? f.object.declared_freight_class : f.object.calculated_freight_class ), wrapper: false },
                    data: { 'dimensions-target': 'forcedClass' },
                    class: 'form-select' %>
 
-      <%= f.text_field :nmfc, hide_label: true, placeholder: 'NMFC', data: { 'dimensions-target': 'nmfc' }, wrapper: false %>
+      <%= f.text_field :nmfc, hide_label: true, placeholder: true, data: { 'dimensions-target': 'nmfc' }, wrapper: false %>
     </div>
   </div>
 

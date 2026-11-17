@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static values = { dateStyle: { type: String, default: 'medium' }, timeStyle: { type: String, default: 'short' }, timeZone: String }
+    static values = { dateStyle: { type: String, default: 'medium' }, locale: String, timeStyle: { type: String, default: 'short' }, timeZone: String }
 
     connect() {
         this.updateTime()
@@ -20,11 +20,19 @@ export default class extends Controller {
             return
         }
 
+        const locale = this.localeValue || undefined
         const timeZone = this.timeZoneValue || undefined
+        const timeStyle = this.timeStyleValue || undefined
 
         try {
-            const localTime = new Intl.DateTimeFormat(undefined, { dateStyle: this.dateStyleValue, timeStyle: this.timeStyleValue, timeZone }).format(date)
-            const timeZoneName = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short', timeZone })
+            const localTime = new Intl.DateTimeFormat(locale, { dateStyle: this.dateStyleValue, timeStyle, timeZone }).format(date)
+
+            if (!timeStyle) {
+                this.element.textContent = localTime
+                return
+            }
+
+            const timeZoneName = new Intl.DateTimeFormat(locale, { timeZoneName: 'short', timeZone })
                 .formatToParts(date)
                 .find((part) => part.type === 'timeZoneName')
                 .value

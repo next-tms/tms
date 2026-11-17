@@ -1,10 +1,10 @@
 <div class="broker-customer-document-preference-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
   <div class="col-auto">
-    <%= f.select :kind, [ ['Carrier BOL', 'carrier_bol'], ['Carrier POD', 'carrier_pod'] ], { label: 'Document', hide_label: true, wrapper: false }, class: 'form-select' %>
+    <%= f.select :kind, [ ['Carrier BOL', 'carrier_bol'], ['Carrier POD', 'carrier_pod'] ], { hide_label: true, wrapper: false }, class: 'form-select' %>
   </div>
 
   <div class="col col-md-2">
-    <%= f.select :contact_id, @broker_customer.contacts.order(:first_name).collect { |c| ["#{c.first_name} #{c.last_name}", c.id] }, { label: 'Contact', hide_label: true, wrapper: false }, class: 'form-select' %>
+    <%= f.select :contact_id, @broker_customer.contacts.order(:first_name).collect { |c| ["#{c.first_name} #{c.last_name}", c.id] }, { hide_label: true, wrapper: false }, class: 'form-select' %>
   </div>
 
   <div class="col-auto">

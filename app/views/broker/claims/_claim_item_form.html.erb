@@ -9,7 +9,6 @@
                   .collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }
                   .sort,
                   {
-                    label: 'Carrier',
                     hide_label: true,
                     include_blank: true,
                     wrapper: false
@@ -19,12 +18,12 @@
   </div>
 
   <div class="col col-sm-2">
-    <%= f.text_field :total, hide_label: true, placeholder: 'Total', prepend: '$', data: money_controller_data, wrapper: false %>
+    <%= f.text_field :total, hide_label: true, placeholder: true, prepend: '$', data: money_controller_data, wrapper: false %>
   </div>
 
   <% unless f.object.new_record? %>
     <div class="col col-sm-2">
-      <%= f.text_field :balance, hide_label: true, placeholder: 'Balance', prepend: '$', data: money_controller_data, wrapper: false %>
+      <%= f.text_field :balance, hide_label: true, placeholder: true, prepend: '$', data: money_controller_data, wrapper: false %>
     </div>
   <% end %>
 

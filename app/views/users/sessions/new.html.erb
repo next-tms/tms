@@ -8,8 +8,8 @@
   <div class="col col-md-6">
     <%= bootstrap_form_for(resource, as: resource_name, url: session_path(resource_name), layout: :horizontal) do |f| %>
     
-      <%= f.email_field :email, placeholder: 'Your email address', class: 'form-control', autofocus: true %>
-      <%= f.password_field :password, placeholder: 'Password', class: 'form-control' %>
+      <%= f.email_field :email, placeholder: true, class: 'form-control', autofocus: true %>
+      <%= f.password_field :password, class: 'form-control' %>
     
       <%= f.submit 'Log in', class: 'btn btn-primary' %>
       <%- if devise_mapping.recoverable? %>

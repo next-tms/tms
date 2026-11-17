@@ -3,13 +3,8 @@
 
   <%= f.fields_for :customer do |customer_form| %>
     <div data-controller="legal-name">
-      <%= customer_form.text_field :legal_name,
-                                   autofocus: true,
-                                   data: { action: 'legal-name#fill', 'legal-name-target': 'legalName' },
-                                   label: 'Legal Name',
-                                   placeholder: 'Legal Name'
-      %>
-      <%= customer_form.text_field :name, data: { 'legal-name-target': 'name' }, placeholder: 'Name' %>
+      <%= customer_form.text_field :legal_name, autofocus: true, data: { action: 'legal-name#fill', 'legal-name-target': 'legalName' }, placeholder: true %>
+      <%= customer_form.text_field :name, data: { 'legal-name-target': 'name' }, placeholder: true %>
     </div>
   <% end %>
 
@@ -18,11 +13,11 @@
 
     <div class="col-sm-10" data-controller="address">
       <%= f.fields_for :primary_pickup_address do |primary_pickup_address_form| %>
-        <%= primary_pickup_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
+        <%= primary_pickup_address_form.text_field :street, hide_label: true, placeholder: true %>
         <%= primary_pickup_address_form.text_field :street2, hide_label: true %>
-        <%= primary_pickup_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
+        <%= primary_pickup_address_form.text_field :city, hide_label: true, placeholder: true %>
         <%= primary_pickup_address_form.select :region_iso31662, (primary_pickup_address_form.object.region_iso31662.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[primary_pickup_address_form.object.region.name, primary_pickup_address_form.object.region_iso31662]]), { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
-        <%= primary_pickup_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
+        <%= primary_pickup_address_form.text_field :zip_code, hide_label: true, placeholder: true %>
         <%= primary_pickup_address_form.select :country_alpha2, country_options(BrokerCountry.countries.order(:name), primary_pickup_address_form.object.country_alpha2), { hide_label: true, selected: (primary_pickup_address_form.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : primary_pickup_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
       <% end %>
     </div>
@@ -33,11 +28,11 @@
 
     <div class="col-sm-10" data-controller="address">
       <%= f.fields_for :office_address do |office_address_form| %>
-        <%= office_address_form.text_field :street, hide_label: true, placeholder: 'Street' %>
+        <%= office_address_form.text_field :street, hide_label: true, placeholder: true %>
         <%= office_address_form.text_field :street2, hide_label: true %>
-        <%= office_address_form.text_field :city, hide_label: true, placeholder: 'City' %>
+        <%= office_address_form.text_field :city, hide_label: true, placeholder: true %>
         <%= office_address_form.select :region_iso31662, (office_address_form.object.region_iso31662.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[office_address_form.object.region.name, office_address_form.object.region_iso31662]]), { include_blank: 'State', hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
-        <%= office_address_form.text_field :zip_code, hide_label: true, placeholder: 'ZIP' %>
+        <%= office_address_form.text_field :zip_code, hide_label: true, placeholder: true %>
         <%= office_address_form.select :country_alpha2, country_options(BrokerCountry.countries.order(:name), office_address_form.object.country_alpha2), { hide_label: true, selected: (office_address_form.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : office_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
       <% end %>
     </div>
@@ -79,7 +74,7 @@
           <div class="col-auto">
             <%= f.select :receivables_contact_id,
                          f.object.contacts.order(:first_name).all.collect { |contact| [ contact.label, contact.id ] },
-                         { label: 'Contact', hide_label: true, wrapper: false },
+                         { hide_label: true, wrapper: false },
                          class: 'form-select' %>
           </div>
         <% end %>
@@ -129,8 +124,8 @@
     </div>
   </div>
 
-  <%= f.text_area :internal_notes, label: 'Customer guide', help: 'Show internally on each shipment', rows: 7 %>
-  <%= f.text_area :default_bol_notes, label: 'Default instructions on BOL', rows: 7 %>
+  <%= f.text_area :internal_notes, rows: 7 %>
+  <%= f.text_area :default_bol_notes, rows: 7 %>
 
   <div class="form-group row">
     <label class="col-form-label col-sm-2">Preferred Carriers</label>

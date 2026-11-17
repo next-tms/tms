@@ -12,7 +12,7 @@ module DateTimeHelper
       return flatpickr_data
              .deep_merge(
                flatpickr_alt_input: true,
-               flatpickr_alt_format: 'Y-m-d h:i K',
+               flatpickr_alt_format: t('flatpickr.alt_formats.datetime'),
                flatpickr_enable_time: true,
                flatpickr_date_format: 'Y-m-dTH:i:00-00:00'
              )
@@ -27,7 +27,7 @@ module DateTimeHelper
 
     flatpickr_data.deep_merge(
       flatpickr_alt_input: true,
-      flatpickr_alt_format: 'Y-m-d h:i K',
+      flatpickr_alt_format: t('flatpickr.alt_formats.datetime'),
       flatpickr_enable_time: true,
       flatpickr_date_format: "Y-m-dTH:i:00#{formatted_offset}"
     )
@@ -83,10 +83,10 @@ module DateTimeHelper
       raise ArgumentError, "time_zone must be an ActiveSupport::TimeZone, #{time_zone.class} provided"
     end
 
-    date.in_time_zone(time_zone).strftime('%m/%d/%y')
+    time(date, time_zone, date_style: :short, time_style: nil)
   end
 
-  def time(datetime, time_zone = nil)
+  def time(datetime, time_zone = nil, date_style: :medium, time_style: :short)
     return if datetime.blank?
 
     time_zone ||= current_user&.time_zone || Setting.time_zone
@@ -98,8 +98,8 @@ module DateTimeHelper
     zoned_datetime = datetime.in_time_zone(time_zone)
 
     time_tag zoned_datetime,
-             zoned_datetime.strftime('%b %-d, %Y, %-l:%M %p %Z'),
-             data: { controller: 'time', time_time_zone_value: time_zone.tzinfo.name }
+             time_style ? l(zoned_datetime, format: :tag) : l(zoned_datetime.to_date, format: :numeric),
+             data: time_data(date_style:, time_style:, time_zone:)
   end
 
   def time_zone_abbreviation(time_zone, at: Time.current)
@@ -116,6 +116,16 @@ module DateTimeHelper
   end
 
   private
+
+  def time_data(date_style:, time_style:, time_zone:)
+    {
+      controller: 'time',
+      time_date_style_value: date_style,
+      time_locale_value: I18n.locale,
+      time_time_style_value: time_style.to_s,
+      time_time_zone_value: time_zone.tzinfo.name
+    }
+  end
 
   def hours_on(date, hours, time_zone)
     return if date.blank? || time_zone.blank?

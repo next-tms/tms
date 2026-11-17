@@ -1,16 +1,15 @@
 <%= form.fields_for address_object do |address_form| %>
   <%= address_form.text_field :ref %>
   <%= address_form.text_field :street, data: { address_target: 'field' } %>
-  <%= address_form.text_field :street2, label: '&nbsp;'.html_safe %>
+  <%= address_form.text_field :street2 %>
   <%= address_form.text_field :city, data: { address_target: 'field' } %>
   <%= address_form.select :region_iso31662,
                           (address_form.object.region_iso31662.blank? ? [[fallback_address.region.name, fallback_address.region.id]] : [[address_form.object.region.name, address_form.object.region_iso31662]]),
-                          { label: 'State' },
+                          {},
                           data: { 'address-target': 'regions' },
                           class: 'form-select' %>
 
   <%= address_form.text_field :zip_code,
-                              label: 'ZIP',
                               data: { action: "keyup->address#fillCityAndStateByZipCode", address_target: 'field' },
                               help: "City and State will be filled based from ZIP" %>
 

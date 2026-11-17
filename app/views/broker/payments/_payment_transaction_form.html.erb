@@ -1,30 +1,30 @@
 <div class="payment-transaction-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
   <div class="col col-sm-1">
-    <%= f.text_field :shipment_load_id, hide_label: true, placeholder: 'Load', wrapper: false %>
+    <%= f.text_field :shipment_load_id, hide_label: true, placeholder: true, wrapper: false %>
   </div>
 
   <div class="col col-sm-2">
-    <%= f.text_field :pro, hide_label: true, placeholder: 'Pro', wrapper: false %>
+    <%= f.text_field :pro, hide_label: true, placeholder: true, wrapper: false %>
   </div>
 
   <div class="col col-sm-2">
-    <%= f.text_field :invoice, hide_label: true, placeholder: 'Invoice', wrapper: false %>
+    <%= f.text_field :invoice, hide_label: true, placeholder: true, wrapper: false %>
   </div>
 
   <div class="col col-sm-1">
-    <%= f.text_field :balance, hide_label: true, placeholder: 'Balance', data: money_controller_data, wrapper: false %>
+    <%= f.text_field :balance, hide_label: true, placeholder: true, data: money_controller_data, wrapper: false %>
   </div>
 
   <div class="col col-sm-1">
-    <%= f.text_field :paid, hide_label: true, placeholder: 'Paid', data: money_controller_data, wrapper: false %>
+    <%= f.text_field :paid, hide_label: true, placeholder: true, data: money_controller_data, wrapper: false %>
   </div>
 
   <div class="col-auto">
-    <%= f.text_field :notes, hide_label: true, placeholder: 'Notes', wrapper: false %>
+    <%= f.text_field :notes, hide_label: true, placeholder: true, wrapper: false %>
   </div>
 
   <div class="col-auto">
-    <%= f.check_box :additional_charge, label: 'Overcharge?' %>
+    <%= f.check_box :additional_charge %>
   </div>
 
   <div class="col-auto">

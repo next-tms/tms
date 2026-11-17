@@ -1,13 +1,13 @@
 <div class="overlength-rules-form-wrapper row gy-2 gx-3 align-items-top mb-4" data-new-record="<%= f.object.new_record? %>">
   <div class="col col-sm-4">
     <div class="input-group">
-      <%= f.text_field :min_length, placeholder: 'Min', wrapper: false %>
-      <%= f.text_field :max_length, placeholder: 'Max', wrapper: false %>
+      <%= f.text_field :min_length, placeholder: true, wrapper: false %>
+      <%= f.text_field :max_length, placeholder: true, wrapper: false %>
     </div>
   </div>
 
   <div class="col col-sm-2">
-    <%= f.text_field :cost, prepend: '$', hide_label: true, placeholder: 'Cost', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
+    <%= f.text_field :cost, prepend: '$', hide_label: true, placeholder: true, data: money_controller_data, wrapper: false, autocomplete: 'off' %>
   </div>
 
   <div class="col-auto">

@@ -9,8 +9,8 @@
       <div data-controller="address">
         <%= f.fields_for :shipper_address do |shipper_address_form| %>
           <%= shipper_address_form.text_field :city %>
-          <%= shipper_address_form.select :region_iso31662, (shipper_address_form.object.region_iso31662.blank? ? [[current_user.companyable.primary_pickup_address.region.name, current_user.companyable.primary_pickup_address.region.id]] : [[shipper_address_form.object.region.name, shipper_address_form.object.region_iso31662]]), { label: 'State' }, data: { 'address-target': 'regions' }, class: 'form-select' %>
-          <%= shipper_address_form.text_field :zip_code, label: 'ZIP' %>
+          <%= shipper_address_form.select :region_iso31662, (shipper_address_form.object.region_iso31662.blank? ? [[current_user.companyable.primary_pickup_address.region.name, current_user.companyable.primary_pickup_address.region.id]] : [[shipper_address_form.object.region.name, shipper_address_form.object.region_iso31662]]), {}, data: { 'address-target': 'regions' }, class: 'form-select' %>
+          <%= shipper_address_form.text_field :zip_code %>
           <%= shipper_address_form.select :country_alpha2, country_options(BrokerCountry.countries.order(:name), shipper_address_form.object.country_alpha2), { selected: (shipper_address_form.object.country_alpha2.blank? ? current_user.companyable.primary_pickup_address.country_alpha2 : shipper_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
         <% end %>
       </div>
@@ -22,8 +22,8 @@
       <div data-controller="address">
         <%= f.fields_for :receiver_address do |receiver_address_form| %>
           <%= receiver_address_form.text_field :city %>
-          <%= receiver_address_form.select :region_iso31662, (receiver_address_form.object.region_iso31662.blank? ? [[current_user.companyable.primary_pickup_address.region.name, current_user.companyable.primary_pickup_address.region.id]] : [[receiver_address_form.object.region.name, receiver_address_form.object.region_iso31662]]), { label: 'State' }, data: { 'address-target': 'regions' }, class: 'form-select' %>
-          <%= receiver_address_form.text_field :zip_code, label: 'ZIP' %>
+          <%= receiver_address_form.select :region_iso31662, (receiver_address_form.object.region_iso31662.blank? ? [[current_user.companyable.primary_pickup_address.region.name, current_user.companyable.primary_pickup_address.region.id]] : [[receiver_address_form.object.region.name, receiver_address_form.object.region_iso31662]]), {}, data: { 'address-target': 'regions' }, class: 'form-select' %>
+          <%= receiver_address_form.text_field :zip_code %>
           <%= receiver_address_form.select :country_alpha2, country_options(BrokerCountry.countries.order(:name), receiver_address_form.object.country_alpha2), { selected: (receiver_address_form.object.country_alpha2.blank? ? current_user.companyable.primary_pickup_address.country_alpha2 : receiver_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
         <% end %>
       </div>
@@ -31,14 +31,14 @@
 
     <div class="col-sm-6 col-md-3">
       <p class="col-title"><%= icon 'solid', 'barcode', 'References' %></p>
-      <%= f.text_field :shipper_reference, label: 'SO', autocomplete: 'off' %>
-      <%= f.text_field :customer_reference, label: 'PO', autocomplete: 'off' %>
-      <%= f.text_field :bol, label: 'BOL', autocomplete: 'off' %>
+      <%= f.text_field :shipper_reference, autocomplete: 'off' %>
+      <%= f.text_field :customer_reference, autocomplete: 'off' %>
+      <%= f.text_field :bol, autocomplete: 'off' %>
     </div>
 
     <div class="col-sm-6 col-md-3">
       <p class="col-title"><%= icon 'solid', 'dollar-sign', 'Value' %></p>
-      <%= f.text_field :value, label: 'Total', prepend: '$', data: money_controller_data, autocomplete: 'off' %>
+      <%= f.text_field :value, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
     </div>
   </div>
 
@@ -48,7 +48,7 @@
              accessorials_has_been_suggested: @accessorials_has_been_suggested %>
 
   <p class="col-title mt-4">Freight</p>
-  <%= f.check_box :truckload, label: 'Ship as a truckload?', class: 'mb-4' %>
+  <%= f.check_box :truckload, class: 'mb-4' %>
   <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".item-form-wrapper">
     <template data-nested-form-target="template">
       <%= f.fields_for :items, Item.new, child_index: 'NEW_RECORD' do |item_form| %>

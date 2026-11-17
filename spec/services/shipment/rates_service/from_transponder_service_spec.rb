@@ -32,7 +32,7 @@ RSpec.describe(Shipment::RatesService::FromTransponderService) do
 
       before { allow(shipment).to(receive(:broker_customer).and_return(nil)) }
 
-      it { expect(rates.map(&:api_errors)).to(eq([[{ 'message' => 'Load value not supported' }]])) }
+      it { expect(rates.map(&:api_errors)).to(eq([[{ 'message' => 'Load declared value not supported' }]])) }
     end
 
     context 'when the carrier acts as a broker' do

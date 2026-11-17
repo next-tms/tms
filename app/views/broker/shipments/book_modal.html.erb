@@ -7,6 +7,6 @@
     <%= f.hidden_field :rate_uid, value: @applied_rate_uid %>
   <% end %>
 
-  <%= f.select :broker_customer_id, @broker_customers.collect { |c| [c.customer.name, c.id] }, { include_blank: false, label: 'Customer' }, class: 'form-select' %>
+  <%= f.select :broker_customer_id, @broker_customers.collect { |c| [c.customer.name, c.id] }, { include_blank: false }, class: 'form-select' %>
   <%= f.submit 'Book', data: { turbo: false }, class: 'btn btn-primary' %>
 <% end %>

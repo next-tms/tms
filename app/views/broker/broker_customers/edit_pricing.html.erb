@@ -16,13 +16,13 @@
       <%= f.alert_message 'Unable to save customer:' %>
 
       <%= f.check_box :can_quote %>
-      <%= f.check_box :always_show_quotes_based_on_calculated_classes, label: 'Always show rates based on calculated class rather than declared class' %>
-      <%= f.check_box :ignore_value_on_api_quotes, label: 'Ignore declared value when retrieving API quotes' %>
+      <%= f.check_box :always_show_quotes_based_on_calculated_classes %>
+      <%= f.check_box :ignore_value_on_api_quotes %>
 
       <p class="col-title">Receivables</p>
-      <%= f.check_box :requires_shipment_delivery_before_receivable, label: 'Requires shipment to deliver before sending receivable?' %>
-      <%= f.check_box :requires_carrier_bol_on_receivables, label: 'Requires carrier BOL on receivables?' %>
-      <%= f.check_box :requires_carrier_pod_on_receivables, label: 'Requires carrier POD on receivables?' %>
+      <%= f.check_box :requires_shipment_delivery_before_receivable %>
+      <%= f.check_box :requires_carrier_bol_on_receivables %>
+      <%= f.check_box :requires_carrier_pod_on_receivables %>
 
       <p class="mt-2">Send receivable</p>
       <%= f.select :receivables_schedule,

@@ -46,10 +46,10 @@
                .includes(:carrier)
                .collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }
                .sort,
-               { include_blank: true, label: 'Carrier' }
+               { include_blank: true }
   %>
 
-  <%= f.file_field :csv, accept: 'text/csv', label: 'CSV' %>
+  <%= f.file_field :csv, accept: 'text/csv' %>
 
   <div class="form-group">
     <%= f.submit class: 'btn btn-primary mt-4', data: { turbo: false }, value: 'Import' %>

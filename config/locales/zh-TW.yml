@@ -22,9 +22,24 @@ zh-TW:
               unsupported: "只能是 Booked、Quoted 或 Canceled。其他所有狀態皆由您的貨運承攬商更新。"
   activerecord:
     attributes:
+      accessorial:
+        code: 代碼
+        fee: 費用
+        name: 名稱
       address:
+        business: 商業地址
+        city: 城市
         country_alpha2: 國家
+        dock: 裝卸碼頭
+        name: 名稱
+        po_box: 郵政信箱
         ref: 參考編號
+        region_iso31662: 州或省
+        residential: 住宅地址
+        street: 街道
+        street2: 街道第 2 行
+        time_zone_name: 時區
+        zip_code: 郵遞區號
       api_key:
         client_id: "用戶端 ID"
         created_at: 建立時間
@@ -35,97 +50,553 @@ zh-TW:
         token: 金鑰
         token_suffix: 金鑰
         ttl: 有效期限
+        user: 使用者
+      bank:
+        account_number: 帳號
+        kind: 類型
+        name: 名稱
+      broker_accessorial:
+        accessorial: 附加服務
+        accessorial_id: 附加服務
+        broker_customer: 客戶
+        broker_only: 僅限經紀商
+        code: 代碼
+        cost: 成本
+        fee: 費用
+        flat_charge: 固定費用
+        name: 名稱
+        upcharge: 加價
+        upcharge_percent: 加價百分比
       broker_carrier:
+        account: 帳號
+        account_desc: 帳戶說明
+        accounting_notes: 會計備註
+        broker_customer: 客戶
+        broker_customer_id: 客戶
+        carrier: 承運商
+        carrier_id: 承運商
+        check_mailing_address: 支票郵寄地址
+        create_invoice_on_pickup: 取貨時建立發票
+        days_to_pay_after_invoice_date: 到期天數
+        default_bol_notes: 預設提單備註
         encrypted_ach_account_number: ACH 帳號
         encrypted_ach_bank_name: ACH 銀行名稱
         encrypted_ach_routing_number: ACH 銀行代碼
         encrypted_api_key: API 金鑰
+        ignore_bol_requires_tracking_number: 無 PRO 號碼時產生提單
         password: 密碼
+        quote_padding: 報價附加額
         username: 使用者名稱
         website_password: 密碼
         website_username: 使用者名稱
+      broker_country:
+        country_alpha2: 國家
       broker_customer:
+        always_show_quotes_based_on_calculated_classes: 一律依計算出的等級顯示運價
         can_quote: 客戶可以詢價並預訂貨運
+        customer: 客戶
+        default_bol_notes: 提單上的預設說明
+        default_upcharge: 預設加價
+        default_upcharge_percentage: 預設加價百分比
+        enable_auto_freight_class: 自動計算貨運等級
+        ignore_value_on_api_quotes: 取得 API 報價時忽略申報價值
+        internal_notes: 客戶指南
+        office_address: 辦公室地址
+        preferred_broker_carriers_kind: 偏好承運商清單
+        primary_pickup_address: 主要取貨地址
+        receivables_contact: 應收帳款聯絡人
+        receivables_contact_id: 應收帳款聯絡人
+        receivables_schedule: 應收帳款排程
+        requires_carrier_bol_on_receivables: 應收帳款需要承運商提單？
+        requires_carrier_pod_on_receivables: 應收帳款需要承運商簽收證明？
         requires_charges_confirmed_on_receivables: 確認貨運費用前禁止建立應收帳款？
         requires_customer_reference_number_on_receivables: 貨運有客戶參考編號前禁止建立應收帳款？
         requires_shipment_delivery_before_receivable: 貨運送達前禁止建立應收帳款？
         requires_shipment_shipper_reference_on_receivables: 貨運有託運人參考編號前禁止建立應收帳款？
+        valid_freight_classes: 有效貨運等級
+      broker_customer_dispatcher:
+        broker_customer: 客戶
+        user: 調度員
+        user_id: 調度員
       broker_customer_sales_rep:
+        broker_customer: 客戶
         commission_flat: 固定佣金
         commission_percent: 按比例佣金
+        user: 業務代表
+        user_id: 業務代表
+      carrier:
+        acts_as_broker: 作為經紀商
+        broker_billing_address: 經紀商帳單地址
+        check_mailing_address: 支票郵寄地址
+        consider_bol_and_pod_documents_same: 將提單和簽收證明視為同一文件
+        has_traceable_pickup_confirmation: 有可追蹤的取貨確認號碼
+        legal_name: 法定名稱
+        mc_number: MC 號碼
+        name: 名稱
+        scac: SCAC
+      claim:
+        balance: 餘額
+        due_on: 到期
+        shipment: 貨運
+        total: 總計
+      claim_item:
+        balance: 餘額
+        claim: 索賠
+        notes: 備註
+        payee: 收款人
+        payee_id: 收款人
+        total: 總計
+      comment:
+        body: 留言
+        contact: 聯絡人
+        discussion_topic: 主題
+      commission:
+        amount: 金額
+        paid: 已支付
+        shipment: 貨運
+        user: 業務代表
+      contact:
+        comments: 備註
+        companyable_sgid: 公司
+        email: 電子郵件
+        first_name: 名字
+        job_title: 職稱
+        label: 部門
+        last_name: 姓氏
+        mobile_phone: 手機
+        work_phone: 公司電話
+      contact_role:
+        contact: 聯絡人
+        role: 角色
       contacts:
         broker_carrier: 承運商
         broker_customer: 客戶
         label: 部門
-      contact:
-        company_sgid: 公司
+      customer:
+        legal_name: 法定名稱
+        name: 名稱
+      document_preference:
+        broker_customer: 客戶
+        contact: 聯絡人
+        contact_id: 聯絡人
+        kind: 文件
       item:
         declared_freight_class: 貨運等級
         desc: 說明
         h: 高
+        hazmat: 危險品
         l: 長
+        nmfc: NMFC
+        packaging: 包裝
+        packaging_id: 包裝
+        quantity: 數量
+        refrigerated: 冷藏
+        shipment: 貨運
         w: 寬
+        weight: 重量
+      overlength_rule:
+        broker_carrier: 承運商
+        cost: 成本
+        max_length: 最大長度
+        min_length: 最小長度
+      packaging:
+        name: 名稱
+      payment:
+        approved_at: 核准時間
+        approved_by: 核准人
+        bank: 銀行
+        bank_id: 銀行
+        broker_carrier: 承運商
+        broker_carrier_id: 承運商
+        created_by: 建立者
+        due_on: 到期
+        legacy_csv: CSV
+        method_reference: 參考編號
+        paid: 已付金額
+        paid_on: 付款日期
+        payment_method: 付款方式
+        payment_method_id: 付款方式
+      payment_method:
+        name: 名稱
+      payment_transaction:
+        additional_charge: 附加費用
+        balance: 餘額
+        broker_carrier: 承運商
+        broker_carrier_id: 承運商
+        created_by: 建立者
+        csv: CSV
+        due_on: 到期日期
+        invoice: 發票
+        notes: 備註
+        paid: 已付金額
+        payment: 付款
+        pro: PRO 號碼
+        shipment: 貨運
+        shipment_load_id: 貨運
+      pickup:
+        confirmed_at: 確認時間
+        dispatcher: 調度員
+        pickup_confirmation: 取貨確認號碼
+        pro: PRO 號碼
+        rate: 運價
+        requested_at: 請求時間
+        shipment: 貨運
       pickup_request:
         accepted_pickup_at: 接受時間
         accepted_pickup_on: 已接受的取貨日期
         canceled_at: 取消時間
+        created_by: 建立者
         pickup_on: 取貨日期
         reschedule_reason: 改期原因
+      preferred_broker_carrier:
+        broker_carrier: 承運商
+        broker_carrier_id: 承運商
+        broker_customer: 客戶
+      pricing_rule:
+        broker_carrier: 承運商
+        cost_per_pallet: 每棧板成本
+        lane: 路線
+        max_pallets: 最大棧板數
+        min_pallets: 最小棧板數
+      problem:
+        assigned_to: 指派給
+        body: 說明
+        resolved_at: 解決時間
+        resolved_by: 解決者
+        title: 標題
+      rate:
+        broker_carrier: 承運商
+        broker_customer: 客戶
+        cost: 成本
+        expires_at: 到期時間
+        reference: 參考編號
+        shipment: 貨運
+        source: 來源
+        tracking_carrier: 追蹤承運商
+        transit_days: 運送天數
+      receivable:
+        authorized_at: 授權時間
+        authorized_by: 授權者
+        balance: 餘額
+        created_by: 建立者
+        due_by: 到期
+        invoice: 發票
+        invoiced: 已開立發票
+        paid_at: 付款時間
+        sent_at: 寄送時間
+        sent_by: 寄送者
+        shipment: 貨運
+        total: 總計
+      receivable_item:
+        charge: 費用
+        description: 說明
       region:
         iso_3166_2: ISO 3166-2
+      setting:
+        key: 鍵
+        value: 值
       shipment:
+        applied_rate: 運價
         bol: 提單號碼
+        bol_notes: 提單備註
+        booked_at: 預訂時間
+        broker_and_broker_customer_notes: 共用備註
         broker_bol: 提單
         broker_carrier: 承運商
+        broker_carrier_id: 承運商
+        broker_carrier_quote: 承運商報價
+        broker_customer: 客戶
+        broker_customer_id: 客戶
         broker_dispatch_sheet: 派車單
         broker_ebol: eBOL
+        broker_label: 貨運標籤
+        broker_notes: 內部備註
         broker_quote: 報價
+        canceled_at: 取消時間
         carrier_bol: 提單掃描檔
+        carrier_charge: 幹線運費
+        carrier_cost: 幹線成本
         carrier_pod: 簽收證明
+        charges_confirmed: 費用已確認
+        created_by: 建立者
+        customer_notes: 客戶備註
         customer_reference: 採購單號碼
+        delivered_at: 送達時間
+        delivery_appointment_at: 送貨預約時間
+        delivery_appointment_on: 送貨預約日期
+        delivery_eta_on: 預計送達
+        delivery_hours_end_at: 送貨結束時間
+        delivery_hours_start_at: 送貨開始時間
+        departed_origin_terminal_at: 離開時間
+        dispatched_at: 派車時間
+        dispatcher: 調度員
+        dispatcher_id: 調度員
+        lift_gate_delivery: 尾門送貨
+        lift_gate_pickup: 尾門取貨
+        load_id: 貨運編號
+        lost_on: 遺失日期
+        out_for_delivery_at: 配送時間
+        pending_appointment_since: 待預約起始時間
+        picked_up_at: 取貨時間
         pickup_confirmation: 取貨確認號碼
+        pickup_driver_assigned_at: 司機指派時間
+        pickup_eta_at: 預計取貨
+        pickup_hours_end_at: 取貨結束時間
+        pickup_hours_start_at: 取貨開始時間
+        pickup_on: 取貨日期
+        pickup_request: 取貨請求
+        priority: 優先順序
         pro: PRO 號碼
+        promised_delivery_by: 承諾送達
+        public_notes: 公開備註
         quote_id: 報價號碼
+        quote_only: 僅報價
+        quoted_delivery_by: 報價預計送達
+        receiver_address: 收貨人
+        receiver_contact_email: 收貨人電子郵件
+        receiver_contact_name: 收貨聯絡人
+        receiver_contact_phone: 收貨人電話
+        shipper_address: 託運人
+        shipper_contact_email: 託運人電子郵件
+        shipper_contact_name: 託運聯絡人
+        shipper_contact_phone: 託運人電話
         shipper_reference: 銷售訂單號碼
+        status: 狀態
         total_charges: 費用
         total_charges_cents: 費用
         total_cost: 承運商成本
         total_cost_cents: 承運商成本
+        tracking_carrier: 追蹤承運商
+        tracking_carrier_id: 追蹤承運商
+        tracking_carrier_pickup_confirmation: 追蹤承運商取貨確認號碼
+        tracking_carrier_pro: 追蹤承運商 PRO 號碼
+        truckload: 整車
+        updated_by: 更新者
+        value: 申報價值
+      shipment_broker_accessorial:
+        broker_accessorial: 附加服務
+        broker_accessorial_id: 附加服務
+        charge: 費用
+        cost: 成本
+      subscription:
+        contact: 聯絡人
+      terminal:
+        address: 地址
+        carrier: 承運商
+        phone: 電話
+      tracking_event:
+        address: 地址
+        at: 時間
+        city: 城市
+        country_alpha2: 國家
+        event: 事件
+        event_id: 事件
+        public: 公開
+        region_iso31662: 州或省
+        shipment: 貨運
+        terminal: 場站
+        time_zone_name: 時區
+        user: 使用者
+      upcharge_rule:
+        broker_customer: 客戶
+        max: 最大值
+        min: 最小值
+        packaging: 包裝
+        packaging_id: 包裝
+        upcharge: 加價
+        upcharge_percentage: 加價百分比
       user:
-        company_sgid: 公司
+        companyable_sgid: 公司
+        contact: 聯絡人
+        current_password: 目前密碼
+        deactivated: 已停用？
+        email: 電子郵件
+        first_name: 名字
+        last_name: 姓氏
+        locale: 語言
+        password: 密碼
+        password_confirmation: 確認密碼
+        phone: 電話
+        receive_email_notifications: 透過電子郵件接收通知？
+        receive_notifications_from_self: 接收由您觸發的通知？
+        receive_read_notifications_by_email: 透過電子郵件接收您已看過的通知？
+        receive_sms_notifications: 透過簡訊接收通知？
+        time_zone_name: 時區
     help:
       api_key:
         name: 金鑰的使用位置，例如「倉庫 WMS」
         ttl: 在金鑰到期前輪替以取代它
+      broker_accessorial:
+        flat_charge: 無論承運商收費多少，一律收取此金額
+      broker_carrier:
+        days_to_pay_after_invoice_date: 當對帳單未註明付款到期日時，用於產生到期日
+      broker_customer:
+        internal_notes: 在每筆貨運中內部顯示
+      shipment:
+        broker_carrier_id: 用於手動報價
+        tracking_carrier_id: 用於追蹤
+      user:
+        current_password: 儲存時必填
+        phone: 國際格式（以 + 開頭）或美國格式
+        time_zone_name: 時間以此時區顯示
     models:
+      accessorial:
+        one: 附加服務
+        other: 附加服務
+      address:
+        one: 地址
+        other: 地址
       api_key:
         one: API 金鑰
         other: API 金鑰
+      bank:
+        one: 銀行
+        other: 銀行
+      broker_accessorial:
+        one: 附加服務
+        other: 附加服務
       broker_carrier:
         one: 承運商
         other: 承運商
+      broker_country:
+        one: 國家
+        other: 國家
       broker_customer:
         one: 客戶
         other: 客戶
+      broker_customer_dispatcher:
+        one: 調度員
+        other: 調度員
       broker_customer_sales_rep:
         one: 業務代表
         other: 業務代表
       carrier:
         one: 承運商
         other: 承運商
+      claim:
+        one: 索賠
+        other: 索賠
+      claim_item:
+        one: 索賠項目
+        other: 索賠項目
+      comment:
+        one: 留言
+        other: 留言
+      commission:
+        one: 佣金
+        other: 佣金
+      contact:
+        one: 聯絡人
+        other: 聯絡人
+      contact_role:
+        one: 角色
+        other: 角色
+      customer:
+        one: 客戶
+        other: 客戶
+      document_preference:
+        one: 文件偏好設定
+        other: 文件偏好設定
+      item:
+        one: 貨物
+        other: 貨物
       overlength_rule:
         one: 超長規則
         other: 超長規則
+      packaging:
+        one: 包裝
+        other: 包裝
+      payment:
+        one: 付款
+        other: 付款
+      payment_method:
+        one: 付款方式
+        other: 付款方式
+      payment_transaction:
+        one: 應付帳款
+        other: 應付帳款
+      pickup:
+        one: 取貨
+        other: 取貨
+      pickup_request:
+        one: 取貨請求
+        other: 取貨請求
+      preferred_broker_carrier:
+        one: 偏好承運商
+        other: 偏好承運商
       pricing_rule:
         one: 棧板定價規則
         other: 棧板定價規則
+      problem:
+        one: 問題
+        other: 問題
+      rate:
+        one: 運價
+        other: 運價
       receivable:
         one: 應收帳款
         other: 應收帳款
+      receivable_item:
+        one: 應收帳款項目
+        other: 應收帳款項目
+      setting:
+        one: 設定
+        other: 設定
       shipment:
         one: 貨運
         other: 貨運
+      shipment_broker_accessorial:
+        one: 附加費用
+        other: 附加費用
+      subscription:
+        one: 訂閱
+        other: 訂閱
+      terminal:
+        one: 場站
+        other: 場站
+      tracking_event:
+        one: 追蹤事件
+        other: 追蹤事件
+      upcharge_rule:
+        one: 加價規則
+        other: 加價規則
+      user:
+        one: 使用者
+        other: 使用者
     enums:
+      bank:
+        kinds:
+          checking: 支票帳戶
+          credit_card: 信用卡
+      broker_customer:
+        preferred_broker_carriers_kinds:
+          blacklist: 封鎖清單
+          whitelist: 允許清單
+        receivables_schedules:
+          daily: 每天
+          immediately: 立即
+          monthly: 每月
+          never: 永不
+          weekly: 每週
+      contact_role:
+        roles:
+          accounting: 會計
+          accounts_payable: 應付帳款
+          accounts_receivable: 應收帳款
+          appointments: 預約
+          carrier_relations: 承運商關係
+          claims: 索賠
+          controller: 財務長
+          dispatch: 調度
+          quoting: 報價
+          root: 超級管理員
+          sales_rep: 業務代表
+          sales_rep_for_all_broker_customers: 所有客戶的業務代表
+          tracking: 追蹤
+      document_preference:
+        kinds:
+          carrier_bol: 提單掃描檔
+          carrier_pod: 簽收證明
       pickup_request:
         reschedule_reasons:
           capacity: 承運商運能不足
@@ -306,6 +777,9 @@ zh-TW:
       lane_changed: "託運人或收貨人的郵遞區號與已報價的貨運不同。請重新為貨運報價。"
       picked_up: "此貨運已取貨，因此無法變更或取消。"
       unbookable_rate: "運價報價「%{rate_quote_id}」無法預訂。它不明、已到期或已被預訂。"
+  date:
+    formats:
+      numeric: "%Y/%m/%d"
   discussion_topics:
     tracking_event:
       arrived_at_terminal: "%{model_name}已抵達 %{city}, %{region_abbreviation} %{country_alpha2} 附近"
@@ -369,6 +843,9 @@ zh-TW:
         departed: 司機已取走貨物。
         en_route: 已為取貨指派司機。
         rescheduled: 取貨已改到其他日期。
+  flatpickr:
+    alt_formats:
+      datetime: "Y-m-d H:i"
   freightview:
     errors:
       missing: "缺少必填屬性。"
@@ -384,6 +861,48 @@ zh-TW:
   graphql:
     errors:
       rate_limited: 請求過多。請等待 Retry-After 標頭中的秒數後再試一次。
+    fields:
+      mutation:
+        address_create: 建立地址
+        fetch_rates: 依貨運編號取得現有%{shipment}的承運商運價
+        quote_create: 為路線及其包裹建立報價，然後取得承運商運價
+        shipment_create: 將報價運價預訂為%{shipment}
+      query:
+        bill: 取得指定 ID 的%{payment_transaction}
+        bills: 使用選用的篩選、排序和分頁搜尋%{payment_transactions}
+        carrier: 取得指定 ID 的%{carrier}
+        carriers: 使用選用的篩選、排序和分頁搜尋%{carriers}
+        customer: 取得指定 ID 的%{broker_customer}
+        customers: 使用選用的篩選、排序和分頁搜尋%{broker_customers}
+        invoice: 取得指定 ID 的%{receivable}
+        invoices: 使用選用的篩選、排序和分頁搜尋%{receivables}
+        shipment: 取得指定貨運編號的%{shipment}
+        shipments: 使用選用的篩選、排序和分頁搜尋%{shipments}
+        task: 取得指定 ID 的任務
+        tasks: 使用選用的篩選、排序和分頁搜尋任務
+  helpers:
+    placeholder:
+      item:
+        h: 高
+        l: 長
+        w: 寬
+        weight: 磅
+      overlength_rule:
+        max_length: 最大
+        min_length: 最小
+      payment:
+        legacy_csv: legacy load, pro, paid, notes
+      pricing_rule:
+        max_pallets: 最大
+        min_pallets: 最小
+      upcharge_rule:
+        max: 最大
+        min: 最小
+      user:
+        email: 您的電子郵件地址
+        password: 新密碼
+        password_confirmation: 確認新密碼
+        phone: 您的電話
   locale_name: 繁體中文
   mcp:
     errors:
@@ -408,3 +927,6 @@ zh-TW:
   test_mailer:
     hello:
       subject: 來自 Next TMS 的問候
+  time:
+    formats:
+      tag: "%Y年%-m月%-d日 %H:%M %Z"

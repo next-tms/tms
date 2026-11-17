@@ -8,7 +8,7 @@
   <div class="col col-md-6">
     <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), data: { turbo: false }, layout: :horizontal) do |f| %>
       <%= f.alert_message 'Unable to send email:' %>
-      <%= f.email_field :email, placeholder: 'Your email address', class: 'form-control', required: true, autofocus: true %>
+      <%= f.email_field :email, placeholder: true, class: 'form-control', required: true, autofocus: true %>
       <%= f.submit 'Send email', class: 'btn btn-primary me-2' %>
       <%= link_to 'Remembered password?', new_session_path(resource_name) %>
     <% end %>

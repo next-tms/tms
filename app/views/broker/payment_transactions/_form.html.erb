@@ -4,20 +4,20 @@
   <div class="form-group row">
     <label class="col-form-label col-sm-2">Carrier</label>
       <div class="col-sm-10">
-        <%= f.select :broker_carrier_id, BrokerCarrier.all.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { label: 'Carrier', hide_label: true, selected: (@payment_transaction.broker_carrier ? @payment_transaction.broker_carrier.id : nil) }, class: 'form-select' %>
+        <%= f.select :broker_carrier_id, BrokerCarrier.all.collect { |broker_carrier| [ broker_carrier.broker_customer_specific_name, broker_carrier.id ] }.sort, { hide_label: true, selected: (@payment_transaction.broker_carrier ? @payment_transaction.broker_carrier.id : nil) }, class: 'form-select' %>
     </div>
   </div>
 
-  <%= f.text_field :due_on, label: 'Due On', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @payment_transaction.due_on, time_zone: current_user.time_zone) %>
+  <%= f.text_field :due_on, autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @payment_transaction.due_on, time_zone: current_user.time_zone) %>
 
   <% unless action_name = 'new' %>
-    <%= f.text_field :shipment_load_id, label: 'Invoiced Load' %>
+    <%= f.text_field :shipment_load_id %>
   <% end %>
-  <%= f.text_field :pro, label: 'Invoiced Pro' %>
-  <%= f.text_field :balance, label: 'Balance', data: money_controller_data %>
-  <%= f.text_field :paid, label: 'Pay', data: money_controller_data %>
-  <%= f.text_field :notes, label: 'Remark' %>
-  <%= f.check_box :additional_charge, label: 'Is additional charge?' %>
+  <%= f.text_field :pro %>
+  <%= f.text_field :balance, data: money_controller_data %>
+  <%= f.text_field :paid, data: money_controller_data %>
+  <%= f.text_field :notes %>
+  <%= f.check_box :additional_charge %>
 
   <div class="form-group">
     <%= f.submit class: 'btn btn-primary mt-4', data: { turbo: false }, value: 'Save' %>

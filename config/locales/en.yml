@@ -35,9 +35,24 @@ en:
               unsupported: can only be Booked, Quoted, or Canceled. Your broker updates every other status.
   activerecord:
     attributes:
+      accessorial:
+        code: Code
+        fee: Fee
+        name: Name
       address:
+        business: Business
+        city: City
         country_alpha2: Country
+        dock: Dock
+        name: Name
+        po_box: PO box
         ref: Reference
+        region_iso31662: State or province
+        residential: Residential
+        street: Street
+        street2: Street line 2
+        time_zone_name: Time zone
+        zip_code: ZIP code
       api_key:
         client_id: Client ID
         created_at: Created
@@ -48,100 +63,553 @@ en:
         token: Key
         token_suffix: Key
         ttl: Expires in
+        user: User
+      bank:
+        account_number: Account number
+        kind: Type
+        name: Name
+      broker_accessorial:
+        accessorial: Accessorial
+        accessorial_id: Accessorial
+        broker_customer: Customer
+        broker_only: Broker only
+        code: Code
+        cost: Cost
+        fee: Fee
+        flat_charge: Flat charge
+        name: Name
+        upcharge: Upcharge
+        upcharge_percent: Upcharge percentage
       broker_carrier:
-        encrypted_ach_account_number: "ACH Account #"
-        encrypted_ach_bank_name: ACH Bank Name
-        encrypted_ach_routing_number: "ACH Routing #"
-        encrypted_api_key: API Key
+        account: "Account #"
+        account_desc: Account description
+        accounting_notes: Accounting notes
+        broker_customer: Customer
+        broker_customer_id: Customer
+        carrier: Carrier
+        carrier_id: Carrier
+        check_mailing_address: Check mailing address
+        create_invoice_on_pickup: Create invoice on pickup
+        days_to_pay_after_invoice_date: Days until due
+        default_bol_notes: Default BOL notes
+        encrypted_ach_account_number: "ACH account #"
+        encrypted_ach_bank_name: ACH bank name
+        encrypted_ach_routing_number: "ACH routing #"
+        encrypted_api_key: API key
+        ignore_bol_requires_tracking_number: Generate BOL without PRO
         password: Password
+        quote_padding: Quote padding
         username: Username
         website_password: Password
         website_username: Username
+      broker_country:
+        country_alpha2: Country
       broker_customer:
+        always_show_quotes_based_on_calculated_classes: Always show rates based on calculated class
         can_quote: Customer can quote and book shipments
+        customer: Customer
+        default_bol_notes: Default instructions on BOL
+        default_upcharge: Default upcharge
+        default_upcharge_percentage: Default upcharge percentage
+        enable_auto_freight_class: Calculate freight class automatically
+        ignore_value_on_api_quotes: Ignore declared value when retrieving API quotes
+        internal_notes: Customer guide
+        office_address: Office address
+        preferred_broker_carriers_kind: Preferred carriers list
+        primary_pickup_address: Primary pickup address
+        receivables_contact: Receivables contact
+        receivables_contact_id: Receivables contact
+        receivables_schedule: Receivables schedule
+        requires_carrier_bol_on_receivables: Requires carrier BOL on receivables?
+        requires_carrier_pod_on_receivables: Requires carrier POD on receivables?
         requires_charges_confirmed_on_receivables: Prevent creating receivable until shipment charges are confirmed?
         requires_customer_reference_number_on_receivables: "Prevent creating receivable until shipment customer reference number is present?"
         requires_shipment_delivery_before_receivable: Prevent creating receivable until shipment is delivered?
         requires_shipment_shipper_reference_on_receivables: "Prevent creating receivable until shipment shipper reference number is present?"
+        valid_freight_classes: Valid freight classes
+      broker_customer_dispatcher:
+        broker_customer: Customer
+        user: Dispatcher
+        user_id: Dispatcher
       broker_customer_sales_rep:
+        broker_customer: Customer
         commission_flat: flat commission
         commission_percent: percentage-based commission
+        user: Sales rep
+        user_id: Sales rep
+      carrier:
+        acts_as_broker: Acts as broker
+        broker_billing_address: Broker billing address
+        check_mailing_address: Check mailing address
+        consider_bol_and_pod_documents_same: Treat BOL and POD as the same document
+        has_traceable_pickup_confirmation: Has traceable pickup confirmation
+        legal_name: Legal name
+        mc_number: MC number
+        name: Name
+        scac: SCAC
+      claim:
+        balance: Balance
+        due_on: Due
+        shipment: Load
+        total: Total
+      claim_item:
+        balance: Balance
+        claim: Claim
+        notes: Notes
+        payee: Payee
+        payee_id: Payee
+        total: Total
+      comment:
+        body: Comment
+        contact: Contact
+        discussion_topic: Topic
+      commission:
+        amount: Amount
+        paid: Paid
+        shipment: Load
+        user: Sales rep
+      contact:
+        comments: Comments
+        companyable_sgid: Company
+        email: Email
+        first_name: First name
+        job_title: Job title
+        label: Department
+        last_name: Last name
+        mobile_phone: Mobile phone
+        work_phone: Work phone
+      contact_role:
+        contact: Contact
+        role: Role
       contacts:
         broker_carrier: Carrier
         broker_customer: Customer
         label: Department
-      contact:
-        company_sgid: Company
+      customer:
+        legal_name: Legal name
+        name: Name
+      document_preference:
+        broker_customer: Customer
+        contact: Contact
+        contact_id: Contact
+        kind: Document
       item:
         declared_freight_class: Freight class
         desc: Description
         h: Height
+        hazmat: Hazmat
         l: Length
+        nmfc: NMFC
+        packaging: Packaging
+        packaging_id: Packaging
+        quantity: Quantity
+        refrigerated: Refrigerated
+        shipment: Load
         w: Width
-      pickup_request:
-        accepted_pickup_at: Accepted At
-        accepted_pickup_on: Accepted Pickup On
-        canceled_at: Canceled At
-        pickup_on: Pickup On
-        reschedule_reason: Reschedule Reason
-      region:
-        iso_3166_2: ISO 3166-2
-      shipment:
-        bol: "BOL #"
-        broker_bol: Bill of Lading
+        weight: Weight
+      overlength_rule:
         broker_carrier: Carrier
-        broker_dispatch_sheet: Dispatch Sheet
-        broker_ebol: eBOL
-        broker_quote: Quote
-        carrier_bol: Scanned Bill of Lading
-        carrier_pod: Proof of Delivery
-        customer_reference: "PO #"
+        cost: Cost
+        max_length: Maximum length
+        min_length: Minimum length
+      packaging:
+        name: Name
+      payment:
+        approved_at: Approved
+        approved_by: Approved by
+        bank: Bank
+        bank_id: Bank
+        broker_carrier: Carrier
+        broker_carrier_id: Carrier
+        created_by: Created by
+        due_on: Due
+        legacy_csv: CSV
+        method_reference: Reference
+        paid: Paid
+        paid_on: Paid on
+        payment_method: Payment method
+        payment_method_id: Payment method
+      payment_method:
+        name: Name
+      payment_transaction:
+        additional_charge: Additional charge
+        balance: Balance
+        broker_carrier: Carrier
+        broker_carrier_id: Carrier
+        created_by: Created by
+        csv: CSV
+        due_on: Due on
+        invoice: Invoice
+        notes: Remark
+        paid: Paid
+        payment: Payment
+        pro: "PRO #"
+        shipment: Load
+        shipment_load_id: Load
+      pickup:
+        confirmed_at: Confirmed
+        dispatcher: Dispatcher
         pickup_confirmation: "PU #"
         pro: "PRO #"
+        rate: Rate
+        requested_at: Requested
+        shipment: Load
+      pickup_request:
+        accepted_pickup_at: Accepted at
+        accepted_pickup_on: Accepted pickup on
+        canceled_at: Canceled at
+        created_by: Created by
+        pickup_on: Pickup on
+        reschedule_reason: Reschedule reason
+      preferred_broker_carrier:
+        broker_carrier: Carrier
+        broker_carrier_id: Carrier
+        broker_customer: Customer
+      pricing_rule:
+        broker_carrier: Carrier
+        cost_per_pallet: Cost per pallet
+        lane: Lane
+        max_pallets: Maximum pallets
+        min_pallets: Minimum pallets
+      problem:
+        assigned_to: Assigned to
+        body: Description
+        resolved_at: Resolved
+        resolved_by: Resolved by
+        title: Title
+      rate:
+        broker_carrier: Carrier
+        broker_customer: Customer
+        cost: Cost
+        expires_at: Expires
+        reference: Reference
+        shipment: Load
+        source: Source
+        tracking_carrier: Tracking carrier
+        transit_days: Transit days
+      receivable:
+        authorized_at: Authorized
+        authorized_by: Authorized by
+        balance: Balance
+        created_by: Created by
+        due_by: Due
+        invoice: Invoice
+        invoiced: Invoiced
+        paid_at: Paid
+        sent_at: Sent
+        sent_by: Sent by
+        shipment: Load
+        total: Total
+      receivable_item:
+        charge: Charge
+        description: Description
+      region:
+        iso_3166_2: ISO 3166-2
+      setting:
+        key: Key
+        value: Value
+      shipment:
+        applied_rate: Rate
+        bol: "BOL #"
+        bol_notes: BOL notes
+        booked_at: Booked
+        broker_and_broker_customer_notes: Shared notes
+        broker_bol: Bill of lading
+        broker_carrier: Carrier
+        broker_carrier_id: Carrier
+        broker_carrier_quote: Carrier quote
+        broker_customer: Customer
+        broker_customer_id: Customer
+        broker_dispatch_sheet: Dispatch sheet
+        broker_ebol: eBOL
+        broker_label: Shipping label
+        broker_notes: Internal notes
+        broker_quote: Quote
+        canceled_at: Canceled
+        carrier_bol: Scanned bill of lading
+        carrier_charge: Linehaul charge
+        carrier_cost: Linehaul cost
+        carrier_pod: Proof of delivery
+        charges_confirmed: Charges confirmed
+        created_by: Created by
+        customer_notes: Customer notes
+        customer_reference: "PO #"
+        delivered_at: Delivered
+        delivery_appointment_at: Delivery appointment time
+        delivery_appointment_on: Delivery appointment
+        delivery_eta_on: Delivery ETA
+        delivery_hours_end_at: Delivery hours end
+        delivery_hours_start_at: Delivery hours start
+        departed_origin_terminal_at: Departed
+        dispatched_at: Dispatched
+        dispatcher: Dispatcher
+        dispatcher_id: Dispatcher
+        lift_gate_delivery: Lift gate delivery
+        lift_gate_pickup: Lift gate pickup
+        load_id: "Load #"
+        lost_on: Lost on
+        out_for_delivery_at: Out for delivery
+        pending_appointment_since: Appointment pending since
+        picked_up_at: Picked up
+        pickup_confirmation: "PU #"
+        pickup_driver_assigned_at: Driver assigned
+        pickup_eta_at: Pickup ETA
+        pickup_hours_end_at: Pickup hours end
+        pickup_hours_start_at: Pickup hours start
+        pickup_on: Pickup date
+        pickup_request: Pickup request
+        priority: Priority
+        pro: "PRO #"
+        promised_delivery_by: Promised delivery
+        public_notes: Public notes
         quote_id: "Quote #"
+        quote_only: Quote only
+        quoted_delivery_by: Quoted ETA
+        receiver_address: Receiver
+        receiver_contact_email: Receiver email
+        receiver_contact_name: Receiver contact
+        receiver_contact_phone: Receiver phone
+        shipper_address: Shipper
+        shipper_contact_email: Shipper email
+        shipper_contact_name: Shipper contact
+        shipper_contact_phone: Shipper phone
         shipper_reference: "SO #"
+        status: Status
         total_charges: Charge
         total_charges_cents: Charge
-        total_cost: Carrier Cost
-        total_cost_cents: Carrier Cost
+        total_cost: Carrier cost
+        total_cost_cents: Carrier cost
+        tracking_carrier: Tracking carrier
+        tracking_carrier_id: Tracking carrier
+        tracking_carrier_pickup_confirmation: "Tracking carrier PU #"
+        tracking_carrier_pro: "Tracking carrier PRO #"
+        truckload: Truckload
+        updated_by: Updated by
+        value: Declared value
+      shipment_broker_accessorial:
+        broker_accessorial: Accessorial
+        broker_accessorial_id: Accessorial
+        charge: Charge
+        cost: Cost
+      subscription:
+        contact: Contact
+      terminal:
+        address: Address
+        carrier: Carrier
+        phone: Phone
+      tracking_event:
+        address: Address
+        at: Time
+        city: City
+        country_alpha2: Country
+        event: Event
+        event_id: Event
+        public: Public
+        region_iso31662: State or province
+        shipment: Load
+        terminal: Terminal
+        time_zone_name: Time zone
+        user: User
+      upcharge_rule:
+        broker_customer: Customer
+        max: Maximum
+        min: Minimum
+        packaging: Packaging
+        packaging_id: Packaging
+        upcharge: Upcharge
+        upcharge_percentage: Upcharge percentage
       user:
-        company_sgid: Company
+        companyable_sgid: Company
+        contact: Contact
+        current_password: Current password
+        deactivated: Deactivated?
+        email: Email
+        first_name: First name
+        last_name: Last name
+        locale: Language
+        password: Password
+        password_confirmation: Password confirmation
+        phone: Phone
+        receive_email_notifications: Receive notifications by email?
+        receive_notifications_from_self: Receive notifications triggered by you?
+        receive_read_notifications_by_email: Receive notifications that you already saw by email?
+        receive_sms_notifications: Receive notifications by text message?
+        time_zone_name: Time zone
     help:
       api_key:
         name: Where the key is used, for example “Warehouse WMS”
         ttl: Roll the key to replace it before it expires
+      broker_accessorial:
+        flat_charge: Always apply this amount regardless of carrier fee
+      broker_carrier:
+        days_to_pay_after_invoice_date: Used to generate payment due dates when they are not specified on account statements
+      broker_customer:
+        internal_notes: Show internally on each shipment
+      shipment:
+        broker_carrier_id: For manual quotes
+        tracking_carrier_id: For tracking
+      user:
+        current_password: Required to save
+        phone: International (with leading +) or US format
+        time_zone_name: Times are shown in this zone
     models:
+      accessorial:
+        one: Accessorial
+        other: Accessorials
+      address:
+        one: Address
+        other: Addresses
       api_key:
         one: API Key
         other: API Keys
+      bank:
+        one: Bank
+        other: Banks
+      broker_accessorial:
+        one: Accessorial
+        other: Accessorials
       broker_carrier:
         one: Carrier
         other: Carriers
+      broker_country:
+        one: Country
+        other: Countries
       broker_customer:
         one: Customer
         other: Customers
+      broker_customer_dispatcher:
+        one: Dispatcher
+        other: Dispatchers
       broker_customer_sales_rep:
         one: Sales Rep
         other: Sales Reps
       carrier:
         one: Carrier
         other: Carriers
+      claim:
+        one: Claim
+        other: Claims
+      claim_item:
+        one: Claim Item
+        other: Claim Items
+      comment:
+        one: Comment
+        other: Comments
+      commission:
+        one: Commission
+        other: Commissions
+      contact:
+        one: Contact
+        other: Contacts
+      contact_role:
+        one: Role
+        other: Roles
+      customer:
+        one: Customer
+        other: Customers
+      document_preference:
+        one: Document Preference
+        other: Document Preferences
+      item:
+        one: Item
+        other: Items
       overlength_rule:
         one: Overlength Rule
         other: Overlength Rules
+      packaging:
+        one: Packaging
+        other: Packagings
+      payment:
+        one: Payment
+        other: Payments
+      payment_method:
+        one: Payment Method
+        other: Payment Methods
       payment_transaction:
         one: Bill
         other: Bills
+      pickup:
+        one: Pickup
+        other: Pickups
+      pickup_request:
+        one: Pickup Request
+        other: Pickup Requests
+      preferred_broker_carrier:
+        one: Preferred Carrier
+        other: Preferred Carriers
       pricing_rule:
         one: Pallet Pricing Rule
         other: Pallet Pricing Rules
+      problem:
+        one: Problem
+        other: Problems
+      rate:
+        one: Rate
+        other: Rates
       receivable:
         one: Receivable
         other: Receivables
+      receivable_item:
+        one: Receivable Item
+        other: Receivable Items
+      setting:
+        one: Setting
+        other: Settings
       shipment:
         one: Load
         other: Loads
+      shipment_broker_accessorial:
+        one: Accessorial Charge
+        other: Accessorial Charges
+      subscription:
+        one: Subscription
+        other: Subscriptions
+      terminal:
+        one: Terminal
+        other: Terminals
+      tracking_event:
+        one: Tracking Event
+        other: Tracking Events
+      upcharge_rule:
+        one: Upcharge Rule
+        other: Upcharge Rules
+      user:
+        one: User
+        other: Users
     enums:
+      bank:
+        kinds:
+          checking: Checking
+          credit_card: Credit Card
+      broker_customer:
+        preferred_broker_carriers_kinds:
+          blacklist: Blocklist
+          whitelist: Allowlist
+        receivables_schedules:
+          daily: Daily
+          immediately: Immediately
+          monthly: Monthly
+          never: Never
+          weekly: Weekly
+      contact_role:
+        roles:
+          accounting: Accounting
+          accounts_payable: Accounts payable
+          accounts_receivable: Accounts receivable
+          appointments: Appointments
+          carrier_relations: Carrier relations
+          claims: Claims
+          controller: Controller
+          dispatch: Dispatch
+          quoting: Quoting
+          root: Root
+          sales_rep: Sales rep
+          sales_rep_for_all_broker_customers: Sales rep for all customers
+          tracking: Tracking
+      document_preference:
+        kinds:
+          carrier_bol: Scanned Bill of Lading
+          carrier_pod: Proof of Delivery
       pickup_request:
         reschedule_reasons:
           capacity: Carrier capacity
@@ -322,6 +790,9 @@ en:
       lane_changed: The shipper or consignee zip code differs from the rated shipment. Rate the shipment again.
       picked_up: The shipment was already picked up, so it cannot be changed or canceled.
       unbookable_rate: Rate quote “%{rate_quote_id}” cannot be booked. It is unknown, expired, or already booked.
+  date:
+    formats:
+      numeric: "%m/%d/%y"
   discussion_topics:
     tracking_event:
       arrived_at_terminal: "%{model_name} arrived near %{city}, %{region_abbreviation} %{country_alpha2}"
@@ -385,6 +856,9 @@ en:
         departed: The driver picked up the freight.
         en_route: A driver is assigned to the pickup.
         rescheduled: The pickup was moved to a different day.
+  flatpickr:
+    alt_formats:
+      datetime: "Y-m-d h:i K"
   freightview:
     errors:
       missing: A required property is missing.
@@ -419,6 +893,29 @@ en:
         shipments: Search %{shipments} with optional filters, sorting, and pagination
         task: Get the task with the given ID
         tasks: Search tasks with optional filters, sorting, and pagination
+  helpers:
+    placeholder:
+      item:
+        h: H
+        l: L
+        w: W
+        weight: lbs
+      overlength_rule:
+        max_length: Max
+        min_length: Min
+      payment:
+        legacy_csv: legacy load, pro, paid, notes
+      pricing_rule:
+        max_pallets: Max
+        min_pallets: Min
+      upcharge_rule:
+        max: Max
+        min: Min
+      user:
+        email: Your email address
+        password: New password
+        password_confirmation: Confirm new password
+        phone: Your phone
   locale_name: English (US)
   mcp:
     errors:
@@ -443,3 +940,6 @@ en:
   test_mailer:
     hello:
       subject: Hello from Next TMS
+  time:
+    formats:
+      tag: "%b %-d, %Y, %-l:%M %p %Z"

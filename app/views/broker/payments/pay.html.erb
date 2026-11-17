@@ -10,20 +10,15 @@
       <%= f.alert_message 'Unable to update payment:' %>
       <%= f.select :bank_id,
                    @banks.collect { |bank| [bank.pretty_name, bank.id] },
-                   { include_blank: false, label: 'Account', data: { action: "change->payments#updatePaymentMethod" } },
+                   { include_blank: false, data: { action: "change->payments#updatePaymentMethod" } },
                    data: { action: "change->payments#updatePaymentMethod" },
                    class: 'form-select' %>
       <%= f.select :payment_method_id,
                    PaymentMethod.all.order(:name).collect { |payment_method| [payment_method.name, payment_method.id] },
-                   { include_blank: false, label: 'Method', selected: @selected_payment_method.id },
+                   { include_blank: false, selected: @selected_payment_method.id },
                    class: 'form-select' %>
-      <%= f.text_field :method_reference, label: 'Reference' %>
-      <%= f.text_field :paid_on,
-                       label: 'Paid On',
-                       autocomplete: 'off',
-                       data: flatpickr_data,
-                       value: DateTime.current.in_time_zone(Setting.time_zone).to_date
-      %>
+      <%= f.text_field :method_reference %>
+      <%= f.text_field :paid_on, autocomplete: 'off', data: flatpickr_data, value: DateTime.current.in_time_zone(Setting.time_zone).to_date %>
       <div class="form-group">
         <%= f.submit class: 'btn btn-primary mt-4', value: 'Pay' %>
       </div>

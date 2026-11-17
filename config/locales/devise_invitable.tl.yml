@@ -23,3 +23,9 @@ tl:
         accept: "Tanggapin ang imbitasyon"
         accept_until: "Mag-e-expire ang imbitasyong ito sa %{due_date}."
         ignore: "Kung ayaw mong tanggapin ang imbitasyon, huwag pansinin ang email na ito. Hindi magagawa ang iyong account hangga't hindi mo binubuksan ang link sa itaas at itinatakda ang iyong password."
+  time:
+    formats:
+      devise:
+        mailer:
+          invitation_instructions:
+            accept_until_format: "%B %d, %Y %I:%M %p"

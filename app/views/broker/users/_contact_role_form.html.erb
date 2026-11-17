@@ -2,7 +2,6 @@
   <div class="col-auto">
     <%= f.select :role,
                  ContactRole.roles.values.sort.map { |role| [role, role] },
-                 label: 'Role',
                  hide_label: true,
                  include_blank: true,
                  wrapper: false,

@@ -22,9 +22,24 @@ es:
               unsupported: "solo puede ser Booked, Quoted o Canceled. Tu bróker actualiza todos los demás estados."
   activerecord:
     attributes:
+      accessorial:
+        code: Código
+        fee: Cargo
+        name: Nombre
       address:
+        business: Comercial
+        city: Ciudad
         country_alpha2: País
+        dock: Muelle
+        name: Nombre
+        po_box: Apartado postal
         ref: Referencia
+        region_iso31662: Estado o provincia
+        residential: Residencial
+        street: Calle
+        street2: Línea 2 de la calle
+        time_zone_name: Zona horaria
+        zip_code: Código postal
       api_key:
         client_id: "ID de cliente"
         created_at: Creada
@@ -35,97 +50,553 @@ es:
         token: Clave
         token_suffix: Clave
         ttl: Vence en
+        user: Usuario
+      bank:
+        account_number: Número de cuenta
+        kind: Tipo
+        name: Nombre
+      broker_accessorial:
+        accessorial: Servicio adicional
+        accessorial_id: Servicio adicional
+        broker_customer: Cliente
+        broker_only: Solo para el bróker
+        code: Código
+        cost: Costo
+        fee: Cargo
+        flat_charge: Cargo fijo
+        name: Nombre
+        upcharge: Recargo
+        upcharge_percent: Porcentaje de recargo
       broker_carrier:
+        account: "N.º de cuenta"
+        account_desc: Descripción de la cuenta
+        accounting_notes: Notas contables
+        broker_customer: Cliente
+        broker_customer_id: Cliente
+        carrier: Transportista
+        carrier_id: Transportista
+        check_mailing_address: Dirección de envío de cheques
+        create_invoice_on_pickup: Crear factura en la recolección
+        days_to_pay_after_invoice_date: Días hasta el vencimiento
+        default_bol_notes: Notas predeterminadas del BOL
         encrypted_ach_account_number: "N.º de cuenta ACH"
         encrypted_ach_bank_name: Nombre del banco ACH
         encrypted_ach_routing_number: "N.º de ruta ACH"
         encrypted_api_key: Clave de API
+        ignore_bol_requires_tracking_number: Generar BOL sin PRO
         password: Contraseña
+        quote_padding: Margen de cotización
         username: Usuario
         website_password: Contraseña
         website_username: Usuario
+      broker_country:
+        country_alpha2: País
       broker_customer:
+        always_show_quotes_based_on_calculated_classes: Mostrar siempre tarifas según la clase calculada
         can_quote: El cliente puede cotizar y reservar envíos
+        customer: Cliente
+        default_bol_notes: Instrucciones predeterminadas en el BOL
+        default_upcharge: Recargo predeterminado
+        default_upcharge_percentage: Porcentaje de recargo predeterminado
+        enable_auto_freight_class: Calcular la clase de flete automáticamente
+        ignore_value_on_api_quotes: Ignorar el valor declarado al obtener cotizaciones por API
+        internal_notes: Guía del cliente
+        office_address: Dirección de la oficina
+        preferred_broker_carriers_kind: Lista de transportistas preferidos
+        primary_pickup_address: Dirección principal de recolección
+        receivables_contact: Contacto de cuentas por cobrar
+        receivables_contact_id: Contacto de cuentas por cobrar
+        receivables_schedule: Calendario de cuentas por cobrar
+        requires_carrier_bol_on_receivables: "¿Requiere el BOL del transportista en las cuentas por cobrar?"
+        requires_carrier_pod_on_receivables: "¿Requiere el comprobante de entrega del transportista en las cuentas por cobrar?"
         requires_charges_confirmed_on_receivables: "¿Impedir crear la cuenta por cobrar hasta que se confirmen los cargos del envío?"
         requires_customer_reference_number_on_receivables: "¿Impedir crear la cuenta por cobrar hasta que el envío tenga el número de referencia del cliente?"
         requires_shipment_delivery_before_receivable: "¿Impedir crear la cuenta por cobrar hasta que se entregue el envío?"
         requires_shipment_shipper_reference_on_receivables: "¿Impedir crear la cuenta por cobrar hasta que el envío tenga el número de referencia del remitente?"
+        valid_freight_classes: Clases de flete válidas
+      broker_customer_dispatcher:
+        broker_customer: Cliente
+        user: Despachador
+        user_id: Despachador
       broker_customer_sales_rep:
+        broker_customer: Cliente
         commission_flat: comisión fija
         commission_percent: comisión porcentual
+        user: Representante de ventas
+        user_id: Representante de ventas
+      carrier:
+        acts_as_broker: Actúa como bróker
+        broker_billing_address: Dirección de facturación del bróker
+        check_mailing_address: Dirección de envío de cheques
+        consider_bol_and_pod_documents_same: Tratar el BOL y el comprobante de entrega como el mismo documento
+        has_traceable_pickup_confirmation: Tiene confirmación de recolección rastreable
+        legal_name: Razón social
+        mc_number: Número MC
+        name: Nombre
+        scac: SCAC
+      claim:
+        balance: Saldo
+        due_on: Vence
+        shipment: Carga
+        total: Total
+      claim_item:
+        balance: Saldo
+        claim: Reclamación
+        notes: Notas
+        payee: Beneficiario
+        payee_id: Beneficiario
+        total: Total
+      comment:
+        body: Comentario
+        contact: Contacto
+        discussion_topic: Tema
+      commission:
+        amount: Monto
+        paid: Pagada
+        shipment: Carga
+        user: Representante de ventas
+      contact:
+        comments: Comentarios
+        companyable_sgid: Empresa
+        email: Correo electrónico
+        first_name: Nombre
+        job_title: Puesto
+        label: Departamento
+        last_name: Apellido
+        mobile_phone: Teléfono móvil
+        work_phone: Teléfono del trabajo
+      contact_role:
+        contact: Contacto
+        role: Rol
       contacts:
         broker_carrier: Transportista
         broker_customer: Cliente
         label: Departamento
-      contact:
-        company_sgid: Empresa
+      customer:
+        legal_name: Razón social
+        name: Nombre
+      document_preference:
+        broker_customer: Cliente
+        contact: Contacto
+        contact_id: Contacto
+        kind: Documento
       item:
         declared_freight_class: Clase de flete
         desc: Descripción
         h: Alto
+        hazmat: Material peligroso
         l: Largo
+        nmfc: NMFC
+        packaging: Embalaje
+        packaging_id: Embalaje
+        quantity: Cantidad
+        refrigerated: Refrigerado
+        shipment: Carga
         w: Ancho
+        weight: Peso
+      overlength_rule:
+        broker_carrier: Transportista
+        cost: Costo
+        max_length: Longitud máxima
+        min_length: Longitud mínima
+      packaging:
+        name: Nombre
+      payment:
+        approved_at: Aprobado
+        approved_by: Aprobado por
+        bank: Banco
+        bank_id: Banco
+        broker_carrier: Transportista
+        broker_carrier_id: Transportista
+        created_by: Creado por
+        due_on: Vence
+        legacy_csv: CSV
+        method_reference: Referencia
+        paid: Pagado
+        paid_on: Pagado el
+        payment_method: Método de pago
+        payment_method_id: Método de pago
+      payment_method:
+        name: Nombre
+      payment_transaction:
+        additional_charge: Cargo adicional
+        balance: Saldo
+        broker_carrier: Transportista
+        broker_carrier_id: Transportista
+        created_by: Creada por
+        csv: CSV
+        due_on: Vence el
+        invoice: Factura
+        notes: Observación
+        paid: Pagado
+        payment: Pago
+        pro: "N.º de PRO"
+        shipment: Carga
+        shipment_load_id: Carga
+      pickup:
+        confirmed_at: Confirmada
+        dispatcher: Despachador
+        pickup_confirmation: "N.º de recolección"
+        pro: "N.º de PRO"
+        rate: Tarifa
+        requested_at: Solicitada
+        shipment: Carga
       pickup_request:
         accepted_pickup_at: Aceptada el
         accepted_pickup_on: Recolección aceptada para el
         canceled_at: Cancelada el
+        created_by: Creada por
         pickup_on: Recolección el
         reschedule_reason: Motivo de reprogramación
+      preferred_broker_carrier:
+        broker_carrier: Transportista
+        broker_carrier_id: Transportista
+        broker_customer: Cliente
+      pricing_rule:
+        broker_carrier: Transportista
+        cost_per_pallet: Costo por tarima
+        lane: Ruta
+        max_pallets: Máximo de tarimas
+        min_pallets: Mínimo de tarimas
+      problem:
+        assigned_to: Asignado a
+        body: Descripción
+        resolved_at: Resuelto
+        resolved_by: Resuelto por
+        title: Título
+      rate:
+        broker_carrier: Transportista
+        broker_customer: Cliente
+        cost: Costo
+        expires_at: Vence
+        reference: Referencia
+        shipment: Carga
+        source: Origen
+        tracking_carrier: Transportista de rastreo
+        transit_days: Días de tránsito
+      receivable:
+        authorized_at: Autorizada
+        authorized_by: Autorizada por
+        balance: Saldo
+        created_by: Creada por
+        due_by: Vence
+        invoice: Factura
+        invoiced: Facturada
+        paid_at: Pagada
+        sent_at: Enviada
+        sent_by: Enviada por
+        shipment: Carga
+        total: Total
+      receivable_item:
+        charge: Cargo
+        description: Descripción
       region:
         iso_3166_2: ISO 3166-2
+      setting:
+        key: Clave
+        value: Valor
       shipment:
+        applied_rate: Tarifa
         bol: "N.º de BOL"
+        bol_notes: Notas del BOL
+        booked_at: Reservada
+        broker_and_broker_customer_notes: Notas compartidas
         broker_bol: Conocimiento de embarque
         broker_carrier: Transportista
+        broker_carrier_id: Transportista
+        broker_carrier_quote: Cotización del transportista
+        broker_customer: Cliente
+        broker_customer_id: Cliente
         broker_dispatch_sheet: Hoja de despacho
         broker_ebol: eBOL
+        broker_label: Etiqueta de envío
+        broker_notes: Notas internas
         broker_quote: Cotización
+        canceled_at: Cancelada
         carrier_bol: Conocimiento de embarque escaneado
+        carrier_charge: Cargo de flete base
+        carrier_cost: Costo de flete base
         carrier_pod: Comprobante de entrega
+        charges_confirmed: Cargos confirmados
+        created_by: Creada por
+        customer_notes: Notas del cliente
         customer_reference: "N.º de OC"
+        delivered_at: Entregada
+        delivery_appointment_at: Hora de la cita de entrega
+        delivery_appointment_on: Cita de entrega
+        delivery_eta_on: ETA de entrega
+        delivery_hours_end_at: Fin del horario de entrega
+        delivery_hours_start_at: Inicio del horario de entrega
+        departed_origin_terminal_at: Salió
+        dispatched_at: Despachada
+        dispatcher: Despachador
+        dispatcher_id: Despachador
+        lift_gate_delivery: Entrega con plataforma elevadora
+        lift_gate_pickup: Recolección con plataforma elevadora
+        load_id: "N.º de carga"
+        lost_on: Perdida el
+        out_for_delivery_at: En reparto
+        pending_appointment_since: Cita pendiente desde
+        picked_up_at: Recolectada
         pickup_confirmation: "N.º de recolección"
+        pickup_driver_assigned_at: Conductor asignado
+        pickup_eta_at: ETA de recolección
+        pickup_hours_end_at: Fin del horario de recolección
+        pickup_hours_start_at: Inicio del horario de recolección
+        pickup_on: Fecha de recolección
+        pickup_request: Solicitud de recolección
+        priority: Prioridad
         pro: "N.º de PRO"
+        promised_delivery_by: Entrega prometida
+        public_notes: Notas públicas
         quote_id: "N.º de cotización"
+        quote_only: Solo cotización
+        quoted_delivery_by: ETA cotizada
+        receiver_address: Destinatario
+        receiver_contact_email: Correo del destinatario
+        receiver_contact_name: Contacto del destinatario
+        receiver_contact_phone: Teléfono del destinatario
+        shipper_address: Remitente
+        shipper_contact_email: Correo del remitente
+        shipper_contact_name: Contacto del remitente
+        shipper_contact_phone: Teléfono del remitente
         shipper_reference: "N.º de OV"
+        status: Estado
         total_charges: Cargo
         total_charges_cents: Cargo
         total_cost: Costo del transportista
         total_cost_cents: Costo del transportista
+        tracking_carrier: Transportista de rastreo
+        tracking_carrier_id: Transportista de rastreo
+        tracking_carrier_pickup_confirmation: "N.º de recolección del transportista de rastreo"
+        tracking_carrier_pro: "N.º de PRO del transportista de rastreo"
+        truckload: Carga completa
+        updated_by: Actualizada por
+        value: Valor declarado
+      shipment_broker_accessorial:
+        broker_accessorial: Servicio adicional
+        broker_accessorial_id: Servicio adicional
+        charge: Cargo
+        cost: Costo
+      subscription:
+        contact: Contacto
+      terminal:
+        address: Dirección
+        carrier: Transportista
+        phone: Teléfono
+      tracking_event:
+        address: Dirección
+        at: Hora
+        city: Ciudad
+        country_alpha2: País
+        event: Evento
+        event_id: Evento
+        public: Público
+        region_iso31662: Estado o provincia
+        shipment: Carga
+        terminal: Terminal
+        time_zone_name: Zona horaria
+        user: Usuario
+      upcharge_rule:
+        broker_customer: Cliente
+        max: Máximo
+        min: Mínimo
+        packaging: Embalaje
+        packaging_id: Embalaje
+        upcharge: Recargo
+        upcharge_percentage: Porcentaje de recargo
       user:
-        company_sgid: Empresa
+        companyable_sgid: Empresa
+        contact: Contacto
+        current_password: Contraseña actual
+        deactivated: "¿Desactivado?"
+        email: Correo electrónico
+        first_name: Nombre
+        last_name: Apellido
+        locale: Idioma
+        password: Contraseña
+        password_confirmation: Confirmación de contraseña
+        phone: Teléfono
+        receive_email_notifications: "¿Recibir notificaciones por correo electrónico?"
+        receive_notifications_from_self: "¿Recibir notificaciones generadas por ti?"
+        receive_read_notifications_by_email: "¿Recibir por correo electrónico las notificaciones que ya viste?"
+        receive_sms_notifications: "¿Recibir notificaciones por mensaje de texto?"
+        time_zone_name: Zona horaria
     help:
       api_key:
         name: Dónde se usa la clave, por ejemplo “WMS del almacén”
         ttl: Renueva la clave para reemplazarla antes de que venza
+      broker_accessorial:
+        flat_charge: Aplicar siempre este importe sin importar la tarifa del transportista
+      broker_carrier:
+        days_to_pay_after_invoice_date: Se usa para generar las fechas de vencimiento de pago cuando no se indican en los estados de cuenta
+      broker_customer:
+        internal_notes: Se muestra internamente en cada carga
+      shipment:
+        broker_carrier_id: Para cotizaciones manuales
+        tracking_carrier_id: Para rastreo
+      user:
+        current_password: Necesaria para guardar
+        phone: Formato internacional (con + inicial) o de EE. UU.
+        time_zone_name: Las horas se muestran en esta zona
     models:
+      accessorial:
+        one: Servicio adicional
+        other: Servicios adicionales
+      address:
+        one: Dirección
+        other: Direcciones
       api_key:
         one: Clave de API
         other: Claves de API
+      bank:
+        one: Banco
+        other: Bancos
+      broker_accessorial:
+        one: Servicio adicional
+        other: Servicios adicionales
       broker_carrier:
         one: Transportista
         other: Transportistas
+      broker_country:
+        one: País
+        other: Países
       broker_customer:
         one: Cliente
         other: Clientes
+      broker_customer_dispatcher:
+        one: Despachador
+        other: Despachadores
       broker_customer_sales_rep:
         one: Representante de ventas
         other: Representantes de ventas
       carrier:
         one: Transportista
         other: Transportistas
+      claim:
+        one: Reclamación
+        other: Reclamaciones
+      claim_item:
+        one: Concepto de reclamación
+        other: Conceptos de reclamación
+      comment:
+        one: Comentario
+        other: Comentarios
+      commission:
+        one: Comisión
+        other: Comisiones
+      contact:
+        one: Contacto
+        other: Contactos
+      contact_role:
+        one: Rol
+        other: Roles
+      customer:
+        one: Cliente
+        other: Clientes
+      document_preference:
+        one: Preferencia de documentos
+        other: Preferencias de documentos
+      item:
+        one: Artículo
+        other: Artículos
       overlength_rule:
         one: Regla de sobrelongitud
         other: Reglas de sobrelongitud
+      packaging:
+        one: Embalaje
+        other: Embalajes
+      payment:
+        one: Pago
+        other: Pagos
+      payment_method:
+        one: Método de pago
+        other: Métodos de pago
+      payment_transaction:
+        one: Cuenta por pagar
+        other: Cuentas por pagar
+      pickup:
+        one: Recolección
+        other: Recolecciones
+      pickup_request:
+        one: Solicitud de recolección
+        other: Solicitudes de recolección
+      preferred_broker_carrier:
+        one: Transportista preferido
+        other: Transportistas preferidos
       pricing_rule:
         one: Regla de precio por tarima
         other: Reglas de precio por tarima
+      problem:
+        one: Problema
+        other: Problemas
+      rate:
+        one: Tarifa
+        other: Tarifas
       receivable:
         one: Cuenta por cobrar
         other: Cuentas por cobrar
+      receivable_item:
+        one: Concepto de cuenta por cobrar
+        other: Conceptos de cuenta por cobrar
+      setting:
+        one: Configuración
+        other: Configuraciones
       shipment:
         one: Carga
         other: Cargas
+      shipment_broker_accessorial:
+        one: Cargo por servicio adicional
+        other: Cargos por servicios adicionales
+      subscription:
+        one: Suscripción
+        other: Suscripciones
+      terminal:
+        one: Terminal
+        other: Terminales
+      tracking_event:
+        one: Evento de rastreo
+        other: Eventos de rastreo
+      upcharge_rule:
+        one: Regla de recargo
+        other: Reglas de recargo
+      user:
+        one: Usuario
+        other: Usuarios
     enums:
+      bank:
+        kinds:
+          checking: Cuenta de cheques
+          credit_card: Tarjeta de crédito
+      broker_customer:
+        preferred_broker_carriers_kinds:
+          blacklist: Lista de bloqueo
+          whitelist: Lista de permitidos
+        receivables_schedules:
+          daily: Diario
+          immediately: Inmediatamente
+          monthly: Mensual
+          never: Nunca
+          weekly: Semanal
+      contact_role:
+        roles:
+          accounting: Contabilidad
+          accounts_payable: Cuentas por pagar
+          accounts_receivable: Cuentas por cobrar
+          appointments: Citas
+          carrier_relations: Relaciones con transportistas
+          claims: Reclamaciones
+          controller: Contralor
+          dispatch: Despacho
+          quoting: Cotizaciones
+          root: Raíz
+          sales_rep: Representante de ventas
+          sales_rep_for_all_broker_customers: Representante de ventas de todos los clientes
+          tracking: Rastreo
+      document_preference:
+        kinds:
+          carrier_bol: Conocimiento de embarque escaneado
+          carrier_pod: Comprobante de entrega
       pickup_request:
         reschedule_reasons:
           capacity: Capacidad del transportista
@@ -306,6 +777,9 @@ es:
       lane_changed: "El código postal del remitente o del destinatario difiere del envío cotizado. Vuelve a cotizar el envío."
       picked_up: "El envío ya se recogió, por lo que no se puede cambiar ni cancelar."
       unbookable_rate: "La cotización de tarifa “%{rate_quote_id}” no se puede reservar. Es desconocida, venció o ya se reservó."
+  date:
+    formats:
+      numeric: "%d/%m/%y"
   discussion_topics:
     tracking_event:
       arrived_at_terminal: "%{model_name} llegó cerca de %{city}, %{region_abbreviation} %{country_alpha2}"
@@ -369,6 +843,9 @@ es:
         departed: El conductor recogió la carga.
         en_route: Se asignó un conductor a la recolección.
         rescheduled: La recolección se cambió a otro día.
+  flatpickr:
+    alt_formats:
+      datetime: "Y-m-d H:i"
   freightview:
     errors:
       missing: "Falta una propiedad obligatoria."
@@ -384,6 +861,48 @@ es:
   graphql:
     errors:
       rate_limited: Demasiadas solicitudes. Espera la cantidad de segundos del encabezado Retry-After y vuelve a intentarlo.
+    fields:
+      mutation:
+        address_create: Crear una dirección
+        fetch_rates: Obtener tarifas de transportistas para una %{shipment} existente por su ID de carga
+        quote_create: Crear una cotización para una ruta y sus bultos, y luego obtener tarifas de transportistas para ella
+        shipment_create: Reservar una tarifa de cotización como %{shipment}
+      query:
+        bill: Obtener la %{payment_transaction} con el ID indicado
+        bills: Buscar %{payment_transactions} con filtros, orden y paginación opcionales
+        carrier: Obtener el %{carrier} con el ID indicado
+        carriers: Buscar %{carriers} con filtros, orden y paginación opcionales
+        customer: Obtener el %{broker_customer} con el ID indicado
+        customers: Buscar %{broker_customers} con filtros, orden y paginación opcionales
+        invoice: Obtener la %{receivable} con el ID indicado
+        invoices: Buscar %{receivables} con filtros, orden y paginación opcionales
+        shipment: Obtener la %{shipment} con el ID de carga indicado
+        shipments: Buscar %{shipments} con filtros, orden y paginación opcionales
+        task: Obtener la tarea con el ID indicado
+        tasks: Buscar tareas con filtros, orden y paginación opcionales
+  helpers:
+    placeholder:
+      item:
+        h: Al
+        l: L
+        w: An
+        weight: lb
+      overlength_rule:
+        max_length: Máx
+        min_length: Mín
+      payment:
+        legacy_csv: legacy load, pro, paid, notes
+      pricing_rule:
+        max_pallets: Máx
+        min_pallets: Mín
+      upcharge_rule:
+        max: Máx
+        min: Mín
+      user:
+        email: Tu correo electrónico
+        password: Nueva contraseña
+        password_confirmation: Confirma la nueva contraseña
+        phone: Tu teléfono
   locale_name: Español
   mcp:
     errors:
@@ -408,3 +927,6 @@ es:
   test_mailer:
     hello:
       subject: Saludos desde Next TMS
+  time:
+    formats:
+      tag: "%-d %b %Y, %H:%M %Z"

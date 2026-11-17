@@ -2,11 +2,19 @@ en-GB:
   activerecord:
     attributes:
       pickup_request:
-        canceled_at: Cancelled At
+        canceled_at: Cancelled at
+      receivable:
+        authorized_at: Authorised
+        authorized_by: Authorised by
+      shipment:
+        canceled_at: Cancelled
     enums:
       shipment:
         statuses:
           canceled: Cancelled
+  date:
+    formats:
+      numeric: "%d/%m/%y"
   dsdc:
     bols:
       destroy:
@@ -18,7 +26,13 @@ en-GB:
         destroy: Pickup request was cancelled.
       statuses:
         cancelled: The pickup request was cancelled.
+  flatpickr:
+    alt_formats:
+      datetime: "Y-m-d H:i"
   locale_name: English (UK)
   settings:
     automatically_authorize_receivables: Automatically authorise receivable after creation?
     mailing_address: Postal address of your company, shown on documents such as bills of lading and quotes
+  time:
+    formats:
+      tag: "%-d %b %Y, %H:%M %Z"

@@ -40,11 +40,11 @@
     <p class="col-title"><%= @shipment.broker_carrier.blank? ? 'Carrier' : @shipment.broker_carrier.carrier.name %></p>
     <div class="row gy-2 gx-3 align-items-center mb-4">
       <div class="col-auto">
-        <%= f.text_field :carrier_cost, prepend: '$', label: 'Cost', data: money_controller_data, autocomplete: 'off' %>
+        <%= f.text_field :carrier_cost, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
       </div>
 
       <div class="col-auto">
-        <%= f.text_field :carrier_charge, prepend: '$', label: 'Charge', data: money_controller_data, autocomplete: 'off' %>
+        <%= f.text_field :carrier_charge, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
       </div>
     </div>
 

@@ -22,9 +22,24 @@ tl:
               unsupported: "ay maaari lamang maging Booked, Quoted, o Canceled. Ang iyong broker ang nag-a-update ng lahat ng iba pang status."
   activerecord:
     attributes:
+      accessorial:
+        code: Code
+        fee: Bayad
+        name: Pangalan
       address:
+        business: Pangnegosyo
+        city: Lungsod
         country_alpha2: Bansa
+        dock: Dock
+        name: Pangalan
+        po_box: PO box
         ref: Reperensya
+        region_iso31662: Estado o lalawigan
+        residential: Pantirahan
+        street: Kalye
+        street2: Kalye, linya 2
+        time_zone_name: Time zone
+        zip_code: ZIP code
       api_key:
         client_id: "Client ID"
         created_at: Ginawa
@@ -35,97 +50,553 @@ tl:
         token: Key
         token_suffix: Key
         ttl: Mag-e-expire sa loob ng
+        user: User
+      bank:
+        account_number: Numero ng account
+        kind: Uri
+        name: Pangalan
+      broker_accessorial:
+        accessorial: Accessorial
+        accessorial_id: Accessorial
+        broker_customer: Kustomer
+        broker_only: Para sa broker lamang
+        code: Code
+        cost: Gastos
+        fee: Bayad
+        flat_charge: Nakapirming singil
+        name: Pangalan
+        upcharge: Dagdag-singil
+        upcharge_percent: Porsiyento ng dagdag-singil
       broker_carrier:
-        encrypted_ach_account_number: "Blg. ng ACH Account"
-        encrypted_ach_bank_name: Pangalan ng ACH Bank
-        encrypted_ach_routing_number: "Blg. ng ACH Routing"
-        encrypted_api_key: API Key
+        account: "Blg. ng account"
+        account_desc: Paglalarawan ng account
+        accounting_notes: Mga tala sa accounting
+        broker_customer: Kustomer
+        broker_customer_id: Kustomer
+        carrier: Carrier
+        carrier_id: Carrier
+        check_mailing_address: Address na padadalhan ng tseke
+        create_invoice_on_pickup: Gumawa ng invoice sa pickup
+        days_to_pay_after_invoice_date: Mga araw bago ang due date
+        default_bol_notes: Default na tala sa BOL
+        encrypted_ach_account_number: "Blg. ng ACH account"
+        encrypted_ach_bank_name: Pangalan ng ACH bank
+        encrypted_ach_routing_number: "Blg. ng ACH routing"
+        encrypted_api_key: API key
+        ignore_bol_requires_tracking_number: Gumawa ng BOL kahit walang PRO
         password: Password
+        quote_padding: Dagdag sa quote
         username: Username
         website_password: Password
         website_username: Username
+      broker_country:
+        country_alpha2: Bansa
       broker_customer:
+        always_show_quotes_based_on_calculated_classes: Laging ipakita ang mga rate batay sa kinalkulang klase
         can_quote: Maaaring mag-quote at mag-book ng mga kargamento ang kustomer
+        customer: Kustomer
+        default_bol_notes: Default na tagubilin sa BOL
+        default_upcharge: Default na dagdag-singil
+        default_upcharge_percentage: Default na porsiyento ng dagdag-singil
+        enable_auto_freight_class: Awtomatikong kalkulahin ang klase ng kargamento
+        ignore_value_on_api_quotes: Huwag pansinin ang idineklarang halaga sa pagkuha ng mga API quote
+        internal_notes: Gabay sa kustomer
+        office_address: Address ng opisina
+        preferred_broker_carriers_kind: Listahan ng mga gustong carrier
+        primary_pickup_address: Pangunahing address ng pickup
+        receivables_contact: Contact para sa mga receivable
+        receivables_contact_id: Contact para sa mga receivable
+        receivables_schedule: Iskedyul ng mga receivable
+        requires_carrier_bol_on_receivables: Kailangan ang BOL ng carrier sa mga receivable?
+        requires_carrier_pod_on_receivables: Kailangan ang POD ng carrier sa mga receivable?
         requires_charges_confirmed_on_receivables: Pigilan ang paggawa ng receivable hangga't hindi nakukumpirma ang mga singil sa kargamento?
         requires_customer_reference_number_on_receivables: Pigilan ang paggawa ng receivable hangga't wala pang reference number ng kustomer ang kargamento?
         requires_shipment_delivery_before_receivable: Pigilan ang paggawa ng receivable hangga't hindi pa naihahatid ang kargamento?
         requires_shipment_shipper_reference_on_receivables: Pigilan ang paggawa ng receivable hangga't wala pang reference number ng shipper ang kargamento?
+        valid_freight_classes: Mga wastong klase ng kargamento
+      broker_customer_dispatcher:
+        broker_customer: Kustomer
+        user: Dispatcher
+        user_id: Dispatcher
       broker_customer_sales_rep:
+        broker_customer: Kustomer
         commission_flat: nakapirming komisyon
         commission_percent: komisyong batay sa porsiyento
+        user: Sales rep
+        user_id: Sales rep
+      carrier:
+        acts_as_broker: Kumikilos bilang broker
+        broker_billing_address: Billing address ng broker
+        check_mailing_address: Address na padadalhan ng tseke
+        consider_bol_and_pod_documents_same: Ituring na iisang dokumento ang BOL at POD
+        has_traceable_pickup_confirmation: May nasusubaybayang kumpirmasyon ng pickup
+        legal_name: Legal na pangalan
+        mc_number: MC number
+        name: Pangalan
+        scac: SCAC
+      claim:
+        balance: Balanse
+        due_on: Due
+        shipment: Karga
+        total: Kabuuan
+      claim_item:
+        balance: Balanse
+        claim: Claim
+        notes: Mga tala
+        payee: Babayaran
+        payee_id: Babayaran
+        total: Kabuuan
+      comment:
+        body: Komento
+        contact: Contact
+        discussion_topic: Paksa
+      commission:
+        amount: Halaga
+        paid: Bayad na
+        shipment: Karga
+        user: Sales rep
+      contact:
+        comments: Mga komento
+        companyable_sgid: Kompanya
+        email: Email
+        first_name: Pangalan
+        job_title: Posisyon
+        label: Departamento
+        last_name: Apelyido
+        mobile_phone: Mobile phone
+        work_phone: Telepono sa trabaho
+      contact_role:
+        contact: Contact
+        role: Tungkulin
       contacts:
         broker_carrier: Carrier
         broker_customer: Kustomer
         label: Departamento
-      contact:
-        company_sgid: Kompanya
+      customer:
+        legal_name: Legal na pangalan
+        name: Pangalan
+      document_preference:
+        broker_customer: Kustomer
+        contact: Contact
+        contact_id: Contact
+        kind: Dokumento
       item:
         declared_freight_class: Klase ng kargamento
         desc: Paglalarawan
         h: Taas
+        hazmat: Mapanganib na materyal
         l: Haba
+        nmfc: NMFC
+        packaging: Packaging
+        packaging_id: Packaging
+        quantity: Dami
+        refrigerated: Pinalamig
+        shipment: Karga
         w: Lapad
-      pickup_request:
-        accepted_pickup_at: Tinanggap Noong
-        accepted_pickup_on: Tinanggap na Pickup Sa
-        canceled_at: Kinansela Noong
-        pickup_on: Pickup Sa
-        reschedule_reason: Dahilan ng Paglipat ng Iskedyul
-      region:
-        iso_3166_2: ISO 3166-2
-      shipment:
-        bol: "Blg. ng BOL"
-        broker_bol: Bill of Lading
+        weight: Bigat
+      overlength_rule:
         broker_carrier: Carrier
-        broker_dispatch_sheet: Dispatch Sheet
-        broker_ebol: eBOL
-        broker_quote: Quote
-        carrier_bol: Na-scan na Bill of Lading
-        carrier_pod: Patunay ng Paghahatid
-        customer_reference: "Blg. ng PO"
+        cost: Gastos
+        max_length: Pinakamahabang haba
+        min_length: Pinakamaikling haba
+      packaging:
+        name: Pangalan
+      payment:
+        approved_at: Inaprubahan
+        approved_by: Inaprubahan ni
+        bank: Bangko
+        bank_id: Bangko
+        broker_carrier: Carrier
+        broker_carrier_id: Carrier
+        created_by: Ginawa ni
+        due_on: Due
+        legacy_csv: CSV
+        method_reference: Reperensya
+        paid: Bayad
+        paid_on: Binayaran noong
+        payment_method: Paraan ng pagbabayad
+        payment_method_id: Paraan ng pagbabayad
+      payment_method:
+        name: Pangalan
+      payment_transaction:
+        additional_charge: Karagdagang singil
+        balance: Balanse
+        broker_carrier: Carrier
+        broker_carrier_id: Carrier
+        created_by: Ginawa ni
+        csv: CSV
+        due_on: Due noong
+        invoice: Invoice
+        notes: Puna
+        paid: Bayad
+        payment: Bayad
+        pro: "Blg. ng PRO"
+        shipment: Karga
+        shipment_load_id: Karga
+      pickup:
+        confirmed_at: Nakumpirma
+        dispatcher: Dispatcher
         pickup_confirmation: "Blg. ng PU"
         pro: "Blg. ng PRO"
-        quote_id: "Blg. ng Quote"
+        rate: Rate
+        requested_at: Hiniling
+        shipment: Karga
+      pickup_request:
+        accepted_pickup_at: Tinanggap noong
+        accepted_pickup_on: Tinanggap na pickup sa
+        canceled_at: Kinansela noong
+        created_by: Ginawa ni
+        pickup_on: Pickup sa
+        reschedule_reason: Dahilan ng paglipat ng iskedyul
+      preferred_broker_carrier:
+        broker_carrier: Carrier
+        broker_carrier_id: Carrier
+        broker_customer: Kustomer
+      pricing_rule:
+        broker_carrier: Carrier
+        cost_per_pallet: Gastos bawat pallet
+        lane: Ruta
+        max_pallets: Pinakamaraming pallet
+        min_pallets: Pinakakaunting pallet
+      problem:
+        assigned_to: Itinalaga kay
+        body: Paglalarawan
+        resolved_at: Nalutas
+        resolved_by: Nalutas ni
+        title: Pamagat
+      rate:
+        broker_carrier: Carrier
+        broker_customer: Kustomer
+        cost: Gastos
+        expires_at: Mag-e-expire
+        reference: Reperensya
+        shipment: Karga
+        source: Pinagmulan
+        tracking_carrier: Tracking carrier
+        transit_days: Mga araw ng biyahe
+      receivable:
+        authorized_at: Inawtorisa
+        authorized_by: Inawtorisa ni
+        balance: Balanse
+        created_by: Ginawa ni
+        due_by: Due
+        invoice: Invoice
+        invoiced: Na-invoice
+        paid_at: Binayaran
+        sent_at: Ipinadala
+        sent_by: Ipinadala ni
+        shipment: Karga
+        total: Kabuuan
+      receivable_item:
+        charge: Singil
+        description: Paglalarawan
+      region:
+        iso_3166_2: ISO 3166-2
+      setting:
+        key: Key
+        value: Halaga
+      shipment:
+        applied_rate: Rate
+        bol: "Blg. ng BOL"
+        bol_notes: Mga tala sa BOL
+        booked_at: Na-book
+        broker_and_broker_customer_notes: Mga ibinahaging tala
+        broker_bol: Bill of lading
+        broker_carrier: Carrier
+        broker_carrier_id: Carrier
+        broker_carrier_quote: Quote ng carrier
+        broker_customer: Kustomer
+        broker_customer_id: Kustomer
+        broker_dispatch_sheet: Dispatch sheet
+        broker_ebol: eBOL
+        broker_label: Shipping label
+        broker_notes: Mga panloob na tala
+        broker_quote: Quote
+        canceled_at: Kinansela
+        carrier_bol: Na-scan na bill of lading
+        carrier_charge: Singil sa linehaul
+        carrier_cost: Gastos sa linehaul
+        carrier_pod: Patunay ng paghahatid
+        charges_confirmed: Nakumpirma ang mga singil
+        created_by: Ginawa ni
+        customer_notes: Mga tala ng kustomer
+        customer_reference: "Blg. ng PO"
+        delivered_at: Naihatid
+        delivery_appointment_at: Oras ng appointment sa paghahatid
+        delivery_appointment_on: Appointment sa paghahatid
+        delivery_eta_on: ETA ng paghahatid
+        delivery_hours_end_at: Pagtatapos ng oras ng paghahatid
+        delivery_hours_start_at: Simula ng oras ng paghahatid
+        departed_origin_terminal_at: Umalis
+        dispatched_at: Naipadala
+        dispatcher: Dispatcher
+        dispatcher_id: Dispatcher
+        lift_gate_delivery: Paghahatid gamit ang lift gate
+        lift_gate_pickup: Pickup gamit ang lift gate
+        load_id: "Blg. ng karga"
+        lost_on: Nawala noong
+        out_for_delivery_at: Ihahatid na
+        pending_appointment_since: Naghihintay ng appointment mula
+        picked_up_at: Na-pickup
+        pickup_confirmation: "Blg. ng PU"
+        pickup_driver_assigned_at: Naitalaga ang driver
+        pickup_eta_at: ETA ng pickup
+        pickup_hours_end_at: Pagtatapos ng oras ng pickup
+        pickup_hours_start_at: Simula ng oras ng pickup
+        pickup_on: Petsa ng pickup
+        pickup_request: Kahilingan sa pickup
+        priority: Priyoridad
+        pro: "Blg. ng PRO"
+        promised_delivery_by: Ipinangakong paghahatid
+        public_notes: Mga pampublikong tala
+        quote_id: "Blg. ng quote"
+        quote_only: Quote lamang
+        quoted_delivery_by: Na-quote na ETA
+        receiver_address: Receiver
+        receiver_contact_email: Email ng receiver
+        receiver_contact_name: Contact ng receiver
+        receiver_contact_phone: Telepono ng receiver
+        shipper_address: Shipper
+        shipper_contact_email: Email ng shipper
+        shipper_contact_name: Contact ng shipper
+        shipper_contact_phone: Telepono ng shipper
         shipper_reference: "Blg. ng SO"
+        status: Katayuan
         total_charges: Singil
         total_charges_cents: Singil
-        total_cost: Gastos sa Carrier
-        total_cost_cents: Gastos sa Carrier
+        total_cost: Gastos sa carrier
+        total_cost_cents: Gastos sa carrier
+        tracking_carrier: Tracking carrier
+        tracking_carrier_id: Tracking carrier
+        tracking_carrier_pickup_confirmation: "Blg. ng PU ng tracking carrier"
+        tracking_carrier_pro: "Blg. ng PRO ng tracking carrier"
+        truckload: Truckload
+        updated_by: In-update ni
+        value: Idineklarang halaga
+      shipment_broker_accessorial:
+        broker_accessorial: Accessorial
+        broker_accessorial_id: Accessorial
+        charge: Singil
+        cost: Gastos
+      subscription:
+        contact: Contact
+      terminal:
+        address: Address
+        carrier: Carrier
+        phone: Telepono
+      tracking_event:
+        address: Address
+        at: Oras
+        city: Lungsod
+        country_alpha2: Bansa
+        event: Kaganapan
+        event_id: Kaganapan
+        public: Pampubliko
+        region_iso31662: Estado o lalawigan
+        shipment: Karga
+        terminal: Terminal
+        time_zone_name: Time zone
+        user: User
+      upcharge_rule:
+        broker_customer: Kustomer
+        max: Pinakamataas
+        min: Pinakamababa
+        packaging: Packaging
+        packaging_id: Packaging
+        upcharge: Dagdag-singil
+        upcharge_percentage: Porsiyento ng dagdag-singil
       user:
-        company_sgid: Kompanya
+        companyable_sgid: Kompanya
+        contact: Contact
+        current_password: Kasalukuyang password
+        deactivated: Na-deactivate?
+        email: Email
+        first_name: Pangalan
+        last_name: Apelyido
+        locale: Wika
+        password: Password
+        password_confirmation: Kumpirmasyon ng password
+        phone: Telepono
+        receive_email_notifications: Tumanggap ng mga notification sa email?
+        receive_notifications_from_self: Tumanggap ng mga notification na ikaw ang nag-trigger?
+        receive_read_notifications_by_email: Tumanggap sa email ng mga notification na nakita mo na?
+        receive_sms_notifications: Tumanggap ng mga notification sa text message?
+        time_zone_name: Time zone
     help:
       api_key:
         name: Kung saan ginagamit ang key, halimbawa “Warehouse WMS”
         ttl: I-roll ang key para palitan ito bago ito mag-expire
+      broker_accessorial:
+        flat_charge: Laging ilapat ang halagang ito anuman ang singil ng carrier
+      broker_carrier:
+        days_to_pay_after_invoice_date: Ginagamit para gumawa ng due date ng bayad kapag wala ito sa account statement
+      broker_customer:
+        internal_notes: Ipinapakita sa loob ng kompanya sa bawat karga
+      shipment:
+        broker_carrier_id: Para sa mga manual na quote
+        tracking_carrier_id: Para sa tracking
+      user:
+        current_password: Kailangan para ma-save
+        phone: Internasyonal (may + sa unahan) o US na format
+        time_zone_name: Ipinapakita ang mga oras sa zone na ito
     models:
+      accessorial:
+        one: Accessorial
+        other: Mga Accessorial
+      address:
+        one: Address
+        other: Mga Address
       api_key:
         one: API Key
         other: Mga API Key
+      bank:
+        one: Bangko
+        other: Mga Bangko
+      broker_accessorial:
+        one: Accessorial
+        other: Mga Accessorial
       broker_carrier:
         one: Carrier
         other: Mga Carrier
+      broker_country:
+        one: Bansa
+        other: Mga Bansa
       broker_customer:
         one: Kustomer
         other: Mga Kustomer
+      broker_customer_dispatcher:
+        one: Dispatcher
+        other: Mga Dispatcher
       broker_customer_sales_rep:
         one: Sales Rep
         other: Mga Sales Rep
       carrier:
         one: Carrier
         other: Mga Carrier
+      claim:
+        one: Claim
+        other: Mga Claim
+      claim_item:
+        one: Item ng Claim
+        other: Mga Item ng Claim
+      comment:
+        one: Komento
+        other: Mga Komento
+      commission:
+        one: Komisyon
+        other: Mga Komisyon
+      contact:
+        one: Contact
+        other: Mga Contact
+      contact_role:
+        one: Tungkulin
+        other: Mga Tungkulin
+      customer:
+        one: Kustomer
+        other: Mga Kustomer
+      document_preference:
+        one: Kagustuhan sa Dokumento
+        other: Mga Kagustuhan sa Dokumento
+      item:
+        one: Item
+        other: Mga Item
       overlength_rule:
         one: Panuntunan sa Sobrang Haba
         other: Mga Panuntunan sa Sobrang Haba
+      packaging:
+        one: Packaging
+        other: Mga Packaging
+      payment:
+        one: Bayad
+        other: Mga Bayad
+      payment_method:
+        one: Paraan ng Pagbabayad
+        other: Mga Paraan ng Pagbabayad
+      payment_transaction:
+        one: Bill
+        other: Mga Bill
+      pickup:
+        one: Pickup
+        other: Mga Pickup
+      pickup_request:
+        one: Kahilingan sa Pickup
+        other: Mga Kahilingan sa Pickup
+      preferred_broker_carrier:
+        one: Gustong Carrier
+        other: Mga Gustong Carrier
       pricing_rule:
         one: Panuntunan sa Presyo ng Pallet
         other: Mga Panuntunan sa Presyo ng Pallet
+      problem:
+        one: Problema
+        other: Mga Problema
+      rate:
+        one: Rate
+        other: Mga Rate
       receivable:
         one: Receivable
         other: Mga Receivable
+      receivable_item:
+        one: Item ng Receivable
+        other: Mga Item ng Receivable
+      setting:
+        one: Setting
+        other: Mga Setting
       shipment:
         one: Karga
         other: Mga Karga
+      shipment_broker_accessorial:
+        one: Singil sa Accessorial
+        other: Mga Singil sa Accessorial
+      subscription:
+        one: Subscription
+        other: Mga Subscription
+      terminal:
+        one: Terminal
+        other: Mga Terminal
+      tracking_event:
+        one: Tracking Event
+        other: Mga Tracking Event
+      upcharge_rule:
+        one: Panuntunan sa Dagdag-singil
+        other: Mga Panuntunan sa Dagdag-singil
+      user:
+        one: User
+        other: Mga User
     enums:
+      bank:
+        kinds:
+          checking: Checking
+          credit_card: Credit Card
+      broker_customer:
+        preferred_broker_carriers_kinds:
+          blacklist: Blocklist
+          whitelist: Allowlist
+        receivables_schedules:
+          daily: Araw-araw
+          immediately: Agad
+          monthly: Buwan-buwan
+          never: Hindi kailanman
+          weekly: Linggo-linggo
+      contact_role:
+        roles:
+          accounting: Accounting
+          accounts_payable: Accounts payable
+          accounts_receivable: Accounts receivable
+          appointments: Mga appointment
+          carrier_relations: Ugnayan sa carrier
+          claims: Mga claim
+          controller: Controller
+          dispatch: Dispatch
+          quoting: Pag-quote
+          root: Root
+          sales_rep: Sales rep
+          sales_rep_for_all_broker_customers: Sales rep para sa lahat ng kustomer
+          tracking: Tracking
+      document_preference:
+        kinds:
+          carrier_bol: Na-scan na Bill of Lading
+          carrier_pod: Patunay ng Paghahatid
       pickup_request:
         reschedule_reasons:
           capacity: Kapasidad ng carrier
@@ -306,6 +777,9 @@ tl:
       lane_changed: "Iba ang zip code ng shipper o consignee sa kargamentong na-rate. I-rate muli ang kargamento."
       picked_up: "Na-pickup na ang kargamento, kaya hindi na ito mababago o makakansela."
       unbookable_rate: "Hindi ma-book ang rate quote na “%{rate_quote_id}”. Hindi ito kilala, expired na, o naka-book na."
+  date:
+    formats:
+      numeric: "%m/%d/%y"
   discussion_topics:
     tracking_event:
       arrived_at_terminal: "Dumating ang %{model_name} malapit sa %{city}, %{region_abbreviation} %{country_alpha2}"
@@ -369,6 +843,9 @@ tl:
         departed: Na-pickup ng driver ang kargamento.
         en_route: May driver nang nakatalaga sa pickup.
         rescheduled: Inilipat ang pickup sa ibang araw.
+  flatpickr:
+    alt_formats:
+      datetime: "Y-m-d h:i K"
   freightview:
     errors:
       missing: "May kulang na kinakailangang property."
@@ -384,6 +861,48 @@ tl:
   graphql:
     errors:
       rate_limited: Masyadong maraming request. Maghintay ng bilang ng segundo sa Retry-After header, pagkatapos ay subukang muli.
+    fields:
+      mutation:
+        address_create: Gumawa ng address
+        fetch_rates: Kunin ang mga rate ng carrier para sa isang umiiral na %{shipment} gamit ang load ID nito
+        quote_create: Gumawa ng quote para sa isang ruta at mga package nito, pagkatapos ay kunin ang mga rate ng carrier para dito
+        shipment_create: I-book ang isang rate ng quote bilang %{shipment}
+      query:
+        bill: Kunin ang %{payment_transaction} na may ibinigay na ID
+        bills: Maghanap ng %{payment_transactions} gamit ang opsyonal na filter, pag-uuri, at pagination
+        carrier: Kunin ang %{carrier} na may ibinigay na ID
+        carriers: Maghanap ng %{carriers} gamit ang opsyonal na filter, pag-uuri, at pagination
+        customer: Kunin ang %{broker_customer} na may ibinigay na ID
+        customers: Maghanap ng %{broker_customers} gamit ang opsyonal na filter, pag-uuri, at pagination
+        invoice: Kunin ang %{receivable} na may ibinigay na ID
+        invoices: Maghanap ng %{receivables} gamit ang opsyonal na filter, pag-uuri, at pagination
+        shipment: Kunin ang %{shipment} na may ibinigay na load ID
+        shipments: Maghanap ng %{shipments} gamit ang opsyonal na filter, pag-uuri, at pagination
+        task: Kunin ang task na may ibinigay na ID
+        tasks: Maghanap ng mga task gamit ang opsyonal na filter, pag-uuri, at pagination
+  helpers:
+    placeholder:
+      item:
+        h: H
+        l: L
+        w: W
+        weight: lbs
+      overlength_rule:
+        max_length: Max
+        min_length: Min
+      payment:
+        legacy_csv: legacy load, pro, paid, notes
+      pricing_rule:
+        max_pallets: Max
+        min_pallets: Min
+      upcharge_rule:
+        max: Max
+        min: Min
+      user:
+        email: Ang iyong email address
+        password: Bagong password
+        password_confirmation: Kumpirmahin ang bagong password
+        phone: Ang iyong telepono
   locale_name: Tagalog
   mcp:
     errors:
@@ -408,3 +927,6 @@ tl:
   test_mailer:
     hello:
       subject: Kumusta mula sa Next TMS
+  time:
+    formats:
+      tag: "%b %-d, %Y, %-l:%M %p %Z"

@@ -2,11 +2,16 @@ en-CA:
   activerecord:
     attributes:
       pickup_request:
-        canceled_at: Cancelled At
+        canceled_at: Cancelled at
+      shipment:
+        canceled_at: Cancelled
     enums:
       shipment:
         statuses:
           canceled: Cancelled
+  date:
+    formats:
+      numeric: "%Y-%m-%d"
   dsdc:
     bols:
       destroy:

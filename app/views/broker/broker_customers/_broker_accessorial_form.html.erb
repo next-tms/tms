@@ -4,11 +4,11 @@
   </div>
 
   <div class="col col-md-1">
-    <%= f.text_field :code, placeholder: 'Code', wrapper: false %>
+    <%= f.text_field :code, placeholder: true, wrapper: false %>
   </div>
 
   <div class="col col-md-2">
-    <%= f.text_field :name, placeholder: 'Name', wrapper: false %>
+    <%= f.text_field :name, placeholder: true, wrapper: false %>
   </div>
 
   <div class="col col-md-1">
@@ -20,7 +20,7 @@
   </div>
 
   <div class="col col-md-1">
-    <%= f.text_field :flat_charge, hide_label: true, help: 'Always apply this amount regardless of carrier fee', default: 0, prepend: '$', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
+    <%= f.text_field :flat_charge, hide_label: true, default: 0, prepend: '$', data: money_controller_data, wrapper: false, autocomplete: 'off' %>
   </div>
 
   <div class="col-auto">

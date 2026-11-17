@@ -8,20 +8,20 @@
         <%= f.hidden_field :quote_only, value: false %>
         <%= f.hidden_field :applied_rate_uid, value: @applied_rate_uid %>
 
-        <%= f.text_field :shipper_contact_name, label: 'Contact' %>
-        <%= f.telephone_field :shipper_contact_phone, label: 'Phone' %>
-        <%= f.email_field :shipper_contact_email, label: 'Email' %>
+        <%= f.text_field :shipper_contact_name %>
+        <%= f.telephone_field :shipper_contact_phone %>
+        <%= f.email_field :shipper_contact_email %>
 
-        <%= f.text_field :pickup_on, label: 'Pickup Date & Hours', data: flatpickr_data %>
-        <%= f.text_field :pickup_hours_start_at, hide_label: true, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
-        <%= f.text_field :pickup_hours_end_at, hide_label: true, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+        <%= f.text_field :pickup_on, data: flatpickr_data %>
+        <%= f.text_field :pickup_hours_start_at, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+        <%= f.text_field :pickup_hours_end_at, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
 
-        <%= f.text_field :receiver_contact_name, label: 'Contact' %>
-        <%= f.telephone_field :receiver_contact_phone, label: 'Phone' %>
-        <%= f.email_field :receiver_contact_email, label: 'Email' %>
+        <%= f.text_field :receiver_contact_name %>
+        <%= f.telephone_field :receiver_contact_phone %>
+        <%= f.email_field :receiver_contact_email %>
 
-        <%= f.text_field :delivery_hours_start_at, label: 'Delivery Hours', data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
-        <%= f.text_field :delivery_hours_end_at, hide_label: true, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+        <%= f.text_field :delivery_hours_start_at, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
+        <%= f.text_field :delivery_hours_end_at, data: flatpickr_data(override: { flatpickr_enable_time: true, flatpickr_no_calendar: true, flatpickr_date_format: 'h:i K' }) %>
 
         <%= f.submit 'Dispatch', data: { turbo: false }, class: 'btn btn-primary' %>
       <% end %>

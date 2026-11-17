@@ -12,8 +12,8 @@
 
   <div class="col col-sm-3">
     <div class="input-group">
-      <%= f.text_field :min_pallets, placeholder: 'Min', wrapper: false %>
-      <%= f.text_field :max_pallets, placeholder: 'Max', wrapper: false %>
+      <%= f.text_field :min_pallets, placeholder: true, wrapper: false %>
+      <%= f.text_field :max_pallets, placeholder: true, wrapper: false %>
     </div>
   </div>
 
@@ -21,7 +21,7 @@
     <%= f.text_field :cost_per_pallet,
                      prepend: '$',
                      hide_label: true,
-                     placeholder: 'Cost per pallet',
+                     placeholder: true,
                      data: money_controller_data,
                      wrapper: false,
                      autocomplete: 'off'

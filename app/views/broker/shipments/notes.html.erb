@@ -5,10 +5,10 @@
 
 <% name = Setting.value(:name, 'broker') %>
 <%= bootstrap_form_with(model: [:broker, @shipment], path: broker_shipment_path(@shipment), layout: :horizontal) do |f| %>
-  <%= f.text_area :broker_notes, label: 'Internal', help: "Visible by #{name} only", autofocus: 'autofocus', rows: 5, autocomplete: 'off' %>
-  <%= f.text_area :broker_and_broker_customer_notes, label: 'Shared', help: "Visible only to #{name} and #{f.object.broker_customer&.customer&.name || 'the customer'}", rows: 5, autocomplete: 'off' %>
-  <%= f.text_area :public_notes, label: 'Public', help: "Visible by everyone including #{name}, #{f.object.broker_customer&.customer&.name || 'the customer'}, and the public on tracking pages", rows: 5, autocomplete: 'off' %>
-  <%= f.text_area :bol_notes, label: 'Bill of Lading', rows: 5 %>
+  <%= f.text_area :broker_notes, help: "Visible by #{name} only", autofocus: 'autofocus', rows: 5, autocomplete: 'off' %>
+  <%= f.text_area :broker_and_broker_customer_notes, help: "Visible only to #{name} and #{f.object.broker_customer&.customer&.name || 'the customer'}", rows: 5, autocomplete: 'off' %>
+  <%= f.text_area :public_notes, help: "Visible by everyone including #{name}, #{f.object.broker_customer&.customer&.name || 'the customer'}, and the public on tracking pages", rows: 5, autocomplete: 'off' %>
+  <%= f.text_area :bol_notes, rows: 5 %>
   <div class="form-group">
     <%= f.submit class: 'btn btn-primary', value: 'Save' %>
   </div>

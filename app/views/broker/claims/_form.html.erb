@@ -5,7 +5,7 @@
     <%= f.hidden_field :shipment_id, value: params[:shipment_id] %>
   <% end %>
 
-  <%= f.text_field :due_on, label: 'Due', autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @claim.due_on, time_zone: current_user.time_zone)&.to_date %>
+  <%= f.text_field :due_on, autocomplete: 'off', data: flatpickr_data, value: maybe_in_time_zone(datetime: @claim.due_on, time_zone: current_user.time_zone)&.to_date %>
 
   <p class="col-title">Owed</p>
   <div class="form-group row">

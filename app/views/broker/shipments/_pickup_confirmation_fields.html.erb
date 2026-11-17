@@ -1,13 +1,9 @@
 <% if @shipment.broker_carrier.blank? || !@shipment.broker_carrier.carrier.acts_as_broker? %>
-  <%= f.text_field :pickup_confirmation, label: 'PU #', autocomplete: 'off' %>
+  <%= f.text_field :pickup_confirmation, autocomplete: 'off' %>
 <% else %>
-  <%= f.text_field :pickup_confirmation, label: 'Broker PU #', help: @shipment.broker_carrier.carrier.name, autocomplete: 'off' %>
+  <%= f.text_field :pickup_confirmation, help: @shipment.broker_carrier.carrier.name, autocomplete: 'off' %>
 
   <% if @shipment.tracking_carrier.present? %>
-    <%= f.text_field :tracking_carrier_pickup_confirmation,
-                     label: 'PU #',
-                     help: @shipment.tracking_carrier.name,
-                     autocomplete: 'off'
-    %>
+    <%= f.text_field :tracking_carrier_pickup_confirmation, help: @shipment.tracking_carrier.name, autocomplete: 'off' %>
   <% end %>
 <% end %>

@@ -23,3 +23,9 @@ eo:
         accept: "Akcepti inviton"
         accept_until: "Ĉi tiu invito validas ĝis %{due_date}."
         ignore: "Se vi ne volas akcepti la inviton, bonvolu ignori ĉi tiun retmesaĝon. Via konto ne estos kreita ĝis vi malfermos la supran ligilon kaj agordos vian pasvorton."
+  time:
+    formats:
+      devise:
+        mailer:
+          invitation_instructions:
+            accept_until_format: "%Y-%m-%d %H:%M"

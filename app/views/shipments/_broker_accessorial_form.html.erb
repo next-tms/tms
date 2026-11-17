@@ -8,7 +8,7 @@
     %>
     <%= f.select :broker_accessorial_id,
                  broker_accessorials.collect { |c| [c.name, c.id] },
-                 { label: 'Accessorial', hide_label: true, wrapper: false },
+                 { hide_label: true, wrapper: false },
                  class: 'form-select' %>
 
     <% if f.object.suggested %>
@@ -20,11 +20,11 @@
 
   <% if action_name == 'pricing' %>
     <div class="col-auto">
-      <%= f.text_field :cost, prepend: '$', label: 'Cost', data: money_controller_data, autocomplete: 'off' %>
+      <%= f.text_field :cost, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
     </div>
 
     <div class="col-auto">
-      <%= f.text_field :charge, prepend: '$', label: 'Charge', data: money_controller_data, autocomplete: 'off' %>
+      <%= f.text_field :charge, prepend: '$', data: money_controller_data, autocomplete: 'off' %>
     </div>
   <% end %>
 

@@ -18,25 +18,21 @@
   <div class="row">
     <div class="col col-md-8">
       <p class="col-title">Profile</p>
-      <%= f.email_field :email, placeholder: 'Your email address', autocomplete: 'email', autofocus: true %>
+      <%= f.email_field :email, placeholder: true, autocomplete: 'email', autofocus: true %>
       <%= f.phone_field :phone,
-                        placeholder: 'Your phone',
+                        placeholder: true,
                         value: (f.object.phone.blank? ? '' : f.object.phone.phony_formatted(format: :international)),
-                        help: 'International (with leading +) or US format',
                         autocomplete: 'tel'
       %>
-      <%= f.select :time_zone_name,
-                   time_zone_options(f.object.time_zone_name),
-                   { label: 'Time zone', help: 'Times are shown in this zone' }
-      %>
+      <%= f.select :time_zone_name, time_zone_options(f.object.time_zone_name) %>
 
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
         <p>Currently awaiting confirmation for: <%= resource.unconfirmed_email %></p>
       <% end %>
 
-      <%= f.check_box :receive_notifications_from_self, label: 'Receive notifications triggered by you?' %>
-      <%= f.check_box :receive_email_notifications, label: 'Receive notifications by email?' %>
-      <%= f.check_box :receive_read_notifications_by_email, label: 'Receive notifications that you’ve already seen by email?' %>
+      <%= f.check_box :receive_notifications_from_self %>
+      <%= f.check_box :receive_email_notifications %>
+      <%= f.check_box :receive_read_notifications_by_email %>
 
       <label class="col-form-label fw-bold"> Notification Preferences: List of Events to be notified on via email when you're not logged in</label>
 
@@ -59,11 +55,11 @@
 
       <p class="col-title mt-4">Password</p>
       <p>Only complete this section to change your password:</p>
-      <%= f.password_field :password, placeholder: 'New password', autocomplete: 'new-password' %>
-      <%= f.password_field :password_confirmation, placeholder: 'New password confirmation', autocomplete: 'new-password' %>
+      <%= f.password_field :password, placeholder: true, autocomplete: 'new-password' %>
+      <%= f.password_field :password_confirmation, placeholder: true, autocomplete: 'new-password' %>
 
       <p class="col-title">Save</p>
-      <%= f.password_field :current_password, help: 'Required to save', placeholder: 'Password', autocomplete: 'current-password' %>
+      <%= f.password_field :current_password, placeholder: true, autocomplete: 'current-password' %>
       <%= f.submit 'Save', class: 'btn btn-primary' %>
     </div>
   </div>

@@ -1,14 +1,14 @@
 <div class="tracking-event-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-controller="address" data-new-record="<%= f.object.new_record? %>">
   <div class="col-auto">
-    <%= f.select :event_id, Event.order(:name).collect { |event| [ event.name.capitalize, event.id ] }, { label: 'Event', hide_label: true }, class: 'form-select' %>
+    <%= f.select :event_id, Event.order(:name).collect { |event| [ event.name.capitalize, event.id ] }, { hide_label: true }, class: 'form-select' %>
   </div>
 
   <div class="col-auto">
-    <%= f.text_field :at, label: 'At', hide_label: true, autocomplete: 'off', data: flatpickr_datetime_data(f.object.at, f.object.time_zone), value: maybe_in_time_zone(datetime: f.object.at, time_zone: f.object.time_zone) %>
+    <%= f.text_field :at, hide_label: true, autocomplete: 'off', data: flatpickr_datetime_data(f.object.at, f.object.time_zone), value: maybe_in_time_zone(datetime: f.object.at, time_zone: f.object.time_zone) %>
   </div>
 
   <div class="col-auto">
-    <%= f.text_field :city, hide_label: true, placeholder: 'City' %>
+    <%= f.text_field :city, hide_label: true, placeholder: true %>
   </div>
 
   <div class="col-auto">
