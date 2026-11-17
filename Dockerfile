@@ -14,7 +14,7 @@ RUN /go/bin/xcaddy build v$CADDY_VERSION \
     --with github.com/ueffel/caddy-brotli
 
 FROM ruby:4.0.9-alpine3.24 AS base
-RUN apk add --no-cache -U ca-certificates gcompat imagemagick jemalloc libpq-dev libxml2 libxslt shared-mime-info tzdata && \
+RUN apk add --no-cache -U ca-certificates gcompat jemalloc libpq-dev libxml2 libxslt shared-mime-info tzdata && \
     update-ca-certificates
 
 ENV BUNDLE_WITHOUT="development:test"
@@ -27,8 +27,6 @@ ENV RUBY_YJIT_ENABLE=1
 FROM base AS build
 RUN apk add --no-cache --virtual .gem-installdeps build-base \
                                                   git \
-                                                  imagemagick-dev \
-                                                  imagemagick-libs \
                                                   libxml2-dev \
                                                   libxslt-dev \
                                                   linux-headers \
