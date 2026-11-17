@@ -187,9 +187,9 @@ GEM
     devise-pwned_password (0.2.0)
       devise (>= 4, < 6)
       pwned (~> 2.4)
-    devise_invitable (2.0.11)
-      actionmailer (>= 5.0)
-      devise (>= 4.6)
+    devise_invitable (3.1.0)
+      actionmailer (>= 7.0)
+      devise (>= 5.0)
     diff-lcs (1.6.2)
     dotenv (3.2.0)
     dotenv-rails (3.2.0)
@@ -690,7 +690,7 @@ DEPENDENCIES
   debug
   devise (~> 5.0)
   devise-pwned_password (~> 0.2)
-  devise_invitable (~> 2.0)
+  devise_invitable (~> 3.1)
   dotenv-rails (~> 3.2.0)
   factory_bot_rails
   faker

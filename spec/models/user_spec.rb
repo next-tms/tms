@@ -3,7 +3,17 @@ require 'rails_helper'
 RSpec.describe(User) do
   it_behaves_like 'has_companyable'
 
+  describe 'ransackers' do
+    subject { described_class.where(id: [earlier, later]).ransack(s: 'invitation_accepted_at desc').result.to_a }
+
+    let(:earlier) { create(:broker_user, devise_invitations: [build(:devise_invitation, invitation_accepted_at: 2.days.ago)]) }
+    let(:later) { create(:broker_user, devise_invitations: [build(:devise_invitation, invitation_accepted_at: 1.day.ago)]) }
+
+    it { is_expected.to(eq([later, earlier])) }
+  end
+
   describe 'relationships' do
+    it { is_expected.to(have_one(:accepted_invitation).class_name('DeviseInvitable::Invitation')) }
     it { is_expected.to(have_many(:api_keys).dependent(:destroy)) }
     it { is_expected.to(have_many(:broker_customer_sales_reps).dependent(:destroy)) }
     it { is_expected.to(have_many(:commissions).dependent(:restrict_with_error)) }
@@ -19,6 +29,17 @@ RSpec.describe(User) do
     it { is_expected.to(validate_presence_of(:time_zone_name)) }
   end
 
+  describe '#accepted_invitation' do
+    subject { user.accepted_invitation }
+
+    let(:earlier) { build(:devise_invitation, invitation_accepted_at: 2.days.ago) }
+    let(:latest) { build(:devise_invitation, invitation_accepted_at: 1.day.ago) }
+    let(:pending) { build(:devise_invitation, :pending) }
+    let(:user) { create(:broker_user, devise_invitations: [earlier, latest, pending]) }
+
+    it { is_expected.to(eq(latest)) }
+  end
+
   describe '#validate_time_zone_name' do
     let(:record) { build(:broker_user, time_zone_name:) }
     let(:time_zone_name) { 'America/Denver' }
@@ -31,6 +52,39 @@ RSpec.describe(User) do
       let(:time_zone_name) { 'not-a-zone' }
 
       it { expect(record.errors).to(include(:time_zone_name)) }
+    end
+  end
+
+  describe '#send_invitation' do
+    before do
+      create(:setting, key: 'robot_email', value: 'robot@example.com')
+      create(:setting, key: 'time_zone_name', value: 'America/Chicago')
+    end
+
+    context 'when inviting a new user' do
+      let!(:record) { described_class.invite!({ email: 'first@acme.test', first_name: 'Billie', last_name: 'Ng' }, &:build_contact) }
+
+      it { expect(record.devise_invitations.count).to(eq(1)) }
+    end
+
+    context 'when a pending user changes email' do
+      let!(:original_token) { record.raw_invitation_token }
+      let!(:record) { described_class.invite!({ email: 'first@acme.test', first_name: 'Billie', last_name: 'Ng' }, &:build_contact) }
+
+      before { record.update!(email: 'second@acme.test') }
+
+      it { expect(described_class.find_by_invitation_token(original_token, true)).to(be_nil) }
+      it { expect(described_class.find_by_invitation_token(record.raw_invitation_token, true)).to(eq(record)) }
+      it { expect(record.reload).to(be_invitation_pending) }
+      it { expect(ActionMailer::Base.deliveries.last.to).to(eq(['second@acme.test'])) }
+    end
+
+    context 'when an accepted user changes email' do
+      let!(:record) { create(:broker_user) }
+
+      before { record.update!(email: 'second@acme.test') }
+
+      it { expect(record.devise_invitations.count).to(eq(1)) }
     end
   end
 

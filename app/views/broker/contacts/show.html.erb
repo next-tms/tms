@@ -4,7 +4,7 @@
 <h2>Overview</h2>
 
 <% if @contact.user.present? %>
-  <% if @contact.user.invitation_sent_at? %>
+  <% if @contact.user.invitation_sent_at.present? %>
     <% if @contact.user.invitation_accepted? %>
       <%= render 'layouts/message',
                  title: 'Invitation accepted',

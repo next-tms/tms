@@ -56,6 +56,13 @@ class User < ApplicationRecord
   has_many :problems, dependent: :nullify, foreign_key: :assigned_to_id, inverse_of: :assigned_to
   has_many :shipments_as_dispatcher, class_name: 'Shipment', dependent: :nullify, foreign_key: :dispatcher_id, inverse_of: :dispatcher
 
+  has_one :accepted_invitation,
+          -> { accepted.order(invitation_accepted_at: :desc) },
+          as: :invitable,
+          class_name: 'DeviseInvitable::Invitation',
+          dependent: nil,
+          inverse_of: false
+
   has_many :broker_customers, through: :broker_customer_sales_reps
 
   has_many :subscriptions, through: :contact
@@ -64,6 +71,12 @@ class User < ApplicationRecord
   has_many :discussion_topics, through: :subscriptions, source: :record, source_type: 'DiscussionTopic'
 
   phony_normalize :phone, default_country_code: 'US'
+
+  ransacker :invitation_accepted_at do
+    invitations = DeviseInvitable::Invitation.arel_table
+    accepted_at = invitations.project(invitations[:invitation_accepted_at].maximum)
+    Arel::Nodes::Grouping.new(accepted_at.where(invitations[:invitable_type].eq(name).and(invitations[:invitable_id].eq(arel_table[:id]))))
+  end
 
   scope :active, -> { where.not(deactivated: true) }
   scope :dispatchers, -> { broker.with_role(:dispatch) }
@@ -210,9 +223,15 @@ class User < ApplicationRecord
   end
 
   def send_invitation
-    return if invitation_accepted? || !saved_change_to_email?
+    return if current_invitation&.new_record? || invitation_accepted? || !saved_change_to_email?
+
+    previous_invitations = devise_invitations.pending.to_a
+    previous_invitations.each do |invitation|
+      invitation.update!(invitation_token: nil, superseded_at: Time.current, superseded_reason: 'email_changed')
+    end
 
     invite!(invited_by)
+    current_invitation.update!(resource_created_at: previous_invitations.filter_map(&:resource_created_at).min || Time.current)
   end
 
   def set_time_zone_name = self.time_zone_name = customer? ? companyable.office_address.time_zone.tzinfo.name : Setting.time_zone_name

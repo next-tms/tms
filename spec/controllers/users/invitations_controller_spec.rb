@@ -101,7 +101,7 @@ RSpec.describe(Users::InvitationsController) do
     end
 
     context 'when the user already exists (re-invitation)' do
-      let(:existing_user) { create(:broker_user, invitation_accepted_at: nil) }
+      let(:existing_user) { create(:broker_user, :invited) }
       let(:params) do
         {
           user: {

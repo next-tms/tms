@@ -20,5 +20,6 @@ RSpec.describe('Broker::Carriers::Users') do
     it { expect(assigns(:users)).to(contain_exactly(carrier_user)) }
     it { expect(assigns(:uninvited_contacts)).to(contain_exactly(contact)) }
     it { expect(response.body).to(include("contact_id=#{contact.id}")) }
+    it { expect(assigns(:users)).to(all(satisfy { |user| user.association(:pending_invitations).loaded? })) }
   end
 end

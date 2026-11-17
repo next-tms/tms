@@ -9,7 +9,9 @@ RSpec.describe(CarriersHelper) do
   end
 
   describe '#carrier_user_status' do
-    let(:invited) { build(:carrier_user, invitation_accepted_at: nil, invitation_sent_at: 1.day.ago) }
+    let(:invited) { create(:carrier_user, :invited) }
+
+    before { create(:setting, key: 'robot_email', value: 'robot@example.com') }
 
     it { expect(helper.carrier_user_status(build(:carrier_user))).to(eq('Active')) }
     it { expect(helper.carrier_user_status(build(:carrier_user, deactivated: true))).to(eq('Deactivated')) }

@@ -7,13 +7,11 @@ FactoryBot.define do
     current_sign_in_at { '2022-06-29 23:58:27' }
     current_sign_in_ip { '' }
     deactivated { false }
+    devise_invitations { [association(:devise_invitation, invite_key: { email: }, strategy: :build)] }
     email { Faker::Internet.email }
     failed_attempts { 1 }
     first_name { Faker::Name.first_name }
-    invitation_accepted_at { '2022-06-29 23:58:27' }
-    invitation_created_at { '2022-06-29 23:58:27' }
     invitation_limit { 1 }
-    invitation_sent_at { '2022-06-29 23:58:27' }
     invitations_count { 1 }
     last_name { Faker::Name.last_name }
     last_sign_in_at { '2022-06-29 23:58:27' }
@@ -30,6 +28,10 @@ FactoryBot.define do
     time_zone_name { 'America/Los_Angeles' }
     unconfirmed_email { 'MyString' }
     updated_at { '2022-06-29 23:58:27' }
+
+    trait :invited do
+      devise_invitations { [association(:devise_invitation, :pending, invite_key: { email: }, strategy: :build)] }
+    end
 
     factory :broker_user do
       companyable { nil }
