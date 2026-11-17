@@ -3,5 +3,4 @@ Sentry.init do |config|
   config.dsn = ENV.fetch('SENTRY_DSN', nil)
   config.enabled_environments = ['production']
   config.environment = Rails.env
-  config.send_default_pii = false
 end
