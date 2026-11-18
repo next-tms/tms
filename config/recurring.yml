@@ -44,6 +44,9 @@ production:
   push_receivables_to_accounting:
     class: PushReceivablesToAccountingJob
     schedule: "0 * * * *"
+  reevaluate_shipment_problems:
+    class: ReevaluateShipmentProblemsJob
+    schedule: "35 * * * *"
   refresh_operator_notice:
     class: RefreshOperatorNoticeJob
     schedule: "25 * * * *"
