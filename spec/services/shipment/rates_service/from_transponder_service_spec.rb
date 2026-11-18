@@ -21,6 +21,24 @@ RSpec.describe(Shipment::RatesService::FromTransponderService) do
       it { expect(rates).to(eq([])) }
     end
 
+    context 'when Transponder returns errors' do
+      let(:response) { { errors: [{ extensions: { code: 'API_ERROR' }, message: 'Carrier API is down' }], request: '{}', response: '{}' } }
+
+      it { expect(rates.map(&:api_errors)).to(eq([[{ 'extensions' => { 'code' => 'API_ERROR' }, 'message' => 'Carrier API is down' }]])) }
+
+      context 'when the carrier is not known' do
+        let(:response) { { errors: [{ extensions: { code: 'CARRIER_NOT_KNOWN_ERROR' }, message: 'Carrier not known' }] } }
+
+        it { expect(rates).to(eq([])) }
+      end
+
+      context 'when the request failed' do
+        let(:response) { { errors: [{ message: 'HTTP status 500' }] } }
+
+        it { expect(rates.map(&:api_errors)).to(eq([[{ 'message' => 'HTTP status 500' }]])) }
+      end
+    end
+
     context 'when the carrier is custom' do
       let(:carrier) { create(:carrier) }
 

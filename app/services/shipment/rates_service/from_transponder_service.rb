@@ -34,7 +34,7 @@ class Shipment::RatesService
       errors = response[:errors]
 
       if errors.any?
-        return rates if errors.any? { |error| error[:code] == 'CARRIER_NOT_KNOWN_ERROR' }
+        return rates if errors.any? { |error| error.dig(:extensions, :code) == 'CARRIER_NOT_KNOWN_ERROR' }
 
         rate = build_rate(:api)
         rate.assign_attributes(api_errors: errors, api_request: response[:request], api_response: response[:response])
