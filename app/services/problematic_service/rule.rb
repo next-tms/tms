@@ -47,10 +47,12 @@ module ProblematicService
 
       if resolvable?
         problems.unresolved.find_each { |problem| problem.update!(resolved_at: Time.current, resolved_by: record.updated_by) }
-      elsif problems.any?
-        problems.resolved.find_each { |problem| problem.update!(resolved_at: nil, resolved_by: nil) }
-      else
-        Problem.create!(assigned_to: assign, problematic_rule_code: code, resolvable: record, title: humanized(:title))
+      elsif problematic?
+        if problems.any?
+          problems.resolved.find_each { |problem| problem.update!(resolved_at: nil, resolved_by: nil) }
+        else
+          Problem.create!(assigned_to: assign, problematic_rule_code: code, resolvable: record, title: humanized(:title))
+        end
       end
     end
 

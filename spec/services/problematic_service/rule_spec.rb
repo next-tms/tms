@@ -21,18 +21,17 @@ RSpec.describe(ProblematicService::Rule) do
     let(:shipment) { create(:shipment, updated_by:).tap { |shipment| shipment.problems.destroy_all } }
     let(:updated_by) { create(:broker_user) }
 
-    context 'when resolvable' do
-      let!(:problem) { create(:problem, problematic_rule_code: rule.code, resolvable: shipment) }
+    context 'when not problematic or resolvable' do
+      let!(:problem) { create(:problem, problematic_rule_code: rule.code, resolvable: shipment, resolved_at: 1.day.ago) }
 
-      before { allow(rule).to(receive(:resolvable?).and_return(true)) }
+      before { allow(rule).to(receive_messages(problematic?: false, resolvable?: false)) }
 
-      it { expect { call }.to(change { problem.reload.resolved? }.from(false).to(true)) }
-      it { expect { call }.to(change { problem.reload.resolved_by }.from(nil).to(updated_by)) }
-      it { expect { call }.not_to(change { other_problem.reload.resolved? }) }
+      it { expect { call }.not_to(change(rule_problems, :count)) }
+      it { expect { call }.not_to(change { problem.reload.resolved? }) }
     end
 
-    context 'when not resolvable' do
-      before { allow(rule).to(receive(:resolvable?).and_return(false)) }
+    context 'when problematic' do
+      before { allow(rule).to(receive_messages(problematic?: true, resolvable?: false)) }
 
       it { expect { call }.to(change { rule_problems.unresolved.count }.from(0).to(1)) }
 
@@ -47,6 +46,16 @@ RSpec.describe(ProblematicService::Rule) do
 
         it { expect { call }.to(change { problem.reload.resolved? }.from(true).to(false)) }
       end
+    end
+
+    context 'when resolvable' do
+      let!(:problem) { create(:problem, problematic_rule_code: rule.code, resolvable: shipment) }
+
+      before { allow(rule).to(receive(:resolvable?).and_return(true)) }
+
+      it { expect { call }.to(change { problem.reload.resolved? }.from(false).to(true)) }
+      it { expect { call }.to(change { problem.reload.resolved_by }.from(nil).to(updated_by)) }
+      it { expect { call }.not_to(change { other_problem.reload.resolved? }) }
     end
   end
 
