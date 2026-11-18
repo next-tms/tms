@@ -60,14 +60,14 @@ RSpec.describe(Types::ShipmentType) do
         shipment.carrier_bol.attach(io: StringIO.new('pdf'), filename: 'carrier_bol.pdf')
         shipment.carrier_pod.attach(io: StringIO.new('pdf'), filename: 'carrier_pod.pdf')
         create(:receivable, shipment:).invoice.attach(io: StringIO.new('pdf'), filename: 'invoice.pdf')
-        ['broker_carrier_quote', 'broker_dispatch_sheet', 'broker_quote'].each do |name|
+        ['broker_carrier_quote', 'broker_dispatch_sheet', 'broker_ebol', 'broker_quote'].each do |name|
           blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new('pdf'), filename: "#{name}.pdf")
           ActiveStorage::Attachment.create!(blob:, name:, record: shipment)
         end
       end
     end
 
-    it { expect(kinds).to(contain_exactly('CARRIER_QUOTE', 'DISPATCH_SHEET', 'INVOICE', 'POD', 'QUOTE', 'SCANNED_BOL')) }
+    it { expect(kinds).to(contain_exactly('CARRIER_QUOTE', 'DISPATCH_SHEET', 'EBOL', 'INVOICE', 'POD', 'QUOTE', 'SCANNED_BOL')) }
     it { expect(documents.first['url']).to(include('/rails/active_storage/blobs/redirect/')) }
     it { expect(documents.pick('filename', 'byteSize')).to(eq(['carrier_bol.pdf', 3])) }
     it { expect(queries_from('active_storage_attachments').size).to(eq(2)) }
@@ -77,13 +77,13 @@ RSpec.describe(Types::ShipmentType) do
     context 'when the user is a carrier' do
       let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
 
-      it { expect(kinds).to(contain_exactly('CARRIER_QUOTE', 'DISPATCH_SHEET', 'POD', 'SCANNED_BOL')) }
+      it { expect(kinds).to(contain_exactly('CARRIER_QUOTE', 'DISPATCH_SHEET', 'EBOL', 'POD', 'SCANNED_BOL')) }
     end
 
     context 'when the user is a customer' do
       let(:authorizable) { create(:customer_user, companyable: shipments.first.broker_customer) }
 
-      it { expect(kinds).to(contain_exactly('INVOICE', 'POD', 'QUOTE')) }
+      it { expect(kinds).to(contain_exactly('EBOL', 'INVOICE', 'POD', 'QUOTE')) }
     end
   end
 

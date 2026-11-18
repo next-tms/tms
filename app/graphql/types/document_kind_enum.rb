@@ -6,6 +6,7 @@ module Types
     value 'CARRIER_BOL', value: 'carrier_label'
     value 'CARRIER_QUOTE', value: 'broker_carrier_quote'
     value 'DISPATCH_SHEET', value: 'broker_dispatch_sheet'
+    value 'EBOL', value: 'broker_ebol'
     value 'INVOICE', value: 'invoice'
     value 'LABEL', value: 'broker_label'
     value 'POD', value: 'carrier_pod'
