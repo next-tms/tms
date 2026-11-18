@@ -12,6 +12,7 @@ module ProblematicService
 
     def resolvable?
       !record.picked_up? ||
+        record.canceled_at.present? ||
         record.delivery_appointment_at.present? ||
         record.delivery_appointment_on.present? ||
         record.delivered?
