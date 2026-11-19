@@ -13,7 +13,7 @@ RUN /go/bin/xcaddy build v$CADDY_VERSION \
     --with github.com/mholt/caddy-ratelimit@5625512f24f6 \
     --with github.com/ueffel/caddy-brotli
 
-FROM ruby:4.0.9-alpine3.24 AS base
+FROM ruby:4.0.10-alpine3.24 AS base
 RUN apk add --no-cache -U ca-certificates gcompat jemalloc libpq-dev libxml2 libxslt shared-mime-info tzdata && \
     update-ca-certificates
 
