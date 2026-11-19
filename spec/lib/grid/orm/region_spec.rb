@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe(Transponder::ORM::Region) do
+RSpec.describe(Grid::ORM::Region) do
   let(:california) { described_class.find('US-CA') }
   let(:unknown) { described_class.new(iso31662: 'ZZ-QQ') }
 
@@ -11,20 +11,20 @@ RSpec.describe(Transponder::ORM::Region) do
     context 'when the country collection is older than MEMO_EXPIRES_IN' do
       let!(:collection) { described_class.all }
 
-      before { Timecop.travel(Transponder::ORM::Country::MEMO_EXPIRES_IN.from_now + 1.second) }
+      before { Timecop.travel(Grid::ORM::Country::MEMO_EXPIRES_IN.from_now + 1.second) }
       after { Timecop.return }
 
       it { expect(described_class.all).not_to(equal(collection)) }
-      it { expect(described_class.first.country).to(equal(Transponder::ORM::Country.find('CA'))) }
+      it { expect(described_class.first.country).to(equal(Grid::ORM::Country.find('CA'))) }
     end
 
     context 'when it was last built from another country collection' do
       let!(:collection) { described_class.all }
 
-      before { Transponder::ORM::Country.instance_variable_set(:@all, nil) }
+      before { Grid::ORM::Country.instance_variable_set(:@all, nil) }
 
       it { expect(described_class.all).not_to(equal(collection)) }
-      it { expect(described_class.first.country).to(equal(Transponder::ORM::Country.find('CA'))) }
+      it { expect(described_class.first.country).to(equal(Grid::ORM::Country.find('CA'))) }
     end
   end
 
@@ -42,8 +42,8 @@ RSpec.describe(Transponder::ORM::Region) do
   end
 
   describe '#country' do
-    it { expect(california.country).to(equal(Transponder::ORM::Country.find('US'))) }
-    it { expect(described_class.new(iso31662: 'US-ZZ').country).to(equal(Transponder::ORM::Country.find('US'))) }
+    it { expect(california.country).to(equal(Grid::ORM::Country.find('US'))) }
+    it { expect(described_class.new(iso31662: 'US-ZZ').country).to(equal(Grid::ORM::Country.find('US'))) }
     it { expect(unknown.country.alpha2).to(eq('ZZ')) }
   end
 

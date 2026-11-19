@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe(CountriesHelper) do
   describe '#country_options' do
-    let(:countries) { Transponder::ORM::Country.where(alpha2: ['CA', 'US']).order(:name) }
+    let(:countries) { Grid::ORM::Country.where(alpha2: ['CA', 'US']).order(:name) }
 
     it { expect(helper.country_options(countries, 'US')).to(eq([['Canada', 'CA'], ['United States of America', 'US']])) }
     it { expect(helper.country_options(countries, nil)).to(eq([['Canada', 'CA'], ['United States of America', 'US']])) }

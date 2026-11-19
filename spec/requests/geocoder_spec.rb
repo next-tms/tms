@@ -49,25 +49,6 @@ RSpec.describe('Geocoder') do
     end
   end
 
-  describe 'POST /fetch_details_by_zip_code' do
-    before { post('/fetch_details_by_zip_code', params: { country: 'US', postal_code: '94536' }) }
-
-    it { expect(response.parsed_body).to(eq('city' => 'Fremont', 'region_iso31662' => 'US-CA')) }
-    it { expect(Geo).to(have_received(:verify).with(postal_code: '94536', region_code: 'US')) }
-
-    context 'when nothing matches' do
-      let(:verification) { nil }
-
-      it { expect(response.parsed_body).to(eq('error' => 'No Location Found')) }
-    end
-
-    context 'when the match has no locality' do
-      let(:verification) { super().with(locality: nil, verified: false) }
-
-      it { expect(response.parsed_body).to(eq('error' => 'No Location Found')) }
-    end
-  end
-
   describe 'POST /validate_address' do
     let(:geocoder) { { city: 'Fremont', country_alpha2: 'US', region_iso31662: 'US-CA', street: '4011 Lana Tier', zip_code: '94536' } }
 

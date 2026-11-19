@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe(TransponderService::Parser::Country) do
   describe '.call' do
-    let(:united_states) { Transponder::ORM::Country.find('US') }
+    let(:united_states) { Grid::ORM::Country.find('US') }
 
     it { expect(described_class.call({ alpha2: 'US' })).to(equal(united_states)) }
     it { expect(described_class.call({ alpha2: 'US', alpha3: 'ROM' })).to(equal(united_states)) }

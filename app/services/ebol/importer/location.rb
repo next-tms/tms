@@ -28,7 +28,7 @@ class EBOL::Importer::Location
   def country
     return @country if defined?(@country)
 
-    @country = Transponder::ORM::Country.find_by(alpha3: location[:country].to_s.upcase)
+    @country = Grid::ORM::Country.find_by(alpha3: location[:country].to_s.upcase)
   end
 
   def region = country&.regions&.find_by(abbreviation: location[:stateProvince].to_s.upcase)

@@ -35,20 +35,20 @@ class DropRegionsAndCountries < ActiveRecord::Migration[8.1]
     end
 
     say 'populate(:countries, :regions)'
-    Transponder::ORM::Country.all.to_a.each do |transponder_country|
+    Grid::ORM::Country.all.to_a.each do |grid_country|
       country = Country.create!(
-        alpha2_code: transponder_country.alpha2,
-        alpha3_code: transponder_country.alpha3,
-        name: transponder_country.name,
-        un_code: transponder_country.numeric
+        alpha2_code: grid_country.alpha2,
+        alpha3_code: grid_country.alpha3,
+        name: grid_country.name,
+        un_code: grid_country.numeric
       )
 
-      transponder_country.regions.each do |transponder_region|
+      grid_country.regions.each do |grid_region|
         Region.create!(
-          abbreviation: transponder_region.abbreviation,
+          abbreviation: grid_region.abbreviation,
           country_id: country.id,
-          iso31662: transponder_region.iso31662.tr('-', '_'),
-          name: transponder_region.name
+          iso31662: grid_region.iso31662.tr('-', '_'),
+          name: grid_region.name
         )
       end
     end

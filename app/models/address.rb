@@ -9,8 +9,8 @@ class Address < ApplicationRecord
 
   before_validation :set_country
 
-  belongs_to_transponder :country, foreign_key: :country_alpha2
-  belongs_to_transponder :region, foreign_key: :region_iso31662
+  belongs_to_orm :country, class_name: 'Grid::ORM::Country', foreign_key: :country_alpha2
+  belongs_to_orm :region, class_name: 'Grid::ORM::Region', foreign_key: :region_iso31662
 
   has_one :receiver_shipment, class_name: 'Shipment', dependent: nil, foreign_key: :receiver_address_id, inverse_of: :receiver_address
   has_one :shipper_shipment, class_name: 'Shipment', dependent: nil, foreign_key: :shipper_address_id, inverse_of: :shipper_address
@@ -33,26 +33,29 @@ class Address < ApplicationRecord
     new_street2 = new_street2.titleize if (new_street2 == new_street2.downcase) || (new_street2 == new_street2.upcase)
     new_street2.squish
   end
-  normalizes :zip_code, with: ->(zip_code) { zip_code.squish }
+  normalizes :zip_code, with: ->(zip_code) { zip_code.squish.sub(/\A(\d{5}) (\d{4})\z/, '\1-\2') }
 
   scope :with_zip_code, ->(zip_code) do
-    where("upper(split_part(replace(addresses.zip_code, ' ', ''), '-', 1)) = ?", zip_code.to_s.delete(' ').split('-').first.to_s.upcase)
+    zip_code = normalize_value_for(:zip_code, zip_code.to_s).delete(' ').split('-').first.to_s.upcase
+
+    where("upper(split_part(replace(addresses.zip_code, ' ', ''), '-', 1)) = ?", zip_code)
   end
 
   validate :region_matches_country
   validate :validate_ref, if: -> { ref.present? && ref_changed? }
   validate :validate_street, if: -> { street.present? && country.present? }
   validate :validate_street_attributes
-  validate :validate_zip_code, if: -> { zip_code.present? && country.present? }
+  validate :validate_zip_code, if: -> { zip_code.present? && country.present? && (zip_code_changed? || country_alpha2_changed?) }
 
   validates :city, presence: true
-  validates :zip_code, presence: true
+  validates :zip_code, presence: true, if: :postal_code?
 
   def blank_to_nil(obj) = obj == '' ? nil : obj
   def commercial? = business?
   def full_address? = street.present? && city.present? && region.present?
   def locality = "#{city}, #{region.abbreviation}".sub(',  ', '')
   def moved? = persisted? && POSTAL_ATTRIBUTES.any? { will_save_change_to_attribute?(it) }
+  def postal_code? = country.nil? || country.postal_code
 
   def pretty(seperator)
     str = ''.dup

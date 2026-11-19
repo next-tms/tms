@@ -1,8 +1,8 @@
 module Transponder
   module ORM
-    class CarrierContact < Base
+    class CarrierContact < ::ORM::Base
       class << self
-        def all = Collection.new(self, Carrier.all.flat_map(&:contacts))
+        def all = ::ORM::Collection.new(self, Carrier.all.flat_map(&:contacts))
         def primary_key = :id
       end
 

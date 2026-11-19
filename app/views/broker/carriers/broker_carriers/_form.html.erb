@@ -22,12 +22,12 @@
     <label class="col-form-label col-sm-2">Check Mailing Address</label>
     <div class="col-sm-10">
       <%= f.fields_for :check_mailing_address do |check_mailing_address_form| %>
+        <%= check_mailing_address_form.select :country_alpha2, country_options(Grid::ORM::Country.order(:name), check_mailing_address_form.object.country_alpha2), { hide_label: true, selected: (check_mailing_address_form.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : check_mailing_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
         <%= check_mailing_address_form.text_field :street, hide_label: true, placeholder: true %>
         <%= check_mailing_address_form.text_field :street2, hide_label: true %>
-        <%= check_mailing_address_form.text_field :city, hide_label: true, placeholder: true %>
+        <%= check_mailing_address_form.text_field :zip_code, hide_label: true, placeholder: true, data: { address_target: 'postalCode' } %>
+        <%= check_mailing_address_form.text_field :city, hide_label: true, placeholder: true, data: { address_target: 'city' } %>
         <%= check_mailing_address_form.select :region_iso31662, (check_mailing_address_form.object.region_iso31662.blank? ? [[Setting.mailing_address!.region.name, Setting.mailing_address!.region.id]] : [[check_mailing_address_form.object.region.abbreviation, check_mailing_address_form.object.region_iso31662]]), { hide_label: true }, data: { 'address-target': 'regions' }, class: 'form-select' %>
-        <%= check_mailing_address_form.text_field :zip_code, hide_label: true, placeholder: true %>
-        <%= check_mailing_address_form.select :country_alpha2, country_options(Transponder::ORM::Country.order(:name), check_mailing_address_form.object.country_alpha2), { hide_label: true, selected: (check_mailing_address_form.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : check_mailing_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
       <% end %>
     </div>
   </div>

@@ -13,6 +13,9 @@ RSpec.describe(CountriesController) do
     it { is_expected.to(have_http_status(:ok)) }
     it { expect(json.dig('country', 'id')).to(eq('US')) }
     it { expect(json.dig('country', 'name')).to(eq('United States of America')) }
+    it { expect(json.dig('country', 'postal_code')).to(be(true)) }
+    it { expect(json.dig('country', 'postal_code_format')).to(eq('(\d{5})(?:[ \-](\d{4}))?')) }
+    it { expect(json.dig('country', 'postal_code_label')).to(eq('ZIP')) }
     it { expect(json.dig('country', 'regions').pluck('id')).to(eq(['US-CA', 'US-TX', 'US-WY'])) }
     it { expect(json.dig('country', 'regions').first).to(eq({ 'abbreviation' => 'CA', 'id' => 'US-CA', 'name' => 'California' })) }
     it { expect(response.headers['Cache-Control']).to(include('public', 'max-age=86400')) }
@@ -31,15 +34,30 @@ RSpec.describe(CountriesController) do
       before do
         request.headers['If-None-Match'] = response.headers['ETag']
 
-        original_hash = JSON.parse(TransponderCountries::FIXTURE_PATH.read)
+        original_hash = JSON.parse(GridCountries::FIXTURE_PATH.read)
         original_hash.dig('data', 'fetchCountries').last['regions'].first['abbreviation'] = 'CF'
-        stub_transponder_countries(original_hash)
+        stub_grid_countries(original_hash)
 
         get(:show, format: :json, params: { id: 'US' })
       end
 
       it { is_expected.to(have_http_status(:ok)) }
       it { expect(json.dig('country', 'regions').pluck('abbreviation')).to(eq(['CF', 'TX', 'WY'])) }
+    end
+
+    context 'when only the postal code label changed since the ETag' do
+      before do
+        request.headers['If-None-Match'] = response.headers['ETag']
+
+        original_hash = JSON.parse(GridCountries::FIXTURE_PATH.read)
+        original_hash.dig('data', 'fetchCountries').last['postalCodeLabel'] = 'ZIP code'
+        stub_grid_countries(original_hash)
+
+        get(:show, format: :json, params: { id: 'US' })
+      end
+
+      it { is_expected.to(have_http_status(:ok)) }
+      it { expect(json.dig('country', 'postal_code_label')).to(eq('ZIP code')) }
     end
   end
 

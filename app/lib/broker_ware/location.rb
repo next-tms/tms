@@ -23,7 +23,7 @@ class BrokerWare::Location
   def country
     return @country if defined?(@country)
 
-    @country = Transponder::ORM::Country.find_by(country_attribute => country_code)
+    @country = Grid::ORM::Country.find_by(country_attribute => country_code)
   end
 
   def country_attribute = country_code.length == 2 ? :alpha2 : :alpha3

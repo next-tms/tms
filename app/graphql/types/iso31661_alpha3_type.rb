@@ -3,7 +3,7 @@ class Types::Iso31661Alpha3Type < Types::BaseEnum
 
   class << self
     def enum_values(_context = nil)
-      Transponder::ORM::Country.all.map { |country| GraphQL::Schema::EnumValue.new(country.alpha3, owner: self, value: country.alpha3) }
+      Grid::ORM::Country.all.map { |country| GraphQL::Schema::EnumValue.new(country.alpha3, owner: self, value: country.alpha3) }
     end
   end
 end

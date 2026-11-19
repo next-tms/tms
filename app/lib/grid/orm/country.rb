@@ -1,11 +1,11 @@
-module Transponder
+module Grid
   module ORM
-    class Country < Base
+    class Country < ::ORM::Base
       class << self
         def all
           reset if @memo_expires_at&.past?
 
-          @all ||= Collection.new(self, fetch.map { |attributes| new(**attributes) }).tap { @memo_expires_at = MEMO_EXPIRES_IN.from_now }
+          @all ||= ::ORM::Collection.new(self, fetch.map { |attributes| new(**attributes) }).tap { @memo_expires_at = MEMO_EXPIRES_IN.from_now }
         end
 
         def primary_key = :alpha2
@@ -24,8 +24,8 @@ module Transponder
         private
 
         def fetch
-          Rails.cache.fetch("transponder@#{ORM.version}/countries", expires_in: CACHE_EXPIRES_IN) do
-            response = GraphQLClient::Transponder::Client.query(GraphQLClient::Transponder::Query::FetchCountries::DETAILS)
+          Rails.cache.fetch("grid@#{ORM.version}/countries", expires_in: CACHE_EXPIRES_IN) do
+            response = GraphQLClient::Grid::Client.query(GraphQLClient::Grid::Query::FetchCountries::DETAILS)
             errors = response.original_hash['errors']
             raise GraphQL::Client::Error, errors.pluck('message').join(', ') if errors.present?
 
@@ -37,37 +37,46 @@ module Transponder
         end
 
         def query_alpha2(name)
-          response = GraphQLClient::Transponder::Client.query(
-            GraphQLClient::Transponder::Query::FetchCountries::NAMED,
-            variables: { name: }
-          )
+          response = GraphQLClient::Grid::Client.query(GraphQLClient::Grid::Query::FetchCountries::NAMED, variables: { name: })
           errors = response.original_hash['errors']
           raise GraphQL::Client::Error, errors.pluck('message').join(', ') if errors.present?
 
           response.original_hash.dig('data', 'fetchCountries', 0, 'alpha2')
         end
 
-        def named_cache_key(name) = "transponder@#{ORM.version}/countries/named/#{name.downcase}"
+        def named_cache_key(name) = "grid@#{ORM.version}/countries/named/#{name.downcase}"
         def resolved_alpha2(name) = Rails.cache.fetch(named_cache_key(name), expires_in: CACHE_EXPIRES_IN) { query_alpha2(name) }
       end
 
       CACHE_EXPIRES_IN = 1.day
       MEMO_EXPIRES_IN = 1.hour
 
-      attr_reader :alpha2, :alpha3, :numeric, :regions
+      attr_reader :alpha2, :alpha3, :numeric, :postal_code, :postal_code_format, :postal_code_label, :regions
 
-      # Only alpha2 is required, so records that store a code Transponder no longer returns stay readable
-      def initialize(alpha2:, alpha3: nil, name: nil, numeric: nil, regions: [])
+      # Only alpha2 is required, so records that store a code Grid no longer returns stay readable
+      def initialize( # rubocop:disable Metrics/ParameterLists
+        alpha2:,
+        alpha3: nil,
+        name: nil,
+        numeric: nil,
+        postal_code: true,
+        postal_code_format: nil,
+        postal_code_label: nil,
+        regions: []
+      )
         super()
 
         @alpha2 = alpha2
         @alpha3 = alpha3
         @name = name
         @numeric = numeric
-        @regions = Collection.new(Region, regions.map { |attributes| Region.new(country: self, **attributes) })
+        @postal_code = postal_code
+        @postal_code_format = postal_code_format
+        @postal_code_label = postal_code_label
+        @regions = ::ORM::Collection.new(Region, regions.map { |attributes| Region.new(country: self, **attributes) })
       end
 
-      def cache_version = name
+      def cache_version = [name, postal_code, postal_code_format, postal_code_label].join('/')
 
       def format_address(str)
         return if str.blank?
@@ -81,14 +90,7 @@ module Transponder
 
       def name = @name || alpha2
 
-      def valid_postal_code?(postal_code)
-        case alpha2
-        when 'CA' then return postal_code.match?(/^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$/)
-        when 'US' then return postal_code.match?(/^\d{5}(?:-\d{4})?$/)
-        end
-
-        true
-      end
+      def valid_postal_code?(postal_code) = postal_code_format.nil? || postal_code.upcase.match?(/\A(?:#{postal_code_format})\z/)
 
       def valid_street?(street)
         case alpha2

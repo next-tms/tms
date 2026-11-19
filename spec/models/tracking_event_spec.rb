@@ -23,7 +23,7 @@ RSpec.describe(TrackingEvent) do
   describe '#country' do
     let(:record) { build(:tracking_event) }
 
-    it { expect(record.country).to(equal(Transponder::ORM::Country.find('US'))) }
+    it { expect(record.country).to(equal(Grid::ORM::Country.find('US'))) }
   end
 
   describe '#discussable_topic_description' do
@@ -61,6 +61,6 @@ RSpec.describe(TrackingEvent) do
   describe '#region' do
     let(:record) { build(:tracking_event) }
 
-    it { expect(record.region).to(equal(Transponder::ORM::Region.find('US-CA'))) }
+    it { expect(record.region).to(equal(Grid::ORM::Region.find('US-CA'))) }
   end
 end

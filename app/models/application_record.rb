@@ -1,6 +1,6 @@
 class ApplicationRecord < ActiveRecord::Base
   include Ransackable
-  include Transponder::ORM::Associations
+  include ORM::Associations
 
   class << self
     # @note For grouped_collection_select in forms

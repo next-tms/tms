@@ -1,8 +1,8 @@
 module Transponder
   module ORM
-    class Lane < Base
+    class Lane < ::ORM::Base
       class << self
-        def all = Collection.new(self, Carrier.all.flat_map(&:lanes))
+        def all = ::ORM::Collection.new(self, Carrier.all.flat_map(&:lanes))
         def primary_key = :id
       end
 

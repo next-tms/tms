@@ -31,7 +31,6 @@ Rails.application.routes.draw do
   get 'contact-card', to: 'brokers#contact_card'
   get 'tracking' => 'tracking#show'
 
-  post 'fetch_details_by_zip_code', to: 'geocoder#fetch_details_by_zip_code', defaults: { format: :json }
   post 'fetch_address_by_broker_customer', to: 'geocoder#fetch_address_by_broker_customer', defaults: { format: :json }
   post 'validate_address', to: 'geocoder#validate_address', defaults: { format: :json }
 
@@ -270,7 +269,9 @@ Rails.application.routes.draw do
     get 'search' => 'search#search'
   end
 
-  resources :countries, only: %i[show]
+  resources :countries, only: %i[show] do
+    resources :postal_codes, only: %i[show]
+  end
 
   scope as: :broker_ware, defaults: { format: :json }, format: false, module: :broker_ware do
     post 'connect/token', to: 'tokens#create'

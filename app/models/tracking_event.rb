@@ -29,8 +29,8 @@ class TrackingEvent < ApplicationRecord
   belongs_to :address, optional: true
   accepts_nested_attributes_for :address, allow_destroy: false, reject_if: :all_blank
 
-  belongs_to_transponder :country, foreign_key: :country_alpha2
-  belongs_to_transponder :region, foreign_key: :region_iso31662
+  belongs_to_orm :country, class_name: 'Grid::ORM::Country', foreign_key: :country_alpha2
+  belongs_to_orm :region, class_name: 'Grid::ORM::Region', foreign_key: :region_iso31662
   belongs_to :shipment
   belongs_to :terminal, optional: true
   belongs_to :user, optional: true

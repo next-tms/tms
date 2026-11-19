@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe(Transponder::ORM::Associations) do
+RSpec.describe(ORM::Associations) do
   let(:model_class) do
     Class.new(ApplicationRecord) do
       self.table_name = 'addresses'
@@ -9,9 +9,9 @@ RSpec.describe(Transponder::ORM::Associations) do
         def name = 'AssociationsTestRecord'
       end
 
-      belongs_to_transponder :country, foreign_key: :country_alpha2
-      belongs_to_transponder :home_country, class_name: 'Country', foreign_key: :country_alpha2
-      belongs_to_transponder :region, foreign_key: :region_iso31662, optional: true
+      belongs_to_orm :country, class_name: 'Grid::ORM::Country', foreign_key: :country_alpha2
+      belongs_to_orm :home_country, class_name: 'Grid::ORM::Country', foreign_key: :country_alpha2
+      belongs_to_orm :region, class_name: 'Grid::ORM::Region', foreign_key: :region_iso31662, optional: true
     end
   end
 
@@ -20,9 +20,9 @@ RSpec.describe(Transponder::ORM::Associations) do
   let(:region_iso31662) { 'US-CA' }
 
   describe 'reader' do
-    it { expect(record.country).to(equal(Transponder::ORM::Country.find('US'))) }
-    it { expect(record.region).to(equal(Transponder::ORM::Region.find('US-CA'))) }
-    it { expect(record.home_country).to(equal(Transponder::ORM::Country.find('US'))) }
+    it { expect(record.country).to(equal(Grid::ORM::Country.find('US'))) }
+    it { expect(record.region).to(equal(Grid::ORM::Region.find('US-CA'))) }
+    it { expect(record.home_country).to(equal(Grid::ORM::Country.find('US'))) }
 
     context 'when the code is blank' do
       let(:region_iso31662) { nil }
@@ -30,7 +30,7 @@ RSpec.describe(Transponder::ORM::Associations) do
       it { expect(record.region).to(be_nil) }
     end
 
-    context 'when Transponder no longer returns the code' do
+    context 'when the source no longer returns the code' do
       let(:region_iso31662) { 'US-ZZ' }
 
       it { expect(record.region.abbreviation).to(eq('ZZ')) }
@@ -38,7 +38,7 @@ RSpec.describe(Transponder::ORM::Associations) do
   end
 
   describe 'writer' do
-    it { expect { record.region = Transponder::ORM::Region.find('US-TX') }.to(change(record, :region_iso31662).to('US-TX')) }
+    it { expect { record.region = Grid::ORM::Region.find('US-TX') }.to(change(record, :region_iso31662).to('US-TX')) }
     it { expect { record.region = nil }.to(change(record, :region_iso31662).to(nil)) }
   end
 

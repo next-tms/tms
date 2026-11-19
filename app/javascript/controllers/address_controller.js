@@ -2,9 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
     static targets = [
+        'city',
         'country',
         'regions',
         'field',
+        'postalCode',
         'validateAddressLoading',
         'validateAddressFailed',
         'validateAddressSuccess'
@@ -21,7 +23,7 @@ export default class extends Controller {
     }
 
     validateAddress() {
-      let hasFilledAddress = this.fieldTargets.every(select => select.value) && !!this.countryTarget.value && !!this.regionsTarget.value
+      let hasFilledAddress = this.fieldTargets.every(field => field.value || field.closest('[hidden]')) &&!!this.countryTarget.value && !!this.regionsTarget.value
 
       if (hasFilledAddress) {
         const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
@@ -70,6 +72,8 @@ export default class extends Controller {
             return;
         }
 
+        this.postalCodeRegion = null
+
         const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
         const country_alpha2 = this.countryTarget.options[this.countryTarget.selectedIndex].value
 
@@ -85,7 +89,157 @@ export default class extends Controller {
                 }
             })
             .then(response => response.json())
-            .then(response => this.populateRegions(response.country))
+            .then(response => {
+                if (this.countryTarget.value != country_alpha2) {
+                    return
+                }
+
+                this.populateRegions(response.country)
+                this.updatePostalCodes(response.country)
+                this.loadedCountry = country_alpha2
+
+                if (this.pendingPostalCode) {
+                    const input = this.pendingPostalCode
+                    this.pendingPostalCode = null
+                    this.lookUpPostalCode(input)
+                }
+            })
+    }
+
+    postalCodeTargetConnected(input) {
+        input.addEventListener('change', () => {
+            input.value = input.value.toUpperCase()
+            this.applyPostalCodePattern(input)
+            this.lookUpPostalCode(input)
+        })
+    }
+
+    savedCountry() {
+        return Array.from(this.countryTarget.options).find(option => option.defaultSelected)?.value
+    }
+
+    applyPostalCodePattern(input) {
+        const saved = input.value.toUpperCase() == input.defaultValue.toUpperCase() && this.countryTarget.value == this.savedCountry()
+
+        if (this.postalCodeFormat && !saved) {
+            input.pattern = this.postalCodeFormat
+        } else {
+            input.removeAttribute('pattern')
+        }
+    }
+
+    regionsTargetConnected(select) {
+        select.addEventListener('change', () => this.alertRegionMismatch(select))
+    }
+
+    lookUpPostalCode(input) {
+        this.postalCodeRegion = null
+
+        if (this.loadedCountry != this.countryTarget.value) {
+            this.pendingPostalCode = input
+            return
+        }
+
+        if (!input.value || input.validity.patternMismatch) {
+            return
+        }
+
+        const country = this.countryTarget.value
+        const postalCode = input.value
+        const url = '/countries/' + country + '/postal_codes/' + encodeURIComponent(postalCode) + '.json'
+
+        fetch(url, { credentials: 'include', headers: { 'Accept': 'application/json' } })
+            .then(response => response.ok ? response.json() : null)
+            .then(response => {
+                if (response && this.countryTarget.value == country && input.value == postalCode) {
+                    this.postalCodeLookup = { country: country, postalCode: postalCode }
+                    this.fillFromPostalCode(response.postal_code)
+                }
+            })
+    }
+
+    fillFromPostalCode(postalCode) {
+        if (this.hasCityTarget && postalCode.city) {
+            this.cityTarget.value = postalCode.city
+        }
+
+        if (postalCode.region_iso31662) {
+            this.postalCodeRegion = postalCode.region_iso31662
+        }
+
+        if (!this.applyPostalCodeRegion() && this.hasCityTarget) {
+            this.cityTarget.dispatchEvent(new Event('change'))
+        }
+    }
+
+    postalCodeRegionCurrent() {
+        return !!this.postalCodeRegion &&
+            this.postalCodeLookup?.country == this.countryTarget.value &&
+            this.postalCodeLookup?.postalCode == this.postalCodeTarget.value
+    }
+
+    applyPostalCodeRegion() {
+        const select = this.regionsTarget
+
+        if (!this.postalCodeRegionCurrent() || select.value == this.postalCodeRegion) {
+            return false
+        }
+
+        if (!Array.from(select.options).some(option => option.value == this.postalCodeRegion)) {
+            return false
+        }
+
+        select.value = this.postalCodeRegion
+        select.dispatchEvent(new Event('change'))
+
+        return true
+    }
+
+    alertRegionMismatch(select) {
+        if (!this.postalCodeRegionCurrent() || select.value == this.postalCodeRegion) {
+            return
+        }
+
+        const region = select.selectedOptions[0]?.text
+        window.alert(this.postalCodeLabel + ' ' + this.postalCodeTarget.value + ' is not in ' + region + '.')
+    }
+
+    updatePostalCodes(country) {
+        if (country.postal_code === undefined) {
+            return
+        }
+
+        this.postalCodeFormat = country.postal_code_format
+        this.postalCodeLabel = country.postal_code_label
+
+        this.postalCodeTargets.forEach((input) => {
+            const formGroup = input.closest('.mb-3') || input
+
+            formGroup.hidden = !country.postal_code
+            input.required = country.postal_code
+
+            if (!country.postal_code) {
+                input.value = ''
+            } else if (this.countryTarget.value != this.savedCountry()) {
+                input.value = input.value.toUpperCase()
+            }
+
+            input.labels.forEach(label => label.textContent = country.postal_code_label)
+
+            if (input.hasAttribute('placeholder')) {
+                input.placeholder = country.postal_code_label
+            }
+
+            this.applyPostalCodePattern(input)
+
+            if (country.alpha2 == 'US') {
+                input.inputMode = 'numeric'
+                input.removeAttribute('autocapitalize')
+            } else {
+                input.removeAttribute('inputmode')
+                input.autocapitalize = 'characters'
+            }
+        })
     }
 
     populateRegions(country) {
@@ -96,7 +250,7 @@ export default class extends Controller {
             option.remove()
         })
 
-        // Keep a saved region that Transponder no longer returns, so saving the form does not change it
+        // Keep a saved region that Grid no longer returns, so saving the form does not change it
         if (selected_value.startsWith(country.alpha2 + '-') && !country.regions.some(region => region.id == selected_value)) {
             selected_option.selected = true
             this.regionsTarget.add(selected_option)
@@ -113,59 +267,7 @@ export default class extends Controller {
 
             this.regionsTarget.add(option)
         }.bind(this))
-    }
 
-    fillCityAndStateByZipCode(event) {
-        event.preventDefault();
-
-        let zipCode = event.target.value;
-        let textField = event.target
-        let elementId = textField.id
-        let helpText = textField.parentElement.lastElementChild
-        let countrySelect = document.getElementById(elementId.replace('zip_code', "country_alpha2"))
-        let selectedCountry = countrySelect.value;
-        const authenticityToken = document.querySelector('meta[name="csrf-token"]').content
-        var duration = 1000;
-
-        let data = { postal_code: zipCode, country: selectedCountry }
-
-
-        if (zipCode == null || zipCode == "") {
-            return
-        }
-
-        clearTimeout(textField._timer);
-        textField._timer = setTimeout(()=>{
-            helpText.innerHTML = "Searching for Location based on ZIP..."
-            fetch('/fetch_details_by_zip_code', {
-                method: 'POST',
-                headers: {
-                  'Accept': 'text/javascript',
-                  'Content-Type': 'application/json',
-                  'X-CSRF-Token': authenticityToken
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(function(data) {
-                setTimeout(()=>{
-                    console.log(data)
-                    if (data.error == null) {
-                        document.getElementById(elementId.replace("zip_code", "city")).value = data.city;
-                        var stateSelect = document.getElementById(elementId.replace("zip_code", "region_iso31662"))
-                        Array.from(stateSelect.options).forEach(function(option) {
-                            if (option.value === data.region_iso31662) {
-                              option.selected = true
-                            }
-                        })
-
-                        helpText.innerHTML = "Location Found, City and State are Filled!"
-                    } else {
-                        helpText.innerHTML = "No Location Found based on ZIP"
-                    }
-                }, duration)
-
-            })
-        }, 500);
+        this.applyPostalCodeRegion()
     }
 }

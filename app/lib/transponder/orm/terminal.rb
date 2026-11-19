@@ -1,8 +1,8 @@
 module Transponder
   module ORM
-    class Terminal < Base
+    class Terminal < ::ORM::Base
       class << self
-        def all = Collection.new(self, Carrier.all.flat_map(&:terminals))
+        def all = ::ORM::Collection.new(self, Carrier.all.flat_map(&:terminals))
         def primary_key = :id
       end
 

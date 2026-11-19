@@ -1,11 +1,11 @@
 module Transponder
   module ORM
-    class Carrier < Base
+    class Carrier < ::ORM::Base
       class << self
         def all
           reset if @memo_expires_at&.past?
 
-          @all ||= Collection.new(self, fetch.map { |attributes| new(**attributes) }).tap { @memo_expires_at = MEMO_EXPIRES_IN.from_now }
+          @all ||= ::ORM::Collection.new(self, fetch.map { |attributes| new(**attributes) }).tap { @memo_expires_at = MEMO_EXPIRES_IN.from_now }
         end
 
         def primary_key = :id

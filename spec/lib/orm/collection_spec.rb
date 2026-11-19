@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe(Transponder::ORM::Collection) do
-  let(:collection) { Transponder::ORM::Region.all }
-  let(:country) { Transponder::ORM::Country.find('US') }
+RSpec.describe(ORM::Collection) do
+  let(:collection) { Grid::ORM::Region.all }
+  let(:country) { Grid::ORM::Country.find('US') }
 
   describe '#initialize' do
     it { expect { described_class.new(String, []) }.to(raise_error(ArgumentError)) }
@@ -25,7 +25,7 @@ RSpec.describe(Transponder::ORM::Collection) do
   end
 
   describe '#inspect' do
-    it { expect(collection.inspect).to(eq('#<Transponder::ORM::Collection orm_class=Transponder::ORM::Region size=6>')) }
+    it { expect(collection.inspect).to(eq('#<ORM::Collection orm_class=Grid::ORM::Region size=6>')) }
   end
 
   describe '#order' do

@@ -52,7 +52,7 @@ en:
         street: Street
         street2: Street line 2
         time_zone_name: Time zone
-        zip_code: ZIP code
+        zip_code: Postal code
       api_key:
         client_id: Client ID
         created_at: Created

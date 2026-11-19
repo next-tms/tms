@@ -1,6 +1,6 @@
 module GraphQLClient
-  class Transponder::Fragment::Region
-    DETAILS = GraphQLClient::Transponder::Client.parse(<<-GRAPHQL)
+  class Grid::Fragment::Region
+    DETAILS = GraphQLClient::Grid::Client.parse(<<-GRAPHQL)
         fragment on Region {
           abbreviation
           iso31662

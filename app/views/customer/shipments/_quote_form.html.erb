@@ -8,10 +8,10 @@
 
       <div data-controller="address">
         <%= f.fields_for :shipper_address do |shipper_address_form| %>
-          <%= shipper_address_form.text_field :city %>
-          <%= shipper_address_form.select :region_iso31662, (shipper_address_form.object.region_iso31662.blank? ? [[current_user.companyable.primary_pickup_address.region.name, current_user.companyable.primary_pickup_address.region.id]] : [[shipper_address_form.object.region.name, shipper_address_form.object.region_iso31662]]), {}, data: { 'address-target': 'regions' }, class: 'form-select' %>
-          <%= shipper_address_form.text_field :zip_code %>
           <%= shipper_address_form.select :country_alpha2, country_options(BrokerCountry.countries.order(:name), shipper_address_form.object.country_alpha2), { selected: (shipper_address_form.object.country_alpha2.blank? ? current_user.companyable.primary_pickup_address.country_alpha2 : shipper_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+          <%= shipper_address_form.text_field :zip_code, data: { address_target: 'postalCode' } %>
+          <%= shipper_address_form.text_field :city, data: { address_target: 'city' } %>
+          <%= shipper_address_form.select :region_iso31662, (shipper_address_form.object.region_iso31662.blank? ? [[current_user.companyable.primary_pickup_address.region.name, current_user.companyable.primary_pickup_address.region.id]] : [[shipper_address_form.object.region.name, shipper_address_form.object.region_iso31662]]), {}, data: { 'address-target': 'regions' }, class: 'form-select' %>
         <% end %>
       </div>
     </div>
@@ -21,10 +21,10 @@
 
       <div data-controller="address">
         <%= f.fields_for :receiver_address do |receiver_address_form| %>
-          <%= receiver_address_form.text_field :city %>
-          <%= receiver_address_form.select :region_iso31662, (receiver_address_form.object.region_iso31662.blank? ? [[current_user.companyable.primary_pickup_address.region.name, current_user.companyable.primary_pickup_address.region.id]] : [[receiver_address_form.object.region.name, receiver_address_form.object.region_iso31662]]), {}, data: { 'address-target': 'regions' }, class: 'form-select' %>
-          <%= receiver_address_form.text_field :zip_code %>
           <%= receiver_address_form.select :country_alpha2, country_options(BrokerCountry.countries.order(:name), receiver_address_form.object.country_alpha2), { selected: (receiver_address_form.object.country_alpha2.blank? ? current_user.companyable.primary_pickup_address.country_alpha2 : receiver_address_form.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+          <%= receiver_address_form.text_field :zip_code, data: { address_target: 'postalCode' } %>
+          <%= receiver_address_form.text_field :city, data: { address_target: 'city' } %>
+          <%= receiver_address_form.select :region_iso31662, (receiver_address_form.object.region_iso31662.blank? ? [[current_user.companyable.primary_pickup_address.region.name, current_user.companyable.primary_pickup_address.region.id]] : [[receiver_address_form.object.region.name, receiver_address_form.object.region_iso31662]]), {}, data: { 'address-target': 'regions' }, class: 'form-select' %>
         <% end %>
       </div>
     </div>

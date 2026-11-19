@@ -4,7 +4,7 @@ module Accounting
 
     attr_accessor :city, :country, :line1, :line2, :postal_code, :region
 
-    def country_alpha2 = Transponder::ORM::Country.find_by(name: country)&.alpha2
+    def country_alpha2 = Grid::ORM::Country.find_by(name: country)&.alpha2
 
     def to_address(default_country_alpha2)
       alpha2 = country_alpha2 || default_country_alpha2

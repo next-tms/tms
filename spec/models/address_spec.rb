@@ -17,6 +17,21 @@ RSpec.describe(Address) do
     it { expect(described_class.with_zip_code('90210')).to(include(address)) }
     it { expect(described_class.with_zip_code('90211')).not_to(include(address)) }
     it { expect(described_class.with_zip_code('90210-9999')).to(include(address)) }
+    it { expect(described_class.with_zip_code('90210 9999')).to(include(address)) }
+
+    context 'when the ZIP+4 is saved with a space' do
+      let!(:address) { create(:address, zip_code: '90210 1234') }
+
+      it { expect(address.zip_code).to(eq('90210-1234')) }
+      it { expect(described_class.with_zip_code('90210')).to(include(address)) }
+    end
+
+    context 'when the postal code is not a ZIP+4' do
+      let!(:address) { create(:address, country_alpha2: 'CA', region_iso31662: 'CA-ON', zip_code: 'K1A 0B1') }
+
+      it { expect(address.zip_code).to(eq('K1A 0B1')) }
+      it { expect(described_class.with_zip_code('K1A 0B1')).to(include(address)) }
+    end
   end
 
   describe '#blank_to_nil' do
@@ -35,7 +50,7 @@ RSpec.describe(Address) do
   end
 
   describe '#country' do
-    it { expect(address.country).to(equal(Transponder::ORM::Country.find('US'))) }
+    it { expect(address.country).to(equal(Grid::ORM::Country.find('US'))) }
   end
 
   describe '#full_address?' do
@@ -80,8 +95,18 @@ RSpec.describe(Address) do
     end
   end
 
+  describe '#postal_code?' do
+    it { expect(address.postal_code?).to(be(true)) }
+
+    context 'when the country has no postal codes' do
+      before { allow(address).to(receive(:country).and_return(Grid::ORM::Country.new(alpha2: 'HK', postal_code: false))) }
+
+      it { expect(address.postal_code?).to(be(false)) }
+    end
+  end
+
   describe '#region' do
-    it { expect(address.region).to(equal(Transponder::ORM::Region.find('US-CA'))) }
+    it { expect(address.region).to(equal(Grid::ORM::Region.find('US-CA'))) }
   end
 
   describe '#restaurant?' do
@@ -268,6 +293,50 @@ RSpec.describe(Address) do
       let(:address) { build(:address, country_alpha2: 'CA') }
 
       it { expect(address.errors[:region]).to(include("isn't within Canada")) }
+    end
+
+    context 'when the zip code does not match the country format' do
+      let(:address) { build(:address, zip_code: '9453') }
+
+      it { expect(address.errors[:zip_code]).to(be_present) }
+
+      context 'when saved before the format applied' do
+        let(:address) do
+          create(:address).tap do |address|
+            address.update_column(:zip_code, '9453') # rubocop:disable Rails/SkipsModelValidations
+            address.reload.name = 'Acme'
+          end
+        end
+
+        it { expect(address.errors[:zip_code]).to(be_empty) }
+      end
+
+      context 'when saved before the format applied and the country changes' do
+        let(:address) do
+          create(:address).tap do |address|
+            address.update_column(:zip_code, '9453') # rubocop:disable Rails/SkipsModelValidations
+            address.reload.assign_attributes(country_alpha2: 'MX', region_iso31662: nil)
+          end
+        end
+
+        it { expect(address.errors[:zip_code]).to(be_present) }
+      end
+    end
+
+    context 'when the zip code is blank' do
+      let(:address) { build(:address, zip_code: '') }
+
+      it { expect(address.errors.of_kind?(:zip_code, :blank)).to(be(true)) }
+
+      context 'when the country has no postal codes' do
+        let(:address) do
+          build(:address, zip_code: '').tap do |address|
+            allow(address).to(receive(:country).and_return(Grid::ORM::Country.new(alpha2: 'HK', postal_code: false)))
+          end
+        end
+
+        it { expect(address.errors[:zip_code]).to(be_empty) }
+      end
     end
   end
 end

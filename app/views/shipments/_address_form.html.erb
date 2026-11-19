@@ -1,22 +1,20 @@
 <%= form.fields_for address_object do |address_form| %>
   <%= address_form.text_field :ref %>
+
+  <%= address_form.select :country_alpha2,
+                          country_options(Grid::ORM::Country.order(:name), address_form.object.country_alpha2),
+                          { selected: (address_form.object.country_alpha2.blank? ? fallback_address.country_alpha2 : address_form.object.country_alpha2) },
+                          data: { action: 'address#handle', 'address-target': 'country' },
+                          class: 'form-select' %>
+
   <%= address_form.text_field :street, data: { address_target: 'field' } %>
   <%= address_form.text_field :street2 %>
-  <%= address_form.text_field :city, data: { address_target: 'field' } %>
+  <%= address_form.text_field :zip_code, data: { address_target: 'field postalCode' } %>
+  <%= address_form.text_field :city, data: { address_target: 'field city' } %>
   <%= address_form.select :region_iso31662,
                           (address_form.object.region_iso31662.blank? ? [[fallback_address.region.name, fallback_address.region.id]] : [[address_form.object.region.name, address_form.object.region_iso31662]]),
                           {},
                           data: { 'address-target': 'regions' },
-                          class: 'form-select' %>
-
-  <%= address_form.text_field :zip_code,
-                              data: { action: "keyup->address#fillCityAndStateByZipCode", address_target: 'field' },
-                              help: "City and State will be filled based from ZIP" %>
-
-  <%= address_form.select :country_alpha2,
-                          country_options(Transponder::ORM::Country.order(:name), address_form.object.country_alpha2),
-                          { selected: (address_form.object.country_alpha2.blank? ? fallback_address.country_alpha2 : address_form.object.country_alpha2) },
-                          data: { action: 'address#handle', 'address-target': 'country' },
                           class: 'form-select' %>
 
   <div class="text-warning my-4 d-none" data-address-target="validateAddressLoading"> 

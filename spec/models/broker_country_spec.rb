@@ -14,7 +14,7 @@ RSpec.describe(BrokerCountry) do
   end
 
   describe '#country' do
-    it { expect(broker_country.country).to(equal(Transponder::ORM::Country.find('CA'))) }
+    it { expect(broker_country.country).to(equal(Grid::ORM::Country.find('CA'))) }
   end
 
   describe 'validations' do

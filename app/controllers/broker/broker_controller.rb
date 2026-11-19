@@ -5,7 +5,7 @@ class Broker::BrokerController < ApplicationController
 
   def settings
     @broker_countries = BrokerCountry.all.sort_by { |broker_country| broker_country.country.name }
-    @unserviced_countries = Transponder::ORM::Country.order(:name).to_a - @broker_countries.map(&:country)
+    @unserviced_countries = Grid::ORM::Country.order(:name).to_a - @broker_countries.map(&:country)
     @settings = Setting.where(key: COMPANY_SETTING_KEYS).index_by(&:key)
   end
 

@@ -3,7 +3,7 @@ class Carrier < ApplicationRecord
     def companyable_order = where(id: BrokerCarrier.select(:carrier_id)).or(where(id: User.carrier.select(:companyable_id))).order(:name)
 
     def terminals_in(city:, state:)
-      region_iso31662s = Transponder::ORM::Region
+      region_iso31662s = Grid::ORM::Region
                          .all
                          .select { |region| [region.abbreviation, region.name].any? { |value| value.casecmp?(state.to_s) } }
                          .map(&:iso31662)
@@ -42,7 +42,7 @@ class Carrier < ApplicationRecord
   belongs_to :broker_billing_address, class_name: 'Address', optional: true
   belongs_to :check_mailing_address, class_name: 'Address', optional: true
 
-  belongs_to_transponder :transponder_carrier, class_name: 'Carrier', foreign_key: :transponder_id, optional: true
+  belongs_to_orm :transponder_carrier, class_name: 'Transponder::ORM::Carrier', foreign_key: :transponder_id, optional: true
 
   accepts_nested_attributes_for :check_mailing_address
 

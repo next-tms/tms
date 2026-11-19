@@ -6,6 +6,9 @@
         "alpha3": "CAN",
         "name": "Canada",
         "numeric": 124,
+        "postalCode": true,
+        "postalCodeFormat": "[ABCEGHJKLMNPRSTVXY]\\d[ABCEGHJ-NPRSTV-Z] ?\\d[ABCEGHJ-NPRSTV-Z]\\d",
+        "postalCodeLabel": "Postal code",
         "regions": [
           {
             "abbreviation": "BC",
@@ -24,6 +27,9 @@
         "alpha3": "MEX",
         "name": "Mexico",
         "numeric": 484,
+        "postalCode": true,
+        "postalCodeFormat": "\\d{5}",
+        "postalCodeLabel": "Postal code",
         "regions": [
           {
             "abbreviation": "AGU",
@@ -37,6 +43,9 @@
         "alpha3": "USA",
         "name": "United States of America",
         "numeric": 840,
+        "postalCode": true,
+        "postalCodeFormat": "(\\d{5})(?:[ \\-](\\d{4}))?",
+        "postalCodeLabel": "ZIP",
         "regions": [
           {
             "abbreviation": "CA",

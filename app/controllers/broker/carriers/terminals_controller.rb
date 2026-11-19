@@ -16,7 +16,7 @@ class Broker::Carriers::TerminalsController < Broker::Carriers::BaseController
     filter = query.delete(FILTER)
     return query if filter.blank?
 
-    region_iso31662s = Transponder::ORM::Region.all.select { |region| region.name.downcase.include?(filter.downcase) }.map(&:iso31662)
+    region_iso31662s = Grid::ORM::Region.all.select { |region| region.name.downcase.include?(filter.downcase) }.map(&:iso31662)
     query.merge(g: [{ m: 'or', FILTER => filter, address_region_iso31662_in: region_iso31662s }])
   end
 end

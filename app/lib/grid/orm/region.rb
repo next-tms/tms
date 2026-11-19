@@ -1,6 +1,6 @@
-module Transponder
+module Grid
   module ORM
-    class Region < Base
+    class Region < ::ORM::Base
       class << self
         # Rebuilt whenever Country.all is a different collection, so regions never lag behind countries
         def all
@@ -8,7 +8,7 @@ module Transponder
           return @all if @all && @countries.equal?(countries)
 
           @countries = countries
-          @all = Collection.new(self, countries.flat_map { |country| country.regions.to_a })
+          @all = ::ORM::Collection.new(self, countries.flat_map { |country| country.regions.to_a })
         end
 
         def primary_key = :iso31662
@@ -16,7 +16,7 @@ module Transponder
 
       attr_reader :iso31662
 
-      # Only iso31662 is required, so records that store a code Transponder no longer returns stay readable
+      # Only iso31662 is required, so records that store a code Grid no longer returns stay readable
       def initialize(iso31662:, abbreviation: nil, country: nil, name: nil)
         super()
 

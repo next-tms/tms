@@ -13,7 +13,7 @@ class CountriesController < ApplicationController
   private
 
   def set_country
-    @country = Transponder::ORM::Country.find(params[:id])
+    @country = Grid::ORM::Country.find(params[:id])
     @regions = @country.regions.order(:abbreviation)
   end
 end

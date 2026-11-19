@@ -12,7 +12,7 @@ module Mutations
 
       address = ::Address.new(attributes)
 
-      region = Transponder::ORM::Region.find_by(iso31662: address_input[:region_iso31662])
+      region = Grid::ORM::Region.find_by(iso31662: address_input[:region_iso31662])
       address.region = region
       address.country = region&.country
 

@@ -6,7 +6,7 @@ class Types::Iso31662Type < Types::BaseEnum
   class << self
     # GraphQL enum names cannot contain hyphens, and some codes (e.g. LR-X1~) are not valid names at all
     def enum_values(_context = nil)
-      Transponder::ORM::Region.all.filter_map do |region|
+      Grid::ORM::Region.all.filter_map do |region|
         name = region.iso31662.tr('-', '_')
         next unless name.match?(NAME_PATTERN)
 

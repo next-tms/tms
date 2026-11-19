@@ -16,7 +16,7 @@
   </div>
 
   <div class="col-auto">
-    <%= f.select :country_alpha2, country_options(Transponder::ORM::Country.order(:name), f.object.country_alpha2), { hide_label: true, selected: (f.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : f.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
+    <%= f.select :country_alpha2, country_options(Grid::ORM::Country.order(:name), f.object.country_alpha2), { hide_label: true, selected: (f.object.country_alpha2.blank? ? Setting.mailing_address!.country_alpha2 : f.object.country_alpha2) }, data: { action: 'address#handle', 'address-target': 'country' }, class: 'form-select' %>
   </div>
 
   <div class="col-auto">

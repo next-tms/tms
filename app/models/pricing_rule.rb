@@ -1,7 +1,7 @@
 class PricingRule < ApplicationRecord
   belongs_to :broker_carrier
 
-  belongs_to_transponder :lane, foreign_key: :lane_id
+  belongs_to_orm :lane, class_name: 'Transponder::ORM::Lane', foreign_key: :lane_id
 
   monetize :cost_per_pallet_cents, allow_nil: false
 

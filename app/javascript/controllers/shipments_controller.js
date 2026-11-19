@@ -85,6 +85,10 @@ export default class extends Controller {
         var receiverZipValue = receiverZip.value
         var receiverCountryValue = receiverCountry.value
 
+        var shipperRegionOptions = shipperRegion.innerHTML
+        shipperRegion.innerHTML = receiverRegion.innerHTML
+        receiverRegion.innerHTML = shipperRegionOptions
+
         shipperStreet.value = receiverStreetValue
         shipperStreet2.value = receiverStreet2Value
         shipperCity.value = receiverCityValue
@@ -98,5 +102,8 @@ export default class extends Controller {
         receiverRegion.value = shipperRegionValue
         receiverZip.value = shipperZipValue
         receiverCountry.value = shipperCountryValue
+
+        shipperCountry.dispatchEvent(new Event('change'))
+        receiverCountry.dispatchEvent(new Event('change'))
     }
 }
