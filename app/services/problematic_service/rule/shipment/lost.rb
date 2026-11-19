@@ -10,8 +10,6 @@ module ProblematicService
       record.lost_on.present? && !resolvable?
     end
 
-    def resolvable?
-      record.lost_on.blank? || record.canceled_at.present?
-    end
+    def resolvable? = record.lost_on.blank? || record.canceled_at.present? || record.delivered?
   end
 end
