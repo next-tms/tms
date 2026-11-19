@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.19
 
 FROM golang:1.27.4-alpine3.24 AS caddy
-ARG CADDY_VERSION=2.11.7
+ARG CADDY_VERSION=2.11.9
 
 RUN apk -U upgrade
 RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.7
@@ -11,7 +11,7 @@ ENV XCADDY_GO_BUILD_FLAGS='-trimpath -ldflags "-s -w -extldflags -static" -tags 
 RUN /go/bin/xcaddy build v$CADDY_VERSION \
     --with github.com/corazawaf/coraza-caddy/v2@v2.6.2 \
     --with github.com/mholt/caddy-ratelimit@5625512f24f6 \
-    --with github.com/ueffel/caddy-brotli
+    --with github.com/ueffel/caddy-brotli@v1.7.0
 
 FROM ruby:4.0.10-alpine3.24 AS base
 RUN apk add --no-cache -U ca-certificates gcompat jemalloc libpq-dev libxml2 libxslt shared-mime-info tzdata && \
