@@ -51,6 +51,11 @@
 		format json
 	}
 
+	handle_errors {
+		header -Server
+		respond "" {err.status_code}
+	}
+
 	handle {
 		coraza_waf {
 			load_owasp_crs
@@ -58,7 +63,9 @@
 				Include @coraza.conf-recommended
 				Include @crs-setup.conf.example
 				Include @owasp_crs/*.conf
-				SecRuleEngine DetectionOnly
+				SecAuditLog /dev/stdout
+				SecAuditLogFormat JSON
+				SecRuleEngine On
 			`
 		}
 
