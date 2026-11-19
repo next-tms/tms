@@ -30,7 +30,7 @@ require_relative 'concurrency'
 threads_count = Concurrency.max_threads
 threads threads_count, threads_count
 
-workers Concurrency.web_workers
+workers Concurrency.web_workers if Concurrency.web_workers > 1
 
 if ENV['PUMA_SOCKET']
   bind "unix://#{ENV.fetch('PUMA_SOCKET')}"
