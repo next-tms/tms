@@ -248,7 +248,7 @@ GEM
       faraday (>= 2.0.0)
       faraday-multipart (>= 1.0.4)
       launchy (>= 2.2)
-    graphql (2.6.15)
+    graphql (2.6.16)
       base64
       fiber-storage
       logger
