@@ -38,4 +38,15 @@ RSpec.describe(AccountingConnectionsController) do
       it { expect(FetchBrokerCarrierAccountingVendorIdsJob).not_to(have_received(:perform_later)) }
     end
   end
+
+  describe 'GET #connect' do
+    before do
+      allow(ENV).to(receive(:fetch).and_call_original)
+      allow(ENV).to(receive(:fetch).with('FLIGHT_APP_ID').and_return('app'))
+      get(:connect, params: { kind: 'quickbooks' })
+    end
+
+    it { is_expected.to(redirect_to(%r{\Ahttps://appcenter\.intuit\.com/connect/oauth2\?client_id=})) }
+    it { expect(response.headers['Referrer-Policy']).to(eq('no-referrer')) }
+  end
 end

@@ -20,6 +20,7 @@ class AccountingConnectionsController < ApplicationController
 
     url = integration.service.authorize_url(redirect_uri:, state:)
 
+    response.set_header('Referrer-Policy', 'no-referrer')
     redirect_to(url, allow_other_host: true)
   end
 
