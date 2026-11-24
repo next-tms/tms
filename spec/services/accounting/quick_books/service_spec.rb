@@ -61,6 +61,21 @@ RSpec.describe Accounting::QuickBooks::Service do
       it { expect { result }.to change { integration.reload.credentials['refresh_token'] }.to('other-refresh') }
     end
 
+    context 'when the caller rolls back its transaction' do
+      self.use_transactional_tests = false
+
+      before do
+        Integration.transaction do
+          result
+          raise ActiveRecord::Rollback
+        end
+      end
+
+      after { Integration.delete_all }
+
+      it { expect(integration.reload.credentials['refresh_token']).to eq('new-refresh') }
+    end
+
     context 'when every attempt fails' do
       let(:result) { service.perform_authenticated_request { raise OAuth2::Error, { 'error' => 'invalid_token' } } }
 

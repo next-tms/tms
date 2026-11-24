@@ -72,13 +72,19 @@ module Accounting
       def refresh!
         refresh_token = credentials[:refresh_token]
 
-        integration.with_lock do
-          rotate_tokens! if connected? && credentials[:refresh_token] == refresh_token
-        rescue OAuth2::Error => e
-          raise unless e.code == 'invalid_grant'
+        Thread.new do
+          Thread.current.report_on_exception = false
 
-          integration.update!(credentials: credentials.merge(refresh_token_revoked_at: Time.current))
-        end
+          Integration.connection_pool.with_connection do
+            integration.with_lock do
+              rotate_tokens! if connected? && credentials[:refresh_token] == refresh_token
+            rescue OAuth2::Error => e
+              raise unless e.code == 'invalid_grant'
+
+              integration.update!(credentials: credentials.merge(refresh_token_revoked_at: Time.current))
+            end
+          end
+        end.value
 
         raise Disconnected unless connected?
       end

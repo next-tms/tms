@@ -3,7 +3,7 @@ class Bank < ApplicationRecord
 
   accounting_syncs :account, match: -> { { name: to_accounting_account.name } }
 
-  after_commit :push_to_accounting
+  after_commit :push_to_accounting, unless: :saved_change_to_accounting_account_id?
 
   enum :kind, { checking: 'checking', credit_card: 'credit_card' }
 

@@ -19,8 +19,10 @@ module AccountingSyncable
         found = klass.find_by(**instance_exec(&match))
         return if found.blank?
 
-        update_columns(id_column => found.id) # rubocop:disable Rails/SkipsModelValidations
         memo[resource] = found
+        self[id_column] = found.id
+        save! if persisted?
+        found
       end
 
       define_method(:"create_accounting_#{resource}") do
@@ -33,7 +35,7 @@ module AccountingSyncable
         result = Accounting.record_class(resource).create(payload.attributes)
         return memo[resource] = nil if result.blank?
 
-        update_columns(**{ id_column => result.id }, **columns ? instance_exec(&columns) : {}) # rubocop:disable Rails/SkipsModelValidations
+        update!(id_column => result.id, **columns ? instance_exec(&columns) : {})
         memo[resource] = result
       end
 

@@ -72,6 +72,19 @@ RSpec.describe(PaymentTransaction) do
     end
   end
 
+  describe 'callbacks' do
+    before do
+      create(:integration)
+      payment_transaction.save!
+    end
+
+    it { expect { payment_transaction.update!(notes: 'Other') }.to have_enqueued_job(PushPaymentTransactionToAccountingJob) }
+
+    it do
+      expect { payment_transaction.update!(accounting_bill_id: '123') }.not_to have_enqueued_job(PushPaymentTransactionToAccountingJob)
+    end
+  end
+
   describe 'validations' do
     let(:carrier) { payment_transaction.broker_carrier.carrier }
     let(:other_account) { create(:broker_carrier, broker_customer: create(:broker_customer), carrier:) }

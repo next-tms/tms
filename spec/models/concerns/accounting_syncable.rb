@@ -19,10 +19,17 @@ RSpec.shared_examples('accounting_syncable') do |resource:, record:|
   end
 
   describe "#accounting_#{resource} adopting a match" do
-    before { allow(record_class).to receive(:find_by).and_return(remote) }
+    before do
+      allow(record_class).to receive(:find_by).and_return(remote)
+      host.public_send(:"accounting_#{resource}")
+    end
 
-    it 'stores the matched external id' do
-      expect { host.public_send(:"accounting_#{resource}") }.to change { host.reload.public_send(id_column) }.from(nil)
+    it { expect(host.public_send(id_column).to_s).to eq('123') }
+
+    context 'when the host is unsaved' do
+      let(:host) { build(described_class.name.underscore.to_sym) }
+
+      it { expect(host.public_send(id_column).to_s).to eq('123') }
     end
   end
 end
