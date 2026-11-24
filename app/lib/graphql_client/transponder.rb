@@ -17,6 +17,8 @@ module GraphQLClient
     end
 
     class HTTPAdapter < GraphQL::Client::HTTP
+      TIMEOUT = { connect_timeout: 5, total_request_timeout: 150 }.freeze
+
       def execute(document:, context: {}, operation_name: nil, variables: {}) # rubocop:disable Lint/UnusedMethodArgument
         json = { query: document.to_query_string }
         json[:operationName] = operation_name if operation_name.present?
@@ -46,7 +48,7 @@ module GraphQLClient
         { fallback_protocol: 'h2' }
       end
 
-      def http_client = @http_client ||= CompressedHTTPClient.new(headers: auth_headers, **h2c_options)
+      def http_client = @http_client ||= CompressedHTTPClient.new(headers: auth_headers, timeout: TIMEOUT, **h2c_options)
     end
 
     SCHEMA_PATH = Rails.root.join('schemas/transponder.json').to_s

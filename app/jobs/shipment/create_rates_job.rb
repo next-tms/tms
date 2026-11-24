@@ -16,16 +16,27 @@ class Shipment::CreateRatesJob < ApplicationJob
                         shipment.valid_broker_carriers_for_quotation(user_type)
                       end
 
-    # @note Using RANDOM() order so that one slow request doesn't always slow down following requests
-    broker_carriers.order(Arel.sql('RANDOM()')).each do |broker_carrier|
-      rates = Shipment::RatesService.call(broker_carrier, shipment, declared_freight_classes:, save: true)
+    pool = Concurrent::FixedThreadPool.new(CONCURRENCY)
 
-      partial = ApplicationController.render(partial: 'rates_service/rates', locals: { shipment:, rates:, user_type: })
-      data = { html: partial, declared_freight_classes:, cost: rates.map(&:cost_cents).max }
+    futures = broker_carriers.map do |broker_carrier|
+      Concurrent::Promises.future_on(pool) do
+        Rails.application.executor.wrap do
+          rates = Shipment::RatesService.call(broker_carrier, shipment, declared_freight_classes:, save: true)
 
-      ActionCable.server.broadcast("rates_channel_#{shipment.id}", data)
+          partial = ApplicationController.render(partial: 'rates_service/rates', locals: { shipment:, rates:, user_type: })
+          data = { html: partial, declared_freight_classes:, cost: rates.map(&:cost_cents).max }
+
+          ActionCable.server.broadcast("rates_channel_#{shipment.id}", data)
+        end
+      end
     end
 
+    futures.each(&:value!)
+
     ActionCable.server.broadcast("rates_channel_#{shipment.id}", { finished: true })
+  ensure
+    pool&.shutdown
   end
+
+  CONCURRENCY = 8
 end
