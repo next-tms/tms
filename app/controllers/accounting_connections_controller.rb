@@ -2,23 +2,17 @@ class AccountingConnectionsController < ApplicationController
   PROVIDERS = { 'quickbooks' => 'intuit', 'wave' => 'wave' }.freeze
 
   def callback
-    raise ActionController::RoutingError, 'Invalid state' unless valid_nonce?
-
-    required_params.each { |key| raise ActionController::RoutingError, 'Missing required parameter(s)' if params[key].blank? }
+    unless valid_nonce? && required_params.all? { |key| params[key].present? }
+      redirect_to(%i[broker settings company accounting], flash: { error: t('.failure') })
+      return
+    end
 
     integration.service.connect!(code: params[:code], realm_id: params[:realmId], redirect_uri:)
 
     FetchBrokerCustomerAccountingCustomerIdsJob.perform_later
     FetchBrokerCarrierAccountingVendorIdsJob.perform_later
 
-    flash[:success] = t('.success')
-
-    if Rails.env.development?
-      redirect_to(root_path)
-      return
-    end
-
-    redirect_to(homepage, allow_other_host: true)
+    redirect_to(%i[broker settings company accounting], flash: { success: t('.success') })
   end
 
   def connect

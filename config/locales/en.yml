@@ -2,6 +2,7 @@ en:
   app_name: "Liftoff"
   accounting_connections:
     callback:
+      failure: Could not connect. Please try again.
       success: Connected
   accounting_mailer:
     unknown_customers:

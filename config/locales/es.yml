@@ -1,6 +1,7 @@
 es:
   accounting_connections:
     callback:
+      failure: No se pudo conectar. Inténtalo de nuevo.
       success: Conectado
   accounting_mailer:
     unknown_customers:

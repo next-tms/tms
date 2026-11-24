@@ -1,6 +1,7 @@
 tl:
   accounting_connections:
     callback:
+      failure: Hindi nakakonekta. Pakisubukang muli.
       success: Nakakonekta
   accounting_mailer:
     unknown_customers:

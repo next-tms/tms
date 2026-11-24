@@ -15,6 +15,6 @@
   </div>
 
   <% AccountingConnectionsController::PROVIDERS.each_key do |kind| %>
-    <%= link_to "Connect #{kind.titleize}", send("connect_#{kind}_accounting_path"), class: 'btn btn-primary' %>
+    <%= link_to "Connect #{kind.titleize}", send("connect_#{kind}_accounting_path"), class: 'btn btn-primary', data: { turbo: false } %>
   <% end %>
 <% end %>
