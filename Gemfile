@@ -112,7 +112,7 @@ gem 'action_policy'
 gem 'action_policy-graphql'
 gem 'bcrypt', '~> 3.1' # explicitly for GraphQL
 gem 'graphql', '~> 2.6'
-gem 'mcp', '~> 1.10'
+gem 'mcp', '~> 1.11'
 
 gem 'StreetAddress',
     git: 'https://github.com/Civitium/street-address',
