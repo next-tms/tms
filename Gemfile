@@ -89,7 +89,7 @@ end
 gem 'bootstrap_form', '~> 5.6.1'
 gem 'dartsass-rails'
 
-gem 'aws-sdk-s3', '~> 1.242', group: :production
+gem 'aws-sdk-s3', '~> 1.245', group: :production
 
 gem 'devise', '~> 5.0'
 gem 'devise_invitable', '~> 3.1'
