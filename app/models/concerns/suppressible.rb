@@ -2,7 +2,7 @@ module Suppressible
   extend ActiveSupport::Concern
 
   included do
-    validate :suppressible!
+    validate :suppressible!, on: :create
 
     def suppressed_by_problematic
       raise NotImplementedError

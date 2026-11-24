@@ -138,4 +138,31 @@ RSpec.describe(Receivable) do
       expect(Sentry).to(have_received(:capture_exception).with(error))
     end
   end
+
+  describe 'validations' do
+    subject { record }
+
+    let(:broker_customer) do
+      create(:broker_customer, requires_carrier_bol_on_receivables: false, requires_carrier_pod_on_receivables: false)
+    end
+    let(:shipment) { create(:shipment, broker_customer:) }
+
+    before do
+      record
+      broker_customer.update!(requires_carrier_bol_on_receivables: true)
+      create(:problem, problematic_rule_code: 'missing_carrier_bol', resolvable: shipment)
+    end
+
+    context 'when the receivable exists' do
+      let(:record) { create(:receivable, shipment:) }
+
+      it { is_expected.to(be_valid) }
+    end
+
+    context 'when the receivable is new' do
+      let(:record) { build(:receivable, shipment:) }
+
+      it { is_expected.not_to(be_valid) }
+    end
+  end
 end
