@@ -372,7 +372,7 @@ GEM
       snaky_hash (~> 2.0, >= 2.0.9)
       version_gem (~> 1.1, >= 1.1.17)
     orm_adapter (0.5.0)
-    pagy (43.8.2)
+    pagy (43.8.5)
       json
       uri
       yaml
