@@ -98,7 +98,7 @@ gem 'devise-pwned_password', '~> 0.2'
 gem 'measured', '~> 3.2.0'
 
 gem 'sentry-rails', '~> 7.2'
-gem 'sentry-ruby', '~> 7.2'
+gem 'sentry-ruby', '~> 7.3'
 
 gem 'barby'
 gem 'business_time'
