@@ -15,7 +15,7 @@ module TransponderService
         end
 
         def pickup_to
-          @pickup_to ||= (shipment.pickup_to.presence || default_pickup_to).iso8601
+          @pickup_to ||= (shipment.pickup_by.presence || default_pickup_to).iso8601
         end
 
         private

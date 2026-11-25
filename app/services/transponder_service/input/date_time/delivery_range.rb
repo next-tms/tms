@@ -13,7 +13,7 @@ module TransponderService
         def delivery_from
           @delivery_from ||= begin
             time = shipment.delivery_from.presence
-            time = nil if time < now
+            time = nil if time&.before?(now)
 
             time&.iso8601
           end
@@ -22,7 +22,7 @@ module TransponderService
         def delivery_to
           @delivery_to ||= begin
             time = shipment.delivery_by.presence
-            time = nil if time < now
+            time = nil if time&.before?(now)
 
             time&.iso8601
           end

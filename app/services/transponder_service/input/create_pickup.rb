@@ -52,7 +52,11 @@ module TransponderService
       end
 
       def shipment
-        Shipment.call(object.shipment, declared_freight_classes: object.rate.declared_freight_classes)
+        Shipment.call(
+          object.shipment,
+          declared_freight_classes: object.rate.declared_freight_classes,
+          estimate_reference: object.rate.reference
+        )
       end
     end
   end

@@ -1,10 +1,11 @@
 module TransponderService
   module Input
     class Shipment < Base
-      attr_reader :declared_freight_classes
+      attr_reader :declared_freight_classes, :estimate_reference
 
-      def initialize(object, declared_freight_classes:)
+      def initialize(object, declared_freight_classes:, estimate_reference: nil)
         @declared_freight_classes = declared_freight_classes
+        @estimate_reference = estimate_reference.presence
 
         super
       end
@@ -14,6 +15,7 @@ module TransponderService
           accessorials:,
           declared_value:,
           destination:,
+          estimate_reference:,
           order_number: object.shipper_reference,
           origin:,
           packages:,
