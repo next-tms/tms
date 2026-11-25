@@ -100,6 +100,15 @@ test:
     schema_dump: cache_schema.rb
     username: <%= ENV["CI"] ? "postgres" : ENV.fetch("USER", "postgres") %>
 
+  queue:
+    <<: *default
+    database: liftoff_queue_test<%= suffix %>
+    host: <%= ENV.fetch("PGHOST", "localhost") %>
+    migrations_paths: db/queue_migrate
+    password: <%= ENV["CI"] ? "postgres" : "" %>
+    schema_dump: queue_schema.rb
+    username: <%= ENV["CI"] ? "postgres" : ENV.fetch("USER", "postgres") %>
+
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
 # ever seen by anyone, they now have access to your database.

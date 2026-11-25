@@ -54,6 +54,7 @@ Rails.application.configure do
   config.action_controller.action_on_unpermitted_parameters = :raise
 
   config.active_job.queue_adapter = :test
+  config.solid_queue.connects_to = { database: { writing: :queue } }
 
   config.active_record.encryption.primary_key = 'test'
   config.active_record.encryption.deterministic_key = 'test'
