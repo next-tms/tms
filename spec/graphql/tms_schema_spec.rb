@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe(LiftoffSchema) do
+RSpec.describe(TMSSchema) do
   describe '.did_you_mean' do
     subject { described_class.did_you_mean }
 

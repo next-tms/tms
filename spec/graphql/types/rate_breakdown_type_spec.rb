@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Types::RateBreakdownType) do
-  subject(:rate_breakdown) { described_class.authorized_new(line, GraphQL::Query.new(LiftoffSchema, nil, context: {}).context) }
+  subject(:rate_breakdown) { described_class.authorized_new(line, GraphQL::Query.new(TMSSchema, nil, context: {}).context) }
 
   let(:line) { { 'blame' => 'carrier', 'cost' => { 'currency' => 'USD', 'fractional' => 12_345 }, 'description' => 'Fuel surcharge' } }
 

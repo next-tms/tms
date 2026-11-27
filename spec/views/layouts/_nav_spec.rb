@@ -4,7 +4,7 @@ RSpec.describe('layouts/_nav') do
   subject { rendered }
 
   before do
-    create(:setting, key: 'name', value: 'Liftoff')
+    create(:setting, key: 'name', value: 'Acme Freight')
     create(:setting, key: 'website_homepage', value: 'https://example.com')
   end
 
@@ -16,7 +16,7 @@ RSpec.describe('layouts/_nav') do
       render
     end
 
-    it { is_expected.to(have_link('Liftoff', href: root_path)) }
+    it { is_expected.to(have_link('Acme Freight', href: root_path)) }
   end
 
   context 'when signed out' do
@@ -25,6 +25,6 @@ RSpec.describe('layouts/_nav') do
       render
     end
 
-    it { is_expected.to(have_link('Liftoff', href: 'https://example.com')) }
+    it { is_expected.to(have_link('Acme Freight', href: 'https://example.com')) }
   end
 end

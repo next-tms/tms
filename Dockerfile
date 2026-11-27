@@ -86,9 +86,9 @@ ENV PORT=3000
 ENV PUMA_SOCKET=/app/tmp/sockets/puma.sock
 ENV RACK_ENV=production
 
-RUN addgroup -g 1000 liftoff && adduser -u 1000 -G liftoff -s /bin/sh -D liftoff
-RUN chown -R liftoff:liftoff /app
-USER liftoff
+RUN addgroup -g 1000 tms && adduser -u 1000 -G tms -s /bin/sh -D tms
+RUN chown -R tms:tms /app
+USER tms
 
 EXPOSE 3000
 CMD ["./web.sh"]

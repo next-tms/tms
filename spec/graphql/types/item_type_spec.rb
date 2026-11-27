@@ -23,7 +23,7 @@ RSpec.describe(Types::ItemType) do
   end
   let(:packaging) { create(:packaging, freight_kit_type: 'pallet') }
   let(:query) { "query($id: ID!) { shipment(id: $id) { items { #{fields} } } }" }
-  let(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables: { id: shipment.load_id }).to_h }
+  let(:result) { TMSSchema.execute(query, context: { authorizable: }, variables: { id: shipment.load_id }).to_h }
   let(:shipment) { create(:shipment) }
 
   it { is_expected.to(eq([expected])) }

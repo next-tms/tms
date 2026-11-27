@@ -6,18 +6,18 @@ services:
       - path: ./.docker-compose.env
         required: false
     environment:
-      AWS_ACCESS_KEY_ID: liftoff
+      AWS_ACCESS_KEY_ID: tms
       AWS_ENDPOINT_URL_S3: http://s3.localhost:9000
       AWS_REGION: us-east-1
-      AWS_S3_BUCKET: liftoff
-      AWS_SECRET_ACCESS_KEY: liftoff-secret
-      CABLE_DATABASE_URL: postgres://liftoff:liftoff@db:5433/liftoff_cable
-      CACHE_DATABASE_URL: postgres://liftoff:liftoff@db:5433/liftoff_cache
-      DATABASE_URL: postgres://liftoff:liftoff@db:5433/liftoff
+      AWS_S3_BUCKET: tms
+      AWS_SECRET_ACCESS_KEY: tms-secret
+      CABLE_DATABASE_URL: postgres://tms:tms@db:5433/tms_cable
+      CACHE_DATABASE_URL: postgres://tms:tms@db:5433/tms_cache
+      DATABASE_URL: postgres://tms:tms@db:5433/tms
       DOMAIN: localhost:3000
       FORCE_SSL: false
       GOTENBERG_URL: http://gotenberg:3000
-      QUEUE_DATABASE_URL: postgres://liftoff:liftoff@db:5433/liftoff_queue
+      QUEUE_DATABASE_URL: postgres://tms:tms@db:5433/tms_queue
       RACK_ENV: production
       RAILS_ENV: production
       TRANSPONDER_URL: http://transponder:2300/graphql
@@ -49,17 +49,17 @@ services:
       - -c
       - |
         aws configure set default.s3.addressing_style path
-        aws s3api head-bucket --bucket liftoff 2>/dev/null || aws s3api create-bucket --bucket liftoff
-        aws s3api put-bucket-policy --bucket liftoff --policy '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::liftoff/*"}]}'
+        aws s3api head-bucket --bucket tms 2>/dev/null || aws s3api create-bucket --bucket tms
+        aws s3api put-bucket-policy --bucket tms --policy '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::tms/*"}]}'
     depends_on:
       s3:
         condition: service_healthy
     entrypoint: []
     environment:
-      AWS_ACCESS_KEY_ID: liftoff
+      AWS_ACCESS_KEY_ID: tms
       AWS_ENDPOINT_URL: http://s3:9000
       AWS_REGION: us-east-1
-      AWS_SECRET_ACCESS_KEY: liftoff-secret
+      AWS_SECRET_ACCESS_KEY: tms-secret
     image: amazon/aws-cli
   db:
     command:
@@ -67,21 +67,21 @@ services:
       - -c
       - |
         docker-entrypoint.sh postgres &
-        until pg_isready -h 127.0.0.1 -U liftoff; do sleep 1; done
-        for database in liftoff liftoff_cable liftoff_cache liftoff_queue; do
-          if ! psql -h 127.0.0.1 -U liftoff -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname = '$$database'" | grep -q 1; then
+        until pg_isready -h 127.0.0.1 -U tms; do sleep 1; done
+        for database in tms tms_cable tms_cache tms_queue; do
+          if ! psql -h 127.0.0.1 -U tms -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname = '$$database'" | grep -q 1; then
             echo "Creating database $$database"
-            createdb -h 127.0.0.1 -U liftoff "$$database"
+            createdb -h 127.0.0.1 -U tms "$$database"
           fi
         done
         wait
     environment:
-      PGPASSWORD: liftoff
+      PGPASSWORD: tms
       PGPORT: 5433
-      POSTGRES_PASSWORD: liftoff
-      POSTGRES_USER: liftoff
+      POSTGRES_PASSWORD: tms
+      POSTGRES_USER: tms
     healthcheck:
-      test: ["CMD-SHELL", "psql -h 127.0.0.1 -U liftoff -d liftoff_queue -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "psql -h 127.0.0.1 -U tms -d tms_queue -c 'SELECT 1'"]
       interval: 2s
       timeout: 2s
       retries: 10
@@ -93,8 +93,8 @@ services:
     image: gotenberg/gotenberg:8.40.0
   s3:
     environment:
-      RUSTFS_ACCESS_KEY: liftoff
-      RUSTFS_SECRET_KEY: liftoff-secret
+      RUSTFS_ACCESS_KEY: tms
+      RUSTFS_SECRET_KEY: tms-secret
       RUSTFS_SERVER_DOMAINS: s3.localhost:9000
       RUSTFS_VOLUMES: /data
     healthcheck:
@@ -106,7 +106,7 @@ services:
     networks:
       default:
         aliases:
-          - liftoff.s3.localhost
+          - tms.s3.localhost
           - s3.localhost
     ports:
       - "127.0.0.1:9000:9000"

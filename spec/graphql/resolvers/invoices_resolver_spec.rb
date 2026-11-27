@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Resolvers::InvoicesResolver) do
-  subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables:).to_h }
+  subject(:result) { TMSSchema.execute(query, context: { authorizable: }, variables:).to_h }
 
   let(:authorizable) { create(:customer_user, companyable: receivables.first.shipment.broker_customer) }
   let(:items) { result.dig('data', 'invoices', 'items') }
@@ -55,6 +55,6 @@ RSpec.describe(Resolvers::InvoicesResolver) do
   end
 
   describe 'filter type' do
-    it { expect(GraphQL::Query.new(LiftoffSchema, context: { authorizable: }).types.type('InvoiceFilter')).to(be(Types::InvoiceFilterType)) }
+    it { expect(GraphQL::Query.new(TMSSchema, context: { authorizable: }).types.type('InvoiceFilter')).to(be(Types::InvoiceFilterType)) }
   end
 end

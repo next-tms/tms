@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Types::RateType) do
-  subject(:rate_type) { described_class.authorized_new(build(:rate, breakdown:), GraphQL::Query.new(LiftoffSchema, nil, context: {}).context) }
+  subject(:rate_type) { described_class.authorized_new(build(:rate, breakdown:), GraphQL::Query.new(TMSSchema, nil, context: {}).context) }
 
   let(:breakdown) { [{ 'cost' => { 'fractional' => 100 }, 'description' => 'Linehaul' }] }
 

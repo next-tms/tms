@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Types::ShipmentType) do
-  subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }).to_h }
+  subject(:result) { TMSSchema.execute(query, context: { authorizable: }).to_h }
 
   let(:authorizable) { create(:broker_user).tap { |broker_user| broker_user.add_role(:dispatch) } }
   let(:broker_carrier) { create(:broker_carrier) }

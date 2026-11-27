@@ -1,5 +1,5 @@
 en:
-  app_name: "Liftoff"
+  app_name: "TMS"
   accounting_connections:
     callback:
       failure: Could not connect. Please try again.

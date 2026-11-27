@@ -6,7 +6,7 @@ RSpec.describe(Types::TaskType) do
   let(:authorizable) { create(:root_broker_user) }
   let(:problem) { create(:problem, resolved_at: Time.current, resolved_by: authorizable) }
   let(:query) { 'query($id: ID!) { task(id: $id) { id resolvedBy { id } shipment { loadId } } }' }
-  let(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables: { id: problem.id }).to_h }
+  let(:result) { TMSSchema.execute(query, context: { authorizable: }, variables: { id: problem.id }).to_h }
 
   describe '.policy_class' do
     it { expect(described_class.policy_class).to(eq(ProblemPolicy)) }

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe(Tools::GraphQLSchema) do
   let(:authorizable) { create(:root_broker_user) }
   let(:profile) { described_class.profile_for(authorizable:) }
-  let(:printer) { GraphQL::Schema::Printer.new(LiftoffSchema, context: { authorizable: }) }
+  let(:printer) { GraphQL::Schema::Printer.new(TMSSchema, context: { authorizable: }) }
 
   describe '.call' do
     subject(:tool_response) { described_class.call(server_context: { authorizable: }, type_name:) }

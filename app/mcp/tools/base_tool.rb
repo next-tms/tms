@@ -19,13 +19,13 @@ module Tools
       end
 
       def execute(query, context:, variables: {}, operation_name: nil)
-        result = LiftoffSchema.execute(query, context:, operation_name:, variables:).to_h
+        result = TMSSchema.execute(query, context:, operation_name:, variables:).to_h
 
         MCP::Tool::Response.new([{ text: result.to_json, type: 'text' }], error: result.key?('errors'))
       end
 
       def operation_type = 'query'
-      def profile_for(context) = GraphQL::Query.new(LiftoffSchema, nil, context:).types
+      def profile_for(context) = GraphQL::Query.new(TMSSchema, nil, context:).types
       def root_type = Types::QueryType
 
       def root_field(name)

@@ -23,7 +23,7 @@ RSpec.describe(Types::CustomerType) do
     GRAPHQL
   end
 
-  let(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables: { id: broker_customer.id }).to_h }
+  let(:result) { TMSSchema.execute(query, context: { authorizable: }, variables: { id: broker_customer.id }).to_h }
 
   let!(:shipment) { create(:shipment, broker_carrier:, broker_customer:, shipper_address: create(:address, name: 'Acme')) }
 

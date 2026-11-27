@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Resolvers::CarrierAccountsResolver) do
-  subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables: { id: customer.id }).to_h }
+  subject(:result) { TMSSchema.execute(query, context: { authorizable: }, variables: { id: customer.id }).to_h }
 
   let(:authorizable) { create(:broker_user) }
   let(:customer) { create(:broker_customer) }

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Resolvers::CarriersResolver) do
-  subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }).to_h }
+  subject(:result) { TMSSchema.execute(query, context: { authorizable: }).to_h }
 
   let(:authorizable) { create(:broker_user) }
   let(:ids) { result.dig('data', 'carriers', 'items').pluck('id') }

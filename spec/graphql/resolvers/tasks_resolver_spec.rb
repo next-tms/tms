@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Resolvers::TasksResolver) do
-  subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables:).to_h }
+  subject(:result) { TMSSchema.execute(query, context: { authorizable: }, variables:).to_h }
 
   let(:authorizable) { create(:broker_user).tap { |broker_user| broker_user.add_role(:dispatch) } }
   let(:items) { result.dig('data', 'tasks', 'items') }
@@ -51,6 +51,6 @@ RSpec.describe(Resolvers::TasksResolver) do
   end
 
   describe 'filter type' do
-    it { expect(GraphQL::Query.new(LiftoffSchema, context: { authorizable: }).types.type('TaskFilter')).to(be(Types::TaskFilterType)) }
+    it { expect(GraphQL::Query.new(TMSSchema, context: { authorizable: }).types.type('TaskFilter')).to(be(Types::TaskFilterType)) }
   end
 end

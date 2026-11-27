@@ -8,7 +8,7 @@ RSpec.describe(Types::CarrierAccountType) do
   let(:errors) { result['errors'].pluck('message') }
   let(:fields) { 'carrier { id } customer { id } shipments { items { id } totalItems }' }
   let(:query) { "query($id: ID!) { carrier(id: $id) { accounts { items { #{fields} } } } }" }
-  let(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables: { id: broker_carrier.carrier_id }).to_h }
+  let(:result) { TMSSchema.execute(query, context: { authorizable: }, variables: { id: broker_carrier.carrier_id }).to_h }
   let!(:shipment) { create(:shipment, broker_carrier:) }
 
   before { create(:shipment, broker_carrier: create(:broker_carrier)) }

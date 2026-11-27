@@ -1,4 +1,4 @@
-class LiftoffSchema < GraphQL::Schema
+class TMSSchema < GraphQL::Schema
   class << self
     # Union and Interface Resolution
     # TODO: Implement this method to return the correct GraphQL object type for `obj`

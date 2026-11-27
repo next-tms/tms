@@ -11,7 +11,7 @@ class GraphQLController < ActionController::API
     operation_name = params[:operationName]
     context = { authorizable:, session: }
     limits = introspection?(query, operation_name:) ? INTROSPECTION_LIMITS : {}
-    @result = LiftoffSchema.execute(query, variables:, context:, operation_name:, **limits)
+    @result = TMSSchema.execute(query, variables:, context:, operation_name:, **limits)
   rescue StandardError => e
     raise e unless Rails.env.development?
 
@@ -28,7 +28,7 @@ class GraphQLController < ActionController::API
   end
 
   def introspection?(query, operation_name:)
-    operation = GraphQL::Query.new(LiftoffSchema, query, operation_name:).selected_operation
+    operation = GraphQL::Query.new(TMSSchema, query, operation_name:).selected_operation
 
     operation.present? && operation.selections.all? do |selection|
       selection.is_a?(GraphQL::Language::Nodes::Field) && selection.name.start_with?('__')

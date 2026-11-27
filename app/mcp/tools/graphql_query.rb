@@ -20,7 +20,7 @@ module Tools
       end
 
       def read_only?(query, operation_name:)
-        [nil, 'query'].include?(GraphQL::Query.new(LiftoffSchema, query, operation_name:).selected_operation&.operation_type)
+        [nil, 'query'].include?(GraphQL::Query.new(TMSSchema, query, operation_name:).selected_operation&.operation_type)
       end
     end
 

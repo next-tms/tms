@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 
 Dotenv::Rails.load if ['development', 'test'].include?(ENV['RAILS_ENV'])
 
-module Liftoff
+module TMS
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1

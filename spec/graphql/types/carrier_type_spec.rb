@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Types::CarrierType) do
-  subject(:data) { LiftoffSchema.execute(query, context:, variables: { id: carrier.id }).to_h.dig('data', 'carrier') }
+  subject(:data) { TMSSchema.execute(query, context:, variables: { id: carrier.id }).to_h.dig('data', 'carrier') }
 
   let!(:broker_carrier) { create(:broker_carrier, carrier:) }
   let(:carrier) { create(:carrier, legal_name: 'Acme Freight LLC', name: 'Acme') }

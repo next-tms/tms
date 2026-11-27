@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Mutations::QuoteCreate) do
-  subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables:).to_h }
+  subject(:result) { TMSSchema.execute(query, context: { authorizable: }, variables:).to_h }
 
   let(:authorizable) { create(:customer_user, companyable: broker_customer) }
   let(:accessorial) { create(:accessorial, broker_customer:, transponder_code: 'liftgate_delivery') }

@@ -24,7 +24,7 @@ RSpec.describe(Broker::ShipmentsController) do
 
   describe 'GET #history' do
     let!(:item) { create(:item, shipment:) }
-    let!(:older_setting) { create(:setting, key: 'name', updated_at: Time.utc(2025, 1, 1), value: 'Liftoff') }
+    let!(:older_setting) { create(:setting, key: 'name', updated_at: Time.utc(2025, 1, 1), value: 'Acme Freight') }
     let!(:setting) { create(:setting, key: 'time_zone_name', updated_at: Time.utc(2026, 1, 1, 0, 0, 0.1), value: 'America/Los_Angeles') }
 
     before { get(:history, params: { load_id: shipment.load_id }) }

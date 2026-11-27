@@ -30,17 +30,17 @@ default: &default
 development:
   primary:
     <<: *default
-    database: liftoff_development<%= suffix %>
+    database: tms_development<%= suffix %>
 
   cable:
     <<: *default
-    database: liftoff_cable_development<%= suffix %>
+    database: tms_cable_development<%= suffix %>
     migrations_paths: db/cable_migrate
     schema_dump: cable_schema.rb
 
   cache:
     <<: *default
-    database: liftoff_cache_development<%= suffix %>
+    database: tms_cache_development<%= suffix %>
     migrations_paths: db/cache_migrate
     schema_dump: cache_schema.rb
 
@@ -48,7 +48,7 @@ development:
   # To create additional roles in PostgreSQL see `$ createuser --help`.
   # When left blank, PostgreSQL will use the default role. This is
   # the same name as the operating system user running Rails.
-  #username: liftoff
+  #username: tms
 
   # The password associated with the PostgreSQL role (username).
   #password:
@@ -77,14 +77,14 @@ development:
 test:
   primary:
     <<: *default
-    database: liftoff_test<%= suffix %>
+    database: tms_test<%= suffix %>
     host: <%= ENV.fetch("PGHOST", "localhost") %>
     password: <%= ENV["CI"] ? "postgres" : "" %>
     username: <%= ENV["CI"] ? "postgres" : ENV.fetch("USER", "postgres") %>
 
   cable:
     <<: *default
-    database: liftoff_cable_test<%= suffix %>
+    database: tms_cable_test<%= suffix %>
     host: <%= ENV.fetch("PGHOST", "localhost") %>
     migrations_paths: db/cable_migrate
     password: <%= ENV["CI"] ? "postgres" : "" %>
@@ -93,7 +93,7 @@ test:
 
   cache:
     <<: *default
-    database: liftoff_cache_test<%= suffix %>
+    database: tms_cache_test<%= suffix %>
     host: <%= ENV.fetch("PGHOST", "localhost") %>
     migrations_paths: db/cache_migrate
     password: <%= ENV["CI"] ? "postgres" : "" %>
@@ -102,7 +102,7 @@ test:
 
   queue:
     <<: *default
-    database: liftoff_queue_test<%= suffix %>
+    database: tms_queue_test<%= suffix %>
     host: <%= ENV.fetch("PGHOST", "localhost") %>
     migrations_paths: db/queue_migrate
     password: <%= ENV["CI"] ? "postgres" : "" %>
@@ -133,7 +133,6 @@ production:
   primary: &primary_production
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
-    password: <%= ENV["LIFTOFF_DATABASE_PASSWORD"] %>
     prepared_statements: false
   cache:
     <<: *primary_production

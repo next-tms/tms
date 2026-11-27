@@ -17,7 +17,7 @@ module Tools
       def call(server_context:, type_name: nil)
         context = server_context.slice(:authorizable, :session)
         profile = profile_for(context)
-        printer = GraphQL::Schema::Printer.new(LiftoffSchema, context:)
+        printer = GraphQL::Schema::Printer.new(TMSSchema, context:)
         type = profile.type(type_name) if type_name
 
         return MCP::Tool::Response.new([{ text: "Unknown type: #{type_name}", type: 'text' }], error: true) if type_name && type.nil?

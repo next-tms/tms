@@ -15,7 +15,7 @@ RSpec.describe(Mutations::AddressCreate) do
   end
 
   let(:region) { 'US_CA' }
-  let(:result) { LiftoffSchema.execute(query, context: {}).to_h }
+  let(:result) { TMSSchema.execute(query, context: {}).to_h }
 
   it { expect { result }.to(change(Address, :count).by(1)) }
   it { expect(result.dig('data', 'addressCreate', 'address', 'country', 'alpha2Code')).to(eq('US')) }

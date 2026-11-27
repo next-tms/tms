@@ -37,5 +37,6 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym('POD') # must come before "PO"
   inflect.acronym('PO')
   inflect.acronym('SO')
+  inflect.acronym('TMS')
   inflect.acronym('ZIP')
 end

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Resolvers::BillsResolver) do
-  subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables:).to_h }
+  subject(:result) { TMSSchema.execute(query, context: { authorizable: }, variables:).to_h }
 
   let(:authorizable) { create(:user, companyable: broker_carrier.carrier) }
   let(:broker_carrier) { create(:broker_carrier) }
@@ -51,6 +51,6 @@ RSpec.describe(Resolvers::BillsResolver) do
   end
 
   describe 'filter type' do
-    it { expect(GraphQL::Query.new(LiftoffSchema, context: { authorizable: }).types.type('BillFilter')).to(be(Types::BillFilterType)) }
+    it { expect(GraphQL::Query.new(TMSSchema, context: { authorizable: }).types.type('BillFilter')).to(be(Types::BillFilterType)) }
   end
 end

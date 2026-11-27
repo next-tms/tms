@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe(Resolvers::ShipmentsResolver) do
-  subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables:).to_h }
+  subject(:result) { TMSSchema.execute(query, context: { authorizable: }, variables:).to_h }
 
   let(:arguments) { {} }
   let(:authorizable) { create(:broker_user).tap { |broker_user| broker_user.add_role(:dispatch) } }
@@ -158,7 +158,7 @@ RSpec.describe(Resolvers::ShipmentsResolver) do
 
     context 'with page and pageSize' do
       let(:arguments) { { page: 2, pageSize: 2 } }
-      let(:first_page) { LiftoffSchema.execute(query, context: { authorizable: }, variables: { page: 1, pageSize: 2 }).to_h }
+      let(:first_page) { TMSSchema.execute(query, context: { authorizable: }, variables: { page: 1, pageSize: 2 }).to_h }
       let(:first_page_fingerprint) { first_page.dig('data', 'shipments').slice('updatedAt', 'version') }
       let(:fingerprint) { result.dig('data', 'shipments').slice('updatedAt', 'version') }
 
