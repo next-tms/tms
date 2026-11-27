@@ -181,13 +181,6 @@ class User < ApplicationRecord
     :customer if customer?
   end
 
-  def enable_notifications
-    UserTexter.switch_on(self).deliver
-
-    client = Twilio::REST::Client.new
-    client.api.account.messages.create(from: '+14243616317', to: phone, url: 'https://tms.next-tms.com/Next%%20TMS.vcf')
-  end
-
   def time_zone
     ActiveSupport::TimeZone.new(time_zone_name)
   end

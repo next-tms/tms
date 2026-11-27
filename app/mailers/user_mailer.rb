@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-  default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
+  default reply_to: -> { email_address_with_name(Setting.customer_service_email!, Setting.value!(:name)) }
   helper :application, :date_time
 
   before_action :set_actor, except: :send_welcome

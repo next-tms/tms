@@ -1,6 +1,4 @@
 class ReceivablesMailer < ApplicationMailer
-  default from: 'Next TMS <robot@tms.next-tms.com>'
-
   def batch(broker_customer:, load_ids:, pdf:, pdf_filename:)
     @load_ids = load_ids.sort
 

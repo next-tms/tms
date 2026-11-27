@@ -2,8 +2,6 @@
   kind: :boolean
 - key: automatically_update_shipment_tracking_based_on_carrier_apis
   kind: :boolean
-- key: copyright_holder
-  kind: :string
 - key: customer_service_email
   kind: :email
   required: true

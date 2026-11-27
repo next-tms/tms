@@ -910,7 +910,6 @@ eo:
   settings:
     automatically_authorize_receivables: Ĉu aŭtomate rajtigi ricevendaĵon post kreado?
     automatically_update_shipment_tracking_based_on_carrier_apis: Ĉu aŭtomate ĝisdatigi la spurajn informojn de sendaĵoj laŭ la API-oj de transportistoj?
-    copyright_holder: Laŭleĝa nomo de via firmao (uzata por la kopirajta avizo), ekz. Mia Firmao, LLC
     customer_service_email: Retpoŝtadreso por klientservo montrata al klientoj
     domain: Domajno uzata por Next TMS, ekz. tms.miafirmao.com
     ignore_broker_carrier_bol_requires_tracking_number: Ĉu permesi krei konosamenton kiam mankas la spurnumero de la sendaĵo kaj la transportisto postulas ĝin?
@@ -924,9 +923,6 @@ eo:
     website_desc: Enhavo por la HTML-etikedo <meta name="description"> uzata en rezultoj de serĉiloj
     website_homepage: URL de via ĉefa retejo, ekz. https://miafirmao.com/
     website_logo_image_data: URL de via SVG-emblemo (povas esti data:-kodita URL)
-  test_mailer:
-    hello:
-      subject: Saluton de Next TMS
   time:
     formats:
       tag: "%Y-%m-%d %H:%M %Z"

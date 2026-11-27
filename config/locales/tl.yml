@@ -911,7 +911,6 @@ tl:
   settings:
     automatically_authorize_receivables: Awtomatikong i-authorize ang receivable pagkatapos itong gawin?
     automatically_update_shipment_tracking_based_on_carrier_apis: Awtomatikong i-update ang tracking ng kargamento batay sa mga API ng carrier?
-    copyright_holder: Legal na pangalan ng iyong kompanya (ginagamit para sa copyright notice), hal. My Company, LLC
     customer_service_email: Email address na ipinapakita sa mga kustomer para sa customer service
     domain: Domain na ginagamit para sa Next TMS, hal. tms.mycompany.com
     ignore_broker_carrier_bol_requires_tracking_number: Payagan ang paggawa ng bill of lading kapag walang tracking number ang kargamento at hinihingi ito ng carrier?
@@ -925,9 +924,6 @@ tl:
     website_desc: Nilalaman para sa <meta name="description"> HTML tag na ginagamit sa mga resulta ng search engine
     website_homepage: URL ng iyong pangunahing website, hal. https://mycompany.com/
     website_logo_image_data: URL ng iyong SVG logo (maaaring data:-encoded URL)
-  test_mailer:
-    hello:
-      subject: Kumusta mula sa Next TMS
   time:
     formats:
       tag: "%b %-d, %Y, %-l:%M %p %Z"

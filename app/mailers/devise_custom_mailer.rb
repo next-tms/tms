@@ -1,4 +1,6 @@
 class DeviseCustomMailer < Devise::Mailer
+  default from: -> { email_address_with_name(Setting.robot_email!, Setting.value!(:name)) }
+
   def invitation_instructions(record, token, opts = {})
     robot_email = Setting.robot_email!
 

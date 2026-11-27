@@ -911,7 +911,6 @@ es:
   settings:
     automatically_authorize_receivables: "¿Autorizar automáticamente la cuenta por cobrar después de crearla?"
     automatically_update_shipment_tracking_based_on_carrier_apis: "¿Actualizar automáticamente el rastreo de envíos según las API de los transportistas?"
-    copyright_holder: Razón social de tu empresa (se usa en el aviso de derechos de autor), p. ej., Mi Empresa, S.A. de C.V.
     customer_service_email: Correo electrónico de atención al cliente que ven los clientes
     domain: Dominio que usa Next TMS, p. ej., tms.miempresa.com
     ignore_broker_carrier_bol_requires_tracking_number: "¿Permitir crear el conocimiento de embarque cuando falta el número de rastreo del envío y el transportista lo exige?"
@@ -925,9 +924,6 @@ es:
     website_desc: Contenido de la etiqueta HTML <meta name="description"> que se usa en los resultados de los buscadores
     website_homepage: URL de tu sitio web principal, p. ej., https://miempresa.com/
     website_logo_image_data: URL de tu logotipo SVG (puede ser una URL codificada con data:)
-  test_mailer:
-    hello:
-      subject: Saludos desde Next TMS
   time:
     formats:
       tag: "%-d %b %Y, %H:%M %Z"

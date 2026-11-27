@@ -1,5 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'Next TMS <robot@tms.next-tms.com>'
+  default from: -> { email_address_with_name(Setting.robot_email!, Setting.value!(:name)) }
   layout 'mailer'
 
   rescue_from Postmark::InactiveRecipientError, with: :notify_sentry_and_store_error_msg

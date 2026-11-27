@@ -16,8 +16,14 @@ RSpec.describe(AccountingMailer) do
     before do
       create(:broker_customer)
       create(:customer_user).tap { |user| user.contact.contact_roles.create!(role: :root) }
+      create(:setting, key: 'customer_service_email', value: 'help@acme.test')
+      create(:setting, key: 'name', value: 'Acme Freight')
+      create(:setting, key: 'robot_email', value: 'robot@acme.test')
     end
 
+    it { expect(mail.from).to(eq(['robot@acme.test'])) }
+    it { expect(mail[:from].to_s).to(eq('Acme Freight <robot@acme.test>')) }
+    it { expect(mail.reply_to).to(eq(['help@acme.test'])) }
     it { expect(mail.subject).to(eq('Accounting Customer Sync Failure')) }
     it { expect(mail.to).to(eq([root_user.email])) }
   end

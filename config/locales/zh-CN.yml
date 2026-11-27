@@ -910,7 +910,6 @@ zh-CN:
   settings:
     automatically_authorize_receivables: 创建后自动授权应收账款？
     automatically_update_shipment_tracking_based_on_carrier_apis: 根据承运商 API 自动更新货运跟踪信息？
-    copyright_holder: 贵公司的法定名称（用于版权声明），例如 我的公司有限公司
     customer_service_email: 向客户显示的客服电子邮件地址
     domain: Next TMS 使用的域名，例如 tms.mycompany.com
     ignore_broker_carrier_bol_requires_tracking_number: 当货运缺少跟踪号而承运商要求提供时，仍允许创建提单？
@@ -924,9 +923,6 @@ zh-CN:
     website_desc: 用于搜索引擎结果的 <meta name="description"> HTML 标签内容
     website_homepage: 贵公司主页网站的 URL，例如 https://mycompany.com/
     website_logo_image_data: "贵公司 SVG 标志的 URL（可以是 data: 编码的 URL）"
-  test_mailer:
-    hello:
-      subject: 来自 Next TMS 的问候
   time:
     formats:
       tag: "%Y年%-m月%-d日 %H:%M %Z"

@@ -910,7 +910,6 @@ zh-TW:
   settings:
     automatically_authorize_receivables: 建立後自動核准應收帳款？
     automatically_update_shipment_tracking_based_on_carrier_apis: 根據承運商 API 自動更新貨運追蹤資訊？
-    copyright_holder: 貴公司的法定名稱（用於版權聲明），例如 我的公司股份有限公司
     customer_service_email: 向客戶顯示的客服電子郵件地址
     domain: Next TMS 使用的網域，例如 tms.mycompany.com
     ignore_broker_carrier_bol_requires_tracking_number: 當貨運缺少追蹤號碼而承運商要求提供時，仍允許建立提單？
@@ -924,9 +923,6 @@ zh-TW:
     website_desc: 用於搜尋引擎結果的 <meta name="description"> HTML 標籤內容
     website_homepage: 貴公司首頁網站的 URL，例如 https://mycompany.com/
     website_logo_image_data: "貴公司 SVG 標誌的 URL（可以是 data: 編碼的 URL）"
-  test_mailer:
-    hello:
-      subject: 來自 Next TMS 的問候
   time:
     formats:
       tag: "%Y年%-m月%-d日 %H:%M %Z"

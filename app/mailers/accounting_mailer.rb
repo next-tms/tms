@@ -1,5 +1,5 @@
 class AccountingMailer < ApplicationMailer
-  default from: 'Next TMS <robot@tms.next-tms.com>', reply_to: 'Support — Next TMS <hello@next-tms.com>'
+  default reply_to: -> { email_address_with_name(Setting.customer_service_email!, Setting.value!(:name)) }
   helper :application, :date_time
 
   def unknown_customers(broker_customers:)
@@ -10,7 +10,7 @@ class AccountingMailer < ApplicationMailer
     users.find_each do |user|
       @user = user
 
-      mail(to: @user.email, reply_to: 'Next TMS <hello@next-tms.com>')
+      mail(to: @user.email)
     end
   end
 end

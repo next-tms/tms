@@ -2,12 +2,12 @@ require 'rails_helper'
 
 RSpec.describe(Setting) do
   describe '.configuration' do
-    it { expect(described_class.configuration).to(include({ key: 'copyright_holder', kind: :string })) }
+    it { expect(described_class.configuration).to(include({ key: 'customer_service_email', kind: :email, required: true })) }
     it { expect(described_class.configuration).to(be_frozen) }
   end
 
   describe '.keys' do
-    it { expect(described_class.keys).to(include('copyright_holder', 'customer_service_email')) }
+    it { expect(described_class.keys).to(include('customer_service_email', 'name')) }
   end
 
   describe '.method_missing' do

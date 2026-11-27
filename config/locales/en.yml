@@ -924,7 +924,6 @@ en:
   settings:
     automatically_authorize_receivables: Automatically authorize receivable after creation?
     automatically_update_shipment_tracking_based_on_carrier_apis: Automatically update shipment tracking information based on carrier API's?
-    copyright_holder: Legal name of your company (used for the copyright notice), e.g. My Company, LLC
     customer_service_email: Email address displayed to customers for customer service
     domain: Domain used for Next TMS, e.g. tms.mycompany.com
     ignore_broker_carrier_bol_requires_tracking_number: Allow creating bill of lading when shipment tracking number is missing and the carrier requires it to be present?
@@ -938,9 +937,6 @@ en:
     website_desc: Content for the <meta name="description"> HTML tag used for search engine results
     website_homepage: URL to your landing website, e.g. https://mycompany.com/
     website_logo_image_data: URL to your SVG logo (can be a data:-encoded URL)
-  test_mailer:
-    hello:
-      subject: Hello from Next TMS
   time:
     formats:
       tag: "%b %-d, %Y, %-l:%M %p %Z"
