@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe('Users::Invitations', :webmock) do
+RSpec.describe('Users::Invitations') do
   let(:carrier) { create(:carrier) }
   let(:contact) { create(:contact, companyable: carrier, email: 'billing@acme.test', first_name: 'Billie', last_name: 'Ng') }
   let(:current_user) { create(:broker_user).tap { |user| user.add_role(:accounts_payable) } }
@@ -17,7 +17,6 @@ RSpec.describe('Users::Invitations', :webmock) do
   end
 
   before do
-    stub_request(:get, %r{\Ahttps://api\.pwnedpasswords\.com/range/}).to_return(body: '')
     seed_settings
     create(:setting, key: 'robot_email', value: 'robot@example.com')
     sign_in(current_user)

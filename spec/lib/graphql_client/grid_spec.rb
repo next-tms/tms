@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe(GraphQLClient::Grid::HTTPAdapter, :webmock) do # rubocop:disable RSpec/SpecFilePathFormat
+RSpec.describe(GraphQLClient::Grid::HTTPAdapter) do # rubocop:disable RSpec/SpecFilePathFormat
   describe '#execute' do
     subject(:execute) { described_class.new.execute(document:, operation_name: 'FetchTimeZone', variables:) }
 

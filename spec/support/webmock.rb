@@ -1,17 +1,6 @@
 require 'httpx/adapters/webmock'
-require 'webmock'
-require 'webmock/rspec/matchers'
+require 'webmock/rspec'
 
-RSpec.configure do |config|
-  config.include(WebMock::API, :webmock)
-  config.include(WebMock::Matchers, :webmock)
+WebMock.disable_net_connect!(allow_localhost: true)
 
-  config.around(:each, :webmock) do |example|
-    WebMock.enable!
-    WebMock.disable_net_connect!
-    example.run
-  ensure
-    WebMock.reset!
-    WebMock.disable!
-  end
-end
+RSpec.configure { |config| config.before { stub_request(:get, %r{\Ahttps://api\.pwnedpasswords\.com/range/}).to_return(body: '') } }

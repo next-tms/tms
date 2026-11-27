@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe(Geo::GoogleMaps, :geo, :webmock) do
+RSpec.describe(Geo::GoogleMaps, :geo) do
   let(:headers) { { 'Content-Type' => 'application/json' } }
   let(:places_url) { 'https://places-key@places.googleapis.com' }
 

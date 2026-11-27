@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe(Geo::Grid, :geo, :webmock) do
+RSpec.describe(Geo::Grid, :geo) do
   let(:body) { { data: { operation => result } }.to_json }
   let(:headers) { { 'Content-Type' => 'application/json' } }
   let(:operation) { 'verifyAddress' }

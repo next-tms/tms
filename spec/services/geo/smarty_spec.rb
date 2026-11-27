@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe(Geo::Smarty, :geo, :webmock) do
+RSpec.describe(Geo::Smarty, :geo) do
   let(:headers) { { 'Content-Type' => 'application/json' } }
 
   before do

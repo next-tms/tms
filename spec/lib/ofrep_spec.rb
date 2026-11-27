@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe(OFREP, :webmock) do
+RSpec.describe(OFREP) do
   let(:api_key) { 'secret' }
   let(:endpoint) { 'https://flags.example.com/api/' }
   let(:url) { 'https://flags.example.com/api/ofrep/v1/evaluate/flags/operator_notice' }
