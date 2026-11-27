@@ -20,6 +20,7 @@ services:
       QUEUE_DATABASE_URL: postgres://liftoff:liftoff@db:5433/liftoff_queue
       RACK_ENV: production
       RAILS_ENV: production
+      TRANSPONDER_URL: http://transponder:2300/graphql
     depends_on:
       bucket:
         condition: service_completed_successfully
@@ -29,7 +30,6 @@ services:
         condition: service_completed_successfully
       transponder:
         condition: service_started
-        required: false
     ports:
       - "127.0.0.1:3000:3000"
   jobs:
@@ -118,7 +118,5 @@ services:
         required: false
     image: registry.fly.io/transponder:main
     platform: linux/amd64
-    profiles:
-      - transponder
 volumes:
   s3:

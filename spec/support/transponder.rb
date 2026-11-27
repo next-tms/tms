@@ -38,7 +38,6 @@ RSpec.configure do |config|
   config.include(TransponderQueries)
 
   config.before do
-    allow(GraphQLClient::Transponder).to(receive(:enabled?).and_return(true))
     allow(GraphQLClient::Transponder::Client).to(receive(:query).and_call_original)
 
     stub_transponder_carriers

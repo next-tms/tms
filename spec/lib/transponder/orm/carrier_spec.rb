@@ -19,17 +19,6 @@ RSpec.describe(Transponder::ORM::Carrier) do
       it { expect(described_class.all).to(equal(described_class.all)) }
     end
 
-    context 'when Transponder is disabled' do
-      before do
-        allow(GraphQLClient::Transponder).to(receive(:enabled?).and_return(false))
-        described_class.reset
-        described_class.all
-      end
-
-      it { expect(described_class.all.to_a).to(eq([])) }
-      it { expect(GraphQLClient::Transponder::Client).not_to(have_received(:query)) }
-    end
-
     context 'when Transponder returns errors' do
       before { stub_transponder_carriers({ 'errors' => [{ 'message' => 'Boom' }] }) }
 

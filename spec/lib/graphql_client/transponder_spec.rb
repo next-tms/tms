@@ -1,44 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe(GraphQLClient::Transponder) do
-  describe '.enabled?' do
-    subject { described_class.enabled? }
+  describe '.uri' do
+    subject(:uri) { described_class.uri.to_s }
 
-    let(:url) { 'http://transponder.example.com/graphql' }
-
-    before do
-      allow(described_class).to(receive(:enabled?).and_call_original)
-      allow(ENV).to(receive(:fetch).and_call_original)
-      allow(ENV).to(receive(:fetch).with('TRANSPONDER_URL', nil).and_return(url))
-    end
-
-    it { is_expected.to(be(true)) }
-
-    context 'when TRANSPONDER_URL is blank' do
-      let(:url) { '' }
-
-      it { is_expected.to(be(false)) }
-    end
+    before { stub_const('ENV', ENV.to_h.merge('TRANSPONDER_URL' => url).compact) }
 
     context 'when TRANSPONDER_URL is missing' do
       let(:url) { nil }
 
-      it { is_expected.to(be(false)) }
-    end
-  end
-
-  describe '.uri' do
-    subject { described_class.uri.to_s }
-
-    before do
-      allow(ENV).to(receive(:fetch).and_call_original)
-      allow(ENV).to(receive(:fetch).with('TRANSPONDER_URL', '').and_return(url))
-    end
-
-    context 'when TRANSPONDER_URL is missing' do
-      let(:url) { '' }
-
-      it { is_expected.to(eq('')) }
+      it { expect { uri }.to(raise_error(KeyError)) }
     end
 
     context 'when TRANSPONDER_URL is set' do

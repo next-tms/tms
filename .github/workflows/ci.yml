@@ -85,6 +85,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: fake-secret-access-key-for-build-env
       POSTMARK_API_TOKEN: fake-api-token-for-build-env
       SECRET_KEY_BASE: fake-secret-key-base-for-build-env
+      TRANSPONDER_URL: http://fake-transponder-for-build-env/graphql
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libmagickwand-dev libpq-dev
