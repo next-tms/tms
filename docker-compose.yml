@@ -116,7 +116,7 @@ services:
     env_file:
       - path: ./.transponder.env
         required: false
-    image: registry.fly.io/transponder:main
+    image: ghcr.io/next-tms/transponder:latest
     platform: linux/amd64
 volumes:
   s3:
