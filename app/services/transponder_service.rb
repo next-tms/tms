@@ -11,6 +11,8 @@ module TransponderService
     private
 
     def commit(method, operation, broker_carrier, object, **)
+      return { errors: [] } unless GraphQLClient::Transponder.enabled?
+
       method_class = ['GraphQLClient', 'Transponder', method.to_s.camelize, operation.to_s.camelize, 'DETAILS'].join('::').constantize
       variables = Query.call(operation.to_s.camelize(:lower), broker_carrier, object, **)
       response = GraphQLClient::Transponder::Client.query(method_class, variables:)

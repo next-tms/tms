@@ -13,6 +13,8 @@ module Transponder
         private
 
         def fetch
+          return [] unless GraphQLClient::Transponder.enabled?
+
           Rails.cache.fetch("transponder@#{ORM.version}/carriers", expires_in: CACHE_EXPIRES_IN) do
             response = GraphQLClient::Transponder::Client.query(GraphQLClient::Transponder::Query::FetchCarriers::DETAILS)
             errors = response.original_hash['errors']

@@ -4,6 +4,8 @@ require 'graphql/client/http'
 module GraphQLClient
   class Transponder
     class << self
+      def enabled? = ENV.fetch('TRANSPONDER_URL', nil).present?
+
       def endpoint
         @endpoint ||= begin
           value = uri
@@ -13,7 +15,7 @@ module GraphQLClient
         end
       end
 
-      def uri = URI.parse(ENV.fetch('TRANSPONDER_URL', 'http://localhost:2300/graphql'))
+      def uri = URI.parse(ENV.fetch('TRANSPONDER_URL', ''))
     end
 
     class HTTPAdapter < GraphQL::Client::HTTP
