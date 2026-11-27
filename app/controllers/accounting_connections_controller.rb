@@ -29,22 +29,13 @@ class AccountingConnectionsController < ApplicationController
   private
 
   def callback_url_helper = :"oauth_callback_#{kind}_accounting_url"
+  def flight_url = ENV.fetch('FLIGHT_URL', nil)
   def integration = @integration ||= Integration.where(kind:).first_or_initialize(name: 'default')
   def kind = params[:kind].presence || 'quickbooks'
   def provider = PROVIDERS.fetch(kind)
+  def redirect_uri = flight_url.present? ? "#{flight_url}/oauth/callback/#{provider}" : public_send(callback_url_helper)
   def required_params = kind == 'quickbooks' ? %i[code realmId] : %i[code]
-
-  def redirect_uri
-    return public_send(callback_url_helper) if Rails.env.development?
-
-    "#{ENV.fetch('INTEGRATIONS_RELAY_URL', 'https://flight.next-tms.com/oauth/callback')}/#{provider}"
-  end
-
-  def state
-    return session[:accounting_oauth_nonce] if Rails.env.development?
-
-    "#{ENV.fetch('FLIGHT_APP_ID')}.#{session[:accounting_oauth_nonce]}"
-  end
+  def state = flight_url.present? ? "#{ENV.fetch('FLIGHT_APP_ID')}.#{session[:accounting_oauth_nonce]}" : session[:accounting_oauth_nonce]
 
   def valid_nonce?
     (nonce = session.delete(:accounting_oauth_nonce)).present? && ActiveSupport::SecurityUtils.secure_compare(

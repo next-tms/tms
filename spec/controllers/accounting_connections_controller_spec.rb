@@ -37,16 +37,35 @@ RSpec.describe(AccountingConnectionsController) do
       it { expect(flash[:error]).to(be_present) }
       it { expect(FetchBrokerCarrierAccountingVendorIdsJob).not_to(have_received(:perform_later)) }
     end
+
+    context 'when the state has no Flight app ID' do
+      let(:params) { { code: 'code', kind: 'quickbooks', realmId: '1', state: 'nonce' } }
+
+      it { expect(flash[:success]).to(be_present) }
+    end
   end
 
   describe 'GET #connect' do
+    let(:flight_url) { nil }
+    let(:query) { Rack::Utils.parse_query(URI.parse(response.location).query) }
+
     before do
       allow(ENV).to(receive(:fetch).and_call_original)
       allow(ENV).to(receive(:fetch).with('FLIGHT_APP_ID').and_return('app'))
+      allow(ENV).to(receive(:fetch).with('FLIGHT_URL', nil).and_return(flight_url))
       get(:connect, params: { kind: 'quickbooks' })
     end
 
     it { is_expected.to(redirect_to(%r{\Ahttps://appcenter\.intuit\.com/connect/oauth2\?client_id=})) }
+    it { expect(query['redirect_uri']).to(eq(oauth_callback_quickbooks_accounting_url)) }
+    it { expect(query['state']).to(eq(session[:accounting_oauth_nonce])) }
     it { expect(response.headers['Referrer-Policy']).to(eq('no-referrer')) }
+
+    context 'when Flight is configured' do
+      let(:flight_url) { 'https://flight.example.com' }
+
+      it { expect(query['redirect_uri']).to(eq('https://flight.example.com/oauth/callback/intuit')) }
+      it { expect(query['state']).to(eq("app.#{session[:accounting_oauth_nonce]}")) }
+    end
   end
 end
