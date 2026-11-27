@@ -7,17 +7,14 @@ RSpec.describe('Freightview::LTLShipments') do
   let(:broker_customer) { api_key.user.companyable }
   let(:headers) { { 'Authorization' => "Bearer #{api_key.token}", 'Content-Type' => 'application/json' } }
   let(:json) { Freightview.decode_keys(response.parsed_body) }
-  let(:liftgate) { create(:accessorial, freight_kit_code: 'liftgate_delivery', name: 'Lift gate delivery') }
   let(:new_rate) { build(:rate, broker_carrier:, cost_cents: 12_345, cost_currency: 'USD', shipment:, transit_days: 3, uid: 'rate-uid') }
   let(:params) { Freightview.encode_keys(body).to_json }
   let(:path) { '/api/v2.0/shipments/ltl' }
-  let(:residential) { create(:accessorial, freight_kit_code: 'residential_delivery', name: 'Residential delivery') }
   let(:shipment) { Shipment.last }
 
   before do
     create(:broker_user).contact.add_role(:dispatch)
-    create(:broker_accessorial, accessorial: liftgate, broker_customer:)
-    create(:broker_accessorial, accessorial: residential, broker_customer:)
+    create(:accessorial, broker_customer:, name: 'Lift gate delivery', transponder_code: 'liftgate_delivery')
     create(:packaging, freight_kit_type: 'pallet')
     allow_any_instance_of(BrokerCustomer).to(receive(:carrier_charge_calculator).and_return(Money.new(15_000, 'USD')))
     allow_any_instance_of(Shipment).to(receive(:valid_broker_carriers_for_quotation).and_return(BrokerCarrier.where(id: broker_carrier.id)))
@@ -35,7 +32,8 @@ RSpec.describe('Freightview::LTLShipments') do
       it { expect(Shipment::RatesService).not_to(have_received(:call)) }
       it { expect(shipment).to(have_attributes(broker_customer:, created_by: api_key.user, pickup_on: Date.new(2026, 11, 17))) }
       it { expect(shipment).to(be_quote_only) }
-      it { expect(shipment.broker_accessorials.map(&:accessorial)).to(contain_exactly(liftgate, residential)) }
+      it { expect(shipment.accessorials.map(&:transponder_code)).to(contain_exactly('liftgate_delivery', 'residential_delivery')) }
+      it { expect(shipment.accessorials.map(&:name)).to(contain_exactly('Lift gate delivery', 'Residential Delivery')) }
       it { expect(shipment.items.sole).to(have_attributes(declared_freight_class: 70.0, desc: 'Widgets', nmfc: '12345-2')) }
       it { expect(shipment.items.sole).to(have_attributes(quantity: 2, weight: 500)) }
       it { expect(shipment.receiver_address).to(have_attributes(city: 'Fremont', name: 'Acme Receiving', region_iso31662: 'US-CA')) }
@@ -56,13 +54,10 @@ RSpec.describe('Freightview::LTLShipments') do
       it { expect(quote.to_s).not_to(include('123.45')) }
     end
 
-    context 'with an accessorial the customer is not offered' do
+    context 'with an accessorial Transponder does not offer' do
       let(:body) { super().deep_merge(destination: { accessorials: { notify: true } }) }
 
-      before do
-        create(:accessorial, freight_kit_code: 'notify_before_delivery', name: 'Notify before delivery')
-        post(path, headers:, params:)
-      end
+      before { post(path, headers:, params:) }
 
       it { is_expected.to(have_http_status(:bad_request)) }
       it { expect(json).to(include(name: 'ValidationError', request_id: be_present)) }

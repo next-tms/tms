@@ -6,40 +6,32 @@ class EBOL::Importer::Accessorials
     @shipment = shipment
   end
 
-  def broker_accessorials
-    shipment
-      .broker_customer
-      .eligible_broker_accessorials
-      .joins(:accessorial)
-      .where(accessorial: { freight_kit_code: codes.filter_map { |code| EBOL.freight_kit_code(code) } })
+  def accessorials
+    @accessorials ||= Accessorial.with_transponder_codes(
+      codes.filter_map { |code| EBOL.transponder_code(code) },
+      broker_customer: shipment.broker_customer
+    )
   end
 
-  def shipment_broker_accessorials_attributes
-    broker_accessorial_ids = broker_accessorials.ids
-    removed, kept = mapped_shipment_broker_accessorials.partition do |shipment_broker_accessorial|
-      broker_accessorial_ids.exclude?(shipment_broker_accessorial.broker_accessorial_id)
+  def shipment_accessorials_attributes
+    transponder_codes = accessorials.map(&:transponder_code)
+    removed, kept = mapped_shipment_accessorials.partition do |shipment_accessorial|
+      transponder_codes.exclude?(shipment_accessorial.accessorial.transponder_code)
     end
+    kept_transponder_codes = kept.map { |shipment_accessorial| shipment_accessorial.accessorial.transponder_code }
+    added = accessorials.reject { |accessorial| kept_transponder_codes.include?(accessorial.transponder_code) }
 
     [
-      *removed.map { |shipment_broker_accessorial| { _destroy: true, id: shipment_broker_accessorial.id } },
-      *(broker_accessorial_ids - kept.map(&:broker_accessorial_id)).map { |broker_accessorial_id| { broker_accessorial_id: } }
+      *removed.map { |shipment_accessorial| { _destroy: true, id: shipment_accessorial.id } },
+      *added.map { |accessorial| { accessorial: } }
     ]
   end
 
-  def unsupported_codes
-    supported_codes = broker_accessorials.includes(:accessorial).map do |broker_accessorial|
-      broker_accessorial.accessorial.freight_kit_code
-    end
-
-    codes.reject { |code| supported_codes.include?(EBOL.freight_kit_code(code)) }
-  end
+  def unsupported_codes = codes.reject { |code| accessorials.map(&:transponder_code).include?(EBOL.transponder_code(code)) }
 
   private
 
-  def mapped_shipment_broker_accessorials
-    shipment
-      .shipment_broker_accessorials
-      .joins(broker_accessorial: :accessorial)
-      .where(accessorial: { freight_kit_code: EBOL::ACCESSORIAL_CODES.keys })
+  def mapped_shipment_accessorials
+    shipment.shipment_accessorials.includes(:accessorial).where(accessorial: { transponder_code: EBOL::ACCESSORIAL_CODES.keys })
   end
 end

@@ -52,10 +52,6 @@ module TransponderService
 
     private
 
-    def accessorials
-      @accessorials ||= Accessorial.combined_accessorial_freight_kit_codes(shipment:)
-    end
-
     def contact_name(key)
       case key
       when :receiver

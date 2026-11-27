@@ -1,11 +1,11 @@
 class Freightview::ShipmentsController < Freightview::ApplicationController
   INCLUDES = [
+    :accessorials,
     :applied_rate,
     :receiver_address,
     :shipper_address,
     :tracking_carrier,
     {
-      broker_accessorials: :accessorial,
       broker_carrier: :carrier,
       items: :packaging
     }

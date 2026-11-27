@@ -1,0 +1,32 @@
+<%= turbo_frame_tag :accessorials do %>
+  <% unless accessorials.blank? %>
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped table-hover">
+        <thead>
+          <tr>
+            <th><%= sort_link q, :name, 'Name' %></th>
+            <th>Customer</th>
+            <th><%= sort_link q, :flat_charge_cents, 'Flat Charge' %></th>
+            <th><%= sort_link q, :upcharge_cents, 'Upcharge' %></th>
+            <th><%= sort_link q, :upcharge_percent, 'Upcharge %' %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% accessorials.each do |accessorial| %>
+            <tr>
+              <td><%= accessorial.name %></td>
+              <td><%= accessorial.broker_customer.blank? ? 'All' : accessorial.broker_customer.name %></td>
+              <td><%= humanized_money_with_symbol(accessorial.flat_charge) %></td>
+              <td><%= humanized_money_with_symbol(accessorial.upcharge) %></td>
+              <td><%= accessorial.upcharge_percent.blank? ? '0' : "#{accessorial.upcharge_percent * 100}%" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render 'layouts/pagy', pagy: @pagy %>
+  <% else %>
+    <%= render 'layouts/no_content' %>
+  <% end %>
+<% end %>

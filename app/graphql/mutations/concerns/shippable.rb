@@ -26,16 +26,12 @@ module Mutations
         raise(GraphQL::ExecutionError.new(message, extensions: { accessorialCodes: accessorial_codes, code: 'UNSERVICEABLE_ACCESSORIALS' }))
       end
 
-      def shipment_broker_accessorials_attributes(shipment, accessorial_codes)
-        broker_accessorials = shipment
-                              .broker_customer
-                              .eligible_broker_accessorials
-                              .joins(:accessorial)
-                              .where(accessorials: { freight_kit_code: accessorial_codes })
-        unserviceable_codes = accessorial_codes.uniq - broker_accessorials.pluck('accessorials.freight_kit_code')
+      def shipment_accessorials_attributes(shipment, accessorial_codes)
+        accessorials = Accessorial.with_transponder_codes(accessorial_codes, broker_customer: shipment.broker_customer)
+        unserviceable_codes = accessorial_codes.uniq - accessorials.map(&:transponder_code)
         raise_unserviceable_accessorials(unserviceable_codes) if unserviceable_codes.any?
 
-        broker_accessorials.ids.map { |broker_accessorial_id| { broker_accessorial_id: } }
+        accessorials.map { |accessorial| { accessorial: } }
       end
     end
   end

@@ -24,9 +24,16 @@ es:
   activerecord:
     attributes:
       accessorial:
+        broker_customer: Cliente
+        broker_only: Solo para el bróker
         code: Código
+        cost: Costo
         fee: Cargo
+        flat_charge: Cargo fijo
         name: Nombre
+        transponder_code: Servicio adicional
+        upcharge: Recargo
+        upcharge_percent: Porcentaje de recargo
       address:
         business: Comercial
         city: Ciudad
@@ -56,18 +63,6 @@ es:
         account_number: Número de cuenta
         kind: Tipo
         name: Nombre
-      broker_accessorial:
-        accessorial: Servicio adicional
-        accessorial_id: Servicio adicional
-        broker_customer: Cliente
-        broker_only: Solo para el bróker
-        code: Código
-        cost: Costo
-        fee: Cargo
-        flat_charge: Cargo fijo
-        name: Nombre
-        upcharge: Recargo
-        upcharge_percent: Porcentaje de recargo
       broker_carrier:
         account: "N.º de cuenta"
         account_desc: Descripción de la cuenta
@@ -374,9 +369,10 @@ es:
         truckload: Carga completa
         updated_by: Actualizada por
         value: Valor declarado
-      shipment_broker_accessorial:
-        broker_accessorial: Servicio adicional
-        broker_accessorial_id: Servicio adicional
+      shipment_accessorial:
+        accessorial: Servicio adicional
+        accessorial_id: Servicio adicional
+        accessorial_key: Servicio adicional
         charge: Cargo
         cost: Costo
       subscription:
@@ -424,11 +420,11 @@ es:
         receive_sms_notifications: "¿Recibir notificaciones por mensaje de texto?"
         time_zone_name: Zona horaria
     help:
+      accessorial:
+        flat_charge: Aplicar siempre este importe sin importar la tarifa del transportista
       api_key:
         name: Dónde se usa la clave, por ejemplo “WMS del almacén”
         ttl: Renueva la clave para reemplazarla antes de que venza
-      broker_accessorial:
-        flat_charge: Aplicar siempre este importe sin importar la tarifa del transportista
       broker_carrier:
         days_to_pay_after_invoice_date: Se usa para generar las fechas de vencimiento de pago cuando no se indican en los estados de cuenta
       broker_customer:
@@ -453,9 +449,6 @@ es:
       bank:
         one: Banco
         other: Bancos
-      broker_accessorial:
-        one: Servicio adicional
-        other: Servicios adicionales
       broker_carrier:
         one: Transportista
         other: Transportistas
@@ -546,7 +539,7 @@ es:
       shipment:
         one: Carga
         other: Cargas
-      shipment_broker_accessorial:
+      shipment_accessorial:
         one: Cargo por servicio adicional
         other: Cargos por servicios adicionales
       subscription:

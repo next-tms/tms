@@ -10,7 +10,7 @@ module DocumentableService
           broker_carrier
           items
           receiver_address
-          shipment_broker_accessorials
+          shipment_accessorials
           shipper_address
           tracking_carrier
         ]

@@ -29,7 +29,7 @@ class BrokerCustomer < ApplicationRecord
   enum :preferred_broker_carriers_kind, { blacklist: 'blacklist', whitelist: 'whitelist' }
   enum :receivables_schedule, { daily: 'daily', immediately: 'immediately', monthly: 'monthly', never: 'never', weekly: 'weekly' }
 
-  has_many :broker_accessorials, dependent: :destroy
+  has_many :accessorials, dependent: :destroy
   has_many :broker_carriers, dependent: :destroy
   has_many :broker_customer_dispatchers, dependent: :destroy
   has_many :broker_customer_sales_reps, dependent: :destroy
@@ -50,7 +50,7 @@ class BrokerCustomer < ApplicationRecord
 
   validate :check_pricing_rules, if: -> { can_quote? }
 
-  accepts_nested_attributes_for :broker_accessorials, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :accessorials, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :broker_carriers, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :broker_customer_dispatchers, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :broker_customer_sales_reps, allow_destroy: true, reject_if: :all_blank
@@ -62,14 +62,7 @@ class BrokerCustomer < ApplicationRecord
   accepts_nested_attributes_for :receivables_contact, allow_destroy: false
   accepts_nested_attributes_for :upcharge_rules, allow_destroy: true, reject_if: :all_blank
 
-  def eligible_broker_accessorials
-    return @eligible_broker_accessorials if @eligible_broker_accessorials
-
-    broker_customer_accessorials = broker_accessorials
-    broker_accessorials = BrokerAccessorial.where(broker_customer: nil).where.not(code: [broker_customer_accessorials.map(&:code)])
-
-    @eligible_broker_accessorials = broker_customer_accessorials.or(broker_accessorials).order(:name)
-  end
+  def eligible_accessorials = @eligible_accessorials ||= Accessorial.eligible(broker_customer: self)
 
   # @return [BrokerCarrier::ActiveRecord_Relation]
   def eligible_broker_carriers(user_type = :customer)

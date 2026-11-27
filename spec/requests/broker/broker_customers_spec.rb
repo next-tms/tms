@@ -32,6 +32,15 @@ RSpec.describe('Broker::BrokerCustomers') do
     it { expect(response.body).to(include('data-controller="legal-name"')) }
   end
 
+  describe 'GET /broker/customers/:id/pricing/edit' do
+    let(:select) { Nokogiri::HTML(response.body).at_css('template select[name$="[transponder_code]"]') }
+
+    before { get("/broker/customers/#{broker_customer.id}/pricing/edit") }
+
+    it { is_expected.to(have_http_status(:ok)) }
+    it { expect(select.css('option').pluck('value')).to(include('liftgate_delivery')) }
+  end
+
   describe 'GET /broker/customers/new' do
     before { get('/broker/customers/new') }
 
@@ -49,5 +58,16 @@ RSpec.describe('Broker::BrokerCustomers') do
 
     it { is_expected.to(redirect_to("/broker/customers/#{broker_customer.id}")) }
     it { expect(customer.reload).to(have_attributes(legal_name: 'Acme Freight, Inc.', name: 'Acme')) }
+  end
+
+  describe 'PATCH /broker/customers/:id/pricing/update' do
+    let(:accessorials_attributes) { [{ code: 'CLIF', name: 'Customer liftgate', transponder_code: 'liftgate_delivery' }] }
+
+    before { patch("/broker/customers/#{broker_customer.id}/pricing/update", params: { broker_customer: { accessorials_attributes: } }) }
+
+    it { is_expected.to(redirect_to("/broker/customers/#{broker_customer.id}/pricing/edit")) }
+
+    it { expect(broker_customer.accessorials.sole).to(have_attributes(code: 'CLIF', transponder_code: 'liftgate_delivery')) }
+    it { expect(broker_customer.accessorials.sole.name).to(eq('Customer liftgate')) }
   end
 end

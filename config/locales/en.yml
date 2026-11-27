@@ -37,9 +37,16 @@ en:
   activerecord:
     attributes:
       accessorial:
+        broker_customer: Customer
+        broker_only: Broker only
         code: Code
+        cost: Cost
         fee: Fee
+        flat_charge: Flat charge
         name: Name
+        transponder_code: Accessorial
+        upcharge: Upcharge
+        upcharge_percent: Upcharge percentage
       address:
         business: Business
         city: City
@@ -69,18 +76,6 @@ en:
         account_number: Account number
         kind: Type
         name: Name
-      broker_accessorial:
-        accessorial: Accessorial
-        accessorial_id: Accessorial
-        broker_customer: Customer
-        broker_only: Broker only
-        code: Code
-        cost: Cost
-        fee: Fee
-        flat_charge: Flat charge
-        name: Name
-        upcharge: Upcharge
-        upcharge_percent: Upcharge percentage
       broker_carrier:
         account: "Account #"
         account_desc: Account description
@@ -387,9 +382,10 @@ en:
         truckload: Truckload
         updated_by: Updated by
         value: Declared value
-      shipment_broker_accessorial:
-        broker_accessorial: Accessorial
-        broker_accessorial_id: Accessorial
+      shipment_accessorial:
+        accessorial: Accessorial
+        accessorial_id: Accessorial
+        accessorial_key: Accessorial
         charge: Charge
         cost: Cost
       subscription:
@@ -437,11 +433,11 @@ en:
         receive_sms_notifications: Receive notifications by text message?
         time_zone_name: Time zone
     help:
+      accessorial:
+        flat_charge: Always apply this amount regardless of carrier fee
       api_key:
         name: Where the key is used, for example “Warehouse WMS”
         ttl: Roll the key to replace it before it expires
-      broker_accessorial:
-        flat_charge: Always apply this amount regardless of carrier fee
       broker_carrier:
         days_to_pay_after_invoice_date: Used to generate payment due dates when they are not specified on account statements
       broker_customer:
@@ -466,9 +462,6 @@ en:
       bank:
         one: Bank
         other: Banks
-      broker_accessorial:
-        one: Accessorial
-        other: Accessorials
       broker_carrier:
         one: Carrier
         other: Carriers
@@ -559,7 +552,7 @@ en:
       shipment:
         one: Load
         other: Loads
-      shipment_broker_accessorial:
+      shipment_accessorial:
         one: Accessorial Charge
         other: Accessorial Charges
       subscription:

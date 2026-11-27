@@ -84,16 +84,16 @@
   </div>
 <% end %>
 
-<% if @shipment.dispatched_at.blank? && @shipment.suggested_broker_accessorials.present? %>
+<% if @shipment.dispatched_at.blank? && @shipment.suggested_accessorials.present? %>
   <div class="alert alert-warning">
     <p class="lead"><%= icon 'solid', 'dollar-sign', 'Missing Services' %></p>
     <p>Based on the shipment information the following services may be required and charged by the carrier:</p>
     <ul class="list-unstyled list-inline">
-      <% @shipment.suggested_broker_accessorials.each do |broker_accessorial| %>
+      <% @shipment.suggested_accessorials.each do |accessorial| %>
         <li class="list-inline-item">
-          <% shipment_broker_accessorials_attributes = [{ broker_accessorial_id: broker_accessorial.id }] %>
-          <%= link_to "Add #{broker_accessorial.name}",
-                      [:broker, @shipment, { shipment: { shipment_broker_accessorials_attributes: } }],
+          <% shipment_accessorials_attributes = [{ accessorial_key: accessorial.key }] %>
+          <%= link_to "Add #{accessorial.name}",
+                      [:broker, @shipment, { shipment: { shipment_accessorials_attributes: } }],
                       class: 'btn btn-light',
                       data: { turbo_method: :patch }
           %>
@@ -377,9 +377,9 @@ Load <%= @shipment.load_id %>
 Origin: <%= @shipment.shipper_address.city %>, <%= @shipment.shipper_address.region.abbreviation %>, <%= @shipment.shipper_address.zip_code %>
 Destination: <%= @shipment.receiver_address.city %>, <%= @shipment.receiver_address.region.abbreviation %>, <%= @shipment.receiver_address.zip_code %>
 
-<% unless @shipment.shipment_broker_accessorials.blank? %>
-<% @shipment.shipment_broker_accessorials.each do |shipment_broker_accessorial| %>
-<%= shipment_broker_accessorial.broker_accessorial.name %>
+<% unless @shipment.shipment_accessorials.blank? %>
+<% @shipment.shipment_accessorials.each do |shipment_accessorial| %>
+<%= shipment_accessorial.accessorial.name %>
 <% end %>
 <% end %>
 
@@ -409,9 +409,9 @@ Destination
 <%= @shipment.receiver_address.name %>
 <%= @shipment.receiver_address.pretty("\n") %>
 
-<% unless @shipment.shipment_broker_accessorials.blank? %>
-<% @shipment.shipment_broker_accessorials.each do |shipment_broker_accessorial| %>
-<%= shipment_broker_accessorial.broker_accessorial.name %>
+<% unless @shipment.shipment_accessorials.blank? %>
+<% @shipment.shipment_accessorials.each do |shipment_accessorial| %>
+<%= shipment_accessorial.accessorial.name %>
 <% end %>
 <% end %>
 

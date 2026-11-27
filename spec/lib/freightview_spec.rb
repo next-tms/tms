@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe(Freightview) do
-  let(:broker_accessorials) { codes.map { |code| build(:broker_accessorial, accessorial: build(:accessorial, freight_kit_code: code)) } }
+  let(:accessorials) { codes.map { |code| build(:accessorial, transponder_code: code) } }
   let(:codes) { [] }
-  let(:shipment) { build(:shipment, broker_accessorials:, status:) }
+  let(:shipment) { build(:shipment, accessorials:, status:) }
   let(:status) { :quoted }
 
   describe '.decode' do

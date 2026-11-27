@@ -111,6 +111,14 @@ module ShipmentsHelper
 
   APPENDED_TABLE_DATA = [{ display_name: 'Dispatcher', column_name: :dispatcher_full_name, wrap: true }].freeze
 
+  def accessorial_options(broker_customer) = accessorial_options_by_broker_customer[broker_customer]
+
+  def accessorial_options_by_broker_customer
+    @accessorial_options_by_broker_customer ||= Hash.new do |options, broker_customer|
+      options[broker_customer] = Accessorial.eligible(broker_customer:).catalog.map { |accessorial| [accessorial.name, accessorial.key] }
+    end
+  end
+
   def shipment_table_row_class(shipment)
     if action_name == 'pending_pickup' && shipment.pickup_on.present?
       current_shipper_time = Time.current.in_time_zone(shipment.shipper_address.time_zone.name).to_date

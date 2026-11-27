@@ -53,7 +53,7 @@ RSpec.describe(BrokerWare::ShipmentPayload) do
 
     it { is_expected.to(include(bol_notes: 'Call ahead', customer_reference: '078219', receiver_contact_email: nil)) }
     it { is_expected.to(include(pickup_hours_end_at: '10:00 PM', pickup_hours_start_at: '2:00 PM', pickup_on: Date.new(2026, 11, 20))) }
-    it { is_expected.to(include(delivery_hours_end_at: nil, shipment_broker_accessorials_attributes: [])) }
+    it { is_expected.to(include(delivery_hours_end_at: nil, shipment_accessorials_attributes: [])) }
     it { expect(shipment_attributes[:items_attributes].sole).to(include(quantity: 1, weight: 462)) }
     it { expect(shipment_attributes[:receiver_address_attributes]).to(include(receiver_location)) }
     it { expect(shipment_attributes[:receiver_address_attributes]).to(include(id: nil, name: 'Fremont Receiving', street2: nil)) }

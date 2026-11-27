@@ -1,6 +1,24 @@
 require 'rails_helper'
 
 RSpec.describe(ShipmentsHelper) do
+  describe '#accessorial_options' do
+    subject(:options) { helper.accessorial_options(nil) }
+
+    let!(:accessorial) { create(:accessorial, name: 'Lift gate', transponder_code: 'liftgate_delivery') }
+
+    it { is_expected.to(include(['Lift gate', accessorial.id.to_s], ['Residential Delivery', 'residential_delivery'])) }
+    it { expect(options.map(&:last)).not_to(include('liftgate_delivery')) }
+
+    context 'when called again' do
+      before do
+        options
+        allow(Accessorial).to(receive(:eligible))
+      end
+
+      it { expect(helper.accessorial_options(nil)).to(eq(options)) }
+    end
+  end
+
   describe '#charges_confirmed_note' do
     subject(:note) { helper.charges_confirmed_note(shipment) }
 

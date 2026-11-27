@@ -4,31 +4,40 @@ RSpec.describe(EBOL::Importer::Accessorials) do
   subject(:accessorials) { described_class.new(['LFTD', 'XYZ'], shipment) }
 
   let(:shipment) { create(:shipment, :usd, picked_up_at: nil) }
-  let!(:accessorial) { create(:accessorial, freight_kit_code: 'liftgate_delivery', name: 'Lift gate delivery') }
 
-  describe '#broker_accessorials' do
-    it { expect(accessorials.broker_accessorials.map(&:accessorial)).to(eq([accessorial])) }
+  describe '#accessorials' do
+    it { expect(accessorials.accessorials.map(&:transponder_code)).to(eq(['liftgate_delivery'])) }
+
+    context 'when the broker renamed the accessorial' do
+      let!(:accessorial) { create(:accessorial, name: 'Lift gate delivery', transponder_code: 'liftgate_delivery') }
+
+      it { expect(accessorials.accessorials).to(eq([accessorial])) }
+    end
   end
 
-  describe '#shipment_broker_accessorials_attributes' do
-    let(:broker_accessorial) { accessorials.broker_accessorials.sole }
+  describe '#shipment_accessorials_attributes' do
+    let(:accessorial) { accessorials.accessorials.sole }
 
-    it { expect(accessorials.shipment_broker_accessorials_attributes).to(include({ broker_accessorial_id: broker_accessorial.id })) }
+    it { expect(accessorials.shipment_accessorials_attributes).to(eq([{ accessorial: }])) }
 
     context 'when the shipment already has the accessorial' do
-      before { shipment.shipment_broker_accessorials.create!(broker_accessorial:) }
+      before do
+        shipment.shipment_accessorials.create!(accessorial: create(:accessorial, code: 'LIFT', transponder_code: 'liftgate_delivery'))
+      end
 
-      it { expect(accessorials.shipment_broker_accessorials_attributes).to(be_empty) }
+      it { expect(accessorials.shipment_accessorials_attributes).to(be_empty) }
     end
 
     context 'when the shipment has an accessorial that the request drops' do
-      let(:shipment_broker_accessorial) { shipment.shipment_broker_accessorials.create!(broker_accessorial:) }
+      let(:shipment_accessorial) do
+        shipment.shipment_accessorials.create!(accessorial: create(:accessorial, transponder_code: 'liftgate_delivery'))
+      end
 
-      before { shipment_broker_accessorial }
+      before { shipment_accessorial }
 
       it do
-        expect(described_class.new([], shipment).shipment_broker_accessorials_attributes).to(
-          eq([{ _destroy: true, id: shipment_broker_accessorial.id }])
+        expect(described_class.new([], shipment).shipment_accessorials_attributes).to(
+          eq([{ _destroy: true, id: shipment_accessorial.id }])
         )
       end
     end

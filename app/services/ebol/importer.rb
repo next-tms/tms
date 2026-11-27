@@ -122,7 +122,7 @@ class EBOL::Importer
       receiver_contact_email: params.dig(:destination, :contact, :email),
       receiver_contact_name: params.dig(:destination, :contact, :name),
       receiver_contact_phone: params.dig(:destination, :contact, :phone),
-      shipment_broker_accessorials_attributes: accessorials.shipment_broker_accessorials_attributes,
+      shipment_accessorials_attributes: accessorials.shipment_accessorials_attributes,
       shipper_address_attributes: Location.call(params[:origin], shipment.shipper_address),
       shipper_contact_email: params.dig(:origin, :contact, :email),
       shipper_contact_name: params.dig(:origin, :contact, :name),

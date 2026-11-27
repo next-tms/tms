@@ -5,7 +5,7 @@ module Freightview
     def encode_keys(hash) = hash.deep_transform_keys { |key| key.to_s.camelize(:lower) }
 
     def location_accessorials(shipment, stop)
-      codes = freight_kit_codes(shipment)
+      codes = transponder_codes(shipment)
 
       [*ACCESSORIALS.fetch(stop).select { |_key, code| codes.include?(code) }.keys, ship_type(shipment, stop)].compact
     end
@@ -13,7 +13,7 @@ module Freightview
     def packaging_type(packaging) = PACKAGING_TYPES.find { |type| type.to_s == packaging&.freight_kit_type } || :piece
 
     def ship_type(shipment, stop)
-      codes = freight_kit_codes(shipment)
+      codes = transponder_codes(shipment)
 
       SHIP_TYPES.find { |ship_type| codes.include?(:"#{ship_type}_#{STOPS.fetch(stop).last}") }
     end
@@ -24,9 +24,7 @@ module Freightview
 
     private
 
-    def freight_kit_codes(shipment)
-      shipment.broker_accessorials.filter_map { |broker_accessorial| broker_accessorial.accessorial.freight_kit_code&.to_sym }
-    end
+    def transponder_codes(shipment) = shipment.accessorials.filter_map { |accessorial| accessorial.transponder_code&.to_sym }
   end
 
   ACCESSORIALS = {

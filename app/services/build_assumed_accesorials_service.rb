@@ -27,45 +27,33 @@ class BuildAssumedAccesorialsService
     @shipment = shipment
   end
 
-  # Collect Shipment Accessorials base from shipper and receiver details
-  # Codes for both shipper and receiver details are the same but will differ in the
-  # Prefix e.g PAIR for Shipper (P = Pickup) and DAIR for Receiver (D = Delivery)
   def call
-    accessorials = []
-    [['D', receiver_address_name], ['P', shipper_address_name]].each do |prefix, name|
-      if name.present? && ['airport', 'hangar'].any? { |word| name.downcase.include?(word) }
-        accessorials << Accessorial.find_by(code: "#{prefix}AIR") # Airports
-      end
+    transponder_codes = []
+
+    [[:delivery, receiver_address_name], [:pickup, shipper_address_name]].each do |stop, name|
+      transponder_codes << :"airport_#{stop}" if name.present? && ['airport', 'hangar'].any? { |word| name.downcase.include?(word) }
     end
 
-    [['D', receiver_address], ['P', shipper_address]].each do |prefix, address|
-      # Airports
-      accessorials << Accessorial.find_by(code: "#{prefix}AIR") if address.types.present? && (address.types.include? 'airport')
-      # Military bases
-      accessorials << Accessorial.find_by(code: "#{prefix}MIL") if address.types.present? && (address.types.include? 'military_site')
-
-      # Residential
-      if residential?(address, prefix)
-        accessorials << Accessorial.find_by(code: "#{prefix}RES")
-        accessorials << Accessorial.find_by(code: "#{prefix}APP")
-      end
-
-      accessorials << Accessorial.find_by(code: "#{prefix}LIF") if liftgate?(address, prefix)
-
-      # Restaurant
-      accessorials << Accessorial.find_by(code: "#{prefix}RST") if address.restaurant?
+    [[:delivery, receiver_address], [:pickup, shipper_address]].each do |stop, address|
+      transponder_codes << :"airport_#{stop}" if address.types.present? && (address.types.include? 'airport')
+      transponder_codes << :"military_site_#{stop}" if address.types.present? && (address.types.include? 'military_site')
+      transponder_codes.push(:"residential_#{stop}", :"appointment_#{stop}") if residential?(address, stop)
+      transponder_codes << :"liftgate_#{stop}" if liftgate?(address, stop)
+      transponder_codes << :"restaurant_#{stop}" if address.restaurant?
     end
 
-    # Appointment delivery
-    accessorials << Accessorial.find_by(code: 'DAPP') if bol_notes.present? && (bol_notes.downcase.include? 'must contact')
+    transponder_codes << :appointment_delivery if bol_notes.present? && (bol_notes.downcase.include? 'must contact')
 
-    accessorials.compact.uniq
+    Accessorial.with_transponder_codes(transponder_codes.uniq, broker_customer: shipment.broker_customer)
   end
 
   private
 
   def heavy? = items.any? { |item| item.weight.to_f >= 200 }
-  def liftgate?(address, prefix) = (residential?(address, prefix) || no_dock?(address)) && heavy?
+  def liftgate?(address, stop) = (residential?(address, stop) || no_dock?(address)) && heavy?
   def no_dock?(address) = address.dock.nil? ? address.restaurant? || address.types.intersect?(NO_DOCK_TYPES) : !address.dock
-  def residential?(address, prefix) = address.residential? || shipment.accessorial_codes.include?("#{prefix}RES")
+
+  def residential?(address, stop)
+    address.residential? || shipment.selected_accessorials.map(&:transponder_code).include?("residential_#{stop}")
+  end
 end

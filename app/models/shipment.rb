@@ -51,16 +51,12 @@ class Shipment < ApplicationRecord
   has_many :items, dependent: :destroy
   accepts_nested_attributes_for :items, allow_destroy: true, reject_if: :all_blank
 
-  has_many :shipment_accessorials, dependent: :destroy
-  accepts_nested_attributes_for :shipment_accessorials, allow_destroy: true, reject_if: :all_blank
-  has_many :accessorials, through: :shipment_accessorials
-
   belongs_to :applied_rate, class_name: 'Rate', optional: true
   has_many :rates, dependent: :destroy
 
-  has_many :shipment_broker_accessorials, dependent: :destroy
-  accepts_nested_attributes_for :shipment_broker_accessorials, allow_destroy: true, reject_if: :all_blank
-  has_many :broker_accessorials, through: :shipment_broker_accessorials
+  has_many :shipment_accessorials, dependent: :destroy
+  accepts_nested_attributes_for :shipment_accessorials, allow_destroy: true, reject_if: :all_blank
+  has_many :accessorials, through: :shipment_accessorials
 
   has_one_attached :broker_bol
   has_one_attached :broker_ebol
@@ -92,8 +88,7 @@ class Shipment < ApplicationRecord
   after_create :notify_of_new_shipment
 
   before_save :remove_tracking_events, if: -> { pro_changed? || tracking_carrier_pro_changed? }
-  # Fix broker_accessorials when broker_customer changes
-  before_save :recalculate_broker_accessorials, if: :broker_customer_id_changed?
+  before_save :recalculate_accessorials, if: :broker_customer_id_changed?
   before_save :maybe_sync_broker_carrier_pickup_confirmation_and_pro
   before_save :maybe_sync_tracking_carrier_pickup_confirmation_and_tracking_carrier_pro
   # Remove tracking_carrier_* information when changed from broker to carrier
@@ -202,21 +197,8 @@ class Shipment < ApplicationRecord
   scope :missing_charge,                -> { active.where.not(id: pending_quotation).where(carrier_charge_cents: 0) }
   scope :missing_cost,                  -> { active.where.not(id: pending_quotation).where(carrier_cost_cents: 0) }
   scope :missing_delivery_appointment, -> {
-                                         accessorial_ids = BrokerAccessorial
-                                                           .where(
-                                                             accessorial_id: Accessorial
-                                                                             .where(
-                                                                               freight_kit_code: [
-                                                                                 'appointment_delivery',
-                                                                                 'residential_delivery'
-                                                                               ]
-                                                                             )
-                                                                             .select(:id)
-                                                           )
-                                                           .ids
-
-                                         joins(:broker_accessorials)
-                                           .where(broker_accessorials: { accessorial_id: accessorial_ids })
+                                         joins(:accessorials)
+                                           .where(accessorials: { transponder_code: ['appointment_delivery', 'residential_delivery'] })
                                            .or(where.not(pending_appointment_since: nil))
                                            .pending_delivery
                                            .where(delivery_appointment_on: nil, delivery_appointment_at: nil)
@@ -312,16 +294,16 @@ class Shipment < ApplicationRecord
 
   def missing_delivery_eta_on? = delivery_eta_on.blank?
 
-  def total_broker_accessorial_charge
-    return 0 if shipment_broker_accessorials.blank?
+  def total_accessorial_charge
+    return 0 if shipment_accessorials.blank?
 
-    shipment_broker_accessorials.map(&:charge).inject(0) { |sum, x| sum + (x.nil? ? Money.new(0) : x) }
+    shipment_accessorials.map(&:charge).inject(0) { |sum, x| sum + (x.nil? ? Money.new(0) : x) }
   end
 
-  def total_broker_accessorial_cost
-    return 0 if shipment_broker_accessorials.blank?
+  def total_accessorial_cost
+    return 0 if shipment_accessorials.blank?
 
-    shipment_broker_accessorials.map(&:cost).inject(0) { |sum, x| sum + (x.nil? ? Money.new(0) : x) }
+    shipment_accessorials.map(&:cost).inject(0) { |sum, x| sum + (x.nil? ? Money.new(0) : x) }
   end
 
   def profit = total_charges - total_cost
@@ -394,58 +376,26 @@ class Shipment < ApplicationRecord
     [late_per_delivery_schedule_since, promised_delivery_by_late_since].compact.select(&:past?).min
   end
 
-  def accessorials
-    return @accessorials if @accessorials
+  def accessorial_codes = selected_accessorials.map { |accessorial| accessorial.code.presence || accessorial.transponder_code }
 
-    broker_accessorials = self.broker_accessorials.where.not(accessorial_id: nil)
-    @accessorials = broker_accessorials.blank? ? [] : Accessorial.where(id: broker_accessorials.map(&:accessorial_id))
-  end
-
-  # Set BrokerAccessorials based on codes (for API)
   def accessorial_codes=(codes)
-    codes = codes.gsub(', ', ',').split(',') if codes.instance_of?(String)
-    broker_accessorials = []
-    codes.each do |code|
-      broker_accessorial = broker_customer.broker_accessorials.where(code:)
-      if broker_accessorial.blank?
-        broker_accessorial = BrokerAccessorial.where(code:)
-        broker_accessorials << broker_accessorial.first if broker_accessorial.present?
-      else
-        broker_accessorials << broker_accessorial.first
-      end
-    end
-    self.broker_accessorials = broker_accessorials.uniq
+    codes = codes.split(',').map(&:strip) if codes.is_a?(String)
+    self.accessorials = Accessorial.eligible(broker_customer:).where(code: codes).to_a.uniq(&:code)
   end
 
-  def accessorial_codes = @accessorial_codes ||= accessorials.blank? ? [] : accessorials.map(&:code)
+  def assumed_accessorials = @assumed_accessorials ||= BuildAssumedAccesorialsService.new(shipment: self).call
 
-  def accessorial_names = @accessorial_names ||= accessorials.blank? ? [] : accessorials.map(&:name)
-
-  def assumed_accessorials
-    return @assumed_accessorials if @assumed_accessorials
-
-    @assumed_accessorials = BuildAssumedAccesorialsService.new(shipment: self).call
+  def combined_accessorials
+    (selected_accessorials + assumed_accessorials).uniq { |accessorial| accessorial.transponder_code || accessorial }
   end
 
-  def assumed_accessorial_codes = @assumed_accessorial_codes ||= assumed_accessorials.blank? ? [] : assumed_accessorials.map(&:code)
-
-  def assumed_accessorial_names = @assumed_accessorial_names ||= assumed_accessorials.blank? ? [] : assumed_accessorials.map(&:name)
+  def combined_transponder_accessorial_codes = combined_accessorials.filter_map(&:transponder_code).uniq
+  def selected_accessorials = shipment_accessorials.reject(&:marked_for_destruction?).filter_map(&:accessorial)
 
   def suggested_accessorials
-    return [] if assumed_accessorials.blank?
+    transponder_codes = selected_accessorials.filter_map(&:transponder_code)
 
-    @suggested_accessorials = assumed_accessorials - (accessorials.presence || [])
-  end
-
-  def suggested_accessorial_codes = @suggested_accessorial_codes ||= suggested_accessorials.blank? ? [] : suggested_accessorials.map(&:code)
-
-  def suggested_broker_accessorials
-    return [] if suggested_accessorial_codes.blank?
-
-    @suggested_broker_accessorials ||= (broker_customer&.eligible_broker_accessorials || BrokerAccessorial.blanket.order(:name))
-                                       .where(code: suggested_accessorial_codes)
-                                       .where.not(id: broker_accessorial_ids)
-                                       .to_a
+    assumed_accessorials.reject { |accessorial| transponder_codes.include?(accessorial.transponder_code) }
   end
 
   def freight_classes(use_declared_freight_class:) = items.map { |item| item.api_freight_class(use_declared_freight_class:) }
@@ -753,7 +703,7 @@ class Shipment < ApplicationRecord
 
     total_charges = broker_customer.carrier_charge_calculator(carrier_cost: applied_rate.cost, shipment: self)
 
-    total_charges += broker_accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents) if total_charges.present?
+    total_charges += accessorials.where.not(upcharge_cents: 0).sum(:upcharge_cents) if total_charges.present?
 
     self.total_charges = total_charges || 0
   end
@@ -761,12 +711,13 @@ class Shipment < ApplicationRecord
   # Remove applied_rate when carrier changes
   def remove_applied_rate = self.applied_rate = nil
 
-  # Fix broker_accessorials when broker_customer changes
-  def recalculate_broker_accessorials
-    new_broker_accessorials = broker_accessorials.map do |broker_accessorials|
-      broker_customer.eligible_broker_accessorials.find_by(code: broker_accessorials.code)
+  def recalculate_accessorials
+    eligible_accessorials = Accessorial.eligible(broker_customer:).to_a
+
+    shipment_accessorials.each do |shipment_accessorial|
+      eligible_accessorial = eligible_accessorials.find { |accessorial| accessorial.overrides?(shipment_accessorial.accessorial) }
+      shipment_accessorial.accessorial = eligible_accessorial if eligible_accessorial.present?
     end
-    self.broker_accessorials = new_broker_accessorials
   end
 
   def maybe_sync_broker_carrier_pickup_confirmation_and_pro
@@ -858,13 +809,13 @@ class Shipment < ApplicationRecord
   def set_total_charges
     return if carrier_charge.blank?
 
-    self.total_charges = carrier_charge + total_broker_accessorial_charge
+    self.total_charges = carrier_charge + total_accessorial_charge
   end
 
   def set_total_cost
     return if carrier_charge.blank?
 
-    self.total_cost = carrier_cost + total_broker_accessorial_cost
+    self.total_cost = carrier_cost + total_accessorial_cost
   end
 
   # Notifications

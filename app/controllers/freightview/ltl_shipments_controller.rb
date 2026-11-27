@@ -18,7 +18,7 @@ class Freightview::LTLShipmentsController < Freightview::ApplicationController
       return
     end
 
-    @shipment.assign_attributes(**@payload.shipment_attributes, shipment_broker_accessorials_attributes:)
+    @shipment.assign_attributes(**@payload.shipment_attributes, shipment_accessorials_attributes:)
     @shipment.created_by = current_user
     @shipment.updated_by = current_user
 
@@ -45,21 +45,17 @@ class Freightview::LTLShipmentsController < Freightview::ApplicationController
     unsupported + unserviceable
   end
 
-  def broker_accessorials
-    @broker_accessorials ||= @shipment
-                             .broker_customer
-                             .eligible_broker_accessorials
-                             .joins(:accessorial)
-                             .where(accessorials: { freight_kit_code: @payload.accessorial_codes })
+  def accessorials
+    @accessorials ||= Accessorial.with_transponder_codes(@payload.accessorial_codes, broker_customer: @shipment.broker_customer)
   end
 
   def declared_freight_classes? = @shipment.declared_freight_classes.compact.any? && !@shipment.calculated_freight_classes?
-  def offered_accessorial_codes = broker_accessorials.pluck('accessorials.freight_kit_code').map(&:to_sym)
+  def offered_accessorial_codes = accessorials.map { |accessorial| accessorial.transponder_code.to_sym }
 
   def quotes
     Shipment::QuotableRatesService.call(@shipment, declared_freight_classes: declared_freight_classes?, user_type: :customer)
   end
 
-  def shipment_broker_accessorials_attributes = broker_accessorials.ids.map { |broker_accessorial_id| { broker_accessorial_id: } }
+  def shipment_accessorials_attributes = accessorials.map { |accessorial| { accessorial: } }
   def shipment_params = params.expect(shipment: Freightview::LTLShipmentPayload::PERMITTED)
 end

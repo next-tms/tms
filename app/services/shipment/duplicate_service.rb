@@ -34,7 +34,7 @@ class Shipment::DuplicateService
     new_shipment = shipment.dup
     new_shipment.receiver_address = shipment.receiver_address.dup
     new_shipment.shipper_address = shipment.shipper_address.dup
-    new_shipment.shipment_broker_accessorials << shipment.shipment_broker_accessorials.collect(&:dup)
+    new_shipment.shipment_accessorials << shipment.shipment_accessorials.collect(&:dup)
     new_shipment.items << shipment.items.collect(&:dup)
     new_shipment.load_id = nil
 

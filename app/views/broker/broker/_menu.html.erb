@@ -4,7 +4,7 @@
       <% if not action_name == 'index' %>
         <li class="navbar-item"><%= link_to icon('solid', 'level-up-alt', 'Settings'), broker_settings_path, class: 'nav-link' %></li>
       <% end %>
-      <li class="navbar-item"><%= link_to icon('solid', 'concierge-bell', 'Services'), broker_broker_accessorials_path, class: 'nav-link' %></li>
+      <li class="navbar-item"><%= link_to icon('solid', 'concierge-bell', 'Services'), [:broker, Accessorial], class: 'nav-link' %></li>
     </ul>
   </div>
 </div>

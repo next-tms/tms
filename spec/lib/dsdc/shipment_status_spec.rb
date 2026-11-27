@@ -7,13 +7,12 @@ RSpec.describe(DSDC::ShipmentStatus) do
   let(:attributes) { {} }
 
   describe '#accessorial_codes' do
-    let(:accessorial) { build(:accessorial, freight_kit_code: 'appointment_delivery') }
     let(:attributes) do
       {
-        broker_accessorials: [
-          build(:broker_accessorial, accessorial:),
-          build(:broker_accessorial, accessorial:),
-          build(:broker_accessorial, accessorial: nil)
+        accessorials: [
+          build(:accessorial, transponder_code: 'appointment_delivery'),
+          build(:accessorial, code: 'APPT', transponder_code: 'appointment_delivery'),
+          build(:accessorial, transponder_code: nil)
         ]
       }
     end
@@ -21,9 +20,11 @@ RSpec.describe(DSDC::ShipmentStatus) do
     it { expect(status.accessorial_codes).to(eq(['APTD'])) }
 
     context 'when the broker accessorials are preloaded' do
-      let(:preloaded_shipment) { Shipment.includes(broker_accessorials: :accessorial).find(shipment.id) }
+      let(:preloaded_shipment) { Shipment.includes(:accessorials).find(shipment.id) }
       let(:queries) { [] }
-      let(:shipment) { create(:shipment).tap { |shipment| shipment.broker_accessorials << create(:broker_accessorial, accessorial:) } }
+      let(:shipment) do
+        create(:shipment).tap { |shipment| shipment.accessorials << create(:accessorial, transponder_code: 'appointment_delivery') }
+      end
 
       before do
         status = described_class.new(preloaded_shipment)

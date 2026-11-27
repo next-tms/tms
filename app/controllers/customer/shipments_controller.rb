@@ -37,7 +37,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   def new
     @shipment = Shipment.new
 
-    # Needed for @shipment.broker_customer.eligible_broker_accessorials
+    # Needed for @shipment.broker_customer.eligible_accessorials
     @shipment.broker_customer = current_user.companyable
 
     @shipment.items << Item.new
@@ -51,7 +51,7 @@ class Customer::ShipmentsController < Customer::CustomerController
   def new_quote_only
     @shipment = Shipment.new
 
-    # Needed for @shipment.broker_customer.eligible_broker_accessorials
+    # Needed for @shipment.broker_customer.eligible_accessorials
     @shipment.broker_customer = current_user.companyable
 
     @shipment.items << Item.new
@@ -72,7 +72,7 @@ class Customer::ShipmentsController < Customer::CustomerController
     @shipment.updated_by = current_user
     @shipment.broker_customer = current_user.companyable
 
-    @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment).any?
+    @accessorials_has_been_suggested = build_suggested_accessorials(shipment: @shipment).any?
 
     if @accessorials_has_been_suggested
       render(:new, status: :unprocessable_content)
@@ -315,11 +315,10 @@ class Customer::ShipmentsController < Customer::CustomerController
             weight
             quantity
           ]],
-          shipment_accessorials_attributes: [%i[_destroy accessorial_id]],
-          shipment_broker_accessorials_attributes: [%i[
+          shipment_accessorials_attributes: [%i[
             _destroy
             id
-            broker_accessorial_id
+            accessorial_key
             cost
             charge
           ]]

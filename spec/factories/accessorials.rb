@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :accessorial do
-    name { 'MyString' }
+    broker_only { false }
     code { 'MyString' }
-    freight_kit_code { 'MyString' }
     fee { false }
+    name { 'MyString' }
   end
 end

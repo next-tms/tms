@@ -124,7 +124,7 @@ class Broker::ShipmentsController < Broker::BrokerController
     @shipment.dispatcher ||= current_user if current_user.dispatcher_for?(@shipment)
     @shipment.updated_by = current_user
 
-    @accessorials_has_been_suggested = build_suggested_broker_accessorials(shipment: @shipment).any?
+    @accessorials_has_been_suggested = build_suggested_accessorials(shipment: @shipment).any?
 
     if @accessorials_has_been_suggested
       render(:new, status: :unprocessable_content)
@@ -709,11 +709,10 @@ class Broker::ShipmentsController < Broker::BrokerController
             zip_code
             country_alpha2
           ],
-          shipment_accessorials_attributes: [%i[_destroy accessorial_id]],
-          shipment_broker_accessorials_attributes: [%i[
+          shipment_accessorials_attributes: [%i[
             _destroy
             id
-            broker_accessorial_id
+            accessorial_key
             cost
             charge
           ]]

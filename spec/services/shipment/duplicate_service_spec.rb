@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe(Shipment::DuplicateService) do
   let!(:shipment) { create(:shipment, carrier_cost_currency: 'USD', carrier_charge_currency: 'USD') }
-  let!(:broker_accessorial) { create(:broker_accessorial) }
+  let!(:accessorial) { create(:accessorial) }
   let!(:item) { create(:item) }
 
   describe '#call' do
@@ -10,7 +10,7 @@ RSpec.describe(Shipment::DuplicateService) do
 
     before do
       shipment.items << item
-      shipment.shipment_broker_accessorials.create(broker_accessorial:)
+      shipment.shipment_accessorials.create(accessorial:)
     end
 
     it { expect { call }.to(change(Shipment, :count).by(1)) }
@@ -36,13 +36,13 @@ RSpec.describe(Shipment::DuplicateService) do
       end
     end
 
-    it 'duplicates broker accessorials' do
+    it 'duplicates accessorials' do
       new_shipment = call
       except_attrs = ['id', 'created_at', 'updated_at']
-      broker_accessorial.attributes.each_key do |k|
+      accessorial.attributes.each_key do |k|
         next if except_attrs.include?(k)
 
-        expect(new_shipment.broker_accessorials.first.public_send(k)).to(eq(broker_accessorial.public_send(k)))
+        expect(new_shipment.accessorials.first.public_send(k)).to(eq(accessorial.public_send(k)))
       end
     end
 

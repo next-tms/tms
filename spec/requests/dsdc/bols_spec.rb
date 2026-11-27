@@ -8,7 +8,6 @@ RSpec.describe('DSDC::BOLs') do
   let(:shipment) { Shipment.find_by(load_id: json.dig('referenceNumbers', 'pro')) }
 
   before do
-    create(:accessorial, freight_kit_code: 'liftgate_delivery', name: 'Lift gate delivery')
     create(:broker_user).contact.add_role(:dispatch)
     create(:packaging, freight_kit_type: 'pallet')
   end
@@ -149,7 +148,7 @@ RSpec.describe('DSDC::BOLs') do
       end
 
       it { expect(shipment.items.sole).to(have_attributes(declared_freight_class: 70, nmfc: '123456-02', quantity: 2, weight: 900)) }
-      it { expect(shipment.accessorials.pluck(:freight_kit_code)).to(eq(['liftgate_delivery'])) }
+      it { expect(shipment.accessorials.pluck(:transponder_code)).to(eq(['liftgate_delivery'])) }
       it { expect(shipment.shipper_address).to(have_attributes(country_alpha2: 'US', region_iso31662: 'US-CA', zip_code: '90012')) }
       it { expect(shipment.booked_at).to(be_present) }
     end

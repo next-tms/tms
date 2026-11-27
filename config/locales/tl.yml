@@ -24,9 +24,16 @@ tl:
   activerecord:
     attributes:
       accessorial:
+        broker_customer: Kustomer
+        broker_only: Para sa broker lamang
         code: Code
+        cost: Gastos
         fee: Bayad
+        flat_charge: Nakapirming singil
         name: Pangalan
+        transponder_code: Accessorial
+        upcharge: Dagdag-singil
+        upcharge_percent: Porsiyento ng dagdag-singil
       address:
         business: Pangnegosyo
         city: Lungsod
@@ -56,18 +63,6 @@ tl:
         account_number: Numero ng account
         kind: Uri
         name: Pangalan
-      broker_accessorial:
-        accessorial: Accessorial
-        accessorial_id: Accessorial
-        broker_customer: Kustomer
-        broker_only: Para sa broker lamang
-        code: Code
-        cost: Gastos
-        fee: Bayad
-        flat_charge: Nakapirming singil
-        name: Pangalan
-        upcharge: Dagdag-singil
-        upcharge_percent: Porsiyento ng dagdag-singil
       broker_carrier:
         account: "Blg. ng account"
         account_desc: Paglalarawan ng account
@@ -374,9 +369,10 @@ tl:
         truckload: Truckload
         updated_by: In-update ni
         value: Idineklarang halaga
-      shipment_broker_accessorial:
-        broker_accessorial: Accessorial
-        broker_accessorial_id: Accessorial
+      shipment_accessorial:
+        accessorial: Accessorial
+        accessorial_id: Accessorial
+        accessorial_key: Accessorial
         charge: Singil
         cost: Gastos
       subscription:
@@ -424,11 +420,11 @@ tl:
         receive_sms_notifications: Tumanggap ng mga notification sa text message?
         time_zone_name: Time zone
     help:
+      accessorial:
+        flat_charge: Laging ilapat ang halagang ito anuman ang singil ng carrier
       api_key:
         name: Kung saan ginagamit ang key, halimbawa “Warehouse WMS”
         ttl: I-roll ang key para palitan ito bago ito mag-expire
-      broker_accessorial:
-        flat_charge: Laging ilapat ang halagang ito anuman ang singil ng carrier
       broker_carrier:
         days_to_pay_after_invoice_date: Ginagamit para gumawa ng due date ng bayad kapag wala ito sa account statement
       broker_customer:
@@ -453,9 +449,6 @@ tl:
       bank:
         one: Bangko
         other: Mga Bangko
-      broker_accessorial:
-        one: Accessorial
-        other: Mga Accessorial
       broker_carrier:
         one: Carrier
         other: Mga Carrier
@@ -546,7 +539,7 @@ tl:
       shipment:
         one: Karga
         other: Mga Karga
-      shipment_broker_accessorial:
+      shipment_accessorial:
         one: Singil sa Accessorial
         other: Mga Singil sa Accessorial
       subscription:

@@ -1,11 +1,10 @@
 module BrokerWare
   class << self
-    def accessorial_code(accessorial) = ACCESSORIAL_CODES[accessorial&.freight_kit_code&.to_sym] || accessorial&.code
+    def accessorial_code(accessorial) = ACCESSORIAL_CODES[accessorial&.transponder_code&.to_sym] || accessorial&.code
     def camelize(key) = key.to_s.gsub(/_([a-z\d])/) { Regexp.last_match(1).upcase }
     def date(value) = Date.strptime(value.to_s[/\A\d{4}-\d{1,2}-\d{1,2}/].to_s, '%Y-%m-%d')
     def document_list_type(attachment) = DOCUMENT_LIST_TYPES[attachment.name.to_sym]
     def document_name(attachment) = DOCUMENT_NAMES[attachment.name.to_sym]
-    def freight_kit_code(accessorial_code) = ACCESSORIAL_CODES.key(accessorial_code.to_s.upcase)
     def freight_kit_type(packaging) = PACKAGING_TYPES.fetch(packaging.to_s.downcase.to_sym, :pallet)
     def shipment_status(shipment) = SHIPMENT_STATUSES[shipment.status&.to_sym]
     def status_name(shipment) = shipment_status(shipment).to_s.camelize.presence
@@ -18,6 +17,7 @@ module BrokerWare
     end
 
     def timestamp(date, hours = nil) = date && Time.find_zone('UTC').parse("#{date} #{hours.presence || '0:00'}")&.iso8601
+    def transponder_code(accessorial_code) = ACCESSORIAL_CODES.key(accessorial_code.to_s.upcase)
 
     private
 

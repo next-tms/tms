@@ -3,10 +3,10 @@ require 'rails_helper'
 RSpec.describe(BrokerWare) do
   describe '.accessorial_code' do
     it do
-      expect(described_class.accessorial_code(build(:accessorial, code: 'DRES', freight_kit_code: 'residential_delivery'))).to(eq('RSDE'))
+      expect(described_class.accessorial_code(build(:accessorial, code: 'DRES', transponder_code: 'residential_delivery'))).to(eq('RSDE'))
     end
 
-    it { expect(described_class.accessorial_code(build(:accessorial, code: 'DREW', freight_kit_code: nil))).to(eq('DREW')) }
+    it { expect(described_class.accessorial_code(build(:accessorial, code: 'DREW', transponder_code: nil))).to(eq('DREW')) }
     it { expect(described_class.accessorial_code(nil)).to(be_nil) }
   end
 
@@ -29,12 +29,6 @@ RSpec.describe(BrokerWare) do
   describe '.document_name' do
     it { expect(described_class.document_name(ActiveStorage::Attachment.new(name: 'carrier_pod'))).to(eq('POD')) }
     it { expect(described_class.document_name(ActiveStorage::Attachment.new(name: 'broker_dispatch_sheet'))).to(be_nil) }
-  end
-
-  describe '.freight_kit_code' do
-    it { expect(described_class.freight_kit_code('LGDE')).to(eq(:liftgate_delivery)) }
-    it { expect(described_class.freight_kit_code('rsde')).to(eq(:residential_delivery)) }
-    it { expect(described_class.freight_kit_code('ZZZZ')).to(be_nil) }
   end
 
   describe '.freight_kit_type' do
@@ -67,5 +61,11 @@ RSpec.describe(BrokerWare) do
     it { expect(described_class.timestamp(Date.new(2026, 11, 20), '2:00 PM')).to(eq('2026-11-20T14:00:00Z')) }
     it { expect(described_class.timestamp(Date.new(2026, 11, 20))).to(eq('2026-11-20T00:00:00Z')) }
     it { expect(described_class.timestamp(nil, '2:00 PM')).to(be_nil) }
+  end
+
+  describe '.transponder_code' do
+    it { expect(described_class.transponder_code('LGDE')).to(eq(:liftgate_delivery)) }
+    it { expect(described_class.transponder_code('rsde')).to(eq(:residential_delivery)) }
+    it { expect(described_class.transponder_code('ZZZZ')).to(be_nil) }
   end
 end

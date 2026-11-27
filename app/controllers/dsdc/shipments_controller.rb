@@ -1,12 +1,12 @@
 class DSDC::ShipmentsController < DSDC::ApplicationController
   INCLUDES = [
+    :accessorials,
     :applied_rate,
     :carrier_pod_attachment,
     :receiver_address,
     :shipper_address,
     :tracking_carrier,
     {
-      broker_accessorials: :accessorial,
       broker_carrier: :carrier,
       broker_customer: %i[customer office_address],
       items: :packaging,

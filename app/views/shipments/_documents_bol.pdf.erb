@@ -83,7 +83,7 @@
           <p>
             <strong>
               Pickup
-              <% if shipment.accessorials.map(&:freight_kit_code).include?('appointment_pickup') %>
+              <% if shipment.accessorials.map(&:transponder_code).include?('appointment_pickup') %>
                 Appointment
               <% else %>
                 Hours
@@ -118,7 +118,7 @@
           <% if shipment.delivery_appointment_at.present? %>
             <strong>
               Delivery
-              <% if shipment.accessorials.map(&:freight_kit_code).include?('appointment_delivery') %>
+              <% if shipment.accessorials.map(&:transponder_code).include?('appointment_delivery') %>
                 Appointment
               <% else %>
                 Hours
@@ -169,9 +169,9 @@
 
   <h3>Instructions</h3>
   <ul class="list-unstyled">
-    <% shipment.broker_accessorials.each do |broker_accessorial| %>
-      <% unless broker_accessorial.broker_only? %>
-        <li><%= broker_accessorial.name %></li>
+    <% shipment.accessorials.each do |accessorial| %>
+      <% unless accessorial.broker_only? %>
+        <li><%= accessorial.name %></li>
       <% end %>
     <% end %>
   </ul>

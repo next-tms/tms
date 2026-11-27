@@ -23,9 +23,16 @@ zh-TW:
   activerecord:
     attributes:
       accessorial:
+        broker_customer: 客戶
+        broker_only: 僅限經紀商
         code: 代碼
+        cost: 成本
         fee: 費用
+        flat_charge: 固定費用
         name: 名稱
+        transponder_code: 附加服務
+        upcharge: 加價
+        upcharge_percent: 加價百分比
       address:
         business: 商業地址
         city: 城市
@@ -55,18 +62,6 @@ zh-TW:
         account_number: 帳號
         kind: 類型
         name: 名稱
-      broker_accessorial:
-        accessorial: 附加服務
-        accessorial_id: 附加服務
-        broker_customer: 客戶
-        broker_only: 僅限經紀商
-        code: 代碼
-        cost: 成本
-        fee: 費用
-        flat_charge: 固定費用
-        name: 名稱
-        upcharge: 加價
-        upcharge_percent: 加價百分比
       broker_carrier:
         account: 帳號
         account_desc: 帳戶說明
@@ -373,9 +368,10 @@ zh-TW:
         truckload: 整車
         updated_by: 更新者
         value: 申報價值
-      shipment_broker_accessorial:
-        broker_accessorial: 附加服務
-        broker_accessorial_id: 附加服務
+      shipment_accessorial:
+        accessorial: 附加服務
+        accessorial_id: 附加服務
+        accessorial_key: 附加服務
         charge: 費用
         cost: 成本
       subscription:
@@ -423,11 +419,11 @@ zh-TW:
         receive_sms_notifications: 透過簡訊接收通知？
         time_zone_name: 時區
     help:
+      accessorial:
+        flat_charge: 無論承運商收費多少，一律收取此金額
       api_key:
         name: 金鑰的使用位置，例如「倉庫 WMS」
         ttl: 在金鑰到期前輪替以取代它
-      broker_accessorial:
-        flat_charge: 無論承運商收費多少，一律收取此金額
       broker_carrier:
         days_to_pay_after_invoice_date: 當對帳單未註明付款到期日時，用於產生到期日
       broker_customer:
@@ -452,9 +448,6 @@ zh-TW:
       bank:
         one: 銀行
         other: 銀行
-      broker_accessorial:
-        one: 附加服務
-        other: 附加服務
       broker_carrier:
         one: 承運商
         other: 承運商
@@ -545,7 +538,7 @@ zh-TW:
       shipment:
         one: 貨運
         other: 貨運
-      shipment_broker_accessorial:
+      shipment_accessorial:
         one: 附加費用
         other: 附加費用
       subscription:

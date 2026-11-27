@@ -51,13 +51,13 @@
     <p class="col-title">Services</p>
     <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".tracking-event-form-wrapper">
       <template data-nested-form-target="template">
-        <%= f.fields_for :shipment_broker_accessorials, ShipmentBrokerAccessorial.new, child_index: 'NEW_RECORD' do |shipment_broker_accessorials_form| %>
-          <%= render 'shipments/broker_accessorial_form', f: shipment_broker_accessorials_form %>
+        <%= f.fields_for :shipment_accessorials, ShipmentAccessorial.new, child_index: 'NEW_RECORD' do |shipment_accessorials_form| %>
+          <%= render 'shipments/accessorial_form', f: shipment_accessorials_form %>
         <% end %>
       </template>
 
-      <%= f.fields_for :shipment_broker_accessorials do |shipment_broker_accessorials_form| %>
-        <%= render 'shipments/broker_accessorial_form', f: shipment_broker_accessorials_form %>
+      <%= f.fields_for :shipment_accessorials do |shipment_accessorials_form| %>
+        <%= render 'shipments/accessorial_form', f: shipment_accessorials_form %>
       <% end %>
 
       <div data-nested-form-target="target"></div>

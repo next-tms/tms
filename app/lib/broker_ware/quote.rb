@@ -47,21 +47,19 @@ class BrokerWare::Quote
     {
       items_attributes: items.map { |item| item_attributes(item) },
       receiver_address_attributes: receiver_location,
-      shipment_broker_accessorials_attributes: broker_accessorials.ids.map { |broker_accessorial_id| { broker_accessorial_id: } },
+      shipment_accessorials_attributes: accessorials.map { |accessorial| { accessorial: } },
       shipper_address_attributes: shipper_location
     }
   end
 
   private
 
-  def broker_accessorials
-    @broker_accessorials ||= broker_customer
-                             .eligible_broker_accessorials
-                             .joins(:accessorial)
-                             .merge(Accessorial.where(code: accessorial_codes).or(Accessorial.where(freight_kit_code: freight_kit_codes)))
+  def accessorials
+    @accessorials ||= [
+      *broker_customer.eligible_accessorials.offered.where(code: accessorial_codes),
+      *Accessorial.with_transponder_codes(transponder_codes, broker_customer:)
+    ].uniq { |accessorial| accessorial.transponder_code || accessorial }
   end
-
-  def freight_kit_codes = accessorial_codes.filter_map { |accessorial_code| BrokerWare.freight_kit_code(accessorial_code) }
 
   def inches(item, dimension)
     unit = item[:units_dimension].to_s.downcase.start_with?('c') ? :cm : :in
@@ -88,11 +86,8 @@ class BrokerWare::Quote
     Measured::Weight.new(item[:weight].to_f, unit).convert_to(:lb).value.ceil
   end
 
-  def serviceable_codes
-    Accessorial.where(id: broker_accessorials.select(:accessorial_id)).flat_map do |accessorial|
-      [accessorial.code, BrokerWare.accessorial_code(accessorial)]
-    end
-  end
+  def serviceable_codes = accessorials.flat_map { |accessorial| [accessorial.code, BrokerWare.accessorial_code(accessorial)] }
+  def transponder_codes = accessorial_codes.filter_map { |accessorial_code| BrokerWare.transponder_code(accessorial_code) }
 
   def validate_accessorials
     unserviceable_codes = accessorial_codes - serviceable_codes

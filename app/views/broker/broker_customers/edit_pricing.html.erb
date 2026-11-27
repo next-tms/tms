@@ -77,15 +77,15 @@
       <p class="col-title">Services</p>
       <p>Set bill amounts for specific services</p>
 
-      <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".broker-accessorial-form-wrapper">
+      <div data-controller="nested-form" data-nested-form-wrapper-selector-value=".accessorial-form-wrapper">
         <template data-nested-form-target="template">
-          <%= f.fields_for :broker_accessorials, BrokerAccessorial.new, child_index: 'NEW_RECORD' do |broker_accessorials_form| %>
-            <%= render 'broker_accessorial_form', f: broker_accessorials_form %>
+          <%= f.fields_for :accessorials, Accessorial.new, child_index: 'NEW_RECORD' do |accessorials_form| %>
+            <%= render 'accessorial_form', f: accessorials_form %>
           <% end %>
         </template>
 
-        <%= f.fields_for :broker_accessorials do |broker_accessorials_form| %>
-          <%= render 'broker_accessorial_form', f: broker_accessorials_form %>
+        <%= f.fields_for :accessorials do |accessorials_form| %>
+          <%= render 'accessorial_form', f: accessorials_form %>
         <% end %>
 
         <div data-nested-form-target="target"></div>

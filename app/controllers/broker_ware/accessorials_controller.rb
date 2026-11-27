@@ -1,9 +1,13 @@
 class BrokerWare::AccessorialsController < BrokerWare::ApplicationController
+  before_action :set_accessorials
+
   def index
     authorize!(broker_customer, to: :view?)
 
-    @broker_accessorials = broker_customer.eligible_broker_accessorials.where.not(accessorial: nil).includes(:accessorial)
-
-    stale?(@broker_accessorials, Accessorial.where(id: @broker_accessorials.select(:accessorial_id)))
+    stale?(*@accessorials)
   end
+
+  private
+
+  def set_accessorials = @accessorials = authorized_scope(Accessorial.all).catalog
 end

@@ -177,11 +177,8 @@ RSpec.describe(EBOL::Exporter) do
 
     context 'with accessorials and a hazardous item' do
       before do
-        accessorials = [
-          create(:accessorial, code: 'LGD', freight_kit_code: 'liftgate_delivery', name: 'Liftgate Delivery'),
-          create(:accessorial, code: 'NOPE', freight_kit_code: 'unmapped', name: 'Unmapped')
-        ]
-        shipment.broker_accessorials << BrokerAccessorial.where(accessorial: accessorials)
+        shipment.accessorials << create(:accessorial, code: 'LGD', name: 'Liftgate Delivery', transponder_code: 'liftgate_delivery')
+        shipment.accessorials << create(:accessorial, code: 'WKND', name: 'Weekend Holding')
         create(:item, declared_freight_class: 85, hazmat: true, packaging: create(:packaging, freight_kit_type: nil), shipment:)
       end
 

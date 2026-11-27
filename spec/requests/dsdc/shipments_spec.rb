@@ -236,7 +236,7 @@ RSpec.describe('DSDC::Shipments') do
       end
 
       it { expect(response).to(have_http_status(:not_modified)) }
-      it { expect(queries.grep(/SELECT "(broker_accessorials|items|packagings|tracking_events)"\.\*/)).to(be_empty) }
+      it { expect(queries.grep(/SELECT "(accessorials|items|packagings|tracking_events)"\.\*/)).to(be_empty) }
     end
 
     context 'when an item changed after the shipment' do

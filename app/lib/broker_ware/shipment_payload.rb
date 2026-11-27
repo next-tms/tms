@@ -70,7 +70,7 @@ class BrokerWare::ShipmentPayload < BrokerWare::Quote
         items_attributes: (items_attributes if provided?(:items)),
         pickup_on: (pickup_on if provided?(:pickup_date)),
         receiver_address_attributes: address_attributes(:receiver),
-        shipment_broker_accessorials_attributes: (shipment_broker_accessorials_attributes if provided?(:accessorials)),
+        shipment_accessorials_attributes: (shipment_accessorials_attributes if provided?(:accessorials)),
         shipper_address_attributes: address_attributes(:shipper)
       }.compact
     }
@@ -99,10 +99,10 @@ class BrokerWare::ShipmentPayload < BrokerWare::Quote
   def pickup_on = params[:pickup_date].presence&.then { |time| Time.iso8601(time).to_date }
   def provided_attributes(attributes, &) = attributes.select { |_attribute, key| provided?(key) }.transform_values(&)
 
-  def shipment_broker_accessorials_attributes
+  def shipment_accessorials_attributes
     [
-      *shipment.shipment_broker_accessorials.map { |shipment_broker_accessorial| { _destroy: true, id: shipment_broker_accessorial.id } },
-      *broker_accessorials.ids.map { |broker_accessorial_id| { broker_accessorial_id: } }
+      *shipment.shipment_accessorials.map { |shipment_accessorial| { _destroy: true, id: shipment_accessorial.id } },
+      *accessorials.map { |accessorial| { accessorial: } }
     ]
   end
 

@@ -1,6 +1,10 @@
-<div class="broker-accessorial-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+<div class="accessorial-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
   <div class="col-auto">
-    <%= f.select :accessorial_id, @broker_customer.eligible_broker_accessorials.includes(:accessorial).where.not(accessorial: nil).map(&:accessorial).collect { |accessorial| [ accessorial.name, accessorial.id ] }, { hide_label: true, include_blank: 'API accessorial to use', wrapper: false }, class: 'form-select' %>
+    <%= f.select :transponder_code,
+                 Transponder::ORM::Accessorial.all.map { |transponder_accessorial| [transponder_accessorial.name, transponder_accessorial.code] },
+                 { hide_label: true, include_blank: 'API accessorial to use', wrapper: false },
+                 class: 'form-select'
+    %>
   </div>
 
   <div class="col col-md-1">

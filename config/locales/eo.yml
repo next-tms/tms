@@ -23,9 +23,16 @@ eo:
   activerecord:
     attributes:
       accessorial:
+        broker_customer: Kliento
+        broker_only: Nur por makleristo
         code: Kodo
+        cost: Kosto
         fee: Kosto
+        flat_charge: Fiksa kosto
         name: Nomo
+        transponder_code: Kroma servo
+        upcharge: Krompago
+        upcharge_percent: Procento de krompago
       address:
         business: Komerca
         city: Urbo
@@ -55,18 +62,6 @@ eo:
         account_number: Kontonumero
         kind: Tipo
         name: Nomo
-      broker_accessorial:
-        accessorial: Kroma servo
-        accessorial_id: Kroma servo
-        broker_customer: Kliento
-        broker_only: Nur por makleristo
-        code: Kodo
-        cost: Kosto
-        fee: Kosto
-        flat_charge: Fiksa kosto
-        name: Nomo
-        upcharge: Krompago
-        upcharge_percent: Procento de krompago
       broker_carrier:
         account: Kontonumero
         account_desc: Priskribo de konto
@@ -373,9 +368,10 @@ eo:
         truckload: Plena kamionŝarĝo
         updated_by: Ĝisdatigita de
         value: Deklarita valoro
-      shipment_broker_accessorial:
-        broker_accessorial: Kroma servo
-        broker_accessorial_id: Kroma servo
+      shipment_accessorial:
+        accessorial: Kroma servo
+        accessorial_id: Kroma servo
+        accessorial_key: Kroma servo
         charge: Kosto
         cost: Elspezo
       subscription:
@@ -423,11 +419,11 @@ eo:
         receive_sms_notifications: Ĉu ricevi sciigojn per tekstmesaĝo?
         time_zone_name: Horzono
     help:
+      accessorial:
+        flat_charge: Ĉiam apliki ĉi tiun sumon sendepende de la kotizo de la transportisto
       api_key:
         name: Kie la ŝlosilo estas uzata, ekzemple “Magazena WMS”
         ttl: Renovigu la ŝlosilon por anstataŭigi ĝin antaŭ ol ĝi eksvalidiĝas
-      broker_accessorial:
-        flat_charge: Ĉiam apliki ĉi tiun sumon sendepende de la kotizo de la transportisto
       broker_carrier:
         days_to_pay_after_invoice_date: Uzata por krei limdatojn de pago kiam ili ne estas indikitaj en kontoeltiroj
       broker_customer:
@@ -452,9 +448,6 @@ eo:
       bank:
         one: Banko
         other: Bankoj
-      broker_accessorial:
-        one: Kroma servo
-        other: Kromaj servoj
       broker_carrier:
         one: Transportisto
         other: Transportistoj
@@ -545,7 +538,7 @@ eo:
       shipment:
         one: Ŝarĝo
         other: Ŝarĝoj
-      shipment_broker_accessorial:
+      shipment_accessorial:
         one: Kosto de kroma servo
         other: Kostoj de kromaj servoj
       subscription:

@@ -1,10 +1,10 @@
 module EBOL
   class << self
-    def accessorial_code(freight_kit_code) = ACCESSORIAL_CODES[freight_kit_code]
-    def accessorial_codes(accessorials) = accessorials.filter_map { |accessorial| accessorial_code(accessorial.freight_kit_code) }
-    def freight_kit_code(code) = ACCESSORIAL_CODES.key(code)
+    def accessorial_code(transponder_code) = ACCESSORIAL_CODES[transponder_code]
+    def accessorial_codes(accessorials) = accessorials.filter_map { |accessorial| accessorial_code(accessorial.transponder_code) }
     def freight_kit_type(type) = HANDLING_UNIT_ALIASES[type.to_s.upcase] || HANDLING_UNIT_TYPES.key(type.to_s.upcase) || 'piece'
     def handling_unit_type(packaging) = HANDLING_UNIT_TYPES.fetch(packaging&.freight_kit_type, 'OTH')
+    def transponder_code(code) = ACCESSORIAL_CODES.key(code)
     def valid?(document) = SCHEMA.valid?(document.as_json)
 
     private
@@ -37,7 +37,7 @@ module EBOL
     'residential_delivery' => 'RES',
     'residential_pickup' => 'REP'
   }.freeze
-  DELIVERY_ACCESSORIAL_CODES = ACCESSORIAL_CODES.select { |freight_kit_code, _code| freight_kit_code.include?('delivery') }.values.freeze
+  DELIVERY_ACCESSORIAL_CODES = ACCESSORIAL_CODES.select { |transponder_code, _code| transponder_code.include?('delivery') }.values.freeze
   HANDLING_UNIT_ALIASES = { 'SKD' => 'pallet' }.freeze
   HANDLING_UNIT_TYPES = {
     'box' => 'BOX',

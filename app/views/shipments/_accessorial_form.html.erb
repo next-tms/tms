@@ -1,15 +1,6 @@
-<div class="shipment-broker-accessorial-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
+<div class="shipment-accessorial-form-wrapper row gy-2 gx-3 align-items-center mb-4" data-new-record="<%= f.object.new_record? %>">
   <div class="col-auto">
-    <% broker_accessorials = if @shipment.broker_customer.blank?
-                               BrokerAccessorial.where(broker_customer: nil).order(:name)
-                             else
-                               @shipment.broker_customer.eligible_broker_accessorials
-                             end
-    %>
-    <%= f.select :broker_accessorial_id,
-                 broker_accessorials.collect { |c| [c.name, c.id] },
-                 { hide_label: true, wrapper: false },
-                 class: 'form-select' %>
+    <%= f.select :accessorial_key, accessorial_options(@shipment.broker_customer), { hide_label: true, wrapper: false }, class: 'form-select' %>
 
     <% if f.object.suggested %>
       <small class="ms-1 text-secondary"> Suggested

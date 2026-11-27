@@ -172,7 +172,7 @@ RSpec.describe(Shipment) do
   end
 
   describe 'helpers' do
-    let(:accessorial) { instance_double(Accessorial, code: 'liftgate', name: 'Liftgate') }
+    let(:accessorial) { build(:accessorial, code: 'DLIF', name: 'Liftgate', transponder_code: 'liftgate_delivery') }
     let(:loose_item) { instance_double(Item) }
     let(:pallet_item) { instance_double(Item) }
     let(:shipment) { build(:shipment, broker_carrier: nil, load_id: 42) }
@@ -191,28 +191,57 @@ RSpec.describe(Shipment) do
       it { expect(shipment.accessorial_codes).to(eq([])) }
 
       context 'when the shipment has accessorials' do
-        before { allow(shipment).to(receive(:accessorials).and_return([accessorial])) }
+        before do
+          shipment.shipment_accessorials.build(accessorial:)
+          shipment.shipment_accessorials.build(accessorial: build(:accessorial, code: nil, transponder_code: 'residential_delivery'))
+        end
 
-        it { expect(shipment.accessorial_codes).to(eq(['liftgate'])) }
-        it { expect(shipment.accessorial_names).to(eq(['Liftgate'])) }
+        it { expect(shipment.accessorial_codes).to(eq(['DLIF', 'residential_delivery'])) }
       end
     end
 
-    describe '#accessorial_names' do
-      it { expect(shipment.accessorial_names).to(eq([])) }
+    describe '#accessorial_codes=' do
+      let(:shipment) { create(:shipment, broker_carrier: nil) }
+      let!(:liftgate) { create(:accessorial, code: 'DLIF') }
+
+      before do
+        create(:accessorial, broker_customer: create(:broker_customer), code: 'DRES')
+        shipment.accessorial_codes = 'DLIF, DRES'
+      end
+
+      it { expect(shipment.accessorials).to(eq([liftgate])) }
     end
 
-    describe '#assumed_accessorial_codes' do
-      before { allow(shipment).to(receive(:assumed_accessorials).and_return([accessorial])) }
+    describe '#assumed_accessorials' do
+      let(:service) { instance_double(BuildAssumedAccesorialsService, call: [accessorial]) }
 
-      it { expect(shipment.assumed_accessorial_codes).to(eq(['liftgate'])) }
-      it { expect(shipment.assumed_accessorial_names).to(eq(['Liftgate'])) }
+      before { allow(BuildAssumedAccesorialsService).to(receive(:new).with(shipment:).and_return(service)) }
+
+      it { expect(shipment.assumed_accessorials).to(eq([accessorial])) }
     end
 
-    describe '#assumed_accessorial_names' do
-      before { allow(shipment).to(receive(:assumed_accessorials).and_return([])) }
+    describe '#combined_accessorials' do
+      let(:custom) { build(:accessorial, code: 'WKND') }
+      let(:liftgate) { build(:accessorial, transponder_code: 'liftgate_delivery') }
+      let(:residential) { build(:accessorial, transponder_code: 'residential_delivery') }
 
-      it { expect(shipment.assumed_accessorial_names).to(eq([])) }
+      before do
+        shipment.shipment_accessorials.build(accessorial:)
+        shipment.shipment_accessorials.build(accessorial: custom)
+        allow(shipment).to(receive(:assumed_accessorials).and_return([liftgate, residential]))
+      end
+
+      it { expect(shipment.combined_accessorials).to(eq([accessorial, custom, residential])) }
+      it { expect(shipment.combined_transponder_accessorial_codes).to(eq(['liftgate_delivery', 'residential_delivery'])) }
+    end
+
+    describe '#selected_accessorials' do
+      before do
+        shipment.shipment_accessorials.build(accessorial:)
+        shipment.shipment_accessorials.build(accessorial: build(:accessorial)).mark_for_destruction
+      end
+
+      it { expect(shipment.selected_accessorials).to(eq([accessorial])) }
     end
 
     describe '#broker_carrier_bol_requires_tracking_number?' do
@@ -335,6 +364,22 @@ RSpec.describe(Shipment) do
       it { expect(shipment.profit).to(eq(Money.new(-200, 'USD'))) }
     end
 
+    describe '#recalculate_accessorials' do
+      let(:broker_customer) { create(:broker_customer) }
+      let(:blanket) { create(:accessorial, code: 'DLIF', transponder_code: 'liftgate_delivery') }
+      let!(:customer) { create(:accessorial, broker_customer:, code: 'CLIF', transponder_code: 'liftgate_delivery') }
+      let(:custom) { create(:accessorial, code: 'WKND') }
+
+      before do
+        shipment.shipment_accessorials.build(accessorial: blanket)
+        shipment.shipment_accessorials.build(accessorial: custom)
+        shipment.broker_customer = broker_customer
+        shipment.__send__(:recalculate_accessorials)
+      end
+
+      it { expect(shipment.selected_accessorials).to(eq([customer, custom])) }
+    end
+
     describe '#remove_applied_rate' do
       before do
         shipment.applied_rate = build(:rate)
@@ -355,45 +400,19 @@ RSpec.describe(Shipment) do
       it { expect(tracking_events).to(have_received(:destroy_all)) }
     end
 
-    describe '#suggested_accessorial_codes' do
-      before { allow(shipment).to(receive(:suggested_accessorials).and_return([accessorial])) }
+    describe '#suggested_accessorials' do
+      let(:residential) { build(:accessorial, transponder_code: 'residential_delivery') }
 
-      it { expect(shipment.suggested_accessorial_codes).to(eq(['liftgate'])) }
-    end
+      before { allow(shipment).to(receive(:assumed_accessorials).and_return([accessorial, residential])) }
 
-    describe '#suggested_broker_accessorials' do
-      let!(:blanket) { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'LIF', name: 'Liftgate') }
-      let!(:other_customer) { create(:broker_accessorial, accessorial: nil, code: 'RES', name: 'Residential') }
-      let(:shipment) { create(:shipment, broker_carrier: nil) }
+      it { expect(shipment.suggested_accessorials).to(eq([accessorial, residential])) }
 
-      before { allow(shipment).to(receive(:suggested_accessorial_codes).and_return(['LIF', 'RES'])) }
+      context 'when the shipment already has an accessorial with the same Transponder code' do
+        before do
+          shipment.shipment_accessorials.build(accessorial: build(:accessorial, code: 'LIFT', transponder_code: 'liftgate_delivery'))
+        end
 
-      it { expect(shipment.suggested_broker_accessorials).to(eq([blanket])) }
-      it { expect(shipment.suggested_broker_accessorials).not_to(include(other_customer)) }
-
-      context 'when nothing is suggested' do
-        before { allow(shipment).to(receive(:suggested_accessorial_codes).and_return([])) }
-
-        it { expect(shipment.suggested_broker_accessorials).to(eq([])) }
-      end
-
-      context 'when the broker customer has its own accessorial' do
-        let!(:customer) { create(:broker_accessorial, accessorial: nil, broker_customer:, code: 'LIF', name: 'Lif') }
-        let(:broker_customer) { shipment.broker_customer }
-
-        it { expect(shipment.suggested_broker_accessorials).to(eq([customer])) }
-      end
-
-      context 'when the shipment already has the accessorial' do
-        before { shipment.broker_accessorials << blanket }
-
-        it { expect(shipment.suggested_broker_accessorials).to(eq([])) }
-      end
-
-      context 'when there is no broker customer' do
-        before { shipment.broker_customer = nil }
-
-        it { expect(shipment.suggested_broker_accessorials).to(eq([blanket])) }
+        it { expect(shipment.suggested_accessorials).to(eq([residential])) }
       end
     end
 
@@ -902,6 +921,26 @@ RSpec.describe(Shipment) do
     end
   end
 
+  describe '#total_accessorial_charge' do
+    let(:shipment) { build(:shipment) }
+
+    it { expect(shipment.total_accessorial_charge).to(eq(0)) }
+
+    context 'with accessorials' do
+      before do
+        shipment.shipment_accessorials.build(accessorial: build(:accessorial), charge: 10, cost: 4)
+        shipment.shipment_accessorials.build(accessorial: build(:accessorial), charge: 5, cost: 2)
+      end
+
+      it { expect(shipment.total_accessorial_charge).to(eq(Money.from_amount(15))) }
+      it { expect(shipment.total_accessorial_cost).to(eq(Money.from_amount(6))) }
+    end
+  end
+
+  describe '#total_accessorial_cost' do
+    it { expect(build(:shipment).total_accessorial_cost).to(eq(0)) }
+  end
+
   describe '#total_cubic_ft' do
     subject { shipment.total_cubic_ft(rounded: false) }
 
@@ -1056,6 +1095,31 @@ RSpec.describe(Shipment) do
       before { shipment.update!(pickup_on: 2.days.from_now) }
 
       it { expect(described_class.missed_pickup).not_to(include(shipment)) }
+    end
+  end
+
+  describe '.missing_delivery_appointment' do
+    let(:shipment) do
+      create(
+        :shipment,
+        :usd,
+        canceled_at: nil,
+        delivered_at: nil,
+        delivery_appointment_at: nil,
+        delivery_appointment_on: nil,
+        pending_appointment_since: nil,
+        picked_up_at: 1.day.ago
+      )
+    end
+
+    before { shipment.shipment_accessorials.create!(accessorial: create(:accessorial, transponder_code: 'appointment_delivery')) }
+
+    it { expect(described_class.missing_delivery_appointment).to(include(shipment)) }
+
+    context 'when the delivery appointment is set' do
+      before { shipment.update!(delivery_appointment_on: Date.current) }
+
+      it { expect(described_class.missing_delivery_appointment).not_to(include(shipment)) }
     end
   end
 

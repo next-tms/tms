@@ -9,15 +9,15 @@ RSpec.describe(BrokerCustomer) do
     it { expect(described_class.ransackable_attributes).not_to(include('default_upcharge_cents', 'default_upcharge_percentage')) }
   end
 
-  describe '#eligible_broker_accessorials' do
+  describe '#eligible_accessorials' do
     let(:record) { create(:broker_customer) }
 
-    let!(:blanket_accessorial) { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'LFT') }
-    let!(:customer_accessorial) { create(:broker_accessorial, accessorial: nil, broker_customer: record, code: 'RES') }
+    let!(:blanket_accessorial) { create(:accessorial, broker_customer: nil, code: 'LFT') }
+    let!(:customer_accessorial) { create(:accessorial, broker_customer: record, code: 'RES') }
 
-    before { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'RES') }
+    before { create(:accessorial, broker_customer: nil, code: 'RES') }
 
-    it { expect(record.eligible_broker_accessorials).to(contain_exactly(blanket_accessorial, customer_accessorial)) }
+    it { expect(record.eligible_accessorials).to(contain_exactly(blanket_accessorial, customer_accessorial)) }
   end
 
   describe '#to_accounting_customer' do

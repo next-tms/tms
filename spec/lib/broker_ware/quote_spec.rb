@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe(BrokerWare::Quote) do
   subject(:quote) { described_class.new(ActionController::Parameters.new(body).permit(described_class::PERMITTED), broker_customer:) }
 
-  let(:accessorial) { create(:accessorial, code: 'DRES', freight_kit_code: 'residential_delivery') }
+  let(:accessorial) { create(:accessorial, code: 'DRES', transponder_code: 'residential_delivery') }
   let(:body) do
     {
       accessorials: ['rsde', 'RSDE', ''],
@@ -18,7 +18,6 @@ RSpec.describe(BrokerWare::Quote) do
     }
   end
   let(:box) { create(:packaging, freight_kit_type: 'box') }
-  let(:broker_accessorial) { BrokerAccessorial.find_by(accessorial:) }
   let(:broker_customer) { create(:broker_customer) }
   let(:pallet) { create(:packaging, freight_kit_type: 'pallet') }
   let(:receiver_location) { { city: 'Fremont', country_alpha2: 'US', region_iso31662: 'US-CA', zip_code: '94536' } }
@@ -67,9 +66,7 @@ RSpec.describe(BrokerWare::Quote) do
     it { expect(quote.shipment_attributes).to(include(receiver_address_attributes: receiver_location)) }
     it { expect(quote.shipment_attributes).to(include(shipper_address_attributes: shipper_location)) }
 
-    it do
-      expect(quote.shipment_attributes[:shipment_broker_accessorials_attributes]).to(eq([{ broker_accessorial_id: broker_accessorial.id }]))
-    end
+    it { expect(quote.shipment_attributes[:shipment_accessorials_attributes]).to(eq([{ accessorial: }])) }
 
     it do
       expect(quote.shipment_attributes[:items_attributes]).to(
@@ -118,13 +115,25 @@ RSpec.describe(BrokerWare::Quote) do
   describe 'validations' do
     it { is_expected.to(be_valid) }
 
-    context 'with an accessorial the customer is not offered' do
+    context 'with an accessorial that has no record yet' do
+      before { body[:accessorials] = ['RSDE', 'LGDE'] }
+
+      it { is_expected.to(be_valid) }
+
+      it do
+        expect(quote.shipment_attributes[:shipment_accessorials_attributes].map do |attributes|
+          attributes[:accessorial].transponder_code
+        end).to(eq(['residential_delivery', 'liftgate_delivery']))
+      end
+    end
+
+    context 'with an unknown accessorial code' do
       before do
-        body[:accessorials] = ['RSDE', 'LGDE']
+        body[:accessorials] = ['RSDE', 'ZZZZ']
         quote.validate
       end
 
-      it { expect(quote.errors.details[:accessorials]).to(eq([{ codes: 'LGDE', error: :unserviceable }])) }
+      it { expect(quote.errors.details[:accessorials]).to(eq([{ codes: 'ZZZZ', error: :unserviceable }])) }
     end
 
     context 'with a TMS accessorial code' do

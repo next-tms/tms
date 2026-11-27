@@ -29,7 +29,7 @@ class Shipment::RatesService
     # @return [Rate]
     def build_rate(source)
       Rate.new(
-        accessorials: Accessorial.combined_accessorials(shipment:),
+        accessorials: shipment.combined_accessorials,
         broker_carrier:,
         broker_customer: shipment.broker_customer,
         shipment_fingerprint: shipment.fingerprint,

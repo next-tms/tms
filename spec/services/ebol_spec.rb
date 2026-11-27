@@ -7,14 +7,9 @@ RSpec.describe(EBOL) do
   end
 
   describe '.accessorial_codes' do
-    let(:accessorials) { [build(:accessorial, freight_kit_code: 'liftgate_delivery'), build(:accessorial, freight_kit_code: 'unknown')] }
+    let(:accessorials) { [build(:accessorial, transponder_code: 'liftgate_delivery'), build(:accessorial, transponder_code: 'unknown')] }
 
     it { expect(described_class.accessorial_codes(accessorials)).to(eq(['LFTD'])) }
-  end
-
-  describe '.freight_kit_code' do
-    it { expect(described_class.freight_kit_code('RES')).to(eq('residential_delivery')) }
-    it { expect(described_class.freight_kit_code('XYZ')).to(be_nil) }
   end
 
   describe '.freight_kit_type' do
@@ -27,6 +22,11 @@ RSpec.describe(EBOL) do
     it { expect(described_class.handling_unit_type(build(:packaging, freight_kit_type: 'pallet'))).to(eq('PAT')) }
     it { expect(described_class.handling_unit_type(build(:packaging, freight_kit_type: nil))).to(eq('OTH')) }
     it { expect(described_class.handling_unit_type(nil)).to(eq('OTH')) }
+  end
+
+  describe '.transponder_code' do
+    it { expect(described_class.transponder_code('RES')).to(eq('residential_delivery')) }
+    it { expect(described_class.transponder_code('XYZ')).to(be_nil) }
   end
 
   describe '.valid?' do

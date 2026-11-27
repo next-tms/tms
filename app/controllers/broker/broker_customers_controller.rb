@@ -251,7 +251,7 @@ class Broker::BrokerCustomersController < Broker::BrokerController
           preferred_broker_carriers_attributes: [%i[_destroy id broker_carrier_id]],
           broker_customer_sales_reps_attributes: [%i[_destroy id commission_flat commission_percent user_id]],
           broker_customer_dispatchers_attributes: [%i[_destroy id user_id]],
-          broker_accessorials_attributes: [%i[_destroy id accessorial_id code flat_charge name upcharge upcharge_percent]],
+          accessorials_attributes: [%i[_destroy id code flat_charge name transponder_code upcharge upcharge_percent]],
           customer_attributes: %i[_destroy id legal_name name],
           document_preferences_attributes: [%i[_destroy id contact_id kind]],
           office_address_attributes: %i[id street street2 city region_iso31662 zip_code country_alpha2],

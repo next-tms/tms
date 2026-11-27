@@ -28,7 +28,7 @@ class EBOL::Exporter
   private
 
   def accessorials
-    codes = EBOL.accessorial_codes(shipment.accessorials)
+    codes = EBOL.accessorial_codes(shipment.selected_accessorials)
     codes << 'HAZ' if shipment.items.any?(&:hazmat?)
     { codes: codes.uniq } if codes.any?
   end

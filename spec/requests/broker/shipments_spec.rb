@@ -45,19 +45,31 @@ RSpec.describe('Broker::Shipments') do
     it { expect(alert).to(be_nil) }
 
     context 'with a suggested accessorial' do
-      let(:broker_accessorial) { BrokerAccessorial.find_by!(code: 'DAIR') }
-      let(:href) { broker_shipment_path(shipment, shipment: { shipment_broker_accessorials_attributes: }) }
+      let(:href) do
+        broker_shipment_path(shipment, shipment: { shipment_accessorials_attributes: [{ accessorial_key: 'airport_delivery' }] })
+      end
       let(:receiver_address) { build(:address, name: 'Airport') }
       let(:shipment) do
-        create(:shipment, :usd, broker_carrier: nil, dispatched_at: nil, load_id: 4242, quote_only: false, receiver_address:).tap do
-          accessorial = create(:accessorial, code: 'DAIR', name: 'Airport')
-          create(:broker_accessorial, accessorial:, broker_customer: nil, code: 'DAIR', name: 'Airport')
-        end
+        create(:shipment, :usd, broker_carrier: nil, dispatched_at: nil, load_id: 4242, quote_only: false, receiver_address:)
       end
-      let(:shipment_broker_accessorials_attributes) { [{ broker_accessorial_id: broker_accessorial.id }] }
 
       it { expect(alert.at_css('a')['href']).to(eq(href)) }
-      it { expect(alert.at_css('a[data-turbo-method="patch"]').text).to(eq('Add Airport')) }
+      it { expect(alert.at_css('a[data-turbo-method="patch"]').text).to(eq('Add Airport Delivery')) }
+
+      context 'when the broker renamed the accessorial' do
+        let(:accessorial) { Accessorial.find_by!(code: 'DAIR') }
+        let(:href) do
+          broker_shipment_path(shipment, shipment: { shipment_accessorials_attributes: [{ accessorial_key: accessorial.key }] })
+        end
+        let(:shipment) do
+          create(:shipment, :usd, broker_carrier: nil, dispatched_at: nil, load_id: 4242, quote_only: false, receiver_address:).tap do
+            create(:accessorial, code: 'DAIR', name: 'Airport', transponder_code: 'airport_delivery')
+          end
+        end
+
+        it { expect(alert.at_css('a')['href']).to(eq(href)) }
+        it { expect(alert.at_css('a[data-turbo-method="patch"]').text).to(eq('Add Airport')) }
+      end
     end
   end
 
@@ -132,18 +144,29 @@ RSpec.describe('Broker::Shipments') do
   end
 
   describe 'PATCH /broker/shipments/:load_id' do
-    let(:broker_accessorial) { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'DAIR', name: 'Airport') }
-    let(:kept) { create(:broker_accessorial, accessorial: nil, broker_customer: nil, code: 'DRES', name: 'Residential') }
-    let(:shipment_broker_accessorials_attributes) { [{ broker_accessorial_id: broker_accessorial.id }] }
+    let(:accessorial) { create(:accessorial, broker_customer: nil, code: 'DAIR', name: 'Airport') }
+    let(:accessorial_key) { accessorial.key }
+    let(:kept) { create(:accessorial, broker_customer: nil, code: 'DRES', name: 'Residential') }
+    let(:shipment_accessorials_attributes) { [{ accessorial_key: }] }
 
     before do
-      shipment.shipment_broker_accessorials.create!(broker_accessorial: kept, cost: 10)
-      patch(broker_shipment_path(shipment, shipment: { shipment_broker_accessorials_attributes: }))
+      shipment.shipment_accessorials.create!(accessorial: kept, cost: 10)
+      patch(broker_shipment_path(shipment, shipment: { shipment_accessorials_attributes: }))
     end
 
     it { is_expected.to(redirect_to(broker_shipment_path(shipment))) }
-    it { expect(shipment.reload.broker_accessorials).to(contain_exactly(broker_accessorial, kept)) }
-    it { expect(shipment.shipment_broker_accessorials.find_by(broker_accessorial: kept).cost).to(eq(Money.from_amount(10))) }
+    it { expect(shipment.reload.accessorials).to(contain_exactly(accessorial, kept)) }
+    it { expect(shipment.shipment_accessorials.find_by(accessorial: kept).cost).to(eq(Money.from_amount(10))) }
+
+    context 'with a Transponder accessorial' do
+      let(:accessorial_key) { 'airport_delivery' }
+
+      it { expect(shipment.reload.accessorials.map(&:transponder_code)).to(contain_exactly('airport_delivery', nil)) }
+
+      it do
+        expect(Accessorial.find_by(transponder_code: 'airport_delivery')).to(have_attributes(broker_only: false, name: 'Airport Delivery'))
+      end
+    end
   end
 
   describe 'PATCH /broker/shipments/:load_id.json' do
@@ -162,7 +185,6 @@ RSpec.describe('Broker::Shipments') do
   end
 
   describe 'POST /broker/shipments' do
-    let(:accessorial) { create(:accessorial, code: 'DAIR', name: 'Airport') }
     let(:accessorials_has_been_suggested) { nil }
     let(:address) { { city: 'Reno', country_alpha2: 'US', zip_code: '89501' } }
     let(:document) { Nokogiri::HTML(response.body) }
@@ -179,14 +201,14 @@ RSpec.describe('Broker::Shipments') do
     end
 
     before do
-      create(:broker_accessorial, accessorial:, broker_customer: nil, code: 'DAIR', name: 'Airport')
+      create(:accessorial, broker_customer: nil, code: 'DAIR', name: 'Airport', transponder_code: 'airport_delivery')
       post(broker_shipments_path, params:)
     end
 
     it { is_expected.to(have_http_status(:unprocessable_content)) }
     it { expect(document.at_css('.alert-info').text.squish).to(be_present) }
     it { expect(document.at_css('input[name="shipment[accessorials_has_been_suggested]"]')['value']).to(eq('true')) }
-    it { expect(document.at_css('select[name$="[broker_accessorial_id]"] option[selected]').text).to(eq('Airport')) }
+    it { expect(document.at_css('select[name$="[accessorial_key]"] option[selected]').text).to(eq('Airport')) }
 
     context 'when accessorials were already suggested' do
       let(:accessorials_has_been_suggested) { 'true' }

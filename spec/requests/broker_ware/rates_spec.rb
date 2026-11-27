@@ -1,9 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe('BrokerWare rates') do
-  let(:accessorial) { create(:accessorial, freight_kit_code: 'residential_delivery') }
+  let(:accessorial) { create(:accessorial, broker_customer:, transponder_code: 'residential_delivery') }
   let(:api_key) { create(:api_key, user: create(:customer_user, companyable: broker_customer)) }
-  let(:broker_accessorial) { create(:broker_accessorial, accessorial:, broker_customer:) }
   let(:broker_carrier) { create(:broker_carrier, carrier: create(:carrier, name: 'Fedex LTL Economy', scac: 'FXNL')) }
   let(:broker_customer) { create(:broker_customer) }
   let(:charge) { Money.new(17_314, 'USD') }
@@ -47,7 +46,7 @@ RSpec.describe('BrokerWare rates') do
   end
 
   before do
-    broker_accessorial
+    accessorial
     create(:packaging, freight_kit_type: 'box')
     create(:packaging, freight_kit_type: 'pallet')
     allow(Geo).to(receive(:verify)) { |postal_code:, **| verifications[postal_code] }
@@ -87,15 +86,15 @@ RSpec.describe('BrokerWare rates') do
 
     it { expect(shipment.items.map { |item| item.packaging.freight_kit_type }).to(eq(['pallet', 'box'])) }
     it { expect(shipment.receiver_address).to(have_attributes(city: 'Fremont', region_iso31662: 'US-CA', zip_code: '94536')) }
-    it { expect(shipment.shipment_broker_accessorials.pluck(:broker_accessorial_id)).to(eq([broker_accessorial.id])) }
+    it { expect(shipment.shipment_accessorials.pluck(:accessorial_id)).to(eq([accessorial.id])) }
     it { expect(shipment.shipper_address).to(have_attributes(city: 'Austin', region_iso31662: 'US-TX', zip_code: '78701')) }
     it { expect(Shipment::RatesService).to(have_received(:call).with(broker_carrier, shipment, declared_freight_classes: true, save: true)) }
 
-    context 'with an accessorial the customer is not offered' do
-      let(:params) { super().merge(accessorials: ['RSDE', 'LGDE']) }
+    context 'with an unknown accessorial' do
+      let(:params) { super().merge(accessorials: ['RSDE', 'ZZZZ']) }
 
       it { is_expected.to(have_http_status(:bad_request)) }
-      it { expect(json[:message]).to(include('LGDE')) }
+      it { expect(json[:message]).to(include('ZZZZ')) }
       it { expect(shipment).to(be_nil) }
     end
 

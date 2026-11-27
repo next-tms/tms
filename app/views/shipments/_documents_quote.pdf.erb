@@ -132,11 +132,11 @@
         </td>
       </tr>
 
-      <% shipment.shipment_broker_accessorials.sort_by{ |shipment_broker_accessorial| shipment_broker_accessorial.broker_accessorial.name }.each do |shipment_broker_accessorial| %>
-        <% unless shipment_broker_accessorial.broker_accessorial.broker_only %>
+      <% shipment.shipment_accessorials.sort_by{ |shipment_accessorial| shipment_accessorial.accessorial.name }.each do |shipment_accessorial| %>
+        <% unless shipment_accessorial.accessorial.broker_only %>
           <tr>
-            <td><%= shipment_broker_accessorial.broker_accessorial.name %></td>
-            <td class="text-end"><%= humanized_money_with_symbol shipment_broker_accessorial.charge, no_cents_if_whole: false %></td>
+            <td><%= shipment_accessorial.accessorial.name %></td>
+            <td class="text-end"><%= humanized_money_with_symbol shipment_accessorial.charge, no_cents_if_whole: false %></td>
           </tr>
         <% end %>
       <% end %>

@@ -225,13 +225,13 @@
                 <td>✓</td>
               </tr>
             <% end %>
-            <% @shipment.shipment_broker_accessorials.sort_by{ |shipment_broker_accessorial| shipment_broker_accessorial.broker_accessorial.name }.each do |shipment_broker_accessorial| %>
+            <% @shipment.shipment_accessorials.sort_by{ |shipment_accessorial| shipment_accessorial.accessorial.name }.each do |shipment_accessorial| %>
               <tr>
-                <td><%= shipment_broker_accessorial.broker_accessorial.name %></td>
-                <td><%= humanized_money_with_symbol shipment_broker_accessorial.cost, no_cents_if_whole: false %></td>
-                <td><%= humanized_money_with_symbol shipment_broker_accessorial.charge, no_cents_if_whole: false %></td>
-                <td><% unless shipment_broker_accessorial.broker_accessorial.broker_only %>✓<% end %></td>
-                <td><% unless shipment_broker_accessorial.broker_accessorial.broker_only %>✓<% end %></td>
+                <td><%= shipment_accessorial.accessorial.name %></td>
+                <td><%= humanized_money_with_symbol shipment_accessorial.cost, no_cents_if_whole: false %></td>
+                <td><%= humanized_money_with_symbol shipment_accessorial.charge, no_cents_if_whole: false %></td>
+                <td><% unless shipment_accessorial.accessorial.broker_only %>✓<% end %></td>
+                <td><% unless shipment_accessorial.accessorial.broker_only %>✓<% end %></td>
               </tr>
             <% end %>
           </tbody>
@@ -334,9 +334,9 @@ Load <%= @shipment.pretty_id %>
 Origin: <%= @shipment.shipper_address.city %>, <%= @shipment.shipper_address.region.abbreviation %>, <%= @shipment.shipper_address.zip_code %>
 Destination: <%= @shipment.receiver_address.city %>, <%= @shipment.receiver_address.region.abbreviation %>, <%= @shipment.receiver_address.zip_code %>
 
-<% unless @shipment.shipment_broker_accessorials.blank? %>
-<% @shipment.shipment_broker_accessorials.each do |shipment_broker_accessorial| %>
-<%= shipment_broker_accessorial.broker_accessorial.name %>
+<% unless @shipment.shipment_accessorials.blank? %>
+<% @shipment.shipment_accessorials.each do |shipment_accessorial| %>
+<%= shipment_accessorial.accessorial.name %>
 <% end %>
 <% end %>
 
@@ -367,9 +367,9 @@ Destination
 <%= @shipment.receiver_address.name %>
 <%= @shipment.receiver_address.pretty("\n") %>
 
-<% unless @shipment.shipment_broker_accessorials.blank? %>
-<% @shipment.shipment_broker_accessorials.each do |shipment_broker_accessorial| %>
-<%= shipment_broker_accessorial.broker_accessorial.name %>
+<% unless @shipment.shipment_accessorials.blank? %>
+<% @shipment.shipment_accessorials.each do |shipment_accessorial| %>
+<%= shipment_accessorial.accessorial.name %>
 <% end %>
 <% end %>
 

@@ -51,7 +51,6 @@ RSpec.describe('Customer::Shipments') do
   end
 
   describe 'POST /customer/shipments' do
-    let(:accessorial) { create(:accessorial, code: 'DAIR', name: 'Airport') }
     let(:accessorials_has_been_suggested) { nil }
     let(:address) { { city: 'Reno', country_alpha2: 'US', zip_code: '89501' } }
     let(:document) { Nokogiri::HTML(response.body) }
@@ -68,14 +67,14 @@ RSpec.describe('Customer::Shipments') do
     end
 
     before do
-      create(:broker_accessorial, accessorial:, broker_customer: nil, code: 'DAIR', name: 'Airport')
+      create(:accessorial, broker_customer: nil, code: 'DAIR', name: 'Airport', transponder_code: 'airport_delivery')
       post(customer_shipments_path, params:)
     end
 
     it { is_expected.to(have_http_status(:unprocessable_content)) }
     it { expect(document.at_css('.alert-info').text.squish).to(be_present) }
     it { expect(document.at_css('input[name="shipment[accessorials_has_been_suggested]"]')['value']).to(eq('true')) }
-    it { expect(document.at_css('select[name$="[broker_accessorial_id]"] option[selected]').text).to(eq('Airport')) }
+    it { expect(document.at_css('select[name$="[accessorial_key]"] option[selected]').text).to(eq('Airport')) }
 
     context 'when accessorials were already suggested' do
       let(:accessorials_has_been_suggested) { 'true' }

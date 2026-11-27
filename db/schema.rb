@@ -17,13 +17,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_182551) do
   enable_extension "pgcrypto"
 
   create_table "accessorials", force: :cascade do |t|
+    t.bigint "broker_customer_id"
+    t.boolean "broker_only", default: true
     t.string "code"
-    t.datetime "created_at", null: false
+    t.float "cost"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.boolean "fee", default: false
-    t.string "freight_kit_code"
+    t.integer "flat_charge_cents", default: 0, null: false
+    t.string "flat_charge_currency", default: "USD", null: false
     t.string "name"
-    t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_accessorials_on_name", unique: true
+    t.float "upcharge"
+    t.integer "upcharge_cents", default: 0, null: false
+    t.string "upcharge_currency", default: "USD", null: false
+    t.float "upcharge_percent"
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "transponder_code"
+    t.index ["broker_customer_id"], name: "index_accessorials_on_broker_customer_id"
+    t.index ["transponder_code"], name: "index_accessorials_on_transponder_code"
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -134,26 +144,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_182551) do
     t.integer "accounting_account_id"
     t.string "kind", null: false
     t.string "name"
-  end
-
-  create_table "broker_accessorials", force: :cascade do |t|
-    t.bigint "accessorial_id"
-    t.bigint "broker_customer_id"
-    t.boolean "broker_only", default: true
-    t.string "code"
-    t.float "cost"
-    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.boolean "fee", default: false
-    t.integer "flat_charge_cents", default: 0, null: false
-    t.string "flat_charge_currency", default: "USD", null: false
-    t.string "name"
-    t.float "upcharge"
-    t.integer "upcharge_cents", default: 0, null: false
-    t.string "upcharge_currency", default: "USD", null: false
-    t.float "upcharge_percent"
-    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.index ["accessorial_id"], name: "index_broker_accessorials_on_accessorial_id"
-    t.index ["broker_customer_id"], name: "index_broker_accessorials_on_broker_customer_id"
   end
 
   create_table "broker_carriers", id: :serial, force: :cascade do |t|
@@ -626,10 +616,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_182551) do
   end
 
   create_table "rate_accessorials", force: :cascade do |t|
-    t.bigint "accessorial_id", null: false
     t.datetime "created_at", null: false
     t.bigint "rate_id", null: false
     t.datetime "updated_at", null: false
+    t.bigint "accessorial_id", null: false
     t.index ["accessorial_id"], name: "index_rate_accessorials_on_accessorial_id"
     t.index ["rate_id"], name: "index_rate_accessorials_on_rate_id"
   end
@@ -721,20 +711,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_182551) do
 
   create_table "shipment_accessorials", force: :cascade do |t|
     t.bigint "accessorial_id", null: false
-    t.bigint "shipment_id", null: false
-    t.index ["accessorial_id"], name: "index_shipment_accessorials_on_accessorial_id"
-    t.index ["shipment_id"], name: "index_shipment_accessorials_on_shipment_id"
-  end
-
-  create_table "shipment_broker_accessorials", force: :cascade do |t|
-    t.bigint "broker_accessorial_id", null: false
     t.integer "charge_cents", default: 0, null: false
     t.string "charge_currency", default: "USD", null: false
     t.integer "cost_cents", default: 0, null: false
     t.string "cost_currency", default: "USD", null: false
     t.bigint "shipment_id", null: false
-    t.index ["broker_accessorial_id"], name: "index_shipment_broker_accessorials_on_broker_accessorial_id"
-    t.index ["shipment_id"], name: "index_shipment_broker_accessorials_on_shipment_id"
+    t.index ["accessorial_id"], name: "index_shipment_accessorials_on_accessorial_id"
+    t.index ["shipment_id"], name: "index_shipment_accessorials_on_shipment_id"
   end
 
   create_table "shipments", id: :serial, force: :cascade do |t|
@@ -977,12 +960,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_182551) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "accessorials", "broker_customers"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_keys", "api_keys", column: "rolled_from_id"
   add_foreign_key "api_keys", "users"
-  add_foreign_key "broker_accessorials", "accessorials"
-  add_foreign_key "broker_accessorials", "broker_customers"
   add_foreign_key "broker_carriers", "addresses", column: "check_mailing_address_id"
   add_foreign_key "broker_carriers", "broker_customers"
   add_foreign_key "broker_carriers", "carriers"
@@ -1041,8 +1023,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_182551) do
   add_foreign_key "receivables", "users", column: "updated_by_id"
   add_foreign_key "shipment_accessorials", "accessorials"
   add_foreign_key "shipment_accessorials", "shipments"
-  add_foreign_key "shipment_broker_accessorials", "broker_accessorials"
-  add_foreign_key "shipment_broker_accessorials", "shipments"
   add_foreign_key "shipments", "addresses", column: "receiver_address_id"
   add_foreign_key "shipments", "addresses", column: "shipper_address_id"
   add_foreign_key "shipments", "broker_customers"

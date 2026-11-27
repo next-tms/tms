@@ -1,4 +1,4 @@
-json.array! @broker_accessorials do |broker_accessorial|
-  json.code BrokerWare.accessorial_code(broker_accessorial.accessorial)
-  json.description broker_accessorial.name
+json.array! @accessorials do |accessorial|
+  json.code BrokerWare.accessorial_code(accessorial)
+  json.description accessorial.name
 end

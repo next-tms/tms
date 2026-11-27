@@ -122,10 +122,10 @@
             </td>
             <td><%= humanized_money_with_symbol @shipment.carrier_charge, no_cents_if_whole: false %></td>
           </tr>
-          <% @shipment.shipment_broker_accessorials.sort_by{ |shipment_broker_accessorial| shipment_broker_accessorial.broker_accessorial.name }.each do |shipment_broker_accessorial| %>
+          <% @shipment.shipment_accessorials.sort_by{ |shipment_accessorial| shipment_accessorial.accessorial.name }.each do |shipment_accessorial| %>
             <tr>
-              <td><%= shipment_broker_accessorial.broker_accessorial.name %></td>
-              <td><%= humanized_money_with_symbol shipment_broker_accessorial.charge, no_cents_if_whole: false %></td>
+              <td><%= shipment_accessorial.accessorial.name %></td>
+              <td><%= humanized_money_with_symbol shipment_accessorial.charge, no_cents_if_whole: false %></td>
             </tr>
           <% end %>
         </tbody>

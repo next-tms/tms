@@ -95,14 +95,12 @@ class Receivable < ApplicationRecord
       end.join("\n")
     )
 
-    shipment_broker_accessorials = shipment.shipment_broker_accessorials.sort_by do |shipment_broker_accessorial|
-      shipment_broker_accessorial.broker_accessorial.name
-    end
+    shipment_accessorials = shipment.shipment_accessorials.sort_by { |shipment_accessorial| shipment_accessorial.accessorial.name }
 
-    shipment_broker_accessorials.each do |shipment_broker_accessorial|
-      next if shipment_broker_accessorial.broker_accessorial.broker_only?
+    shipment_accessorials.each do |shipment_accessorial|
+      next if shipment_accessorial.accessorial.broker_only?
 
-      receivable_items.build(charge: shipment_broker_accessorial.charge, description: shipment_broker_accessorial.broker_accessorial.name)
+      receivable_items.build(charge: shipment_accessorial.charge, description: shipment_accessorial.accessorial.name)
     end
 
     self.total = receivable_items.reject(&:marked_for_destruction?).sum(&:charge)

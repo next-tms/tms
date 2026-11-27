@@ -59,7 +59,7 @@ Rails.application.routes.draw do
 
     get 'settings/company', to: 'broker#settings'
     resources :broker_countries, only: %i[create destroy], path: 'settings/company/countries'
-    resources :broker_accessorials, path: 'settings/company/accessorials'
+    resources :accessorials, only: :index, path: 'settings/company/accessorials'
 
     get 'settings/company/accounting', to: 'accounting#show'
 

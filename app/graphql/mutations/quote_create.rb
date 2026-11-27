@@ -26,7 +26,7 @@ module Mutations
         items_attributes: packages.map(&:item_attributes),
         pickup_on: attributes[:pickup_on],
         receiver_address_attributes: attributes[:receiver_address].address_attributes,
-        shipment_broker_accessorials_attributes: shipment_broker_accessorials_attributes(shipment, accessorial_codes),
+        shipment_accessorials_attributes: shipment_accessorials_attributes(shipment, accessorial_codes),
         shipper_address_attributes: attributes[:shipper_address].address_attributes
       )
       shipment.created_by = actor

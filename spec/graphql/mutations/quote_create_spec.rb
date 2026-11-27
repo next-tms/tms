@@ -4,9 +4,8 @@ RSpec.describe(Mutations::QuoteCreate) do
   subject(:result) { LiftoffSchema.execute(query, context: { authorizable: }, variables:).to_h }
 
   let(:authorizable) { create(:customer_user, companyable: broker_customer) }
-  let(:accessorial) { create(:accessorial, freight_kit_code: 'liftgate_delivery') }
+  let(:accessorial) { create(:accessorial, broker_customer:, transponder_code: 'liftgate_delivery') }
   let(:accessorial_codes) { ['liftgate_delivery'] }
-  let(:broker_accessorial) { create(:broker_accessorial, accessorial:, broker_customer:) }
   let(:broker_carrier) { create(:broker_carrier, carrier: create(:carrier, scac: 'ABCD')) }
   let(:broker_customer) { create(:broker_customer) }
   let(:data) { result.dig('data', 'quoteCreate') }
@@ -36,7 +35,7 @@ RSpec.describe(Mutations::QuoteCreate) do
   end
 
   before do
-    broker_accessorial
+    accessorial
     create(:packaging, freight_kit_type: 'pallet')
     allow_any_instance_of(BrokerCustomer).to(receive(:carrier_charge_calculator).and_return(Money.new(15_000, 'USD')))
     allow_any_instance_of(Shipment).to(receive(:valid_broker_carriers_for_quotation).and_return(BrokerCarrier.where(id: broker_carrier.id)))
@@ -54,25 +53,34 @@ RSpec.describe(Mutations::QuoteCreate) do
     it { expect(shipment).to(have_attributes(broker_customer:, created_by: authorizable, pickup_on: Date.new(2026, 11, 3))) }
     it { expect(shipment).to(be_quote_only) }
     it { expect(shipment.items.pluck(:quantity, :weight)).to(eq([[2, 500]])) }
-    it { expect(shipment.shipment_broker_accessorials.pluck(:broker_accessorial_id)).to(eq([broker_accessorial.id])) }
+    it { expect(shipment.shipment_accessorials.pluck(:accessorial_id)).to(eq([accessorial.id])) }
   end
 
-  context 'with an accessorial the customer is not offered' do
-    let(:accessorial_codes) { ['liftgate_delivery', 'inside_delivery', 'inside_delivery'] }
+  context 'with an unknown accessorial' do
+    let(:accessorial_codes) { ['liftgate_delivery', 'teleport_delivery', 'teleport_delivery'] }
     let(:error) { result['errors'].sole }
 
     it { expect { result }.not_to(change(Shipment, :count)) }
-    it { expect(error['extensions']).to(eq('accessorialCodes' => ['inside_delivery'], 'code' => 'UNSERVICEABLE_ACCESSORIALS')) }
-    it { expect(error['message']).to(eq('Accessorials not offered: inside_delivery')) }
+    it { expect(error['extensions']).to(eq('accessorialCodes' => ['teleport_delivery'], 'code' => 'UNSERVICEABLE_ACCESSORIALS')) }
+    it { expect(error['message']).to(eq('Accessorials not offered: teleport_delivery')) }
   end
 
   context 'with a blanket accessorial' do
-    let(:broker_accessorial) { create(:broker_accessorial, accessorial:, broker_customer: nil) }
+    let(:accessorial) { create(:accessorial, broker_customer: nil, transponder_code: 'liftgate_delivery') }
 
     before { result }
 
     it { expect(result['errors']).to(be_nil) }
-    it { expect(shipment.shipment_broker_accessorials.pluck(:broker_accessorial_id)).to(include(broker_accessorial.id)) }
+    it { expect(shipment.shipment_accessorials.pluck(:accessorial_id)).to(include(accessorial.id)) }
+  end
+
+  context 'with an accessorial that has no record yet' do
+    let(:accessorial_codes) { ['liftgate_delivery', 'inside_delivery'] }
+
+    before { result }
+
+    it { expect(result['errors']).to(be_nil) }
+    it { expect(shipment.accessorials.map(&:transponder_code)).to(contain_exactly('liftgate_delivery', 'inside_delivery')) }
   end
 
   context 'when the user is a broker' do
