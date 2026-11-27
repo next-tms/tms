@@ -86,7 +86,7 @@ services:
       timeout: 2s
       retries: 10
       start_period: 120s
-    image: postgres:18.7-alpine3.24
+    image: postgres:19.0-alpine3.24
     volumes:
       - ./data/postgres:/var/lib/postgresql
   gotenberg:
