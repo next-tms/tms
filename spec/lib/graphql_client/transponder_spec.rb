@@ -32,7 +32,7 @@ RSpec.describe(GraphQLClient::Transponder) do
       end
 
       let!(:requests) { Concurrent::AtomicFixnum.new }
-      let!(:server) { TCPServer.new('localhost', 0) }
+      let!(:server) { TCPServer.new('127.0.0.1', 0) }
       let!(:thread) do
         Thread.new do
           loop do
@@ -49,7 +49,7 @@ RSpec.describe(GraphQLClient::Transponder) do
         end
       end
 
-      let(:url) { "http://localhost:#{server.addr[1]}/graphql" }
+      let(:url) { "http://127.0.0.1:#{server.addr[1]}/graphql" }
 
       before do
         stub_const("#{described_class}::HTTPAdapter::TIMEOUT", { connect_timeout: 1, total_request_timeout: 0.3 })
