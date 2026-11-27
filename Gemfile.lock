@@ -359,7 +359,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.7-x86_64-linux-musl)
       racc (~> 1.4)
-    noticed (3.1.1)
+    noticed (3.2.0)
       rails (>= 7.1.0)
     oauth2 (2.1.0)
       anonymous_loader (~> 0.1, >= 0.1.5)
@@ -432,7 +432,7 @@ GEM
       roxml (~> 4.2)
     raabro (1.5.0)
     racc (1.8.1)
-    rack (3.2.8)
+    rack (3.2.9)
     rack-session (2.1.2)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -650,10 +650,10 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     websocket (1.2.11)
-    websocket-driver (0.8.2)
+    websocket-driver (0.9.1)
       base64
-      websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.5)
+      websocket-extensions (>= 0.2.0)
+    websocket-extensions (0.3.0)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yaml (0.4.0)
@@ -708,7 +708,7 @@ DEPENDENCIES
   measured (~> 3.2.0)
   money-rails (~> 3.0)
   nkf
-  noticed (~> 3.1.1)
+  noticed (~> 3.2.0)
   pagy
   pg (~> 1.7)
   phony_rails

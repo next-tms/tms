@@ -135,7 +135,7 @@ gem 'pagy'
 gem 'ransack', '~> 6.1'
 
 gem 'audited'
-gem 'noticed', '~> 3.1.1'
+gem 'noticed', '~> 3.2.0'
 gem 'pretender'
 
 gem 'activerecord-session_store', '~> 2.3.0'
